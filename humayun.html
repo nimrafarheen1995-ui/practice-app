@@ -77,6 +77,7 @@
     transition: all 0.15s;
     box-shadow: 0 2px 0 var(--border);
     white-space: nowrap;
+    text-decoration: none;
   }
   .header-action-btn:active { transform: translateY(2px); box-shadow: none; }
 
@@ -435,6 +436,7 @@
 
   <div class="header">
     <div class="header-title" id="headerTitle">
+      <a href="javascript:void(0)" onclick="goToHub()" class="header-action-btn" style="margin-right: 4px;">🏠 Hub</a>
       <span class="icon">🗺️</span>
       <span>Humayun's Word Quest</span>
     </div>
@@ -660,6 +662,23 @@ var AppStorage = (function() {
 })();
 
 /* ============================================================
+   RETURN TO HUB SAFE-EXIT HANDLER
+   ============================================================ */
+function goToHub() {
+  if ('speechSynthesis' in window) {
+    try { window.speechSynthesis.cancel(); } catch (e) {}
+  }
+  if (typeof saveCurrentDrawing === "function") {
+    try { saveCurrentDrawing(); } catch (e) {}
+  }
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage("close-lesson-to-hub", "*");
+  } else {
+    window.location.href = "index.html";
+  }
+}
+
+/* ============================================================
    NAMESPACED KEYS
    ============================================================ */
 var APP_ID = "humayun";
@@ -807,7 +826,6 @@ function getParentPin() { return AppStorage.get(pinKey()) || "1234"; }
 function getCurrentList() { return activeLessonContent[currentSectionKey]; }
 function getCurrentItem() { return getCurrentList()[currentIndex]; }
 
-// FIXED: Parent mode now maps to the 'write' mode storage key instead of 'practice'
 function currentModeId() {
   return (appMode === "write" || appMode === "parent") ? "write" : "practice";
 }
@@ -1049,7 +1067,6 @@ function fitCanvasToContainer() {
    INK PERSISTENCE
    ============================================================ */
 function saveCurrentDrawing() {
-  // Prevent Parent mode from overwriting child's ink
   if (appMode === "parent") return;
   if (!canvasReady || canvas.width <= 0) return;
   var key = currentInkKey();
@@ -1125,21 +1142,19 @@ function setupCanvasListeners() {
   canvas.addEventListener("pointerdown", function(e) {
     if (appMode === "parent") return;
 
-    // Strict Stylus Check if in pen-only mode
     if (inputRejectionMode === "pen-only") {
       if (e.pointerType !== "pen") {
         e.preventDefault();
-        return; // Complete palm & finger rejection
+        return;
       }
     } else {
-      // Any touch mode: reject massive contact patches (palms resting on screen)
       if (e.pointerType === "touch" && (e.width > 35 || e.height > 35)) {
         e.preventDefault();
         return;
       }
     }
 
-    if (isDrawing && activePointerId !== null) return; // Ignore second touches / multi-finger
+    if (isDrawing && activePointerId !== null) return;
 
     activePointerId = e.pointerId;
     isDrawing = true;
@@ -1388,7 +1403,7 @@ function checkPin() {
   if (val === getParentPin()) {
     saveCurrentDrawing();
     appMode = "parent";
-    applyOrderForMode(); // FIXED: Syncs exact card sequence with Write Mode
+    applyOrderForMode();
     currentIndex = 0;
     updateAppMode();
     renderCurrentCard();
