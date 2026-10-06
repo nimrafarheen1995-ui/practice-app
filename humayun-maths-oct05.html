@@ -53,7 +53,6 @@
       display: none;
     }
 
-    /* Header */
     header.header {
       height: var(--header-h);
       background: #ffffff;
@@ -125,7 +124,6 @@
       box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
     }
 
-    /* Main Workspace Layout */
     .main-workspace {
       flex: 1;
       display: grid;
@@ -141,7 +139,7 @@
       .main-workspace { grid-template-columns: 1fr; }
     }
 
-    /* Left Pane: Rainbow Stage & Visual Shelf */
+    /* Left Pane */
     .rainbow-pane {
       background: #ffffff;
       border-radius: var(--radius);
@@ -194,7 +192,6 @@
       flex-shrink: 0;
     }
 
-    /* Large Rainbow Canvas Stack */
     .rainbow-canvas-container {
       position: relative;
       width: 100%;
@@ -266,7 +263,6 @@
       pointer-events: none;
     }
 
-    /* Action Shelf */
     .action-shelf {
       width: 100%;
       background: #f8fafc;
@@ -306,7 +302,7 @@
       font-size: 0.95rem;
     }
 
-    /* Right Pane: 2-Column Wide Cards & Taller Keypad */
+    /* Right Pane */
     .questions-pane {
       background: #ffffff;
       border-radius: var(--radius);
@@ -372,7 +368,6 @@
       background: #fef2f2;
     }
 
-    /* Locked State after 2 Failed Attempts */
     .q-card.is-locked {
       border-color: #f59e0b;
       background: #fffbeb;
@@ -443,7 +438,6 @@
       color: #b45309;
     }
 
-    /* Helper clue badge when card locks */
     .locked-clue {
       font-size: 0.76rem;
       font-weight: 800;
@@ -454,7 +448,7 @@
       text-align: center;
     }
 
-    /* Keypad with Taller Touch Buttons */
+    /* Keypad */
     .docked-keypad {
       background: #f1f5f9;
       border: 1px solid var(--border);
@@ -512,7 +506,7 @@
       font-size: 1.15rem;
     }
 
-    /* Draggable Scratchpad */
+    /* Scratchpad */
     .floating-gridpad {
       position: fixed;
       top: 90px;
@@ -708,7 +702,7 @@
 
   <main class="main-workspace">
 
-    <!-- Left: Spacious Rainbow Canvas Area -->
+    <!-- Left: Rainbow Area -->
     <section class="rainbow-pane">
       <div class="rainbow-stage-box">
         <div class="brush-shelf" id="brushShelf">
@@ -770,7 +764,7 @@
       </div>
     </section>
 
-    <!-- Right: 2-Column Wide Cards & Taller Keypad -->
+    <!-- Right: Questions & Keypad -->
     <section class="questions-pane">
       <div class="questions-grid" id="questionsContainer"></div>
 
@@ -799,7 +793,7 @@
 
   </main>
 
-  <!-- Draggable Math Scratchpad -->
+  <!-- Scratchpad Modal -->
   <div class="floating-gridpad" id="scratchpadWindow">
     <div class="pad-topbar" id="padHeader">
       <div class="pad-title">
@@ -839,9 +833,6 @@
   </div>
 
   <script>
-    /*************************************************************
-     * 1. Hub Navigation Safe Exit
-     *************************************************************/
     function goToHub() {
       if ('speechSynthesis' in window) {
         try { window.speechSynthesis.cancel(); } catch (e) {}
@@ -856,9 +847,7 @@
       }
     }
 
-    /*************************************************************
-     * 2. Web Audio Synthesizer (Built-in SFX, No External MP3s)
-     *************************************************************/
+    /* Web Audio Synthesizer */
     let soundEnabled = true;
     let audioCtx = null;
 
@@ -905,24 +894,20 @@
       } catch (e) {}
     }
 
-    // Specific Sound FX
     const SFX = {
       tap: () => playTone(600, 0.04, 'triangle', 0.08),
       success: () => {
-        // C5 -> E5 -> G5 Major Triad Fanfare
         if (!soundEnabled) return;
         playTone(523.25, 0.12, 'sine', 0.18);
         setTimeout(() => playTone(659.25, 0.12, 'sine', 0.18), 90);
         setTimeout(() => playTone(783.99, 0.25, 'sine', 0.2), 180);
       },
       wrong: () => {
-        // Double-boop Try Again
         if (!soundEnabled) return;
         playTone(260, 0.1, 'sawtooth', 0.1);
         setTimeout(() => playTone(210, 0.16, 'sawtooth', 0.12), 110);
       },
       stroke: () => {
-        // Soft sparkle chime when coloring arc
         playTone(880 + Math.random() * 200, 0.04, 'sine', 0.03);
       },
       celebration: () => {
@@ -934,27 +919,23 @@
       }
     };
 
-    /*************************************************************
-     * 3. Dataset, Arc Geometry & Anti-Guess State
-     *************************************************************/
     const STUDENT = "humayun";
     const SUBJECT_TOPIC = "maths_division_oct05";
     const STORAGE_PREFIX = `ink::${STUDENT}::${SUBJECT_TOPIC}::standard`;
 
-    // 9 Division Equations matching the image key[cite: 1]
+    // 9 Division Equations matching textbook key[cite: 1]
     const baseQuestions = [
-      { id: "q1", num1: 45, num2: 9, answer: 5, missing: "ans", colorHex: "#3b82f6", colorName: "Dark Blue", targetArc: 5, clue: "Think: 9 × 5 = 45" },[cite: 1]
-      { id: "q2", num1: 24, num2: 2, answer: 12, missing: "ans", colorHex: "#ef4444", colorName: "Red", targetArc: 12, clue: "Half of 24 is 12" },[cite: 1]
-      { id: "q3", num1: 21, num2: 7, answer: 3, missing: "div", colorHex: "#eab308", colorName: "Yellow", targetArc: 3, clue: "Think: 7 × ? = 21" },[cite: 1]
-      { id: "q4", num1: 25, num2: 5, answer: 5, missing: "ans", colorHex: "#ec4899", colorName: "Hot Pink", targetArc: 5, clue: "Count 5 groups of 5" },[cite: 1]
-      { id: "q5", num1: 20, num2: 5, answer: 4, missing: "div", colorHex: "#84cc16", colorName: "Light Green", targetArc: 4, clue: "Think: 5 × 4 = 20" },[cite: 1]
-      { id: "q6", num1: 32, num2: 4, answer: 8, missing: "ans", colorHex: "#7dd3fc", colorName: "Sky Blue", targetArc: 8, clue: "Think: 4 × 8 = 32" },[cite: 1]
-      { id: "q7", num1: 18, num2: 9, answer: 2, missing: "div", colorHex: "#f472b6", colorName: "Salmon Pink", targetArc: null, clue: "Think: 9 doubled is 18" },[cite: 1]
-      { id: "q8", num1: 60, num2: 10, answer: 6, missing: "ans", colorHex: "#f97316", colorName: "Orange", targetArc: 6, clue: "Drop the 0 when dividing by 10" },[cite: 1]
-      { id: "q9", num1: 49, num2: 7, answer: 7, missing: "ans", colorHex: "#6d28d9", colorName: "Deep Purple", targetArc: 7, clue: "Square: 7 × 7 = 49" }[cite: 1]
+      { id: "q1", num1: 45, num2: 9, answer: 5, missing: "ans", colorHex: "#3b82f6", colorName: "Dark Blue", targetArc: 5, clue: "Think: 9 × 5 = 45" },
+      { id: "q2", num1: 24, num2: 2, answer: 12, missing: "ans", colorHex: "#ef4444", colorName: "Red", targetArc: 12, clue: "Half of 24 is 12" },
+      { id: "q3", num1: 21, num2: 7, answer: 3, missing: "div", colorHex: "#eab308", colorName: "Yellow", targetArc: 3, clue: "Think: 7 × ? = 21" },
+      { id: "q4", num1: 25, num2: 5, answer: 5, missing: "ans", colorHex: "#ec4899", colorName: "Hot Pink", targetArc: 5, clue: "Count 5 groups of 5" },
+      { id: "q5", num1: 20, num2: 5, answer: 4, missing: "div", colorHex: "#84cc16", colorName: "Light Green", targetArc: 4, clue: "Think: 5 × 4 = 20" },
+      { id: "q6", num1: 32, num2: 4, answer: 8, missing: "ans", colorHex: "#7dd3fc", colorName: "Sky Blue", targetArc: 8, clue: "Think: 4 × 8 = 32" },
+      { id: "q7", num1: 18, num2: 9, answer: 2, missing: "div", colorHex: "#f472b6", colorName: "Salmon Pink", targetArc: null, clue: "Think: 9 doubled is 18" },
+      { id: "q8", num1: 60, num2: 10, answer: 6, missing: "ans", colorHex: "#f97316", colorName: "Orange", targetArc: 6, clue: "Drop the 0 when dividing by 10" },
+      { id: "q9", num1: 49, num2: 7, answer: 7, missing: "ans", colorHex: "#6d28d9", colorName: "Deep Purple", targetArc: 7, clue: "Square: 7 × 7 = 49" }
     ];
 
-    // Mathematical arc geometry [center (250, 270)][cite: 1]
     const arcGeometry = {
       12: { radius: 220, strokeWidth: 26 },
       6:  { radius: 190, strokeWidth: 26 },
@@ -967,16 +948,13 @@
 
     let questions = JSON.parse(JSON.stringify(baseQuestions));
     let userAnswers = {};
-    let attemptsCount = {}; // { q1: 1, q2: 2 } Tracks guesses
-    let lockedCards = {};   // { q3: true } Locked after 2 wrong tries
+    let attemptsCount = {};
+    let lockedCards = {};
     let activeBrush = null;
     let paintedArcs = {};
     let strokeDistance = 0;
     let activeCardIndex = 0;
 
-    /*************************************************************
-     * 4. Question Cards & Keypad Interaction
-     *************************************************************/
     function renderQuestionCards() {
       const container = document.getElementById("questionsContainer");
       if (!container) return;
@@ -1086,7 +1064,6 @@
       SFX.tap();
       const current = questions[activeCardIndex];
 
-      // Anti-Guess: Prevent keying into locked card
       if (lockedCards[current.id]) {
         SFX.wrong();
         showNotice(`🔒 This question is locked! Open Scratchpad to work it out.`);
@@ -1116,16 +1093,12 @@
       }
     }
 
-    /*************************************************************
-     * 5. Anti-Guessing Logic: 2 Attempts & Clue Lockout
-     *************************************************************/
     function checkAnswerWithAntiGuess(q, val) {
       if (!val || val.trim() === "") return;
 
       const numVal = parseInt(val, 10);
 
       if (numVal === q.answer) {
-        // Correct Answer
         SFX.success();
         delete attemptsCount[q.id];
         delete lockedCards[q.id];
@@ -1145,20 +1118,15 @@
           showNotice(`⭐ Excellent! 18 ÷ 2 = 9!`);
         }
       } else {
-        // Wrong Answer
         SFX.wrong();
         attemptsCount[q.id] = (attemptsCount[q.id] || 0) + 1;
 
         if (attemptsCount[q.id] >= 2) {
-          // Exceeded 2 attempts: Lock card & guide to scratchpad
           lockedCards[q.id] = true;
           userAnswers[q.id] = "";
           showNotice(`🔒 2 tries used for ${q.colorName}. Open Scratchpad to calculate!`);
-
-          // Auto-advance to next unlocked card
           advanceToNextUnlocked();
         } else {
-          // First wrong attempt
           userAnswers[q.id] = "";
           showNotice(`Not quite! You have 1 more try. Check your scratchpad!`);
         }
@@ -1179,20 +1147,17 @@
       }
     }
 
-    // Unlock a card when student opens scratchpad to do rough work
     function unlockCardFromScratchpad() {
       const current = questions[activeCardIndex];
       if (current && lockedCards[current.id]) {
         delete lockedCards[current.id];
-        attemptsCount[current.id] = 1; // 1 fresh chance after scratchpad working
+        attemptsCount[current.id] = 1;
         renderQuestionCards();
         showNotice(`🔓 ${current.colorName} unlocked for a fresh calculation!`);
       }
     }
 
-    /*************************************************************
-     * 6. Masked Hand-Stroke Rainbow Arc Coloring Engine
-     *************************************************************/
+    /* Rainbow Canvas Logic */
     const rCanvas = document.getElementById("rainbowPaintCanvas");
     const rCtx = rCanvas.getContext("2d");
     const rContainer = document.getElementById("rainbowContainer");
@@ -1265,7 +1230,6 @@
       const dist = Math.hypot(pt.x - lastColorPt.x, pt.y - lastColorPt.y);
       strokeDistance += dist;
 
-      // Soft brush stroke SFX
       if (Math.random() < 0.25) SFX.stroke();
 
       rCtx.save();
@@ -1438,9 +1402,7 @@
       renderQuestionCards();
     }
 
-    /*************************************************************
-     * 7. Draggable Math Scratchpad Canvas (With True Erasing)
-     *************************************************************/
+    /* Scratchpad Canvas */
     const padWindow = document.getElementById("scratchpadWindow");
     const padHeader = document.getElementById("padHeader");
     const canvas = document.getElementById("mathCanvas");
@@ -1595,9 +1557,7 @@
       ctx.clearRect(0, 0, rect.width, rect.height);
     }
 
-    /*************************************************************
-     * 8. Accessibility & Screen Helpers
-     *************************************************************/
+    /* Accessibility */
     let isDimmed = false;
     function toggleDimScreen() {
       isDimmed = !isDimmed;
@@ -1612,9 +1572,7 @@
       }
     }
 
-    /*************************************************************
-     * 9. Confetti Particle Engine
-     *************************************************************/
+    /* Confetti */
     const confettiCvs = document.getElementById("confettiCanvas");
     const confettiCtx = confettiCvs.getContext("2d");
     let confettiParticles = [];
