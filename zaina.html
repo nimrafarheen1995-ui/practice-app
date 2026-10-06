@@ -205,6 +205,7 @@
       color: var(--text);
       height: 38px;
       white-space: nowrap;
+      text-decoration: none;
     }
     .action-btn:active { transform: translateY(1px); }
 
@@ -748,6 +749,7 @@
     <!-- ROW 1: HEADER -->
     <header>
       <div class="title-banner">
+        <a href="javascript:void(0)" onclick="goToHub()" class="action-btn" style="margin-right: 4px;">🏠 Hub</a>
         <span style="font-size: 1.4rem;">🏔️</span>
         <h1>Zaina's English Trail <span class="user-tag">Grade 5</span></h1>
       </div>
@@ -864,6 +866,24 @@
     const PARENT_SECRET_PIN = "1995";
     let enteredPin = "";
     let peekUnlockedMap = {};
+
+    /* Return to Hub Safe-Exit Handler */
+    function goToHub() {
+      if ('speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+      }
+      if (typeof saveCurrentInk === "function") {
+        try { saveCurrentInk(); } catch (e) {}
+      }
+      if (typeof saveCurrentPosition === "function") {
+        try { saveCurrentPosition(); } catch (e) {}
+      }
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage("close-lesson-to-hub", "*");
+      } else {
+        window.location.href = "index.html";
+      }
+    }
 
     /* Complete Structured Curriculum */
     const MASTER_LESSON_CONTENT = {
@@ -1073,7 +1093,7 @@
       renderCurrentCard();
     }
 
-    /* Hi-DPI Dynamic Fit (Preserves Ink Only Within Matching Keys) */
+    /* Hi-DPI Dynamic Fit */
     function fitCanvasToContainer(skipRestore) {
       const wrap = document.getElementById("canvasWrapper");
       if (!wrap || wrap.offsetParent === null) return;
@@ -1141,7 +1161,7 @@
       }
     }
 
-    /* Strictly Isolated Ink Storage Key (Includes exact appMode) */
+    /* Strictly Isolated Ink Storage Key */
     function inkStorageKey(id) {
       return `z_ink_${appMode}_${currentSection}_${id}`;
     }
@@ -1346,7 +1366,7 @@
       document.body.classList.toggle("dark-mode");
       const isDark = document.body.classList.contains("dark-mode");
       StorageMgr.set("z_theme", isDark ? "dark" : "light");
-      document.getElementById("toggleThemeBtn").textContent = isDark ? "☀️️ Light" : "🌙 Dark";
+      document.getElementById("toggleThemeBtn").textContent = isDark ? "☀ Light" : "🌙 Dark";
       const item = getCurrentItem();
       if (item) restoreInkForCard(item.id);
     }
@@ -1521,7 +1541,7 @@
       document.getElementById("nextBtn").textContent = (currentLocalIndex === list.length - 1) ? "Section Done 🎉" : "Next ▶";
 
       setTimeout(() => {
-        fitCanvasToContainer(true); // Don't allow old canvas content to be snapshotted
+        fitCanvasToContainer(true);
         restoreInkForCard(item.id);
       }, 20);
     }
@@ -1572,7 +1592,7 @@
     function navigateCard(dir) {
       window.speechSynthesis.cancel();
       saveCurrentInk();
-      ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear screen before card change
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       const list = getActiveSectionList();
       const nextIdx = currentLocalIndex + dir;
       if (nextIdx >= 0 && nextIdx < list.length) {
