@@ -1,0 +1,1488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Humayun - Grade 3 Maths: Division Rainbow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4338ca;
+      --primary-light: #eef2ff;
+      --accent: #f59e0b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #cbd5e1;
+      --radius: 16px;
+      --header-h: 64px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #dimOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.45);
+      pointer-events: none;
+      z-index: 9998;
+      display: none;
+    }
+
+    header.header {
+      height: var(--header-h);
+      background: #ffffff;
+      border-bottom: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.25rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-left, .header-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .header-action-btn {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      color: #334155;
+      font-size: 0.85rem;
+      font-weight: 800;
+      padding: 0.4rem 0.85rem;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      text-decoration: none;
+    }
+    .header-action-btn:hover { background: #e2e8f0; }
+
+    .badge-student {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #fff;
+      font-weight: 900;
+      font-size: 0.85rem;
+      padding: 0.3rem 0.75rem;
+      border-radius: 999px;
+    }
+
+    .lesson-title h1 {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1.1;
+    }
+    .lesson-title span {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .toggle-pad-btn {
+      background: linear-gradient(135deg, #4f46e5, #4338ca);
+      color: #ffffff;
+      border: none;
+      border-radius: 999px;
+      padding: 0.45rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+
+    .main-workspace {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      padding: 1rem 1.25rem;
+      max-width: 1600px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    @media (max-width: 960px) {
+      .main-workspace { grid-template-columns: 1fr; }
+    }
+
+    /* Left Pane: Interactive Coloring Rainbow */
+    .rainbow-pane {
+      background: #ffffff;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .rainbow-stage-box {
+      width: 100%;
+      background: linear-gradient(180deg, #f0fdf4 0%, #e0f2fe 100%);
+      border: 2px dashed #bae6fd;
+      border-radius: 16px;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+
+    .brush-banner {
+      min-height: 44px;
+      width: 100%;
+      border-radius: 12px;
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.8rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #334155;
+      text-align: center;
+      transition: all 0.25s ease;
+    }
+
+    .brush-color-pill {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.25);
+      flex-shrink: 0;
+    }
+
+    /* Rainbow Canvas Stack */
+    .rainbow-canvas-container {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      aspect-ratio: 500 / 290;
+      touch-action: none;
+    }
+
+    svg.rainbow-svg-base {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    canvas#rainbowPaintCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      touch-action: none;
+      cursor: crosshair;
+    }
+
+    svg.rainbow-svg-top {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .rainbow-arc-base {
+      fill: none;
+      stroke-linecap: round;
+      stroke: #e2e8f0;
+      transition: stroke 0.3s ease;
+    }
+
+    .rainbow-arc-top {
+      fill: none;
+      stroke-linecap: round;
+      stroke: rgba(148, 163, 184, 0.4);
+    }
+
+    .arc-glow {
+      animation: arcPulse 1.2s infinite alternate;
+    }
+
+    @keyframes arcPulse {
+      from { stroke: #93c5fd; }
+      to { stroke: #3b82f6; }
+    }
+
+    .rainbow-text {
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 900;
+      fill: #1e293b;
+      font-size: 15px;
+      text-anchor: middle;
+      dominant-baseline: central;
+      pointer-events: none;
+    }
+
+    .progress-box {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .shuffle-btn {
+      background: #f1f5f9;
+      border: 2px solid var(--border);
+      color: #0f172a;
+      font-weight: 800;
+      font-size: 0.88rem;
+      padding: 0.6rem 1.1rem;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+    .shuffle-btn:active { transform: scale(0.96); }
+
+    .score-badge {
+      background: #ecfdf5;
+      color: #065f46;
+      border: 1.5px solid #a7f3d0;
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+
+    /* Right Pane: Questions & Keypad */
+    .questions-pane {
+      background: #ffffff;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      justify-content: space-between;
+    }
+
+    .questions-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.65rem;
+      min-height: 260px;
+    }
+
+    @media (max-width: 650px) {
+      .questions-grid { grid-template-columns: 1fr; }
+    }
+
+    .q-card {
+      background: #f8fafc;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 0.55rem 0.65rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      transition: all 0.15s ease;
+    }
+
+    .q-card.active-target {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.2);
+    }
+
+    .q-card.ready-to-color {
+      border-color: #f59e0b;
+      background: #fffbeb;
+      animation: pulseGlow 1.5s infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      from { box-shadow: 0 0 4px #fbbf24; }
+      to { box-shadow: 0 0 12px #f59e0b; }
+    }
+
+    .q-card.completed {
+      border-color: #10b981;
+      background: #f0fdf4;
+    }
+
+    .q-card.is-wrong {
+      border-color: #f87171;
+      background: #fef2f2;
+    }
+
+    .q-swatch-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #334155;
+    }
+
+    .q-color-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+      border: 1px solid rgba(0,0,0,0.1);
+      display: inline-block;
+      margin-right: 0.35rem;
+      vertical-align: middle;
+    }
+
+    .card-status-tag {
+      font-size: 0.7rem;
+      font-weight: 900;
+    }
+
+    .equation-row {
+      font-family: 'Quicksand', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+      color: #0f172a;
+    }
+
+    .math-sym { color: #6366f1; }
+
+    .target-box {
+      width: 44px;
+      height: 38px;
+      border-radius: 8px;
+      border: 2px dashed #94a3b8;
+      background: #ffffff;
+      font-size: 1.25rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0f172a;
+    }
+    .active-target .target-box {
+      border: 2px solid var(--primary);
+    }
+
+    /* Docked Keypad */
+    .docked-keypad {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.65rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .keypad-header {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #475569;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .keypad-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.45rem;
+    }
+
+    .key-btn {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 0.7rem 0.2rem;
+      font-family: 'Quicksand', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #0f172a;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+    .key-btn:active {
+      background: #e2e8f0;
+      transform: translateY(1px);
+    }
+    .key-btn.action-key {
+      background: #e2e8f0;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #334155;
+    }
+    .key-btn.ok-key {
+      background: #10b981;
+      color: #ffffff;
+      font-weight: 900;
+    }
+
+    /* Draggable Scratchpad with Grid Layering */
+    .floating-gridpad {
+      position: fixed;
+      top: 90px;
+      right: 30px;
+      width: 440px;
+      height: 380px;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 1000;
+      display: none;
+    }
+
+    .pad-topbar {
+      background: #1e293b;
+      color: #ffffff;
+      padding: 0.5rem 0.85rem;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+      touch-action: none;
+    }
+    .pad-topbar:active { cursor: grabbing; }
+
+    .pad-title {
+      font-size: 0.85rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .pad-close-btn {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 1.25rem;
+      line-height: 1;
+      font-weight: 900;
+      cursor: pointer;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+    }
+    .pad-close-btn:hover { background: rgba(255,255,255,0.15); }
+
+    .pad-tools {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #f8fafc;
+      padding: 0.4rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .tool-btn {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.78rem;
+      font-weight: 800;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .tool-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    .color-chip {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      cursor: pointer;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.25);
+      transition: transform 0.1s;
+    }
+    .color-chip:active { transform: scale(0.9); }
+    .color-chip.active-chip {
+      box-shadow: 0 0 0 2px var(--primary);
+      transform: scale(1.15);
+    }
+
+    .size-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .size-btn.active-size {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .size-dot {
+      background: #334155;
+      border-radius: 50%;
+    }
+
+    .pen-palm-btn {
+      margin-left: auto;
+      font-size: 0.72rem;
+      padding: 0.25rem 0.55rem;
+      border-radius: 999px;
+      border: 1px solid #0284c7;
+      background: #e0f2fe;
+      color: #0369a1;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .pen-palm-btn.active {
+      background: #0284c7;
+      color: #ffffff;
+    }
+
+    .gridpad-canvas-wrap {
+      flex: 1;
+      position: relative;
+      background-color: #ffffff;
+      background-image:
+        linear-gradient(to right, #cbd5e1 1px, transparent 1px),
+        linear-gradient(to bottom, #cbd5e1 1px, transparent 1px);
+      background-size: 20px 20px;
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    canvas#mathCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    #confettiCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="dimOverlay"></div>
+  <canvas id="confettiCanvas"></canvas>
+
+  <header class="header">
+    <div class="header-left">
+      <a href="javascript:void(0)" onclick="goToHub()" class="header-action-btn">
+        🏠 Hub
+      </a>
+      <div class="badge-student">Humayun</div>
+      <div class="lesson-title">
+        <h1>Division Warm-Up</h1>
+        <span>Grade 3 Maths • Oct 05</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <button class="toggle-pad-btn" onclick="toggleScratchpad()">
+        📝 Scratchpad
+      </button>
+      <button class="header-action-btn" onclick="toggleDimScreen()" title="Dim Screen">
+        🌙 Dim
+      </button>
+      <button class="header-action-btn" onclick="toggleFullscreen()" title="Fullscreen">
+        ⛶
+      </button>
+    </div>
+  </header>
+
+  <main class="main-workspace">
+
+    <!-- Rainbow Area: Masked Hand-Stroke Coloring -->
+    <section class="rainbow-pane">
+      <div class="rainbow-stage-box">
+        <div class="brush-banner" id="brushBanner">
+          <span>Tap a card on the right, solve the division, and stroke the rainbow!</span>
+        </div>
+
+        <div class="rainbow-canvas-container" id="rainbowContainer">
+          <!-- Base Background Arcs -->
+          <svg class="rainbow-svg-base" viewBox="0 0 500 290">
+            <path id="base-arc-12" d="M 30,270 A 220,220 0 0,1 470,270" class="rainbow-arc-base" stroke-width="26" />
+            <path id="base-arc-6"  d="M 60,270 A 190,190 0 0,1 440,270" class="rainbow-arc-base" stroke-width="26" />
+            <path id="base-arc-3"  d="M 90,270 A 160,160 0 0,1 410,270" class="rainbow-arc-base" stroke-width="26" />
+            <path id="base-arc-4"  d="M 120,270 A 130,130 0 0,1 380,270" class="rainbow-arc-base" stroke-width="26" />
+            <path id="base-arc-8"  d="M 150,270 A 100,100 0 0,1 350,270" class="rainbow-arc-base" stroke-width="26" />
+            <path id="base-arc-5"  d="M 180,270 A 70,70 0 0,1 320,270"  class="rainbow-arc-base" stroke-width="26" />
+            <path id="base-arc-7"  d="M 210,270 A 40,40 0 0,1 290,270"  class="rainbow-arc-base" stroke-width="26" />
+          </svg>
+
+          <!-- Interactive Hand-Stroking Canvas -->
+          <canvas id="rainbowPaintCanvas"></canvas>
+
+          <!-- Top SVG: Numbers and Arc Outlines Layered Above Coloring -->
+          <svg class="rainbow-svg-top" viewBox="0 0 500 290">
+            <defs>
+              <path id="path12" d="M 30,270 A 220,220 0 0,1 470,270" />
+              <path id="path6"  d="M 60,270 A 190,190 0 0,1 440,270" />
+              <path id="path3"  d="M 90,270 A 160,160 0 0,1 410,270" />
+              <path id="path4"  d="M 120,270 A 130,130 0 0,1 380,270" />
+              <path id="path8"  d="M 150,270 A 100,100 0 0,1 350,270" />
+              <path id="path5"  d="M 180,270 A 70,70 0 0,1 320,270" />
+              <path id="path7"  d="M 210,270 A 40,40 0 0,1 290,270" />
+            </defs>
+
+            <!-- Border Outlines -->
+            <path id="top-arc-12" d="M 30,270 A 220,220 0 0,1 470,270" class="rainbow-arc-top" stroke-width="26" />
+            <path id="top-arc-6"  d="M 60,270 A 190,190 0 0,1 440,270" class="rainbow-arc-top" stroke-width="26" />
+            <path id="top-arc-3"  d="M 90,270 A 160,160 0 0,1 410,270" class="rainbow-arc-top" stroke-width="26" />
+            <path id="top-arc-4"  d="M 120,270 A 130,130 0 0,1 380,270" class="rainbow-arc-top" stroke-width="26" />
+            <path id="top-arc-8"  d="M 150,270 A 100,100 0 0,1 350,270" class="rainbow-arc-top" stroke-width="26" />
+            <path id="top-arc-5"  d="M 180,270 A 70,70 0 0,1 320,270"  class="rainbow-arc-top" stroke-width="26" />
+            <path id="top-arc-7"  d="M 210,270 A 40,40 0 0,1 290,270"  class="rainbow-arc-top" stroke-width="26" />
+
+            <!-- Numbers along Arc Centerlines[cite: 1] -->
+            <text><textPath href="#path12" startOffset="50%" class="rainbow-text">12</textPath></text>
+            <text><textPath href="#path6"  startOffset="50%" class="rainbow-text">6</textPath></text>
+            <text><textPath href="#path3"  startOffset="50%" class="rainbow-text">3</textPath></text>
+            <text><textPath href="#path4"  startOffset="50%" class="rainbow-text">4</textPath></text>
+            <text><textPath href="#path8"  startOffset="50%" class="rainbow-text">8</textPath></text>
+            <text><textPath href="#path5"  startOffset="50%" class="rainbow-text">5</textPath></text>
+            <text><textPath href="#path7"  startOffset="50%" class="rainbow-text">7</textPath></text>
+
+            <line x1="15" y1="272" x2="485" y2="272" stroke="#94a3b8" stroke-width="4" stroke-linecap="round" />
+          </svg>
+        </div>
+      </div>
+
+      <div class="progress-box">
+        <button class="shuffle-btn" onclick="shuffleAndReset()">
+          🔀 Reshuffle & Practice Again
+        </button>
+        <div class="score-badge" id="scoreBadge">
+          Rainbow Bands: <span id="coloredArcCount">0</span> / 7
+        </div>
+      </div>
+    </section>
+
+    <!-- Questions & Keypad Area -->
+    <section class="questions-pane">
+      <div class="questions-grid" id="questionsContainer"></div>
+
+      <div class="docked-keypad">
+        <div class="keypad-header">
+          <span>Number Pad</span>
+          <span id="activeTargetLabel">Active: Card 1</span>
+        </div>
+        <div class="keypad-grid">
+          <button class="key-btn" onclick="pressKey('1')">1</button>
+          <button class="key-btn" onclick="pressKey('2')">2</button>
+          <button class="key-btn" onclick="pressKey('3')">3</button>
+          <button class="key-btn" onclick="pressKey('4')">4</button>
+          <button class="key-btn" onclick="pressKey('5')">5</button>
+          <button class="key-btn action-key" onclick="pressKey('BACK')">⌫ Del</button>
+
+          <button class="key-btn" onclick="pressKey('6')">6</button>
+          <button class="key-btn" onclick="pressKey('7')">7</button>
+          <button class="key-btn" onclick="pressKey('8')">8</button>
+          <button class="key-btn" onclick="pressKey('9')">9</button>
+          <button class="key-btn" onclick="pressKey('0')">0</button>
+          <button class="key-btn ok-key" onclick="pressKey('OK')">OK ↵</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Draggable Math Scratchpad -->
+  <div class="floating-gridpad" id="scratchpadWindow">
+    <div class="pad-topbar" id="padHeader">
+      <div class="pad-title">
+        <span>✥</span> Scratchpad
+      </div>
+      <button class="pad-close-btn" 
+              onpointerdown="event.stopPropagation()" 
+              onclick="event.stopPropagation(); closeScratchpad();">
+        ✕
+      </button>
+    </div>
+    <div class="pad-tools">
+      <button class="tool-btn active" id="btnPen" onclick="setPadTool('pen')">✏ Pen</button>
+      <button class="tool-btn" id="btnEraser" onclick="setPadTool('eraser')">🧹 Eraser</button>
+      
+      <span class="color-chip active-chip" id="chip-navy" style="background:#1e3a8a;" onclick="setPadColor('#1e3a8a', 'chip-navy')"></span>
+      <span class="color-chip" id="chip-red" style="background:#dc2626;" onclick="setPadColor('#dc2626', 'chip-red')"></span>
+      <span class="color-chip" id="chip-green" style="background:#16a34a;" onclick="setPadColor('#16a34a', 'chip-green')"></span>
+      <span class="color-chip" id="chip-black" style="background:#0f172a;" onclick="setPadColor('#0f172a', 'chip-black')"></span>
+
+      <button class="size-btn" id="size-fine" title="Fine" onclick="setPadSize(2, 'size-fine')">
+        <span class="size-dot" style="width:3px; height:3px;"></span>
+      </button>
+      <button class="size-btn active-size" id="size-med" title="Medium" onclick="setPadSize(4, 'size-med')">
+        <span class="size-dot" style="width:6px; height:6px;"></span>
+      </button>
+      <button class="size-btn" id="size-thick" title="Thick" onclick="setPadSize(7, 'size-thick')">
+        <span class="size-dot" style="width:10px; height:10px;"></span>
+      </button>
+
+      <button class="tool-btn" onclick="clearPad()">🗑️</button>
+      <button class="pen-palm-btn active" id="btnPalm" onclick="togglePalmRejection()">Stylus: ON</button>
+    </div>
+    <div class="gridpad-canvas-wrap" id="canvasWrapper">
+      <canvas id="mathCanvas"></canvas>
+    </div>
+  </div>
+
+  <script>
+    function goToHub() {
+      if ('speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+      }
+      if (typeof saveCurrentDrawing === "function") {
+        try { saveCurrentDrawing(); } catch (e) {}
+      }
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage("close-lesson-to-hub", "*");
+      } else {
+        window.location.href = "index.html";
+      }
+    }
+
+    const STUDENT = "humayun";
+    const SUBJECT_TOPIC = "maths_division_oct05";
+    const STORAGE_PREFIX = `ink::${STUDENT}::${SUBJECT_TOPIC}::standard`;
+
+    // 9 Division Equations matching the image key[cite: 1]
+    const baseQuestions = [
+      { id: "q1", num1: 45, num2: 9, answer: 5, missing: "ans", colorHex: "#3b82f6", colorName: "Dark Blue", targetArc: 5 },
+      { id: "q2", num1: 24, num2: 2, answer: 12, missing: "ans", colorHex: "#ef4444", colorName: "Red", targetArc: 12 },
+      { id: "q3", num1: 21, num2: 7, answer: 3, missing: "div", colorHex: "#eab308", colorName: "Yellow", targetArc: 3 },
+      { id: "q4", num1: 25, num2: 5, answer: 5, missing: "ans", colorHex: "#ec4899", colorName: "Hot Pink", targetArc: 5 },
+      { id: "q5", num1: 20, num2: 5, answer: 4, missing: "div", colorHex: "#84cc16", colorName: "Light Green", targetArc: 4 },
+      { id: "q6", num1: 32, num2: 4, answer: 8, missing: "ans", colorHex: "#7dd3fc", colorName: "Sky Blue", targetArc: 8 },
+      { id: "q7", num1: 18, num2: 9, answer: 2, missing: "div", colorHex: "#f472b6", colorName: "Salmon Pink", targetArc: null },
+      { id: "q8", num1: 60, num2: 10, answer: 6, missing: "ans", colorHex: "#f97316", colorName: "Orange", targetArc: 6 },
+      { id: "q9", num1: 49, num2: 7, answer: 7, missing: "ans", colorHex: "#6d28d9", colorName: "Deep Purple", targetArc: 7 }
+    ];
+
+    // Mathematical arc geometry [center (250, 270)][cite: 1]
+    const arcGeometry = {
+      12: { radius: 220, strokeWidth: 26 },
+      6:  { radius: 190, strokeWidth: 26 },
+      3:  { radius: 160, strokeWidth: 26 },
+      4:  { radius: 130, strokeWidth: 26 },
+      8:  { radius: 100, strokeWidth: 26 },
+      5:  { radius: 70,  strokeWidth: 26 },
+      7:  { radius: 40,  strokeWidth: 26 }
+    };
+
+    let questions = JSON.parse(JSON.stringify(baseQuestions));
+    let userAnswers = {};
+    let activeBrush = null;
+    let paintedArcs = {}; // { 12: colorHex, ... }
+    let strokeDistance = 0; // tracks hand-stroking progress for active arc
+    let activeCardIndex = 0;
+
+    /*************************************************************
+     * 1. Question Cards & Keypad Interaction
+     *************************************************************/
+    function renderQuestionCards() {
+      const container = document.getElementById("questionsContainer");
+      if (!container) return;
+      container.innerHTML = "";
+
+      questions.forEach((q, idx) => {
+        const userVal = userAnswers[q.id] || "";
+        const isSolved = userVal !== "" && parseInt(userVal, 10) === q.answer;
+        const isPainted = q.targetArc ? !!paintedArcs[q.targetArc] : isSolved;
+
+        const card = document.createElement("div");
+        let cardClass = "q-card";
+        if (idx === activeCardIndex) cardClass += " active-target";
+
+        if (isSolved && isPainted) {
+          cardClass += " completed";
+        } else if (isSolved && !isPainted) {
+          cardClass += " ready-to-color";
+        } else if (userVal !== "" && !isSolved) {
+          cardClass += " is-wrong";
+        }
+
+        card.className = cardClass;
+        card.id = `card_${q.id}`;
+        card.onclick = () => selectActiveCard(idx);
+
+        let equationHtml = "";
+        if (q.missing === "ans") {
+          equationHtml = `
+            <span>${q.num1}</span>
+            <span class="math-sym">÷</span>
+            <span>${q.num2}</span>
+            <span class="math-sym">=</span>
+            <div class="target-box" id="val_${q.id}">${userVal}</div>
+          `;
+        } else {
+          equationHtml = `
+            <span>${q.num1}</span>
+            <span class="math-sym">÷</span>
+            <div class="target-box" id="val_${q.id}">${userVal}</div>
+            <span class="math-sym">=</span>
+            <span>${q.num2}</span>
+          `;
+        }
+
+        let statusTag = "";
+        if (isSolved && isPainted) {
+          statusTag = `<span class="card-status-tag" style="color:#10b981;">✓ Done</span>`;
+        } else if (isSolved && !isPainted) {
+          statusTag = `<span class="card-status-tag" style="color:#d97706;">🎨 Stroke Arc ${q.targetArc}!</span>`;
+        } else if (userVal !== "" && !isSolved) {
+          statusTag = `<span class="card-status-tag" style="color:#ef4444;">Retry</span>`;
+        }
+
+        card.innerHTML = `
+          <div class="q-swatch-header">
+            <div>
+              <span class="q-color-dot" style="background-color: ${q.colorHex};"></span>
+              <span>${q.colorName}</span>
+            </div>
+            ${statusTag}
+          </div>
+          <div class="equation-row">
+            ${equationHtml}
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      updateActiveLabel();
+    }
+
+    function selectActiveCard(idx) {
+      activeCardIndex = idx;
+      document.querySelectorAll(".q-card").forEach((c, i) => {
+        c.classList.toggle("active-target", i === activeCardIndex);
+      });
+      updateActiveLabel();
+    }
+
+    function updateActiveLabel() {
+      if (!questions || !questions[activeCardIndex]) return;
+      const current = questions[activeCardIndex];
+      const lbl = document.getElementById("activeTargetLabel");
+      if (lbl) lbl.innerText = `Active: ${current.colorName}`;
+    }
+
+    function pressKey(key) {
+      const current = questions[activeCardIndex];
+      let currentVal = userAnswers[current.id] || "";
+
+      if (key === "BACK") {
+        currentVal = currentVal.slice(0, -1);
+        userAnswers[current.id] = currentVal;
+        const box = document.getElementById(`val_${current.id}`);
+        if (box) box.innerText = currentVal;
+        return;
+      }
+
+      if (key === "OK") {
+        checkAnswerAndUnlockBrush(current, currentVal);
+        return;
+      }
+
+      if (currentVal.length < 2) {
+        currentVal += key;
+        userAnswers[current.id] = currentVal;
+        const box = document.getElementById(`val_${current.id}`);
+        if (box) box.innerText = currentVal;
+      }
+    }
+
+    function checkAnswerAndUnlockBrush(q, val) {
+      if (!val || val.trim() === "") return;
+
+      if (parseInt(val, 10) === q.answer) {
+        if (q.targetArc) {
+          activeBrush = {
+            colorHex: q.colorHex,
+            colorName: q.colorName,
+            targetArc: q.targetArc,
+            qid: q.id
+          };
+          strokeDistance = 0;
+          updateBrushBanner();
+          highlightArcBase(q.targetArc);
+        } else {
+          triggerMiniConfetti();
+          showNotice(`⭐ Excellent! 18 ÷ 2 = 9!`);
+        }
+      } else {
+        showNotice(`Not quite! Check your work on the scratchpad.`);
+      }
+
+      renderQuestionCards();
+    }
+
+    /*************************************************************
+     * 2. Masked Hand-Stroke Rainbow Arc Coloring Engine
+     *************************************************************/
+    const rCanvas = document.getElementById("rainbowPaintCanvas");
+    const rCtx = rCanvas.getContext("2d");
+    const rContainer = document.getElementById("rainbowContainer");
+
+    let isColoring = false;
+    let lastColorPt = null;
+
+    function resizeRainbowCanvas() {
+      const rect = rContainer.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      rCanvas.width = rect.width * dpr;
+      rCanvas.height = rect.height * dpr;
+      rCtx.scale(dpr, dpr);
+      redrawCompletedArcs();
+    }
+
+    window.addEventListener("resize", resizeRainbowCanvas);
+
+    function getRainbowCoordinates(e) {
+      const rect = rCanvas.getBoundingClientRect();
+      const scaleX = 500 / rect.width;
+      const scaleY = 290 / rect.height;
+      return {
+        x: (e.clientX - rect.left) * scaleX,
+        y: (e.clientY - rect.top) * scaleY
+      };
+    }
+
+    // Clip to specific Arc mask path
+    function clipToArc(ctx, arcNum) {
+      const geom = arcGeometry[arcNum];
+      if (!geom) return;
+
+      const cx = 250;
+      const cy = 270;
+      const rInner = geom.radius - (geom.strokeWidth / 2);
+      const rOuter = geom.radius + (geom.strokeWidth / 2);
+
+      ctx.beginPath();
+      // Outer semicircle arc (clockwise from left to right)
+      ctx.arc(cx, cy, rOuter, Math.PI, 0, false);
+      // Inner semicircle arc (counter-clockwise back to left)
+      ctx.arc(cx, cy, rInner, 0, Math.PI, true);
+      ctx.closePath();
+      ctx.clip();
+    }
+
+    rCanvas.addEventListener("pointerdown", (e) => {
+      if (!activeBrush) {
+        showNotice("Solve an equation on the right to unlock your brush first!");
+        return;
+      }
+
+      const pt = getRainbowCoordinates(e);
+      // Check if tap point is in the target arc
+      const hitArc = getArcAtPoint(pt.x, pt.y);
+      if (hitArc !== activeBrush.targetArc) {
+        showNotice(`Use your ${activeBrush.colorName} brush on Arc ${activeBrush.targetArc}!`);
+        return;
+      }
+
+      e.preventDefault();
+      rCanvas.setPointerCapture(e.pointerId);
+      isColoring = true;
+      lastColorPt = pt;
+    });
+
+    rCanvas.addEventListener("pointermove", (e) => {
+      if (!isColoring || !activeBrush) return;
+      e.preventDefault();
+
+      const pt = getRainbowCoordinates(e);
+      const dist = Math.hypot(pt.x - lastColorPt.x, pt.y - lastColorPt.y);
+      strokeDistance += dist;
+
+      // Draw hand-stroke masked strictly inside the arc
+      rCtx.save();
+      // Scale from 500x290 coordinate space to canvas pixel space
+      const rect = rCanvas.getBoundingClientRect();
+      rCtx.scale(rect.width / 500, rect.height / 290);
+
+      clipToArc(rCtx, activeBrush.targetArc);
+
+      rCtx.beginPath();
+      rCtx.moveTo(lastColorPt.x, lastColorPt.y);
+      rCtx.lineTo(pt.x, pt.y);
+      rCtx.lineCap = "round";
+      rCtx.lineJoin = "round";
+      rCtx.strokeStyle = activeBrush.colorHex;
+      rCtx.lineWidth = 32; // Thick brush for satisfying finger/stylus strokes
+      rCtx.stroke();
+
+      rCtx.restore();
+      lastColorPt = pt;
+
+      // When ~450px of stroke coverage is completed, auto-fill smoothly
+      if (strokeDistance > 450) {
+        completeArcFill(activeBrush.targetArc, activeBrush.colorHex, activeBrush.colorName);
+        isColoring = false;
+        try { rCanvas.releasePointerCapture(e.pointerId); } catch(err) {}
+      }
+    });
+
+    rCanvas.addEventListener("pointerup", (e) => {
+      isColoring = false;
+      try { rCanvas.releasePointerCapture(e.pointerId); } catch(err) {}
+    });
+
+    function getArcAtPoint(x, y) {
+      const cx = 250;
+      const cy = 270;
+      const d = Math.hypot(x - cx, y - cy);
+      if (y > cy + 15) return null; // below rainbow ground line
+
+      for (const [arcNum, geom] of Object.entries(arcGeometry)) {
+        if (Math.abs(d - geom.radius) <= (geom.strokeWidth / 2) + 6) {
+          return parseInt(arcNum, 10);
+        }
+      }
+      return null;
+    }
+
+    function completeArcFill(arcNum, colorHex, colorName) {
+      paintedArcs[arcNum] = colorHex;
+      redrawCompletedArcs();
+
+      // Clear glow outline
+      clearArcHighlights();
+      triggerMiniConfetti();
+      showNotice(`⭐ Arc ${arcNum} fully painted with ${colorName}!`);
+
+      activeBrush = null;
+      updateBrushBanner();
+      updateColoredArcCount();
+      renderQuestionCards();
+
+      // Auto-advance to next unsolved equation
+      activeCardIndex = (activeCardIndex + 1) % questions.length;
+      selectActiveCard(activeCardIndex);
+
+      checkFullCompletion();
+    }
+
+    function redrawCompletedArcs() {
+      const rect = rCanvas.getBoundingClientRect();
+      rCtx.clearRect(0, 0, rect.width, rect.height);
+
+      for (const [arcNum, colorHex] of Object.entries(paintedArcs)) {
+        const geom = arcGeometry[arcNum];
+        if (!geom) continue;
+
+        rCtx.save();
+        rCtx.scale(rect.width / 500, rect.height / 290);
+        rCtx.beginPath();
+        rCtx.arc(250, 270, geom.radius, Math.PI, 0, false);
+        rCtx.strokeStyle = colorHex;
+        rCtx.lineWidth = geom.strokeWidth;
+        rCtx.lineCap = "round";
+        rCtx.stroke();
+        rCtx.restore();
+      }
+    }
+
+    function highlightArcBase(arcNum) {
+      clearArcHighlights();
+      const topArc = document.getElementById(`top-arc-12`);
+      const targetEl = document.getElementById(`top-arc-${arcNum}`);
+      if (targetEl && !paintedArcs[arcNum]) {
+        targetEl.classList.add("arc-glow");
+      }
+    }
+
+    function clearArcHighlights() {
+      document.querySelectorAll(".rainbow-arc-top").forEach(a => a.classList.remove("arc-glow"));
+    }
+
+    function updateBrushBanner() {
+      const banner = document.getElementById("brushBanner");
+      if (!banner) return;
+      if (activeBrush) {
+        banner.style.background = "#fffbeb";
+        banner.style.borderColor = "#f59e0b";
+        banner.innerHTML = `
+          <span class="brush-color-pill" style="background-color:${activeBrush.colorHex}"></span>
+          <span><strong>${activeBrush.colorName} Unlocked!</strong> Use your stylus or finger to <strong>color Arc ${activeBrush.targetArc}</strong>!</span>
+        `;
+      } else {
+        banner.style.background = "#ffffff";
+        banner.style.borderColor = "#e2e8f0";
+        banner.innerHTML = `<span>Tap a card on the right, solve the division, and stroke the rainbow!</span>`;
+      }
+    }
+
+    function showNotice(msg) {
+      const banner = document.getElementById("brushBanner");
+      if (!banner) return;
+      banner.innerHTML = `<span>${msg}</span>`;
+      setTimeout(() => {
+        if (!activeBrush) {
+          banner.innerHTML = `<span>Tap a card on the right, solve the division, and stroke the rainbow!</span>`;
+        } else {
+          updateBrushBanner();
+        }
+      }, 2400);
+    }
+
+    function updateColoredArcCount() {
+      const count = Object.keys(paintedArcs).length;
+      const el = document.getElementById("coloredArcCount");
+      if (el) el.innerText = count;
+    }
+
+    function checkFullCompletion() {
+      const totalArcsColored = Object.keys(paintedArcs).length;
+      let allSolved = true;
+      questions.forEach(q => {
+        const val = userAnswers[q.id];
+        if (!val || parseInt(val, 10) !== q.answer) allSolved = false;
+      });
+
+      if (totalArcsColored >= 7 && allSolved) {
+        triggerGrandCelebration();
+        const banner = document.getElementById("brushBanner");
+        banner.style.background = "#f0fdf4";
+        banner.style.borderColor = "#86efac";
+        banner.innerHTML = `<span>🎉 <strong>All Done!</strong> Magnificent Rainbow, Humayun!</span>`;
+      }
+    }
+
+    function shuffleAndReset() {
+      for (let i = questions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [questions[i], questions[j]] = [questions[j], questions[i]];
+      }
+
+      userAnswers = {};
+      paintedArcs = {};
+      activeBrush = null;
+      strokeDistance = 0;
+      activeCardIndex = 0;
+
+      clearArcHighlights();
+      redrawCompletedArcs();
+      updateColoredArcCount();
+      updateBrushBanner();
+      renderQuestionCards();
+    }
+
+    /*************************************************************
+     * 3. Draggable Math Scratchpad Canvas (With True Erasing)
+     *************************************************************/
+    const padWindow = document.getElementById("scratchpadWindow");
+    const padHeader = document.getElementById("padHeader");
+    const canvas = document.getElementById("mathCanvas");
+    const ctx = canvas.getContext("2d");
+    const canvasWrapper = document.getElementById("canvasWrapper");
+
+    let isDrawing = false;
+    let padTool = "pen";
+    let padColor = "#1e3a8a";
+    let padSize = 4;
+    let stylusOnly = true;
+
+    function toggleScratchpad() {
+      const isVisible = padWindow.style.display === "flex";
+      padWindow.style.display = isVisible ? "none" : "flex";
+      if (!isVisible) resizeMathCanvas();
+    }
+
+    function closeScratchpad() {
+      padWindow.style.display = "none";
+    }
+
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+
+    padHeader.addEventListener("pointerdown", (e) => {
+      if (e.target.tagName.toLowerCase() === "button") return;
+      isDragging = true;
+      dragStartX = e.clientX - padWindow.offsetLeft;
+      dragStartY = e.clientY - padWindow.offsetTop;
+      padHeader.setPointerCapture(e.pointerId);
+    });
+
+    window.addEventListener("pointermove", (e) => {
+      if (!isDragging) return;
+      let newX = e.clientX - dragStartX;
+      let newY = e.clientY - dragStartY;
+
+      newX = Math.max(10, Math.min(window.innerWidth - padWindow.offsetWidth - 10, newX));
+      newY = Math.max(60, Math.min(window.innerHeight - padWindow.offsetHeight - 10, newY));
+      padWindow.style.left = `${newX}px`;
+      padWindow.style.top = `${newY}px`;
+      padWindow.style.right = "auto";
+    });
+
+    window.addEventListener("pointerup", (e) => {
+      if (isDragging) {
+        isDragging = false;
+        try { padHeader.releasePointerCapture(e.pointerId); } catch (err) {}
+      }
+    });
+
+    function resizeMathCanvas() {
+      const rect = canvasWrapper.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+
+      const tempCanvas = document.createElement("canvas");
+      tempCanvas.width = canvas.width;
+      tempCanvas.height = canvas.height;
+      const tempCtx = tempCanvas.getContext("2d");
+      tempCtx.drawImage(canvas, 0, 0);
+
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+      ctx.drawImage(tempCanvas, 0, 0, rect.width, rect.height);
+    }
+
+    window.addEventListener("resize", () => {
+      if (padWindow.style.display === "flex") resizeMathCanvas();
+    });
+
+    canvas.addEventListener("pointerdown", (e) => {
+      if (stylusOnly && e.pointerType !== "pen") return;
+      e.preventDefault();
+      canvas.setPointerCapture(e.pointerId);
+      isDrawing = true;
+
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+
+      if (padTool === "eraser") {
+        ctx.globalCompositeOperation = "destination-out";
+        ctx.lineWidth = 22;
+      } else {
+        ctx.globalCompositeOperation = "source-over";
+        ctx.strokeStyle = padColor;
+        ctx.lineWidth = padSize;
+      }
+    });
+
+    canvas.addEventListener("pointermove", (e) => {
+      if (!isDrawing) return;
+      if (stylusOnly && e.pointerType !== "pen") return;
+      e.preventDefault();
+
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      ctx.lineTo(x, y);
+      ctx.stroke();
+    });
+
+    canvas.addEventListener("pointerup", (e) => {
+      if (!isDrawing) return;
+      isDrawing = false;
+      try { canvas.releasePointerCapture(e.pointerId); } catch(err) {}
+    });
+
+    function setPadTool(tool) {
+      padTool = tool;
+      document.getElementById("btnPen").classList.toggle("active", tool === "pen");
+      document.getElementById("btnEraser").classList.toggle("active", tool === "eraser");
+    }
+
+    function setPadColor(color, chipId) {
+      padColor = color;
+      setPadTool("pen");
+      document.querySelectorAll(".color-chip").forEach(c => c.classList.remove("active-chip"));
+      const el = document.getElementById(chipId);
+      if (el) el.classList.add("active-chip");
+    }
+
+    function setPadSize(size, sizeId) {
+      padSize = size;
+      setPadTool("pen");
+      document.querySelectorAll(".size-btn").forEach(b => b.classList.remove("active-size"));
+      const el = document.getElementById(sizeId);
+      if (el) el.classList.add("active-size");
+    }
+
+    function togglePalmRejection() {
+      stylusOnly = !stylusOnly;
+      const btn = document.getElementById("btnPalm");
+      btn.classList.toggle("active", stylusOnly);
+      btn.innerText = stylusOnly ? "Stylus: ON" : "Touch: ON";
+    }
+
+    function clearPad() {
+      const rect = canvasWrapper.getBoundingClientRect();
+      ctx.clearRect(0, 0, rect.width, rect.height);
+    }
+
+    /*************************************************************
+     * 4. Accessibility & Fullscreen
+     *************************************************************/
+    let isDimmed = false;
+    function toggleDimScreen() {
+      isDimmed = !isDimmed;
+      document.getElementById("dimOverlay").style.display = isDimmed ? "block" : "none";
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    }
+
+    /*************************************************************
+     * 5. Lightweight Particle Confetti
+     *************************************************************/
+    const confettiCvs = document.getElementById("confettiCanvas");
+    const confettiCtx = confettiCvs.getContext("2d");
+    let confettiParticles = [];
+    let confettiAnim = null;
+
+    function resizeConfetti() {
+      confettiCvs.width = window.innerWidth;
+      confettiCvs.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeConfetti);
+    resizeConfetti();
+
+    function triggerMiniConfetti() {
+      spawnConfetti(35, 0.4);
+    }
+
+    function triggerGrandCelebration() {
+      spawnConfetti(100, 0.5);
+      setTimeout(() => spawnConfetti(80, 0.5), 400);
+    }
+
+    function spawnConfetti(count, originY) {
+      const colors = ["#ef4444", "#3b82f6", "#eab308", "#10b981", "#ec4899", "#8b5cf6", "#f97316"];
+      for (let i = 0; i < count; i++) {
+        confettiParticles.push({
+          x: window.innerWidth * 0.5,
+          y: window.innerHeight * originY,
+          vx: (Math.random() - 0.5) * 14,
+          vy: (Math.random() - 0.75) * 14,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          rotSpeed: (Math.random() - 0.5) * 12
+        });
+      }
+      if (!confettiAnim) animateConfetti();
+    }
+
+    function animateConfetti() {
+      confettiCtx.clearRect(0, 0, confettiCvs.width, confettiCvs.height);
+      for (let i = confettiParticles.length - 1; i >= 0; i--) {
+        const p = confettiParticles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.35;
+        p.rotation += p.rotSpeed;
+
+        confettiCtx.save();
+        confettiCtx.translate(p.x, p.y);
+        confettiCtx.rotate((p.rotation * Math.PI) / 180);
+        confettiCtx.fillStyle = p.color;
+        confettiCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+        confettiCtx.restore();
+
+        if (p.y > window.innerHeight) confettiParticles.splice(i, 1);
+      }
+
+      if (confettiParticles.length > 0) {
+        confettiAnim = requestAnimationFrame(animateConfetti);
+      } else {
+        confettiAnim = null;
+        confettiCtx.clearRect(0, 0, confettiCvs.width, confettiCvs.height);
+      }
+    }
+
+    // Direct Boot
+    window.addEventListener("DOMContentLoaded", () => {
+      renderQuestionCards();
+      setTimeout(resizeRainbowCanvas, 100);
+    });
+  </script>
+</body>
+</html>
