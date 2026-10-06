@@ -26,16 +26,19 @@
       user-select: none;
     }
 
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
     body {
       background: linear-gradient(135deg, #E0F2FE 0%, #EDE9FE 50%, #FEF3C7 100%);
-      min-height: 100vh;
-      min-height: 100dvh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 24px 16px;
-      overflow-x: hidden;
       position: relative;
     }
 
@@ -194,6 +197,8 @@
       color: #FFFFFF;
       font-weight: 800;
       font-size: 1.3rem;
+      cursor: pointer;
+      border: none;
       box-shadow: 0 6px 0 rgba(0,0,0,0.18), 0 10px 20px rgba(0,0,0,0.08);
       transition: transform 0.1s ease;
     }
@@ -203,13 +208,13 @@
     }
 
     /* Color Palette for Subjects */
-    .btn-english  { background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%); } /* Blue */
-    .btn-math     { background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); } /* Amber */
-    .btn-evs      { background: linear-gradient(135deg, #10B981 0%, #059669 100%); } /* Green */
-    .btn-islam    { background: linear-gradient(135deg, #0D9488 0%, #115E59 100%); } /* Teal */
-    .btn-tamil    { background: linear-gradient(135deg, #EF4444 0%, #B91C1C 100%); } /* Red */
-    .btn-arabic   { background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%); } /* Purple */
-    .btn-default  { background: linear-gradient(135deg, #64748B 0%, #334155 100%); } /* Slate */
+    .btn-english  { background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%); }
+    .btn-math     { background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); }
+    .btn-evs      { background: linear-gradient(135deg, #10B981 0%, #059669 100%); }
+    .btn-islam    { background: linear-gradient(135deg, #0D9488 0%, #115E59 100%); }
+    .btn-tamil    { background: linear-gradient(135deg, #EF4444 0%, #B91C1C 100%); }
+    .btn-arabic   { background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%); }
+    .btn-default  { background: linear-gradient(135deg, #64748B 0%, #334155 100%); }
 
     .arrow-circle {
       width: 42px;
@@ -230,6 +235,24 @@
       color: #64748B;
       font-weight: 700;
       border: 2px dashed #CBD5E1;
+    }
+
+    /* Fullscreen Seamless Lesson Frame */
+    #lessonFrameContainer {
+      display: none;
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 99999;
+      background: #FFFFFF;
+    }
+
+    #activeLessonFrame {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
     }
   </style>
 </head>
@@ -276,11 +299,15 @@
     </div>
   </div>
 
+  <!-- SEAMLESS FULLSCREEN EMBED (KEEPS FULLSCREEN UNBROKEN) -->
+  <div id="lessonFrameContainer">
+    <iframe id="activeLessonFrame" src="about:blank" allow="autoplay; fullscreen"></iframe>
+  </div>
+
   <script>
     const GITHUB_REPO = "nimrafarheen1995-ui/practice-app";
     let lessonsCache = null;
 
-    // 6 Target Subjects Configuration
     const SUBJECT_CONFIG = {
       english:    { icon: "📖", colorClass: "btn-english", label: "English" },
       math:       { icon: "🔢", colorClass: "btn-math",    label: "Maths" },
@@ -343,7 +370,6 @@
       if (lessonsCache && !forceRefresh) return lessonsCache;
 
       try {
-        // Cache buster parameter (?t=...) ensures deleted/added files reflect instantly
         const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/?t=${Date.now()}`, {
           cache: "no-store",
           headers: { "Accept": "application/vnd.github.v3+json" }
@@ -367,7 +393,6 @@
     }
 
     async function openStudentView(name) {
-      // Automatically enters edge-to-edge fullscreen on the first tap!
       requestFullScreenAuto();
 
       document.getElementById('nameSelectView').style.display = 'none';
@@ -391,10 +416,11 @@
       }
 
       studentFiles.forEach(item => {
-        const btn = document.createElement("a");
-        btn.href = item.fileName;
+        const btn = document.createElement("button");
+        btn.type = "button";
         btn.className = `lesson-btn ${item.colorClass}`;
         btn.innerHTML = `<span>${item.title}</span><div class="arrow-circle">➔</div>`;
+        btn.onclick = () => launchLesson(item.fileName);
         deck.appendChild(btn);
       });
     }
@@ -403,6 +429,25 @@
       document.getElementById('studentView').style.display = 'none';
       document.getElementById('nameSelectView').style.display = 'flex';
     }
+
+    /* Launch lesson inside container without leaving page or losing fullscreen */
+    function launchLesson(fileName) {
+      requestFullScreenAuto();
+      const container = document.getElementById('lessonFrameContainer');
+      const frame = document.getElementById('activeLessonFrame');
+      frame.src = fileName;
+      container.style.display = 'block';
+    }
+
+    /* Listen for message from lesson's goToHub() */
+    window.addEventListener("message", function(e) {
+      if (e.data === "close-lesson-to-hub") {
+        const container = document.getElementById('lessonFrameContainer');
+        const frame = document.getElementById('activeLessonFrame');
+        container.style.display = 'none';
+        frame.src = "about:blank";
+      }
+    });
 
     loadRepositoryFiles();
   </script>
