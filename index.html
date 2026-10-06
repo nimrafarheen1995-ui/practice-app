@@ -293,6 +293,17 @@
       arabic:     { icon: "📜", colorClass: "btn-arabic",  label: "Arabic" }
     };
 
+    function requestFullScreenAuto() {
+      const el = document.documentElement;
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        if (el.requestFullscreen) {
+          el.requestFullscreen().catch(() => {});
+        } else if (el.webkitRequestFullscreen) {
+          el.webkitRequestFullscreen();
+        }
+      }
+    }
+
     function parseFileName(fileName) {
       let base = fileName.replace(/\.html$/i, "");
       
@@ -356,6 +367,9 @@
     }
 
     async function openStudentView(name) {
+      // Automatically enters edge-to-edge fullscreen on the first tap!
+      requestFullScreenAuto();
+
       document.getElementById('nameSelectView').style.display = 'none';
       const studentView = document.getElementById('studentView');
       studentView.style.display = 'flex';
