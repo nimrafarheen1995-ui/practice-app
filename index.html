@@ -56,9 +56,7 @@
       gap: 24px;
     }
 
-    header {
-      text-align: center;
-    }
+    header { text-align: center; }
     h1 {
       font-size: 2.5rem;
       font-weight: 800;
@@ -94,9 +92,7 @@
       gap: 16px;
       transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
-    .name-card:active {
-      transform: translateY(3px) scale(0.98);
-    }
+    .name-card:active { transform: translateY(3px) scale(0.98); }
 
     .card-humayun { border-color: #38BDF8; }
     .card-humayun:hover { border-color: #0284C7; }
@@ -163,9 +159,7 @@
       gap: 6px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     }
-    .back-btn:active {
-      transform: translateY(2px);
-    }
+    .back-btn:active { transform: translateY(2px); }
 
     .current-student-title {
       font-size: 1.8rem;
@@ -201,9 +195,11 @@
       box-shadow: 0 2px 0 rgba(0,0,0,0.18);
     }
 
-    .btn-green { background: linear-gradient(135deg, #10B981 0%, #059669 100%); }
-    .btn-blue  { background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%); }
-    .btn-purple{ background: linear-gradient(135deg, #A855F7 0%, #7E22CE 100%); }
+    .btn-green  { background: linear-gradient(135deg, #10B981 0%, #059669 100%); }
+    .btn-blue   { background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%); }
+    .btn-purple { background: linear-gradient(135deg, #A855F7 0%, #7E22CE 100%); }
+    .btn-amber  { background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); }
+    .btn-rose   { background: linear-gradient(135deg, #F43F5E 0%, #E11D48 100%); }
 
     .arrow-circle {
       width: 42px;
@@ -215,11 +211,20 @@
       justify-content: center;
       font-size: 1.3rem;
     }
+
+    .status-msg {
+      background: #FFFFFF;
+      border-radius: 16px;
+      padding: 18px;
+      text-align: center;
+      color: #64748B;
+      font-weight: 700;
+      border: 2px dashed #CBD5E1;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Floating animated background -->
   <div class="bg-bubble" style="left: 10%; animation-delay: 0s;">🚀</div>
   <div class="bg-bubble" style="left: 30%; animation-delay: 4s;">⭐</div>
   <div class="bg-bubble" style="left: 65%; animation-delay: 8s;">🌱</div>
@@ -233,14 +238,12 @@
     </header>
 
     <div class="names-grid">
-      <!-- Humayun Card -->
       <div class="name-card card-humayun" onclick="openStudentView('humayun')">
         <div class="avatar">👦</div>
         <div class="name-title">Humayun</div>
         <span class="tap-tag">Tap to Open ➔</span>
       </div>
 
-      <!-- Zaina Card -->
       <div class="name-card card-zaina" onclick="openStudentView('zaina')">
         <div class="avatar">👧</div>
         <div class="name-title">Zaina</div>
@@ -249,61 +252,127 @@
     </div>
   </div>
 
-  <!-- SCREEN 2: INSIDE HUMAYUN'S VIEW -->
-  <div class="inside-view" id="humayunView">
+  <!-- SCREEN 2: INSIDE STUDENT VIEW -->
+  <div class="inside-view" id="studentView">
     <div class="top-nav">
       <button type="button" class="back-btn" onclick="showNameSelect()">⬅ Back</button>
-      <div class="current-student-title"><span>👦</span> Humayun</div>
+      <div class="current-student-title" id="activeStudentLabel"><span>👦</span> Humayun</div>
       <div style="width: 80px;"></div>
     </div>
 
-    <div class="lessons-deck">
-      <a href="humayun-science.html" class="lesson-btn btn-green">
-        <span>🌱 EVS Science Nature Trail</span>
-        <div class="arrow-circle">➔</div>
-      </a>
-
-      <a href="humayun.html" class="lesson-btn btn-blue">
-        <span>📖 English Word Quest</span>
-        <div class="arrow-circle">➔</div>
-      </a>
-    </div>
-  </div>
-
-  <!-- SCREEN 2: INSIDE ZAINA'S VIEW -->
-  <div class="inside-view" id="zainaView">
-    <div class="top-nav">
-      <button type="button" class="back-btn" onclick="showNameSelect()">⬅ Back</button>
-      <div class="current-student-title"><span>👧</span> Zaina</div>
-      <div style="width: 80px;"></div>
-    </div>
-
-    <div class="lessons-deck">
-      <a href="zaina.html" class="lesson-btn btn-purple">
-        <span>🏔️ English Trail</span>
-        <div class="arrow-circle">➔</div>
-      </a>
+    <!-- Automatically Populated Deck -->
+    <div class="lessons-deck" id="lessonsDeck">
+      <div class="status-msg">Finding active lessons... 🔍</div>
     </div>
   </div>
 
   <script>
-    function openStudentView(name) {
-      document.getElementById('nameSelectView').style.display = 'none';
+    const GITHUB_REPO = "nimrafarheen1995-ui/practice-app";
+    let lessonsCache = null;
 
-      if (name === 'humayun') {
-        document.getElementById('humayunView').style.display = 'flex';
-        document.getElementById('zainaView').style.display = 'none';
-      } else {
-        document.getElementById('zainaView').style.display = 'flex';
-        document.getElementById('humayunView').style.display = 'none';
+    // Subject styling palette & icons
+    const SUBJECT_CONFIG = {
+      science: { icon: "🌱", colorClass: "btn-green", label: "Science" },
+      evs:     { icon: "🌍", colorClass: "btn-green", label: "EVS" },
+      math:    { icon: "🔢", colorClass: "btn-amber", label: "Math" },
+      english: { icon: "📖", colorClass: "btn-blue",  label: "English" },
+      default: { icon: "📝", colorClass: "btn-purple",label: "Lesson" }
+    };
+
+    function parseFileName(fileName) {
+      // Remove .html
+      let base = fileName.replace(/\.html$/i, "");
+      
+      // Determine student prefix
+      let student = "";
+      if (base.toLowerCase().startsWith("humayun")) student = "humayun";
+      else if (base.toLowerCase().startsWith("zaina")) student = "zaina";
+      else return null;
+
+      // Extract subject remainder
+      let remainder = base.replace(new RegExp(`^${student}[-_]?`, "i"), "");
+      if (!remainder) remainder = "english";
+
+      let matchedConfig = SUBJECT_CONFIG.default;
+      for (const key of Object.keys(SUBJECT_CONFIG)) {
+        if (remainder.toLowerCase().includes(key)) {
+          matchedConfig = SUBJECT_CONFIG[key];
+          break;
+        }
+      }
+
+      // Format label: e.g. "math-oct07" -> "Math Oct07"
+      let formattedTitle = remainder.replace(/[-_]/g, " ").trim();
+      formattedTitle = formattedTitle.charAt(0).toUpperCase() + formattedTitle.slice(1);
+
+      return {
+        student: student,
+        fileName: fileName,
+        title: `${matchedConfig.icon} ${formattedTitle}`,
+        colorClass: matchedConfig.colorClass
+      };
+    }
+
+    async function loadRepositoryFiles() {
+      if (lessonsCache) return lessonsCache;
+
+      try {
+        const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/`);
+        if (!res.ok) throw new Error("API call limit or network error");
+        const files = await res.json();
+        
+        lessonsCache = files
+          .filter(f => f.name.endsWith(".html") && f.name !== "index.html")
+          .map(f => parseFileName(f.name))
+          .filter(Boolean);
+
+        return lessonsCache;
+      } catch (err) {
+        // Fallback default list if GitHub API is offline
+        return [
+          { student: "humayun", fileName: "humayun.html", title: "📖 English Word Quest", colorClass: "btn-blue" },
+          { student: "zaina", fileName: "zaina.html", title: "🏔️ English Trail", colorClass: "btn-purple" }
+        ];
       }
     }
 
+    async function openStudentView(name) {
+      document.getElementById('nameSelectView').style.display = 'none';
+      const studentView = document.getElementById('studentView');
+      studentView.style.display = 'flex';
+
+      const label = document.getElementById('activeStudentLabel');
+      label.innerHTML = name === 'humayun' ? '<span>👦</span> Humayun' : '<span>👧</span> Zaina';
+
+      const deck = document.getElementById('lessonsDeck');
+      deck.innerHTML = '<div class="status-msg">Finding active lessons... 🔍</div>';
+
+      const allFiles = await loadRepositoryFiles();
+      const studentFiles = allFiles.filter(item => item.student === name);
+
+      deck.innerHTML = "";
+
+      if (studentFiles.length === 0) {
+        deck.innerHTML = '<div class="status-msg">No lessons uploaded yet for today! ✨</div>';
+        return;
+      }
+
+      studentFiles.forEach(item => {
+        const btn = document.createElement("a");
+        btn.href = item.fileName;
+        btn.className = `lesson-btn ${item.colorClass}`;
+        btn.innerHTML = `<span>${item.title}</span><div class="arrow-circle">➔</div>`;
+        deck.appendChild(btn);
+      });
+    }
+
     function showNameSelect() {
-      document.getElementById('humayunView').style.display = 'none';
-      document.getElementById('zainaView').style.display = 'none';
+      document.getElementById('studentView').style.display = 'none';
       document.getElementById('nameSelectView').style.display = 'flex';
     }
+
+    // Pre-fetch files on background load
+    loadRepositoryFiles();
   </script>
 </body>
 </html>
