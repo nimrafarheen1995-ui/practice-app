@@ -1,1519 +1,2230 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Humayun's Word Quest</title>
-<style>
-  :root {
-    --bg: #F0F6FC;
-    --card: #FFFFFF;
-    --ink: #1F3A4B;
-    --ink-soft: #5A7A8E;
-    --border: #D0E2F0;
-    --primary: #4A9FE0;
-    --primary-dark: #3A7FB8;
-    --reward: #FFC93C;
-    --reward-dark: #D4A020;
-    --green: #4BCA7A;
-    --green-dark: #2E9A5A;
-    --orange: #FF8A5C;
-    --orange-dark: #D46030;
-    --purple: #B085F5;
-    --purple-dark: #8050D0;
-    --shadow: 0 4px 0 #C0D4E4, 0 8px 24px rgba(100, 140, 180, 0.12);
-    --radius: 20px;
-    --font: 'Nunito', 'Quicksand', 'Comic Sans MS', 'Chalkboard SE', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --ruled-line: #E8EEF4;
-    --margin-line: #F0C8C8;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#1e293b" />
+  <title>Class 3 EVS — Nature Adventure Trail (Explorer's Edition)</title>
 
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-  html, body { height: 100%; overflow: hidden; }
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  body {
-    background: var(--bg);
-    color: var(--ink);
-    font-family: var(--font);
-    font-weight: 600;
-    user-select: none; -webkit-user-select: none;
-    display: flex; flex-direction: column;
-    height: 100vh; height: 100dvh;
-  }
+  <style>
+    html, body, #root { height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden; }
+    body {
+      font-family: 'Fredoka', cursive, sans-serif;
+      -webkit-user-select: none; user-select: none;
+      background: linear-gradient(180deg, #f0fdf4 0%, #ecfdf5 50%, #f8fafc 100%);
+      color: #1e293b;
+      overscroll-behavior: none;
+      -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent;
+      font-size: 18px;
+      transition: background 0.3s, color 0.3s;
+    }
 
-  .app {
-    display: flex; flex-direction: column;
-    height: 100vh; height: 100dvh;
-    max-width: 1200px; margin: 0 auto; width: 100%;
-    padding: 8px 12px; gap: 8px;
-    padding-bottom: max(8px, env(safe-area-inset-bottom));
-  }
+    body.dark-mode {
+      background: #121824 !important;
+      color: #f1f5f9 !important;
+    }
+    body.dark-mode .bg-\[\#fefdfa\], 
+    body.dark-mode .bg-white,
+    body.dark-mode div[class*="bg-white"] {
+      background-color: #1e293b !important;
+      color: #f1f5f9 !important;
+      border-color: #334155 !important;
+    }
+    body.dark-mode .bg-emerald-50, 
+    body.dark-mode .bg-emerald-100,
+    body.dark-mode div[class*="bg-emerald-50"] {
+      background-color: #0f172a !important;
+      color: #34d399 !important;
+      border-color: #334155 !important;
+    }
+    body.dark-mode .text-emerald-950, 
+    body.dark-mode .text-emerald-900, 
+    body.dark-mode .text-emerald-800,
+    body.dark-mode span[class*="text-emerald-"] {
+      color: #34d399 !important;
+    }
+    body.dark-mode .soft-ruled-paper {
+      background-color: #182232 !important;
+      background-image:
+        linear-gradient(90deg, transparent 52px, rgba(239, 68, 68, 0.1) 52px, rgba(239, 68, 68, 0.1) 54px, transparent 54px),
+        linear-gradient(0deg, transparent 35px, rgba(148, 163, 184, 0.1) 35px, rgba(148, 163, 184, 0.1) 36px);
+    }
 
-  .header { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; flex-shrink: 0; }
-  .header-title { display: flex; align-items: center; gap: 8px; font-size: 1.2rem; font-weight: 800; color: var(--ink); }
-  .header-title .icon { font-size: 1.6rem; line-height: 1; }
-  .header-actions { display: flex; align-items: center; gap: 8px; }
+    #wallpaperCanvas {
+      position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0.28;
+    }
 
-  .header-action-btn {
-    width: auto;
-    min-width: 44px;
-    height: 44px;
-    padding: 0 14px;
-    border-radius: 22px;
-    border: 2px solid var(--border);
-    background: var(--card);
-    color: var(--ink);
-    font-size: 0.85rem;
-    font-weight: 800;
-    font-family: var(--font);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    transition: all 0.15s;
-    box-shadow: 0 2px 0 var(--border);
-    white-space: nowrap;
-  }
-  .header-action-btn:active { transform: translateY(2px); box-shadow: none; }
+    .soft-ruled-paper {
+      background-color: #fefdfa;
+      background-image:
+        linear-gradient(90deg, transparent 52px, rgba(239, 68, 68, 0.2) 52px, rgba(239, 68, 68, 0.2) 54px, transparent 54px),
+        linear-gradient(0deg, transparent 35px, rgba(148, 163, 184, 0.22) 35px, rgba(148, 163, 184, 0.22) 36px);
+      background-size: 100% 36px;
+    }
+    .node-ruled-paper {
+      background-color: #ffffff;
+      background-image:
+        linear-gradient(0deg, transparent 29px, rgba(148, 163, 184, 0.22) 29px, rgba(148, 163, 184, 0.22) 30px);
+      background-size: 100% 30px;
+    }
+    .evs-canvas {
+      user-select: none; -webkit-user-select: none;
+      cursor: crosshair; background: transparent; display: block; width: 100%; height: 100%;
+    }
 
-  /* === SPEAK BUTTON === */
-  .speak-icon-btn {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    border: 2px solid var(--primary-dark);
-    background: var(--primary);
-    color: #FFF;
-    font-size: 1.25rem;
-    line-height: 1;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.12s;
-    box-shadow: 0 3px 0 var(--primary-dark);
-    flex-shrink: 0;
-  }
-  .speak-icon-btn:active {
-    transform: translateY(3px);
-    box-shadow: none;
-  }
-  .speak-icon-btn.playing {
-    background: var(--reward);
-    border-color: var(--reward-dark);
-    color: #5A3A00;
-    box-shadow: 0 3px 0 var(--reward-dark);
-  }
+    .carousel-card {
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 4px 14px rgba(22, 101, 52, 0.08);
+    }
+    .carousel-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 22px rgba(22, 101, 52, 0.15);
+    }
 
-  /* === SCREEN DIM === */
-  #screenDimOverlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.45);
-    pointer-events: none;
-    z-index: 99999;
-    transition: opacity 0.2s ease;
-  }
+    .node {
+      background-color: #047857;
+      color: #f8fafc;
+      min-width: 105px;
+      height: 54px;
+      padding: 0 14px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      font-weight: 600;
+      text-align: center;
+      box-sizing: border-box;
+      box-shadow: 0 3px 0 #065f46;
+    }
+    .node-input-box {
+      background-color: #f0fdf4;
+      color: #1e293b;
+      min-width: 130px;
+      height: 54px;
+      padding: 0 14px;
+      border: 2.5px dashed #059669;
+      border-radius: 14px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-sizing: border-box;
+      transition: all 0.15s ease;
+    }
+    .node-input-box.active {
+      border-color: #0284c7;
+      background-color: #e0f2fe;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25);
+      transform: scale(1.02);
+    }
+    .node-input-box.correct {
+      background-color: #dcfce7 !important;
+      border: 2px solid #16a34a !important;
+      color: #14532d !important;
+    }
+    .node-input-box.wrong {
+      background-color: #fee2e2 !important;
+      border: 2px solid #ef4444 !important;
+      color: #7f1d1d !important;
+    }
+    .flow-arrow {
+      color: #059669;
+      font-size: 1.6rem;
+      user-select: none;
+      font-weight: bold;
+    }
 
-  /* === MODE TABS === */
-  .mode-tabs { display: flex; gap: 6px; padding: 0 8px; flex-shrink: 0; }
+    .spelling-key {
+      background: #ffffff;
+      color: #1e293b;
+      border: 2px solid #cbd5e1;
+      border-bottom: 4px solid #94a3b8;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 20px;
+      width: 50px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.08s ease;
+    }
+    .spelling-key:active {
+      transform: translateY(3px);
+      border-bottom-width: 1px;
+    }
 
-  .mode-tab {
-    flex: 1;
-    border: 3px solid var(--border);
-    border-radius: 16px;
-    padding: 10px 8px;
-    font-size: 0.9rem;
-    font-weight: 800;
-    cursor: pointer;
-    font-family: var(--font);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    min-height: 48px;
-    transition: all 0.12s;
-    background: var(--card);
-    color: var(--ink-soft);
-    box-shadow: 0 3px 0 var(--border);
-    white-space: nowrap;
-  }
-  .mode-tab:active { transform: translateY(3px); box-shadow: none; }
-  .mode-tab.active-practice {
-    background: var(--primary); color: #FFF;
-    border-color: var(--primary-dark); box-shadow: 0 3px 0 var(--primary-dark);
-  }
-  .mode-tab.active-write {
-    background: var(--purple); color: #FFF;
-    border-color: var(--purple-dark); box-shadow: 0 3px 0 var(--purple-dark);
-  }
-  .mode-tab.active-parent {
-    background: var(--green); color: #FFF;
-    border-color: var(--green-dark); box-shadow: 0 3px 0 var(--green-dark);
-  }
-
-  /* === SECTION TABS === */
-  .section-tabs { display: flex; gap: 6px; padding: 0 8px 4px; flex-shrink: 0; }
-  .section-tab {
-    flex: 1; background: var(--card); border: 3px solid var(--border);
-    border-radius: 14px; padding: 8px 4px; font-size: 0.85rem; font-weight: 800;
-    color: var(--ink-soft); cursor: pointer; text-align: center; white-space: nowrap;
-    box-shadow: 0 3px 0 var(--border); transition: all 0.1s; font-family: var(--font);
-    display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 44px;
-  }
-  .section-tab:active { transform: translateY(3px); box-shadow: none; }
-  .section-tab.active { background: var(--primary); color: #FFF; border-color: var(--primary-dark); box-shadow: 0 3px 0 var(--primary-dark); }
-
-  .main { display: flex; gap: 12px; flex: 1; min-height: 0; }
-  .left-panel { flex: 0 0 38%; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-  .right-panel { flex: 1; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-
-  .prompt-card {
-    background: var(--card); border: 3px solid var(--border);
-    border-radius: var(--radius); padding: 14px 16px;
-    box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;
-  }
-
-  .card-category-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    padding-bottom: 6px;
-    border-bottom: 2px dashed var(--border);
-  }
-
-  .card-category {
-    font-size: 0.95rem; font-weight: 800; color: var(--purple);
-    text-transform: uppercase; letter-spacing: 0.5px;
-    display: flex; align-items: center; gap: 6px;
-    min-width: 0;
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .prompt-text { font-size: 1.6rem; font-weight: 800; color: var(--ink); line-height: 1.3; min-height: 2.2rem; }
-  .prompt-text u { text-decoration-color: var(--reward); text-decoration-thickness: 4px; text-underline-offset: 5px; }
-  .prompt-text .blank { color: var(--orange); font-size: 1.8rem; }
-
-  .hint-box {
-    background: #FFF8E7; border-left: 6px solid var(--reward);
-    padding: 10px 14px; border-radius: 8px 16px 16px 8px;
-    font-size: 1rem; font-weight: 600; color: #4A3A1A;
-    border: 2px solid #F0DCA0; border-left-width: 6px; line-height: 1.4;
-  }
-  .hint-box b { color: #B06A1A; }
-
-  body.write-mode .hint-box,
-  body.parent-mode .hint-box { display: none !important; }
-
-  .no-peek-box {
-    display: none;
-    background: #F0E8FF;
-    border-left: 6px solid var(--purple);
-    padding: 14px 16px;
-    border-radius: 8px 16px 16px 8px;
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: #5E3A9E;
-    border: 2px solid #C9B5F0;
-    border-left-width: 6px;
-    text-align: center;
-  }
-  body.write-mode .no-peek-box { display: block; }
-
-  .map-card {
-    background: var(--card); border: 3px solid var(--border);
-    border-radius: var(--radius); padding: 10px 12px;
-    box-shadow: var(--shadow); flex-shrink: 0;
-  }
-  .map-title {
-    font-size: 0.8rem; font-weight: 800; color: var(--ink-soft);
-    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .map-grid { display: flex; gap: 6px; flex-wrap: wrap; }
-
-  .chest {
-    width: 40px; height: 40px; border-radius: 10px;
-    border: 2px solid var(--border); background: var(--bg);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.2rem; cursor: pointer; transition: all 0.15s;
-    position: relative; flex-shrink: 0;
-  }
-  .chest:active { transform: scale(0.9); }
-  .chest.current { border-color: var(--primary); border-width: 3px; box-shadow: 0 0 0 2px var(--primary); }
-  .chest.done { background: #E8F8F0; border-color: var(--green); }
-  .chest.correct { background: #FFF8E0; border-color: var(--reward-dark); }
-  .chest.retry { background: #FFF0E8; border-color: var(--orange); }
-  .chest .badge { position: absolute; top: -4px; right: -4px; font-size: 0.7rem; line-height: 1; }
-
-  .garden-card {
-    background: #F0FFF4; border: 3px solid #A8E0C0;
-    border-radius: var(--radius); padding: 10px 12px;
-    box-shadow: var(--shadow); display: none; flex-shrink: 0;
-  }
-  .garden-card.show { display: block; }
-  .garden-title { font-size: 0.85rem; font-weight: 800; color: var(--green-dark); display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
-  .garden-seeds { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-  .seed-btn {
-    background: #FFFFFF; border: 2px solid #A8E0C0; border-radius: 30px;
-    padding: 6px 14px; font-size: 0.8rem; font-weight: 800; color: var(--green-dark);
-    cursor: pointer; display: flex; align-items: center; gap: 4px;
-    box-shadow: 0 2px 0 #A8E0C0; transition: all 0.1s; font-family: var(--font); min-height: 38px;
-  }
-  .seed-btn:active { transform: translateY(2px); box-shadow: none; }
-  .garden-empty { font-size: 0.85rem; color: var(--ink-soft); font-style: italic; }
-
-  .canvas-card {
-    background: var(--card); border: 3px solid var(--border);
-    border-radius: var(--radius); box-shadow: var(--shadow);
-    display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden;
-  }
-  .canvas-toolbar {
-    display: flex; align-items: center; justify-content: space-between; gap: 6px;
-    padding: 8px 12px; background: var(--bg); border-bottom: 2px solid var(--border);
-    flex-shrink: 0; flex-wrap: wrap;
-  }
-  .tool-group { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-  .tool-btn {
-    background: var(--card); border: 2px solid var(--border); border-radius: 12px;
-    padding: 8px 14px; font-size: 0.8rem; font-weight: 800; cursor: pointer;
-    color: var(--ink); box-shadow: 0 2px 0 var(--border); transition: all 0.1s;
-    font-family: var(--font); min-height: 40px;
-    display: flex; align-items: center; gap: 4px;
-  }
-  .tool-btn:active { transform: translateY(2px); box-shadow: none; }
-  .tool-btn.active { background: var(--primary); color: #FFF; border-color: var(--primary-dark); box-shadow: 0 2px 0 var(--primary-dark); }
-
-  .canvas-wrap { flex: 1; min-height: 0; position: relative; overflow: hidden; background: var(--card); }
-  canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: crosshair; background: transparent; position: relative; z-index: 2; }
-
-  .ruled-lines {
-    position: absolute; inset: 0; z-index: 1; pointer-events: none;
-    background-image: repeating-linear-gradient(to bottom, transparent, transparent 39px, var(--ruled-line) 39px, var(--ruled-line) 40px);
-    background-size: 100% 40px;
-    border-left: 2px solid var(--margin-line);
-    margin-left: 40px;
-  }
-
-  .parent-panel {
-    display: none; background: #F3EDFF; border: 3px solid #C9B5F0;
-    border-radius: var(--radius); padding: 12px 14px;
-    box-shadow: var(--shadow); flex-shrink: 0;
-  }
-  .parent-panel.show { display: block; }
-  .parent-heading { font-size: 0.9rem; font-weight: 800; color: #4A7A5A; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
-  .parent-answer {
-    font-size: 1rem; color: var(--ink); margin-bottom: 10px; font-weight: 600;
-    background: var(--card); padding: 10px 14px; border-radius: 12px;
-    border: 2px solid #D8CCF0; line-height: 1.4;
-  }
-  .grade-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .grade-btn {
-    border: none; padding: 10px 20px; border-radius: 14px;
-    font-weight: 800; font-size: 0.9rem; cursor: pointer;
-    box-shadow: 0 4px 0 rgba(0,0,0,0.15); transition: all 0.1s;
-    font-family: var(--font); min-height: 44px;
-    display: flex; align-items: center; gap: 4px;
-  }
-  .grade-btn:active { transform: translateY(3px); box-shadow: none; }
-  .grade-btn.pass { background: var(--green); color: #FFF; box-shadow: 0 4px 0 var(--green-dark); }
-  .grade-btn.retry { background: var(--orange); color: #FFF; box-shadow: 0 4px 0 var(--orange-dark); }
-  .grade-notice { font-weight: 800; font-size: 0.85rem; margin-left: 4px; }
-
-  .bottom-bar {
-    display: flex; justify-content: space-between; align-items: center; gap: 10px;
-    flex-shrink: 0; padding: 4px 0; flex-wrap: wrap;
-  }
-  .bottom-left, .bottom-right { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-
-  .btn {
-    border: none; border-radius: 16px; padding: 12px 20px;
-    font-size: 0.9rem; font-weight: 800; cursor: pointer;
-    transition: all 0.1s; font-family: var(--font); min-height: 48px;
-    display: flex; align-items: center; gap: 6px;
-    box-shadow: 0 4px 0 rgba(0,0,0,0.15); white-space: nowrap;
-  }
-  .btn:active { transform: translateY(3px); box-shadow: none; }
-  .btn-primary { background: var(--primary); color: #FFF; box-shadow: 0 4px 0 var(--primary-dark); }
-  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-  .btn-green { background: var(--green); color: #FFF; box-shadow: 0 4px 0 var(--green-dark); }
-  .btn-orange { background: var(--orange); color: #FFF; box-shadow: 0 4px 0 var(--orange-dark); }
-  .btn-purple { background: var(--purple); color: #FFF; box-shadow: 0 4px 0 var(--purple-dark); }
-  .btn-ghost { background: var(--card); color: var(--ink); border: 2px solid var(--border); box-shadow: 0 4px 0 var(--border); }
-
-  .btn-hand-to-parent { display: none; background: var(--green); color: #FFF; box-shadow: 0 4px 0 var(--green-dark); animation: gentlePulse 1.8s infinite; }
-  body.write-mode .btn-hand-to-parent { display: flex; }
-  body.write-mode .btn-parent-trigger { display: none; }
-  body.write-mode .btn-done-card { display: none; }
-  body.parent-mode .btn-hand-to-parent { display: none; }
-  body.parent-mode .btn-parent-trigger { display: none; }
-  body.parent-mode .btn-done-card { display: none; }
-
-  .btn-done-green {
-    display: none; background: var(--green); color: #FFF;
-    box-shadow: 0 4px 0 var(--green-dark); animation: gentlePulse 1.8s infinite;
-  }
-  body.parent-mode .btn-done-green { display: flex; }
-
-  @keyframes gentlePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
-
-  .modal-overlay {
-    position: fixed; inset: 0; background: rgba(30, 40, 50, 0.5);
-    backdrop-filter: blur(4px); display: none; align-items: center;
-    justify-content: center; z-index: 100;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal-card {
-    background: var(--card); border-radius: 24px; padding: 24px;
-    max-width: 320px; width: 90%; text-align: center;
-    border: 3px solid var(--border); box-shadow: 0 12px 40px rgba(0,0,0,0.2);
-  }
-  .modal-card h3 { margin: 0 0 6px; color: var(--ink); font-size: 1.1rem; }
-  .modal-card p { font-size: 0.85rem; color: var(--ink-soft); margin-bottom: 12px; }
-  .modal-card input {
-    width: 80%; font-size: 1.6rem; padding: 10px; text-align: center;
-    letter-spacing: 8px; margin: 8px 0 16px;
-    border: 3px solid var(--border); border-radius: 14px;
-    background: var(--bg); color: var(--ink); font-family: var(--font);
-  }
-  .modal-actions { display: flex; justify-content: center; gap: 10px; }
-  .modal-link { display: inline-block; margin-top: 12px; font-size: 0.75rem; color: var(--ink-soft); text-decoration: underline; cursor: pointer; }
-
-  .confetti-piece { position: fixed; width: 10px; height: 10px; z-index: 200; pointer-events: none; animation: confettiFall 1s ease-out forwards; }
-  @keyframes confettiFall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(200px) rotate(720deg); opacity: 0; } }
-
-  .orientation-warning {
-    display: none; position: fixed; inset: 0; background: var(--bg);
-    z-index: 300; align-items: center; justify-content: center;
-    flex-direction: column; gap: 16px; padding: 40px; text-align: center;
-  }
-  .orientation-warning .icon { font-size: 4rem; animation: rotatePhone 2s infinite; }
-  @keyframes rotatePhone { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(90deg); } }
-  .orientation-warning h2 { font-size: 1.4rem; color: var(--ink); }
-  .orientation-warning p { font-size: 1rem; color: var(--ink-soft); }
-  @media (orientation: portrait) { .orientation-warning { display: flex; } }
-
-  @media (max-height: 560px) {
-    .prompt-text { font-size: 1.3rem; }
-    .hint-box { font-size: 0.9rem; padding: 8px 12px; }
-    .header-title { font-size: 1rem; }
-    .header-title .icon { font-size: 1.3rem; }
-    .btn { padding: 8px 14px; font-size: 0.8rem; min-height: 42px; }
-    .tool-btn { padding: 6px 10px; font-size: 0.75rem; min-height: 36px; }
-    .chest { width: 34px; height: 34px; font-size: 1rem; }
-    .section-tab { font-size: 0.75rem; padding: 6px 2px; min-height: 38px; }
-    .mode-tab { font-size: 0.8rem; padding: 8px 4px; min-height: 42px; }
-    .header-action-btn { font-size: 0.75rem; padding: 0 10px; }
-    .speak-icon-btn { width: 40px; height: 40px; font-size: 1.1rem; }
-  }
-  @media (max-width: 800px) {
-    .left-panel { flex: 0 0 42%; }
-    .prompt-text { font-size: 1.3rem; }
-  }
-</style>
+    #trail-toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: #1e293b; color: #f8fafc; padding: 10px 24px; border-radius: 999px;
+      font-weight: 600; font-size: 16px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+      z-index: 99999; opacity: 0; pointer-events: none; transition: all .2s ease;
+      display: flex; align-items: center; gap: 8px; border: 1.5px solid #475569;
+    }
+    #trail-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
 </head>
 <body>
+  <canvas id="wallpaperCanvas"></canvas>
+  <div id="root" class="h-full w-full relative z-10 flex flex-col overflow-hidden"></div>
+  <div id="trail-toast"><span id="toast-icon">💾</span> <span id="toast-txt">Saved</span></div>
 
-<div id="screenDimOverlay"></div>
-
-<div class="orientation-warning">
-  <div class="icon">📱</div>
-  <h2>Please rotate your tablet</h2>
-  <p>Humayun's Word Quest works best in landscape mode.</p>
-</div>
-
-<div class="app">
-
-  <div class="header">
-    <div class="header-title" id="headerTitle">
-      <span class="icon">🗺️</span>
-      <span>Humayun's Word Quest</span>
-    </div>
-    <div class="header-actions">
-      <button type="button" class="header-action-btn" id="btnFullscreen" onclick="toggleFullscreen()">⛶ Fullscreen</button>
-      <button type="button" class="header-action-btn" id="screenDimToggleBtn" onclick="toggleScreenDim()">💡 Dim Screen</button>
-    </div>
-  </div>
-
-  <!-- MODE TABS -->
-  <div class="mode-tabs">
-    <button class="mode-tab active-practice" id="mode-practice" onclick="setMode('study')">📖 Practice</button>
-    <button class="mode-tab" id="mode-write" onclick="setMode('write')">✍️ Write</button>
-    <button class="mode-tab" id="mode-parent" onclick="openPinModal()">🔒 Parent Review</button>
-  </div>
-
-  <!-- SECTION TABS -->
-  <div class="section-tabs">
-    <button class="section-tab active" id="tab-meanings" onclick="selectSection('meanings')">📖 Meanings</button>
-    <button class="section-tab" id="tab-opposites" onclick="selectSection('opposites')">🔄 Opposites</button>
-    <button class="section-tab" id="tab-sentences" onclick="selectSection('sentences')">✏️ Sentences</button>
-    <button class="section-tab" id="tab-qa" onclick="selectSection('qa')">❓ Q&amp;A</button>
-  </div>
-
-  <div class="main">
-
-    <div class="left-panel">
-
-      <div class="prompt-card">
-        <div class="card-category-row">
-          <div class="card-category" id="cardCategoryText">📖 Meaning 1 of 8</div>
-          <button type="button" class="speak-icon-btn" id="speakBtn" onclick="speakCurrentCard()" aria-label="Play">🔊</button>
-        </div>
-        <div class="prompt-text" id="cardPromptText">Word</div>
-        <div class="hint-box" id="cardHintBox">Hint will appear here</div>
-        <div class="no-peek-box">🙈 No peeking — write from memory.</div>
-      </div>
-
-      <div class="map-card">
-        <div class="map-title">
-          <span>🗺️ Treasure Map</span>
-          <span id="mapProgress">0 / 8 ⭐</span>
-        </div>
-        <div class="map-grid" id="mapGrid"></div>
-      </div>
-
-      <div class="garden-card" id="gardenCard">
-        <div class="garden-title">
-          <span>🌱 Review Garden</span>
-          <span id="gardenCount"></span>
-        </div>
-        <div class="garden-seeds" id="gardenSeeds">
-          <span class="garden-empty">No seeds yet — great work!</span>
-        </div>
-      </div>
-
-      <div class="parent-panel" id="parentPanel">
-        <div class="parent-heading">✅ Answer:</div>
-        <div class="parent-answer" id="parentRefAnswer">Answer</div>
-        <div class="grade-row">
-          <span style="font-weight:700; color:var(--ink);">Mark:</span>
-          <button class="grade-btn pass" onclick="saveGrade('correct')">⭐ Correct</button>
-          <button class="grade-btn retry" onclick="saveGrade('retry')">🔄 Try Again</button>
-          <span class="grade-notice" id="gradeNotice"></span>
-        </div>
-      </div>
-
-    </div>
-
-    <div class="right-panel">
-
-      <div class="canvas-card">
-        <div class="canvas-toolbar">
-          <div class="tool-group">
-            <button class="tool-btn active" id="toolPen" onclick="selectTool('pen')">✏️ Pen</button>
-            <button class="tool-btn" id="toolEraser" onclick="selectTool('eraser')">🧼 Eraser</button>
-            <button class="tool-btn" onclick="undoStroke()">↩️ Undo</button>
-            <button class="tool-btn" onclick="clearCanvas()">🗑️ Clear</button>
-          </div>
-          <div class="tool-group">
-            <button class="tool-btn active" id="btnInputMode" onclick="toggleInputMode()">🖊️ Pen Only</button>
-            <button class="tool-btn" id="sizeThin" onclick="setStrokeSize(2)">Thin</button>
-            <button class="tool-btn active" id="sizeMed" onclick="setStrokeSize(4)">Med</button>
-            <button class="tool-btn" id="sizeThick" onclick="setStrokeSize(7)">Thick</button>
-          </div>
-        </div>
-        <div class="canvas-wrap" id="canvasWrap">
-          <div class="ruled-lines"></div>
-          <canvas id="activeCanvas"></canvas>
-        </div>
-      </div>
-
-    </div>
-
-  </div>
-
-  <div class="bottom-bar">
-    <div class="bottom-left">
-      <button class="btn btn-primary" id="btnPrev" onclick="navigateStep(-1)">◀ Back</button>
-      <button class="btn btn-primary" id="btnNext" onclick="navigateStep(1)">Next ▶</button>
-      <span class="pager-info" id="pagerIndicator" style="font-weight:800; font-size:0.9rem; color:var(--ink-soft); padding:0 8px;">1 / 8</span>
-    </div>
-    <div class="bottom-right">
-      <button class="btn btn-green btn-done-card" id="btnDoneCard" onclick="markCardDone()">✅ Done</button>
-      <button class="btn btn-purple btn-hand-to-parent" id="btnHandToParent" onclick="handToParent()">🤝 Hand to Parent</button>
-      <button class="btn btn-orange btn-parent-trigger" onclick="openPinModal()">🔒 Parent Review</button>
-      <button class="btn btn-done-green" onclick="returnToStudyFromParent()">🏠 Done &amp; Back</button>
-    </div>
-  </div>
-
-</div>
-
-<div id="modalPin" class="modal-overlay">
-  <div class="modal-card">
-    <h3>Parent Access</h3>
-    <p>Enter 4-digit PIN</p>
-    <input type="password" id="inputPin" maxlength="4" placeholder="••••" inputmode="numeric" />
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closePinModal()">Cancel</button>
-      <button class="btn btn-primary" onclick="checkPin()">Unlock</button>
-    </div>
-    <div class="modal-link" onclick="changePin()">Change PIN</div>
-  </div>
-</div>
-
-<script>
-/* ============================================================
-   AppStorage — hybrid storage with in-memory fallback
-   ============================================================ */
-var AppStorage = (function() {
-  var memory = Object.create(null);
-  var backend = null;
-  var backendName = "memory";
-  var warned = false;
-
-  (function probe() {
-    try {
-      if (typeof localStorage === "undefined") throw new Error("no localStorage");
-      var probeKey = "__appstorage_probe__";
-      localStorage.setItem(probeKey, "1");
-      var ok = localStorage.getItem(probeKey) === "1";
-      localStorage.removeItem(probeKey);
-      if (ok) { backend = localStorage; backendName = "localStorage"; }
-    } catch (e) { backend = null; backendName = "memory"; }
-  })();
-
-  function warnOnce(msg) {
-    if (!warned) { warned = true; try { console.warn("[AppStorage]", msg); } catch (_) {} }
-  }
-
-  function trimInkKeys() {
-    if (!backend) return false;
-    try {
-      var inkKeys = [];
-      for (var i = 0; i < backend.length; i++) {
-        var k = backend.key(i);
-        if (k && k.indexOf("ink::") === 0 && k.indexOf("__t") === -1) inkKeys.push(k);
+  <script>
+    // Resilient Dual Storage Engine (LocalStorage + In-Memory Fallback)
+    const AppStorage = {
+      _mem: {},
+      setItem(key, val) {
+        this._mem[key] = val;
+        try { localStorage.setItem(key, val); } catch (e) {}
+      },
+      getItem(key) {
+        if (this._mem[key] !== undefined) return this._mem[key];
+        try {
+          const v = localStorage.getItem(key);
+          if (v !== null) { this._mem[key] = v; return v; }
+        } catch (e) {}
+        return null;
+      },
+      removeItem(key) {
+        delete this._mem[key];
+        try { localStorage.removeItem(key); } catch (e) {}
       }
-      if (inkKeys.length === 0) return false;
-      inkKeys.sort(function(a, b) {
-        var ta = parseInt(backend.getItem(a + "__t") || "0", 10);
-        var tb = parseInt(backend.getItem(b + "__t") || "0", 10);
-        return ta - tb;
-      });
-      var removeCount = Math.max(1, Math.floor(inkKeys.length * 0.25));
-      for (var j = 0; j < removeCount; j++) {
-        backend.removeItem(inkKeys[j]);
-        backend.removeItem(inkKeys[j] + "__t");
+    };
+
+    window.__showSaveToast = function(msg, icon) {
+      var t = document.getElementById('trail-toast');
+      var txt = document.getElementById('toast-txt');
+      var ico = document.getElementById('toast-icon');
+      if (!t) return;
+      if (txt) txt.textContent = msg || 'Saved';
+      if (ico) ico.textContent = icon || '💾';
+      t.classList.add('show');
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(function() { t.classList.remove('show'); }, 950);
+    };
+
+    (function runWallpaper() {
+      const cvs = document.getElementById('wallpaperCanvas');
+      if (!cvs) return;
+      const ctx = cvs.getContext('2d');
+      let items = [];
+      const emojis = ['🌱', '🍃', '☁️', '🐢', '🌾', '⭐', '💧', '🦜', '🌸'];
+
+      function resize() {
+        cvs.width = window.innerWidth;
+        cvs.height = window.innerHeight;
       }
-      return true;
-    } catch (e) { return false; }
-  }
+      window.addEventListener('resize', resize);
+      resize();
 
-  function touch(key) {
-    if (!backend) return;
-    try { backend.setItem(key + "__t", String(Date.now())); } catch (_) {}
-  }
+      for (let i = 0; i < 20; i++) {
+        items.push({
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * window.innerHeight,
+          vy: -(0.2 + Math.random() * 0.3),
+          vx: (Math.random() - 0.5) * 0.2,
+          char: emojis[Math.floor(Math.random() * emojis.length)],
+          size: 18 + Math.random() * 18,
+          rot: Math.random() * Math.PI * 2,
+          vRot: (Math.random() - 0.5) * 0.015
+        });
+      }
 
-  return {
-    get engine() { return backendName; },
-    get: function(key) {
-      try {
-        if (backend) {
-          var v = backend.getItem(key);
-          if (v !== null) return v;
-        }
-      } catch (e) { warnOnce("read failed: " + e.message); }
-      return (key in memory) ? memory[key] : null;
-    },
-    set: function(key, value) {
-      memory[key] = value;
-      if (!backend) { warnOnce("no persistent backend"); return false; }
-      try {
-        backend.setItem(key, value);
-        touch(key);
-        return true;
-      } catch (e) {
-        var isQuota = (e && (e.name === "QuotaExceededError" || e.name === "NS_ERROR_DOM_QUOTA_REACHED" || e.code === 22 || e.code === 1014));
-        if (isQuota) {
-          warnOnce("quota exceeded; trimming oldest ink keys");
-          if (trimInkKeys()) {
-            try { backend.setItem(key, value); touch(key); return true; }
-            catch (e2) { warnOnce("still over quota; memory only"); }
+      function draw() {
+        ctx.clearRect(0, 0, cvs.width, cvs.height);
+        for (let it of items) {
+          it.y += it.vy;
+          it.x += it.vx;
+          it.rot += it.vRot;
+          if (it.y < -30) {
+            it.y = cvs.height + 20;
+            it.x = Math.random() * cvs.width;
           }
-        } else {
-          warnOnce("write failed (" + e.name + "); memory only");
+          ctx.save();
+          ctx.translate(it.x, it.y);
+          ctx.rotate(it.rot);
+          ctx.font = `${it.size}px Fredoka, sans-serif`;
+          ctx.fillText(it.char, 0, 0);
+          ctx.restore();
         }
-        return false;
+        requestAnimationFrame(draw);
       }
-    },
-    remove: function(key) {
-      delete memory[key];
-      if (backend) {
-        try { backend.removeItem(key); backend.removeItem(key + "__t"); } catch (_) {}
+      draw();
+    })();
+  </script>
+
+  <script>
+    const { useState, useEffect, useRef, useCallback, useMemo, forwardRef, useImperativeHandle } = React;
+    const e = React.createElement;
+
+    let IS_AUDIO_MUTED = (() => {
+      try { return AppStorage.getItem('evs_audio_muted') === 'true'; } catch(err) { return false; }
+    })();
+
+    let _audioCtx = null;
+    function getAudioCtx() {
+      if (!_audioCtx) {
+        const AudioClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioClass) _audioCtx = new AudioClass();
       }
-    },
-    has: function(key) {
-      if (key in memory) return true;
-      if (backend) { try { return backend.getItem(key) !== null; } catch (_) { return false; } }
-      return false;
+      if (_audioCtx && _audioCtx.state === 'suspended') {
+        _audioCtx.resume().catch(() => {});
+      }
+      return _audioCtx;
     }
-  };
-})();
 
-/* ============================================================
-   NAMESPACED KEYS
-   ============================================================ */
-var APP_ID = "humayun";
-var STORAGE_VERSION = "v1";
-
-function inkKey(sectionId, modeId, itemId) {
-  return "ink::" + APP_ID + "::" + STORAGE_VERSION + "::" + sectionId + "::" + modeId + "::" + itemId;
-}
-function gradeKey(sectionId, itemId) {
-  return "grade::" + APP_ID + "::" + STORAGE_VERSION + "::" + sectionId + "::" + itemId;
-}
-function pinKey() {
-  return "pin::" + APP_ID + "::" + STORAGE_VERSION;
-}
-
-/* ============================================================
-   CONTENT
-   ============================================================ */
-var MASTER_LESSON_CONTENT = {
-  meanings: [
-    { id: "m1", word: "encyclopaedia", answer: "a book with facts on many subjects" },
-    { id: "m2", word: "stack", answer: "arrange one on top of the other" },
-    { id: "m3", word: "topple", answer: "overbalance and fall" },
-    { id: "m4", word: "scatter", answer: "to throw things all over" },
-    { id: "m5", word: "troll", answer: "an ugly giant" },
-    { id: "m6", word: "nibble", answer: "a small quick bite" },
-    { id: "m7", word: "wriggle", answer: "twist and turn with quick movement" },
-    { id: "m8", word: "nervous", answer: "feeling worry" }
-  ],
-  opposites: [
-    { id: "o1", word: "top", answer: "bottom" },
-    { id: "o2", word: "up", answer: "down" },
-    { id: "o3", word: "found", answer: "lost" },
-    { id: "o4", word: "begin", answer: "end" },
-    { id: "o5", word: "loud", answer: "quiet" },
-    { id: "o6", word: "hard", answer: "soft" },
-    { id: "o7", word: "under", answer: "over" }
-  ],
-  sentences: [
-    { id: "s1", word: "rescue", answer: "the fireman came to rescue the kitten from the tree." },
-    { id: "s2", word: "grab", answer: "the monkey tried to grab the banana from my hand." },
-    { id: "s3", word: "strange", answer: "the dog made a strange noise at night" },
-    { id: "s4", word: "anxious", answer: "I felt anxious before my test results" }
-  ],
-  qa: [
-    { id: "q1", word: "Why was Meena annoyed at the sight of books?", answer: "Meena was annoyed because in her house her parents were always reading and buying more books." },
-    { id: "q2", word: "Where were books kept in her house?", answer: "Books were kept in drawers desks, cupboards, chests on the sofa, on the stairs, in the fireplace, and stacked on chairs." }
-  ]
-};
-
-/* ============================================================
-   STATE
-   ============================================================ */
-var activeLessonContent = JSON.parse(JSON.stringify(MASTER_LESSON_CONTENT));
-var currentSectionKey = "meanings";
-var currentIndex = 0;
-var appMode = "study"; // study | write | parent
-var activeTool = "pen";
-var activeBaseSize = 4;
-var isDrawing = false;
-var lastX = 0, lastY = 0;
-var strokeHistory = {};
-var canvasReady = false;
-
-/* Palm Rejection Mode: 'pen-only' or 'all' */
-var inputRejectionMode = AppStorage.get("input_rejection_mode") || "pen-only";
-var activePointerId = null;
-
-var writeShuffleCache = null;
-var parentShuffleCache = null;
-
-var canvas = document.getElementById("activeCanvas");
-var ctx = canvas.getContext("2d", { willReadFrequently: false });
-
-/* ============================================================
-   FULLSCREEN UTILITIES
-   ============================================================ */
-function toggleFullscreen() {
-  if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-    var el = document.documentElement;
-    if (el.requestFullscreen) {
-      el.requestFullscreen().catch(function(){});
-    } else if (el.webkitRequestFullscreen) {
-      el.webkitRequestFullscreen();
-    }
-  } else {
-    if (document.exitFullscreen) {
-      document.exitFullscreen().catch(function(){});
-    } else if (document.webkitExitFullscreen) {
-      document.webkitExitFullscreen();
-    }
-  }
-}
-
-function updateFullscreenBtn() {
-  var isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
-  var btn = document.getElementById("btnFullscreen");
-  if (btn) {
-    btn.innerHTML = isFs ? "↩ Exit Screen" : "⛶ Fullscreen";
-  }
-}
-
-document.addEventListener("fullscreenchange", function() {
-  updateFullscreenBtn();
-  setTimeout(function() {
-    fitCanvasToContainer();
-    restoreInkForCurrentCard();
-  }, 100);
-});
-document.addEventListener("webkitfullscreenchange", function() {
-  updateFullscreenBtn();
-  setTimeout(function() {
-    fitCanvasToContainer();
-    restoreInkForCurrentCard();
-  }, 100);
-});
-
-/* ============================================================
-   INPUT MODE (PALM REJECTION)
-   ============================================================ */
-function toggleInputMode() {
-  inputRejectionMode = (inputRejectionMode === "pen-only") ? "all" : "pen-only";
-  AppStorage.set("input_rejection_mode", inputRejectionMode);
-  updateInputModeBtn();
-}
-
-function updateInputModeBtn() {
-  var btn = document.getElementById("btnInputMode");
-  if (!btn) return;
-  if (inputRejectionMode === "pen-only") {
-    btn.innerHTML = "🖊️ Pen Only";
-    btn.title = "Palm rejection ON: Only stylus writes. Palms & fingers ignored.";
-    btn.classList.add("active");
-  } else {
-    btn.innerHTML = "👆 Any Touch";
-    btn.title = "Touch enabled: Can write with fingers or stylus.";
-    btn.classList.remove("active");
-  }
-}
-
-/* ============================================================
-   HELPERS
-   ============================================================ */
-function getParentPin() { return AppStorage.get(pinKey()) || "1234"; }
-function getCurrentList() { return activeLessonContent[currentSectionKey]; }
-function getCurrentItem() { return getCurrentList()[currentIndex]; }
-
-// FIXED: Parent mode now maps to the 'write' mode storage key instead of 'practice'
-function currentModeId() {
-  return (appMode === "write" || appMode === "parent") ? "write" : "practice";
-}
-
-function currentInkKey() {
-  var item = getCurrentItem();
-  if (!item) return null;
-  return inkKey(currentSectionKey, currentModeId(), item.id);
-}
-
-function currentGradeKey() {
-  var item = getCurrentItem();
-  if (!item) return null;
-  return gradeKey(currentSectionKey, item.id);
-}
-
-function shuffleArray(arr) {
-  var a = arr.slice();
-  for (var i = a.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var t = a[i]; a[i] = a[j]; a[j] = t;
-  }
-  return a;
-}
-
-function buildShuffledSet() {
-  return {
-    meanings: shuffleArray(MASTER_LESSON_CONTENT.meanings),
-    opposites: shuffleArray(MASTER_LESSON_CONTENT.opposites),
-    sentences: shuffleArray(MASTER_LESSON_CONTENT.sentences),
-    qa: shuffleArray(MASTER_LESSON_CONTENT.qa)
-  };
-}
-
-function applyOrderForMode() {
-  if (appMode === "write") {
-    if (!writeShuffleCache) writeShuffleCache = buildShuffledSet();
-    activeLessonContent = writeShuffleCache;
-  } else if (appMode === "parent") {
-    if (writeShuffleCache) {
-      parentShuffleCache = writeShuffleCache;
-    } else if (!parentShuffleCache) {
-      parentShuffleCache = buildShuffledSet();
-    }
-    activeLessonContent = parentShuffleCache;
-  } else {
-    activeLessonContent = JSON.parse(JSON.stringify(MASTER_LESSON_CONTENT));
-  }
-}
-
-function getInkColor() { return "#1E232A"; }
-
-function getSectionTheme() {
-  var themes = {
-    meanings:  { icon: "📖", label: "MEANINGS",   color: "#4A9FE0" },
-    opposites: { icon: "🔄", label: "OPPOSITES",  color: "#E07A3A" },
-    sentences: { icon: "✏️", label: "SENTENCES",  color: "#7A5AC0" },
-    qa:        { icon: "❓", label: "STORY Q&A",  color: "#3A9A6A" }
-  };
-  return themes[currentSectionKey] || themes.meanings;
-}
-
-/* ============================================================
-   MODE
-   ============================================================ */
-function setMode(mode) {
-  if (mode === "parent") { openPinModal(); return; }
-  stopSpeaking();
-  saveCurrentDrawing();
-  appMode = mode;
-  applyOrderForMode();
-  currentIndex = 0;
-  updateAppMode();
-  renderCurrentCard();
-}
-
-function updateAppMode() {
-  document.body.classList.remove("parent-mode");
-  document.body.classList.remove("write-mode");
-
-  if (appMode === "parent") document.body.classList.add("parent-mode");
-  if (appMode === "write") document.body.classList.add("write-mode");
-
-  document.getElementById("mode-practice").className = "mode-tab" + (appMode === "study" ? " active-practice" : "");
-  document.getElementById("mode-write").className = "mode-tab" + (appMode === "write" ? " active-write" : "");
-  document.getElementById("mode-parent").className = "mode-tab" + (appMode === "parent" ? " active-parent" : "");
-
-  document.getElementById("parentPanel").classList.toggle("show", appMode === "parent");
-}
-
-function returnToStudyFromParent() {
-  stopSpeaking();
-  writeShuffleCache = null;
-  parentShuffleCache = null;
-  appMode = "study";
-  applyOrderForMode();
-  currentIndex = 0;
-  updateAppMode();
-  renderCurrentCard();
-}
-
-function handToParent() {
-  stopSpeaking();
-  saveCurrentDrawing();
-  appMode = "parent";
-  applyOrderForMode();
-  updateAppMode();
-  renderCurrentCard();
-}
-
-/* ============================================================
-   NAVIGATION
-   ============================================================ */
-function selectSection(secKey) {
-  stopSpeaking();
-  saveCurrentDrawing();
-  currentSectionKey = secKey;
-  currentIndex = 0;
-  renderCurrentCard();
-  updateSectionTabs();
-}
-
-function updateSectionTabs() {
-  document.querySelectorAll(".section-tab").forEach(function(t){
-    t.classList.toggle("active", t.id === "tab-" + currentSectionKey);
-  });
-}
-
-function navigateStep(direction) {
-  stopSpeaking();
-  saveCurrentDrawing();
-  var list = getCurrentList();
-  var nextIdx = currentIndex + direction;
-  if (nextIdx >= 0 && nextIdx < list.length) {
-    currentIndex = nextIdx;
-    renderCurrentCard();
-  }
-}
-
-function jumpToCard(idx) {
-  stopSpeaking();
-  saveCurrentDrawing();
-  if (idx >= 0 && idx < getCurrentList().length) {
-    currentIndex = idx;
-    renderCurrentCard();
-  }
-}
-
-/* ============================================================
-   RENDER
-   ============================================================ */
-function renderCurrentCard() {
-  var list = getCurrentList();
-  var item = getCurrentItem();
-  if (!item) return;
-  var theme = getSectionTheme();
-
-  document.getElementById("btnPrev").disabled = (currentIndex === 0);
-  document.getElementById("btnNext").disabled = (currentIndex === list.length - 1);
-  document.getElementById("pagerIndicator").innerText = (currentIndex + 1) + " / " + list.length;
-
-  var catText = "";
-  var promptText = "";
-  var hintText = "";
-
-  if (currentSectionKey === "meanings") {
-    catText = theme.icon + " " + theme.label + " — Card " + (currentIndex + 1) + " of " + list.length;
-    promptText = "Word: <u>" + item.word + "</u>";
-    hintText = "<b>💡 Meaning:</b> " + item.answer;
-  } else if (currentSectionKey === "opposites") {
-    catText = theme.icon + " " + theme.label + " — Card " + (currentIndex + 1) + " of " + list.length;
-    promptText = "Opposite of <u>" + item.word + "</u> &nbsp;=&nbsp; <span class='blank'>?</span>";
-    hintText = "<b>💡 Opposite:</b> " + item.word + " &times; <b>" + item.answer + "</b>";
-  } else if (currentSectionKey === "sentences") {
-    catText = theme.icon + " " + theme.label + " — Card " + (currentIndex + 1) + " of " + list.length;
-    promptText = "Frame a sentence with: <u>" + item.word + "</u>";
-    hintText = "<b>💡 Model Sentence:</b> " + item.answer;
-  } else if (currentSectionKey === "qa") {
-    catText = theme.icon + " " + theme.label + " — Card " + (currentIndex + 1) + " of " + list.length;
-    promptText = item.word;
-    hintText = "<b>💡 Answer:</b> " + item.answer;
-  }
-
-  var catEl = document.getElementById("cardCategoryText");
-  catEl.innerText = catText;
-  catEl.style.color = theme.color;
-
-  document.getElementById("cardPromptText").innerHTML = promptText;
-  document.getElementById("cardHintBox").innerHTML = hintText;
-  document.getElementById("parentRefAnswer").innerText = item.answer;
-
-  fitCanvasToContainer();
-  restoreInkForCurrentCard();
-  refreshGradeBadge();
-  renderMap();
-  renderGarden();
-}
-
-/* ============================================================
-   CANVAS FIT
-   ============================================================ */
-function fitCanvasToContainer() {
-  var wrap = document.getElementById("canvasWrap");
-  var rect = wrap.getBoundingClientRect();
-  if (rect.width <= 0 || rect.height <= 0) return;
-
-  var dpr = window.devicePixelRatio || 1;
-  var newW = Math.floor(rect.width * dpr);
-  var newH = Math.floor(rect.height * dpr);
-
-  if (canvas.width === newW && canvas.height === newH) { canvasReady = true; return; }
-
-  var snapshot = null;
-  if (canvasReady && canvas.width > 0 && canvas.height > 0) {
-    try { snapshot = canvas.toDataURL("image/png"); } catch (_) {}
-  }
-
-  canvas.width = newW;
-  canvas.height = newH;
-  canvas.style.width = rect.width + "px";
-  canvas.style.height = rect.height + "px";
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  if (snapshot) {
-    var img = new Image();
-    img.onload = function() {
-      ctx.save();
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      ctx.restore();
+    const SoundFX = {
+      playTap() {
+        if (IS_AUDIO_MUTED) return;
+        try {
+          const ctx = getAudioCtx();
+          if (!ctx) return;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(540, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(780, ctx.currentTime + 0.05);
+          gain.gain.setValueAtTime(0.06, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(); osc.stop(ctx.currentTime + 0.05);
+        } catch(err){}
+      },
+      playSpaceTone() {
+        if (IS_AUDIO_MUTED) return;
+        try {
+          const ctx = getAudioCtx();
+          if (!ctx) return;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(220, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(140, ctx.currentTime + 0.06);
+          gain.gain.setValueAtTime(0.09, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.06);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(); osc.stop(ctx.currentTime + 0.06);
+        } catch(err){}
+      },
+      playBackspaceTone() {
+        if (IS_AUDIO_MUTED) return;
+        try {
+          const ctx = getAudioCtx();
+          if (!ctx) return;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(380, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.07);
+          gain.gain.setValueAtTime(0.045, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.07);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(); osc.stop(ctx.currentTime + 0.07);
+        } catch(err){}
+      },
+      playClearTone() {
+        if (IS_AUDIO_MUTED) return;
+        try {
+          const ctx = getAudioCtx();
+          if (!ctx) return;
+          [350, 240].forEach((f, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = f;
+            gain.gain.setValueAtTime(0.05, ctx.currentTime + i * 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.05 + 0.06);
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.start(ctx.currentTime + i * 0.05); osc.stop(ctx.currentTime + i * 0.05 + 0.06);
+          });
+        } catch(err){}
+      },
+      playSuccess() {
+        if (IS_AUDIO_MUTED) return;
+        try {
+          const ctx = getAudioCtx();
+          if (!ctx) return;
+          [523.25, 659.25, 783.99, 1046.50].forEach((f, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.frequency.value = f;
+            gain.gain.setValueAtTime(0.05, ctx.currentTime + idx * 0.065);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.065 + 0.15);
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.start(ctx.currentTime + idx * 0.065);
+            osc.stop(ctx.currentTime + idx * 0.065 + 0.15);
+          });
+        } catch(err){}
+      }
     };
-    img.src = snapshot;
-  }
-  canvasReady = true;
-}
 
-/* ============================================================
-   INK PERSISTENCE
-   ============================================================ */
-function saveCurrentDrawing() {
-  // Prevent Parent mode from overwriting child's ink
-  if (appMode === "parent") return;
-  if (!canvasReady || canvas.width <= 0) return;
-  var key = currentInkKey();
-  if (!key) return;
-  try {
-    var data = canvas.toDataURL("image/png");
-    AppStorage.set(key, data);
-    if (!strokeHistory[key]) strokeHistory[key] = [];
-    var hist = strokeHistory[key];
-    if (hist.length === 0 || hist[hist.length - 1] !== data) hist.push(data);
-    if (hist.length > 30) hist.shift();
-  } catch (e) {}
-}
-
-function restoreInkForCurrentCard() {
-  var key = currentInkKey();
-  if (!key) return;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  if (!strokeHistory[key]) strokeHistory[key] = [];
-  var saved = AppStorage.get(key);
-  if (!saved) return;
-  var img = new Image();
-  img.onload = function() {
-    ctx.save();
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    ctx.restore();
-    var hist = strokeHistory[key];
-    if (hist.length === 0) hist.push(saved);
-  };
-  img.src = saved;
-}
-
-function clearCanvas() {
-  if (appMode === "parent") return;
-  var key = currentInkKey();
-  if (!key) return;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  AppStorage.remove(key);
-  strokeHistory[key] = [];
-  saveCurrentDrawing();
-}
-
-function undoStroke() {
-  if (appMode === "parent") return;
-  var key = currentInkKey();
-  if (!key) return;
-  var hist = strokeHistory[key] || [];
-  if (hist.length > 1) {
-    hist.pop();
-    var prev = hist[hist.length - 1];
-    AppStorage.set(key, prev);
-    var img = new Image();
-    img.onload = function() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.save();
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      ctx.restore();
+    const Speech = {
+      read(text) {
+        if (IS_AUDIO_MUTED || !('speechSynthesis' in window)) return;
+        try {
+          speechSynthesis.cancel();
+          const u = new SpeechSynthesisUtterance(String(text || '').trim());
+          u.rate = 0.95;
+          speechSynthesis.speak(u);
+        } catch(e){}
+      }
     };
-    img.src = prev;
-  } else if (hist.length === 1) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    AppStorage.remove(key);
-    strokeHistory[key] = [];
-  }
-}
 
-/* ============================================================
-   CANVAS INPUT (WITH HARDWARE PALM REJECTION)
-   ============================================================ */
-function setupCanvasListeners() {
-  canvas.addEventListener("pointerdown", function(e) {
-    if (appMode === "parent") return;
-
-    // Strict Stylus Check if in pen-only mode
-    if (inputRejectionMode === "pen-only") {
-      if (e.pointerType !== "pen") {
-        e.preventDefault();
-        return; // Complete palm & finger rejection
+    const StylusStore = {
+      _subs: new Set(),
+      _state: { color: '#047857', eraser: false, penSize: 4, eraserSize: 28, scrollLock: false },
+      get() { return this._state; },
+      set(patch) {
+        this._state = { ...this._state, ...patch };
+        this._subs.forEach(fn => fn(this._state));
+      },
+      subscribe(fn) {
+        this._subs.add(fn);
+        return () => this._subs.delete(fn);
       }
-    } else {
-      // Any touch mode: reject massive contact patches (palms resting on screen)
-      if (e.pointerType === "touch" && (e.width > 35 || e.height > 35)) {
-        e.preventDefault();
-        return;
+    };
+
+    const ADVENTURE_SECTIONS = [
+      {
+        id: 'sec_1',
+        title: 'Section I: Fill in the Blanks',
+        badge: 'Air & Solar System',
+        icon: '🌱',
+        type: 'fill',
+        questions: [
+          { q: 'The _____ is at the centre of the solar system.', answers: ['sun'] },
+          { q: 'Planets have no _____ of their own.', answers: ['light'] },
+          { q: 'We can only _____ air.', answers: ['feel'] },
+          { q: 'Air has _____ .', answers: ['weight'] },
+          { q: 'Air takes up _____ .', answers: ['space'] },
+          { q: 'Throwing waste into rivers causes _____ pollution.', answers: ['water'] },
+          { q: 'Firecrackers cause _____ and noise pollution.', answers: ['air'] },
+          { q: 'The _____ Mountains form a natural boundary in the north.', answers: ['Himalayan', 'himalayan', 'Himalayas'] },
+          { q: 'Birds build _____ to lay eggs.', answers: ['nests'] },
+          { q: 'The _____ bird uses its own spit to make its nest.', answers: ['swallow'] },
+          { q: 'The skeletal system is made up of a large number of _____ .', answers: ['bones'] },
+          { q: 'Always use the _____ to cross the road.', answers: ['zebra crossing', 'zebra'] },
+          { q: '_____ is the immediate help given to an injured person.', answers: ['First aid', 'first aid'] },
+          { q: 'Mosquitoes breed in _____ water.', answers: ['stagnant'] },
+          { q: 'A house provides us _____ .', answers: ['shelter'] }
+        ]
+      },
+      {
+        id: 'sec_2',
+        title: 'Section II: Choose Correct Answer',
+        badge: 'Science Quiz',
+        icon: '🎯',
+        type: 'mcq',
+        questions: [
+          { q: 'The sun is not ____', options: ['Hot', 'A planet', 'A star'], answerText: 'A planet' },
+          { q: '_____ is the hottest planet.', options: ['Venus', 'Earth', 'Mars'], answerText: 'Venus' },
+          { q: 'Vehicles should be powered by _____', options: ['CNG', 'CGG', 'NCG'], answerText: 'CNG' },
+          { q: 'Jharkhand is a ______.', options: ['State', 'Union territory', 'Country'], answerText: 'State' },
+          { q: 'Puducherry is a _____', options: ['State', 'Union territory', 'Country'], answerText: 'Union territory' },
+          { q: 'The _______ has webbed feet.', options: ['Eagle', 'Duck', 'Hummingbird'], answerText: 'Duck' },
+          { q: 'This sense organ helps us to feel things.', options: ['Eyes', 'Ears', 'Skin'], answerText: 'Skin' },
+          { q: 'The function of this organ is to pump blood.', options: ['Lungs', 'Heart', 'Kidney'], answerText: 'Heart' },
+          { q: 'We should not touch these with wet hands.', options: ['Pencils', 'Electric appliances', 'Pens'], answerText: 'Electric appliances' },
+          { q: 'Eating nutritious food protects us from _____', options: ['Falling ill', 'Falling down', 'Thieves'], answerText: 'Falling ill' },
+          { q: 'Jute is a _____', options: ['Animal fibre', 'Plant fibre', 'None'], answerText: 'Plant fibre' },
+          { q: '______ is a human-made fibre.', options: ['Silk', 'Rayon', 'Wool'], answerText: 'Rayon' }
+        ]
+      },
+      {
+        id: 'sec_3',
+        title: 'Section III: True or False',
+        badge: 'Fact Checker',
+        icon: '⚖️',
+        type: 'tf',
+        questions: [
+          { id: 'tf_1', q: 'The solar system consists of 10 planets.', answer: false },
+          { id: 'tf_2', q: 'Breathing clean and fresh air keeps us healthy.', answer: true },
+          { id: 'tf_3', q: 'Overuse of pesticides is good for the soil.', answer: false },
+          { id: 'tf_4', q: 'India is the seventh largest country in the world.', answer: true },
+          { id: 'tf_5', q: 'Birds are toothless.', answer: true },
+          { id: 'tf_6', q: 'Herons is a seed-eating bird.', answer: false },
+          { id: 'tf_7', q: 'The skin removes urine from our body.', answer: false },
+          { id: 'tf_8', q: 'We should always use a footpath to cross the road.', answer: false },
+          { id: 'tf_9', q: 'If water spills on the floor, we should not mop it.', answer: false },
+          { id: 'tf_10', q: 'Our house should be free from dust and germs.', answer: true }
+        ]
+      },
+      {
+        id: 'sec_4',
+        title: 'Section IV: Match the Following',
+        badge: 'Pair Connector',
+        icon: '🔗',
+        type: 'match',
+        pairs: [
+          { id: '1', left: 'Cotton', right: 'Summer' },
+          { id: '2', left: 'Asteroids', right: 'Rocks and metal' },
+          { id: '3', left: 'Comet', right: 'Ice particles' },
+          { id: '4', left: 'Nitrogen', right: '78 percent' },
+          { id: '5', left: 'Noise pollution', right: 'Unpleasant sound' },
+          { id: '6', left: 'Tamil Nadu', right: 'Chennai' },
+          { id: '7', left: 'Talons', right: 'Flesh-eating bird' },
+          { id: '8', left: 'Oxygen', right: '21 percent' },
+          { id: '9', left: 'Circulatory system', right: 'Heart' },
+          { id: '10', left: 'Sheep', right: 'Wool' }
+        ]
+      },
+      {
+        id: 'sec_5',
+        title: 'Section V: Name the Following',
+        badge: 'Recall Island',
+        icon: '💡',
+        type: 'name_following',
+        questions: [
+          { id: 'nf_1', q: 'Which planet is farthest from the sun?', a: 'Neptune' },
+          { id: 'nf_2', q: 'What is called an act of causing harm to our environment?', a: 'Pollution' },
+          { id: 'nf_3', q: 'Which is a piece of land which has water on three sides?', a: 'Peninsula' },
+          { id: 'nf_4', q: 'Which bird has a short, strong and hard beak to crush its food?', a: 'Sparrow' },
+          { id: 'nf_5', q: 'Which bird lives in ice and makes its home using pebbles and strong?', a: 'Penguin' },
+          { id: 'nf_6', q: 'Which system of our body responsible for digestion of food?', a: 'Digestive system' },
+          { id: 'nf_7', q: 'What breeds in stagnant water and can cause diseases like dengue?', a: 'Mosquitoes' },
+          { id: 'nf_8', q: 'What is the immediate help given to an injured person called?', a: 'First aid' },
+          { id: 'nf_9', q: 'Which is the largest organ of our body?', a: 'Skin' },
+          { id: 'nf_10', q: 'What provides us shelter?', a: 'A house' }
+        ]
+      },
+      {
+        id: 'sec_6',
+        title: 'Section VI: Odd One Out + Reason',
+        badge: 'Logic Quest',
+        icon: '🔍',
+        type: 'odd_one_out',
+        questions: [
+          { id: 'odd_1', q: 'Raincoat, umbrella, woollen jacket', words: ['Raincoat', 'Umbrella', 'Woollen jacket'], odd: 'Woollen jacket', reason: 'used for cold, not rain' },
+          { id: 'odd_2', q: 'Moon, star, mug', words: ['Moon', 'Star', 'Mug'], odd: 'Mug', reason: 'not a celestial body' },
+          { id: 'odd_3', q: 'Carrot, radish, pomegranate', words: ['Carrot', 'Radish', 'Pomegranate'], odd: 'Pomegranate', reason: 'fruit, others are root vegetables' },
+          { id: 'odd_4', q: 'Fruit, milk, chips', words: ['Fruit', 'Milk', 'Chips'], odd: 'Chips', reason: 'junk food, not natural/nutritious' },
+          { id: 'odd_5', q: 'Blood, kidney, bladder', words: ['Blood', 'Kidney', 'Bladder'], odd: 'Blood', reason: 'it’s a fluid, others are organs' },
+          { id: 'odd_6', q: 'Mouth, lungs, stomach', words: ['Mouth', 'Lungs', 'Stomach'], odd: 'Mouth', reason: 'external part, others are internal organs' },
+          { id: 'odd_7', q: 'Hawk, sparrow, vulture', words: ['Hawk', 'Sparrow', 'Vulture'], odd: 'Hawk', reason: 'flesh-eating, others are seed/plant eaters' },
+          { id: 'odd_8', q: 'Crow, heron, stork', words: ['Crow', 'Heron', 'Stork'], odd: 'Crow', reason: 'not a water bird, others are water birds' }
+        ]
+      },
+      {
+        id: 'sec_7',
+        title: 'Section VII: Give 2 Examples',
+        badge: 'Nature Listing',
+        icon: '🌿',
+        type: 'two_examples',
+        questions: [
+          { id: 'two_1', q: 'Give 2 examples of: Climbing bird', ex1: 'Parrot', ex2: 'woodpecker' },
+          { id: 'two_2', q: 'Give 2 examples of: Flesh‑eating bird', ex1: 'Eagle', ex2: 'vulture' },
+          { id: 'two_3', q: 'Give 2 examples of: Swimming bird', ex1: 'Duck', ex2: 'penguin' },
+          { id: 'two_4', q: 'Give 2 examples of: Health habit', ex1: 'Brushing teeth', ex2: 'washing hands' },
+          { id: 'two_5', q: 'Give 2 examples of: Plant fibre', ex1: 'Cotton', ex2: 'jute' },
+          { id: 'two_6', q: 'Give 2 examples of: Union territory', ex1: 'Puducherry', ex2: 'Chandigarh' },
+          { id: 'two_7', q: 'Give 2 examples of: Unhealthy habit', ex1: 'Eating junk food', ex2: 'not exercising' },
+          { id: 'two_8', q: 'Give 2 examples of: Animal fibre', ex1: 'Wool', ex2: 'silk' },
+          { id: 'two_9', q: 'Give 2 examples of: Gases in air', ex1: 'Oxygen', ex2: 'nitrogen' },
+          { id: 'two_10', q: 'Give 2 examples of: Types of pollution', ex1: 'Air pollution', ex2: 'water pollution' }
+        ]
+      },
+      {
+        id: 'sec_8',
+        title: 'Section IX: Complete Concept Map',
+        badge: 'Flowchart Bay',
+        icon: '🧩',
+        type: 'concept_map'
+      },
+      {
+        id: 'sec_9',
+        title: 'Section X: Answer the Following',
+        badge: 'Short Answers',
+        icon: '📖',
+        type: 'written',
+        questions: [
+          { id: 'ans_1', q: 'Name the five sense organs of the human body.', a: 'Eyes, ears, nose, tongue and skin are the five sense organs.' },
+          { id: 'ans_2', q: 'Define breathing.', a: 'The process of taking in oxygen and giving out carbon dioxide is called breathing.' },
+          { id: 'ans_3', q: 'What is reproduction in living beings?', a: 'Reproduction in the process by which living things give birth to their own kids.' },
+          { id: 'ans_4', q: 'What kinds of clothes do we wear during summers and why?', a: 'We wear light and comfortable clothes that are made of cotton in summer.' },
+          { id: 'ans_5', q: 'What is hatching of bird eggs?', a: 'Hatching is a process in which an egg breaks to allow the young one to come out.' },
+          { id: 'ans_6', q: 'What are flight feathers and where are they attached?', a: 'The large feathers found in the tail and wings of a bird are called flight feathers. They help the birds to fly.' },
+          { id: 'ans_7', q: 'What is pollution?', a: 'Pollution is an act of causing harm to our environment and making it dirty.' },
+{ id: 'ans_8', q: 'What is air made of?', a: 'The air around the Earth is a mixture of gases containing nitrogen, carbon dioxide and other gases. Together this mixture of gases forms the Earth\'s atmosphere.' },
+          { id: 'ans_9', q: 'What is the Environment?', a: 'Environment is everything around us, like air, water, land, plants, animals and humans.' },
+          { id: 'ans_10', q: 'Why is it important to breathe clean air?', a: 'It is important to be clean air because breathing clean and fresh air keeps us healthy and driven sickness from harmful germs. It also helps Plants to grow healthy.' }
+        ]
+      },
+      {
+        id: 'sec_10',
+        title: 'Section XI: Answer in Detail',
+        badge: 'Deep Ocean Cave',
+        icon: '📚',
+        type: 'written',
+        questions: [
+          {
+            id: 'det_1',
+            q: 'How can we save our environment?',
+            a: 'Plant more trees.\nDo not throw garbage on roads.\nSave water and electricity.'
+          },
+          {
+            id: 'det_2',
+            q: 'Write the different properties of air.',
+            a: 'Air has weight.\nAir occupies space.\nAir exerts pressure.\nAir has no colour, no smell and no taste.'
+          },
+          {
+            id: 'det_3',
+            q: 'Draw and label a diagram of excretory system. How excretory system helps to remove wastes from our body?',
+            a: 'Our body removes waste in three ways.\nKidneys clean blood and make urine.\nLungs remove carbon dioxide when we breathe out.\nSkin removes extra water and salt as sweat.'
+          },
+          {
+            id: 'det_4',
+            q: 'We must keep our house neat and clean. Why?',
+            a: 'We must keep our house neat and clean to stay healthy. Dirty places have germs and insects. Clean houses keep us safe and prevent sickness. So we must keep our house neat and clean.'
+          }
+        ]
       }
-    }
+    ];
 
-    if (isDrawing && activePointerId !== null) return; // Ignore second touches / multi-finger
+    // DEFINITIVE ERROR-FREE PERSISTENT CANVAS
+    const StageCanvas = forwardRef(({ storageKey, isMini = false }, ref) => {
+      const canvasRef = useRef(null);
+      const isDrawing = useRef(false);
+      const activePointerId = useRef(null);
+      const tempEraserRef = useRef(false);
 
-    activePointerId = e.pointerId;
-    isDrawing = true;
-    try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+      const [penColor, setPenColor] = useState('#047857');
+      const [isEraser, setIsEraser] = useState(false);
+      const [penSize, setPenSize] = useState(4);
+      const [eraserSize, setEraserSize] = useState(28);
+      const [scrollLock, setScrollLock] = useState(false);
 
-    var rect = canvas.getBoundingClientRect();
-    lastX = e.clientX - rect.left;
-    lastY = e.clientY - rect.top;
-    e.preventDefault();
-  }, { passive: false });
+      const strokeData = useRef([]);
+      const currentPath = useRef([]);
+      const lastRecordedPt = useRef(null);
+      const uniqueStorageKey = 'evs_ink_v10_' + storageKey;
 
-  canvas.addEventListener("pointermove", function(e) {
-    if (!isDrawing || appMode === "parent" || e.pointerId !== activePointerId) return;
+      const saveStrokes = () => {
+        try {
+          AppStorage.setItem(uniqueStorageKey, JSON.stringify(strokeData.current));
+          if (!isMini && window.__showSaveToast) window.__showSaveToast('Ink Saved', '✍️');
+        } catch(err){}
+      };
 
-    var rect = canvas.getBoundingClientRect();
-    var currX = e.clientX - rect.left;
-    var currY = e.clientY - rect.top;
-    var dx = currX - lastX;
-    var dy = currY - lastY;
-    if ((dx * dx + dy * dy) < 4) return;
+      const redrawAll = useCallback(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
 
-    ctx.beginPath();
-    ctx.moveTo(lastX, lastY);
-    ctx.lineTo(currX, currY);
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
+        const rect = canvas.getBoundingClientRect();
+        const W = rect.width;
+        const H = rect.height;
+        if (W <= 2 || H <= 2) return;
 
-    if (activeTool === "eraser") {
-      ctx.globalCompositeOperation = "destination-out";
-      ctx.lineWidth = activeBaseSize * 5;
-    } else {
-      ctx.globalCompositeOperation = "source-over";
-      ctx.strokeStyle = getInkColor();
-      var pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
-      ctx.lineWidth = activeBaseSize * (pressure * 1.5 + 0.4);
-    }
-    ctx.stroke();
-    lastX = currX;
-    lastY = currY;
-    e.preventDefault();
-  }, { passive: false });
+        ctx.clearRect(0, 0, W, H);
+        const list = strokeData.current;
+        if (!list || list.length === 0) return;
 
-  var stopStroke = function(e) {
-    if (isDrawing && (e.pointerId === activePointerId || activePointerId === null)) {
-      isDrawing = false;
-      activePointerId = null;
-      try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
-      saveCurrentDrawing();
-    }
-  };
+        list.forEach(st => {
+          if (!st.points || st.points.length === 0) return;
+          ctx.save();
+          ctx.globalCompositeOperation = st.eraser ? 'destination-out' : 'source-over';
+          ctx.strokeStyle = st.eraser ? 'rgba(0,0,0,1)' : st.color;
+          ctx.fillStyle = st.eraser ? 'rgba(0,0,0,1)' : st.color;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
 
-  canvas.addEventListener("pointerup", stopStroke);
-  canvas.addEventListener("pointercancel", stopStroke);
-  canvas.addEventListener("pointerleave", stopStroke);
-}
+          if (st.points.length === 1) {
+            ctx.beginPath();
+            ctx.arc(st.points[0].nx * W, st.points[0].ny * H, (st.width || 4) / 2, 0, Math.PI * 2);
+            ctx.fill();
+          } else {
+            ctx.beginPath();
+            ctx.lineWidth = st.width || 4;
+            ctx.moveTo(st.points[0].nx * W, st.points[0].ny * H);
+            for (let i = 1; i < st.points.length; i++) {
+              ctx.lineTo(st.points[i].nx * W, st.points[i].ny * H);
+            }
+            ctx.stroke();
+          }
+          ctx.restore();
+        });
+      }, []);
 
-/* ============================================================
-   TOOLBAR
-   ============================================================ */
-function selectTool(tool) {
-  activeTool = tool;
-  document.getElementById("toolPen").classList.toggle("active", tool === "pen");
-  document.getElementById("toolEraser").classList.toggle("active", tool === "eraser");
-}
-function setStrokeSize(size) {
-  activeBaseSize = size;
-  document.getElementById("sizeThin").classList.toggle("active", size === 2);
-  document.getElementById("sizeMed").classList.toggle("active", size === 4);
-  document.getElementById("sizeThick").classList.toggle("active", size === 7);
-}
+      const fit = useCallback(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const rect = canvas.getBoundingClientRect();
+        if (rect.width <= 2 || rect.height <= 2) return;
 
-/* ============================================================
-   SPEAK — icon-only button
-   ============================================================ */
-var _speakBtn = document.getElementById("speakBtn");
+        const dpr = window.devicePixelRatio || 1;
+        const newW = Math.round(rect.width * dpr);
+        const newH = Math.round(rect.height * dpr);
 
-function stopSpeaking() {
-  if ('speechSynthesis' in window) {
-    try { window.speechSynthesis.cancel(); } catch (_) {}
-  }
-  if (_speakBtn) _speakBtn.classList.remove("playing");
-}
+        if (canvas.width !== newW || canvas.height !== newH) {
+          canvas.width = newW;
+          canvas.height = newH;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.scale(dpr, dpr);
+          }
+        }
+        redrawAll();
+      }, [redrawAll]);
 
-function speakCurrentCard() {
-  if (!('speechSynthesis' in window)) return;
-  window.speechSynthesis.cancel();
+      useEffect(() => {
+        const unsub = StylusStore.subscribe((s) => {
+          setIsEraser(s.eraser);
+          setPenColor(s.color);
+          setPenSize(s.penSize);
+          setEraserSize(s.eraserSize);
+          setScrollLock(s.scrollLock);
+        });
+        const curr = StylusStore.get();
+        setIsEraser(curr.eraser);
+        setPenColor(curr.color);
+        setPenSize(curr.penSize);
+        setEraserSize(curr.eraserSize);
+        setScrollLock(curr.scrollLock);
+        return unsub;
+      }, []);
 
-  var item = getCurrentItem();
-  if (!item) return;
+      useEffect(() => {
+        try {
+          const saved = AppStorage.getItem(uniqueStorageKey);
+          strokeData.current = saved ? JSON.parse(saved) : [];
+        } catch(err) {
+          strokeData.current = [];
+        }
 
-  var text = "";
-  if (currentSectionKey === "meanings") text = item.word + ".";
-  else if (currentSectionKey === "opposites") text = "What is the opposite of " + item.word + "?";
-  else if (currentSectionKey === "sentences") text = "Frame a sentence with " + item.word + ".";
-  else if (currentSectionKey === "qa") text = item.word;
+        fit();
+        const t1 = setTimeout(fit, 30);
+        const t2 = setTimeout(fit, 150);
+        const t3 = setTimeout(fit, 350);
 
-  if (appMode === "study") {
-    if (currentSectionKey === "meanings") text += " Meaning: " + item.answer;
-    else if (currentSectionKey === "opposites") text += " " + item.answer;
-    else if (currentSectionKey === "sentences") text += " For example: " + item.answer;
-    else text += " Answer: " + item.answer;
-  }
+        let ro = null;
+        if (typeof ResizeObserver !== 'undefined' && canvasRef.current && canvasRef.current.parentElement) {
+          ro = new ResizeObserver((entries) => {
+            for (let entry of entries) {
+              if (entry.contentRect.width > 2 && entry.contentRect.height > 2) {
+                fit();
+              }
+            }
+          });
+          ro.observe(canvasRef.current.parentElement);
+        }
 
-  var u = new SpeechSynthesisUtterance(text);
-  u.rate = 0.9;
-  u.lang = "en-US";
-  u.onstart = function() { if (_speakBtn) _speakBtn.classList.add("playing"); };
-  u.onend = function() { if (_speakBtn) _speakBtn.classList.remove("playing"); };
-  u.onerror = function() { if (_speakBtn) _speakBtn.classList.remove("playing"); };
-  window.speechSynthesis.speak(u);
-}
+        return () => {
+          clearTimeout(t1);
+          clearTimeout(t2);
+          clearTimeout(t3);
+          if (ro) ro.disconnect();
+        };
+      }, [uniqueStorageKey, fit]);
 
-/* ============================================================
-   PROGRESS MAP
-   ============================================================ */
-function renderMap() {
-  var grid = document.getElementById("mapGrid");
-  var list = getCurrentList();
-  var html = "";
-  var correctCount = 0;
+      useImperativeHandle(ref, () => ({
+        clear: () => {
+          strokeData.current = [];
+          try {
+            AppStorage.removeItem(uniqueStorageKey);
+            if (!isMini && window.__showSaveToast) window.__showSaveToast('Pad Cleared', '🗑️');
+          } catch(err){}
+          const canvas = canvasRef.current;
+          if (canvas) {
+            const ctx = canvas.getContext('2d');
+            const rect = canvas.getBoundingClientRect();
+            if (ctx) ctx.clearRect(0, 0, rect.width, rect.height);
+          }
+        }
+      }));
 
-  for (var i = 0; i < list.length; i++) {
-    var item = list[i];
-    var gKey = gradeKey(currentSectionKey, item.id);
-    var iKey = inkKey(currentSectionKey, currentModeId(), item.id);
-    var grade = AppStorage.get(gKey);
-    var done = AppStorage.has(iKey);
-    var cls = "chest";
-    if (i === currentIndex) cls += " current";
-    if (grade === "correct") { cls += " correct"; correctCount++; }
-    else if (grade === "retry") cls += " retry";
-    else if (done) cls += " done";
+      const getPos = (ev) => {
+        const r = canvasRef.current.getBoundingClientRect();
+        return {
+          x: ev.clientX - r.left,
+          y: ev.clientY - r.top,
+          nx: Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width)),
+          ny: Math.max(0, Math.min(1, (ev.clientY - r.top) / r.height))
+        };
+      };
 
-    var icon = "📦";
-    var badge = "";
-    if (grade === "correct") badge = "<span class='badge'>⭐</span>";
-    else if (grade === "retry") icon = "🌱";
+      const handlePointerDown = (ev) => {
+        if (scrollLock || isDrawing.current) return;
+        if (ev.pointerType !== 'pen' && ev.pointerType !== 'mouse' && ev.pointerType !== 'touch') return;
+        
+        ev.preventDefault();
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
 
-    html += "<div class='" + cls + "' onclick='jumpToCard(" + i + ")'>" + icon + badge + "</div>";
-  }
-  grid.innerHTML = html;
-  document.getElementById("mapProgress").innerText = correctCount + " / " + list.length + " ⭐";
-}
+        try { canvas.setPointerCapture(ev.pointerId); } catch(err){}
+        activePointerId.current = ev.pointerId;
+        isDrawing.current = true;
 
-/* ============================================================
-   REVIEW GARDEN
-   ============================================================ */
-function renderGarden() {
-  var allItems = [];
-  ["meanings","opposites","sentences","qa"].forEach(function(sec){
-    MASTER_LESSON_CONTENT[sec].forEach(function(item){
-      allItems.push({section: sec, item: item});
+        const isSideBtn = (ev.pointerType === 'pen' && (ev.buttons === 2 || ev.button === 5));
+        tempEraserRef.current = isSideBtn;
+        const usingEraser = isSideBtn || isEraser;
+
+        const p = getPos(ev);
+        let strokeW = usingEraser ? (isMini ? 18 : eraserSize) : (isMini ? 3.5 : penSize);
+        if (!usingEraser && ev.pointerType === 'pen' && ev.pressure > 0) {
+          strokeW = Math.max(1.5, strokeW * (0.6 + ev.pressure));
+        }
+
+        const pointObj = { nx: Number(p.nx.toFixed(4)), ny: Number(p.ny.toFixed(4)) };
+        currentPath.current = [pointObj];
+        lastRecordedPt.current = { x: p.x, y: p.y };
+
+        ctx.save();
+        ctx.globalCompositeOperation = usingEraser ? 'destination-out' : 'source-over';
+        ctx.fillStyle = usingEraser ? 'rgba(0,0,0,1)' : penColor;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, strokeW / 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      };
+
+      const handlePointerMove = (ev) => {
+        if (scrollLock || !isDrawing.current || ev.pointerId !== activePointerId.current) return;
+        if (ev.pointerType !== 'pen' && ev.pointerType !== 'mouse' && ev.pointerType !== 'touch') return;
+        
+        ev.preventDefault();
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        const p = getPos(ev);
+        // Distance decimation filter prevents quota overflow in Edge
+        if (lastRecordedPt.current) {
+          const dx = p.x - lastRecordedPt.current.x;
+          const dy = p.y - lastRecordedPt.current.y;
+          if (dx * dx + dy * dy < 4) return;
+        }
+
+        const isSideBtn = (ev.pointerType === 'pen' && (ev.buttons === 2 || ev.button === 5));
+        const usingEraser = isSideBtn || tempEraserRef.current || isEraser;
+
+        let strokeW = usingEraser ? (isMini ? 18 : eraserSize) : (isMini ? 3.5 : penSize);
+        if (!usingEraser && ev.pointerType === 'pen' && ev.pressure > 0) {
+          strokeW = Math.max(1.5, strokeW * (0.6 + ev.pressure));
+        }
+
+        const rect = canvas.getBoundingClientRect();
+        const pts = currentPath.current;
+        const lastP = pts[pts.length - 1];
+
+        ctx.save();
+        ctx.globalCompositeOperation = usingEraser ? 'destination-out' : 'source-over';
+        ctx.strokeStyle = usingEraser ? 'rgba(0,0,0,1)' : penColor;
+        ctx.lineWidth = strokeW;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        ctx.beginPath();
+        ctx.moveTo(lastP.nx * rect.width, lastP.ny * rect.height);
+        ctx.lineTo(p.x, p.y);
+        ctx.stroke();
+        ctx.restore();
+
+        currentPath.current.push({ nx: Number(p.nx.toFixed(4)), ny: Number(p.ny.toFixed(4)) });
+        lastRecordedPt.current = { x: p.x, y: p.y };
+      };
+
+      const handlePointerUp = (ev) => {
+        if (scrollLock || !isDrawing.current || ev.pointerId !== activePointerId.current) return;
+        const usingEraser = tempEraserRef.current || isEraser;
+        let strokeW = usingEraser ? (isMini ? 18 : eraserSize) : (isMini ? 3.5 : penSize);
+
+        if (currentPath.current.length > 0) {
+          strokeData.current.push({
+            points: [...currentPath.current],
+            color: penColor,
+            width: Number(strokeW.toFixed(1)),
+            eraser: usingEraser
+          });
+          saveStrokes();
+        }
+
+        isDrawing.current = false;
+        activePointerId.current = null;
+        tempEraserRef.current = false;
+        lastRecordedPt.current = null;
+        currentPath.current = [];
+      };
+
+      return e('div', {
+        className: `relative w-full h-full overflow-hidden flex flex-col min-h-0 ${isMini ? 'node-ruled-paper rounded-xl border border-emerald-300 shadow-inner' : 'soft-ruled-paper rounded-2xl border border-emerald-200 shadow-inner'}`
+      },
+        e('canvas', {
+          ref: canvasRef,
+          style: { touchAction: scrollLock ? 'auto' : 'none', pointerEvents: scrollLock ? 'none' : 'auto' },
+          className: 'evs-canvas',
+          onPointerDown: handlePointerDown,
+          onPointerMove: handlePointerMove,
+          onPointerUp: handlePointerUp,
+          onPointerCancel: handlePointerUp,
+          onPointerLeave: handlePointerUp,
+          onContextMenu: ev => ev.preventDefault()
+        })
+      );
     });
-  });
-  var seeds = allItems.filter(function(x){
-    return AppStorage.get(gradeKey(x.section, x.item.id)) === "retry";
-  });
-  var card = document.getElementById("gardenCard");
-  var seedsEl = document.getElementById("gardenSeeds");
-  var countEl = document.getElementById("gardenCount");
-  if (seeds.length === 0) { card.classList.remove("show"); return; }
-  card.classList.add("show");
-  countEl.innerText = seeds.length + " seed" + (seeds.length > 1 ? "s" : "");
-  var html = "";
-  seeds.forEach(function(s){
-    html += "<button class='seed-btn' onclick='jumpToSectionCard(\"" + s.section + "\", \"" + s.item.id + "\")'>🌱 " + s.item.word + "</button>";
-  });
-  seedsEl.innerHTML = html;
-}
 
-function jumpToSectionCard(section, itemId) {
-  stopSpeaking();
-  saveCurrentDrawing();
-  currentSectionKey = section;
-  var list = activeLessonContent[section];
-  for (var i = 0; i < list.length; i++) {
-    if (list[i].id === itemId) { currentIndex = i; break; }
-  }
-  updateSectionTabs();
-  renderCurrentCard();
-}
-
-/* ============================================================
-   GRADE / DONE
-   ============================================================ */
-function saveGrade(status) {
-  var key = currentGradeKey();
-  if (!key) return;
-  AppStorage.set(key, status);
-  refreshGradeBadge();
-  renderMap();
-  renderGarden();
-  if (status === "correct") celebrate();
-}
-
-function refreshGradeBadge() {
-  var key = currentGradeKey();
-  var saved = key ? AppStorage.get(key) : null;
-  var notice = document.getElementById("gradeNotice");
-  if (saved === "correct") { notice.innerText = "⭐ Correct!"; notice.style.color = "var(--green)"; }
-  else if (saved === "retry") { notice.innerText = "🌱 Try again later"; notice.style.color = "var(--orange)"; }
-  else { notice.innerText = ""; }
-}
-
-function markCardDone() {
-  var key = currentGradeKey();
-  if (key && !AppStorage.get(key)) AppStorage.set(key, "done");
-  saveCurrentDrawing();
-  celebrate();
-  renderMap();
-  var list = getCurrentList();
-  if (currentIndex < list.length - 1) setTimeout(function(){ navigateStep(1); }, 400);
-}
-
-/* ============================================================
-   CONFETTI
-   ============================================================ */
-function celebrate() {
-  var colors = ["#FFC93C","#4BCA7A","#4A9FE0","#FF8A5C","#B085F5"];
-  for (var i = 0; i < 14; i++) {
-    var p = document.createElement("div");
-    p.className = "confetti-piece";
-    p.style.background = colors[Math.floor(Math.random()*colors.length)];
-    p.style.left = (window.innerWidth/2 + (Math.random()-0.5)*200) + "px";
-    p.style.top = (window.innerHeight/2) + "px";
-    p.style.borderRadius = Math.random() > 0.5 ? "50%" : "2px";
-    p.style.animationDelay = (Math.random()*0.3) + "s";
-    document.body.appendChild(p);
-    setTimeout(function(el){ return function(){ el.remove(); }; }(p), 1400);
-  }
-}
-
-/* ============================================================
-   PIN MODAL
-   ============================================================ */
-function openPinModal() {
-  stopSpeaking();
-  document.getElementById("modalPin").classList.add("open");
-  var inp = document.getElementById("inputPin");
-  inp.value = ""; inp.focus();
-}
-function closePinModal() { document.getElementById("modalPin").classList.remove("open"); }
-
-function checkPin() {
-  var val = document.getElementById("inputPin").value;
-  if (val === getParentPin()) {
-    saveCurrentDrawing();
-    appMode = "parent";
-    applyOrderForMode(); // FIXED: Syncs exact card sequence with Write Mode
-    currentIndex = 0;
-    updateAppMode();
-    renderCurrentCard();
-    closePinModal();
-  } else {
-    alert("Incorrect PIN.");
-    document.getElementById("inputPin").value = "";
-  }
-}
-
-function changePin() {
-  var oldPin = prompt("Enter current PIN:");
-  if (oldPin === getParentPin()) {
-    var newPin = prompt("Enter new 4-digit PIN:");
-    if (newPin && newPin.length === 4 && !isNaN(newPin)) {
-      AppStorage.set(pinKey(), newPin);
-      alert("PIN updated successfully!");
-    } else alert("PIN must be 4 numbers.");
-  } else alert("Incorrect current PIN.");
-}
-
-/* ============================================================
-   SCREEN DIM
-   ============================================================ */
-const ScreenDim = {
-  storageKey: "app_screen_dim",
-  overlayId: "screenDimOverlay",
-  btnId: "screenDimToggleBtn",
-
-  toggle() {
-    const overlay = document.getElementById(this.overlayId);
-    const btn = document.getElementById(this.btnId);
-    if (!overlay) return;
-
-    const isDimmed = window.getComputedStyle(overlay).display === "block";
-
-    if (isDimmed) {
-      overlay.style.display = "none";
-      if (btn) btn.textContent = "💡 Dim Screen";
-      localStorage.setItem(this.storageKey, "off");
-    } else {
-      overlay.style.display = "block";
-      if (btn) btn.textContent = "☀️ Brighten";
-      localStorage.setItem(this.storageKey, "on");
+    function InlineScribbleBox({ storageKey, label, widthClass = "w-full", heightClass = "h-20" }) {
+      const boxCanvasRef = useRef(null);
+      return e('div', { className: `relative ${widthClass} ${heightClass} bg-white border-2 border-emerald-300 rounded-2xl shadow-xs flex flex-col p-1.5` },
+        e('div', { className: 'flex items-center justify-between px-1 shrink-0 select-none' },
+          e('span', { className: 'text-xs uppercase font-bold text-emerald-800' }, label),
+          e('button', {
+            title: 'Clear line',
+            onClick: (ev) => {
+              ev.stopPropagation();
+              if (boxCanvasRef.current) boxCanvasRef.current.clear();
+            },
+            className: 'w-5 h-5 rounded-full bg-emerald-50 hover:bg-rose-100 text-emerald-800 hover:text-rose-600 text-xs font-bold flex items-center justify-center border border-emerald-200'
+          }, '×')
+        ),
+        e('div', { className: 'flex-1 w-full min-h-0 overflow-hidden' },
+          e(StageCanvas, {
+            key: storageKey,
+            ref: boxCanvasRef,
+            storageKey: storageKey,
+            isMini: true
+          })
+        )
+      );
     }
-  },
 
-  init() {
-    const isSavedOn = localStorage.getItem(this.storageKey) === "on";
-    const overlay = document.getElementById(this.overlayId);
-    const btn = document.getElementById(this.btnId);
+    function CollapsibleSpellingDrawer({ isOpen, onToggle, onChar, onBackspace, onClear, targetLabel, disabled }) {
+      const [isShift, setIsShift] = useState(false);
+      const baseRows = [
+        ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+        ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+        ['z', 'x', 'c', 'v', 'b', 'n', 'm']
+      ];
 
-    if (overlay && isSavedOn) {
-      overlay.style.display = "block";
-      if (btn) btn.textContent = "☀️ Brighten";
+      return e('div', { className: 'shrink-0 border-t-2 border-emerald-300 bg-emerald-50/80 shadow-2xl transition-all duration-200' },
+        e('div', {
+          onClick: onToggle,
+          className: 'flex items-center justify-between px-4 py-2 bg-emerald-100 cursor-pointer hover:bg-emerald-200 transition select-none'
+        },
+          e('div', { className: 'flex items-center gap-2.5' },
+            e('span', { className: 'text-base sm:text-lg font-bold text-emerald-950' }, `⌨️ ${targetLabel || 'Large Typing Keypad'}`),
+            e('span', { className: 'text-xs text-emerald-700 font-semibold' }, isOpen ? '(Tap to close)' : '(Tap to open)')
+          ),
+          e('button', { className: 'px-3 py-1 bg-white border border-emerald-300 rounded-lg text-xs font-bold text-emerald-900 shadow-sm' },
+            isOpen ? '⌵ Close' : '⌃ Open'
+          )
+        ),
+        isOpen && e('div', { className: 'p-3 space-y-2 select-none bg-emerald-50 max-h-72 overflow-y-auto no-scrollbar' },
+          e('div', { className: 'flex flex-col items-center gap-1.5 w-full max-w-2xl mx-auto' },
+            baseRows.map((row, rIdx) =>
+              e('div', { key: rIdx, className: 'flex gap-1.5 justify-center w-full flex-wrap' },
+                row.map(char => {
+                  const displayChar = isShift ? char.toUpperCase() : char;
+                  return e('button', {
+                    key: char,
+                    disabled: disabled,
+                    onClick: () => {
+                      Speech.read(displayChar);
+                      onChar(displayChar);
+                    },
+                    className: 'spelling-key text-emerald-950 hover:bg-emerald-100'
+                  }, displayChar);
+                })
+              )
+            )
+          ),
+          e('div', { className: 'flex justify-center items-center gap-2 pt-2 border-t border-emerald-200 flex-wrap max-w-2xl mx-auto' },
+            e('button', {
+              disabled: disabled,
+              onClick: () => { SoundFX.playTap(); setIsShift(!isShift); },
+              className: `px-4 py-2 rounded-xl text-sm font-bold border transition ${isShift ? 'bg-emerald-800 text-white border-emerald-900 shadow-sm' : 'bg-white text-emerald-900 border-emerald-300 shadow-sm'}`
+            }, isShift ? '⇧ ABC' : '⇧ abc'),
+            e('button', {
+              disabled: disabled,
+              onClick: () => { SoundFX.playSpaceTone(); onChar(' '); },
+              className: 'px-8 py-2 bg-white border border-emerald-300 text-emerald-950 rounded-xl text-sm font-bold hover:bg-emerald-100 shadow-sm active:scale-95'
+            }, '␣ Space'),
+            e('button', {
+              disabled: disabled,
+              onClick: () => { SoundFX.playBackspaceTone(); onBackspace(); },
+              className: 'px-5 py-2 bg-amber-100 border border-amber-300 text-amber-950 rounded-xl text-sm font-bold shadow-sm active:scale-95'
+            }, '⌫ Delete'),
+            e('button', {
+              disabled: disabled,
+              onClick: () => { SoundFX.playClearTone(); onClear(); },
+              className: 'px-5 py-2 bg-rose-100 border border-rose-300 text-rose-900 rounded-xl text-sm font-bold shadow-sm active:scale-95'
+            }, 'Clear')
+          )
+        )
+      );
     }
-  }
-};
 
-function toggleScreenDim() {
-  ScreenDim.toggle();
-}
+    function PencilCaseBar({ onClear }) {
+      const [penColor, setPenColor] = useState('#047857');
+      const [isEraser, setIsEraser] = useState(false);
+      const [penSize, setPenSize] = useState(4);
 
-/* ============================================================
-   SECRET PARENT GESTURE
-   ============================================================ */
-var titlePressTimer;
-var headerTitle = document.getElementById("headerTitle");
-headerTitle.addEventListener("pointerdown", function() {
-  titlePressTimer = setTimeout(function() { openPinModal(); }, 3000);
-});
-headerTitle.addEventListener("pointerup", function() { clearTimeout(titlePressTimer); });
-headerTitle.addEventListener("pointercancel", function() { clearTimeout(titlePressTimer); });
-headerTitle.addEventListener("pointerleave", function() { clearTimeout(titlePressTimer); });
+      useEffect(() => {
+        return StylusStore.subscribe(s => {
+          setPenColor(s.color);
+          setIsEraser(s.eraser);
+          setPenSize(s.penSize);
+        });
+      }, []);
 
-/* ============================================================
-   LIFECYCLE FLUSH
-   ============================================================ */
-window.addEventListener("beforeunload", function() {
-  stopSpeaking();
-  saveCurrentDrawing();
-});
-window.addEventListener("pagehide", function() {
-  stopSpeaking();
-  saveCurrentDrawing();
-});
-document.addEventListener("visibilitychange", function() {
-  if (document.hidden) {
-    stopSpeaking();
-    saveCurrentDrawing();
-  }
-});
+      return e('div', { className: 'bg-emerald-50 border border-emerald-200 rounded-2xl px-3.5 py-1.5 flex items-center justify-between gap-3 shadow-xs shrink-0 flex-wrap' },
+        e('div', { className: 'flex items-center gap-2.5 flex-wrap' },
+          e('span', { className: 'text-xs font-bold uppercase tracking-wider text-emerald-900' }, 'Pencil:'),
+          [
+            { c: '#047857', label: 'Forest Green' },
+            { c: '#0284c7', label: 'River Blue' },
+            { c: '#b45309', label: 'Earth Amber' },
+            { c: '#334155', label: 'Graphite' }
+          ].map(item =>
+            e('button', {
+              key: item.c,
+              onClick: () => { SoundFX.playTap(); StylusStore.set({ color: item.c, eraser: false }); },
+              className: `w-7 h-7 rounded-full border-2 transition ${!isEraser && penColor === item.c ? 'scale-125 border-emerald-900 ring-2 ring-white shadow-sm' : 'border-white opacity-85'}`,
+              style: { backgroundColor: item.c },
+              title: item.label
+            })
+          ),
+          e('div', { className: 'h-4 w-px bg-emerald-300 mx-1' }),
+          e('div', { className: 'flex items-center gap-1 bg-white px-1.5 py-0.5 rounded-lg border border-emerald-200' },
+            [
+              { size: 2, label: 'Fine' },
+              { size: 4, label: 'Med' },
+              { size: 8, label: 'Thick' }
+            ].map(s =>
+              e('button', {
+                key: s.size,
+                onClick: () => { SoundFX.playTap(); StylusStore.set({ penSize: s.size, eraser: false }); },
+                className: `px-2 py-0.5 rounded text-xs font-bold transition ${!isEraser && penSize === s.size ? 'bg-emerald-800 text-white' : 'text-emerald-900 hover:bg-emerald-100'}`
+              }, s.label)
+            )
+          ),
+          e('button', {
+            onClick: () => { SoundFX.playTap(); StylusStore.set({ eraser: true }); },
+            className: `px-3 py-1 rounded-xl text-xs font-bold border transition ${isEraser ? 'bg-rose-600 text-white border-rose-700 shadow-sm' : 'bg-white text-emerald-950 border-emerald-300 hover:bg-emerald-100'}`
+          }, '🧽 Eraser')
+        ),
+        e('button', {
+          onClick: () => { SoundFX.playTap(); onClear(); },
+          className: 'px-3 py-1 bg-white hover:bg-rose-50 text-rose-700 rounded-xl text-xs font-bold border border-rose-200 transition shadow-xs'
+        }, 'Clear Pad 🗑️')
+      );
+    }
 
-/* ============================================================
-   INIT
-   ============================================================ */
-window.onload = function() {
-  setupCanvasListeners();
-  applyOrderForMode();
-  updateAppMode();
-  updateSectionTabs();
-  updateInputModeBtn();
-  updateFullscreenBtn();
-  ScreenDim.init();
-  setTimeout(function(){
-    fitCanvasToContainer();
-    renderCurrentCard();
-  }, 120);
-};
+    function ConceptMapStage({ onComplete }) {
+      const [cmapMode, setCmapMode] = useState('learn');
+      const [isLocked, setIsLocked] = useState(false);
+      const [activeBox, setActiveBox] = useState('row1_2');
+      const [learnEvaluated, setLearnEvaluated] = useState(false);
 
-window.addEventListener("resize", function() {
-  if (!getCurrentItem()) return;
-  saveCurrentDrawing();
-  fitCanvasToContainer();
-  restoreInkForCurrentCard();
-});
+      const [learnAnswers, setLearnAnswers] = useState(() => {
+        try {
+          const saved = AppStorage.getItem('evs_cmap_learn_state_v10');
+          return saved ? JSON.parse(saved) : { row1_2: '', row1_3: '', row1_4: '', row2_2: '', row2_3: '', row2_4: '' };
+        } catch(err) {
+          return { row1_2: '', row1_3: '', row1_4: '', row2_2: '', row2_3: '', row2_4: '' };
+        }
+      });
 
-window.addEventListener("orientationchange", function() {
-  setTimeout(function() {
-    if (!getCurrentItem()) return;
-    saveCurrentDrawing();
-    fitCanvasToContainer();
-    restoreInkForCurrentCard();
-  }, 350);
-});
-</script>
+      useEffect(() => {
+        try { AppStorage.setItem('evs_cmap_learn_state_v10', JSON.stringify(learnAnswers)); } catch(err){}
+      }, [learnAnswers]);
+
+      const checkMatch = (val, expected) => String(val || '').trim().toLowerCase() === expected.toLowerCase();
+
+      const handleCheckLearn = () => {
+        SoundFX.playTap();
+        setLearnEvaluated(true);
+        let correct = 0;
+        if (checkMatch(learnAnswers.row1_2, 'tissue')) correct++;
+        if (checkMatch(learnAnswers.row1_3, 'organ')) correct++;
+        if (checkMatch(learnAnswers.row1_4, 'organ system')) correct++;
+        if (checkMatch(learnAnswers.row2_2, 'food pipe')) correct++;
+        if (checkMatch(learnAnswers.row2_3, 'stomach')) correct++;
+        if (checkMatch(learnAnswers.row2_4, 'small intestine')) correct++;
+
+        if (correct >= 4) {
+          SoundFX.playSuccess();
+          if (window.confetti) window.confetti({ particleCount: 70, spread: 65 });
+          Speech.read('Splendid job Humayun! You memorized the sequence.');
+        }
+      };
+
+      const clearAllInlineNodes = () => {
+        ['row1_2', 'row1_3', 'row1_4', 'row2_2', 'row2_3', 'row2_4'].forEach(k => {
+          try { AppStorage.removeItem(`evs_ink_v10_inline_node_${k}`); } catch(err){}
+        });
+        window.location.hash = Math.random();
+        if (window.__showSaveToast) window.__showSaveToast('All boxes cleared', '🗑️');
+      };
+
+      const quickTokens = ['tissue', 'organ', 'organ system', 'food pipe', 'stomach', 'small intestine'];
+
+      return e('div', { className: 'flex-1 flex flex-col min-h-0 gap-3' },
+        e('div', { className: 'flex items-center justify-between gap-3 shrink-0 flex-wrap' },
+          e('div', { className: 'flex items-center bg-emerald-100 p-1 rounded-xl border border-emerald-200' },
+            e('button', {
+              disabled: isLocked,
+              onClick: () => { SoundFX.playTap(); setCmapMode('learn'); },
+              className: `px-4 py-1.5 rounded-lg text-sm font-bold transition ${cmapMode === 'learn' ? 'bg-white text-emerald-950 shadow-sm' : isLocked ? 'text-slate-400 cursor-not-allowed opacity-60' : 'text-emerald-800'}`
+            }, isLocked ? '🔒 Part A: Learn (Locked)' : '📖 Part A: Learn & Memorize'),
+            e('button', {
+              onClick: () => { SoundFX.playTap(); setCmapMode('practice'); setIsLocked(true); },
+              className: `px-4 py-1.5 rounded-lg text-sm font-bold transition ${cmapMode === 'practice' ? 'bg-white text-emerald-950 shadow-sm' : 'text-emerald-800'}`
+            }, '✍️ Part B: Handwritten Flowchart')
+          ),
+          cmapMode === 'practice' && e(PencilCaseBar, { onClear: clearAllInlineNodes })
+        ),
+        cmapMode === 'learn' && e('div', { className: 'flex-1 flex flex-col min-h-0 justify-between' },
+          e('div', { className: 'overflow-y-auto no-scrollbar space-y-4 pb-3' },
+            e('div', { className: 'bg-emerald-50 border border-emerald-200 rounded-2xl p-3 flex items-center justify-between' },
+              e('p', { className: 'text-base font-bold text-emerald-950' }, 'Tap a dashed box, then tap a word chip below to place and memorize it:')
+            ),
+            !learnEvaluated && e('div', { className: 'bg-white border border-emerald-200 rounded-2xl p-3 flex items-center gap-2 flex-wrap shadow-sm' },
+              e('span', { className: 'text-xs font-bold text-emerald-800 uppercase tracking-wider' }, 'Tap to Place:'),
+              quickTokens.map(tok =>
+                e('button', {
+                  key: tok,
+                  onClick: () => { SoundFX.playTap(); if (activeBox) setLearnAnswers(prev => ({ ...prev, [activeBox]: tok })); },
+                  className: 'px-3.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-950 border border-emerald-300 rounded-xl text-sm font-bold transition shadow-xs active:scale-95'
+                }, `+ ${tok}`)
+              )
+            ),
+            e('div', { className: 'bg-white p-4 rounded-2xl border border-emerald-200 shadow-sm space-y-3' },
+              e('div', { className: 'flex items-center gap-2.5 flex-wrap' },
+                e('span', { className: 'text-lg font-bold text-emerald-800 w-6' }, '1.'),
+                e('div', { className: 'node' }, 'cell'),
+                e('span', { className: 'flow-arrow' }, '➔'),
+                e('div', {
+                  onClick: () => { SoundFX.playTap(); if (!learnEvaluated) setActiveBox('row1_2'); },
+                  className: `node-input-box ${activeBox === 'row1_2' ? 'active' : ''} ${learnEvaluated ? (checkMatch(learnAnswers.row1_2, 'tissue') ? 'correct' : 'wrong') : ''}`
+                }, learnAnswers.row1_2 || '____'),
+                e('span', { className: 'flow-arrow' }, '➔'),
+                e('div', {
+                  onClick: () => { SoundFX.playTap(); if (!learnEvaluated) setActiveBox('row1_3'); },
+                  className: `node-input-box ${activeBox === 'row1_3' ? 'active' : ''} ${learnEvaluated ? (checkMatch(learnAnswers.row1_3, 'organ') ? 'correct' : 'wrong') : ''}`
+                }, learnAnswers.row1_3 || '____'),
+                e('span', { className: 'flow-arrow' }, '➔'),
+                e('div', {
+                  onClick: () => { SoundFX.playTap(); if (!learnEvaluated) setActiveBox('row1_4'); },
+                  className: `node-input-box ${activeBox === 'row1_4' ? 'active' : ''} ${learnEvaluated ? (checkMatch(learnAnswers.row1_4, 'organ system') ? 'correct' : 'wrong') : ''}`
+                }, learnAnswers.row1_4 || '____'),
+                e('span', { className: 'flow-arrow' }, '➔'),
+                e('div', { className: 'node' }, 'organism')
+              )
+            ),
+            e('div', { className: 'bg-white p-4 rounded-2xl border border-emerald-200 shadow-sm space-y-3' },
+              e('div', { className: 'flex items-center gap-2.5 flex-wrap' },
+                e('span', { className: 'text-lg font-bold text-emerald-800 w-6' }, '2.'),
+                e('div', { className: 'node' }, 'mouth'),
+                e('span', { className: 'flow-arrow' }, '➔'),
+                e('div', {
+                  onClick: () => { SoundFX.playTap(); if (!learnEvaluated) setActiveBox('row2_2'); },
+                  className: `node-input-box ${activeBox === 'row2_2' ? 'active' : ''} ${learnEvaluated ? (checkMatch(learnAnswers.row2_2, 'food pipe') ? 'correct' : 'wrong') : ''}`
+                }, learnAnswers.row2_2 || '____'),
+                e('span', { className: 'flow-arrow' }, '➔'),
+                e('div', {
+                  onClick: () => { SoundFX.playTap(); if (!learnEvaluated) setActiveBox('row2_3'); },
+                  className: `node-input-box ${activeBox === 'row2_3' ? 'active' : ''} ${learnEvaluated ? (checkMatch(learnAnswers.row2_3, 'stomach') ? 'correct' : 'wrong') : ''}`
+                }, learnAnswers.row2_3 || '____'),
+                e('span', { className: 'flow-arrow' }, '➔'),
+                e('div', {
+                  onClick: () => { SoundFX.playTap(); if (!learnEvaluated) setActiveBox('row2_4'); },
+                  className: `node-input-box ${activeBox === 'row2_4' ? 'active' : ''} ${learnEvaluated ? (checkMatch(learnAnswers.row2_4, 'small intestine') ? 'correct' : 'wrong') : ''}`
+                }, learnAnswers.row2_4 || '____'),
+                e('span', { className: 'flow-arrow' }, '➔'),
+                e('div', { className: 'node' }, 'large intestine')
+              )
+            )
+          ),
+          e('div', { className: 'flex justify-between items-center gap-3 pt-3 border-t border-emerald-200' },
+            learnEvaluated ? e('button', {
+              onClick: () => {
+                SoundFX.playTap();
+                setLearnAnswers({ row1_2: '', row1_3: '', row1_4: '', row2_2: '', row2_3: '', row2_4: '' });
+                setLearnEvaluated(false);
+              },
+              className: 'px-5 py-2.5 bg-emerald-100 hover:bg-emerald-200 text-emerald-950 font-bold rounded-xl text-sm'
+            }, 'Retry Placement ↺') : e('button', {
+              onClick: handleCheckLearn,
+              className: 'px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-sm shadow-md'
+            }, 'Check Sequence ✨'),
+            e('button', {
+              onClick: () => {
+                SoundFX.playTap();
+                setCmapMode('practice');
+                setIsLocked(true);
+                window.__showSaveToast('Learning locked! Write from memory.', '🔒');
+              },
+              className: 'px-6 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-sm shadow-md flex items-center gap-2'
+            }, e('span', null, '🔒 Lock & Practice Handwriting'), e('span', null, '➔'))
+          )
+        ),
+        cmapMode === 'practice' && e('div', { className: 'flex-1 flex flex-col min-h-0 justify-between' },
+          e('div', { className: 'overflow-y-auto no-scrollbar space-y-4 pb-3' },
+            e('div', { className: 'bg-emerald-50 border border-emerald-200 rounded-2xl p-3 flex items-center justify-between' },
+              e('p', { className: 'text-base font-bold text-emerald-950' }, 'Write each missing word directly inside the flowchart canvas box with your stylus:')
+            ),
+            e('div', { className: 'bg-white p-4 rounded-2xl border border-emerald-200 shadow-sm space-y-3' },
+              e('div', { className: 'flex items-center gap-2.5 flex-wrap' },
+                e('span', { className: 'text-lg font-bold text-emerald-800 w-5' }, '1.'),
+                e('div', { className: 'node' }, 'cell'),
+                e('span', { className: 'flow-arrow' }, '➔'),
+                e(InlineScribbleBox, { key: 'inline_node_row1_2', storageKey: 'inline_node_row1_2', label: 'Write #1', widthClass: 'w-36 sm:w-44', heightClass: 'h-20' }),
+                e('span', { className: 'flow-arrow' }, '➔'),
+                e(InlineScribbleBox, { key: 'inline_node_row1_3', storageKey: 'inline_node_row1_3', label: 'Write #2', widthClass: 'w-36 sm:w-44', heightClass: 'h-20' }),
+                e('span', { className: 'flow-arrow' }, '➔'),
+                e(InlineScribbleBox, { key: 'inline_node_row1_4', storageKey: 'inline_node_row1_4', label: 'Write #3 (organ system)', widthClass: 'w-52 sm:w-60', heightClass: 'h-20' }),
+                e('span', { className: 'flow-arrow' }, '➔'),
+                e('div', { className: 'node' }, 'organism')
+              )
+            ),
+            e('div', { className: 'bg-white p-4 rounded-2xl border border-emerald-200 shadow-sm space-y-3' },
+              e('div', { className: 'flex items-center gap-2.5 flex-wrap' },
+                e('span', { className: 'text-lg font-bold text-emerald-800 w-5' }, '2.'),
+                e('div', { className: 'node' }, 'mouth'),
+                e('span', { className: 'flow-arrow' }, '➔'),
+                e(InlineScribbleBox, { key: 'inline_node_row2_2', storageKey: 'inline_node_row2_2', label: 'Write #1', widthClass: 'w-36 sm:w-44', heightClass: 'h-20' }),
+                e('span', { className: 'flow-arrow' }, '➔'),
+                e(InlineScribbleBox, { key: 'inline_node_row2_3', storageKey: 'inline_node_row2_3', label: 'Write #2', widthClass: 'w-36 sm:w-44', heightClass: 'h-20' }),
+                e('span', { className: 'flow-arrow' }, '➔'),
+                e(InlineScribbleBox, { key: 'inline_node_row2_4', storageKey: 'inline_node_row2_4', label: 'Write #3 (small intestine)', widthClass: 'w-52 sm:w-60', heightClass: 'h-20' }),
+                e('span', { className: 'flow-arrow' }, '➔'),
+                e('div', { className: 'node' }, 'large intestine')
+              )
+            )
+          ),
+          e('div', { className: 'bg-emerald-50 border border-emerald-200 rounded-xl p-3 flex items-center justify-between gap-3 shrink-0 flex-wrap' },
+            e('div', { className: 'flex items-center gap-2 flex-wrap' },
+              e('span', { className: 'text-xs font-bold uppercase tracking-wider text-emerald-900' }, 'Parent Grade:'),
+              [
+                { stars: 1, label: '⭐ Good', pct: 60 },
+                { stars: 2, label: '⭐⭐ Very Good', pct: 85 },
+                { stars: 3, label: '⭐⭐⭐ Excellent', pct: 100 }
+              ].map(g =>
+                e('button', {
+                  key: g.stars,
+                  onClick: () => {
+                    SoundFX.playSuccess();
+                    onComplete(g.pct);
+                    if (window.confetti) window.confetti({ particleCount: 75, spread: 70 });
+                    Speech.read(`Fantastic Humayun! Parent awarded ${g.stars} stars.`);
+                  },
+                  className: 'px-3.5 py-1.5 bg-white hover:bg-emerald-100 text-emerald-950 border border-emerald-300 rounded-lg text-xs sm:text-sm font-bold transition shadow-xs active:scale-95'
+                }, g.label)
+              )
+            ),
+            e('button', {
+              onClick: () => { SoundFX.playTap(); setIsLocked(false); setCmapMode('learn'); },
+              className: 'px-3.5 py-1.5 bg-white border border-emerald-300 rounded-lg text-xs font-bold text-emerald-900 hover:bg-emerald-100'
+            }, 'Unlock Learn 🔓')
+          )
+        )
+      );
+    }
+
+    function App() {
+      const [isMuted, setIsMuted] = useState(IS_AUDIO_MUTED);
+      const [scrollLock, setScrollLock] = useState(false);
+      const [eyeComfort, setEyeComfort] = useState(false);
+      const [bookOpened, setBookOpened] = useState(false);
+      const [currentStageId, setCurrentStageId] = useState(null);
+      const [activeMode, setActiveMode] = useState('learn');
+      const [isPracticeLocked, setIsPracticeLocked] = useState(false);
+      const [questionIndex, setQuestionIndex] = useState(0);
+
+      const [sectionScores, setSectionScores] = useState(() => {
+        try {
+          const saved = AppStorage.getItem('evs_adventure_scores_v10');
+          return saved ? JSON.parse(saved) : {};
+        } catch(err){ return {}; }
+      });
+
+      const [allStoredAnswers, setAllStoredAnswers] = useState(() => {
+        try {
+          const saved = AppStorage.getItem('evs_answers_state_v10');
+          return saved ? JSON.parse(saved) : {};
+        } catch(err){ return {}; }
+      });
+
+      const [shuffledFill, setShuffledFill] = useState(() => {
+        try {
+          const saved = AppStorage.getItem('evs_order_fill_v10');
+          return saved ? JSON.parse(saved) : (ADVENTURE_SECTIONS.find(s => s.id === 'sec_1')?.questions || []);
+        } catch(err){ return ADVENTURE_SECTIONS.find(s => s.id === 'sec_1')?.questions || []; }
+      });
+
+      const [shuffledMCQs, setShuffledMCQs] = useState(() => {
+        try {
+          const saved = AppStorage.getItem('evs_order_mcq_v10');
+          if (saved) return JSON.parse(saved);
+        } catch(err){}
+        const base = ADVENTURE_SECTIONS.find(s => s.id === 'sec_2')?.questions || [];
+        return base.map(q => ({ ...q, correctIndex: q.options.indexOf(q.answerText) }));
+      });
+
+      const [shuffledTF, setShuffledTF] = useState(() => {
+        try {
+          const saved = AppStorage.getItem('evs_order_tf_v10');
+          return saved ? JSON.parse(saved) : (ADVENTURE_SECTIONS.find(s => s.id === 'sec_3')?.questions || []);
+        } catch(err){ return ADVENTURE_SECTIONS.find(s => s.id === 'sec_3')?.questions || []; }
+      });
+
+      const [shuffledNameFollowing, setShuffledNameFollowing] = useState(() => {
+        try {
+          const saved = AppStorage.getItem('evs_order_nf_v10');
+          return saved ? JSON.parse(saved) : (ADVENTURE_SECTIONS.find(s => s.id === 'sec_5')?.questions || []);
+        } catch(err) {
+          return ADVENTURE_SECTIONS.find(s => s.id === 'sec_5')?.questions || [];
+        }
+      });
+
+      const [shuffledOdd, setShuffledOdd] = useState(() => {
+        try {
+          const saved = AppStorage.getItem('evs_order_odd_v10');
+          return saved ? JSON.parse(saved) : (ADVENTURE_SECTIONS.find(s => s.id === 'sec_6')?.questions || []);
+        } catch(err) {
+          return ADVENTURE_SECTIONS.find(s => s.id === 'sec_6')?.questions || [];
+        }
+      });
+
+      const [shuffledTwoExamples, setShuffledTwoExamples] = useState(() => {
+        try {
+          const saved = AppStorage.getItem('evs_order_twoex_v10');
+          return saved ? JSON.parse(saved) : (ADVENTURE_SECTIONS.find(s => s.id === 'sec_7')?.questions || []);
+        } catch(err) {
+          return ADVENTURE_SECTIONS.find(s => s.id === 'sec_7')?.questions || [];
+        }
+      });
+
+      const [activeBlankIndex, setActiveBlankIndex] = useState(0);
+      const [objectiveGraded, setObjectiveGraded] = useState(false);
+      const [drawerOpen, setDrawerOpen] = useState(false);
+      const [isFullscreen, setIsFullscreen] = useState(false);
+
+      const activePadRef = useRef(null);
+      const carouselRef = useRef(null);
+
+      useEffect(() => {
+        const handleFsChange = () => {
+          setIsFullscreen(!!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement));
+        };
+        document.addEventListener('fullscreenchange', handleFsChange);
+        return () => document.removeEventListener('fullscreenchange', handleFsChange);
+      }, []);
+
+      const toggleFullscreen = () => {
+        SoundFX.playTap();
+        const docEl = document.documentElement;
+        if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement) {
+          if (docEl.requestFullscreen) docEl.requestFullscreen().catch(() => {});
+          else if (docEl.webkitRequestFullscreen) docEl.webkitRequestFullscreen();
+        } else {
+          if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+          else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+        }
+      };
+
+      const toggleScrollLock = () => {
+        const next = !scrollLock;
+        setScrollLock(next);
+        StylusStore.set({ scrollLock: next });
+        SoundFX.playTap();
+        window.__showSaveToast(next ? 'Scroll Lock: ON' : 'Scroll Lock: OFF', next ? '🔒' : '✏️');
+      };
+
+      const toggleEyeComfort = () => {
+        const next = !eyeComfort;
+        setEyeComfort(next);
+        SoundFX.playTap();
+        if (next) {
+          document.body.classList.add('dark-mode');
+          window.__showSaveToast('Eye Comfort ON 🌙', '🛡️');
+        } else {
+          document.body.classList.remove('dark-mode');
+          window.__showSaveToast('Eye Comfort OFF ☀️', '💡');
+        }
+      };
+
+      useEffect(() => {
+        try { AppStorage.setItem('evs_adventure_scores_v10', JSON.stringify(sectionScores)); } catch(err){}
+      }, [sectionScores]);
+
+      useEffect(() => {
+        try { AppStorage.setItem('evs_answers_state_v10', JSON.stringify(allStoredAnswers)); } catch(err){}
+      }, [allStoredAnswers]);
+
+      const toggleMute = () => {
+        const next = !isMuted;
+        setIsMuted(next);
+        IS_AUDIO_MUTED = next;
+        try { AppStorage.setItem('evs_audio_muted', String(next)); } catch(err){}
+        if (next && 'speechSynthesis' in window) speechSynthesis.cancel();
+      };
+
+      const activeStage = useMemo(() => {
+        return ADVENTURE_SECTIONS.find(l => l.id === currentStageId) || null;
+      }, [currentStageId]);
+
+      const initShuffledFill = useCallback(() => {
+        const base = ADVENTURE_SECTIONS.find(s => s.id === 'sec_1')?.questions || [];
+        const nextList = [...base].sort(() => Math.random() - 0.5);
+        setShuffledFill(nextList);
+        try { AppStorage.setItem('evs_order_fill_v10', JSON.stringify(nextList)); } catch(err){}
+      }, []);
+
+      const initShuffledMCQ = useCallback(() => {
+        const base = ADVENTURE_SECTIONS.find(s => s.id === 'sec_2')?.questions || [];
+        const shuffledList = [...base].sort(() => Math.random() - 0.5).map(q => {
+          const shuffledOptions = [...q.options].sort(() => Math.random() - 0.5);
+          return {
+            ...q,
+            options: shuffledOptions,
+            correctIndex: shuffledOptions.indexOf(q.answerText)
+          };
+        });
+        setShuffledMCQs(shuffledList);
+        try { AppStorage.setItem('evs_order_mcq_v10', JSON.stringify(shuffledList)); } catch(err){}
+      }, []);
+
+      const initShuffledTF = useCallback(() => {
+        const base = ADVENTURE_SECTIONS.find(s => s.id === 'sec_3')?.questions || [];
+        const nextList = [...base].sort(() => Math.random() - 0.5);
+        setShuffledTF(nextList);
+        try { AppStorage.setItem('evs_order_tf_v10', JSON.stringify(nextList)); } catch(err){}
+      }, []);
+
+      const initShuffledNameFollowing = useCallback(() => {
+        const base = ADVENTURE_SECTIONS.find(s => s.id === 'sec_5')?.questions || [];
+        const nextList = [...base].sort(() => Math.random() - 0.5);
+        setShuffledNameFollowing(nextList);
+        try { AppStorage.setItem('evs_order_nf_v10', JSON.stringify(nextList)); } catch(err){}
+      }, []);
+
+      const initShuffledOdd = useCallback(() => {
+        const base = ADVENTURE_SECTIONS.find(s => s.id === 'sec_6')?.questions || [];
+        const nextList = [...base].sort(() => Math.random() - 0.5);
+        setShuffledOdd(nextList);
+        try { AppStorage.setItem('evs_order_odd_v10', JSON.stringify(nextList)); } catch(err){}
+      }, []);
+
+      const initShuffledTwoExamples = useCallback(() => {
+        const base = ADVENTURE_SECTIONS.find(s => s.id === 'sec_7')?.questions || [];
+        const nextList = [...base].sort(() => Math.random() - 0.5);
+        setShuffledTwoExamples(nextList);
+        try { AppStorage.setItem('evs_order_twoex_v10', JSON.stringify(nextList)); } catch(err){}
+      }, []);
+
+      const openStage = (sec) => {
+        SoundFX.playTap();
+        setCurrentStageId(sec.id);
+        setQuestionIndex(0);
+        setActiveMode('learn');
+        setIsPracticeLocked(false);
+        setObjectiveGraded(false);
+        setActiveBlankIndex(0);
+        setDrawerOpen(false);
+
+        if (sec.type === 'match' && !allStoredAnswers['sec_4_match']) {
+          const lefts = sec.pairs.map(p => ({ id: p.id, text: p.left })).sort(() => Math.random() - 0.5);
+          const rights = sec.pairs.map(p => ({ id: p.id, text: p.right })).sort(() => Math.random() - 0.5);
+          setAllStoredAnswers(prev => ({
+            ...prev,
+            sec_4_match: { lefts, rights, selectedLeft: null, links: {} }
+          }));
+        }
+      };
+
+      const recordSectionCompletion = (secId, pct) => {
+        setSectionScores(prev => {
+          const updated = {
+            ...prev,
+            [secId]: { completed: true, pct: Math.max(pct, prev[secId]?.pct || 0) }
+          };
+          try { AppStorage.setItem('evs_adventure_scores_v10', JSON.stringify(updated)); } catch(err){}
+          return updated;
+        });
+        window.__showSaveToast(`Completed! (${pct}%)`, '⭐');
+        setTimeout(() => { setCurrentStageId(null); }, 1400);
+      };
+
+      const goToNextSection = () => {
+        SoundFX.playTap();
+        const currentIndex = ADVENTURE_SECTIONS.findIndex(s => s.id === currentStageId);
+        if (currentIndex !== -1 && currentIndex < ADVENTURE_SECTIONS.length - 1) {
+          openStage(ADVENTURE_SECTIONS[currentIndex + 1]);
+        } else {
+          setCurrentStageId(null);
+        }
+      };
+
+      const goToPrevSection = () => {
+        SoundFX.playTap();
+        const currentIndex = ADVENTURE_SECTIONS.findIndex(s => s.id === currentStageId);
+        if (currentIndex > 0) {
+          openStage(ADVENTURE_SECTIONS[currentIndex - 1]);
+        }
+      };
+
+      const gradeObjective = () => {
+        SoundFX.playTap();
+        if (!activeStage) return;
+        let correct = 0;
+
+        if (activeStage.type === 'fill') {
+          const total = shuffledFill.length;
+          shuffledFill.forEach((q, idx) => {
+            const val = String(allStoredAnswers['fill_' + idx] || '').trim().toLowerCase();
+            if (val && q.answers.some(a => a.toLowerCase() === val)) correct++;
+          });
+          const pct = Math.round((correct / total) * 100);
+          setObjectiveGraded(true);
+          setDrawerOpen(false);
+          if (pct >= 60) {
+            SoundFX.playSuccess();
+            if (window.confetti) window.confetti({ particleCount: 75, spread: 70 });
+            Speech.read(`Awesome work champ! You scored ${correct} out of ${total}!`);
+          }
+          recordSectionCompletion(activeStage.id, pct);
+        } else if (activeStage.type === 'mcq') {
+          const total = shuffledMCQs.length;
+          shuffledMCQs.forEach((q, idx) => {
+            if (allStoredAnswers['mcq_shuffled_' + idx] === q.correctIndex) correct++;
+          });
+          const pct = Math.round((correct / total) * 100);
+          setObjectiveGraded(true);
+          if (pct >= 60) {
+            SoundFX.playSuccess();
+            if (window.confetti) window.confetti({ particleCount: 75, spread: 70 });
+            Speech.read(`Quiz complete! You scored ${correct} out of ${total}.`);
+          }
+          recordSectionCompletion(activeStage.id, pct);
+        } else if (activeStage.type === 'tf') {
+          const total = shuffledTF.length;
+          shuffledTF.forEach((q) => {
+            if (allStoredAnswers['tf_' + q.id] === q.answer) correct++;
+          });
+          const pct = Math.round((correct / total) * 100);
+          setObjectiveGraded(true);
+          if (pct >= 60) {
+            SoundFX.playSuccess();
+            if (window.confetti) window.confetti({ particleCount: 75, spread: 70 });
+            Speech.read(`Great job Humayun! You scored ${correct} out of ${total}.`);
+          }
+          recordSectionCompletion(activeStage.id, pct);
+        } else if (activeStage.type === 'match') {
+          const mState = allStoredAnswers['sec_4_match'] || { links: {} };
+          activeStage.pairs.forEach(p => {
+            if (mState.links[p.id] === p.id) correct++;
+          });
+          const pct = Math.round((correct / activeStage.pairs.length) * 100);
+          setObjectiveGraded(true);
+          if (pct >= 60) {
+            SoundFX.playSuccess();
+            if (window.confetti) window.confetti({ particleCount: 75, spread: 70 });
+            Speech.read(`Great matching champion!`);
+          }
+          recordSectionCompletion(activeStage.id, pct);
+        } else if (activeStage.type === 'odd_one_out') {
+          shuffledOdd.forEach((q) => {
+            if (allStoredAnswers['odd_' + q.id] === q.odd) correct++;
+          });
+          const pct = Math.round((correct / shuffledOdd.length) * 100);
+          setObjectiveGraded(true);
+          if (pct >= 60) {
+            SoundFX.playSuccess();
+            if (window.confetti) window.confetti({ particleCount: 75, spread: 70 });
+            Speech.read(`Nice logic! You scored ${correct} out of ${shuffledOdd.length}.`);
+          }
+          recordSectionCompletion(activeStage.id, pct);
+        }
+      };
+
+      if (!bookOpened) {
+        return e('div', { className: 'h-screen w-screen flex items-center justify-center p-6 relative overflow-hidden bg-emerald-50/70' },
+          e('div', { className: 'max-w-lg w-full bg-[#fefdfa] border-2 border-emerald-200 rounded-3xl p-8 shadow-md text-center space-y-6 relative z-10' },
+            e('div', { className: 'w-20 h-20 mx-auto rounded-3xl bg-emerald-100 flex items-center justify-center text-4xl border border-emerald-300 shadow-xs' }, '🚀'),
+            e('div', { className: 'space-y-2' },
+              e('span', { className: 'text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100 px-3.5 py-1 rounded-full' }, 'Periodic Assessment — I'),
+              e('h1', { className: 'text-2xl sm:text-3xl font-bold text-emerald-950' }, 'Class 3 EVS Nature Trail'),
+              e('p', { className: 'text-sm sm:text-base text-slate-600 font-medium' }, 'Official Syllabus Question Bank & Interactive Practice Pad for Young Explorers')
+            ),
+            e('div', { className: 'flex items-center justify-center gap-3' },
+              e('button', {
+                onClick: toggleMute,
+                className: 'px-4 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-950 rounded-xl text-sm font-bold transition border border-emerald-300 flex items-center gap-2'
+              }, e('span', null, isMuted ? '🔇' : '🔊'), e('span', null, isMuted ? 'Sound Muted' : 'Sound Enabled')),
+              e('button', {
+                onClick: toggleFullscreen,
+                className: 'px-4 py-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-950 rounded-xl text-sm font-bold transition border border-emerald-300 flex items-center gap-2'
+              }, e('span', null, isFullscreen ? '🗗' : '⛶'), e('span', null, isFullscreen ? 'Exit Full' : 'Fullscreen'))
+            ),
+            e('button', {
+              onClick: () => {
+                SoundFX.playTap();
+                setBookOpened(true);
+                if (!isMuted) Speech.read('Humayun, you’re faster than a rocket chicken.');
+              },
+              className: 'w-full py-4 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-2xl text-base shadow-md transition flex items-center justify-center gap-2 active:scale-95'
+            }, e('span', null, 'Start Adventure Trail'), e('span', null, '➔'))
+          )
+        );
+      }
+
+      return e('div', { className: 'h-full w-full flex flex-col overflow-hidden relative z-10' },
+        e('header', { className: 'bg-emerald-900 px-4 py-2.5 flex items-center justify-between shrink-0 shadow-sm text-emerald-50 border-b border-emerald-800' },
+          e('div', { className: 'flex items-center gap-3 cursor-pointer', onClick: () => { SoundFX.playTap(); setCurrentStageId(null); } },
+            e('div', { className: 'w-9 h-9 rounded-xl bg-emerald-800 flex items-center justify-center text-xl border border-emerald-700' }, '🚀'),
+            e('div', null,
+              e('h1', { className: 'text-base sm:text-lg font-bold tracking-wide' }, 'Class 3 EVS Workbook'),
+              e('p', { className: 'text-xs text-emerald-200 font-medium' }, 'Nature Adventure & Question Bank')
+            )
+          ),
+          e('div', { className: 'flex items-center gap-2.5 flex-wrap' },
+            e('button', {
+              onClick: toggleEyeComfort,
+              className: `px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition border flex items-center gap-1.5 ${eyeComfort ? 'bg-amber-400 text-amber-950 border-amber-500 shadow-md ring-2 ring-white' : 'bg-emerald-800 hover:bg-emerald-700 text-emerald-100 border-emerald-700'}`
+            }, e('span', null, eyeComfort ? '🛡️' : '☀️'), e('span', null, eyeComfort ? 'Eye Comfort ON' : 'Eye Comfort OFF')),
+
+            e('button', {
+              onClick: toggleScrollLock,
+              className: `px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition border flex items-center gap-1.5 ${scrollLock ? 'bg-sky-400 text-sky-950 border-sky-500 shadow-md ring-2 ring-white' : 'bg-emerald-800 hover:bg-emerald-700 text-emerald-100 border-emerald-700'}`
+            }, e('span', null, scrollLock ? '🔒' : '🔓'), e('span', null, scrollLock ? 'Scroll Lock ON' : 'Scroll Lock OFF')),
+
+            e('button', {
+              onClick: toggleFullscreen,
+              className: 'px-3 py-1 bg-emerald-800 hover:bg-emerald-700 text-emerald-100 rounded-xl text-xs sm:text-sm font-bold transition border border-emerald-700 flex items-center gap-1.5'
+            }, e('span', null, isFullscreen ? '🗗' : '⛶'), e('span', { className: 'hidden sm:inline' }, isFullscreen ? 'Exit Full' : 'Fullscreen')),
+
+            e('button', {
+              onClick: toggleMute,
+              className: 'px-3 py-1 bg-emerald-800 hover:bg-emerald-700 text-emerald-100 rounded-xl text-xs sm:text-sm font-bold transition border border-emerald-700 flex items-center gap-1.5'
+            }, e('span', null, isMuted ? '🔇' : '🔊'), e('span', { className: 'hidden sm:inline' }, isMuted ? 'Muted' : 'Sound'))
+          )
+        ),
+
+        e('main', { className: 'flex-1 overflow-hidden p-3 sm:p-5 flex flex-col relative min-h-0' },
+          !currentStageId && e('div', { className: 'max-w-6xl mx-auto w-full h-full flex flex-col justify-center py-2' },
+            e('div', { className: 'text-center pb-4 space-y-1' },
+              e('span', { className: 'text-xs font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100 px-3.5 py-1 rounded-full' }, 'Syllabus Units'),
+              e('h2', { className: 'text-xl sm:text-2xl font-bold text-emerald-950' }, 'Select Any Practice Section'),
+              e('p', { className: 'text-sm text-slate-600' }, 'All stylus strokes auto-save automatically across navigation and refreshes.')
+            ),
+            e('div', { className: 'relative w-full flex items-center' },
+              e('button', {
+                onClick: () => { SoundFX.playTap(); if (carouselRef.current) carouselRef.current.scrollBy({ left: -320, behavior: 'smooth' }); },
+                className: 'absolute -left-1 z-20 w-11 h-11 rounded-full bg-white text-emerald-950 shadow-md border border-emerald-300 flex items-center justify-center font-bold text-xl active:scale-95'
+              }, '◀'),
+              e('div', {
+                ref: carouselRef,
+                className: 'w-full flex gap-5 overflow-x-auto no-scrollbar py-4 px-10 scroll-smooth items-center'
+              },
+                ADVENTURE_SECTIONS.map((sec, idx) => {
+                  const sc = sectionScores[sec.id];
+                  return e('div', {
+                    key: sec.id,
+                    onClick: () => openStage(sec),
+                    className: 'carousel-card flex-shrink-0 w-72 bg-[#fefdfa] rounded-2xl p-5 border-2 border-emerald-200 flex flex-col justify-between cursor-pointer h-80'
+                  },
+                    e('div', { className: 'space-y-2.5' },
+                      e('div', { className: 'flex items-center justify-between' },
+                        e('span', { className: 'text-3xl p-2.5 bg-emerald-50 rounded-xl border border-emerald-200' }, sec.icon),
+                        e('span', { className: 'text-xs font-bold bg-emerald-100 text-emerald-900 px-3 py-1 rounded-full uppercase' }, `Unit ${idx + 1}`)
+                      ),
+                      e('h3', { className: 'text-base font-bold text-emerald-950 leading-snug' }, sec.title),
+                      e('p', { className: 'text-sm text-emerald-700 font-medium' }, sec.badge)
+                    ),
+                    e('div', { className: 'pt-3 border-t border-emerald-100 flex items-center justify-between' },
+                      sc?.completed ? e('span', { className: 'text-xs font-bold text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-md border border-emerald-300' }, `Done ✓ (${sc.pct}%)`) : e('span', { className: 'text-xs font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md' }, 'Open'),
+                      e('span', { className: 'text-xs font-bold text-emerald-900' }, 'Open ➔')
+                    )
+                  );
+                })
+              ),
+              e('button', {
+                onClick: () => { SoundFX.playTap(); if (carouselRef.current) carouselRef.current.scrollBy({ left: 320, behavior: 'smooth' }); },
+                className: 'absolute -right-1 z-20 w-11 h-11 rounded-full bg-white text-emerald-950 shadow-md border border-emerald-300 flex items-center justify-center font-bold text-xl active:scale-95'
+              }, '▶')
+            )
+          ),
+
+          currentStageId && activeStage && e('div', { className: 'max-w-5xl mx-auto w-full h-full flex flex-col bg-[#fefdfa] rounded-2xl border-2 border-emerald-200 shadow-sm p-4 sm:p-5 overflow-hidden' },
+            e('div', { className: 'flex items-center justify-between pb-3 border-b border-emerald-100 shrink-0 flex-wrap gap-2' },
+              e('div', { className: 'flex items-center gap-2.5' },
+                e('span', { className: 'text-2xl' }, activeStage.icon),
+                e('h2', { className: 'text-base sm:text-lg font-bold text-emerald-950' }, activeStage.title)
+              ),
+              e('div', { className: 'flex items-center gap-2' },
+                e('button', {
+                  onClick: goToPrevSection,
+                  className: 'px-3 py-1 bg-white hover:bg-emerald-50 text-emerald-900 rounded-lg text-xs font-bold border border-emerald-200 transition'
+                }, '⬅ Prev Unit'),
+                e('button', {
+                  onClick: goToNextSection,
+                  className: 'px-3 py-1 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold transition shadow-xs'
+                }, 'Next Unit ➔'),
+                e('button', {
+                  onClick: () => { SoundFX.playTap(); setCurrentStageId(null); },
+                  className: 'px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-xs font-bold transition'
+                }, 'Hub 🗺️')
+              )
+            ),
+
+            e('div', { className: 'flex-1 flex flex-col min-h-0 pt-2.5 overflow-hidden' },
+              activeStage.type === 'concept_map' && e(ConceptMapStage, { onComplete: (pct) => recordSectionCompletion(activeStage.id, pct) }),
+
+              activeStage.type === 'name_following' && e('div', { className: 'flex-1 flex flex-col min-h-0' },
+                e('div', { className: 'flex items-center justify-between gap-2.5 pb-2 shrink-0 flex-wrap border-b border-emerald-100' },
+                  e('span', { className: 'text-sm font-bold text-emerald-900' }, 'Write the answer in the notebook box below:'),
+                  e('div', { className: 'flex items-center gap-2' },
+                    e('button', {
+                      onClick: () => {
+                        SoundFX.playTap();
+                        initShuffledNameFollowing();
+                        window.__showSaveToast('List Reset & Reshuffled', '🔄');
+                      },
+                      className: 'px-3 py-1 bg-rose-100 hover:bg-rose-200 text-rose-800 rounded-lg text-xs font-bold border border-rose-200 transition'
+                    }, 'Reset & Reshuffle 🔄'),
+                    e(PencilCaseBar, {
+                      onClear: () => {
+                        shuffledNameFollowing.forEach((q) => {
+                          try { AppStorage.removeItem(`evs_ink_v10_name_following_q_${q.id}`); } catch(err){}
+                        });
+                        window.location.hash = Math.random();
+                        if (window.__showSaveToast) window.__showSaveToast('All boxes cleared', '🗑️');
+                      }
+                    })
+                  )
+                ),
+                e('div', { className: 'flex-1 overflow-y-auto no-scrollbar space-y-4 py-3' },
+                  shuffledNameFollowing.map((q, idx) =>
+                    e('div', { key: q.id, className: 'bg-white p-4 rounded-xl border border-emerald-200 space-y-2 shadow-xs' },
+                      e('p', { className: 'text-base sm:text-lg font-bold text-emerald-950' }, `${idx + 1}. ${q.q}`),
+                      e('div', { className: 'pt-1' },
+                        e(InlineScribbleBox, {
+                          key: `name_following_q_${q.id}`,
+                          storageKey: `name_following_q_${q.id}`,
+                          label: `Write Answer #${idx + 1}`,
+                          widthClass: 'w-full max-w-xl',
+                          heightClass: 'h-20'
+                        })
+                      ),
+                      objectiveGraded && e('div', { className: 'p-2.5 bg-emerald-50 border border-emerald-300 rounded-lg text-sm text-emerald-950 font-bold mt-2' }, `Model Answer: ${q.a}`)
+                    )
+                  )
+                ),
+                e('div', { className: 'pt-2 flex justify-end gap-2 border-t border-emerald-100 shrink-0' },
+                  e('button', {
+                    onClick: () => {
+                      SoundFX.playSuccess();
+                      setObjectiveGraded(!objectiveGraded);
+                      recordSectionCompletion(activeStage.id, 100);
+                    },
+                    className: 'px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-bold text-sm shadow-md'
+                  }, objectiveGraded ? 'Hide Answer Keys 👁️' : 'Check Answers & Finish ✨')
+                )
+              ),
+
+              activeStage.type === 'two_examples' && e('div', { className: 'flex-1 flex flex-col min-h-0' },
+                e('div', { className: 'flex items-center justify-between gap-2.5 pb-2 shrink-0 flex-wrap border-b border-emerald-100' },
+                  e('span', { className: 'text-sm font-bold text-emerald-900' }, 'Write both examples in their lined boxes:'),
+                  e('div', { className: 'flex items-center gap-2' },
+                    e('button', {
+                      onClick: () => {
+                        SoundFX.playTap();
+                        initShuffledTwoExamples();
+                        window.__showSaveToast('List Reset & Reshuffled', '🔄');
+                      },
+                      className: 'px-3 py-1 bg-rose-100 hover:bg-rose-200 text-rose-800 rounded-lg text-xs font-bold border border-rose-200 transition'
+                    }, 'Reset & Reshuffle 🔄'),
+                    e(PencilCaseBar, {
+                      onClear: () => {
+                        shuffledTwoExamples.forEach((q) => {
+                          try {
+                            AppStorage.removeItem(`evs_ink_v10_two_ex_${q.id}_1`);
+                            AppStorage.removeItem(`evs_ink_v10_two_ex_${q.id}_2`);
+                          } catch(err){}
+                        });
+                        window.location.hash = Math.random();
+                        if (window.__showSaveToast) window.__showSaveToast('All boxes cleared', '🗑️');
+                      }
+                    })
+                  )
+                ),
+                e('div', { className: 'flex-1 overflow-y-auto no-scrollbar space-y-4 py-3' },
+                  shuffledTwoExamples.map((q, idx) =>
+                    e('div', { key: q.id, className: 'bg-white p-4 rounded-xl border border-emerald-200 space-y-2.5 shadow-xs' },
+                      e('p', { className: 'text-base sm:text-lg font-bold text-emerald-950' }, `${idx + 1}. ${q.q}`),
+                      e('div', { className: 'grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1' },
+                        e(InlineScribbleBox, { key: `two_ex_${q.id}_1`, storageKey: `two_ex_${q.id}_1`, label: 'Example 1', widthClass: 'w-full', heightClass: 'h-20' }),
+                        e(InlineScribbleBox, { key: `two_ex_${q.id}_2`, storageKey: `two_ex_${q.id}_2`, label: 'Example 2', widthClass: 'w-full', heightClass: 'h-20' })
+                      ),
+                      objectiveGraded && e('div', { className: 'p-2.5 bg-emerald-50 border border-emerald-300 rounded-lg text-sm text-emerald-950 font-bold mt-2' },
+                        `Model Examples: 1. ${q.ex1}  |  2. ${q.ex2}`
+                      )
+                    )
+                  )
+                ),
+                e('div', { className: 'pt-2 flex justify-end gap-2 border-t border-emerald-100 shrink-0' },
+                  e('button', {
+                    onClick: () => {
+                      SoundFX.playSuccess();
+                      setObjectiveGraded(!objectiveGraded);
+                      recordSectionCompletion(activeStage.id, 100);
+                    },
+                    className: 'px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-bold text-sm shadow-md'
+                  }, objectiveGraded ? 'Hide Answer Keys 👁️' : 'Check Answers & Finish ✨')
+                )
+              ),
+
+              activeStage.type === 'written' && (() => {
+                const questionsList = activeStage.questions;
+                const totalQ = questionsList.length;
+                const item = questionsList[questionIndex] || questionsList[0];
+                // MODE-ISOLATED STORAGE KEY: Prevents Learn pad duplicating to Practice pad
+                const canvasStorageKey = `${activeStage.id}_${activeMode}_q_${item.id}`;
+
+                return e('div', { className: 'flex-1 flex flex-col min-h-0 gap-2.5' },
+                  e('div', { className: 'flex items-center justify-between gap-2.5 shrink-0 flex-wrap' },
+                    e('div', { className: 'flex items-center bg-emerald-100 p-1 rounded-xl border border-emerald-200' },
+                      e('button', {
+                        disabled: isPracticeLocked,
+                        onClick: () => { SoundFX.playTap(); setActiveMode('learn'); },
+                        className: `px-3.5 py-1.5 rounded-lg text-sm font-bold transition ${activeMode === 'learn' ? 'bg-white text-emerald-950 shadow-sm' : 'text-emerald-800'}`
+                      }, '📖 Learn & Memorize'),
+                      e('button', {
+                        onClick: () => { SoundFX.playTap(); setActiveMode('practice'); setIsPracticeLocked(true); },
+                        className: `px-3.5 py-1.5 rounded-lg text-sm font-bold transition ${activeMode === 'practice' ? 'bg-white text-emerald-950 shadow-sm' : 'text-emerald-800'}`
+                      }, '✍️ Practice Pad')
+                    ),
+                    e('div', { className: 'flex items-center gap-2' },
+                      e(PencilCaseBar, { onClear: () => { if (activePadRef.current) activePadRef.current.clear(); } })
+                    )
+                  ),
+                  e('div', { className: 'bg-emerald-50/70 border border-emerald-200 rounded-xl p-3.5 shrink-0 space-y-1.5' },
+                    e('div', { className: 'flex items-center justify-between gap-3' },
+                      e('p', { className: 'text-base sm:text-lg font-bold text-emerald-950' }, `${questionIndex + 1}. ${item.q}`),
+                      e('button', {
+                        onClick: () => Speech.read(activeMode === 'learn' ? `Question: ${item.q}. Answer: ${item.a}` : item.q),
+                        className: 'text-sm font-bold bg-white px-2.5 py-1 rounded-md border border-emerald-300 text-emerald-950 shrink-0'
+                      }, '🔊 Listen')
+                    ),
+                    activeMode === 'learn' ? e('div', { className: 'pt-2 border-t border-emerald-200 text-sm sm:text-base text-emerald-950 bg-emerald-100/60 p-2.5 rounded-lg whitespace-pre-line leading-relaxed font-semibold' },
+                      e('span', { className: 'font-bold text-emerald-900' }, 'Answer: '), item.a
+                    ) : e('div', { className: 'pt-1.5 border-t border-emerald-200 text-xs sm:text-sm font-bold text-slate-500' }, '✍️ Write from memory on the ruled pad below:')
+                  ),
+                  e('div', { className: 'flex-1 w-full h-full min-h-0' },
+                    e(StageCanvas, {
+                      key: canvasStorageKey,
+                      ref: activePadRef,
+                      storageKey: canvasStorageKey
+                    })
+                  ),
+                  e('div', { className: 'flex items-center justify-between pt-1 shrink-0' },
+                    e('div', { className: 'flex items-center gap-2' },
+                      e('button', {
+                        disabled: questionIndex === 0,
+                        onClick: () => { SoundFX.playTap(); setQuestionIndex(questionIndex - 1); },
+                        className: `px-4 py-2 rounded-xl text-sm font-bold border transition ${questionIndex === 0 ? 'bg-slate-100 text-slate-400 border-slate-200' : 'bg-white text-emerald-950 border-emerald-200'}`
+                      }, '⬅ Prev')
+                    ),
+                    e('span', { className: 'text-sm font-bold text-emerald-950' }, `${questionIndex + 1} / ${totalQ}`),
+                    e('button', {
+                      onClick: () => {
+                        SoundFX.playTap();
+                        if (questionIndex < totalQ - 1) {
+                          setQuestionIndex(questionIndex + 1);
+                        } else {
+                          if (activeMode === 'learn') {
+                            window.__showSaveToast('Starting practice mode!', '✍️');
+                            setActiveMode('practice');
+                            setIsPracticeLocked(true);
+                            setQuestionIndex(0);
+                          } else {
+                            SoundFX.playSuccess();
+                            if (window.confetti) window.confetti({ particleCount: 75, spread: 70 });
+                            Speech.read('Section complete! Moving to next unit.');
+                            setIsPracticeLocked(false);
+                            recordSectionCompletion(activeStage.id, 100);
+                            goToNextSection();
+                          }
+                        }
+                      },
+                      className: 'px-5 py-2 rounded-xl text-sm font-bold bg-emerald-700 hover:bg-emerald-800 text-white shadow-md'
+                    }, questionIndex === totalQ - 1 ? (activeMode === 'learn' ? 'Start Practice ✍️' : 'Next Unit ➔') : 'Next ➔')
+                  )
+                );
+              })(),
+
+              activeStage.type === 'fill' && e('div', { className: 'flex-1 flex flex-col min-h-0 overflow-hidden' },
+                e('div', { className: 'flex-1 overflow-y-auto no-scrollbar space-y-2.5 pr-1 pb-3' },
+                  shuffledFill.map((q, idx) => {
+                    const key = 'fill_' + idx;
+                    const val = allStoredAnswers[key] || '';
+                    const isSelected = activeBlankIndex === idx;
+                    const isCor = objectiveGraded && q.answers.some(a => a.toLowerCase() === val.trim().toLowerCase());
+
+                    return e('div', {
+                      key: idx,
+                      onClick: () => {
+                        SoundFX.playTap();
+                        if (!objectiveGraded) {
+                          setActiveBlankIndex(idx);
+                          setDrawerOpen(true);
+                        }
+                      },
+                      className: `p-3.5 rounded-xl border transition cursor-pointer ${isSelected ? 'bg-emerald-50 border-emerald-400 ring-2 ring-emerald-300' : 'bg-white border-emerald-100'}`
+                    },
+                      e('p', { className: 'text-sm sm:text-base font-bold text-emerald-950' }, `${idx + 1}. ${q.q}`),
+                      e('div', { className: 'flex items-center gap-2 mt-2' },
+                        e('span', { className: 'text-xs sm:text-sm font-bold text-emerald-800' }, 'Your Answer:'),
+                        e('div', {
+                          className: `px-4 py-1.5 rounded-lg border text-sm sm:text-base font-bold min-w-[130px] text-center ${objectiveGraded ? (isCor ? 'bg-emerald-100 border-emerald-400 text-emerald-950' : 'bg-rose-50 border-rose-400 text-rose-950') : (isSelected ? 'bg-white border-emerald-500 text-emerald-950 shadow-xs' : 'bg-emerald-50/60 border-emerald-200 text-emerald-900')}`
+                        }, val || '____')
+                      ),
+                      objectiveGraded && !isCor && e('p', { className: 'text-xs sm:text-sm text-slate-700 bg-emerald-50 p-2 rounded-md mt-2 border border-emerald-200' },
+                        'Correct Answer: ', e('span', { className: 'font-bold text-emerald-900' }, q.answers[0])
+                      )
+                    );
+                  })
+                ),
+                !objectiveGraded && e(CollapsibleSpellingDrawer, {
+                  isOpen: drawerOpen,
+                  onToggle: () => setDrawerOpen(!drawerOpen),
+                  targetLabel: `Question #${activeBlankIndex + 1}`,
+                  onChar: (char) => {
+                    const k = 'fill_' + activeBlankIndex;
+                    const cur = allStoredAnswers[k] || '';
+                    setAllStoredAnswers(prev => ({ ...prev, [k]: cur + char }));
+                  },
+                  onBackspace: () => {
+                    const k = 'fill_' + activeBlankIndex;
+                    const cur = allStoredAnswers[k] || '';
+                    setAllStoredAnswers(prev => ({ ...prev, [k]: cur.slice(0, -1) }));
+                  },
+                  onClear: () => {
+                    const k = 'fill_' + activeBlankIndex;
+                    setAllStoredAnswers(prev => ({ ...prev, [k]: '' }));
+                  },
+                  disabled: objectiveGraded
+                }),
+                e('div', { className: 'pt-3 flex justify-between items-center gap-2 shrink-0 border-t border-emerald-100' },
+                  e('button', {
+                    onClick: () => {
+                      SoundFX.playTap();
+                      setObjectiveGraded(false);
+                      initShuffledFill();
+                      setAllStoredAnswers(prev => {
+                        const next = { ...prev };
+                        Object.keys(next).forEach(k => { if (k.startsWith('fill_')) delete next[k]; });
+                        return next;
+                      });
+                      window.__showSaveToast('Fill Section Reset & Reshuffled', '🔄');
+                    },
+                    className: 'px-4 py-2 bg-rose-100 hover:bg-rose-200 text-rose-800 rounded-xl font-bold text-sm transition border border-rose-200 shadow-xs'
+                  }, 'Reset & Reshuffle 🔄'),
+                  e('button', {
+                    onClick: gradeObjective,
+                    className: 'px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-bold text-sm shadow-md'
+                  }, 'Check Answers ✨')
+                )
+              ),
+
+              activeStage.type === 'mcq' && e('div', { className: 'flex-1 flex flex-col min-h-0 overflow-hidden' },
+                e('div', { className: 'flex-1 overflow-y-auto no-scrollbar space-y-3 pb-3' },
+                  shuffledMCQs.map((q, idx) => {
+                    const key = 'mcq_shuffled_' + idx;
+                    const picked = allStoredAnswers[key];
+                    return e('div', { key: idx, className: 'bg-white p-3.5 rounded-xl border border-emerald-200 space-y-2' },
+                      e('p', { className: 'text-sm sm:text-base font-bold text-emerald-950' }, `${idx + 1}. ${q.q}`),
+                      e('div', { className: 'grid grid-cols-1 sm:grid-cols-3 gap-2' },
+                        q.options.map((opt, oIdx) => {
+                          const isSel = picked === oIdx;
+                          const isCor = oIdx === q.correctIndex;
+                          let style = 'bg-emerald-50/50 border-emerald-200 text-emerald-950 hover:bg-emerald-100';
+                          if (objectiveGraded) {
+                            if (isCor) style = 'bg-emerald-100 border-emerald-500 text-emerald-950 font-bold';
+                            else if (isSel) style = 'bg-rose-50 border-rose-300 text-rose-950';
+                          } else if (isSel) {
+                            style = 'bg-emerald-700 border-emerald-800 text-white font-bold shadow-sm';
+                          }
+                          return e('button', {
+                            key: oIdx,
+                            disabled: objectiveGraded,
+                            onClick: () => {
+                              SoundFX.playTap();
+                              setAllStoredAnswers(prev => ({ ...prev, [key]: oIdx }));
+                            },
+                            className: `p-3 rounded-lg border text-sm font-bold text-left transition ${style}`
+                          }, opt);
+                        })
+                      )
+                    );
+                  })
+                ),
+                e('div', { className: 'pt-3 flex justify-between items-center gap-2 shrink-0 border-t border-emerald-100' },
+                  e('button', {
+                    onClick: () => {
+                      SoundFX.playTap();
+                      setObjectiveGraded(false);
+                      initShuffledMCQ();
+                      setAllStoredAnswers(prev => {
+                        const next = { ...prev };
+                        Object.keys(next).forEach(k => { if (k.startsWith('mcq_shuffled_')) delete next[k]; });
+                        return next;
+                      });
+                      window.__showSaveToast('MCQ Reset & Reshuffled', '🔄');
+                    },
+                    className: 'px-4 py-2 bg-rose-100 hover:bg-rose-200 text-rose-800 rounded-xl font-bold text-sm transition border border-rose-200 shadow-xs'
+                  }, 'Reset & Reshuffle 🔄'),
+                  e('button', {
+                    onClick: gradeObjective,
+                    className: 'px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-bold text-sm shadow-md'
+                  }, 'Submit Quiz ✨')
+                )
+              ),
+
+              activeStage.type === 'tf' && e('div', { className: 'flex-1 flex flex-col min-h-0 overflow-hidden' },
+                e('div', { className: 'flex-1 overflow-y-auto no-scrollbar space-y-3 pb-3' },
+                  shuffledTF.map((q, idx) => {
+                    const key = 'tf_' + q.id;
+                    const picked = allStoredAnswers[key];
+                    return e('div', { key: q.id, className: 'bg-white p-3.5 rounded-xl border border-emerald-200 space-y-2' },
+                      e('p', { className: 'text-sm sm:text-base font-bold text-emerald-950' }, `${idx + 1}. ${q.q}`),
+                      e('div', { className: 'flex gap-2.5' },
+                        [true, false].map(val => {
+                          const isSel = picked === val;
+                          const isCor = val === q.answer;
+                          let style = 'bg-emerald-50/50 border-emerald-200 text-emerald-950 hover:bg-emerald-100';
+                          if (objectiveGraded) {
+                            if (isCor) style = 'bg-emerald-100 border-emerald-500 text-emerald-950 font-bold';
+                            else if (isSel) style = 'bg-rose-50 border-rose-300 text-rose-950';
+                          } else if (isSel) {
+                            style = 'bg-emerald-700 border-emerald-800 text-white font-bold shadow-sm';
+                          }
+                          return e('button', {
+                            key: String(val),
+                            disabled: objectiveGraded,
+                            onClick: () => {
+                              SoundFX.playTap();
+                              setAllStoredAnswers(prev => ({ ...prev, [key]: val }));
+                            },
+                            className: `flex-1 p-2.5 rounded-lg border text-sm font-bold transition ${style}`
+                          }, val ? 'True' : 'False');
+                        })
+                      )
+                    );
+                  })
+                ),
+                e('div', { className: 'pt-3 flex justify-between items-center gap-2 shrink-0 border-t border-emerald-100' },
+                  e('button', {
+                    onClick: () => {
+                      SoundFX.playTap();
+                      setObjectiveGraded(false);
+                      initShuffledTF();
+                      setAllStoredAnswers(prev => {
+                        const next = { ...prev };
+                        Object.keys(next).forEach(k => { if (k.startsWith('tf_')) delete next[k]; });
+                        return next;
+                      });
+                      window.__showSaveToast('True/False Reset & Reshuffled', '🔄');
+                    },
+                    className: 'px-4 py-2 bg-rose-100 hover:bg-rose-200 text-rose-800 rounded-xl font-bold text-sm transition border border-rose-200 shadow-xs'
+                  }, 'Reset & Reshuffle 🔄'),
+                  e('button', {
+                    onClick: gradeObjective,
+                    className: 'px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-bold text-sm shadow-md'
+                  }, 'Check Answers ✨')
+                )
+              ),
+
+              activeStage.type === 'match' && (() => {
+                const mState = allStoredAnswers['sec_4_match'] || {
+                  lefts: activeStage.pairs.map(p => ({ id: p.id, text: p.left })),
+                  rights: activeStage.pairs.map(p => ({ id: p.id, text: p.right })),
+                  selectedLeft: null,
+                  links: {}
+                };
+
+                const updateMatchState = (patch) => {
+                  setAllStoredAnswers(prev => ({
+                    ...prev,
+                    sec_4_match: { ...mState, ...patch }
+                  }));
+                };
+
+                return e('div', { className: 'flex-1 flex flex-col min-h-0 space-y-2.5 pb-4' },
+                  e('p', { className: 'text-sm sm:text-base font-bold text-emerald-950' }, 'Tap an item on Column A, then tap its partner on Column B:'),
+                  e('div', { className: 'flex-1 overflow-y-auto no-scrollbar grid grid-cols-1 sm:grid-cols-2 gap-3.5' },
+                    e('div', { className: 'space-y-2' },
+                      e('span', { className: 'text-xs font-bold uppercase text-emerald-900' }, 'Column A'),
+                      mState.lefts.map(l => {
+                        const isSel = mState.selectedLeft === l.id;
+                        const isLinked = !!mState.links[l.id];
+                        const isCor = objectiveGraded && mState.links[l.id] === l.id;
+                        const isWrong = objectiveGraded && mState.links[l.id] && mState.links[l.id] !== l.id;
+
+                        return e('div', {
+                          key: l.id,
+                          onClick: () => {
+                            if (objectiveGraded) return;
+                            SoundFX.playTap();
+                            updateMatchState({ selectedLeft: isSel ? null : l.id });
+                          },
+                          className: `p-3 rounded-xl border text-sm sm:text-base font-bold cursor-pointer transition flex items-center justify-between ${isSel ? 'bg-amber-100 border-amber-400 ring-2 ring-amber-300' : isLinked ? 'bg-emerald-50 border-emerald-300' : 'bg-white border-emerald-200 hover:bg-emerald-50/60'} ${isCor ? '!bg-emerald-100 !border-emerald-500 !text-emerald-950' : ''} ${isWrong ? '!bg-rose-50 !border-rose-400 !text-rose-950' : ''}`
+                        },
+                          e('span', null, l.text),
+                          isLinked && e('span', { className: 'w-3 h-3 rounded-full bg-emerald-700' })
+                        );
+                      })
+                    ),
+                    e('div', { className: 'space-y-2' },
+                      e('span', { className: 'text-xs font-bold uppercase text-emerald-900' }, 'Column B'),
+                      mState.rights.map(r => {
+                        const linkedLeft = Object.keys(mState.links).find(k => mState.links[k] === r.id);
+                        const isCor = objectiveGraded && linkedLeft === r.id;
+                        const isWrong = objectiveGraded && linkedLeft && linkedLeft !== r.id;
+
+                        return e('div', {
+                          key: r.id,
+                          onClick: () => {
+                            if (objectiveGraded || !mState.selectedLeft) return;
+                            SoundFX.playTap();
+                            const leftId = mState.selectedLeft;
+                            const nextLinks = { ...mState.links };
+                            Object.keys(nextLinks).forEach(k => { if (nextLinks[k] === r.id) delete nextLinks[k]; });
+                            nextLinks[leftId] = r.id;
+                            updateMatchState({ links: nextLinks, selectedLeft: null });
+                          },
+                          className: `p-3 rounded-xl border text-sm sm:text-base font-bold cursor-pointer transition flex items-center justify-between ${linkedLeft ? 'bg-emerald-50 border-emerald-300' : 'bg-white border-emerald-200 hover:bg-emerald-50/60'} ${isCor ? '!bg-emerald-100 !border-emerald-500 !text-emerald-950' : ''} ${isWrong ? '!bg-rose-50 !border-rose-400 !text-rose-950' : ''}`
+                        },
+                          e('span', null, r.text),
+                          linkedLeft && e('span', { className: 'w-3 h-3 rounded-full bg-emerald-700' })
+                        );
+                      })
+                    )
+                  ),
+                  e('div', { className: 'pt-2 flex justify-end gap-2 shrink-0 border-t border-emerald-100' },
+                    e('button', {
+                      onClick: gradeObjective,
+                      className: 'px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-bold text-sm shadow-md'
+                    }, 'Check Pairs ✨')
+                  )
+                );
+              })(),
+
+              activeStage.type === 'odd_one_out' && e('div', { className: 'flex-1 flex flex-col min-h-0' },
+                e('div', { className: 'flex items-center justify-between gap-2.5 pb-2 shrink-0 flex-wrap border-b border-emerald-100' },
+                  e('span', { className: 'text-sm font-bold text-emerald-900' }, 'Tap the odd item, then write it and its reason in the lined boxes:'),
+                  e('div', { className: 'flex items-center gap-2' },
+                    e('button', {
+                      onClick: () => {
+                        SoundFX.playTap();
+                        initShuffledOdd();
+                        window.__showSaveToast('List Reset & Reshuffled', '🔄');
+                      },
+                      className: 'px-3 py-1 bg-rose-100 hover:bg-rose-200 text-rose-800 rounded-lg text-xs font-bold border border-rose-200 transition'
+                    }, 'Reset & Reshuffle 🔄'),
+                    e(PencilCaseBar, {
+                      onClear: () => {
+                        shuffledOdd.forEach((q) => {
+                          try {
+                            AppStorage.removeItem(`evs_ink_v10_odd_scribble_${q.id}`);
+                            AppStorage.removeItem(`evs_ink_v10_reason_scribble_${q.id}`);
+                          } catch(err){}
+                        });
+                        window.location.hash = Math.random();
+                        if (window.__showSaveToast) window.__showSaveToast('All boxes cleared', '🗑️');
+                      }
+                    })
+                  )
+                ),
+                e('div', { className: 'flex-1 overflow-y-auto no-scrollbar space-y-4 py-3' },
+                  shuffledOdd.map((q, idx) => {
+                    const selKey = 'odd_' + q.id;
+                    const pickedWord = allStoredAnswers[selKey];
+                    const isOddCorrect = objectiveGraded && pickedWord === q.odd;
+
+                    return e('div', { key: q.id, className: 'p-4 rounded-xl border border-emerald-200 bg-white space-y-3 shadow-xs' },
+                      e('p', { className: 'text-base sm:text-lg font-bold text-emerald-950' }, `${idx + 1}. ${q.q}`),
+                      e('div', { className: 'flex flex-wrap gap-2' },
+                        q.words.map((w, wIdx) => {
+                          const isSel = pickedWord === w;
+                          let btnCls = 'bg-emerald-50/60 border-emerald-200 text-emerald-950 hover:bg-emerald-100';
+                          if (objectiveGraded) {
+                            if (w === q.odd) btnCls = 'bg-emerald-100 border-emerald-500 text-emerald-950 font-bold';
+                            else if (isSel) btnCls = 'bg-rose-50 border-rose-300 text-rose-950';
+                          } else if (isSel) {
+                            btnCls = 'bg-emerald-700 border-emerald-800 text-white font-bold shadow-sm';
+                          }
+                          return e('button', {
+                            key: wIdx,
+                            disabled: objectiveGraded,
+                            onClick: () => {
+                              SoundFX.playTap();
+                              setAllStoredAnswers(prev => ({ ...prev, [selKey]: w }));
+                            },
+                            className: `px-4 py-2 rounded-xl text-sm font-bold border transition ${btnCls}`
+                          }, w);
+                        })
+                      ),
+                      e('div', { className: 'space-y-2 pt-1' },
+                        e(InlineScribbleBox, { key: `odd_scribble_${q.id}`, storageKey: `odd_scribble_${q.id}`, label: '1. Write Odd Item', widthClass: 'w-full max-w-md', heightClass: 'h-20' }),
+                        e(InlineScribbleBox, { key: `reason_scribble_${q.id}`, storageKey: `reason_scribble_${q.id}`, label: '2. Write Reason', widthClass: 'w-full', heightClass: 'h-24' })
+                      ),
+                      objectiveGraded && e('div', { className: 'p-2.5 bg-emerald-50 rounded-lg text-sm space-y-1 border border-emerald-200' },
+                        e('span', { className: `text-xs font-bold px-2 py-0.5 rounded ${isOddCorrect ? 'bg-emerald-200 text-emerald-900' : 'bg-rose-100 text-rose-900'}` }, `Odd item: ${q.odd}`),
+                        e('p', { className: 'text-emerald-950 font-medium' }, e('span', { className: 'font-bold' }, 'Model Reason: '), q.reason)
+                      )
+                    );
+                  })
+                ),
+                e('div', { className: 'pt-3 flex justify-between items-center gap-2 border-t border-emerald-100 shrink-0' },
+                  e('button', {
+                    onClick: () => {
+                      SoundFX.playTap();
+                      setObjectiveGraded(false);
+                      initShuffledOdd();
+                      setAllStoredAnswers(prev => {
+                        const next = { ...prev };
+                        Object.keys(next).forEach(k => { if (k.startsWith('odd_')) delete next[k]; });
+                        return next;
+                      });
+                      window.__showSaveToast('Odd One Out Reset & Reshuffled', '🔄');
+                    },
+                    className: 'px-4 py-2 bg-rose-100 hover:bg-rose-200 text-rose-800 rounded-xl font-bold text-sm transition border border-rose-200 shadow-xs'
+                  }, 'Reset & Reshuffle 🔄'),
+                  e('button', {
+                    onClick: gradeObjective,
+                    className: 'px-6 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-bold text-sm shadow-md'
+                  }, 'Check Answers ✨')
+                )
+              )
+            )
+          )
+        )
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(e(App));
+  </script>
 </body>
 </html>
