@@ -195,11 +195,14 @@
       box-shadow: 0 2px 0 rgba(0,0,0,0.18);
     }
 
-    .btn-green  { background: linear-gradient(135deg, #10B981 0%, #059669 100%); }
-    .btn-blue   { background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%); }
-    .btn-purple { background: linear-gradient(135deg, #A855F7 0%, #7E22CE 100%); }
-    .btn-amber  { background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); }
-    .btn-rose   { background: linear-gradient(135deg, #F43F5E 0%, #E11D48 100%); }
+    /* Color Palette for Subjects */
+    .btn-english  { background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%); } /* Blue */
+    .btn-math     { background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); } /* Amber */
+    .btn-evs      { background: linear-gradient(135deg, #10B981 0%, #059669 100%); } /* Green */
+    .btn-islam    { background: linear-gradient(135deg, #0D9488 0%, #115E59 100%); } /* Teal */
+    .btn-tamil    { background: linear-gradient(135deg, #EF4444 0%, #B91C1C 100%); } /* Red */
+    .btn-arabic   { background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%); } /* Purple */
+    .btn-default  { background: linear-gradient(135deg, #64748B 0%, #334155 100%); } /* Slate */
 
     .arrow-circle {
       width: 42px;
@@ -270,55 +273,66 @@
     const GITHUB_REPO = "nimrafarheen1995-ui/practice-app";
     let lessonsCache = null;
 
-    // Subject styling palette & icons
+    // 6 Target Subjects Configuration
     const SUBJECT_CONFIG = {
-      science: { icon: "🌱", colorClass: "btn-green", label: "Science" },
-      evs:     { icon: "🌍", colorClass: "btn-green", label: "EVS" },
-      math:    { icon: "🔢", colorClass: "btn-amber", label: "Math" },
-      english: { icon: "📖", colorClass: "btn-blue",  label: "English" },
-      default: { icon: "📝", colorClass: "btn-purple",label: "Lesson" }
+      english:    { icon: "📖", colorClass: "btn-english", label: "English" },
+      math:       { icon: "🔢", colorClass: "btn-math",    label: "Maths" },
+      maths:      { icon: "🔢", colorClass: "btn-math",    label: "Maths" },
+      evs:        { icon: "🌱", colorClass: "btn-evs",     label: "EVS" },
+      science:    { icon: "🔬", colorClass: "btn-evs",     label: "EVS Science" },
+      islamiyath: { icon: "🌙", colorClass: "btn-islam",   label: "Islamiyath" },
+      islam:      { icon: "🌙", colorClass: "btn-islam",   label: "Islamiyath" },
+      tamil:      { icon: "🪔", colorClass: "btn-tamil",   label: "Tamil" },
+      arabic:     { icon: "📜", colorClass: "btn-arabic",  label: "Arabic" }
     };
 
     function parseFileName(fileName) {
-      // Remove .html
       let base = fileName.replace(/\.html$/i, "");
       
-      // Determine student prefix
       let student = "";
       if (base.toLowerCase().startsWith("humayun")) student = "humayun";
       else if (base.toLowerCase().startsWith("zaina")) student = "zaina";
       else return null;
 
-      // Extract subject remainder
-      let remainder = base.replace(new RegExp(`^${student}[-_]?`, "i"), "");
+      // Extract whatever comes after the name (e.g. humayun-tamil -> tamil)
+      let remainder = base.replace(new RegExp(`^${student}[-_]?`, "i"), "").toLowerCase();
       if (!remainder) remainder = "english";
 
-      let matchedConfig = SUBJECT_CONFIG.default;
+      let matchedConfig = { icon: "📝", colorClass: "btn-default", label: "Lesson" };
+      let displayLabel = "";
+
       for (const key of Object.keys(SUBJECT_CONFIG)) {
-        if (remainder.toLowerCase().includes(key)) {
+        if (remainder.includes(key)) {
           matchedConfig = SUBJECT_CONFIG[key];
+          displayLabel = matchedConfig.label;
           break;
         }
       }
 
-      // Format label: e.g. "math-oct07" -> "Math Oct07"
-      let formattedTitle = remainder.replace(/[-_]/g, " ").trim();
-      formattedTitle = formattedTitle.charAt(0).toUpperCase() + formattedTitle.slice(1);
+      if (!displayLabel) {
+        displayLabel = remainder.replace(/[-_]/g, " ").trim();
+        displayLabel = displayLabel.charAt(0).toUpperCase() + displayLabel.slice(1);
+      }
 
       return {
         student: student,
         fileName: fileName,
-        title: `${matchedConfig.icon} ${formattedTitle}`,
+        title: `${matchedConfig.icon} ${displayLabel}`,
         colorClass: matchedConfig.colorClass
       };
     }
 
-    async function loadRepositoryFiles() {
-      if (lessonsCache) return lessonsCache;
+    async function loadRepositoryFiles(forceRefresh = false) {
+      if (lessonsCache && !forceRefresh) return lessonsCache;
 
       try {
-        const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/`);
-        if (!res.ok) throw new Error("API call limit or network error");
+        // Cache buster parameter (?t=...) ensures deleted/added files reflect instantly
+        const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/?t=${Date.now()}`, {
+          cache: "no-store",
+          headers: { "Accept": "application/vnd.github.v3+json" }
+        });
+        
+        if (!res.ok) throw new Error("API call error");
         const files = await res.json();
         
         lessonsCache = files
@@ -328,10 +342,9 @@
 
         return lessonsCache;
       } catch (err) {
-        // Fallback default list if GitHub API is offline
         return [
-          { student: "humayun", fileName: "humayun.html", title: "📖 English Word Quest", colorClass: "btn-blue" },
-          { student: "zaina", fileName: "zaina.html", title: "🏔️ English Trail", colorClass: "btn-purple" }
+          { student: "humayun", fileName: "humayun.html", title: "📖 English", colorClass: "btn-english" },
+          { student: "zaina", fileName: "zaina.html", title: "📖 English", colorClass: "btn-english" }
         ];
       }
     }
@@ -347,7 +360,7 @@
       const deck = document.getElementById('lessonsDeck');
       deck.innerHTML = '<div class="status-msg">Finding active lessons... 🔍</div>';
 
-      const allFiles = await loadRepositoryFiles();
+      const allFiles = await loadRepositoryFiles(true);
       const studentFiles = allFiles.filter(item => item.student === name);
 
       deck.innerHTML = "";
@@ -371,7 +384,6 @@
       document.getElementById('nameSelectView').style.display = 'flex';
     }
 
-    // Pre-fetch files on background load
     loadRepositoryFiles();
   </script>
 </body>
