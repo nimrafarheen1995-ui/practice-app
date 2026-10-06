@@ -45,67 +45,6 @@
       100% { transform: translateY(-15vh) rotate(360deg); }
     }
 
-    /* Welcome Modal */
-    #startModal {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(8px);
-      z-index: 10000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .modal-card {
-      background: #FFFFFF;
-      border: 4px solid #38BDF8;
-      border-radius: 36px;
-      padding: 36px 28px;
-      text-align: center;
-      max-width: 400px;
-      width: 100%;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
-    }
-    .modal-btn {
-      margin-top: 20px;
-      background: linear-gradient(180deg, #F59E0B 0%, #D97706 100%);
-      color: #FFF;
-      font-size: 1.4rem;
-      font-weight: 800;
-      padding: 16px 32px;
-      border: none;
-      border-radius: 24px;
-      cursor: pointer;
-      box-shadow: 0 6px 0 #92400E, 0 12px 20px rgba(217, 119, 6, 0.35);
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .modal-btn:active {
-      transform: translateY(4px);
-      box-shadow: 0 2px 0 #92400E;
-    }
-
-    .sound-toggle-btn {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      background: #FFFFFF;
-      border: 2px solid #CBD5E1;
-      padding: 8px 14px;
-      border-radius: 14px;
-      font-weight: 700;
-      font-size: 0.85rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      color: #334155;
-      z-index: 50;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    }
-
     .view-container {
       position: relative;
       z-index: 10;
@@ -156,11 +95,14 @@
       transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
     .name-card:active {
-      transform: translateY(2px) scale(0.98);
+      transform: translateY(3px) scale(0.98);
     }
 
     .card-humayun { border-color: #38BDF8; }
+    .card-humayun:hover { border-color: #0284C7; }
+
     .card-zaina { border-color: #C084FC; }
+    .card-zaina:hover { border-color: #9333EA; }
 
     .avatar {
       width: 110px;
@@ -190,13 +132,15 @@
       border-radius: 999px;
     }
 
-    /* Inside Student View */
+    /* Screen 2: Inside Student View */
     .inside-view {
       display: none;
       width: 100%;
       max-width: 650px;
       flex-direction: column;
       gap: 18px;
+      position: relative;
+      z-index: 10;
     }
 
     .top-nav {
@@ -218,6 +162,9 @@
       align-items: center;
       gap: 6px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    .back-btn:active {
+      transform: translateY(2px);
     }
 
     .current-student-title {
@@ -272,28 +219,11 @@
 </head>
 <body>
 
+  <!-- Floating animated background -->
   <div class="bg-bubble" style="left: 10%; animation-delay: 0s;">🚀</div>
   <div class="bg-bubble" style="left: 30%; animation-delay: 4s;">⭐</div>
   <div class="bg-bubble" style="left: 65%; animation-delay: 8s;">🌱</div>
   <div class="bg-bubble" style="left: 85%; animation-delay: 2s;">📚</div>
-
-  <!-- Audio unlock dialog -->
-  <div id="startModal">
-    <div class="modal-card">
-      <div style="font-size: 4rem; margin-bottom: 6px;">🏰</div>
-      <h2 style="font-size: 2rem; font-weight: 800; color: #0F172A;">Learning Quest</h2>
-      <p style="color: #64748B; font-weight: 600; margin-top: 6px;">Ready for today's tasks?</p>
-      <button type="button" class="modal-btn" onclick="unlockAudioAndStart()">
-        <span>Start!</span>
-        <span>✨</span>
-      </button>
-    </div>
-  </div>
-
-  <button type="button" class="sound-toggle-btn" id="soundBtn" onclick="toggleMute()">
-    <span id="soundIcon">🔊</span>
-    <span id="soundText">Voice On</span>
-  </button>
 
   <!-- SCREEN 1: CHOOSE NAME -->
   <div class="view-container" id="nameSelectView">
@@ -303,12 +233,14 @@
     </header>
 
     <div class="names-grid">
+      <!-- Humayun Card -->
       <div class="name-card card-humayun" onclick="openStudentView('humayun')">
         <div class="avatar">👦</div>
         <div class="name-title">Humayun</div>
         <span class="tap-tag">Tap to Open ➔</span>
       </div>
 
+      <!-- Zaina Card -->
       <div class="name-card card-zaina" onclick="openStudentView('zaina')">
         <div class="avatar">👧</div>
         <div class="name-title">Zaina</div>
@@ -355,99 +287,22 @@
   </div>
 
   <script>
-    var isMuted = false;
-    var audioCtx = null;
-
-    function playUpbeatChime() {
-      if (isMuted) return;
-      try {
-        var AudioClass = window.AudioContext || window.webkitAudioContext;
-        if (!AudioClass) return;
-        if (!audioCtx) audioCtx = new AudioClass();
-        if (audioCtx.state === 'suspended') {
-          audioCtx.resume().catch(function() {});
-        }
-
-        var notes = [523.25, 659.25, 783.99, 1046.50];
-        notes.forEach(function(freq, idx) {
-          var osc = audioCtx.createOscillator();
-          var gain = audioCtx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.value = freq;
-          gain.gain.setValueAtTime(0.06, audioCtx.currentTime + idx * 0.07);
-          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + idx * 0.07 + 0.2);
-          osc.connect(gain);
-          gain.connect(audioCtx.destination);
-          osc.start(audioCtx.currentTime + idx * 0.07);
-          osc.stop(audioCtx.currentTime + idx * 0.07 + 0.2);
-        });
-      } catch (err) {}
-    }
-
-    function speakKidVoice(text) {
-      if (isMuted || !('speechSynthesis' in window)) return;
-      try {
-        window.speechSynthesis.cancel();
-        var utterance = new SpeechSynthesisUtterance(text);
-        utterance.pitch = 1.35;
-        utterance.rate = 1.0;
-        window.speechSynthesis.speak(utterance);
-      } catch (err) {}
-    }
-
-    function unlockAudioAndStart() {
-      // Step 1: Hide modal immediately regardless of sound support
-      var modal = document.getElementById('startModal');
-      if (modal) modal.style.display = 'none';
-
-      // Step 2: Trigger audio inside safe wrappers
-      playUpbeatChime();
-      setTimeout(function() {
-        speakKidVoice("Welcome! Tap your name to start.");
-      }, 250);
-    }
-
     function openStudentView(name) {
-      playUpbeatChime();
-      var nameView = document.getElementById('nameSelectView');
-      var hView = document.getElementById('humayunView');
-      var zView = document.getElementById('zainaView');
-
-      if (nameView) nameView.style.display = 'none';
+      document.getElementById('nameSelectView').style.display = 'none';
 
       if (name === 'humayun') {
-        if (hView) hView.style.display = 'flex';
-        if (zView) zView.style.display = 'none';
-        speakKidVoice("Welcome Humayun! Pick your subject.");
+        document.getElementById('humayunView').style.display = 'flex';
+        document.getElementById('zainaView').style.display = 'none';
       } else {
-        if (zView) zView.style.display = 'flex';
-        if (hView) hView.style.display = 'none';
-        speakKidVoice("Welcome Zaina! Pick your subject.");
+        document.getElementById('zainaView').style.display = 'flex';
+        document.getElementById('humayunView').style.display = 'none';
       }
     }
 
     function showNameSelect() {
-      playUpbeatChime();
-      var nameView = document.getElementById('nameSelectView');
-      var hView = document.getElementById('humayunView');
-      var zView = document.getElementById('zainaView');
-
-      if (hView) hView.style.display = 'none';
-      if (zView) zView.style.display = 'none';
-      if (nameView) nameView.style.display = 'flex';
-
-      speakKidVoice("Choose your name.");
-    }
-
-    function toggleMute() {
-      isMuted = !isMuted;
-      var icon = document.getElementById('soundIcon');
-      var txt = document.getElementById('soundText');
-      if (icon) icon.textContent = isMuted ? '🔇' : '🔊';
-      if (txt) txt.textContent = isMuted ? 'Voice Off' : 'Voice On';
-      if (isMuted && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
+      document.getElementById('humayunView').style.display = 'none';
+      document.getElementById('zainaView').style.display = 'none';
+      document.getElementById('nameSelectView').style.display = 'flex';
     }
   </script>
 </body>
