@@ -8,7 +8,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 
   <style>
     * {
@@ -33,7 +32,6 @@
       position: relative;
     }
 
-    /* Floating Background Emojis */
     .bg-bubble {
       position: fixed;
       font-size: 2.2rem;
@@ -47,7 +45,7 @@
       100% { transform: translateY(-15vh) rotate(360deg); }
     }
 
-    /* Welcome Modal (Audio unlock required for tablets) */
+    /* Welcome Modal */
     #startModal {
       position: fixed;
       inset: 0;
@@ -68,11 +66,6 @@
       max-width: 400px;
       width: 100%;
       box-shadow: 0 20px 40px rgba(0,0,0,0.25);
-      animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    @keyframes popIn {
-      0% { transform: scale(0.7); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
     }
     .modal-btn {
       margin-top: 20px;
@@ -94,7 +87,6 @@
       box-shadow: 0 2px 0 #92400E;
     }
 
-    /* Sound Switcher */
     .sound-toggle-btn {
       position: absolute;
       top: 16px;
@@ -114,7 +106,6 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
 
-    /* Main Container */
     .view-container {
       position: relative;
       z-index: 10;
@@ -162,21 +153,14 @@
       flex-direction: column;
       align-items: center;
       gap: 16px;
-      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    .name-card:hover {
-      transform: translateY(-8px) scale(1.02);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.14);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
     .name-card:active {
       transform: translateY(2px) scale(0.98);
     }
 
     .card-humayun { border-color: #38BDF8; }
-    .card-humayun:hover { border-color: #0284C7; }
-
     .card-zaina { border-color: #C084FC; }
-    .card-zaina:hover { border-color: #9333EA; }
 
     .avatar {
       width: 110px;
@@ -206,18 +190,13 @@
       border-radius: 999px;
     }
 
-    /* Screen 2: Inside Student View */
+    /* Inside Student View */
     .inside-view {
       display: none;
       width: 100%;
       max-width: 650px;
       flex-direction: column;
       gap: 18px;
-      animation: fadeIn 0.3s ease;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     .top-nav {
@@ -239,9 +218,7 @@
       align-items: center;
       gap: 6px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-      transition: all 0.1s;
     }
-    .back-btn:active { transform: translateY(2px); }
 
     .current-student-title {
       font-size: 1.8rem;
@@ -270,7 +247,7 @@
       font-weight: 800;
       font-size: 1.3rem;
       box-shadow: 0 6px 0 rgba(0,0,0,0.18), 0 10px 20px rgba(0,0,0,0.08);
-      transition: all 0.15s ease;
+      transition: transform 0.1s ease;
     }
     .lesson-btn:active {
       transform: translateY(4px);
@@ -295,27 +272,25 @@
 </head>
 <body>
 
-  <!-- Floating animated elements -->
   <div class="bg-bubble" style="left: 10%; animation-delay: 0s;">🚀</div>
   <div class="bg-bubble" style="left: 30%; animation-delay: 4s;">⭐</div>
   <div class="bg-bubble" style="left: 65%; animation-delay: 8s;">🌱</div>
   <div class="bg-bubble" style="left: 85%; animation-delay: 2s;">📚</div>
 
-  <!-- Audio unlock dialog for mobile tablets -->
+  <!-- Audio unlock dialog -->
   <div id="startModal">
     <div class="modal-card">
       <div style="font-size: 4rem; margin-bottom: 6px;">🏰</div>
       <h2 style="font-size: 2rem; font-weight: 800; color: #0F172A;">Learning Quest</h2>
       <p style="color: #64748B; font-weight: 600; margin-top: 6px;">Ready for today's tasks?</p>
-      <button class="modal-btn" onclick="unlockAudioAndStart()">
+      <button type="button" class="modal-btn" onclick="unlockAudioAndStart()">
         <span>Start!</span>
         <span>✨</span>
       </button>
     </div>
   </div>
 
-  <!-- Sound Toggle -->
-  <button class="sound-toggle-btn" id="soundBtn" onclick="toggleMute()">
+  <button type="button" class="sound-toggle-btn" id="soundBtn" onclick="toggleMute()">
     <span id="soundIcon">🔊</span>
     <span id="soundText">Voice On</span>
   </button>
@@ -328,14 +303,12 @@
     </header>
 
     <div class="names-grid">
-      <!-- Humayun Card -->
       <div class="name-card card-humayun" onclick="openStudentView('humayun')">
         <div class="avatar">👦</div>
         <div class="name-title">Humayun</div>
         <span class="tap-tag">Tap to Open ➔</span>
       </div>
 
-      <!-- Zaina Card -->
       <div class="name-card card-zaina" onclick="openStudentView('zaina')">
         <div class="avatar">👧</div>
         <div class="name-title">Zaina</div>
@@ -347,10 +320,135 @@
   <!-- SCREEN 2: INSIDE HUMAYUN'S VIEW -->
   <div class="inside-view" id="humayunView">
     <div class="top-nav">
-      <button class="back-btn" onclick="showNameSelect()">⬅ Back</button>
+      <button type="button" class="back-btn" onclick="showNameSelect()">⬅ Back</button>
       <div class="current-student-title"><span>👦</span> Humayun</div>
       <div style="width: 80px;"></div>
     </div>
 
     <div class="lessons-deck">
-      <a href="humayun-science.html" class="lesson-btn btn-green"
+      <a href="humayun-science.html" class="lesson-btn btn-green">
+        <span>🌱 EVS Science Nature Trail</span>
+        <div class="arrow-circle">➔</div>
+      </a>
+
+      <a href="humayun.html" class="lesson-btn btn-blue">
+        <span>📖 English Word Quest</span>
+        <div class="arrow-circle">➔</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- SCREEN 2: INSIDE ZAINA'S VIEW -->
+  <div class="inside-view" id="zainaView">
+    <div class="top-nav">
+      <button type="button" class="back-btn" onclick="showNameSelect()">⬅ Back</button>
+      <div class="current-student-title"><span>👧</span> Zaina</div>
+      <div style="width: 80px;"></div>
+    </div>
+
+    <div class="lessons-deck">
+      <a href="zaina.html" class="lesson-btn btn-purple">
+        <span>🏔️ English Trail</span>
+        <div class="arrow-circle">➔</div>
+      </a>
+    </div>
+  </div>
+
+  <script>
+    var isMuted = false;
+    var audioCtx = null;
+
+    function playUpbeatChime() {
+      if (isMuted) return;
+      try {
+        var AudioClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioClass) return;
+        if (!audioCtx) audioCtx = new AudioClass();
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume().catch(function() {});
+        }
+
+        var notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach(function(freq, idx) {
+          var osc = audioCtx.createOscillator();
+          var gain = audioCtx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.value = freq;
+          gain.gain.setValueAtTime(0.06, audioCtx.currentTime + idx * 0.07);
+          gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + idx * 0.07 + 0.2);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(audioCtx.currentTime + idx * 0.07);
+          osc.stop(audioCtx.currentTime + idx * 0.07 + 0.2);
+        });
+      } catch (err) {}
+    }
+
+    function speakKidVoice(text) {
+      if (isMuted || !('speechSynthesis' in window)) return;
+      try {
+        window.speechSynthesis.cancel();
+        var utterance = new SpeechSynthesisUtterance(text);
+        utterance.pitch = 1.35;
+        utterance.rate = 1.0;
+        window.speechSynthesis.speak(utterance);
+      } catch (err) {}
+    }
+
+    function unlockAudioAndStart() {
+      // Step 1: Hide modal immediately regardless of sound support
+      var modal = document.getElementById('startModal');
+      if (modal) modal.style.display = 'none';
+
+      // Step 2: Trigger audio inside safe wrappers
+      playUpbeatChime();
+      setTimeout(function() {
+        speakKidVoice("Welcome! Tap your name to start.");
+      }, 250);
+    }
+
+    function openStudentView(name) {
+      playUpbeatChime();
+      var nameView = document.getElementById('nameSelectView');
+      var hView = document.getElementById('humayunView');
+      var zView = document.getElementById('zainaView');
+
+      if (nameView) nameView.style.display = 'none';
+
+      if (name === 'humayun') {
+        if (hView) hView.style.display = 'flex';
+        if (zView) zView.style.display = 'none';
+        speakKidVoice("Welcome Humayun! Pick your subject.");
+      } else {
+        if (zView) zView.style.display = 'flex';
+        if (hView) hView.style.display = 'none';
+        speakKidVoice("Welcome Zaina! Pick your subject.");
+      }
+    }
+
+    function showNameSelect() {
+      playUpbeatChime();
+      var nameView = document.getElementById('nameSelectView');
+      var hView = document.getElementById('humayunView');
+      var zView = document.getElementById('zainaView');
+
+      if (hView) hView.style.display = 'none';
+      if (zView) zView.style.display = 'none';
+      if (nameView) nameView.style.display = 'flex';
+
+      speakKidVoice("Choose your name.");
+    }
+
+    function toggleMute() {
+      isMuted = !isMuted;
+      var icon = document.getElementById('soundIcon');
+      var txt = document.getElementById('soundText');
+      if (icon) icon.textContent = isMuted ? '🔇' : '🔊';
+      if (txt) txt.textContent = isMuted ? 'Voice Off' : 'Voice On';
+      if (isMuted && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    }
+  </script>
+</body>
+</html>
