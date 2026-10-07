@@ -487,7 +487,7 @@ const MASTER_LESSON_CONTENT = {
 
 let activeLessonContent = JSON.parse(JSON.stringify(MASTER_LESSON_CONTENT));
 let currentSectionKey = "meanings";
-let currentIndex = 0; // Card index (for split layout) or Sub-tab index (for notepad layout)
+let currentIndex = 0;
 let appMode = "study"; // 'study' | 'write' | 'parent'
 
 let activeTool = "pen";
@@ -575,9 +575,14 @@ function applyOrderForMode() {
   }
 }
 
+/* BULLETPROOF MODE TOGGLE */
 function setMode(mode) {
   if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  
+  // 1. Save outgoing drawing in the current mode
   saveCurrentDrawing();
+  
+  // 2. Switch mode cleanly
   appMode = mode;
   document.body.className = (mode === "write") ? "write-mode" : (mode === "parent" ? "parent-mode" : "");
 
@@ -587,7 +592,9 @@ function setMode(mode) {
 
   applyOrderForMode();
   currentIndex = 0;
-  renderWorkspace();
+  
+  // 3. Render without saving to prevent cross-contamination
+  renderWorkspace(false);
 }
 
 function selectSection(secKey) {
@@ -596,7 +603,7 @@ function selectSection(secKey) {
   currentSectionKey = secKey;
   currentIndex = 0;
   updateSectionTabs();
-  renderWorkspace();
+  renderWorkspace(false);
 }
 
 function updateSectionTabs() {
@@ -612,7 +619,7 @@ function navigateStep(dir) {
   const next = currentIndex + dir;
   if (next >= 0 && next < list.length) {
     currentIndex = next;
-    renderWorkspace();
+    renderWorkspace(false);
   }
 }
 
@@ -621,7 +628,7 @@ function jumpToCard(idx) {
   saveCurrentDrawing();
   if (idx >= 0 && idx < getCurrentList().length) {
     currentIndex = idx;
-    renderWorkspace();
+    renderWorkspace(false);
   }
 }
 
@@ -629,11 +636,13 @@ function switchSubTab(idx) {
   if ('speechSynthesis' in window) window.speechSynthesis.cancel();
   saveCurrentDrawing();
   currentIndex = idx;
-  renderWorkspace();
+  renderWorkspace(false);
 }
 
 /* WORKSPACE RENDERER */
-function renderWorkspace() {
+function renderWorkspace(doSave = true) {
+  if (doSave) saveCurrentDrawing();
+
   const container = document.getElementById("mainWorkspace");
   const bottomBar = document.getElementById("bottomBar");
 
@@ -789,11 +798,12 @@ function renderNotepadLayout(container) {
   }, 40);
 }
 
-/* PERSISTENT CANVAS ENGINE */
+/* FRESH NAMESPACE TO PERMANENTLY PREVENT CONTAMINATION */
 function currentStorageKey() {
   const item = getCurrentItem();
   if (!item) return null;
-  return `ink::humayun::eng_oct07::${item.id}`;
+  const targetSlot = (appMode === "parent") ? "write" : appMode;
+  return `v2_isolated_ink::humayun::eng_oct07::${targetSlot}::${item.id}`;
 }
 
 function initCanvasElement() {
@@ -826,6 +836,7 @@ function fitCanvas() {
 }
 
 function saveCurrentDrawing() {
+  if (appMode === "parent") return; // Read-only in parent review
   if (!canvas || canvas.width <= 0) return;
   const key = currentStorageKey();
   if (!key) return;
@@ -837,9 +848,12 @@ function saveCurrentDrawing() {
 
 function restoreCurrentDrawing() {
   if (!canvas || !ctx) return;
+  
+  // MANDATORY: ALWAYS CLEAR TO BLANK BEFORE CHECKING STORAGE
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
   const key = currentStorageKey();
   if (!key) return;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
   const saved = localStorage.getItem(key);
   if (!saved) return;
   const img = new Image();
@@ -881,6 +895,7 @@ function setupCanvasListeners() {
   if (!canvas) return;
 
   canvas.onpointerdown = function(e) {
+    if (appMode === "parent") return; // Read-only
     if (inputRejectionMode === "pen-only") {
       if (e.pointerType !== "pen" && e.pointerType !== "mouse") {
         e.preventDefault();
@@ -899,7 +914,7 @@ function setupCanvasListeners() {
   };
 
   canvas.onpointermove = function(e) {
-    if (!isDrawing || e.pointerId !== activePointerId) return;
+    if (!isDrawing || e.pointerId !== activePointerId || appMode === "parent") return;
 
     const rect = canvas.getBoundingClientRect();
     const currX = e.clientX - rect.left;
@@ -952,7 +967,8 @@ function renderMap() {
   for (let i = 0; i < list.length; i++) {
     const it = list[i];
     const grade = localStorage.getItem(`grade::humayun::eng::${it.id}`);
-    const done = localStorage.getItem(`ink::humayun::eng_oct07::${it.id}`);
+    const done = localStorage.getItem(`v2_isolated_ink::humayun::eng_oct07::study::${it.id}`) || 
+                 localStorage.getItem(`v2_isolated_ink::humayun::eng_oct07::write::${it.id}`);
     let cls = "chest";
     if (i === currentIndex) cls += " current";
     if (grade === "correct") { cls += " correct"; correctCount++; }
@@ -1027,7 +1043,7 @@ function updatePinDots() {
 
 window.onload = function() {
   updateSectionTabs();
-  renderWorkspace();
+  renderWorkspace(false);
 };
 
 window.addEventListener("resize", () => {
