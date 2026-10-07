@@ -130,6 +130,11 @@
       color: #FFF;
       box-shadow: 0 2px 0 var(--purple-dark);
     }
+    .mode-btn.active-review {
+      background: #0284C7;
+      color: #FFF;
+      box-shadow: 0 2px 0 #0369A1;
+    }
 
     .header-actions {
       display: flex;
@@ -191,6 +196,10 @@
       background: var(--purple);
       box-shadow: 0 3px 0 var(--purple-dark);
     }
+    body.review-mode .tab-btn.active {
+      background: #0284C7;
+      box-shadow: 0 3px 0 #0369A1;
+    }
 
     /* WORKSPACE */
     .workspace {
@@ -221,9 +230,8 @@
       font-weight: 800;
       color: var(--primary-dark);
     }
-    body.test-mode .pane-title {
-      color: var(--purple-dark);
-    }
+    body.test-mode .pane-title { color: var(--purple-dark); }
+    body.review-mode .pane-title { color: #0284C7; }
 
     .speakable {
       cursor: pointer;
@@ -414,20 +422,6 @@
       cursor: pointer;
     }
     body.test-mode .answer-tag { display: none !important; }
-
-    .test-instruction {
-      display: none;
-      background: #F5F3FF;
-      border: 2px solid #DDD6FE;
-      border-left: 5px solid var(--purple);
-      padding: 10px 14px;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 800;
-      color: var(--purple-dark);
-      margin-bottom: 10px;
-    }
-    body.test-mode .test-instruction { display: block; }
 
     /* MATCH THE FOLLOWING */
     .match-columns {
@@ -650,31 +644,29 @@
       cursor: pointer;
     }
 
-    /* PEEK BAR */
-    .peek-bar {
+    /* PARENT REVIEW BAR */
+    .parent-review-strip {
       display: none;
-      margin-top: auto;
-      padding: 8px 12px;
-      background: #F8FAFC;
-      border: 2px solid #CBD5E1;
+      background: #F0F9FF;
+      border: 2px solid #BAE6FD;
+      padding: 10px 14px;
       border-radius: 12px;
-      align-items: center;
       justify-content: space-between;
-    }
-    body.test-mode .peek-bar { display: flex; }
-
-    .unlocked-peek {
-      display: none;
-      background: #FEF2F2;
-      border: 2px solid #FECACA;
-      border-left: 5px solid #EF4444;
-      padding: 10px;
-      border-radius: 8px;
-      font-size: 0.95rem;
-      color: #991B1B;
-      font-weight: 700;
+      align-items: center;
       margin-top: 8px;
     }
+    body.review-mode .parent-review-strip { display: flex; }
+
+    .grade-btn {
+      border: none;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .grade-btn.pass { background: #22C55E; color: #FFF; }
+    .grade-btn.retry { background: #F97316; color: #FFF; }
 
     /* PIN MODAL */
     .modal-overlay {
@@ -736,6 +728,7 @@
       <div class="mode-switch-wrap">
         <button class="mode-btn active-learn" id="btnModeLearn" onclick="setAppMode('learn')">📖 படி &amp; மனனம் செய்</button>
         <button class="mode-btn" id="btnModeTest" onclick="setAppMode('test')">🔒 பயிற்சித் தேர்வு</button>
+        <button class="mode-btn" id="btnModeReview" onclick="openPinModal()">🔒 Parent Review</button>
       </div>
 
       <div class="header-actions">
@@ -760,20 +753,16 @@
     <main class="workspace" id="exercisePane">
       <div class="pane-header">
         <div class="pane-title" id="paneTitle">தலைப்பு</div>
-        <div style="font-size:0.85rem; font-weight:800; color:#9A3412;">👉 சொல்லைத் தொட்டு உச்சரிப்பைக் கேட்கவும்</div>
-      </div>
-
-      <div class="test-instruction">
-        ✍️ விடைகளை நினைவில் கொண்டு 2-கோட்டு இடங்களில் எழுதிப் பழகுக!
       </div>
 
       <div id="exerciseContent" style="display:flex; flex-direction:column; gap:8px; flex:1; min-height:0;"></div>
 
-      <div class="unlocked-peek" id="unlockedPeekBox"></div>
-
-      <div class="peek-bar" id="peekBar">
-        <span style="font-size:0.9rem; font-weight:800; color:#64748B;">பெற்றோர் உதவி தேவைப்பட்டால் விடையைப் பார்க்கவும்:</span>
-        <button class="header-btn" onclick="openPinModal()">🔒 விடையைப் பார்</button>
+      <div class="parent-review-strip" id="reviewStrip">
+        <span style="font-weight:800; color:#0369A1;" id="reviewAnswerHint">Teacher Answer: ...</span>
+        <div style="display:flex; gap:8px;">
+          <button class="grade-btn pass" onclick="markCardGrade('pass')">⭐ Correct</button>
+          <button class="grade-btn retry" onclick="markCardGrade('retry')">🔄 Try Again</button>
+        </div>
       </div>
     </main>
   </div>
@@ -782,7 +771,7 @@
   <div class="modal-overlay" id="pinModal">
     <div class="modal-box">
       <h3 style="font-weight:900; color:#0F172A;">Parent Access</h3>
-      <p style="font-size:0.85rem; color:#64748B; margin-top:4px;">விடையை வெளிப்படுத்த 4-இலக்க PIN உள்ளிடவும்</p>
+      <p style="font-size:0.85rem; color:#64748B; margin-top:4px;">விடையை மதிப்பாய்வு செய்ய 4-இலக்க PIN உள்ளிடவும்</p>
       <div class="pin-dots" id="pinDots">----</div>
       <div class="keypad-grid">
         <button class="key-btn" onclick="pressPin('1')">1</button>
@@ -804,12 +793,10 @@
   <script>
     const PARENT_PIN = "1995";
     let enteredPin = "";
-    let appMode = "learn";
+    let appMode = "learn"; // 'learn' | 'test' | 'review'
     let currentSectionIdx = 0;
     let palmRejectionMode = "pen-only";
-    let unlockedPeeks = {};
 
-    /* Helper: Pronounce Word Aloud */
     function speakWord(txt) {
       if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
@@ -819,7 +806,6 @@
       window.speechSynthesis.speak(u);
     }
 
-    /* Helper: Wide 2-Line Inline Scribble Pad */
     function inlineBlankHtml(id) {
       return `
         <span class="inline-blank-container">
@@ -832,81 +818,68 @@
       `;
     }
 
-    /* SECTIONS CURRICULUM */
     const TAMIL_SECTIONS = [
       {
         title: "பாடம்: சொல்வதை எழுதுக (Classwork Notebook)",
-        peek: "1. விலங்குகள், 2. ஒற்றுமை, 3. மரம், 4. உயர்ந்தவர், 5. வலிமை, 6. ஒப்பந்தம், 7. பாலைவனம்",
+        answerHint: "1. விலங்குகள், 2. ஒற்றுமை, 3. மரம், 4. உயர்ந்தவர், 5. வலிமை, 6. ஒப்பந்தம், 7. பாலைவனம்",
         render: () => `
-          <div style="font-weight:700; color:#9A3412; margin-bottom:10px;">
-            ஒலி கேட்டு, சொற்களை 2-கோட்டுப் பகுதியில் எழுதிப் பழகுக:
-          </div>
-
           <div class="dictation-item">
             <span class="dictation-word-text speakable" onclick="speakWord('விலங்குகள்')">1. விலங்குகள்</span>
-            <button class="btn-audio-listen" onclick="speakWord('விலங்குகள்')">🔊 1. கேள்</button>
+            <button class="btn-audio-listen" onclick="speakWord('விலங்குகள்')">1. கேள்</button>
             ${inlineBlankHtml('dict_1')}
           </div>
-
           <div class="dictation-item">
             <span class="dictation-word-text speakable" onclick="speakWord('ஒற்றுமை')">2. ஒற்றுமை</span>
-            <button class="btn-audio-listen" onclick="speakWord('ஒற்றுமை')">🔊 2. கேள்</button>
+            <button class="btn-audio-listen" onclick="speakWord('ஒற்றுமை')">2. கேள்</button>
             ${inlineBlankHtml('dict_2')}
           </div>
-
           <div class="dictation-item">
             <span class="dictation-word-text speakable" onclick="speakWord('மரம்')">3. மரம்</span>
-            <button class="btn-audio-listen" onclick="speakWord('மரம்')">🔊 3. கேள்</button>
+            <button class="btn-audio-listen" onclick="speakWord('மரம்')">3. கேள்</button>
             ${inlineBlankHtml('dict_3')}
           </div>
-
           <div class="dictation-item">
             <span class="dictation-word-text speakable" onclick="speakWord('உயர்ந்தவர்')">4. உயர்ந்தவர்</span>
-            <button class="btn-audio-listen" onclick="speakWord('உயர்ந்தவர்')">🔊 4. கேள்</button>
+            <button class="btn-audio-listen" onclick="speakWord('உயர்ந்தவர்')">4. கேள்</button>
             ${inlineBlankHtml('dict_4')}
           </div>
-
           <div class="dictation-item">
             <span class="dictation-word-text speakable" onclick="speakWord('வலிமை')">5. வலிமை</span>
-            <button class="btn-audio-listen" onclick="speakWord('வலிமை')">🔊 5. கேள்</button>
+            <button class="btn-audio-listen" onclick="speakWord('வலிமை')">5. கேள்</button>
             ${inlineBlankHtml('dict_5')}
           </div>
-
           <div class="dictation-item">
             <span class="dictation-word-text speakable" onclick="speakWord('ஒப்பந்தம்')">6. ஒப்பந்தம்</span>
-            <button class="btn-audio-listen" onclick="speakWord('ஒப்பந்தம்')">🔊 6. கேள்</button>
+            <button class="btn-audio-listen" onclick="speakWord('ஒப்பந்தம்')">6. கேள்</button>
             ${inlineBlankHtml('dict_6')}
           </div>
-
           <div class="dictation-item">
             <span class="dictation-word-text speakable" onclick="speakWord('பாலைவனம்')">7. பாலைவனம்</span>
-            <button class="btn-audio-listen" onclick="speakWord('பாலைவனம்')">🔊 7. கேள்</button>
+            <button class="btn-audio-listen" onclick="speakWord('பாலைவனம்')">7. கேள்</button>
             ${inlineBlankHtml('dict_7')}
           </div>
         `
       },
       {
         title: "வினா விடை (Classwork Notebook) - முழு நோட்டுப் பகுதி",
-        peek: "கேள்வி: மரங்கள் எவற்றுடன் சண்டையிட்டன? விடை: மரங்கள் விலங்குகளுடன் சண்டையிட்டன.",
+        answerHint: "கேள்வி: மரங்கள் எவற்றுடன் சண்டையிட்டன? விடை: மரங்கள் விலங்குகளுடன் சண்டையிட்டன.",
         render: () => `
           <div class="full-qa-wrapper">
             <div class="qa-prompt-box">
               <div style="font-size:1.25rem; font-weight:800; color:#7C2D12;">
-                <span class="speakable" onclick="speakWord('மரங்கள் எவற்றுடன் சண்டையிட்டன?')">❓ கேள்வி: மரங்கள் எவற்றுடன் சண்டையிட்டன? 🔊</span>
+                <span class="speakable" onclick="speakWord('மரங்கள் எவற்றுடன் சண்டையிட்டன?')">கேள்வி: மரங்கள் எவற்றுடன் சண்டையிட்டன?</span>
               </div>
               <div style="font-size:1.15rem; font-weight:700; color:#15803D; margin-top:2px;">
                 <span class="answer-tag" style="font-size:1.15rem; padding:4px 12px;" onclick="speakWord('மரங்கள் விலங்குகளுடன் சண்டையிட்டன.')">
-                  விடை: மரங்கள் விலங்குகளுடன் சண்டையிட்டன. 🔊
+                  விடை: மரங்கள் விலங்குகளுடன் சண்டையிட்டன.
                 </span>
               </div>
             </div>
 
-            <!-- Full Canvas Toolbar -->
             <div class="full-canvas-toolbar">
               <div class="tool-cluster">
                 <button class="canvas-tool-btn active" id="fullPenTool" onclick="setFullTool('pen')">✏️ Pen</button>
                 <button class="canvas-tool-btn" id="fullEraserTool" onclick="setFullTool('eraser')">🧹 Eraser</button>
-                <button class="canvas-tool-btn" onclick="undoFullCanvas()">↩️ Undo</button>
                 <button class="canvas-tool-btn" onclick="clearFullCanvas()">🗑️ Clear</button>
               </div>
               <div class="tool-cluster">
@@ -916,7 +889,6 @@
               </div>
             </div>
 
-            <!-- Full 2-Line Notebook Canvas Container -->
             <div class="full-canvas-container" id="fullCanvasContainer">
               <div class="full-two-lines-texture"></div>
               <canvas id="fullQaCanvas"></canvas>
@@ -926,13 +898,10 @@
       },
       {
         title: "பகுதி 1: பேச்சு வழக்கு ➔ எழுத்து வழக்கு பொருத்துக",
-        peek: "வேகல = வேகவில்லை | பெய்ஞ்சுது = பெய்தது | எரியல = எரியவில்லை | புல்லு = புல் | பாலு = பால் | புத்து = புற்று | தின்னேன் = தின்றேன் | கடிச்சது = கடித்தது",
+        answerHint: "வேகல = வேகவில்லை | பெய்ஞ்சுது = பெய்தது | எரியல = எரியவில்லை | புல்லு = புல் | பாலு = பால் | புத்து = புற்று | தின்னேன் = தின்றேன் | கடிச்சது = கடித்தது",
         render: () => {
           if (appMode === "learn") {
             return `
-              <p style="font-weight:700; color:#9A3412; margin-bottom:8px;">
-                முதலில் பேச்சு வழக்கை எழுத்து வழக்கோடு படித்து மனனம் செய்க:
-              </p>
               <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; max-width:800px; margin:0 auto;">
                 <div style="background:#FFF7ED; border:2px solid var(--border); padding:10px 14px; border-radius:12px; display:flex; justify-content:space-between;"><span class="speakable" onclick="speakWord('வேகல')">வேகல</span><span>➔</span><span class="speakable" onclick="speakWord('வேகவில்லை')"><b>வேகவில்லை</b></span></div>
                 <div style="background:#FFF7ED; border:2px solid var(--border); padding:10px 14px; border-radius:12px; display:flex; justify-content:space-between;"><span class="speakable" onclick="speakWord('பெய்ஞ்சுது')">பெய்ஞ்சுது</span><span>➔</span><span class="speakable" onclick="speakWord('பெய்தது')"><b>பெய்தது</b></span></div>
@@ -946,9 +915,6 @@
             `;
           } else {
             return `
-              <p style="font-weight:800; color:var(--purple-dark); margin-bottom:12px; text-align:center;">
-                இடதுபுறம் உள்ள சொல்லைத் தொட்டு, வலதுபுறம் உள்ள சரியான எழுத்து வழக்குடன் பொருத்துக:
-              </p>
               <div class="match-columns">
                 <div style="display:flex; flex-direction:column; gap:10px;">
                   <button class="match-btn left-match" data-pair="1" onclick="selectMatch(this, 'left')">வேகல</button>
@@ -973,11 +939,8 @@
       },
       {
         title: "பகுதி 2: எழுத்து வழக்கு வாக்கியத்தைத் தேர்ந்தெடு",
-        peek: "பாம்புப்புற்று, பட்டம் பறக்கிறது, பூனை ஓடியது, தண்ணீர் குடித்தான், அப்பளம் உடைந்தது, கை வலித்தது",
+        answerHint: "பாம்புப்புற்று, பட்டம் பறக்கிறது, பூனை ஓடியது, தண்ணீர் குடித்தான், அப்பளம் உடைந்தது, கை வலித்தது",
         render: () => `
-          <div style="font-weight:800; color:var(--primary-dark); margin-bottom:10px;">
-            சரியான எழுத்து வழக்கு வாக்கியத்தைத் தொட்டு தேர்வு செய்க (✓):
-          </div>
           <div class="tick-box-grid">
             <div class="tick-card" onclick="markTick(this, false)"><span class="speakable" onclick="speakWord('பாம்புப்புத்து')">பாம்புப்புத்து</span><div class="tick-indicator"></div></div>
             <div class="tick-card" onclick="markTick(this, true)"><span class="speakable" onclick="speakWord('பாம்புப்புற்று')">பாம்புப்புற்று</span><div class="tick-indicator"></div></div>
@@ -996,15 +959,14 @@
       },
       {
         title: "பகுதி 3: சரியான விடையைத் தெரிவு செய்வேன்",
-        peek: "1. வேட்டையாட, 2. தாழ்வு, 3. பறவைகள், 4. சிங்கம்",
+        answerHint: "1. வேட்டையாட, 2. தாழ்வு, 3. பறவைகள், 4. சிங்கம்",
         render: () => `
-          <!-- Q1 -->
           <div class="mcq-block">
             <div class="mcq-q-row">
               <span class="speakable" onclick="speakWord('வேட்டை கூட்டல் ஆட')">1. வேட்டை + ஆட</span>
               <span class="speakable" onclick="speakWord('இச்சொற்களைச் சேர்த்து எழுதக் கிடைப்பது')">இச்சொற்களைச் சேர்த்து எழுதக் கிடைப்பது:</span>
               ${inlineBlankHtml('mcq_q1')}
-              <span class="answer-tag" onclick="speakWord('வேட்டையாட')">வேட்டையாட 🔊</span>
+              <span class="answer-tag" onclick="speakWord('வேட்டையாட')">வேட்டையாட</span>
             </div>
             <div class="mcq-options-row">
               <button class="mcq-btn" onclick="chooseMcq(this, 'வேட்டையட')">(அ) வேட்டையட</button>
@@ -1014,12 +976,11 @@
             </div>
           </div>
 
-          <!-- Q2 -->
           <div class="mcq-block">
             <div class="mcq-q-row">
               <span class="speakable" onclick="speakWord('உயர்வு இச்சொல்லின் எதிர்ச்சொல்')">2. உயர்வு — இச்சொல்லின் எதிர்ச்சொல்:</span>
               ${inlineBlankHtml('mcq_q2')}
-              <span class="answer-tag" onclick="speakWord('தாழ்வு')">தாழ்வு 🔊</span>
+              <span class="answer-tag" onclick="speakWord('தாழ்வு')">தாழ்வு</span>
             </div>
             <div class="mcq-options-row">
               <button class="mcq-btn" onclick="chooseMcq(this, 'பணிவு')">(அ) பணிவு</button>
@@ -1029,12 +990,11 @@
             </div>
           </div>
 
-          <!-- Q3 -->
           <div class="mcq-block">
             <div class="mcq-q-row">
               <span class="speakable" onclick="speakWord('ஏற்றுக்கொள்கிறோம் என்று கூறியது யார்?')">3. 'ஏற்றுக்கொள்கிறோம்' என்று கூறியது யார்?</span>
               ${inlineBlankHtml('mcq_q3')}
-              <span class="answer-tag" onclick="speakWord('பறவைகள்')">பறவைகள் 🔊</span>
+              <span class="answer-tag" onclick="speakWord('பறவைகள்')">பறவைகள்</span>
             </div>
             <div class="mcq-options-row">
               <button class="mcq-btn" onclick="chooseMcq(this, 'மரங்கள்')">(அ) மரங்கள்</button>
@@ -1044,12 +1004,11 @@
             </div>
           </div>
 
-          <!-- Q4 -->
           <div class="mcq-block">
             <div class="mcq-q-row">
               <span class="speakable" onclick="speakWord('எந்த உணவும் கிடைக்கவில்லை என்று கூறியது யார்?')">4. 'எந்த உணவும் கிடைக்கவில்லை' என்று கூறியது:</span>
               ${inlineBlankHtml('mcq_q4')}
-              <span class="answer-tag" onclick="speakWord('சிங்கம்')">சிங்கம் 🔊</span>
+              <span class="answer-tag" onclick="speakWord('சிங்கம்')">சிங்கம்</span>
             </div>
             <div class="mcq-options-row">
               <button class="mcq-btn" onclick="chooseMcq(this, 'சிங்கம்')">(அ) சிங்கம்</button>
@@ -1062,19 +1021,15 @@
       },
       {
         title: "பகுதி 4: வண்ணத்தில் வேறுபட்ட எழுத்துக்களைச் சேர்ப்போம்",
-        peek: "1. பருத்தி, 2. பட்டு, 3. கம்பளி",
+        answerHint: "1. பருத்தி, 2. பட்டு, 3. கம்பளி",
         render: () => `
-          <div style="font-weight:700; color:#9A3412; margin-bottom:10px;">
-            வண்ண எழுத்துக்களைக் கூட்டி கிடைக்கும் சொல்லை 2-கோட்டில் எழுதுக:
-          </div>
-
           <div class="letters-row">
             <div><span class="colored-char speakable" onclick="speakWord('ப')">ப</span><span class="speakable" onclick="speakWord('ள்ளம்')">ள்ளம்</span></div>
             <div>அ<span class="colored-char speakable" onclick="speakWord('ரு')">ரு</span><span class="speakable" onclick="speakWord('ம்பு')">ம்பு</span></div>
             <div>பார்<span class="colored-char speakable" onclick="speakWord('த்தி')">த்தி</span><span class="speakable" onclick="speakWord('பன்')">பன்</span></div>
             <div>➔</div>
             ${inlineBlankHtml('letters_q1')}
-            <span class="answer-tag" onclick="speakWord('பருத்தி')">பருத்தி 🔊</span>
+            <span class="answer-tag" onclick="speakWord('பருத்தி')">பருத்தி</span>
           </div>
 
           <div class="letters-row">
@@ -1083,7 +1038,7 @@
             <div>வண்<span class="colored-char speakable" onclick="speakWord('டு')">டு</span></div>
             <div>➔</div>
             ${inlineBlankHtml('letters_q2')}
-            <span class="answer-tag" onclick="speakWord('பட்டு')">பட்டு 🔊</span>
+            <span class="answer-tag" onclick="speakWord('பட்டு')">பட்டு</span>
           </div>
 
           <div class="letters-row">
@@ -1092,15 +1047,14 @@
             <div>தக்கா<span class="colored-char speakable" onclick="speakWord('ளி')">ளி</span></div>
             <div>➔</div>
             ${inlineBlankHtml('letters_q3')}
-            <span class="answer-tag" onclick="speakWord('கம்பளி')">கம்பளி 🔊</span>
+            <span class="answer-tag" onclick="speakWord('கம்பளி')">கம்பளி</span>
           </div>
         `
       },
       {
         title: "பகுதி 5: உரிய சொல்லைத் தேர்ந்தெடுத்து நிரப்புவோம்",
-        peek: "1. மழை, மலை | 2. வாள், வால் | 3. புளி, புலி",
+        answerHint: "1. மழை, மலை | 2. வாள், வால் | 3. புளி, புலி",
         render: () => `
-          <!-- Block 1 -->
           <div class="contrast-block">
             <div class="contrast-visual-badge">
               <span class="big-icon speakable" onclick="speakWord('மலை')">⛰️</span>
@@ -1110,16 +1064,15 @@
             <div class="contrast-sentence">
               ${inlineBlankHtml('contrast_q1a')} 
               <span class="speakable" onclick="speakWord('பெய்தது')">பெய்தது.</span>
-              <span class="answer-tag" onclick="speakWord('மழை')">மழை 🔊</span>
+              <span class="answer-tag" onclick="speakWord('மழை')">மழை</span>
             </div>
             <div class="contrast-sentence">
               ${inlineBlankHtml('contrast_q1b')} 
               <span class="speakable" onclick="speakWord('உயரமானது')">உயரமானது.</span>
-              <span class="answer-tag" onclick="speakWord('மலை')">மலை 🔊</span>
+              <span class="answer-tag" onclick="speakWord('மலை')">மலை</span>
             </div>
           </div>
 
-          <!-- Block 2 -->
           <div class="contrast-block">
             <div class="contrast-visual-badge">
               <span class="big-icon speakable" onclick="speakWord('வாள்')">⚔️</span>
@@ -1129,16 +1082,15 @@
             <div class="contrast-sentence">
               <span class="speakable" onclick="speakWord('மரத்தை அறுப்பது')">மரத்தை அறுப்பது</span>
               ${inlineBlankHtml('contrast_q2a')}
-              <span class="answer-tag" onclick="speakWord('வாள்')">வாள் 🔊</span>
+              <span class="answer-tag" onclick="speakWord('வாள்')">வாள்</span>
             </div>
             <div class="contrast-sentence">
               <span class="speakable" onclick="speakWord('மாட்டுக்கு இருப்பது')">மாட்டுக்கு இருப்பது</span>
               ${inlineBlankHtml('contrast_q2b')}
-              <span class="answer-tag" onclick="speakWord('வால்')">வால் 🔊</span>
+              <span class="answer-tag" onclick="speakWord('வால்')">வால்</span>
             </div>
           </div>
 
-          <!-- Block 3 -->
           <div class="contrast-block">
             <div class="contrast-visual-badge">
               <span class="big-icon speakable" onclick="speakWord('புலி')">🐯</span>
@@ -1148,19 +1100,18 @@
             <div class="contrast-sentence">
               <span class="speakable" onclick="speakWord('மரத்தில் காய்ப்பது')">மரத்தில் காய்ப்பது</span>
               ${inlineBlankHtml('contrast_q3a')}
-              <span class="answer-tag" onclick="speakWord('புளி')">புளி 🔊</span>
+              <span class="answer-tag" onclick="speakWord('புளி')">புளி</span>
             </div>
             <div class="contrast-sentence">
               <span class="speakable" onclick="speakWord('காட்டில் வாழ்வது')">காட்டில் வாழ்வது</span>
               ${inlineBlankHtml('contrast_q3b')}
-              <span class="answer-tag" onclick="speakWord('புலி')">புலி 🔊</span>
+              <span class="answer-tag" onclick="speakWord('புலி')">புலி</span>
             </div>
           </div>
         `
       }
     ];
 
-    /* SEAMLESS HUB SAFE EXIT */
     function goToHub() {
       if ('speechSynthesis' in window) {
         try { window.speechSynthesis.cancel(); } catch (e) {}
@@ -1174,7 +1125,6 @@
       }
     }
 
-    /* FULLSCREEN & DIM */
     function toggleFullscreen() {
       if (!document.fullscreenElement && !document.webkitFullscreenElement) {
         const el = document.documentElement;
@@ -1194,21 +1144,20 @@
       btn.textContent = isDim ? "💡 Dim" : "☀️ Bright";
     }
 
-    /* MODE TOGGLE */
     function setAppMode(m) {
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
       saveAllCanvases();
       saveFullCanvas();
       appMode = m;
-      document.body.classList.toggle("test-mode", m === "test");
+      document.body.className = (m === 'test') ? "test-mode" : (m === 'review' ? "review-mode" : "");
 
       document.getElementById("btnModeLearn").className = `mode-btn ${m === 'learn' ? 'active-learn' : ''}`;
       document.getElementById("btnModeTest").className = `mode-btn ${m === 'test' ? 'active-test' : ''}`;
+      document.getElementById("btnModeReview").className = `mode-btn ${m === 'review' ? 'active-review' : ''}`;
 
       switchSection(currentSectionIdx);
     }
 
-    /* SECTION SWITCH */
     function switchSection(idx) {
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
       saveAllCanvases();
@@ -1221,14 +1170,7 @@
       const sec = TAMIL_SECTIONS[idx];
       document.getElementById("paneTitle").textContent = sec.title;
       document.getElementById("exerciseContent").innerHTML = sec.render();
-
-      const peekBox = document.getElementById("unlockedPeekBox");
-      if (appMode === "test" && unlockedPeeks[idx]) {
-        peekBox.innerHTML = `🔑 <b>Parent Answer Key:</b><br/>${sec.peek}`;
-        peekBox.style.display = "block";
-      } else {
-        peekBox.style.display = "none";
-      }
+      document.getElementById("reviewAnswerHint").textContent = `Teacher Answer: ${sec.answerHint}`;
 
       if (idx === 1) {
         setTimeout(() => {
@@ -1241,7 +1183,6 @@
       }
     }
 
-    /* MATCH THE FOLLOWING LOGIC */
     let selectedLeftBtn = null;
     let selectedRightBtn = null;
 
@@ -1275,7 +1216,6 @@
       }
     }
 
-    /* MCQ SELECTION */
     function chooseMcq(btn, textToSpeak) {
       const parent = btn.parentElement;
       parent.querySelectorAll(".mcq-btn").forEach(b => b.classList.remove("selected"));
@@ -1283,22 +1223,26 @@
       speakWord(textToSpeak);
     }
 
-    /* TICK MARK HELPER */
     function markTick(el, isCorrect) {
       el.className = isCorrect ? "tick-card correct" : "tick-card wrong";
       el.querySelector(".tick-indicator").innerHTML = isCorrect ? "✓" : "✗";
     }
 
-    /* PALM REJECTION TOGGLE */
+    function markCardGrade(grade) {
+      alert(grade === 'pass' ? "⭐ Marked as Correct!" : "🔄 Marked to Review Later.");
+    }
+
     function togglePalmRejection() {
       palmRejectionMode = (palmRejectionMode === "pen-only") ? "all" : "pen-only";
       const btn = document.getElementById("btnPalm");
       btn.innerHTML = (palmRejectionMode === "pen-only") ? "🖊️ Pen Only" : "👆 Any Touch";
     }
 
-    /* INLINE 2-LINE CANVAS ENGINE */
+    /* MODE-ISOLATED NAMESPACE KEY HELPER */
     function storageKeyForCanvas(id) {
-      return `ink::humayun::tamil_oct07::${appMode}::${id}`;
+      // In review mode, read from the test namespace
+      const modeKey = (appMode === "review") ? "test" : appMode;
+      return `ink::humayun::tamil_oct07::${modeKey}::${id}`;
     }
 
     function setupInlineCanvases() {
@@ -1321,7 +1265,7 @@
         let lastX = 0, lastY = 0;
 
         c.onpointerdown = (e) => {
-          if (palmRejectionMode === "pen-only" && e.pointerType !== "pen") {
+          if (palmRejectionMode === "pen-only" && e.pointerType !== "pen" && e.pointerType !== "mouse") {
             e.preventDefault();
             return;
           }
@@ -1369,6 +1313,7 @@
     }
 
     function saveCanvas(c, id) {
+      if (appMode === "review") return;
       try {
         const data = c.toDataURL("image/png");
         localStorage.setItem(storageKeyForCanvas(id), data);
@@ -1376,6 +1321,7 @@
     }
 
     function saveAllCanvases() {
+      if (appMode === "review") return;
       document.querySelectorAll(".inline-canvas").forEach(c => {
         const id = c.getAttribute("data-canvas-id");
         saveCanvas(c, id);
@@ -1391,7 +1337,7 @@
       }
     }
 
-    /* FULL CANVAS ENGINE FOR Q&A (SECTION 1) */
+    /* FULL NOTEPAD CANVAS ENGINE */
     let fullCanvas = null;
     let fullCtx = null;
     let fullIsDrawing = false;
@@ -1399,10 +1345,10 @@
     let fullLineWidth = 4;
     let fullLastX = 0, fullLastY = 0;
     let fullActivePointerId = null;
-    let fullUndoStack = [];
 
     function fullStorageKey() {
-      return `ink::humayun::tamil_oct07::${appMode}::full_qa`;
+      const modeKey = (appMode === "review") ? "test" : appMode;
+      return `ink::humayun::tamil_oct07::${modeKey}::full_qa`;
     }
 
     function fitFullCanvas() {
@@ -1428,15 +1374,10 @@
     }
 
     function saveFullCanvas() {
-      if (!fullCanvas || fullCanvas.width <= 0) return;
+      if (!fullCanvas || fullCanvas.width <= 0 || appMode === "review") return;
       try {
         const data = fullCanvas.toDataURL("image/png");
-        const k = fullStorageKey();
-        localStorage.setItem(k, data);
-        if (fullUndoStack.slice(-1)[0] !== data) {
-          fullUndoStack.push(data);
-          if (fullUndoStack.length > 25) fullUndoStack.shift();
-        }
+        localStorage.setItem(fullStorageKey(), data);
       } catch (e) {}
     }
 
@@ -1459,27 +1400,6 @@
       if (!fullCanvas || !fullCtx) return;
       fullCtx.clearRect(0, 0, fullCanvas.width, fullCanvas.height);
       localStorage.removeItem(fullStorageKey());
-      fullUndoStack = [];
-    }
-
-    function undoFullCanvas() {
-      if (!fullCanvas || !fullCtx) return;
-      if (fullUndoStack.length > 1) {
-        fullUndoStack.pop();
-        const prev = fullUndoStack[fullUndoStack.length - 1];
-        localStorage.setItem(fullStorageKey(), prev);
-        const img = new Image();
-        img.onload = function() {
-          fullCtx.clearRect(0, 0, fullCanvas.width, fullCanvas.height);
-          fullCtx.save();
-          fullCtx.setTransform(1, 0, 0, 1, 0, 0);
-          fullCtx.drawImage(img, 0, 0, fullCanvas.width, fullCanvas.height);
-          fullCtx.restore();
-        };
-        img.src = prev;
-      } else {
-        clearFullCanvas();
-      }
     }
 
     function setFullTool(t) {
@@ -1501,7 +1421,7 @@
       fullCtx = fullCanvas.getContext("2d");
 
       fullCanvas.onpointerdown = (e) => {
-        if (palmRejectionMode === "pen-only" && e.pointerType !== "pen") {
+        if (palmRejectionMode === "pen-only" && e.pointerType !== "pen" && e.pointerType !== "mouse") {
           e.preventDefault();
           return;
         }
@@ -1577,9 +1497,8 @@
         updatePinDots();
         if (enteredPin.length === 4) {
           if (enteredPin === PARENT_PIN) {
-            unlockedPeeks[currentSectionIdx] = true;
             closePinModal();
-            switchSection(currentSectionIdx);
+            setAppMode('review');
           } else {
             alert("தவறான PIN!");
             clearPin();
