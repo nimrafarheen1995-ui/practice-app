@@ -978,7 +978,6 @@
                 <div class="tool-group">
                   <button class="pad-btn active" id="btnNPPen" onclick="setNPTool('pen')">✏️ Pen</button>
                   <button class="pad-btn" id="btnNPEraser" onclick="setNPTool('eraser')">🧹 Eraser</button>
-                  <button class="pad-btn" onclick="undoNPCanvas()">↩️ Undo</button>
                   <button class="pad-btn" onclick="clearNPCanvas()">🗑️ Clear</button>
                 </div>
                 <div class="tool-group">
@@ -1030,10 +1029,15 @@
       btn.textContent = isDim ? "💡 Dim" : "☀️ Bright";
     }
 
+    /* BULLETPROOF MODE TOGGLE */
     function setAppMode(m) {
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      
+      // 1. Save whatever was written in the CURRENT mode first
       saveAllDualCanvases();
       saveFullNPCanvas();
+
+      // 2. Switch mode cleanly
       appMode = m;
       document.body.className = (m === 'test') ? "test-mode" : (m === 'review' ? "review-mode" : "");
 
@@ -1041,7 +1045,8 @@
       document.getElementById("btnModeTest").className = `mode-btn ${m === 'test' ? 'active-test' : ''}`;
       document.getElementById("btnModeReview").className = `mode-btn ${m === 'review' ? 'active-review' : ''}`;
 
-      switchSection(currentSectionIdx);
+      // 3. Render and load the canvas for the NEW mode without re-saving
+      switchSection(currentSectionIdx, false);
     }
 
     function renderTabs() {
@@ -1052,10 +1057,12 @@
       }).join("");
     }
 
-    function switchSection(idx) {
+    function switchSection(idx, doSave = true) {
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-      saveAllDualCanvases();
-      saveFullNPCanvas();
+      if (doSave) {
+        saveAllDualCanvases();
+        saveFullNPCanvas();
+      }
       currentSectionIdx = idx;
 
       renderTabs();
@@ -1069,7 +1076,7 @@
           setupFullNPCanvas();
           fitFullNPCanvas();
           restoreFullNPCanvas();
-        }, 60);
+        }, 50);
       } else {
         setupDualCanvases();
       }
@@ -1078,7 +1085,7 @@
     function switchDefTab(defIdx) {
       saveFullNPCanvas();
       currentDefIdx = defIdx;
-      switchSection(4);
+      switchSection(4, false);
     }
 
     let selectedLeftMatch = null;
@@ -1128,15 +1135,11 @@
     function selectChip(itemId, state) {
       localStorage.setItem(`chip::humayun::evs::${itemId}`, state);
       speakText(state);
-      switchSection(currentSectionIdx);
+      switchSection(currentSectionIdx, false);
     }
 
     function markCardGrade(grade) {
-      if (grade === 'pass') {
-        alert("⭐ Marked as Correct!");
-      } else {
-        alert("🔄 Marked to Review Later.");
-      }
+      alert(grade === 'pass' ? "⭐ Marked as Correct!" : "🔄 Marked to Review Later.");
     }
 
     function togglePalmRejection() {
@@ -1145,9 +1148,10 @@
       btn.innerHTML = (palmRejectionMode === "pen-only") ? "🖊️ Pen Only" : "👆 Any Touch";
     }
 
-    /* INLINE DUAL-LINE CANVASES */
+    /* FRESH NAMESPACE TO PERMANENTLY PREVENT CONTAMINATION */
     function storageKeyForDual(id) {
-      return `ink::humayun::evs_oct07::${id}`;
+      const targetSlot = (appMode === "review") ? "test" : appMode;
+      return `v2_isolated_ink::humayun::evs_oct07::${targetSlot}::${id}`;
     }
 
     function setupDualCanvases() {
@@ -1155,6 +1159,9 @@
       canvasList.forEach(c => {
         const id = c.getAttribute("data-canvas-id");
         const ctx = c.getContext("2d", { willReadFrequently: false });
+
+        // MANDATORY: ALWAYS CLEAR TO BLANK BEFORE CHECKING FOR SAVED IMAGE
+        ctx.clearRect(0, 0, c.width, c.height);
 
         const saved = localStorage.getItem(storageKeyForDual(id));
         if (saved) {
@@ -1170,7 +1177,8 @@
         let lastX = 0, lastY = 0;
 
         c.onpointerdown = (e) => {
-          if (palmRejectionMode === "pen-only" && e.pointerType !== "pen") {
+          if (appMode === "review") return;
+          if (palmRejectionMode === "pen-only" && e.pointerType !== "pen" && e.pointerType !== "mouse") {
             e.preventDefault();
             return;
           }
@@ -1183,7 +1191,7 @@
         };
 
         c.onpointermove = (e) => {
-          if (!isDrawing) return;
+          if (!isDrawing || appMode === "review") return;
           const rect = c.getBoundingClientRect();
           const currX = e.clientX - rect.left;
           const currY = e.clientY - rect.top;
@@ -1218,6 +1226,7 @@
     }
 
     function saveDualCanvas(c, id) {
+      if (appMode === "review") return;
       try {
         const data = c.toDataURL("image/png");
         localStorage.setItem(storageKeyForDual(id), data);
@@ -1225,6 +1234,7 @@
     }
 
     function saveAllDualCanvases() {
+      if (appMode === "review") return;
       document.querySelectorAll(".dual-canvas").forEach(c => {
         const id = c.getAttribute("data-canvas-id");
         saveDualCanvas(c, id);
@@ -1251,7 +1261,8 @@
 
     function npStorageKey() {
       const curDef = DEFINITIONS_DATA[currentDefIdx];
-      return `ink::humayun::evs_oct07::def_${curDef.id}`;
+      const targetSlot = (appMode === "review") ? "test" : appMode;
+      return `v2_isolated_ink::humayun::evs_oct07::${targetSlot}::def_${curDef.id}`;
     }
 
     function fitFullNPCanvas() {
@@ -1277,7 +1288,7 @@
     }
 
     function saveFullNPCanvas() {
-      if (!npCanvas || npCanvas.width <= 0) return;
+      if (!npCanvas || npCanvas.width <= 0 || appMode === "review") return;
       try {
         const data = npCanvas.toDataURL("image/png");
         localStorage.setItem(npStorageKey(), data);
@@ -1286,6 +1297,7 @@
 
     function restoreFullNPCanvas() {
       if (!npCanvas || !npCtx) return;
+      // MANDATORY: ALWAYS CLEAR TO BLANK BEFORE CHECKING STORAGE
       npCtx.clearRect(0, 0, npCanvas.width, npCanvas.height);
       const saved = localStorage.getItem(npStorageKey());
       if (!saved) return;
@@ -1303,10 +1315,6 @@
       if (!npCanvas || !npCtx) return;
       npCtx.clearRect(0, 0, npCanvas.width, npCanvas.height);
       localStorage.removeItem(npStorageKey());
-    }
-
-    function undoNPCanvas() {
-      clearNPCanvas();
     }
 
     function setNPTool(t) {
@@ -1328,7 +1336,8 @@
       npCtx = npCanvas.getContext("2d");
 
       npCanvas.onpointerdown = (e) => {
-        if (palmRejectionMode === "pen-only" && e.pointerType !== "pen") {
+        if (appMode === "review") return;
+        if (palmRejectionMode === "pen-only" && e.pointerType !== "pen" && e.pointerType !== "mouse") {
           e.preventDefault();
           return;
         }
@@ -1344,7 +1353,7 @@
       };
 
       npCanvas.onpointermove = (e) => {
-        if (!npIsDrawing || e.pointerId !== npPointerId) return;
+        if (!npIsDrawing || e.pointerId !== npPointerId || appMode === "review") return;
 
         const rect = npCanvas.getBoundingClientRect();
         const currX = e.clientX - rect.left;
@@ -1429,7 +1438,7 @@
 
     window.onload = function() {
       renderTabs();
-      switchSection(0);
+      switchSection(0, false);
     };
 
     window.addEventListener("resize", () => {
