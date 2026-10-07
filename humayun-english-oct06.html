@@ -159,10 +159,10 @@
   }
 
   /* === SECTION TABS === */
-  .section-tabs { display: flex; gap: 6px; padding: 0 8px 4px; flex-shrink: 0; }
+  .section-tabs { display: flex; gap: 6px; padding: 0 8px 4px; flex-shrink: 0; overflow-x: auto; }
   .section-tab {
     flex: 1; background: var(--card); border: 3px solid var(--border);
-    border-radius: 14px; padding: 8px 4px; font-size: 0.85rem; font-weight: 800;
+    border-radius: 14px; padding: 8px 4px; font-size: 0.82rem; font-weight: 800;
     color: var(--ink-soft); cursor: pointer; text-align: center; white-space: nowrap;
     box-shadow: 0 3px 0 var(--border); transition: all 0.1s; font-family: var(--font);
     display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 44px;
@@ -200,15 +200,16 @@
     white-space: nowrap;
   }
 
-  .prompt-text { font-size: 1.6rem; font-weight: 800; color: var(--ink); line-height: 1.3; min-height: 2.2rem; }
+  .prompt-text { font-size: 1.45rem; font-weight: 800; color: var(--ink); line-height: 1.35; min-height: 2.2rem; }
   .prompt-text u { text-decoration-color: var(--reward); text-decoration-thickness: 4px; text-underline-offset: 5px; }
   .prompt-text .blank { color: var(--orange); font-size: 1.8rem; }
 
   .hint-box {
     background: #FFF8E7; border-left: 6px solid var(--reward);
     padding: 10px 14px; border-radius: 8px 16px 16px 8px;
-    font-size: 1rem; font-weight: 600; color: #4A3A1A;
-    border: 2px solid #F0DCA0; border-left-width: 6px; line-height: 1.4;
+    font-size: 0.95rem; font-weight: 600; color: #4A3A1A;
+    border: 2px solid #F0DCA0; border-left-width: 6px; line-height: 1.45;
+    max-height: 140px; overflow-y: auto;
   }
   .hint-box b { color: #B06A1A; }
 
@@ -313,9 +314,9 @@
   .parent-panel.show { display: block; }
   .parent-heading { font-size: 0.9rem; font-weight: 800; color: #4A7A5A; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
   .parent-answer {
-    font-size: 1rem; color: var(--ink); margin-bottom: 10px; font-weight: 600;
+    font-size: 0.95rem; color: var(--ink); margin-bottom: 10px; font-weight: 600;
     background: var(--card); padding: 10px 14px; border-radius: 12px;
-    border: 2px solid #D8CCF0; line-height: 1.4;
+    border: 2px solid #D8CCF0; line-height: 1.45; max-height: 150px; overflow-y: auto;
   }
   .grade-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .grade-btn {
@@ -404,8 +405,8 @@
   @media (orientation: portrait) { .orientation-warning { display: flex; } }
 
   @media (max-height: 560px) {
-    .prompt-text { font-size: 1.3rem; }
-    .hint-box { font-size: 0.9rem; padding: 8px 12px; }
+    .prompt-text { font-size: 1.25rem; }
+    .hint-box { font-size: 0.85rem; padding: 8px 12px; }
     .header-title { font-size: 1rem; }
     .header-title .icon { font-size: 1.3rem; }
     .btn { padding: 8px 14px; font-size: 0.8rem; min-height: 42px; }
@@ -418,7 +419,7 @@
   }
   @media (max-width: 800px) {
     .left-panel { flex: 0 0 42%; }
-    .prompt-text { font-size: 1.3rem; }
+    .prompt-text { font-size: 1.25rem; }
   }
 </style>
 </head>
@@ -458,7 +459,8 @@
     <button class="section-tab active" id="tab-meanings" onclick="selectSection('meanings')">📖 Meanings</button>
     <button class="section-tab" id="tab-opposites" onclick="selectSection('opposites')">🔄 Opposites</button>
     <button class="section-tab" id="tab-sentences" onclick="selectSection('sentences')">✏️ Sentences</button>
-    <button class="section-tab" id="tab-qa" onclick="selectSection('qa')">❓ Q&amp;A</button>
+    <button class="section-tab" id="tab-qa" onclick="selectSection('qa')">❓ Short Q&amp;A</button>
+    <button class="section-tab" id="tab-long_qa" onclick="selectSection('long_qa')">📝 Long Q&amp;A</button>
   </div>
 
   <div class="main">
@@ -695,7 +697,7 @@ function pinKey() {
 }
 
 /* ============================================================
-   CONTENT
+   COMPLETE LESSON CONTENT (FROM PDF PAGES 1 & 2)
    ============================================================ */
 var MASTER_LESSON_CONTENT = {
   meanings: [
@@ -725,7 +727,13 @@ var MASTER_LESSON_CONTENT = {
   ],
   qa: [
     { id: "q1", word: "Why was Meena annoyed at the sight of books?", answer: "Meena was annoyed because in her house her parents were always reading and buying more books." },
-    { id: "q2", word: "Where were books kept in her house?", answer: "Books were kept in drawers desks, cupboards, chests on the sofa, on the stairs, in the fireplace, and stacked on chairs." }
+    { id: "q2", word: "Where were books kept in her house?", answer: "Books were kept in drawers desks, cupboards, chests on the sofa, on the stairs, in the fireplace, and stacked on chairs." },
+    { id: "q3", word: "What did Meena do to rescue Max?", answer: "Meena climbed the tall stack to rescue Max who was stuck on top." },
+    { id: "q4", word: "What began to happen when the books fell down?", answer: "When the books fell down all the characters from the book came out princes, princesses, fairies, elephants, monkeys, rabbits and many more." }
+  ],
+  long_qa: [
+    { id: "lq1", word: "What made Meena read the books and how did it help her?", answer: "All the characters from the books came out and made noise in her room. To make them go back, Meena started enjoying the stories and she began to love reading stories every single day." },
+    { id: "lq2", word: "How did the animals feel when they were out of their books?", answer: "When the animals were out of their books they felt confused and scared. They did not know where they belonged and wanted to go back to their own stories because they felt safe inside their books." }
   ]
 };
 
@@ -856,7 +864,8 @@ function buildShuffledSet() {
     meanings: shuffleArray(MASTER_LESSON_CONTENT.meanings),
     opposites: shuffleArray(MASTER_LESSON_CONTENT.opposites),
     sentences: shuffleArray(MASTER_LESSON_CONTENT.sentences),
-    qa: shuffleArray(MASTER_LESSON_CONTENT.qa)
+    qa: shuffleArray(MASTER_LESSON_CONTENT.qa),
+    long_qa: shuffleArray(MASTER_LESSON_CONTENT.long_qa)
   };
 }
 
@@ -880,10 +889,11 @@ function getInkColor() { return "#1E232A"; }
 
 function getSectionTheme() {
   var themes = {
-    meanings:  { icon: "📖", label: "MEANINGS",   color: "#4A9FE0" },
-    opposites: { icon: "🔄", label: "OPPOSITES",  color: "#E07A3A" },
-    sentences: { icon: "✏️", label: "SENTENCES",  color: "#7A5AC0" },
-    qa:        { icon: "❓", label: "STORY Q&A",  color: "#3A9A6A" }
+    meanings:  { icon: "📖", label: "MEANINGS",    color: "#4A9FE0" },
+    opposites: { icon: "🔄", label: "OPPOSITES",   color: "#E07A3A" },
+    sentences: { icon: "✏️", label: "SENTENCES",   color: "#7A5AC0" },
+    qa:        { icon: "❓", label: "SHORT Q&A",   color: "#3A9A6A" },
+    long_qa:   { icon: "📝", label: "LONG Q&A",    color: "#D46030" }
   };
   return themes[currentSectionKey] || themes.meanings;
 }
@@ -987,26 +997,25 @@ function renderCurrentCard() {
   document.getElementById("btnNext").disabled = (currentIndex === list.length - 1);
   document.getElementById("pagerIndicator").innerText = (currentIndex + 1) + " / " + list.length;
 
-  var catText = "";
+  var catText = theme.icon + " " + theme.label + " — Card " + (currentIndex + 1) + " of " + list.length;
   var promptText = "";
   var hintText = "";
 
   if (currentSectionKey === "meanings") {
-    catText = theme.icon + " " + theme.label + " — Card " + (currentIndex + 1) + " of " + list.length;
     promptText = "Word: <u>" + item.word + "</u>";
     hintText = "<b>💡 Meaning:</b> " + item.answer;
   } else if (currentSectionKey === "opposites") {
-    catText = theme.icon + " " + theme.label + " — Card " + (currentIndex + 1) + " of " + list.length;
     promptText = "Opposite of <u>" + item.word + "</u> &nbsp;=&nbsp; <span class='blank'>?</span>";
     hintText = "<b>💡 Opposite:</b> " + item.word + " &times; <b>" + item.answer + "</b>";
   } else if (currentSectionKey === "sentences") {
-    catText = theme.icon + " " + theme.label + " — Card " + (currentIndex + 1) + " of " + list.length;
     promptText = "Frame a sentence with: <u>" + item.word + "</u>";
     hintText = "<b>💡 Model Sentence:</b> " + item.answer;
   } else if (currentSectionKey === "qa") {
-    catText = theme.icon + " " + theme.label + " — Card " + (currentIndex + 1) + " of " + list.length;
     promptText = item.word;
     hintText = "<b>💡 Answer:</b> " + item.answer;
+  } else if (currentSectionKey === "long_qa") {
+    promptText = item.word;
+    hintText = "<b>💡 Answer (30-40 words):</b> " + item.answer;
   }
 
   var catEl = document.getElementById("cardCategoryText");
@@ -1249,7 +1258,7 @@ function speakCurrentCard() {
   if (currentSectionKey === "meanings") text = item.word + ".";
   else if (currentSectionKey === "opposites") text = "What is the opposite of " + item.word + "?";
   else if (currentSectionKey === "sentences") text = "Frame a sentence with " + item.word + ".";
-  else if (currentSectionKey === "qa") text = item.word;
+  else if (currentSectionKey === "qa" || currentSectionKey === "long_qa") text = item.word;
 
   if (appMode === "study") {
     if (currentSectionKey === "meanings") text += " Meaning: " + item.answer;
@@ -1304,7 +1313,7 @@ function renderMap() {
    ============================================================ */
 function renderGarden() {
   var allItems = [];
-  ["meanings","opposites","sentences","qa"].forEach(function(sec){
+  ["meanings","opposites","sentences","qa","long_qa"].forEach(function(sec){
     MASTER_LESSON_CONTENT[sec].forEach(function(item){
       allItems.push({section: sec, item: item});
     });
