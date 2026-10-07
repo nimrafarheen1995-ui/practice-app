@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>ஹுமாயூன் - தமிழ் பயிற்சி</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Arima:wght@600;700;800&family=Mukta+Malar:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #FFF7ED;
+      --card-bg: #FFFFFF;
+      --text: #7C2D12;
+      --subtext: #9A3412;
+      --border: #FED7AA;
+      --primary: #EA580C;
+      --primary-dark: #C2410C;
+      --purple: #7C3AED;
+      --purple-dark: #6D28D9;
+      --accent: #F59E0B;
+      --success: #16A34A;
+      --wrong: #DC2626;
+      --shadow: 0 6px 18px rgba(124, 45, 18, 0.08);
+      --font-tamil: 'Mukta Malar', 'Arima', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      font-family: var(--font-tamil);
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-size: 16px;
+    }
+
+    body {
+      background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 50%, #FEF3C7 100%);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+      padding: 8px 14px;
+    }
+
+    #screenDimOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      pointer-events: none;
+      z-index: 99999;
+    }
+
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      gap: 8px;
+    }
+
+    /* HEADER */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 48px;
+      flex-shrink: 0;
+    }
+
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mode-switch-wrap {
+      display: flex;
+      background: var(--card-bg);
+      padding: 4px;
+      border-radius: 14px;
+      border: 2px solid var(--border);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+
+    .mode-btn {
+      border: none;
+      background: transparent;
+      padding: 6px 14px;
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: var(--subtext);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.12s;
+      white-space: nowrap;
+    }
+    .mode-btn.active-learn {
+      background: var(--primary);
+      color: #FFF;
+      box-shadow: 0 2px 0 var(--primary-dark);
+    }
+    .mode-btn.active-test {
+      background: var(--purple);
+      color: #FFF;
+      box-shadow: 0 2px 0 var(--purple-dark);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .header-btn {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      color: var(--text);
+      font-size: 0.85rem;
+      font-weight: 800;
+      padding: 6px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 38px;
+      text-decoration: none;
+      box-shadow: 0 2px 0 var(--border);
+    }
+    .header-btn:active { transform: translateY(1px); }
+
+    /* TABS */
+    .tabs-strip {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      background: rgba(255, 255, 255, 0.85);
+      padding: 5px 6px;
+      border-radius: 16px;
+      border: 2px solid var(--border);
+      scrollbar-width: none;
+      flex-shrink: 0;
+    }
+    .tabs-strip::-webkit-scrollbar { display: none; }
+
+    .tab-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: var(--subtext);
+      font-weight: 800;
+      font-size: 0.88rem;
+      padding: 8px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #FFF;
+      box-shadow: 0 3px 0 var(--primary-dark);
+    }
+    body.test-mode .tab-btn.active {
+      background: var(--purple);
+      box-shadow: 0 3px 0 var(--purple-dark);
+    }
+
+    /* WORKSPACE */
+    .workspace {
+      flex: 1;
+      background: var(--card-bg);
+      border-radius: 20px;
+      border: 2px solid var(--border);
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: var(--shadow);
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    .pane-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px dashed var(--border);
+      padding-bottom: 8px;
+      flex-shrink: 0;
+    }
+
+    .pane-title {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+    body.test-mode .pane-title {
+      color: var(--purple-dark);
+    }
+
+    .speakable {
+      cursor: pointer;
+      border-radius: 6px;
+      padding: 1px 4px;
+      transition: background 0.12s;
+    }
+    .speakable:active {
+      background: #FEF08A;
+      color: #000;
+    }
+
+    /* 2-LINE INLINE SCRIBBLE PAD */
+    .inline-blank-container {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      margin: 6px 8px;
+      background: #FFFFFF;
+      border: 2px solid #CBD5E1;
+      border-radius: 14px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+
+    .inline-canvas-wrapper {
+      position: relative;
+      width: 320px;
+      height: 68px;
+      border-radius: 12px 0 0 12px;
+      overflow: hidden;
+      background: #FFFFFF;
+    }
+
+    .two-lines-texture {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image: 
+        linear-gradient(to bottom, #2563EB 1.5px, transparent 1.5px),
+        linear-gradient(to bottom, #2563EB 1.5px, transparent 1.5px);
+      background-size: 100% 100%;
+      background-position: 0 20px, 0 48px;
+      opacity: 0.65;
+    }
+
+    .inline-canvas {
+      position: absolute;
+      inset: 0;
+      cursor: crosshair;
+      touch-action: none;
+      z-index: 2;
+    }
+
+    .inline-clear-btn {
+      background: #F8FAFC;
+      border: none;
+      border-left: 1.5px solid #CBD5E1;
+      padding: 0 10px;
+      height: 68px;
+      border-radius: 0 12px 12px 0;
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: #64748B;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .inline-clear-btn:active { background: #E2E8F0; }
+
+    /* FULL CANVAS STYLING FOR Q&A SECTION */
+    .full-qa-wrapper {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      height: 100%;
+      gap: 10px;
+      min-height: 0;
+    }
+
+    .qa-prompt-box {
+      background: #FFF7ED;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .full-canvas-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--border);
+      gap: 6px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+
+    .tool-cluster {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .canvas-tool-btn {
+      background: #FFF7ED;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      cursor: pointer;
+      color: var(--text);
+      height: 36px;
+    }
+    .canvas-tool-btn.active {
+      background: var(--primary);
+      color: #FFF;
+      border-color: var(--primary);
+    }
+    body.test-mode .canvas-tool-btn.active {
+      background: var(--purple);
+      border-color: var(--purple);
+    }
+
+    .full-canvas-container {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      min-height: 320px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 2px solid var(--border);
+      background: #FFFFFF;
+    }
+
+    .full-two-lines-texture {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-color: #FFFFFF;
+      background-image: repeating-linear-gradient(
+        #FFFFFF 0px,
+        #FFFFFF 28px,
+        #2563EB 29px,
+        #FFFFFF 30px,
+        #FFFFFF 58px,
+        #2563EB 59px,
+        #FFFFFF 60px,
+        #FFFFFF 80px
+      );
+      opacity: 0.55;
+      z-index: 1;
+    }
+    .full-two-lines-texture::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 38px;
+      width: 2px;
+      height: 100%;
+      background: #F87171;
+    }
+
+    #fullQaCanvas {
+      position: absolute;
+      inset: 0;
+      cursor: crosshair;
+      touch-action: none;
+      z-index: 2;
+    }
+
+    /* LEARN VS TEST MODE DISPLAY */
+    .answer-tag {
+      background: #DCFCE7;
+      color: #15803D;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 8px;
+      border: 1.5px solid #86EFAC;
+      font-size: 1.1rem;
+      display: inline-block;
+      margin-left: 6px;
+      cursor: pointer;
+    }
+    body.test-mode .answer-tag { display: none !important; }
+
+    .test-instruction {
+      display: none;
+      background: #F5F3FF;
+      border: 2px solid #DDD6FE;
+      border-left: 5px solid var(--purple);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--purple-dark);
+      margin-bottom: 10px;
+    }
+    body.test-mode .test-instruction { display: block; }
+
+    /* MATCH THE FOLLOWING */
+    .match-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 800px;
+      margin: 10px auto;
+      width: 100%;
+    }
+    .match-btn {
+      background: #FFF7ED;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .match-btn.selected {
+      background: #FEF08A;
+      border-color: #EAB308;
+      box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.4);
+    }
+    .match-btn.paired {
+      background: #DCFCE7;
+      border-color: var(--success);
+      color: #166534;
+      pointer-events: none;
+    }
+
+    /* TICK BOXES */
+    .tick-box-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .tick-card {
+      background: #FFF7ED;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    .tick-indicator {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid #CBD5E1;
+      background: #FFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.1rem;
+    }
+    .tick-card.correct {
+      border-color: var(--success);
+      background: #F0FDF4;
+      color: #166534;
+    }
+    .tick-card.correct .tick-indicator {
+      border-color: var(--success);
+      background: var(--success);
+      color: #FFF;
+    }
+    .tick-card.wrong {
+      border-color: var(--wrong);
+      background: #FEF2F2;
+      color: #991B1B;
+    }
+
+    /* MCQ BLOCK */
+    .mcq-block {
+      background: #FFF7ED;
+      border: 2px solid var(--border);
+      padding: 14px 16px;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .mcq-q-row {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .mcq-options-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .mcq-btn {
+      background: #FFFFFF;
+      border: 2px solid #CBD5E1;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+    .mcq-btn:active { transform: translateY(1px); }
+    .mcq-btn.selected {
+      background: #FEF08A;
+      border-color: #EAB308;
+      color: #854D0E;
+      font-weight: 800;
+    }
+
+    /* LETTER BLOCKS */
+    .letters-row {
+      display: flex;
+      align-items: center;
+      background: #FFF7ED;
+      border: 2px solid var(--border);
+      padding: 12px 16px;
+      border-radius: 14px;
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .colored-char {
+      color: #D946EF;
+      font-size: 1.45rem;
+      text-decoration: underline;
+    }
+
+    /* CONTRAST CARDS */
+    .contrast-block {
+      background: #FFF7ED;
+      border: 2px solid var(--border);
+      border-radius: 18px;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .contrast-visual-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      background: #FEF3C7;
+      border: 2px solid #FCD34D;
+      border-radius: 16px;
+      padding: 12px 18px;
+    }
+    .big-icon {
+      font-size: 3.5rem;
+      line-height: 1;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+    }
+    .contrast-words-pill {
+      background: #FFF;
+      border: 2px solid #F59E0B;
+      color: #92400E;
+      font-size: 1.35rem;
+      font-weight: 900;
+      padding: 6px 20px;
+      border-radius: 999px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+    }
+    .contrast-sentence {
+      font-size: 1.18rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    /* DICTATION (NOTEBOOK WORDS) */
+    .dictation-item {
+      background: #FFF7ED;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .dictation-word-text {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #7C2D12;
+      min-width: 140px;
+    }
+    body.test-mode .dictation-word-text {
+      display: none !important;
+    }
+
+    .btn-audio-listen {
+      background: #FEF3C7;
+      border: 2px solid #FCD34D;
+      color: #92400E;
+      font-weight: 800;
+      font-size: 0.95rem;
+      padding: 8px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    /* PEEK BAR */
+    .peek-bar {
+      display: none;
+      margin-top: auto;
+      padding: 8px 12px;
+      background: #F8FAFC;
+      border: 2px solid #CBD5E1;
+      border-radius: 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    body.test-mode .peek-bar { display: flex; }
+
+    .unlocked-peek {
+      display: none;
+      background: #FEF2F2;
+      border: 2px solid #FECACA;
+      border-left: 5px solid #EF4444;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      color: #991B1B;
+      font-weight: 700;
+      margin-top: 8px;
+    }
+
+    /* PIN MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100000;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #FFF;
+      border-radius: 20px;
+      padding: 22px;
+      width: 90%;
+      max-width: 320px;
+      text-align: center;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.25);
+    }
+    .pin-dots {
+      font-size: 1.8rem;
+      letter-spacing: 6px;
+      background: #F1F5F9;
+      padding: 10px;
+      border-radius: 12px;
+      margin: 14px 0;
+      font-weight: 900;
+    }
+    .keypad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .key-btn {
+      padding: 12px;
+      font-size: 1.25rem;
+      font-weight: 800;
+      border-radius: 12px;
+      border: 2px solid #E2E8F0;
+      background: #F8FAFC;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="screenDimOverlay"></div>
+
+  <div class="app-container">
+    <header>
+      <div class="brand-block">
+        <a href="javascript:void(0)" onclick="goToHub()" class="header-btn">🏠 Hub</a>
+        <div class="brand-title">🪔 ஒற்றுமையே வலிமை</div>
+      </div>
+
+      <div class="mode-switch-wrap">
+        <button class="mode-btn active-learn" id="btnModeLearn" onclick="setAppMode('learn')">📖 படி &amp; மனனம் செய்</button>
+        <button class="mode-btn" id="btnModeTest" onclick="setAppMode('test')">🔒 பயிற்சித் தேர்வு</button>
+      </div>
+
+      <div class="header-actions">
+        <button type="button" class="header-btn" id="btnPalm" onclick="togglePalmRejection()">🖊️ Pen Only</button>
+        <button type="button" class="header-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+        <button type="button" class="header-btn" id="dimBtn" onclick="toggleScreenDim()">💡 Dim</button>
+      </div>
+    </header>
+
+    <!-- TABS -->
+    <div class="tabs-strip" id="tabsStrip">
+      <button class="tab-btn active" onclick="switchSection(0)">📝 சொல்வதை எழுதுக</button>
+      <button class="tab-btn" onclick="switchSection(1)">❓ வினா விடை</button>
+      <button class="tab-btn" onclick="switchSection(2)">🧩 1. பொருத்துக</button>
+      <button class="tab-btn" onclick="switchSection(3)">✓ 2. எழுத்து வழக்கு</button>
+      <button class="tab-btn" onclick="switchSection(4)">🎯 3. சரியான விடை</button>
+      <button class="tab-btn" onclick="switchSection(5)">🎨 4. எழுத்துக்களைச் சேர்ப்போம்</button>
+      <button class="tab-btn" onclick="switchSection(6)">🔍 5. ஒலி வேறுபாடு</button>
+    </div>
+
+    <!-- MAIN VIEW -->
+    <main class="workspace" id="exercisePane">
+      <div class="pane-header">
+        <div class="pane-title" id="paneTitle">தலைப்பு</div>
+        <div style="font-size:0.85rem; font-weight:800; color:#9A3412;">👉 சொல்லைத் தொட்டு உச்சரிப்பைக் கேட்கவும்</div>
+      </div>
+
+      <div class="test-instruction">
+        ✍️ விடைகளை நினைவில் கொண்டு 2-கோட்டு இடங்களில் எழுதிப் பழகுக!
+      </div>
+
+      <div id="exerciseContent" style="display:flex; flex-direction:column; gap:8px; flex:1; min-height:0;"></div>
+
+      <div class="unlocked-peek" id="unlockedPeekBox"></div>
+
+      <div class="peek-bar" id="peekBar">
+        <span style="font-size:0.9rem; font-weight:800; color:#64748B;">பெற்றோர் உதவி தேவைப்பட்டால் விடையைப் பார்க்கவும்:</span>
+        <button class="header-btn" onclick="openPinModal()">🔒 விடையைப் பார்</button>
+      </div>
+    </main>
+  </div>
+
+  <!-- Parent PIN Modal -->
+  <div class="modal-overlay" id="pinModal">
+    <div class="modal-box">
+      <h3 style="font-weight:900; color:#0F172A;">Parent Access</h3>
+      <p style="font-size:0.85rem; color:#64748B; margin-top:4px;">விடையை வெளிப்படுத்த 4-இலக்க PIN உள்ளிடவும்</p>
+      <div class="pin-dots" id="pinDots">----</div>
+      <div class="keypad-grid">
+        <button class="key-btn" onclick="pressPin('1')">1</button>
+        <button class="key-btn" onclick="pressPin('2')">2</button>
+        <button class="key-btn" onclick="pressPin('3')">3</button>
+        <button class="key-btn" onclick="pressPin('4')">4</button>
+        <button class="key-btn" onclick="pressPin('5')">5</button>
+        <button class="key-btn" onclick="pressPin('6')">6</button>
+        <button class="key-btn" onclick="pressPin('7')">7</button>
+        <button class="key-btn" onclick="pressPin('8')">8</button>
+        <button class="key-btn" onclick="pressPin('9')">9</button>
+        <button class="key-btn" onclick="clearPin()">C</button>
+        <button class="key-btn" onclick="pressPin('0')">0</button>
+        <button class="key-btn" onclick="closePinModal()">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PARENT_PIN = "1995";
+    let enteredPin = "";
+    let appMode = "learn";
+    let currentSectionIdx = 0;
+    let palmRejectionMode = "pen-only";
+    let unlockedPeeks = {};
+
+    /* Helper: Pronounce Word Aloud */
+    function speakWord(txt) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(txt);
+      u.lang = "ta-IN";
+      u.rate = 0.82;
+      window.speechSynthesis.speak(u);
+    }
+
+    /* Helper: Wide 2-Line Inline Scribble Pad */
+    function inlineBlankHtml(id) {
+      return `
+        <span class="inline-blank-container">
+          <span class="inline-canvas-wrapper">
+            <span class="two-lines-texture"></span>
+            <canvas class="inline-canvas" data-canvas-id="${id}" width="320" height="68"></canvas>
+          </span>
+          <button type="button" class="inline-clear-btn" onclick="clearInlineCanvas('${id}')" title="அழி">🧹</button>
+        </span>
+      `;
+    }
+
+    /* SECTIONS CURRICULUM */
+    const TAMIL_SECTIONS = [
+      {
+        title: "பாடம்: சொல்வதை எழுதுக (Classwork Notebook)",
+        peek: "1. விலங்குகள், 2. ஒற்றுமை, 3. மரம், 4. உயர்ந்தவர், 5. வலிமை, 6. ஒப்பந்தம், 7. பாலைவனம்",
+        render: () => `
+          <div style="font-weight:700; color:#9A3412; margin-bottom:10px;">
+            ஒலி கேட்டு, சொற்களை 2-கோட்டுப் பகுதியில் எழுதிப் பழகுக:
+          </div>
+
+          <div class="dictation-item">
+            <span class="dictation-word-text speakable" onclick="speakWord('விலங்குகள்')">1. விலங்குகள்</span>
+            <button class="btn-audio-listen" onclick="speakWord('விலங்குகள்')">🔊 1. கேள்</button>
+            ${inlineBlankHtml('dict_1')}
+          </div>
+
+          <div class="dictation-item">
+            <span class="dictation-word-text speakable" onclick="speakWord('ஒற்றுமை')">2. ஒற்றுமை</span>
+            <button class="btn-audio-listen" onclick="speakWord('ஒற்றுமை')">🔊 2. கேள்</button>
+            ${inlineBlankHtml('dict_2')}
+          </div>
+
+          <div class="dictation-item">
+            <span class="dictation-word-text speakable" onclick="speakWord('மரம்')">3. மரம்</span>
+            <button class="btn-audio-listen" onclick="speakWord('மரம்')">🔊 3. கேள்</button>
+            ${inlineBlankHtml('dict_3')}
+          </div>
+
+          <div class="dictation-item">
+            <span class="dictation-word-text speakable" onclick="speakWord('உயர்ந்தவர்')">4. உயர்ந்தவர்</span>
+            <button class="btn-audio-listen" onclick="speakWord('உயர்ந்தவர்')">🔊 4. கேள்</button>
+            ${inlineBlankHtml('dict_4')}
+          </div>
+
+          <div class="dictation-item">
+            <span class="dictation-word-text speakable" onclick="speakWord('வலிமை')">5. வலிமை</span>
+            <button class="btn-audio-listen" onclick="speakWord('வலிமை')">🔊 5. கேள்</button>
+            ${inlineBlankHtml('dict_5')}
+          </div>
+
+          <div class="dictation-item">
+            <span class="dictation-word-text speakable" onclick="speakWord('ஒப்பந்தம்')">6. ஒப்பந்தம்</span>
+            <button class="btn-audio-listen" onclick="speakWord('ஒப்பந்தம்')">🔊 6. கேள்</button>
+            ${inlineBlankHtml('dict_6')}
+          </div>
+
+          <div class="dictation-item">
+            <span class="dictation-word-text speakable" onclick="speakWord('பாலைவனம்')">7. பாலைவனம்</span>
+            <button class="btn-audio-listen" onclick="speakWord('பாலைவனம்')">🔊 7. கேள்</button>
+            ${inlineBlankHtml('dict_7')}
+          </div>
+        `
+      },
+      {
+        title: "வினா விடை (Classwork Notebook) - முழு நோட்டுப் பகுதி",
+        peek: "கேள்வி: மரங்கள் எவற்றுடன் சண்டையிட்டன? விடை: மரங்கள் விலங்குகளுடன் சண்டையிட்டன.",
+        render: () => `
+          <div class="full-qa-wrapper">
+            <div class="qa-prompt-box">
+              <div style="font-size:1.25rem; font-weight:800; color:#7C2D12;">
+                <span class="speakable" onclick="speakWord('மரங்கள் எவற்றுடன் சண்டையிட்டன?')">❓ கேள்வி: மரங்கள் எவற்றுடன் சண்டையிட்டன? 🔊</span>
+              </div>
+              <div style="font-size:1.15rem; font-weight:700; color:#15803D; margin-top:2px;">
+                <span class="answer-tag" style="font-size:1.15rem; padding:4px 12px;" onclick="speakWord('மரங்கள் விலங்குகளுடன் சண்டையிட்டன.')">
+                  விடை: மரங்கள் விலங்குகளுடன் சண்டையிட்டன. 🔊
+                </span>
+              </div>
+            </div>
+
+            <!-- Full Canvas Toolbar -->
+            <div class="full-canvas-toolbar">
+              <div class="tool-cluster">
+                <button class="canvas-tool-btn active" id="fullPenTool" onclick="setFullTool('pen')">✏️ Pen</button>
+                <button class="canvas-tool-btn" id="fullEraserTool" onclick="setFullTool('eraser')">🧹 Eraser</button>
+                <button class="canvas-tool-btn" onclick="undoFullCanvas()">↩️ Undo</button>
+                <button class="canvas-tool-btn" onclick="clearFullCanvas()">🗑️ Clear</button>
+              </div>
+              <div class="tool-cluster">
+                <button class="canvas-tool-btn" id="swThin" onclick="setFullStrokeWidth(2)">Thin</button>
+                <button class="canvas-tool-btn active" id="swMed" onclick="setFullStrokeWidth(4)">Med</button>
+                <button class="canvas-tool-btn" id="swThick" onclick="setFullStrokeWidth(7)">Thick</button>
+              </div>
+            </div>
+
+            <!-- Full 2-Line Notebook Canvas Container -->
+            <div class="full-canvas-container" id="fullCanvasContainer">
+              <div class="full-two-lines-texture"></div>
+              <canvas id="fullQaCanvas"></canvas>
+            </div>
+          </div>
+        `
+      },
+      {
+        title: "பகுதி 1: பேச்சு வழக்கு ➔ எழுத்து வழக்கு பொருத்துக",
+        peek: "வேகல = வேகவில்லை | பெய்ஞ்சுது = பெய்தது | எரியல = எரியவில்லை | புல்லு = புல் | பாலு = பால் | புத்து = புற்று | தின்னேன் = தின்றேன் | கடிச்சது = கடித்தது",
+        render: () => {
+          if (appMode === "learn") {
+            return `
+              <p style="font-weight:700; color:#9A3412; margin-bottom:8px;">
+                முதலில் பேச்சு வழக்கை எழுத்து வழக்கோடு படித்து மனனம் செய்க:
+              </p>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; max-width:800px; margin:0 auto;">
+                <div style="background:#FFF7ED; border:2px solid var(--border); padding:10px 14px; border-radius:12px; display:flex; justify-content:space-between;"><span class="speakable" onclick="speakWord('வேகல')">வேகல</span><span>➔</span><span class="speakable" onclick="speakWord('வேகவில்லை')"><b>வேகவில்லை</b></span></div>
+                <div style="background:#FFF7ED; border:2px solid var(--border); padding:10px 14px; border-radius:12px; display:flex; justify-content:space-between;"><span class="speakable" onclick="speakWord('பெய்ஞ்சுது')">பெய்ஞ்சுது</span><span>➔</span><span class="speakable" onclick="speakWord('பெய்தது')"><b>பெய்தது</b></span></div>
+                <div style="background:#FFF7ED; border:2px solid var(--border); padding:10px 14px; border-radius:12px; display:flex; justify-content:space-between;"><span class="speakable" onclick="speakWord('எரியல')">எரியல</span><span>➔</span><span class="speakable" onclick="speakWord('எரியவில்லை')"><b>எரியவில்லை</b></span></div>
+                <div style="background:#FFF7ED; border:2px solid var(--border); padding:10px 14px; border-radius:12px; display:flex; justify-content:space-between;"><span class="speakable" onclick="speakWord('புல்லு')">புல்லு</span><span>➔</span><span class="speakable" onclick="speakWord('புல்')"><b>புல்</b></span></div>
+                <div style="background:#FFF7ED; border:2px solid var(--border); padding:10px 14px; border-radius:12px; display:flex; justify-content:space-between;"><span class="speakable" onclick="speakWord('பாலு')">பாலு</span><span>➔</span><span class="speakable" onclick="speakWord('பால்')"><b>பால்</b></span></div>
+                <div style="background:#FFF7ED; border:2px solid var(--border); padding:10px 14px; border-radius:12px; display:flex; justify-content:space-between;"><span class="speakable" onclick="speakWord('புத்து')">புத்து</span><span>➔</span><span class="speakable" onclick="speakWord('புற்று')"><b>புற்று</b></span></div>
+                <div style="background:#FFF7ED; border:2px solid var(--border); padding:10px 14px; border-radius:12px; display:flex; justify-content:space-between;"><span class="speakable" onclick="speakWord('தின்னேன்')">தின்னேன்</span><span>➔</span><span class="speakable" onclick="speakWord('தின்றேன்')"><b>தின்றேன்</b></span></div>
+                <div style="background:#FFF7ED; border:2px solid var(--border); padding:10px 14px; border-radius:12px; display:flex; justify-content:space-between;"><span class="speakable" onclick="speakWord('கடிச்சது')">கடிச்சது</span><span>➔</span><span class="speakable" onclick="speakWord('கடித்தது')"><b>கடித்தது</b></span></div>
+              </div>
+            `;
+          } else {
+            return `
+              <p style="font-weight:800; color:var(--purple-dark); margin-bottom:12px; text-align:center;">
+                இடதுபுறம் உள்ள சொல்லைத் தொட்டு, வலதுபுறம் உள்ள சரியான எழுத்து வழக்குடன் பொருத்துக:
+              </p>
+              <div class="match-columns">
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                  <button class="match-btn left-match" data-pair="1" onclick="selectMatch(this, 'left')">வேகல</button>
+                  <button class="match-btn left-match" data-pair="2" onclick="selectMatch(this, 'left')">புத்து</button>
+                  <button class="match-btn left-match" data-pair="3" onclick="selectMatch(this, 'left')">பெய்ஞ்சுது</button>
+                  <button class="match-btn left-match" data-pair="4" onclick="selectMatch(this, 'left')">தின்னேன்</button>
+                  <button class="match-btn left-match" data-pair="5" onclick="selectMatch(this, 'left')">பாலு</button>
+                  <button class="match-btn left-match" data-pair="6" onclick="selectMatch(this, 'left')">கடிச்சது</button>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                  <button class="match-btn right-match" data-pair="3" onclick="selectMatch(this, 'right')">பெய்தது</button>
+                  <button class="match-btn right-match" data-pair="1" onclick="selectMatch(this, 'right')">வேகவில்லை</button>
+                  <button class="match-btn right-match" data-pair="5" onclick="selectMatch(this, 'right')">பால்</button>
+                  <button class="match-btn right-match" data-pair="2" onclick="selectMatch(this, 'right')">புற்று</button>
+                  <button class="match-btn right-match" data-pair="6" onclick="selectMatch(this, 'right')">கடித்தது</button>
+                  <button class="match-btn right-match" data-pair="4" onclick="selectMatch(this, 'right')">தின்றேன்</button>
+                </div>
+              </div>
+            `;
+          }
+        }
+      },
+      {
+        title: "பகுதி 2: எழுத்து வழக்கு வாக்கியத்தைத் தேர்ந்தெடு",
+        peek: "பாம்புப்புற்று, பட்டம் பறக்கிறது, பூனை ஓடியது, தண்ணீர் குடித்தான், அப்பளம் உடைந்தது, கை வலித்தது",
+        render: () => `
+          <div style="font-weight:800; color:var(--primary-dark); margin-bottom:10px;">
+            சரியான எழுத்து வழக்கு வாக்கியத்தைத் தொட்டு தேர்வு செய்க (✓):
+          </div>
+          <div class="tick-box-grid">
+            <div class="tick-card" onclick="markTick(this, false)"><span class="speakable" onclick="speakWord('பாம்புப்புத்து')">பாம்புப்புத்து</span><div class="tick-indicator"></div></div>
+            <div class="tick-card" onclick="markTick(this, true)"><span class="speakable" onclick="speakWord('பாம்புப்புற்று')">பாம்புப்புற்று</span><div class="tick-indicator"></div></div>
+            <div class="tick-card" onclick="markTick(this, true)"><span class="speakable" onclick="speakWord('பட்டம் பறக்கிறது')">பட்டம் பறக்கிறது</span><div class="tick-indicator"></div></div>
+            <div class="tick-card" onclick="markTick(this, false)"><span class="speakable" onclick="speakWord('பட்டம் பறக்குது')">பட்டம் பறக்குது</span><div class="tick-indicator"></div></div>
+            <div class="tick-card" onclick="markTick(this, true)"><span class="speakable" onclick="speakWord('பூனை ஓடியது')">பூனை ஓடியது</span><div class="tick-indicator"></div></div>
+            <div class="tick-card" onclick="markTick(this, false)"><span class="speakable" onclick="speakWord('பூனை ஓடுச்சு')">பூனை ஓடுச்சு</span><div class="tick-indicator"></div></div>
+            <div class="tick-card" onclick="markTick(this, false)"><span class="speakable" onclick="speakWord('தண்ணீர் குடிச்சான்')">தண்ணீர் குடிச்சான்</span><div class="tick-indicator"></div></div>
+            <div class="tick-card" onclick="markTick(this, true)"><span class="speakable" onclick="speakWord('தண்ணீர் குடித்தான்')">தண்ணீர் குடித்தான்</span><div class="tick-indicator"></div></div>
+            <div class="tick-card" onclick="markTick(this, false)"><span class="speakable" onclick="speakWord('அப்பளம் உடைஞ்சது')">அப்பளம் உடைஞ்சது</span><div class="tick-indicator"></div></div>
+            <div class="tick-card" onclick="markTick(this, true)"><span class="speakable" onclick="speakWord('அப்பளம் உடைந்தது')">அப்பளம் உடைந்தது</span><div class="tick-indicator"></div></div>
+            <div class="tick-card" onclick="markTick(this, true)"><span class="speakable" onclick="speakWord('கை வலித்தது')">கை வலித்தது</span><div class="tick-indicator"></div></div>
+            <div class="tick-card" onclick="markTick(this, false)"><span class="speakable" onclick="speakWord('கை வலிச்சது')">கை வலிச்சது</span><div class="tick-indicator"></div></div>
+          </div>
+        `
+      },
+      {
+        title: "பகுதி 3: சரியான விடையைத் தெரிவு செய்வேன்",
+        peek: "1. வேட்டையாட, 2. தாழ்வு, 3. பறவைகள், 4. சிங்கம்",
+        render: () => `
+          <!-- Q1 -->
+          <div class="mcq-block">
+            <div class="mcq-q-row">
+              <span class="speakable" onclick="speakWord('வேட்டை கூட்டல் ஆட')">1. வேட்டை + ஆட</span>
+              <span class="speakable" onclick="speakWord('இச்சொற்களைச் சேர்த்து எழுதக் கிடைப்பது')">இச்சொற்களைச் சேர்த்து எழுதக் கிடைப்பது:</span>
+              ${inlineBlankHtml('mcq_q1')}
+              <span class="answer-tag" onclick="speakWord('வேட்டையாட')">வேட்டையாட 🔊</span>
+            </div>
+            <div class="mcq-options-row">
+              <button class="mcq-btn" onclick="chooseMcq(this, 'வேட்டையட')">(அ) வேட்டையட</button>
+              <button class="mcq-btn" onclick="chooseMcq(this, 'வேட்டையாட')">(ஆ) வேட்டையாட</button>
+              <button class="mcq-btn" onclick="chooseMcq(this, 'வேட்டைஆடு')">(இ) வேட்டைஆடு</button>
+              <button class="mcq-btn" onclick="chooseMcq(this, 'வெட்டையாட')">(ஈ) வெட்டையாட</button>
+            </div>
+          </div>
+
+          <!-- Q2 -->
+          <div class="mcq-block">
+            <div class="mcq-q-row">
+              <span class="speakable" onclick="speakWord('உயர்வு இச்சொல்லின் எதிர்ச்சொல்')">2. உயர்வு — இச்சொல்லின் எதிர்ச்சொல்:</span>
+              ${inlineBlankHtml('mcq_q2')}
+              <span class="answer-tag" onclick="speakWord('தாழ்வு')">தாழ்வு 🔊</span>
+            </div>
+            <div class="mcq-options-row">
+              <button class="mcq-btn" onclick="chooseMcq(this, 'பணிவு')">(அ) பணிவு</button>
+              <button class="mcq-btn" onclick="chooseMcq(this, 'கனிவு')">(ஆ) கனிவு</button>
+              <button class="mcq-btn" onclick="chooseMcq(this, 'தாழ்வு')">(இ) தாழ்வு</button>
+              <button class="mcq-btn" onclick="chooseMcq(this, 'துணிவு')">(ஈ) துணிவு</button>
+            </div>
+          </div>
+
+          <!-- Q3 -->
+          <div class="mcq-block">
+            <div class="mcq-q-row">
+              <span class="speakable" onclick="speakWord('ஏற்றுக்கொள்கிறோம் என்று கூறியது யார்?')">3. 'ஏற்றுக்கொள்கிறோம்' என்று கூறியது யார்?</span>
+              ${inlineBlankHtml('mcq_q3')}
+              <span class="answer-tag" onclick="speakWord('பறவைகள்')">பறவைகள் 🔊</span>
+            </div>
+            <div class="mcq-options-row">
+              <button class="mcq-btn" onclick="chooseMcq(this, 'மரங்கள்')">(அ) மரங்கள்</button>
+              <button class="mcq-btn" onclick="chooseMcq(this, 'விலங்குகள்')">(ஆ) விலங்குகள்</button>
+              <button class="mcq-btn" onclick="chooseMcq(this, 'பறவைகள்')">(இ) பறவைகள்</button>
+              <button class="mcq-btn" onclick="chooseMcq(this, 'மனிதர்கள்')">(ஈ) மனிதர்கள்</button>
+            </div>
+          </div>
+
+          <!-- Q4 -->
+          <div class="mcq-block">
+            <div class="mcq-q-row">
+              <span class="speakable" onclick="speakWord('எந்த உணவும் கிடைக்கவில்லை என்று கூறியது யார்?')">4. 'எந்த உணவும் கிடைக்கவில்லை' என்று கூறியது:</span>
+              ${inlineBlankHtml('mcq_q4')}
+              <span class="answer-tag" onclick="speakWord('சிங்கம்')">சிங்கம் 🔊</span>
+            </div>
+            <div class="mcq-options-row">
+              <button class="mcq-btn" onclick="chooseMcq(this, 'சிங்கம்')">(அ) சிங்கம்</button>
+              <button class="mcq-btn" onclick="chooseMcq(this, 'புலி')">(ஆ) புலி</button>
+              <button class="mcq-btn" onclick="chooseMcq(this, 'முயல்')">(இ) முயல்</button>
+              <button class="mcq-btn" onclick="chooseMcq(this, 'மான்')">(ஈ) மான்</button>
+            </div>
+          </div>
+        `
+      },
+      {
+        title: "பகுதி 4: வண்ணத்தில் வேறுபட்ட எழுத்துக்களைச் சேர்ப்போம்",
+        peek: "1. பருத்தி, 2. பட்டு, 3. கம்பளி",
+        render: () => `
+          <div style="font-weight:700; color:#9A3412; margin-bottom:10px;">
+            வண்ண எழுத்துக்களைக் கூட்டி கிடைக்கும் சொல்லை 2-கோட்டில் எழுதுக:
+          </div>
+
+          <div class="letters-row">
+            <div><span class="colored-char speakable" onclick="speakWord('ப')">ப</span><span class="speakable" onclick="speakWord('ள்ளம்')">ள்ளம்</span></div>
+            <div>அ<span class="colored-char speakable" onclick="speakWord('ரு')">ரு</span><span class="speakable" onclick="speakWord('ம்பு')">ம்பு</span></div>
+            <div>பார்<span class="colored-char speakable" onclick="speakWord('த்தி')">த்தி</span><span class="speakable" onclick="speakWord('பன்')">பன்</span></div>
+            <div>➔</div>
+            ${inlineBlankHtml('letters_q1')}
+            <span class="answer-tag" onclick="speakWord('பருத்தி')">பருத்தி 🔊</span>
+          </div>
+
+          <div class="letters-row">
+            <div><span class="colored-char speakable" onclick="speakWord('ப')">ப</span><span class="speakable" onclick="speakWord('ருந்து')">ருந்து</span></div>
+            <div>வ<span class="colored-char speakable" onclick="speakWord('ட்')">ட்</span><span class="speakable" onclick="speakWord('டம்')">டம்</span></div>
+            <div>வண்<span class="colored-char speakable" onclick="speakWord('டு')">டு</span></div>
+            <div>➔</div>
+            ${inlineBlankHtml('letters_q2')}
+            <span class="answer-tag" onclick="speakWord('பட்டு')">பட்டு 🔊</span>
+          </div>
+
+          <div class="letters-row">
+            <div><span class="colored-char speakable" onclick="speakWord('க')">க</span><span class="speakable" onclick="speakWord('ம்பு')">ம்பு</span></div>
+            <div>ப<span class="colored-char speakable" onclick="speakWord('ம்ப')">ம்ப</span><span class="speakable" onclick="speakWord('ரம்')">ரம்</span></div>
+            <div>தக்கா<span class="colored-char speakable" onclick="speakWord('ளி')">ளி</span></div>
+            <div>➔</div>
+            ${inlineBlankHtml('letters_q3')}
+            <span class="answer-tag" onclick="speakWord('கம்பளி')">கம்பளி 🔊</span>
+          </div>
+        `
+      },
+      {
+        title: "பகுதி 5: உரிய சொல்லைத் தேர்ந்தெடுத்து நிரப்புவோம்",
+        peek: "1. மழை, மலை | 2. வாள், வால் | 3. புளி, புலி",
+        render: () => `
+          <!-- Block 1 -->
+          <div class="contrast-block">
+            <div class="contrast-visual-badge">
+              <span class="big-icon speakable" onclick="speakWord('மலை')">⛰️</span>
+              <span class="contrast-words-pill speakable" onclick="speakWord('மலை மழை')">மலை / மழை</span>
+              <span class="big-icon speakable" onclick="speakWord('மழை')">🌧️</span>
+            </div>
+            <div class="contrast-sentence">
+              ${inlineBlankHtml('contrast_q1a')} 
+              <span class="speakable" onclick="speakWord('பெய்தது')">பெய்தது.</span>
+              <span class="answer-tag" onclick="speakWord('மழை')">மழை 🔊</span>
+            </div>
+            <div class="contrast-sentence">
+              ${inlineBlankHtml('contrast_q1b')} 
+              <span class="speakable" onclick="speakWord('உயரமானது')">உயரமானது.</span>
+              <span class="answer-tag" onclick="speakWord('மலை')">மலை 🔊</span>
+            </div>
+          </div>
+
+          <!-- Block 2 -->
+          <div class="contrast-block">
+            <div class="contrast-visual-badge">
+              <span class="big-icon speakable" onclick="speakWord('வாள்')">⚔️</span>
+              <span class="contrast-words-pill speakable" onclick="speakWord('வாள் வால்')">வாள் / வால்</span>
+              <span class="big-icon speakable" onclick="speakWord('வால்')">🐅</span>
+            </div>
+            <div class="contrast-sentence">
+              <span class="speakable" onclick="speakWord('மரத்தை அறுப்பது')">மரத்தை அறுப்பது</span>
+              ${inlineBlankHtml('contrast_q2a')}
+              <span class="answer-tag" onclick="speakWord('வாள்')">வாள் 🔊</span>
+            </div>
+            <div class="contrast-sentence">
+              <span class="speakable" onclick="speakWord('மாட்டுக்கு இருப்பது')">மாட்டுக்கு இருப்பது</span>
+              ${inlineBlankHtml('contrast_q2b')}
+              <span class="answer-tag" onclick="speakWord('வால்')">வால் 🔊</span>
+            </div>
+          </div>
+
+          <!-- Block 3 -->
+          <div class="contrast-block">
+            <div class="contrast-visual-badge">
+              <span class="big-icon speakable" onclick="speakWord('புலி')">🐯</span>
+              <span class="contrast-words-pill speakable" onclick="speakWord('புலி புளி')">புலி / புளி</span>
+              <span class="big-icon speakable" onclick="speakWord('புளி')">🫘</span>
+            </div>
+            <div class="contrast-sentence">
+              <span class="speakable" onclick="speakWord('மரத்தில் காய்ப்பது')">மரத்தில் காய்ப்பது</span>
+              ${inlineBlankHtml('contrast_q3a')}
+              <span class="answer-tag" onclick="speakWord('புளி')">புளி 🔊</span>
+            </div>
+            <div class="contrast-sentence">
+              <span class="speakable" onclick="speakWord('காட்டில் வாழ்வது')">காட்டில் வாழ்வது</span>
+              ${inlineBlankHtml('contrast_q3b')}
+              <span class="answer-tag" onclick="speakWord('புலி')">புலி 🔊</span>
+            </div>
+          </div>
+        `
+      }
+    ];
+
+    /* SEAMLESS HUB SAFE EXIT */
+    function goToHub() {
+      if ('speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+      }
+      saveAllCanvases();
+      saveFullCanvas();
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage("close-lesson-to-hub", "*");
+      } else {
+        window.location.href = "index.html";
+      }
+    }
+
+    /* FULLSCREEN & DIM */
+    function toggleFullscreen() {
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        const el = document.documentElement;
+        if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      }
+    }
+
+    function toggleScreenDim() {
+      const el = document.getElementById("screenDimOverlay");
+      const btn = document.getElementById("dimBtn");
+      const isDim = el.style.display === "block";
+      el.style.display = isDim ? "none" : "block";
+      btn.textContent = isDim ? "💡 Dim" : "☀️ Bright";
+    }
+
+    /* MODE TOGGLE */
+    function setAppMode(m) {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      saveAllCanvases();
+      saveFullCanvas();
+      appMode = m;
+      document.body.classList.toggle("test-mode", m === "test");
+
+      document.getElementById("btnModeLearn").className = `mode-btn ${m === 'learn' ? 'active-learn' : ''}`;
+      document.getElementById("btnModeTest").className = `mode-btn ${m === 'test' ? 'active-test' : ''}`;
+
+      switchSection(currentSectionIdx);
+    }
+
+    /* SECTION SWITCH */
+    function switchSection(idx) {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      saveAllCanvases();
+      saveFullCanvas();
+      currentSectionIdx = idx;
+
+      const tabs = document.querySelectorAll(".tab-btn");
+      tabs.forEach((t, i) => t.classList.toggle("active", i === idx));
+
+      const sec = TAMIL_SECTIONS[idx];
+      document.getElementById("paneTitle").textContent = sec.title;
+      document.getElementById("exerciseContent").innerHTML = sec.render();
+
+      const peekBox = document.getElementById("unlockedPeekBox");
+      if (appMode === "test" && unlockedPeeks[idx]) {
+        peekBox.innerHTML = `🔑 <b>Parent Answer Key:</b><br/>${sec.peek}`;
+        peekBox.style.display = "block";
+      } else {
+        peekBox.style.display = "none";
+      }
+
+      if (idx === 1) {
+        setTimeout(() => {
+          setupFullCanvas();
+          fitFullCanvas();
+          restoreFullCanvas();
+        }, 50);
+      } else {
+        setupInlineCanvases();
+      }
+    }
+
+    /* MATCH THE FOLLOWING LOGIC */
+    let selectedLeftBtn = null;
+    let selectedRightBtn = null;
+
+    function selectMatch(btn, side) {
+      if (side === 'left') {
+        if (selectedLeftBtn) selectedLeftBtn.classList.remove('selected');
+        selectedLeftBtn = btn;
+        btn.classList.add('selected');
+      } else {
+        if (selectedRightBtn) selectedRightBtn.classList.remove('selected');
+        selectedRightBtn = btn;
+        btn.classList.add('selected');
+      }
+
+      if (selectedLeftBtn && selectedRightBtn) {
+        if (selectedLeftBtn.getAttribute('data-pair') === selectedRightBtn.getAttribute('data-pair')) {
+          selectedLeftBtn.classList.remove('selected');
+          selectedRightBtn.classList.remove('selected');
+          selectedLeftBtn.classList.add('paired');
+          selectedRightBtn.classList.add('paired');
+          selectedLeftBtn.innerHTML += " ✓";
+          selectedRightBtn.innerHTML += " ✓";
+          speakWord("சரியான விடை");
+        } else {
+          selectedLeftBtn.classList.remove('selected');
+          selectedRightBtn.classList.remove('selected');
+          alert("தவறு! மீண்டும் முயற்சிக்கவும்.");
+        }
+        selectedLeftBtn = null;
+        selectedRightBtn = null;
+      }
+    }
+
+    /* MCQ SELECTION */
+    function chooseMcq(btn, textToSpeak) {
+      const parent = btn.parentElement;
+      parent.querySelectorAll(".mcq-btn").forEach(b => b.classList.remove("selected"));
+      btn.classList.add("selected");
+      speakWord(textToSpeak);
+    }
+
+    /* TICK MARK HELPER */
+    function markTick(el, isCorrect) {
+      el.className = isCorrect ? "tick-card correct" : "tick-card wrong";
+      el.querySelector(".tick-indicator").innerHTML = isCorrect ? "✓" : "✗";
+    }
+
+    /* PALM REJECTION TOGGLE */
+    function togglePalmRejection() {
+      palmRejectionMode = (palmRejectionMode === "pen-only") ? "all" : "pen-only";
+      const btn = document.getElementById("btnPalm");
+      btn.innerHTML = (palmRejectionMode === "pen-only") ? "🖊️ Pen Only" : "👆 Any Touch";
+    }
+
+    /* INLINE 2-LINE CANVAS ENGINE */
+    function storageKeyForCanvas(id) {
+      return `ink::humayun::tamil_oct07::${appMode}::${id}`;
+    }
+
+    function setupInlineCanvases() {
+      const canvasList = document.querySelectorAll(".inline-canvas");
+      canvasList.forEach(c => {
+        const id = c.getAttribute("data-canvas-id");
+        const ctx = c.getContext("2d", { willReadFrequently: false });
+
+        const saved = localStorage.getItem(storageKeyForCanvas(id));
+        if (saved) {
+          const img = new Image();
+          img.onload = () => {
+            ctx.clearRect(0, 0, c.width, c.height);
+            ctx.drawImage(img, 0, 0);
+          };
+          img.src = saved;
+        }
+
+        let isDrawing = false;
+        let lastX = 0, lastY = 0;
+
+        c.onpointerdown = (e) => {
+          if (palmRejectionMode === "pen-only" && e.pointerType !== "pen") {
+            e.preventDefault();
+            return;
+          }
+          isDrawing = true;
+          try { c.setPointerCapture(e.pointerId); } catch (_) {}
+          const rect = c.getBoundingClientRect();
+          lastX = e.clientX - rect.left;
+          lastY = e.clientY - rect.top;
+          e.preventDefault();
+        };
+
+        c.onpointermove = (e) => {
+          if (!isDrawing) return;
+          const rect = c.getBoundingClientRect();
+          const currX = e.clientX - rect.left;
+          const currY = e.clientY - rect.top;
+
+          ctx.beginPath();
+          ctx.moveTo(lastX, lastY);
+          ctx.lineTo(currX, currY);
+          ctx.lineCap = "round";
+          ctx.lineJoin = "round";
+          ctx.strokeStyle = "#7C2D12";
+          const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
+          ctx.lineWidth = 3.8 * (pressure * 1.5 + 0.35);
+          ctx.stroke();
+
+          lastX = currX;
+          lastY = currY;
+          e.preventDefault();
+        };
+
+        const stopStroke = (e) => {
+          if (isDrawing) {
+            isDrawing = false;
+            try { c.releasePointerCapture(e.pointerId); } catch (_) {}
+            saveCanvas(c, id);
+          }
+        };
+
+        c.onpointerup = stopStroke;
+        c.onpointercancel = stopStroke;
+        c.onpointerleave = stopStroke;
+      });
+    }
+
+    function saveCanvas(c, id) {
+      try {
+        const data = c.toDataURL("image/png");
+        localStorage.setItem(storageKeyForCanvas(id), data);
+      } catch (e) {}
+    }
+
+    function saveAllCanvases() {
+      document.querySelectorAll(".inline-canvas").forEach(c => {
+        const id = c.getAttribute("data-canvas-id");
+        saveCanvas(c, id);
+      });
+    }
+
+    function clearInlineCanvas(id) {
+      const c = document.querySelector(`.inline-canvas[data-canvas-id="${id}"]`);
+      if (c) {
+        const ctx = c.getContext("2d");
+        ctx.clearRect(0, 0, c.width, c.height);
+        localStorage.removeItem(storageKeyForCanvas(id));
+      }
+    }
+
+    /* FULL CANVAS ENGINE FOR Q&A (SECTION 1) */
+    let fullCanvas = null;
+    let fullCtx = null;
+    let fullIsDrawing = false;
+    let fullTool = "pen";
+    let fullLineWidth = 4;
+    let fullLastX = 0, fullLastY = 0;
+    let fullActivePointerId = null;
+    let fullUndoStack = [];
+
+    function fullStorageKey() {
+      return `ink::humayun::tamil_oct07::${appMode}::full_qa`;
+    }
+
+    function fitFullCanvas() {
+      fullCanvas = document.getElementById("fullQaCanvas");
+      if (!fullCanvas) return;
+      const wrap = document.getElementById("fullCanvasContainer");
+      if (!wrap || wrap.offsetParent === null) return;
+      const rect = wrap.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
+
+      const dpr = window.devicePixelRatio || 1;
+      const targetW = Math.floor(rect.width * dpr);
+      const targetH = Math.floor(rect.height * dpr);
+
+      if (fullCanvas.width === targetW && fullCanvas.height === targetH) return;
+
+      fullCanvas.width = targetW;
+      fullCanvas.height = targetH;
+      fullCanvas.style.width = rect.width + "px";
+      fullCanvas.style.height = rect.height + "px";
+      fullCtx = fullCanvas.getContext("2d");
+      fullCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function saveFullCanvas() {
+      if (!fullCanvas || fullCanvas.width <= 0) return;
+      try {
+        const data = fullCanvas.toDataURL("image/png");
+        const k = fullStorageKey();
+        localStorage.setItem(k, data);
+        if (fullUndoStack.slice(-1)[0] !== data) {
+          fullUndoStack.push(data);
+          if (fullUndoStack.length > 25) fullUndoStack.shift();
+        }
+      } catch (e) {}
+    }
+
+    function restoreFullCanvas() {
+      if (!fullCanvas || !fullCtx) return;
+      fullCtx.clearRect(0, 0, fullCanvas.width, fullCanvas.height);
+      const saved = localStorage.getItem(fullStorageKey());
+      if (!saved) return;
+      const img = new Image();
+      img.onload = function() {
+        fullCtx.save();
+        fullCtx.setTransform(1, 0, 0, 1, 0, 0);
+        fullCtx.drawImage(img, 0, 0, fullCanvas.width, fullCanvas.height);
+        fullCtx.restore();
+      };
+      img.src = saved;
+    }
+
+    function clearFullCanvas() {
+      if (!fullCanvas || !fullCtx) return;
+      fullCtx.clearRect(0, 0, fullCanvas.width, fullCanvas.height);
+      localStorage.removeItem(fullStorageKey());
+      fullUndoStack = [];
+    }
+
+    function undoFullCanvas() {
+      if (!fullCanvas || !fullCtx) return;
+      if (fullUndoStack.length > 1) {
+        fullUndoStack.pop();
+        const prev = fullUndoStack[fullUndoStack.length - 1];
+        localStorage.setItem(fullStorageKey(), prev);
+        const img = new Image();
+        img.onload = function() {
+          fullCtx.clearRect(0, 0, fullCanvas.width, fullCanvas.height);
+          fullCtx.save();
+          fullCtx.setTransform(1, 0, 0, 1, 0, 0);
+          fullCtx.drawImage(img, 0, 0, fullCanvas.width, fullCanvas.height);
+          fullCtx.restore();
+        };
+        img.src = prev;
+      } else {
+        clearFullCanvas();
+      }
+    }
+
+    function setFullTool(t) {
+      fullTool = t;
+      document.getElementById("fullPenTool").classList.toggle("active", t === "pen");
+      document.getElementById("fullEraserTool").classList.toggle("active", t === "eraser");
+    }
+
+    function setFullStrokeWidth(w) {
+      fullLineWidth = w;
+      document.getElementById("swThin").classList.toggle("active", w === 2);
+      document.getElementById("swMed").classList.toggle("active", w === 4);
+      document.getElementById("swThick").classList.toggle("active", w === 7);
+    }
+
+    function setupFullCanvas() {
+      fullCanvas = document.getElementById("fullQaCanvas");
+      if (!fullCanvas) return;
+      fullCtx = fullCanvas.getContext("2d");
+
+      fullCanvas.onpointerdown = (e) => {
+        if (palmRejectionMode === "pen-only" && e.pointerType !== "pen") {
+          e.preventDefault();
+          return;
+        }
+        if (fullIsDrawing && fullActivePointerId !== null) return;
+        fullActivePointerId = e.pointerId;
+        fullIsDrawing = true;
+        try { fullCanvas.setPointerCapture(e.pointerId); } catch (_) {}
+
+        const rect = fullCanvas.getBoundingClientRect();
+        fullLastX = e.clientX - rect.left;
+        fullLastY = e.clientY - rect.top;
+        e.preventDefault();
+      };
+
+      fullCanvas.onpointermove = (e) => {
+        if (!fullIsDrawing || e.pointerId !== fullActivePointerId) return;
+
+        const rect = fullCanvas.getBoundingClientRect();
+        const currX = e.clientX - rect.left;
+        const currY = e.clientY - rect.top;
+
+        fullCtx.beginPath();
+        fullCtx.moveTo(fullLastX, fullLastY);
+        fullCtx.lineTo(currX, currY);
+        fullCtx.lineCap = "round";
+        fullCtx.lineJoin = "round";
+
+        if (fullTool === "eraser") {
+          fullCtx.globalCompositeOperation = "destination-out";
+          fullCtx.lineWidth = fullLineWidth * 6;
+        } else {
+          fullCtx.globalCompositeOperation = "source-over";
+          fullCtx.strokeStyle = "#7C2D12";
+          const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
+          fullCtx.lineWidth = fullLineWidth * (pressure * 1.5 + 0.35);
+        }
+
+        fullCtx.stroke();
+        fullLastX = currX;
+        fullLastY = currY;
+        e.preventDefault();
+      };
+
+      const stopFullStroke = (e) => {
+        if (fullIsDrawing && (e.pointerId === fullActivePointerId || fullActivePointerId === null)) {
+          fullIsDrawing = false;
+          fullActivePointerId = null;
+          try { fullCanvas.releasePointerCapture(e.pointerId); } catch (_) {}
+          saveFullCanvas();
+        }
+      };
+
+      fullCanvas.onpointerup = stopFullStroke;
+      fullCanvas.onpointercancel = stopFullStroke;
+      fullCanvas.onpointerleave = stopFullStroke;
+    }
+
+    /* PARENT PIN LOGIC */
+    function openPinModal() {
+      enteredPin = "";
+      updatePinDots();
+      document.getElementById("pinModal").classList.add("open");
+    }
+
+    function closePinModal() {
+      document.getElementById("pinModal").classList.remove("open");
+      enteredPin = "";
+    }
+
+    function pressPin(n) {
+      if (enteredPin.length < 4) {
+        enteredPin += n;
+        updatePinDots();
+        if (enteredPin.length === 4) {
+          if (enteredPin === PARENT_PIN) {
+            unlockedPeeks[currentSectionIdx] = true;
+            closePinModal();
+            switchSection(currentSectionIdx);
+          } else {
+            alert("தவறான PIN!");
+            clearPin();
+          }
+        }
+      }
+    }
+
+    function clearPin() {
+      enteredPin = "";
+      updatePinDots();
+    }
+
+    function updatePinDots() {
+      let str = "";
+      for (let i = 0; i < 4; i++) {
+        str += (i < enteredPin.length) ? "● " : "- ";
+      }
+      document.getElementById("pinDots").textContent = str.trim();
+    }
+
+    window.onload = function() {
+      switchSection(0);
+    };
+
+    window.addEventListener("resize", () => {
+      if (currentSectionIdx === 1) {
+        saveFullCanvas();
+        fitFullCanvas();
+        restoreFullCanvas();
+      }
+    });
+
+    window.addEventListener("beforeunload", () => {
+      saveAllCanvases();
+      saveFullCanvas();
+    });
+    window.addEventListener("pagehide", () => {
+      saveAllCanvases();
+      saveFullCanvas();
+    });
+  </script>
+</body>
+</html>
