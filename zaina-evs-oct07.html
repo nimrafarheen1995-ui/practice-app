@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Zaina's EVS: Pollution Quest</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700;800&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #F0FDF4;
+      --card-bg: #FFFFFF;
+      --text: #064E3B;
+      --subtext: #276749;
+      --border: #BBF7D0;
+      --primary: #059669;
+      --primary-dark: #047857;
+      --accent: #F59E0B;
+      --purple: #7C3AED;
+      --blue: #2563EB;
+      --wrong: #EF4444;
+      --font-display: 'Fredoka', cursive, sans-serif;
+      --font-body: 'Nunito', sans-serif;
+      --shadow: 0 8px 20px rgba(6, 78, 59, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      font-family: var(--font-body);
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-size: 16px;
+    }
+
+    body {
+      background: linear-gradient(135deg, #ECFDF5 0%, #F0FDF4 50%, #FEF9C3 100%);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+      padding: 8px 14px;
+    }
+
+    #screenDimOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      pointer-events: none;
+      z-index: 99999;
+    }
+
+    .app-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      max-width: 1350px;
+      margin: 0 auto;
+      width: 100%;
+      gap: 8px;
+    }
+
+    /* HEADER */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 48px;
+      flex-shrink: 0;
+    }
+
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .phase-badge {
+      background: #D1FAE5;
+      color: #065F46;
+      font-size: 0.8rem;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1.5px solid #6EE7B7;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .header-btn {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      color: var(--text);
+      font-size: 0.85rem;
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 38px;
+      box-shadow: 0 2px 0 var(--border);
+      text-decoration: none;
+    }
+    .header-btn:active { transform: translateY(1px); }
+
+    /* STAGE SELECTOR TABS */
+    .stage-tabs {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 4px 6px;
+      border-radius: 16px;
+      border: 2px solid var(--border);
+      scrollbar-width: none;
+      flex-shrink: 0;
+    }
+    .stage-tabs::-webkit-scrollbar { display: none; }
+
+    .stage-tab-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: var(--subtext);
+      font-weight: 800;
+      font-size: 0.9rem;
+      padding: 8px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .stage-tab-btn.active {
+      background: var(--primary);
+      color: #FFF;
+      box-shadow: 0 3px 0 var(--primary-dark);
+    }
+    .stage-tab-btn.game-tab {
+      background: #FEF3C7;
+      color: #92400E;
+    }
+    .stage-tab-btn.game-tab.active {
+      background: var(--accent);
+      color: #FFF;
+      box-shadow: 0 3px 0 #D97706;
+    }
+
+    /* MAIN VIEWPORT */
+    .main-viewport {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+      width: 100%;
+    }
+
+    /* PHASE 1: STORYBOOK VIEW */
+    .storybook-container {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      gap: 14px;
+    }
+
+    .book-card {
+      flex: 1;
+      background: var(--card-bg);
+      border-radius: 24px;
+      border: 3px solid var(--border);
+      padding: 16px 20px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+    }
+
+    .card-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px dashed var(--border);
+      padding-bottom: 8px;
+    }
+
+    .card-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .btn-speak {
+      background: #FEF3C7;
+      border: 2px solid #FCD34D;
+      color: #92400E;
+      font-size: 0.88rem;
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .btn-speak.speaking {
+      background: #FBBF24;
+      color: #000;
+    }
+
+    .book-illustration {
+      width: 100%;
+      height: 190px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px solid var(--border);
+      position: relative;
+      background: #000;
+      flex-shrink: 0;
+    }
+    .book-illustration img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.95;
+    }
+    .image-caption {
+      position: absolute;
+      bottom: 6px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.65);
+      color: #FFF;
+      font-size: 0.78rem;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 8px;
+      backdrop-filter: blur(4px);
+    }
+
+    .book-text {
+      font-size: 1.05rem;
+      line-height: 1.6;
+      color: #1F2937;
+    }
+    .book-text b { color: var(--primary-dark); }
+    .book-text ul { margin-left: 20px; margin-top: 6px; }
+    .book-text li { margin-bottom: 6px; }
+
+    .did-you-know {
+      background: #FEF3C7;
+      border: 2px solid #FCD34D;
+      border-left: 6px solid var(--accent);
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      color: #78350F;
+      font-weight: 700;
+      margin-top: auto;
+    }
+
+    /* PHASE 2: ARENA CONTAINER */
+    .arena-container {
+      display: none;
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--card-bg);
+      border-radius: 24px;
+      border: 3px solid var(--border);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      overflow-y: auto;
+    }
+
+    .arena-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 8px;
+      border-bottom: 2px dashed var(--border);
+    }
+
+    .arena-subtabs {
+      display: flex;
+      gap: 8px;
+    }
+    .arena-btn {
+      background: #F1F5F9;
+      border: 2px solid #CBD5E1;
+      padding: 6px 14px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+    .arena-btn.active {
+      background: var(--purple);
+      color: #FFF;
+      border-color: var(--purple);
+    }
+
+    /* GAME 1: SORTER QUEST */
+    .sorter-view {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      gap: 16px;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sorter-prompt {
+      background: #EEF2FF;
+      border: 3px solid #C7D2FE;
+      padding: 16px 24px;
+      border-radius: 20px;
+      text-align: center;
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: #3730A3;
+      max-width: 650px;
+      width: 100%;
+      box-shadow: 0 4px 10px rgba(55, 48, 163, 0.1);
+      animation: bounceCard 0.4s ease;
+    }
+    @keyframes bounceCard {
+      0% { transform: scale(0.92); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .bins-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .target-bin {
+      padding: 22px 10px;
+      border-radius: 20px;
+      border: 3px solid #E2E8F0;
+      background: #F8FAFC;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .target-bin:active { transform: scale(0.96); }
+    .target-bin .icon { font-size: 2.5rem; }
+    .target-bin .bin-name { font-size: 1.15rem; font-weight: 900; }
+
+    .bin-air   { background: #EFF6FF; border-color: #93C5FD; color: #1E40AF; }
+    .bin-water { background: #ECFEFF; border-color: #67E8F9; color: #0E7490; }
+    .bin-soil  { background: #FEF3C7; border-color: #FCD34D; color: #92400E; }
+    .bin-noise { background: #FAF5FF; border-color: #E9D5FF; color: #6B21A8; }
+
+    /* GAME 2: FLASHCARD VIEW */
+    .flashcard-view {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      gap: 18px;
+    }
+
+    .flip-card-wrapper {
+      width: 380px;
+      height: 240px;
+      perspective: 1000px;
+      cursor: pointer;
+    }
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    .flip-card-wrapper.flipped .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+    .flip-card-front, .flip-card-back {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      border-radius: 24px;
+      border: 4px solid var(--border);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: var(--shadow);
+    }
+    .flip-card-front {
+      background: #FFFFFF;
+      color: #0F172A;
+    }
+    .flip-card-back {
+      background: linear-gradient(135deg, #10B981, #059669);
+      color: #FFFFFF;
+      transform: rotateY(180deg);
+    }
+
+    /* GAME 3: TRUE/FALSE DETECTIVE */
+    .detective-view {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      gap: 18px;
+    }
+
+    .fact-card {
+      background: #FFFBEB;
+      border: 3px solid #FDE68A;
+      padding: 24px 28px;
+      border-radius: 24px;
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: #78350F;
+      max-width: 650px;
+      width: 100%;
+      text-align: center;
+      line-height: 1.45;
+    }
+
+    .tf-btn-row {
+      display: flex;
+      gap: 16px;
+      width: 100%;
+      max-width: 450px;
+    }
+    .btn-tf {
+      flex: 1;
+      padding: 16px;
+      border-radius: 18px;
+      font-size: 1.25rem;
+      font-weight: 900;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 4px 0 rgba(0,0,0,0.15);
+      transition: transform 0.1s;
+    }
+    .btn-tf:active { transform: translateY(2px); }
+    .btn-true { background: #10B981; color: #FFF; }
+    .btn-false { background: #EF4444; color: #FFF; }
+
+    /* FOOTER BAR */
+    footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 48px;
+      flex-shrink: 0;
+    }
+
+    .bottom-btn {
+      background: var(--primary);
+      color: #FFF;
+      font-size: 0.95rem;
+      font-weight: 800;
+      padding: 10px 24px;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 3px 0 var(--primary-dark);
+    }
+    .bottom-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .bottom-btn:active { transform: translateY(2px); }
+
+    .bottom-btn.gold {
+      background: var(--accent);
+      box-shadow: 0 3px 0 #D97706;
+    }
+
+    /* CONFETTI */
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      z-index: 999999;
+      pointer-events: none;
+      animation: fall 1.2s forwards;
+    }
+    @keyframes fall {
+      0% { transform: translateY(0) rotate(0); opacity: 1; }
+      100% { transform: translateY(350px) rotate(720deg); opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="screenDimOverlay"></div>
+
+  <div class="app-wrapper">
+    <!-- HEADER -->
+    <header>
+      <div class="brand-block">
+        <a href="javascript:void(0)" onclick="goToHub()" class="header-btn">🏠 Hub</a>
+        <div class="brand-title">🌱 Pollution Quest</div>
+        <span class="phase-badge" id="phaseBadge">Phase 1: Storybook</span>
+      </div>
+
+      <div class="nav-actions">
+        <button type="button" class="header-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+        <button type="button" class="header-btn" id="dimBtn" onclick="toggleScreenDim()">💡 Dim Screen</button>
+      </div>
+    </header>
+
+    <!-- STAGE TABS -->
+    <div class="stage-tabs" id="stageTabsBar"></div>
+
+    <!-- MAIN VIEW -->
+    <main class="main-viewport">
+      <!-- PHASE 1: STORYBOOK -->
+      <div class="storybook-container" id="storybookView">
+        <div class="book-card">
+          <div class="card-topbar">
+            <div class="card-title" id="bookTitle">Topic Title</div>
+            <button class="btn-speak" id="btnSpeak" onclick="readAloud()">🔊 Read Out Loud</button>
+          </div>
+
+          <div class="book-illustration">
+            <img id="bookImg" src="" alt="Pollution Topic" />
+            <div class="image-caption" id="bookCaption">Caption</div>
+          </div>
+
+          <div class="book-text" id="bookText">Text Content</div>
+
+          <div class="did-you-know" id="bookDidYouKnow">💡 Did You Know?</div>
+        </div>
+      </div>
+
+      <!-- PHASE 2: ARENA GAMES -->
+      <div class="arena-container" id="arenaView">
+        <div class="arena-header">
+          <div style="font-family: var(--font-display); font-size:1.4rem; font-weight:800; color:#3730A3;">
+            🎮 Challenge Arena
+          </div>
+          <div class="arena-subtabs">
+            <button class="arena-btn active" id="btnSubSorter" onclick="switchGame('sorter')">🗑️ Sorter Quest</button>
+            <button class="arena-btn" id="btnSubFlash" onclick="switchGame('flash')">🎴 Flashcard Flip</button>
+            <button class="arena-btn" id="btnSubDetective" onclick="switchGame('detective')">🔍 Fact Detective</button>
+          </div>
+        </div>
+
+        <!-- GAME 1: SORTER -->
+        <div class="sorter-view" id="gameSorter">
+          <div style="font-weight: 800; color: #64748B;">Tap the correct bin for this pollutant:</div>
+          <div class="sorter-prompt" id="sorterPrompt">Loading...</div>
+          <div class="bins-grid">
+            <div class="target-bin bin-air" onclick="checkSort('air')">
+              <span class="icon">💨</span>
+              <span class="bin-name">Air Pollution</span>
+            </div>
+            <div class="target-bin bin-water" onclick="checkSort('water')">
+              <span class="icon">💧</span>
+              <span class="bin-name">Water Pollution</span>
+            </div>
+            <div class="target-bin bin-soil" onclick="checkSort('soil')">
+              <span class="icon">🪴</span>
+              <span class="bin-name">Soil Pollution</span>
+            </div>
+            <div class="target-bin bin-noise" onclick="checkSort('noise')">
+              <span class="icon">📢</span>
+              <span class="bin-name">Noise Pollution</span>
+            </div>
+          </div>
+          <div id="sorterScore" style="font-weight: 800; color: var(--primary);">Solved: 0 / 6 ⭐</div>
+        </div>
+
+        <!-- GAME 2: FLASHCARD -->
+        <div class="flashcard-view" id="gameFlash">
+          <div style="font-weight: 800; color: #64748B;">Is it Natural or Human-made? Tap the card to reveal!</div>
+          <div class="flip-card-wrapper" id="flipWrapper" onclick="toggleFlip()">
+            <div class="flip-card-inner">
+              <div class="flip-card-front">
+                <div style="font-size: 3rem;" id="flashIcon">🌋</div>
+                <div style="font-size: 1.4rem; font-weight: 900;" id="flashName">Volcanic Eruption</div>
+                <div style="font-size: 0.85rem; color: #64748B;">Tap card to flip 🔄</div>
+              </div>
+              <div class="flip-card-back">
+                <div style="font-size: 1.8rem; font-weight: 900;" id="flashType">🌿 NATURAL</div>
+                <p id="flashDesc" style="font-size: 0.95rem; font-weight: 700; line-height: 1.4;">Volcanic gases and ash are created by nature.</p>
+              </div>
+            </div>
+          </div>
+          <button class="bottom-btn" onclick="nextFlashcard()">Next Card ➔</button>
+        </div>
+
+        <!-- GAME 3: DETECTIVE -->
+        <div class="detective-view" id="gameDetective">
+          <div style="font-weight: 800; color: #64748B;">True or False? Read carefully and decide:</div>
+          <div class="fact-card" id="factText">Sounds above 120 dB are safe for human ears.</div>
+          <div class="tf-btn-row">
+            <button class="btn-tf btn-true" onclick="checkFact(true)">✓ TRUE</button>
+            <button class="btn-tf btn-false" onclick="checkFact(false)">✗ FALSE</button>
+          </div>
+          <div id="factResultMsg" style="font-weight: 900; font-size: 1.1rem; height: 24px;"></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- FOOTER NAV -->
+    <footer>
+      <button class="bottom-btn" id="btnPrev" onclick="navigateBook(-1)">◀ Previous Page</button>
+      <span id="pageIndicator" style="font-weight:800; font-size:0.95rem; color:var(--subtext);">Page 1 of 5</span>
+      <button class="bottom-btn" id="btnNext" onclick="navigateBook(1)">Next Page ▶</button>
+    </footer>
+  </div>
+
+  <script>
+    /* ============================================================
+       CURRICULUM CONTENT (FROM STUDENT TEXTBOOK PAGES)
+       ============================================================ */
+    const STORY_PAGES = [
+      {
+        id: "overview",
+        title: "🌍 What is Pollution?",
+        img: "https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?auto=format&fit=crop&w=1000&q=80",
+        caption: "Industrial smoke contamination in the air",
+        text: `
+          <p><b>Pollution</b> is the contamination of land, water, and air by harmful substances.</p>
+          <p>Such harmful substances are known as <b>pollutants</b> or <b>contaminants</b>.</p>
+          <ul>
+            <li><b>Natural Pollutants:</b> Volcanic eruptions, forest fires, sandstorms, and pollen grains.</li>
+            <li><b>Human-made Pollutants:</b> Industrial effluents, chemical pesticides, vehicle exhausts, and loud horn honking.</li>
+          </ul>
+        `,
+        speech: "Pollution is the contamination of land, water, and air by harmful substances. These substances are called pollutants. Natural pollutants include volcanoes and forest fires. Human-made pollutants include factory effluents and car exhausts.",
+        fact: "💡 <b>Remember:</b> Pollutants can come from Mother Nature (like volcanoes) or human activity (like factory chimneys)!"
+      },
+      {
+        id: "air",
+        title: "💨 Air Pollution & Acid Rain",
+        img: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=1000&q=80",
+        caption: "Emissions from vehicle exhausts & factories",
+        text: `
+          <p>Air pollution is caused by the introduction of harmful gases and particles into the atmosphere.</p>
+          <ul>
+            <li><b>Vehicles:</b> Release poisonous gases like <b>carbon monoxide</b>.</li>
+            <li><b>Factories:</b> Release <b>sulphur dioxide</b> and <b>nitrogen oxide</b>. When these dissolve in cloud moisture, they create <b>Acid Rain</b>!</li>
+            <li><b>Cooling Equipment:</b> Fridges and air conditioners release harmful compounds called <b>chlorofluorocarbons (CFCs)</b>.</li>
+          </ul>
+          <p><b>Diseases:</b> Cough, nausea, eye irritation, <b>asthma</b>, and <b>bronchitis</b>.</p>
+        `,
+        speech: "Air pollution is caused by harmful gases. Cars produce carbon monoxide. Factories release sulphur dioxide which creates acid rain. Refrigerators release CFCs. Air pollution causes asthma and bronchitis.",
+        fact: "💡 <b>Acid Rain Alert:</b> Sulphur dioxide + Nitrogen oxide + cloud moisture = Acid Rain!"
+      },
+      {
+        id: "water",
+        title: "💧 Water Pollution",
+        img: "https://images.unsplash.com/photo-1618477388954-7852f32655ec?auto=format&fit=crop&w=1000&q=80",
+        caption: "Discharge of sewage and runoff into rivers",
+        text: `
+          <p>Water pollution takes place when pollutants enter rivers, lakes, or oceans.</p>
+          <ul>
+            <li><b>Industrial & Domestic Discharge:</b> Untreated factory wastewater and sewage dumped into rivers.</li>
+            <li><b>Oil Spills:</b> Accidental tanker leaks in seawater that trap marine life.</li>
+            <li><b>Agricultural Runoff:</b> Rain draining from farms carrying dangerous pesticides into nearby rivers.</li>
+          </ul>
+          <p><b>Diseases:</b> Dysentery, jaundice, typhoid, <b>encephalitis</b>, and skin infections.</p>
+        `,
+        speech: "Water pollution occurs when pollutants enter rivers and oceans. Causes include industrial discharge, oil spills, and farm pesticide runoff. It causes dysentery, jaundice, typhoid, and encephalitis.",
+        fact: "💡 <b>Look Up:</b> 'Runoff' means the draining of rainwater from pesticide-treated farmland into rivers."
+      },
+      {
+        id: "soil",
+        title: "🪴 Soil & Land Pollution",
+        img: "https://images.unsplash.com/photo-1530587191325-3db32d826c18?auto=format&fit=crop&w=1000&q=80",
+        caption: "Landfill garbage dumps and chemical waste",
+        text: `
+          <p>Soil pollution occurs when pollutants cause soil to become <b>infertile or unusable</b>, destroying vegetation.</p>
+          <ul>
+            <li><b>Garbage Dumps:</b> Improper disposal of household garbage and contaminated <b>medical waste</b>.</li>
+            <li><b>Factory Leakage:</b> Harmful chemicals seeping into open soil and abandoned mines.</li>
+            <li><b>Over-farming:</b> Excessive use of chemical <b>fertilisers, pesticides, and insecticides</b>.</li>
+          </ul>
+          <p><b>Health Dangers:</b> Headaches, nausea, skin rashes, and damage to the kidneys and liver.</p>
+        `,
+        speech: "Soil pollution happens when soil becomes infertile or unusable. It is caused by garbage dumps, medical waste, and excessive chemical fertilisers and insecticides. It can damage kidneys and liver.",
+        fact: "💡 <b>Think:</b> Infertile soil means no plants or vegetables can grow in it!"
+      },
+      {
+        id: "noise",
+        title: "📢 Noise Pollution & Decibels",
+        img: "https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=1000&q=80",
+        caption: "City traffic honking and flight paths",
+        text: `
+          <p>Noise pollution is the occurrence of loud, disruptive, and unbearable sounds.</p>
+          <p>Sound loudness is measured in <b>decibels (dB)</b>:</p>
+          <ul>
+            <li><b>Comfortable sound level:</b> <b>20 to 120 dB</b>.</li>
+            <li><b>Danger Level:</b> Any sound <b>above 120 dB</b> causes immediate damage to human ears!</li>
+          </ul>
+          <p><b>Sources:</b> Blaring loudspeakers, constant vehicle honking, and construction drilling.</p>
+          <p><b>Effects:</b> Stress, irritation, digestion issues, permanent deafness, and <b>high blood pressure</b>.</p>
+        `,
+        speech: "Noise pollution is loud unbearable sound. It is measured in decibels. The safe level is 20 to 120 decibels. Above 120 decibels causes immediate ear damage. This is why honking is banned near hospitals.",
+        fact: "💡 <b>Rule:</b> Honking is strictly banned near hospitals and schools to protect patients and students!"
+      }
+    ];
+
+    /* ============================================================
+       CHALLENGE ARENA QUESTION BANKS
+       ============================================================ */
+    const SORTER_ITEMS = [
+      { text: "CFCs from refrigerators & ACs", category: "air" },
+      { text: "Oil spill in seawater from tankers", category: "water" },
+      { text: "Excessive chemical fertilisers & insecticides", category: "soil" },
+      { text: "Sounds above 120 dB causing ear damage", category: "noise" },
+      { text: "Sulphur dioxide forming Acid Rain", category: "air" },
+      { text: "Medical garbage & open mine dumping", category: "soil" }
+    ];
+
+    const FLASHCARDS = [
+      { name: "Volcanic Eruption", icon: "🌋", type: "🌿 NATURAL", desc: "Volcanic gases and ash are created by nature." },
+      { name: "Pesticide Farm Runoff", icon: "🚜", type: "🏭 HUMAN-MADE", desc: "Chemical sprays used by farmers drain into rivers." },
+      { name: "Forest Fires & Sandstorms", icon: "🌪️", type: "🌿 NATURAL", desc: "Natural climate events that send ash and pollen into the air." },
+      { name: "Vehicle Carbon Monoxide", icon: "🚗", type: "🏭 HUMAN-MADE", desc: "Poisonous exhaust smoke emitted from cars and buses." }
+    ];
+
+    const DETECTIVE_FACTS = [
+      { text: "Sounds above 120 decibels (dB) can cause immediate damage to our ears.", answer: true, reason: "Correct! Any sound over 120 dB harms human hearing." },
+      { text: "Sulphur dioxide and nitrogen oxide mix with clouds to create Acid Rain.", answer: true, reason: "Correct! Industrial emissions form acidic clouds." },
+      { text: "Drinking polluted water causes asthma and bronchitis.", answer: false, reason: "False! Asthma is caused by Air Pollution. Dirty water causes typhoid and jaundice." },
+      { text: "Infertile soil means that crops and vegetation grow very fast.", answer: false, reason: "False! Infertile soil cannot support plant life." }
+    ];
+
+    let currentStoryIdx = 0;
+    let isArenaMode = false;
+    let activeGame = "sorter";
+
+    let sorterIdx = 0;
+    let sorterScore = 0;
+    let flashIdx = 0;
+    let detectiveIdx = 0;
+
+    /* SAFE EXIT TO HUB (SEAMLESS FULLSCREEN PRESERVATION) */
+    function goToHub() {
+      if ('speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+      }
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage("close-lesson-to-hub", "*");
+      } else {
+        window.location.href = "index.html";
+      }
+    }
+
+    /* FULLSCREEN & DIM */
+    function toggleFullscreen() {
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        const el = document.documentElement;
+        if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      }
+    }
+
+    function toggleScreenDim() {
+      const el = document.getElementById("screenDimOverlay");
+      const btn = document.getElementById("dimBtn");
+      const isDim = el.style.display === "block";
+      el.style.display = isDim ? "none" : "block";
+      btn.textContent = isDim ? "💡 Dim Screen" : "☀️ Bright Screen";
+    }
+
+    /* SPEECH SYNTHESIZER */
+    function readAloud() {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const page = STORY_PAGES[currentStoryIdx];
+      const btn = document.getElementById("btnSpeak");
+
+      const u = new SpeechSynthesisUtterance(page.speech);
+      u.rate = 0.92;
+      u.onstart = () => btn.classList.add("speaking");
+      u.onend = () => btn.classList.remove("speaking");
+      u.onerror = () => btn.classList.remove("speaking");
+      window.speechSynthesis.speak(u);
+    }
+
+    /* STAGE TABS BAR */
+    function renderTabs() {
+      const bar = document.getElementById("stageTabsBar");
+      let html = STORY_PAGES.map((p, i) => {
+        const active = (!isArenaMode && i === currentStoryIdx) ? "active" : "";
+        return `<button class="stage-tab-btn ${active}" onclick="selectPage(${i})">${p.title}</button>`;
+      }).join("");
+
+      const arenaActive = isArenaMode ? "active" : "";
+      html += `<button class="stage-tab-btn game-tab ${arenaActive}" onclick="openArena()">🎯 Challenge Arena</button>`;
+      bar.innerHTML = html;
+    }
+
+    function selectPage(idx) {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      isArenaMode = false;
+      currentStoryIdx = idx;
+      renderTabs();
+      renderStoryPage();
+    }
+
+    function navigateBook(dir) {
+      const next = currentStoryIdx + dir;
+      if (next >= 0 && next < STORY_PAGES.length) {
+        selectPage(next);
+      } else if (next === STORY_PAGES.length) {
+        openArena();
+      }
+    }
+
+    function renderStoryPage() {
+      document.getElementById("storybookView").style.display = "flex";
+      document.getElementById("arenaView").style.display = "none";
+      document.getElementById("phaseBadge").textContent = "Phase 1: Storybook";
+
+      const p = STORY_PAGES[currentStoryIdx];
+      document.getElementById("bookTitle").textContent = p.title;
+      document.getElementById("bookImg").src = p.img;
+      document.getElementById("bookCaption").textContent = p.caption;
+      document.getElementById("bookText").innerHTML = p.text;
+      document.getElementById("bookDidYouKnow").innerHTML = p.fact;
+
+      document.getElementById("pageIndicator").textContent = `Page ${currentStoryIdx + 1} of ${STORY_PAGES.length}`;
+      document.getElementById("btnPrev").disabled = (currentStoryIdx === 0);
+      
+      const nextBtn = document.getElementById("btnNext");
+      if (currentStoryIdx === STORY_PAGES.length - 1) {
+        nextBtn.textContent = "Start Challenge Quest ➔";
+        nextBtn.classList.add("gold");
+      } else {
+        nextBtn.textContent = "Next Page ▶";
+        nextBtn.classList.remove("gold");
+      }
+    }
+
+    /* ARENA MODE */
+    function openArena() {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      isArenaMode = true;
+      renderTabs();
+
+      document.getElementById("storybookView").style.display = "none";
+      const arena = document.getElementById("arenaView");
+      arena.style.display = "flex";
+      document.getElementById("phaseBadge").textContent = "Phase 2: Challenge Arena";
+
+      document.getElementById("pageIndicator").textContent = "Challenge Arena 🏆";
+      document.getElementById("btnPrev").disabled = false;
+      document.getElementById("btnNext").textContent = "Back to Reading 📖";
+      document.getElementById("btnNext").onclick = () => selectPage(0);
+
+      switchGame(activeGame);
+    }
+
+    function switchGame(g) {
+      activeGame = g;
+      document.getElementById("btnSubSorter").classList.toggle("active", g === "sorter");
+      document.getElementById("btnSubFlash").classList.toggle("active", g === "flash");
+      document.getElementById("btnSubDetective").classList.toggle("active", g === "detective");
+
+      document.getElementById("gameSorter").style.display = (g === "sorter") ? "flex" : "none";
+      document.getElementById("gameFlash").style.display = (g === "flash") ? "flex" : "none";
+      document.getElementById("gameDetective").style.display = (g === "detective") ? "flex" : "none";
+
+      if (g === "sorter") renderSorter();
+      if (g === "flash") renderFlashcard();
+      if (g === "detective") renderDetective();
+    }
+
+    /* GAME 1: SORTER QUEST LOGIC */
+    function renderSorter() {
+      if (sorterIdx >= SORTER_ITEMS.length) {
+        document.getElementById("sorterPrompt").innerHTML = "🎉 Quest Complete! You mastered all pollutants!";
+        celebrate();
+        return;
+      }
+      const item = SORTER_ITEMS[sorterIdx];
+      document.getElementById("sorterPrompt").textContent = `"${item.text}"`;
+      document.getElementById("sorterScore").textContent = `Solved: ${sorterScore} / ${SORTER_ITEMS.length} ⭐`;
+    }
+
+    function checkSort(chosenCategory) {
+      const current = SORTER_ITEMS[sorterIdx];
+      if (chosenCategory === current.category) {
+        sorterScore++;
+        sorterIdx++;
+        celebrate();
+        renderSorter();
+      } else {
+        alert("🌱 Not quite! Review the sources and try this one again.");
+      }
+    }
+
+    /* GAME 2: FLASHCARD FLIP LOGIC */
+    function renderFlashcard() {
+      const card = FLASHCARDS[flashIdx];
+      const wrap = document.getElementById("flipWrapper");
+      wrap.classList.remove("flipped");
+
+      document.getElementById("flashIcon").textContent = card.icon;
+      document.getElementById("flashName").textContent = card.name;
+      document.getElementById("flashType").textContent = card.type;
+      document.getElementById("flashDesc").textContent = card.desc;
+    }
+
+    function toggleFlip() {
+      document.getElementById("flipWrapper").classList.toggle("flipped");
+    }
+
+    function nextFlashcard() {
+      flashIdx = (flashIdx + 1) % FLASHCARDS.length;
+      renderFlashcard();
+    }
+
+    /* GAME 3: FACT DETECTIVE LOGIC */
+    function renderDetective() {
+      const fact = DETECTIVE_FACTS[detectiveIdx];
+      document.getElementById("factText").textContent = `"${fact.text}"`;
+      document.getElementById("factResultMsg").textContent = "";
+    }
+
+    function checkFact(choice) {
+      const fact = DETECTIVE_FACTS[detectiveIdx];
+      const msg = document.getElementById("factResultMsg");
+
+      if (choice === fact.answer) {
+        msg.style.color = "#059669";
+        msg.textContent = `⭐ Correct! ${fact.reason}`;
+        celebrate();
+        setTimeout(() => {
+          detectiveIdx = (detectiveIdx + 1) % DETECTIVE_FACTS.length;
+          renderDetective();
+        }, 1600);
+      } else {
+        msg.style.color = "#EF4444";
+        msg.textContent = `🌱 Try again: ${fact.reason}`;
+      }
+    }
+
+    /* CELEBRATION BURST */
+    function celebrate() {
+      const colors = ["#10B981", "#F59E0B", "#3B82F6", "#EC4899", "#8B5CF6"];
+      for (let i = 0; i < 18; i++) {
+        const c = document.createElement("div");
+        c.className = "confetti";
+        c.style.background = colors[Math.floor(Math.random() * colors.length)];
+        c.style.left = (window.innerWidth / 2 + (Math.random() - 0.5) * 320) + "px";
+        c.style.top = (window.innerHeight / 2 - 80) + "px";
+        c.style.borderRadius = Math.random() > 0.5 ? "50%" : "2px";
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 1200);
+      }
+    }
+
+    window.onload = function() {
+      renderTabs();
+      renderStoryPage();
+    };
+  </script>
+</body>
+</html>
