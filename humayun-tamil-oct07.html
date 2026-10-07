@@ -1144,15 +1144,15 @@
       btn.textContent = isDim ? "💡 Dim" : "☀️ Bright";
     }
 
-    /* CRITICAL FIX: Save outgoing state, switch variable, clear caches, then render */
+    /* BULLETPROOF MODE TOGGLE */
     function setAppMode(m) {
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
       
-      // 1. Save whatever was written in the OLD mode first
+      // 1. Save whatever was written in CURRENT mode first
       saveAllCanvases();
       saveFullCanvas();
 
-      // 2. NOW update the active mode
+      // 2. Switch mode cleanly
       appMode = m;
       document.body.className = (m === 'test') ? "test-mode" : (m === 'review' ? "review-mode" : "");
 
@@ -1161,13 +1161,15 @@
       document.getElementById("btnModeReview").className = `mode-btn ${m === 'review' ? 'active-review' : ''}`;
 
       // 3. Render and load the canvas for the NEW mode
-      switchSection(currentSectionIdx);
+      switchSection(currentSectionIdx, false);
     }
 
-    function switchSection(idx) {
+    function switchSection(idx, doSave = true) {
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-      saveAllCanvases();
-      saveFullCanvas();
+      if (doSave) {
+        saveAllCanvases();
+        saveFullCanvas();
+      }
       currentSectionIdx = idx;
 
       const tabs = document.querySelectorAll(".tab-btn");
@@ -1244,11 +1246,10 @@
       btn.innerHTML = (palmRejectionMode === "pen-only") ? "🖊️ Pen Only" : "👆 Any Touch";
     }
 
-    /* MODE-ISOLATED NAMESPACE KEY HELPER */
+    /* FRESH NAMESPACE TO PERMANENTLY PREVENT CONTAMINATION */
     function storageKeyForCanvas(id) {
-      // In review mode, inspect the test slot
-      const modeKey = (appMode === "review") ? "test" : appMode;
-      return `ink::humayun::tamil_oct07::${modeKey}::${id}`;
+      const targetSlot = (appMode === "review") ? "test" : appMode;
+      return `v2_isolated_ink::humayun::tamil_oct07::${targetSlot}::${id}`;
     }
 
     function setupInlineCanvases() {
@@ -1257,7 +1258,7 @@
         const id = c.getAttribute("data-canvas-id");
         const ctx = c.getContext("2d", { willReadFrequently: false });
 
-        // CRITICAL FIX: ALWAYS CLEAR FIRST so previous mode drawings don't stay visible
+        // MANDATORY: ALWAYS CLEAR TO BLANK BEFORE CHECKING FOR SAVED IMAGE
         ctx.clearRect(0, 0, c.width, c.height);
 
         const saved = localStorage.getItem(storageKeyForCanvas(id));
@@ -1357,8 +1358,8 @@
     let fullActivePointerId = null;
 
     function fullStorageKey() {
-      const modeKey = (appMode === "review") ? "test" : appMode;
-      return `ink::humayun::tamil_oct07::${modeKey}::full_qa`;
+      const targetSlot = (appMode === "review") ? "test" : appMode;
+      return `v2_isolated_ink::humayun::tamil_oct07::${targetSlot}::full_qa`;
     }
 
     function fitFullCanvas() {
@@ -1393,7 +1394,6 @@
 
     function restoreFullCanvas() {
       if (!fullCanvas || !fullCtx) return;
-      // CRITICAL FIX: ALWAYS CLEAR BEFORE RESTORING
       fullCtx.clearRect(0, 0, fullCanvas.width, fullCanvas.height);
       const saved = localStorage.getItem(fullStorageKey());
       if (!saved) return;
@@ -1533,7 +1533,7 @@
     }
 
     window.onload = function() {
-      switchSection(0);
+      switchSection(0, false);
     };
 
     window.addEventListener("resize", () => {
