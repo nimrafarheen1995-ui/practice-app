@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Humayun's EVS: Solids, Liquids &amp; Gases</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #F0FDF4;
+      --card-bg: #FFFFFF;
+      --text: #14532D;
+      --subtext: #166534;
+      --border: #BBF7D0;
+      --primary: #16A34A;
+      --primary-dark: #15803D;
+      --purple: #7C3AED;
+      --purple-dark: #6D28D9;
+      --accent: #F59E0B;
+      --ruled-line: #93C5FD;
+      --shadow: 0 4px 14px rgba(20, 83, 45, 0.08);
+      --font: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      font-family: var(--font) !important;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-size: 16px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+      padding: 8px 14px;
+    }
+
+    /* FORCED LANDSCAPE OVERLAY */
+    .orientation-warning {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #F0FDF4;
+      z-index: 999999;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      padding: 30px;
+      text-align: center;
+    }
+    .orientation-warning .icon { font-size: 4rem; animation: rotPhone 2s infinite ease-in-out; }
+    @keyframes rotPhone { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(90deg); } }
+    .orientation-warning h2 { font-size: 1.6rem; font-weight: 900; color: #14532D; }
+    .orientation-warning p { font-size: 1.1rem; color: #166534; font-weight: 700; }
+    @media (orientation: portrait) {
+      .orientation-warning { display: flex; }
+    }
+
+    #screenDimOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      pointer-events: none;
+      z-index: 99999;
+    }
+
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      gap: 8px;
+    }
+
+    /* HEADER */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 46px;
+      flex-shrink: 0;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-title {
+      font-family: 'Fredoka', cursive, sans-serif !important;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .grade-badge {
+      background: #DCFCE7;
+      color: #15803D;
+      font-size: 0.8rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 8px;
+      border: 1px solid #86EFAC;
+    }
+
+    .mode-switch-wrap {
+      display: flex;
+      background: var(--card-bg);
+      padding: 3px;
+      border-radius: 14px;
+      border: 2px solid var(--border);
+    }
+
+    .mode-btn {
+      border: none;
+      background: transparent;
+      padding: 6px 14px;
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: var(--subtext);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .mode-btn.active-learn { background: var(--primary); color: #FFF; }
+    .mode-btn.active-test { background: var(--purple); color: #FFF; }
+    .mode-btn.active-review { background: #0284C7; color: #FFF; }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .action-btn {
+      border: 2px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text);
+      font-weight: 800;
+      font-size: 0.85rem;
+      padding: 6px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      height: 38px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      text-decoration: none;
+    }
+    .action-btn:active { transform: translateY(1px); }
+
+    /* SECTIONS BAR */
+    .sections-bar {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      background: var(--card-bg);
+      padding: 6px 8px;
+      border-radius: 14px;
+      border: 2px solid var(--border);
+      scrollbar-width: none;
+      flex-shrink: 0;
+    }
+    .sections-bar::-webkit-scrollbar { display: none; }
+
+    .section-tab-btn {
+      border: none;
+      background: transparent;
+      color: var(--subtext);
+      font-weight: 800;
+      font-size: 0.88rem;
+      padding: 6px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.1s;
+    }
+    .section-tab-btn.active { background: var(--primary); color: #FFF; }
+    body.test-mode .section-tab-btn.active { background: var(--purple); }
+    body.review-mode .section-tab-btn.active { background: #0284C7; }
+
+    /* WORKSPACE */
+    .workspace {
+      flex: 1;
+      background: var(--card-bg);
+      border-radius: 18px;
+      border: 2px solid var(--border);
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: var(--shadow);
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    .pane-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px dashed var(--border);
+      padding-bottom: 8px;
+      flex-shrink: 0;
+    }
+
+    .pane-title {
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: var(--primary-dark);
+    }
+    body.test-mode .pane-title { color: var(--purple-dark); }
+    body.review-mode .pane-title { color: #0284C7; }
+
+    .speakable {
+      cursor: pointer;
+      border-radius: 6px;
+      padding: 1px 4px;
+      transition: background 0.12s;
+    }
+    .speakable:active { background: #FEF08A; color: #000; }
+
+    /* INLINE DUAL-LINE CANVAS */
+    .inline-blank-container {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      margin: 4px 6px;
+      background: #FFFFFF;
+      border: 2px solid #CBD5E1;
+      border-radius: 12px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+    }
+
+    .inline-canvas-wrapper {
+      position: relative;
+      width: 250px;
+      height: 60px;
+      border-radius: 10px 0 0 10px;
+      overflow: hidden;
+      background: #FFFFFF;
+    }
+
+    .dual-lines-texture {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image: 
+        linear-gradient(to bottom, #2563EB 1.5px, transparent 1.5px),
+        linear-gradient(to bottom, #2563EB 1.5px, transparent 1.5px);
+      background-size: 100% 100%;
+      background-position: 0 18px, 0 42px;
+      opacity: 0.65;
+    }
+
+    .dual-canvas {
+      position: absolute;
+      inset: 0;
+      cursor: crosshair;
+      touch-action: none;
+      z-index: 2;
+    }
+
+    .inline-clear-btn {
+      background: #F8FAFC;
+      border: none;
+      border-left: 1.5px solid #CBD5E1;
+      padding: 0 8px;
+      height: 60px;
+      border-radius: 0 10px 10px 0;
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: #64748B;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .inline-clear-btn:active { background: #E2E8F0; }
+
+    /* FULL NOTEPAD COMPONENT (SECTION 5) */
+    .def-subtabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 6px;
+      flex-shrink: 0;
+    }
+
+    .def-subtab-btn {
+      background: #F8FAFC;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 6px 14px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: var(--subtext);
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+    .def-subtab-btn.active {
+      background: var(--primary);
+      color: #FFF;
+      border-color: var(--primary);
+    }
+    body.test-mode .def-subtab-btn.active {
+      background: var(--purple);
+      border-color: var(--purple);
+    }
+
+    .full-notepad-wrapper {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      gap: 8px;
+      height: 100%;
+    }
+
+    .notepad-prompt-box {
+      background: #F8FAFC;
+      border: 2px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 1.1rem;
+      line-height: 1.5;
+      flex-shrink: 0;
+    }
+    .notepad-prompt-box b { color: var(--primary-dark); }
+    body.test-mode .notepad-prompt-box .learn-ans-reveal { display: none !important; }
+
+    .notepad-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--border);
+      gap: 6px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+
+    .tool-group {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .pad-btn {
+      background: #F8FAFC;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      cursor: pointer;
+      color: var(--text);
+      height: 36px;
+    }
+    .pad-btn.active { background: var(--primary); color: #FFF; border-color: var(--primary); }
+    body.test-mode .pad-btn.active { background: var(--purple); border-color: var(--purple); }
+
+    .full-notepad-container {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      min-height: 320px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 2px solid var(--border);
+      background: #FFFFFF;
+    }
+
+    .notepad-dual-lines {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-color: #FFFFFF;
+      background-image: repeating-linear-gradient(
+        #FFFFFF 0px,
+        #FFFFFF 28px,
+        var(--ruled-line) 29px,
+        #FFFFFF 30px,
+        #FFFFFF 56px,
+        var(--ruled-line) 57px,
+        #FFFFFF 58px,
+        #FFFFFF 84px
+      );
+      opacity: 0.65;
+      z-index: 1;
+    }
+    .notepad-dual-lines::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 36px;
+      width: 2px;
+      height: 100%;
+      background: #F87171;
+    }
+
+    #fullNotepadCanvas {
+      position: absolute;
+      inset: 0;
+      cursor: crosshair;
+      touch-action: none;
+      z-index: 2;
+    }
+
+    /* TABLE */
+    .diff-table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid #CBD5E1;
+      font-size: 0.95rem;
+    }
+    .diff-table th {
+      background: #DCFCE7;
+      color: #166534;
+      padding: 10px 6px;
+      font-weight: 900;
+      border: 1px solid #BBF7D0;
+      text-align: center;
+    }
+    .diff-table td {
+      padding: 8px;
+      border: 1px solid #E2E8F0;
+      vertical-align: middle;
+      font-weight: 700;
+    }
+    .diff-table tr:nth-child(even) { background: #F8FAFC; }
+
+    .answer-tag {
+      background: #DCFCE7;
+      color: #15803D;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid #86EFAC;
+      display: inline-block;
+      margin: 0 4px;
+    }
+    body.test-mode .answer-tag { display: none !important; }
+
+    /* MATCH & MCQ */
+    .match-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      width: 100%;
+      margin-top: 6px;
+    }
+    .match-btn {
+      background: #F8FAFC;
+      border: 2px solid #CBD5E1;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.12s;
+    }
+    .match-btn.selected { background: #FEF08A; border-color: #EAB308; box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.35); }
+    .match-btn.paired { background: #DCFCE7; border-color: var(--primary); color: #166534; pointer-events: none; }
+
+    .mcq-item {
+      background: #F8FAFC;
+      border: 2px solid #E2E8F0;
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .mcq-q { font-size: 1.05rem; font-weight: 800; color: #0F172A; }
+    .mcq-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .mcq-opt-btn {
+      background: #FFF;
+      border: 2px solid #CBD5E1;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+    }
+    .mcq-opt-btn.correct { background: #DCFCE7; border-color: var(--primary); color: #166534; font-weight: 800; }
+    .mcq-opt-btn.wrong { background: #FEE2E2; border-color: #EF4444; color: #991B1B; }
+    .mcq-opt-btn.selected-test { background: #DDD6FE; border-color: var(--purple); color: #4C1D95; font-weight: 800; }
+
+    /* PICTURE IDENTIFICATION */
+    .pic-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .pic-card {
+      background: #F8FAFC;
+      border: 2px solid #E2E8F0;
+      border-radius: 14px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      text-align: center;
+    }
+    .pic-icon { font-size: 2.4rem; line-height: 1; }
+    .pic-name { font-size: 1rem; font-weight: 800; }
+    .chip-row { display: flex; gap: 4px; }
+    .state-chip {
+      background: #FFF;
+      border: 1.5px solid #CBD5E1;
+      padding: 3px 8px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .state-chip.active-chip { background: var(--primary); border-color: var(--primary); color: #FFF; }
+
+    /* PARENT REVIEW */
+    .parent-review-strip {
+      display: none;
+      background: #F0F9FF;
+      border: 2px solid #BAE6FD;
+      padding: 10px 14px;
+      border-radius: 12px;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+    }
+    body.review-mode .parent-review-strip { display: flex; }
+
+    .grade-btn {
+      border: none;
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .grade-btn.pass { background: #22C55E; color: #FFF; }
+    .grade-btn.retry { background: #F97316; color: #FFF; }
+
+    /* PIN MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100000;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #FFF;
+      border-radius: 20px;
+      padding: 22px;
+      width: 90%;
+      max-width: 320px;
+      text-align: center;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.25);
+    }
+    .pin-dots {
+      font-size: 1.8rem;
+      letter-spacing: 6px;
+      background: #F1F5F9;
+      padding: 10px;
+      border-radius: 12px;
+      margin: 14px 0;
+      font-weight: 900;
+    }
+    .keypad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .key-btn {
+      padding: 12px;
+      font-size: 1.25rem;
+      font-weight: 800;
+      border-radius: 12px;
+      border: 2px solid #E2E8F0;
+      background: #F8FAFC;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="orientation-warning">
+    <div class="icon">📱</div>
+    <h2>Please Rotate Tablet to Landscape</h2>
+    <p>Humayun's EVS Quest is designed to work in tablet landscape mode.</p>
+  </div>
+
+  <div id="screenDimOverlay"></div>
+
+  <div class="app-container">
+    <header>
+      <div class="brand-group">
+        <a href="javascript:void(0)" onclick="goToHub()" class="action-btn">🏠 Hub</a>
+        <div class="brand-title">🧪 Solids, Liquids &amp; Gases <span class="grade-badge">Grade 3 EVS</span></div>
+      </div>
+
+      <div class="mode-switch-wrap">
+        <button class="mode-btn active-learn" id="btnModeLearn" onclick="setAppMode('learn')">📖 Practice</button>
+        <button class="mode-btn" id="btnModeTest" onclick="setAppMode('test')">✍️ Write (Test)</button>
+        <button class="mode-btn" id="btnModeReview" onclick="openPinModal()">🔒 Parent Review</button>
+      </div>
+
+      <div class="header-actions">
+        <button type="button" class="action-btn" id="btnPalm" onclick="togglePalmRejection()">🖊️ Pen Only</button>
+        <button type="button" class="action-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+        <button type="button" class="action-btn" id="dimBtn" onclick="toggleScreenDim()">💡 Dim</button>
+      </div>
+    </header>
+
+    <div class="sections-bar" id="sectionsBar"></div>
+
+    <main class="workspace" id="exercisePane">
+      <div class="pane-header">
+        <div class="pane-title" id="paneTitle">Title</div>
+      </div>
+
+      <div id="exerciseContent" style="display:flex; flex-direction:column; gap:8px; flex:1; min-height:0;"></div>
+
+      <div class="parent-review-strip" id="reviewStrip">
+        <span style="font-weight:800; color:#0369A1;" id="reviewAnswerHint">Teacher Answer: ...</span>
+        <div style="display:flex; gap:8px;">
+          <button class="grade-btn pass" onclick="markCardGrade('pass')">⭐ Correct</button>
+          <button class="grade-btn retry" onclick="markCardGrade('retry')">🔄 Try Again</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Parent PIN Modal -->
+  <div class="modal-overlay" id="pinModal">
+    <div class="modal-box">
+      <h3 style="font-weight:900; color:#0F172A;">Parent Access</h3>
+      <p style="font-size:0.85rem; color:#64748B; margin-top:4px;">Enter 4-digit PIN to review answers</p>
+      <div class="pin-dots" id="pinDots">----</div>
+      <div class="keypad-grid">
+        <button class="key-btn" onclick="pressPin('1')">1</button>
+        <button class="key-btn" onclick="pressPin('2')">2</button>
+        <button class="key-btn" onclick="pressPin('3')">3</button>
+        <button class="key-btn" onclick="pressPin('4')">4</button>
+        <button class="key-btn" onclick="pressPin('5')">5</button>
+        <button class="key-btn" onclick="pressPin('6')">6</button>
+        <button class="key-btn" onclick="pressPin('7')">7</button>
+        <button class="key-btn" onclick="pressPin('8')">8</button>
+        <button class="key-btn" onclick="pressPin('9')">9</button>
+        <button class="key-btn" onclick="clearPin()">C</button>
+        <button class="key-btn" onclick="pressPin('0')">0</button>
+        <button class="key-btn" onclick="closePinModal()">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PARENT_PIN = "1995";
+    let enteredPin = "";
+    let appMode = "learn";
+    let currentSectionIdx = 0;
+    let currentDefIdx = 0; // 0: Matter, 1: Evaporation, 2: Condensation, 3: Freezing
+    let palmRejectionMode = "pen-only";
+
+    function speakText(txt) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(txt);
+      u.lang = "en-US";
+      u.rate = 0.9;
+      window.speechSynthesis.speak(u);
+    }
+
+    function inlineDualBlank(id) {
+      return `
+        <span class="inline-blank-container">
+          <span class="inline-canvas-wrapper">
+            <span class="dual-lines-texture"></span>
+            <canvas class="dual-canvas" data-canvas-id="${id}" width="250" height="60"></canvas>
+          </span>
+          <button type="button" class="inline-clear-btn" onclick="clearDualCanvas('${id}')" title="Clear">🧹</button>
+        </span>
+      `;
+    }
+
+    const DEFINITIONS_DATA = [
+      {
+        id: "matter",
+        tab: "a) Matter",
+        prompt: `<b>a) Matter</b><br/>
+                 <span class="learn-ans-reveal"><b>Definition:</b> Anything that has mass and takes up space is matter.<br/>
+                 <b>Examples:</b> 1. Chair, 2. Car</span>`,
+        hint: "Definition: Anything that has mass and takes up space is matter. Examples: 1. Chair, 2. Car"
+      },
+      {
+        id: "evaporation",
+        tab: "b) Evaporation",
+        prompt: `<b>b) Evaporation</b><br/>
+                 <span class="learn-ans-reveal"><b>Definition:</b> The process by which water changes into water vapour is called evaporation.<br/>
+                 <b>Examples:</b> 1. Wet floor becomes dry, 2. Clothes drying</span>`,
+        hint: "Definition: The process by which water changes into water vapour is called evaporation. Examples: 1. Wet floor becomes dry, 2. Clothes drying"
+      },
+      {
+        id: "condensation",
+        tab: "c) Condensation",
+        prompt: `<b>c) Condensation</b><br/>
+                 <span class="learn-ans-reveal"><b>Definition:</b> The process by which water vapour changes into water is called condensation.<br/>
+                 <b>Examples:</b> 1. Fog on car, 2. Water drops on a cold bottle</span>`,
+        hint: "Definition: The process by which water vapour changes into water is called condensation. Examples: 1. Fog on car, 2. Water drops on a cold bottle"
+      },
+      {
+        id: "freezing",
+        tab: "d) Freezing",
+        prompt: `<b>d) Freezing</b><br/>
+                 <span class="learn-ans-reveal"><b>Definition:</b> The process of liquid changing into a solid on cooling.<br/>
+                 <b>Examples:</b> 1. Ice cubes from freezer, 2. Ice cream getting hard</span>`,
+        hint: "Definition: The process of liquid changing into a solid on cooling. Examples: 1. Ice cubes from freezer, 2. Ice cream getting hard"
+      }
+    ];
+
+    const SECTIONS = [
+      {
+        id: "differences",
+        tabTitle: "📊 1. Differences Table",
+        title: "Complete the Differences between Solids, Liquids and Gases",
+        answerHint: "Solids: shape, volume | Liquids: shape, fixed volume, flow | Gases: shape, volume, flow very easily",
+        render: () => `
+          <table class="diff-table">
+            <tr>
+              <th class="speakable" onclick="speakText('Solids')">Solids</th>
+              <th class="speakable" onclick="speakText('Liquids')">Liquids</th>
+              <th class="speakable" onclick="speakText('Gases')">Gases</th>
+            </tr>
+            <tr>
+              <td>
+                <span class="speakable" onclick="speakText('Have a fixed shape and volume')">1. Have a fixed</span>
+                ${inlineDualBlank('diff_s_shape')} <span class="answer-tag">shape</span> and
+                ${inlineDualBlank('diff_s_vol')} <span class="answer-tag">volume</span>.
+              </td>
+              <td>
+                <span class="speakable" onclick="speakText('Do not have any fixed shape but fixed volume')">1. Do not have any fixed</span>
+                ${inlineDualBlank('diff_l_shape')} <span class="answer-tag">shape</span> but
+                ${inlineDualBlank('diff_l_vol')} <span class="answer-tag">fixed volume</span>.
+              </td>
+              <td>
+                <span class="speakable" onclick="speakText('Do not have any fixed shape and volume')">1. Do not have any fixed</span>
+                ${inlineDualBlank('diff_g_shape')} <span class="answer-tag">shape</span> and
+                ${inlineDualBlank('diff_g_vol')} <span class="answer-tag">volume</span>.
+              </td>
+            </tr>
+            <tr>
+              <td><span class="speakable" onclick="speakText('Do not flow')">2. Do not flow.</span></td>
+              <td>
+                2. ${inlineDualBlank('diff_l_flow')} <span class="answer-tag">Flow</span>
+                <span class="speakable" onclick="speakText('Flow easily')">easily.</span>
+              </td>
+              <td>
+                2. ${inlineDualBlank('diff_g_flow')} <span class="answer-tag">Flow</span>
+                <span class="speakable" onclick="speakText('Flow very easily')">very easily.</span>
+              </td>
+            </tr>
+            <tr>
+              <td><span class="speakable" onclick="speakText('Cannot be poured into containers')">3. Cannot be poured into containers.</span></td>
+              <td>
+                <span class="speakable" onclick="speakText('Take up the shape of container')">3. Take up the</span>
+                ${inlineDualBlank('diff_l_cont')} <span class="answer-tag">shape</span>
+                <span class="speakable" onclick="speakText('of container')">of container.</span>
+              </td>
+              <td>
+                <span class="speakable" onclick="speakText('Take up the entire space of container')">3. Take up the entire</span>
+                ${inlineDualBlank('diff_g_cont')} <span class="answer-tag">space</span>
+                <span class="speakable" onclick="speakText('of container')">of container.</span>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <span class="speakable" onclick="speakText('Examples: Chair and Book')">4. Examples:</span>
+                ${inlineDualBlank('diff_s_ex1')} <span class="answer-tag">Chair</span> and
+                ${inlineDualBlank('diff_s_ex2')} <span class="answer-tag">Book</span>.
+              </td>
+              <td>
+                <span class="speakable" onclick="speakText('Examples: Water and Milk')">4. Examples:</span>
+                ${inlineDualBlank('diff_l_ex1')} <span class="answer-tag">Water</span> and
+                ${inlineDualBlank('diff_l_ex2')} <span class="answer-tag">Milk</span>.
+              </td>
+              <td>
+                <span class="speakable" onclick="speakText('Examples: Oxygen and Steam')">4. Examples:</span>
+                ${inlineDualBlank('diff_g_ex1')} <span class="answer-tag">Oxygen</span> and
+                ${inlineDualBlank('diff_g_ex2')} <span class="answer-tag">Steam</span>.
+              </td>
+            </tr>
+          </table>
+        `
+      },
+      {
+        id: "match",
+        tabTitle: "🧩 2. Match Following",
+        title: "Match the Following States and Concepts",
+        answerHint: "Solid: Does not change shape | Water vapour: Gaseous state | Liquid: Can flow | Matter: Has mass and occupies space | Ice: Frozen water",
+        render: () => {
+          if (appMode === "learn") {
+            return `
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <div class="speakable" onclick="speakText('Solid does not change shape')" style="background:#F0FDF4; border:2px solid #BBF7D0; padding:10px 14px; border-radius:12px; font-weight:800;">1. Solid ➔ <b>Does not change shape</b></div>
+                <div class="speakable" onclick="speakText('Water vapour gaseous state')" style="background:#F0FDF4; border:2px solid #BBF7D0; padding:10px 14px; border-radius:12px; font-weight:800;">2. Water vapour ➔ <b>Gaseous state</b></div>
+                <div class="speakable" onclick="speakText('Liquid can flow')" style="background:#F0FDF4; border:2px solid #BBF7D0; padding:10px 14px; border-radius:12px; font-weight:800;">3. Liquid ➔ <b>Can flow</b></div>
+                <div class="speakable" onclick="speakText('Matter has mass and occupies space')" style="background:#F0FDF4; border:2px solid #BBF7D0; padding:10px 14px; border-radius:12px; font-weight:800;">4. Matter ➔ <b>Has mass and occupies space</b></div>
+                <div class="speakable" onclick="speakText('Ice frozen water')" style="background:#F0FDF4; border:2px solid #BBF7D0; padding:10px 14px; border-radius:12px; font-weight:800;">5. Ice ➔ <b>Frozen water</b></div>
+              </div>
+            `;
+          } else {
+            return `
+              <div class="match-columns">
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                  <button class="match-btn" data-pair="1" onclick="handleMatch(this, 'left')">1. Solid</button>
+                  <button class="match-btn" data-pair="2" onclick="handleMatch(this, 'left')">2. Water vapour</button>
+                  <button class="match-btn" data-pair="3" onclick="handleMatch(this, 'left')">3. Liquid</button>
+                  <button class="match-btn" data-pair="4" onclick="handleMatch(this, 'left')">4. Matter</button>
+                  <button class="match-btn" data-pair="5" onclick="handleMatch(this, 'left')">5. Ice</button>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                  <button class="match-btn" data-pair="3" onclick="handleMatch(this, 'right')">a. Can flow</button>
+                  <button class="match-btn" data-pair="1" onclick="handleMatch(this, 'right')">b. Does not change shape</button>
+                  <button class="match-btn" data-pair="2" onclick="handleMatch(this, 'right')">c. Gaseous state</button>
+                  <button class="match-btn" data-pair="5" onclick="handleMatch(this, 'right')">d. Frozen water</button>
+                  <button class="match-btn" data-pair="4" onclick="handleMatch(this, 'right')">e. Has mass and occupies space</button>
+                </div>
+              </div>
+            `;
+          }
+        }
+      },
+      {
+        id: "mcq",
+        tabTitle: "🎯 3. Objective MCQs",
+        title: "Tick (✓) the Correct Answer",
+        answerHint: "1. c (matter) | 2. c (Shadow) | 3. d (evaporation) | 4. b (condensation) | 5. d (All of these)",
+        render: () => `
+          <div class="mcq-item">
+            <div class="mcq-q speakable" onclick="speakText('Anything that has mass and takes up space is known as')">1. Anything that has mass and takes up space is known as:</div>
+            <div class="mcq-opts">
+              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'a. liquid')">a. liquid</button>
+              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'b. solid')">b. solid</button>
+              <button class="mcq-opt-btn ${appMode === 'learn' ? 'correct' : ''}" onclick="checkMcq(this, true, 'c. matter')">c. matter ${appMode === 'learn' ? '✓' : ''}</button>
+              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'd. both a and b')">d. both a and b</button>
+            </div>
+          </div>
+          <div class="mcq-item">
+            <div class="mcq-q speakable" onclick="speakText('Which of the following is not a state of matter')">2. Which of the following is not a state of matter?</div>
+            <div class="mcq-opts">
+              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'a. Solid')">a. Solid</button>
+              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'b. Liquid')">b. Liquid</button>
+              <button class="mcq-opt-btn ${appMode === 'learn' ? 'correct' : ''}" onclick="checkMcq(this, true, 'c. Shadow')">c. Shadow ${appMode === 'learn' ? '✓' : ''}</button>
+              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'd. Gas')">d. Gas</button>
+            </div>
+          </div>
+          <div class="mcq-item">
+            <div class="mcq-q speakable" onclick="speakText('Deepa heated water for a very long time. She saw gas rising up. This process is')">3. Deepa heated water for a very long time. She saw gas rising up. This process is:</div>
+            <div class="mcq-opts">
+              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'a. freezing')">a. freezing</button>
+              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'b. condensation')">b. condensation</button>
+              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'c. melting')">c. melting</button>
+              <button class="mcq-opt-btn ${appMode === 'learn' ? 'correct' : ''}" onclick="checkMcq(this, true, 'd. evaporation')">d. evaporation ${appMode === 'learn' ? '✓' : ''}</button>
+            </div>
+          </div>
+          <div class="mcq-item">
+            <div class="mcq-q speakable" onclick="speakText('Tiny droplets of water are formed through the process of')">4. Tiny droplets of water are formed through the process of:</div>
+            <div class="mcq-opts">
+              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'a. melting')">a. melting</button>
+              <button class="mcq-opt-btn ${appMode === 'learn' ? 'correct' : ''}" onclick="checkMcq(this, true, 'b. condensation')">b. condensation ${appMode === 'learn' ? '✓' : ''}</button>
+              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'c. evaporation')">c. evaporation</button>
+              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'd. freezing')">d. freezing</button>
+            </div>
+          </div>
+          <div class="mcq-item">
+            <div class="mcq-q speakable" onclick="speakText('Which of the following is a state of matter')">5. Which of the following is a state of matter?</div>
+            <div class="mcq-opts">
+              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'a. Water')">a. Water</button>
+              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'b. Chapatti')">b. Chapatti</button>
+              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'c. Car')">c. Car</button>
+              <button class="mcq-opt-btn ${appMode === 'learn' ? 'correct' : ''}" onclick="checkMcq(this, true, 'd. All of these')">d. All of these ${appMode === 'learn' ? '✓' : ''}</button>
+            </div>
+          </div>
+        `
+      },
+      {
+        id: "pictures",
+        tabTitle: "🖼️ 4. Identify State",
+        title: "Identify the State of Matter (Solid, Liquid or Gas)",
+        answerHint: "1. Ice: Solid | 2. Kerosene: Liquid | 3. Oil: Liquid | 4. Tree: Solid | 5. Smoke: Gas | 6. Tea: Liquid | 7. Steam: Gas | 8. Eraser: Solid | 9. Soap: Liquid",
+        render: () => {
+          const items = [
+            { id: "p1", name: "1. Ice cubes", icon: "🧊", correct: "Solid" },
+            { id: "p2", name: "2. Kerosene", icon: "⛽", correct: "Liquid" },
+            { id: "p3", name: "3. Oil", icon: "🧴", correct: "Liquid" },
+            { id: "p4", name: "4. Tree", icon: "🌳", correct: "Solid" },
+            { id: "p5", name: "5. Smoke", icon: "🏭", correct: "Gas" },
+            { id: "p6", name: "6. Hot Tea", icon: "☕", correct: "Liquid" },
+            { id: "p7", name: "7. Steam", icon: "♨️", correct: "Gas" },
+            { id: "p8", name: "8. Eraser", icon: "🧼", correct: "Solid" },
+            { id: "p9", name: "9. Soap", icon: "🧴", correct: "Liquid" }
+          ];
+
+          return `
+            <div class="pic-grid">
+              ${items.map(it => {
+                const saved = localStorage.getItem(`chip::humayun::evs::${it.id}`) || (appMode === 'learn' ? it.correct : '');
+                return `
+                  <div class="pic-card">
+                    <span class="pic-icon speakable" onclick="speakText('${it.name}')">${it.icon}</span>
+                    <span class="pic-name speakable" onclick="speakText('${it.name}')">${it.name}</span>
+                    <div class="chip-row">
+                      <button class="state-chip ${saved === 'Solid' ? 'active-chip' : ''}" onclick="selectChip('${it.id}', 'Solid')">Solid</button>
+                      <button class="state-chip ${saved === 'Liquid' ? 'active-chip' : ''}" onclick="selectChip('${it.id}', 'Liquid')">Liquid</button>
+                      <button class="state-chip ${saved === 'Gas' ? 'active-chip' : ''}" onclick="selectChip('${it.id}', 'Gas')">Gas</button>
+                    </div>
+                  </div>
+                `;
+              }).join("")}
+            </div>
+          `;
+        }
+      },
+      {
+        id: "definitions",
+        tabTitle: "📖 5. Definitions & Examples",
+        title: "Define the Following Terms and Give Two Examples Each",
+        answerHint: "Matter: Chair, Car | Evaporation: Wet floor dry, Clothes drying | Condensation: Fog on car, Water drops on cold bottle | Freezing: Ice cubes from freezer, Ice cream getting hard",
+        render: () => {
+          const curDef = DEFINITIONS_DATA[currentDefIdx];
+          return `
+            <div class="def-subtabs">
+              ${DEFINITIONS_DATA.map((d, i) => `
+                <button class="def-subtab-btn ${i === currentDefIdx ? 'active' : ''}" onclick="switchDefTab(${i})">
+                  ${d.tab}
+                </button>
+              `).join("")}
+            </div>
+
+            <div class="full-notepad-wrapper">
+              <div class="notepad-prompt-box">
+                <span class="speakable" onclick="speakText('${curDef.tab}')">${curDef.prompt}</span>
+              </div>
+
+              <div class="notepad-toolbar">
+                <div class="tool-group">
+                  <button class="pad-btn active" id="btnNPPen" onclick="setNPTool('pen')">✏️ Pen</button>
+                  <button class="pad-btn" id="btnNPEraser" onclick="setNPTool('eraser')">🧹 Eraser</button>
+                  <button class="pad-btn" onclick="undoNPCanvas()">↩️ Undo</button>
+                  <button class="pad-btn" onclick="clearNPCanvas()">🗑️ Clear</button>
+                </div>
+                <div class="tool-group">
+                  <button class="pad-btn" id="npThick2" onclick="setNPWidth(2)">Thin</button>
+                  <button class="pad-btn active" id="npThick4" onclick="setNPWidth(4)">Med</button>
+                  <button class="pad-btn" id="npThick7" onclick="setNPWidth(7)">Thick</button>
+                </div>
+              </div>
+
+              <div class="full-notepad-container" id="fullNotepadContainer">
+                <div class="notepad-dual-lines"></div>
+                <canvas id="fullNotepadCanvas"></canvas>
+              </div>
+            </div>
+          `;
+        }
+      }
+    ];
+
+    function goToHub() {
+      if ('speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+      }
+      saveAllDualCanvases();
+      saveFullNPCanvas();
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage("close-lesson-to-hub", "*");
+      } else {
+        window.location.href = "index.html";
+      }
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        const el = document.documentElement;
+        if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      }
+    }
+
+    function toggleScreenDim() {
+      const el = document.getElementById("screenDimOverlay");
+      const btn = document.getElementById("dimBtn");
+      const isDim = el.style.display === "block";
+      el.style.display = isDim ? "none" : "block";
+      btn.textContent = isDim ? "💡 Dim" : "☀️ Bright";
+    }
+
+    function setAppMode(m) {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      saveAllDualCanvases();
+      saveFullNPCanvas();
+      appMode = m;
+      document.body.className = (m === 'test') ? "test-mode" : (m === 'review' ? "review-mode" : "");
+
+      document.getElementById("btnModeLearn").className = `mode-btn ${m === 'learn' ? 'active-learn' : ''}`;
+      document.getElementById("btnModeTest").className = `mode-btn ${m === 'test' ? 'active-test' : ''}`;
+      document.getElementById("btnModeReview").className = `mode-btn ${m === 'review' ? 'active-review' : ''}`;
+
+      switchSection(currentSectionIdx);
+    }
+
+    function renderTabs() {
+      const bar = document.getElementById("sectionsBar");
+      bar.innerHTML = SECTIONS.map((sec, idx) => {
+        const active = idx === currentSectionIdx ? "active" : "";
+        return `<button class="section-tab-btn ${active}" onclick="switchSection(${idx})">${sec.tabTitle}</button>`;
+      }).join("");
+    }
+
+    function switchSection(idx) {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      saveAllDualCanvases();
+      saveFullNPCanvas();
+      currentSectionIdx = idx;
+
+      renderTabs();
+      const sec = SECTIONS[idx];
+      document.getElementById("paneTitle").textContent = sec.title;
+      document.getElementById("exerciseContent").innerHTML = sec.render();
+      document.getElementById("reviewAnswerHint").textContent = `Teacher Answer: ${sec.answerHint}`;
+
+      if (idx === 4) {
+        setTimeout(() => {
+          setupFullNPCanvas();
+          fitFullNPCanvas();
+          restoreFullNPCanvas();
+        }, 60);
+      } else {
+        setupDualCanvases();
+      }
+    }
+
+    function switchDefTab(defIdx) {
+      saveFullNPCanvas();
+      currentDefIdx = defIdx;
+      switchSection(4);
+    }
+
+    let selectedLeftMatch = null;
+    let selectedRightMatch = null;
+
+    function handleMatch(btn, side) {
+      if (side === 'left') {
+        if (selectedLeftMatch) selectedLeftMatch.classList.remove('selected');
+        selectedLeftMatch = btn;
+        btn.classList.add('selected');
+      } else {
+        if (selectedRightMatch) selectedRightMatch.classList.remove('selected');
+        selectedRightMatch = btn;
+        btn.classList.add('selected');
+      }
+
+      if (selectedLeftMatch && selectedRightMatch) {
+        if (selectedLeftMatch.getAttribute('data-pair') === selectedRightMatch.getAttribute('data-pair')) {
+          selectedLeftMatch.classList.remove('selected');
+          selectedRightMatch.classList.remove('selected');
+          selectedLeftMatch.classList.add('paired');
+          selectedRightMatch.classList.add('paired');
+          selectedLeftMatch.innerHTML += " ✓";
+          selectedRightMatch.innerHTML += " ✓";
+          speakText("Correct match");
+        } else {
+          selectedLeftMatch.classList.remove('selected');
+          selectedRightMatch.classList.remove('selected');
+          alert("Try again!");
+        }
+        selectedLeftMatch = null;
+        selectedRightMatch = null;
+      }
+    }
+
+    function checkMcq(btn, isCorrect, speakVal) {
+      speakText(speakVal);
+      const parent = btn.parentElement;
+      parent.querySelectorAll(".mcq-opt-btn").forEach(b => b.className = "mcq-opt-btn");
+      if (appMode === 'learn') {
+        btn.className = isCorrect ? "mcq-opt-btn correct" : "mcq-opt-btn wrong";
+      } else {
+        btn.className = "mcq-opt-btn selected-test";
+      }
+    }
+
+    function selectChip(itemId, state) {
+      localStorage.setItem(`chip::humayun::evs::${itemId}`, state);
+      speakText(state);
+      switchSection(currentSectionIdx);
+    }
+
+    function markCardGrade(grade) {
+      if (grade === 'pass') {
+        alert("⭐ Marked as Correct!");
+      } else {
+        alert("🔄 Marked to Review Later.");
+      }
+    }
+
+    function togglePalmRejection() {
+      palmRejectionMode = (palmRejectionMode === "pen-only") ? "all" : "pen-only";
+      const btn = document.getElementById("btnPalm");
+      btn.innerHTML = (palmRejectionMode === "pen-only") ? "🖊️ Pen Only" : "👆 Any Touch";
+    }
+
+    /* INLINE DUAL-LINE CANVASES */
+    function storageKeyForDual(id) {
+      return `ink::humayun::evs_oct07::${id}`;
+    }
+
+    function setupDualCanvases() {
+      const canvasList = document.querySelectorAll(".dual-canvas");
+      canvasList.forEach(c => {
+        const id = c.getAttribute("data-canvas-id");
+        const ctx = c.getContext("2d", { willReadFrequently: false });
+
+        const saved = localStorage.getItem(storageKeyForDual(id));
+        if (saved) {
+          const img = new Image();
+          img.onload = () => {
+            ctx.clearRect(0, 0, c.width, c.height);
+            ctx.drawImage(img, 0, 0);
+          };
+          img.src = saved;
+        }
+
+        let isDrawing = false;
+        let lastX = 0, lastY = 0;
+
+        c.onpointerdown = (e) => {
+          if (palmRejectionMode === "pen-only" && e.pointerType !== "pen") {
+            e.preventDefault();
+            return;
+          }
+          isDrawing = true;
+          try { c.setPointerCapture(e.pointerId); } catch (_) {}
+          const rect = c.getBoundingClientRect();
+          lastX = e.clientX - rect.left;
+          lastY = e.clientY - rect.top;
+          e.preventDefault();
+        };
+
+        c.onpointermove = (e) => {
+          if (!isDrawing) return;
+          const rect = c.getBoundingClientRect();
+          const currX = e.clientX - rect.left;
+          const currY = e.clientY - rect.top;
+
+          ctx.beginPath();
+          ctx.moveTo(lastX, lastY);
+          ctx.lineTo(currX, currY);
+          ctx.lineCap = "round";
+          ctx.lineJoin = "round";
+          ctx.strokeStyle = "#14532D";
+          const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
+          ctx.lineWidth = 3.8 * (pressure * 1.5 + 0.35);
+          ctx.stroke();
+
+          lastX = currX;
+          lastY = currY;
+          e.preventDefault();
+        };
+
+        const stopStroke = (e) => {
+          if (isDrawing) {
+            isDrawing = false;
+            try { c.releasePointerCapture(e.pointerId); } catch (_) {}
+            saveDualCanvas(c, id);
+          }
+        };
+
+        c.onpointerup = stopStroke;
+        c.onpointercancel = stopStroke;
+        c.onpointerleave = stopStroke;
+      });
+    }
+
+    function saveDualCanvas(c, id) {
+      try {
+        const data = c.toDataURL("image/png");
+        localStorage.setItem(storageKeyForDual(id), data);
+      } catch (e) {}
+    }
+
+    function saveAllDualCanvases() {
+      document.querySelectorAll(".dual-canvas").forEach(c => {
+        const id = c.getAttribute("data-canvas-id");
+        saveDualCanvas(c, id);
+      });
+    }
+
+    function clearDualCanvas(id) {
+      const c = document.querySelector(`.dual-canvas[data-canvas-id="${id}"]`);
+      if (c) {
+        const ctx = c.getContext("2d");
+        ctx.clearRect(0, 0, c.width, c.height);
+        localStorage.removeItem(storageKeyForDual(id));
+      }
+    }
+
+    /* FULL NOTEPAD COMPONENT FOR EACH DEFINITION */
+    let npCanvas = null;
+    let npCtx = null;
+    let npIsDrawing = false;
+    let npTool = "pen";
+    let npLineWidth = 4;
+    let npLastX = 0, npLastY = 0;
+    let npPointerId = null;
+
+    function npStorageKey() {
+      const curDef = DEFINITIONS_DATA[currentDefIdx];
+      return `ink::humayun::evs_oct07::def_${curDef.id}`;
+    }
+
+    function fitFullNPCanvas() {
+      npCanvas = document.getElementById("fullNotepadCanvas");
+      if (!npCanvas) return;
+      const wrap = document.getElementById("fullNotepadContainer");
+      if (!wrap || wrap.offsetParent === null) return;
+      const rect = wrap.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
+
+      const dpr = window.devicePixelRatio || 1;
+      const targetW = Math.floor(rect.width * dpr);
+      const targetH = Math.floor(rect.height * dpr);
+
+      if (npCanvas.width === targetW && npCanvas.height === targetH) return;
+
+      npCanvas.width = targetW;
+      npCanvas.height = targetH;
+      npCanvas.style.width = rect.width + "px";
+      npCanvas.style.height = rect.height + "px";
+      npCtx = npCanvas.getContext("2d");
+      npCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function saveFullNPCanvas() {
+      if (!npCanvas || npCanvas.width <= 0) return;
+      try {
+        const data = npCanvas.toDataURL("image/png");
+        localStorage.setItem(npStorageKey(), data);
+      } catch (e) {}
+    }
+
+    function restoreFullNPCanvas() {
+      if (!npCanvas || !npCtx) return;
+      npCtx.clearRect(0, 0, npCanvas.width, npCanvas.height);
+      const saved = localStorage.getItem(npStorageKey());
+      if (!saved) return;
+      const img = new Image();
+      img.onload = function() {
+        npCtx.save();
+        npCtx.setTransform(1, 0, 0, 1, 0, 0);
+        npCtx.drawImage(img, 0, 0, npCanvas.width, npCanvas.height);
+        npCtx.restore();
+      };
+      img.src = saved;
+    }
+
+    function clearNPCanvas() {
+      if (!npCanvas || !npCtx) return;
+      npCtx.clearRect(0, 0, npCanvas.width, npCanvas.height);
+      localStorage.removeItem(npStorageKey());
+    }
+
+    function undoNPCanvas() {
+      clearNPCanvas();
+    }
+
+    function setNPTool(t) {
+      npTool = t;
+      document.getElementById("btnNPPen").classList.toggle("active", t === "pen");
+      document.getElementById("btnNPEraser").classList.toggle("active", t === "eraser");
+    }
+
+    function setNPWidth(w) {
+      npLineWidth = w;
+      document.getElementById("npThick2").classList.toggle("active", w === 2);
+      document.getElementById("npThick4").classList.toggle("active", w === 4);
+      document.getElementById("npThick7").classList.toggle("active", w === 7);
+    }
+
+    function setupFullNPCanvas() {
+      npCanvas = document.getElementById("fullNotepadCanvas");
+      if (!npCanvas) return;
+      npCtx = npCanvas.getContext("2d");
+
+      npCanvas.onpointerdown = (e) => {
+        if (palmRejectionMode === "pen-only" && e.pointerType !== "pen") {
+          e.preventDefault();
+          return;
+        }
+        if (npIsDrawing && npPointerId !== null) return;
+        npPointerId = e.pointerId;
+        npIsDrawing = true;
+        try { npCanvas.setPointerCapture(e.pointerId); } catch (_) {}
+
+        const rect = npCanvas.getBoundingClientRect();
+        npLastX = e.clientX - rect.left;
+        npLastY = e.clientY - rect.top;
+        e.preventDefault();
+      };
+
+      npCanvas.onpointermove = (e) => {
+        if (!npIsDrawing || e.pointerId !== npPointerId) return;
+
+        const rect = npCanvas.getBoundingClientRect();
+        const currX = e.clientX - rect.left;
+        const currY = e.clientY - rect.top;
+
+        npCtx.beginPath();
+        npCtx.moveTo(npLastX, npLastY);
+        npCtx.lineTo(currX, currY);
+        npCtx.lineCap = "round";
+        npCtx.lineJoin = "round";
+
+        if (npTool === "eraser") {
+          npCtx.globalCompositeOperation = "destination-out";
+          npCtx.lineWidth = npLineWidth * 6;
+        } else {
+          npCtx.globalCompositeOperation = "source-over";
+          npCtx.strokeStyle = "#14532D";
+          const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
+          npCtx.lineWidth = npLineWidth * (pressure * 1.5 + 0.35);
+        }
+
+        npCtx.stroke();
+        npLastX = currX;
+        npLastY = currY;
+        e.preventDefault();
+      };
+
+      const stopNPStroke = (e) => {
+        if (npIsDrawing && (e.pointerId === npPointerId || npPointerId === null)) {
+          npIsDrawing = false;
+          npPointerId = null;
+          try { npCanvas.releasePointerCapture(e.pointerId); } catch (_) {}
+          saveFullNPCanvas();
+        }
+      };
+
+      npCanvas.onpointerup = stopNPStroke;
+      npCanvas.onpointercancel = stopNPStroke;
+      npCanvas.onpointerleave = stopNPStroke;
+    }
+
+    /* PARENT PIN LOGIC */
+    function openPinModal() {
+      enteredPin = "";
+      updatePinDots();
+      document.getElementById("pinModal").classList.add("open");
+    }
+
+    function closePinModal() {
+      document.getElementById("pinModal").classList.remove("open");
+      enteredPin = "";
+    }
+
+    function pressPin(n) {
+      if (enteredPin.length < 4) {
+        enteredPin += n;
+        updatePinDots();
+        if (enteredPin.length === 4) {
+          if (enteredPin === PARENT_PIN) {
+            closePinModal();
+            setAppMode('review');
+          } else {
+            alert("Incorrect PIN");
+            clearPin();
+          }
+        }
+      }
+    }
+
+    function clearPin() {
+      enteredPin = "";
+      updatePinDots();
+    }
+
+    function updatePinDots() {
+      let str = "";
+      for (let i = 0; i < 4; i++) {
+        str += (i < enteredPin.length) ? "● " : "- ";
+      }
+      document.getElementById("pinDots").textContent = str.trim();
+    }
+
+    window.onload = function() {
+      renderTabs();
+      switchSection(0);
+    };
+
+    window.addEventListener("resize", () => {
+      if (currentSectionIdx === 4) {
+        saveFullNPCanvas();
+        fitFullNPCanvas();
+        restoreFullNPCanvas();
+      }
+    });
+
+    window.addEventListener("beforeunload", () => {
+      saveAllDualCanvases();
+      saveFullNPCanvas();
+    });
+    window.addEventListener("pagehide", () => {
+      saveAllDualCanvases();
+      saveFullNPCanvas();
+    });
+  </script>
+</body>
+</html>
