@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Zaina's Maths: Decimals Expansion</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #EFF6FF;
+      --card-bg: #FFFFFF;
+      --text: #1E3A8A;
+      --subtext: #1D4ED8;
+      --border: #BFDBFE;
+      --primary: #2563EB;
+      --primary-dark: #1D4ED8;
+      --purple: #7C3AED;
+      --purple-dark: #6D28D9;
+      --accent: #F59E0B;
+      --ruled-line: #E2E8F0;
+      --shadow: 0 4px 14px rgba(30, 58, 138, 0.08);
+      --font: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      font-family: var(--font) !important;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-size: 16px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+      padding: 8px 12px;
+    }
+
+    #screenDimOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      pointer-events: none;
+      z-index: 99999;
+    }
+
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      gap: 8px;
+    }
+
+    /* HEADER */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 44px;
+      flex-shrink: 0;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .grade-badge {
+      background: #DBEAFE;
+      color: #1E40AF;
+      font-size: 0.8rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 8px;
+      border: 1px solid #93C5FD;
+    }
+
+    .mode-switch-wrap {
+      display: flex;
+      background: var(--card-bg);
+      padding: 3px;
+      border-radius: 12px;
+      border: 2px solid var(--border);
+    }
+
+    .mode-btn {
+      border: none;
+      background: transparent;
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--subtext);
+      border-radius: 9px;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+    .mode-btn.active-learn { background: var(--primary); color: #FFF; }
+    .mode-btn.active-write { background: var(--purple); color: #FFF; }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .action-btn {
+      border: 2px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text);
+      font-weight: 800;
+      font-size: 0.85rem;
+      padding: 6px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      height: 38px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      text-decoration: none;
+    }
+    .action-btn:active { transform: translateY(1px); }
+
+    /* TABS */
+    .sections-bar {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      background: var(--card-bg);
+      padding: 6px 8px;
+      border-radius: 14px;
+      border: 2px solid var(--border);
+      scrollbar-width: none;
+      flex-shrink: 0;
+    }
+    .sections-bar::-webkit-scrollbar { display: none; }
+
+    .section-tab-btn {
+      border: none;
+      background: transparent;
+      color: var(--subtext);
+      font-weight: 800;
+      font-size: 0.88rem;
+      padding: 6px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.1s;
+    }
+    .section-tab-btn.active {
+      background: var(--primary);
+      color: #FFF;
+    }
+    body.write-mode .section-tab-btn.active {
+      background: var(--purple);
+    }
+
+    /* WORKSPACE */
+    .workspace {
+      display: flex;
+      flex: 1;
+      gap: 12px;
+      min-height: 0;
+    }
+
+    /* LEFT EXPLANATION / CARD */
+    .content-pane {
+      flex: 1.1;
+      background: var(--card-bg);
+      border-radius: 18px;
+      border: 2px solid var(--border);
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: var(--shadow);
+      overflow-y: auto;
+    }
+
+    .concept-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px dashed var(--border);
+      padding-bottom: 8px;
+    }
+
+    .concept-heading {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--text);
+    }
+
+    .btn-speak {
+      background: #FEF3C7;
+      border: 2px solid #FCD34D;
+      color: #92400E;
+      font-size: 0.85rem;
+      font-weight: 800;
+      padding: 6px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* PLACE VALUE TABLE */
+    .pv-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0;
+      text-align: center;
+      font-size: 0.95rem;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid #CBD5E1;
+    }
+    .pv-table th {
+      background: #DBEAFE;
+      color: #1E40AF;
+      padding: 8px 4px;
+      font-weight: 800;
+      border: 1px solid #BFDBFE;
+    }
+    .pv-table th.dec-th {
+      background: #FEF3C7;
+      color: #92400E;
+    }
+    .pv-table td {
+      background: #FFF;
+      padding: 10px 4px;
+      font-weight: 900;
+      font-size: 1.25rem;
+      border: 1px solid #CBD5E1;
+      color: #0F172A;
+    }
+    .pv-table td.dot {
+      background: #F1F5F9;
+      color: #DC2626;
+      font-size: 1.6rem;
+      width: 24px;
+    }
+
+    .rule-box {
+      background: #EFF6FF;
+      border: 2px solid #BFDBFE;
+      border-left: 5px solid var(--primary);
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #1E3A8A;
+    }
+
+    .expansion-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .exp-item {
+      background: #F8FAFC;
+      border: 2px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+    .exp-item .method-title {
+      font-size: 0.85rem;
+      font-weight: 900;
+      color: #64748B;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .exp-item .math-val {
+      color: #059669;
+      font-size: 1.25rem;
+      font-weight: 900;
+      word-break: break-word;
+    }
+
+    .write-prompt-card {
+      display: none;
+      background: #F5F3FF;
+      border: 2px solid #DDD6FE;
+      border-left: 5px solid var(--purple);
+      padding: 14px 16px;
+      border-radius: 12px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--purple-dark);
+      line-height: 1.5;
+    }
+    body.write-mode .write-prompt-card { display: block; }
+    body.write-mode .learn-only-wrap { display: none; }
+
+    /* RIGHT CANVAS PANE */
+    .canvas-pane {
+      flex: 0.9;
+      background: var(--card-bg);
+      border-radius: 18px;
+      border: 2px solid var(--border);
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow);
+      min-width: 0;
+    }
+
+    .pad-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tool-cluster {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pad-btn {
+      background: #F8FAFC;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      cursor: pointer;
+      color: var(--text);
+      height: 36px;
+    }
+    .pad-btn.active {
+      background: var(--primary);
+      color: #FFF;
+      border-color: var(--primary);
+    }
+    body.write-mode .pad-btn.active {
+      background: var(--purple);
+      border-color: var(--purple);
+    }
+
+    .canvas-container {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      min-height: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid var(--border);
+      background-color: var(--card-bg);
+    }
+
+    .grid-lines {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image: 
+        repeating-linear-gradient(to bottom, #FFF 0px, #FFF 34px, var(--ruled-line) 35px),
+        repeating-linear-gradient(to right, #FFF 0px, #FFF 34px, var(--ruled-line) 35px);
+      opacity: 0.6;
+      z-index: 1;
+    }
+
+    #mathCanvas {
+      position: absolute;
+      inset: 0;
+      cursor: crosshair;
+      touch-action: none;
+      z-index: 2;
+    }
+
+    /* PEEK BAR */
+    .peek-bar {
+      display: none;
+      margin-top: auto;
+      padding: 8px 12px;
+      background: #F8FAFC;
+      border: 2px solid #CBD5E1;
+      border-radius: 10px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    body.write-mode .peek-bar { display: flex; }
+
+    .unlocked-answer-box {
+      display: none;
+      background: #FEF2F2;
+      border: 2px solid #FECACA;
+      border-left: 5px solid #EF4444;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      color: #991B1B;
+      font-weight: 700;
+      margin-top: 6px;
+    }
+
+    /* PIN MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100000;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #FFF;
+      border-radius: 20px;
+      padding: 22px;
+      width: 90%;
+      max-width: 320px;
+      text-align: center;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.25);
+    }
+    .pin-dots {
+      font-size: 1.8rem;
+      letter-spacing: 6px;
+      background: #F1F5F9;
+      padding: 10px;
+      border-radius: 12px;
+      margin: 14px 0;
+      font-weight: 900;
+    }
+    .keypad-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .key-btn {
+      padding: 12px;
+      font-size: 1.25rem;
+      font-weight: 800;
+      border-radius: 12px;
+      border: 2px solid #E2E8F0;
+      background: #F8FAFC;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="screenDimOverlay"></div>
+
+  <div class="app-container">
+    <header>
+      <div class="brand-group">
+        <a href="javascript:void(0)" onclick="goToHub()" class="action-btn">🏠 Hub</a>
+        <div class="brand-title">📐 Decimal Explorer <span class="grade-badge">Grade 5 Maths</span></div>
+      </div>
+
+      <div class="mode-switch-wrap">
+        <button class="mode-btn active-learn" id="btnModeLearn" onclick="setAppMode('learn')">📖 Learn &amp; Understand</button>
+        <button class="mode-btn" id="btnModeWrite" onclick="setAppMode('write')">✍️ Solve from Memory</button>
+      </div>
+
+      <div class="header-actions">
+        <button class="action-btn" id="btnFullscreen" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+        <button class="action-btn" id="btnDim" onclick="toggleScreenDim()">💡 Dim</button>
+      </div>
+    </header>
+
+    <div class="sections-bar" id="sectionsBar"></div>
+
+    <main class="workspace">
+      <!-- Left Card Pane -->
+      <section class="content-pane">
+        <div class="concept-title-row">
+          <div class="concept-heading" id="conceptHeading">Title</div>
+          <button class="btn-speak" id="btnSpeak" onclick="readAloud()">🔊 Explain</button>
+        </div>
+
+        <div class="learn-only-wrap">
+          <div id="pvTableWrap"></div>
+          <div class="rule-box" id="ruleBoxText"></div>
+          <div class="expansion-cards" id="expansionCardsWrap"></div>
+        </div>
+
+        <div class="write-prompt-card" id="writePromptCard"></div>
+        <div class="unlocked-answer-box" id="unlockedAnswerBox"></div>
+
+        <div class="peek-bar" id="peekBar">
+          <span style="font-size:0.88rem; font-weight:700; color:#64748B;">Solve both fractional &amp; decimal forms on pad</span>
+          <button class="action-btn" onclick="openPinModal()">🔒 Parent Peek</button>
+        </div>
+      </section>
+
+      <!-- Right Scratchpad Canvas -->
+      <section class="canvas-pane">
+        <div class="pad-toolbar">
+          <div class="tool-cluster">
+            <button class="pad-btn active" id="penTool" onclick="setTool('pen')">✏️ Pen</button>
+            <button class="pad-btn" id="eraserTool" onclick="setTool('eraser')">🧹 Eraser</button>
+            <button class="pad-btn" onclick="undoCanvas()">↩️ Undo</button>
+            <button class="pad-btn" onclick="clearCanvas()">🗑️ Clear</button>
+          </div>
+          <div class="tool-cluster">
+            <button class="pad-btn active" id="btnPalmRejection" onclick="togglePalmRejection()">🖊️ Pen Only</button>
+            <button class="pad-btn" id="swThin" onclick="setStrokeWidth(2)">Thin</button>
+            <button class="pad-btn active" id="swMed" onclick="setStrokeWidth(4)">Med</button>
+            <button class="pad-btn" id="swThick" onclick="setStrokeWidth(7)">Thick</button>
+          </div>
+        </div>
+
+        <div class="canvas-container" id="canvasContainer">
+          <div class="grid-lines"></div>
+          <canvas id="mathCanvas"></canvas>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Parent PIN Modal -->
+  <div class="modal-overlay" id="pinModal">
+    <div class="modal-box">
+      <h3 style="font-weight:900; color:#0F172A;">Parent PIN</h3>
+      <p style="font-size:0.85rem; color:#64748B; margin-top:4px;">Enter PIN to reveal teacher answer key</p>
+      <div class="pin-dots" id="pinDots">----</div>
+      <div class="keypad-grid">
+        <button class="key-btn" onclick="pressPin('1')">1</button>
+        <button class="key-btn" onclick="pressPin('2')">2</button>
+        <button class="key-btn" onclick="pressPin('3')">3</button>
+        <button class="key-btn" onclick="pressPin('4')">4</button>
+        <button class="key-btn" onclick="pressPin('5')">5</button>
+        <button class="key-btn" onclick="pressPin('6')">6</button>
+        <button class="key-btn" onclick="pressPin('7')">7</button>
+        <button class="key-btn" onclick="pressPin('8')">8</button>
+        <button class="key-btn" onclick="pressPin('9')">9</button>
+        <button class="key-btn" onclick="clearPin()">C</button>
+        <button class="key-btn" onclick="pressPin('0')">0</button>
+        <button class="key-btn" onclick="closePinModal()">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PARENT_PIN = "1995";
+    let enteredPin = "";
+
+    const LESSON_ITEMS = [
+      {
+        id: "intro",
+        tabTitle: "💡 The Golden Rule",
+        title: "How Decimals Work (Place Value)",
+        speech: "Decimals have two sides separated by a point. The left side is whole numbers: hundreds, tens, and ones. The right side is parts of a whole: tenths with a ten in the denominator, hundredths with a hundred in the denominator, and thousandths with a thousand in the denominator. When a place has a zero, we don't write anything for that place!",
+        rule: `<b>The Secret to Never Getting Confused:</b><br/>
+               • Numbers <b>before</b> the dot are normal whole numbers (Hundreds, Tens, Ones).<br/>
+               • Numbers <b>after</b> the dot are fractions with zeroes in the denominator!<br/>
+               &nbsp;&nbsp;&nbsp;&nbsp;1st place after dot = <b>Tenths</b> (/10)<br/>
+               &nbsp;&nbsp;&nbsp;&nbsp;2nd place after dot = <b>Hundredths</b> (/100)<br/>
+               &nbsp;&nbsp;&nbsp;&nbsp;3rd place after dot = <b>Thousandths</b> (/1000)<br/>
+               ⭐ <b>Zero Rule:</b> If there is a 0 in a place, we just skip it!`,
+        table: `
+          <table class="pv-table">
+            <tr><th>Hundreds (100)</th><th>Tens (10)</th><th>Ones (1)</th><th>.</th><th class="dec-th">Tenths (/10)</th><th class="dec-th">Hundredths (/100)</th><th class="dec-th">Thousandths (/1000)</th></tr>
+            <tr><td>Hundreds</td><td>Tens</td><td>Ones</td><td class="dot">.</td><td>1/10</td><td>1/100</td><td>1/1000</td></tr>
+          </table>
+        `,
+        expCards: `
+          <div class="exp-item">
+            <div class="method-title">Remember This Pattern:</div>
+            <div class="math-val" style="color:#2563EB;">0.5 = 5/10 &nbsp;&nbsp;|&nbsp;&nbsp; 0.05 = 5/100 &nbsp;&nbsp;|&nbsp;&nbsp; 0.005 = 5/1000</div>
+          </div>
+        `,
+        prompt: "Write on the scratchpad:<br/>1. What does the 1st digit after the decimal point represent?<br/>2. What does the 2nd digit represent?<br/>3. What does the 3rd digit represent?",
+        answer: "1st digit = Tenths (/10), 2nd digit = Hundredths (/100), 3rd digit = Thousandths (/1000)."
+      },
+      {
+        id: "q_a",
+        tabTitle: "a) 753.62",
+        title: "Expand: 753.62",
+        speech: "Let's expand 753.62. Seven is in the hundreds place, so 700. Five is in the tens place, so 50. Three is in the ones place, so 3. After the decimal point, 6 is in the tenths place, so 6 over 10. And 2 is in the hundredths place, so 2 over 100. So the answer is 700 plus 50 plus 3 plus 6 over 10 plus 2 over 100.",
+        rule: `<b>Step-by-Step Breakdown:</b><br/>
+               • <b>7</b> Hundreds = 700<br/>
+               • <b>5</b> Tens = 50<br/>
+               • <b>3</b> Ones = 3<br/>
+               • [ . ] Decimal point<br/>
+               • <b>6</b> Tenths = 6/10 (or 0.6)<br/>
+               • <b>2</b> Hundredths = 2/100 (or 0.02)`,
+        table: `
+          <table class="pv-table">
+            <tr><th>Hundreds</th><th>Tens</th><th>Ones</th><th>.</th><th class="dec-th">Tenths</th><th class="dec-th">Hundredths</th></tr>
+            <tr><td>7</td><td>5</td><td>3</td><td class="dot">.</td><td>6</td><td>2</td></tr>
+          </table>
+        `,
+        expCards: `
+          <div class="exp-item">
+            <div class="method-title">Form 1 (Fractional Expansion - Most Common in Grade 5):</div>
+            <div class="math-val">700 + 50 + 3 + <sup>6</sup>/<sub>10</sub> + <sup>2</sup>/<sub>100</sub></div>
+          </div>
+          <div class="exp-item">
+            <div class="method-title">Form 2 (Decimal Expansion):</div>
+            <div class="math-val">700 + 50 + 3 + 0.6 + 0.02</div>
+          </div>
+        `,
+        prompt: "Solve homework sum a) <b>753.62</b> on the scratchpad:<br/>Write both the fractional expansion and decimal expansion from memory!",
+        answer: "Fractional: 700 + 50 + 3 + 6/10 + 2/100<br/>Decimal: 700 + 50 + 3 + 0.6 + 0.02"
+      },
+      {
+        id: "q_b",
+        tabTitle: "b) 800.025",
+        title: "Expand: 800.025",
+        speech: "Let's expand 800.025. Here is where many students get confused because of the zeroes! Eight is in the hundreds place, so 800. Tens and ones are zero, so we skip them. Tenths is zero, so skip it. Two is in the hundredths place, so 2 over 100. And five is in the thousandths place, so 5 over 1000. That gives 800 plus 2 over 100 plus 5 over 1000.",
+        rule: `<b>Don't get tricked by the Zeroes!</b><br/>
+               • <b>8</b> Hundreds = 800<br/>
+               • Tens and Ones are 0 $\\rightarrow$ <i>We skip them!</i><br/>
+               • [ . ] Decimal point<br/>
+               • Tenths is 0 $\\rightarrow$ <i>We skip it!</i><br/>
+               • <b>2</b> is in the 2nd place = <b>2/100</b> (or 0.02)<br/>
+               • <b>5</b> is in the 3rd place = <b>5/1000</b> (or 0.005)`,
+        table: `
+          <table class="pv-table">
+            <tr><th>Hundreds</th><th>Tens</th><th>Ones</th><th>.</th><th class="dec-th">Tenths</th><th class="dec-th">Hundredths</th><th class="dec-th">Thousandths</th></tr>
+            <tr><td>8</td><td>0</td><td>0</td><td class="dot">.</td><td>0</td><td>2</td><td>5</td></tr>
+          </table>
+        `,
+        expCards: `
+          <div class="exp-item">
+            <div class="method-title">Form 1 (Fractional Expansion):</div>
+            <div class="math-val">800 + <sup>2</sup>/<sub>100</sub> + <sup>5</sup>/<sub>1000</sub></div>
+          </div>
+          <div class="exp-item">
+            <div class="method-title">Form 2 (Decimal Expansion):</div>
+            <div class="math-val">800 + 0.02 + 0.005</div>
+          </div>
+        `,
+        prompt: "Solve homework sum b) <b>800.025</b> on the scratchpad:<br/>Remember to skip the zeroes and write the 2 and 5 with their correct denominators!",
+        answer: "Fractional: 800 + 2/100 + 5/1000<br/>Decimal: 800 + 0.02 + 0.005"
+      },
+      {
+        id: "q_c",
+        tabTitle: "c) 96.008",
+        title: "Expand: 96.008",
+        speech: "Let's expand 96.008. Nine is in the tens place, so 90. Six is in the ones place, so 6. Tenths is zero, so skip it. Hundredths is zero, so skip it. Eight is in the third decimal place, which is thousandths, so 8 over 1000. The full expansion is 90 plus 6 plus 8 over 1000.",
+        rule: `<b>Step-by-Step Breakdown:</b><br/>
+               • <b>9</b> Tens = 90<br/>
+               • <b>6</b> Ones = 6<br/>
+               • [ . ] Decimal point<br/>
+               • Tenths is 0 $\\rightarrow$ skip!<br/>
+               • Hundredths is 0 $\\rightarrow$ skip!<br/>
+               • <b>8</b> is in the 3rd place after dot = <b>8/1000</b> (or 0.008)`,
+        table: `
+          <table class="pv-table">
+            <tr><th>Tens</th><th>Ones</th><th>.</th><th class="dec-th">Tenths</th><th class="dec-th">Hundredths</th><th class="dec-th">Thousandths</th></tr>
+            <tr><td>9</td><td>6</td><td class="dot">.</td><td>0</td><td>0</td><td>8</td></tr>
+          </table>
+        `,
+        expCards: `
+          <div class="exp-item">
+            <div class="method-title">Form 1 (Fractional Expansion):</div>
+            <div class="math-val">90 + 6 + <sup>8</sup>/<sub>1000</sub></div>
+          </div>
+          <div class="exp-item">
+            <div class="method-title">Form 2 (Decimal Expansion):</div>
+            <div class="math-val">90 + 6 + 0.008</div>
+          </div>
+        `,
+        prompt: "Solve homework sum c) <b>96.008</b> on the scratchpad:<br/>Carefully count the zeroes for the thousandths place!",
+        answer: "Fractional: 90 + 6 + 8/1000<br/>Decimal: 90 + 6 + 0.008"
+      }
+    ];
+
+    let currentItemIdx = 0;
+    let appMode = "learn";
+    let palmRejectionMode = "pen-only";
+    let strokeUndoHistory = {};
+    let unlockedPeeks = {};
+
+    /* Return to Hub */
+    function goToHub() {
+      if ('speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+      }
+      saveCurrentCanvas();
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage("close-lesson-to-hub", "*");
+      } else {
+        window.location.href = "index.html";
+      }
+    }
+
+    /* Screen Dim & Fullscreen */
+    function toggleScreenDim() {
+      const el = document.getElementById("screenDimOverlay");
+      const btn = document.getElementById("btnDim");
+      const isDim = el.style.display === "block";
+      el.style.display = isDim ? "none" : "block";
+      btn.textContent = isDim ? "💡 Dim" : "☀️ Bright";
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        const el = document.documentElement;
+        if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      }
+    }
+
+    /* Mode Switching */
+    function setAppMode(m) {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      saveCurrentCanvas();
+      appMode = m;
+      document.body.classList.toggle("write-mode", m === "write");
+      document.getElementById("btnModeLearn").className = `mode-btn ${m === 'learn' ? 'active-learn' : ''}`;
+      document.getElementById("btnModeWrite").className = `mode-btn ${m === 'write' ? 'active-write' : ''}`;
+      renderCard();
+    }
+
+    /* Render Navigation Tabs */
+    function renderTabs() {
+      const bar = document.getElementById("sectionsBar");
+      bar.innerHTML = LESSON_ITEMS.map((item, idx) => {
+        const active = idx === currentItemIdx ? "active" : "";
+        return `<button class="section-tab-btn ${active}" onclick="selectItem(${idx})">${item.tabTitle}</button>`;
+      }).join("");
+    }
+
+    function selectItem(idx) {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      saveCurrentCanvas();
+      currentItemIdx = idx;
+      renderTabs();
+      renderCard();
+    }
+
+    /* Render Card */
+    function renderCard() {
+      const item = LESSON_ITEMS[currentItemIdx];
+
+      document.getElementById("conceptHeading").innerHTML = item.title;
+      document.getElementById("ruleBoxText").innerHTML = item.rule;
+      document.getElementById("pvTableWrap").innerHTML = item.table;
+      document.getElementById("expansionCardsWrap").innerHTML = item.expCards;
+      document.getElementById("writePromptCard").innerHTML = item.prompt;
+
+      const peekBox = document.getElementById("unlockedAnswerBox");
+      if (unlockedPeeks[item.id] && appMode === "write") {
+        peekBox.innerHTML = `🔑 <b>Answer Key:</b><br/>${item.answer}`;
+        peekBox.style.display = "block";
+      } else {
+        peekBox.style.display = "none";
+      }
+
+      setTimeout(() => {
+        fitCanvas();
+        restoreCanvas(item.id);
+      }, 40);
+    }
+
+    /* Speech TTS */
+    function readAloud() {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const item = LESSON_ITEMS[currentItemIdx];
+      const u = new SpeechSynthesisUtterance(item.speech);
+      u.rate = 0.9;
+      u.lang = "en-US";
+      window.speechSynthesis.speak(u);
+    }
+
+    /* Canvas Engine & Palm Rejection */
+    const canvas = document.getElementById("mathCanvas");
+    const ctx = canvas.getContext("2d", { willReadFrequently: false });
+    let isDrawing = false;
+    let currentTool = "pen";
+    let baseLineWidth = 4;
+    let activePointerId = null;
+    let lastX = 0, lastY = 0;
+
+    function storageKey(itemId) {
+      return `ink::zaina::maths_oct07::${appMode}::${itemId}`;
+    }
+
+    function fitCanvas() {
+      const wrap = document.getElementById("canvasContainer");
+      if (!wrap || wrap.offsetParent === null) return;
+      const rect = wrap.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
+
+      const dpr = window.devicePixelRatio || 1;
+      const targetW = Math.floor(rect.width * dpr);
+      const targetH = Math.floor(rect.height * dpr);
+
+      if (canvas.width === targetW && canvas.height === targetH) return;
+
+      canvas.width = targetW;
+      canvas.height = targetH;
+      canvas.style.width = rect.width + "px";
+      canvas.style.height = rect.height + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function saveCurrentCanvas() {
+      if (canvas.width <= 0) return;
+      const item = LESSON_ITEMS[currentItemIdx];
+      const key = storageKey(item.id);
+      try {
+        const data = canvas.toDataURL("image/png");
+        localStorage.setItem(key, data);
+        if (!strokeUndoHistory[key]) strokeUndoHistory[key] = [];
+        if (strokeUndoHistory[key].slice(-1)[0] !== data) {
+          strokeUndoHistory[key].push(data);
+          if (strokeUndoHistory[key].length > 25) strokeUndoHistory[key].shift();
+        }
+      } catch (e) {}
+    }
+
+    function restoreCanvas(itemId) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const key = storageKey(itemId);
+      const saved = localStorage.getItem(key);
+      if (!saved) return;
+      const img = new Image();
+      img.onload = function() {
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        ctx.restore();
+      };
+      img.src = saved;
+    }
+
+    function clearCanvas() {
+      const item = LESSON_ITEMS[currentItemIdx];
+      const key = storageKey(item.id);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      localStorage.removeItem(key);
+      strokeUndoHistory[key] = [];
+    }
+
+    function undoCanvas() {
+      const item = LESSON_ITEMS[currentItemIdx];
+      const key = storageKey(item.id);
+      const hist = strokeUndoHistory[key] || [];
+      if (hist.length > 1) {
+        hist.pop();
+        const prev = hist[hist.length - 1];
+        localStorage.setItem(key, prev);
+        const img = new Image();
+        img.onload = function() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.save();
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          ctx.restore();
+        };
+        img.src = prev;
+      } else {
+        clearCanvas();
+      }
+    }
+
+    function setTool(tool) {
+      currentTool = tool;
+      document.getElementById("penTool").classList.toggle("active", tool === "pen");
+      document.getElementById("eraserTool").classList.toggle("active", tool === "eraser");
+    }
+
+    function setStrokeWidth(w) {
+      baseLineWidth = w;
+      document.getElementById("swThin").classList.toggle("active", w === 2);
+      document.getElementById("swMed").classList.toggle("active", w === 4);
+      document.getElementById("swThick").classList.toggle("active", w === 7);
+    }
+
+    function togglePalmRejection() {
+      palmRejectionMode = (palmRejectionMode === "pen-only") ? "all" : "pen-only";
+      const btn = document.getElementById("btnPalmRejection");
+      if (palmRejectionMode === "pen-only") {
+        btn.innerHTML = "🖊️ Pen Only";
+        btn.classList.add("active");
+      } else {
+        btn.innerHTML = "👆 Any Touch";
+        btn.classList.remove("active");
+      }
+    }
+
+    function setupCanvas() {
+      canvas.addEventListener("pointerdown", function(e) {
+        if (palmRejectionMode === "pen-only" && e.pointerType !== "pen") {
+          e.preventDefault();
+          return;
+        }
+        if (isDrawing && activePointerId !== null) return;
+
+        activePointerId = e.pointerId;
+        isDrawing = true;
+        try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+
+        const rect = canvas.getBoundingClientRect();
+        lastX = e.clientX - rect.left;
+        lastY = e.clientY - rect.top;
+        e.preventDefault();
+      }, { passive: false });
+
+      canvas.addEventListener("pointermove", function(e) {
+        if (!isDrawing || e.pointerId !== activePointerId) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const currX = e.clientX - rect.left;
+        const currY = e.clientY - rect.top;
+
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(currX, currY);
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+
+        if (currentTool === "eraser") {
+          ctx.globalCompositeOperation = "destination-out";
+          ctx.lineWidth = baseLineWidth * 5;
+        } else {
+          ctx.globalCompositeOperation = "source-over";
+          ctx.strokeStyle = "#1E3A8A";
+          const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
+          ctx.lineWidth = baseLineWidth * (pressure * 1.5 + 0.35);
+        }
+
+        ctx.stroke();
+        lastX = currX;
+        lastY = currY;
+        e.preventDefault();
+      }, { passive: false });
+
+      const stopStroke = function(e) {
+        if (isDrawing && (e.pointerId === activePointerId || activePointerId === null)) {
+          isDrawing = false;
+          activePointerId = null;
+          try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+          saveCurrentCanvas();
+        }
+      };
+
+      canvas.addEventListener("pointerup", stopStroke);
+      canvas.addEventListener("pointercancel", stopStroke);
+      canvas.addEventListener("pointerleave", stopStroke);
+    }
+
+    /* Parent PIN */
+    function openPinModal() {
+      enteredPin = "";
+      updatePinDots();
+      document.getElementById("pinModal").classList.add("open");
+    }
+
+    function closePinModal() {
+      document.getElementById("pinModal").classList.remove("open");
+      enteredPin = "";
+    }
+
+    function pressPin(n) {
+      if (enteredPin.length < 4) {
+        enteredPin += n;
+        updatePinDots();
+        if (enteredPin.length === 4) {
+          if (enteredPin === PARENT_PIN) {
+            const item = LESSON_ITEMS[currentItemIdx];
+            unlockedPeeks[item.id] = true;
+            closePinModal();
+            renderCard();
+          } else {
+            alert("Incorrect PIN");
+            clearPin();
+          }
+        }
+      }
+    }
+
+    function clearPin() {
+      enteredPin = "";
+      updatePinDots();
+    }
+
+    function updatePinDots() {
+      let str = "";
+      for (let i = 0; i < 4; i++) {
+        str += (i < enteredPin.length) ? "● " : "- ";
+      }
+      document.getElementById("pinDots").textContent = str.trim();
+    }
+
+    window.onload = function() {
+      setupCanvas();
+      renderTabs();
+      renderCard();
+    };
+
+    window.addEventListener("resize", () => {
+      saveCurrentCanvas();
+      fitCanvas();
+      restoreCanvas(LESSON_ITEMS[currentItemIdx].id);
+    });
+  </script>
+</body>
+</html>
