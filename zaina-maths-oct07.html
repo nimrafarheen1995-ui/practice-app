@@ -344,7 +344,7 @@ header {
 }
 .scene-flutter {
   background: radial-gradient(circle at 85% 15%, rgba(254, 240, 138, 0.35) 0%, transparent 45%),
-              linear-gradient(135deg, #14532D 0%, #166534 50%, #064E3B 100%) !important;
+              linear-gradient(135deg, #1E293B 0%, #334155 50%, #0F172A 100%) !important;
 }
 
 .scene-companion-anchor {
@@ -532,7 +532,7 @@ header {
   color: #B91C1C !important;
 }
 
-/* NOTEBOOK PEEK BUTTON AND POPUP WITH SPIRAL BINDER */
+/* NOTEBOOK PEEK BUTTON AND INTERACTIVE HANDWRITING MODAL */
 .notebook-peek-btn {
   background: #FEF08A;
   border: 1.5px solid #F59E0B;
@@ -554,7 +554,7 @@ header {
   display: none;
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.5);
+  background: rgba(15, 23, 42, 0.55);
   backdrop-filter: blur(4px);
   z-index: 99999;
   align-items: center;
@@ -566,14 +566,15 @@ header {
 .notebook-sheet {
   background: #FFFDF0;
   width: 100%;
-  max-width: 600px;
+  max-width: 720px;
+  height: 480px;
   border: 3px solid #E2E8F0;
-  border-radius: 18px;
-  padding: 24px 28px 24px 44px;
+  border-radius: 20px;
+  padding: 20px 24px 20px 42px;
   box-shadow: 0 20px 50px rgba(0,0,0,0.35);
   position: relative;
-  background-image: repeating-linear-gradient(to bottom, transparent, transparent 31px, #E2E8F0 31px, #E2E8F0 32px);
-  background-size: 100% 32px;
+  display: flex;
+  flex-direction: column;
   animation: notePopIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 @keyframes notePopIn {
@@ -586,32 +587,75 @@ header {
   content: '';
   position: absolute;
   top: 14px;
-  left: 12px;
+  left: 10px;
   bottom: 14px;
   width: 14px;
   background-image: radial-gradient(circle, #475569 45%, transparent 50%);
   background-size: 14px 24px;
 }
 
-.notebook-header-title {
+.notebook-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px dashed #CBD5E1;
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+.notebook-question-title {
   font-family: var(--font-display);
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 800;
   color: #1E293B;
-  border-bottom: 3px solid #1E293B;
-  padding-bottom: 4px;
-  margin-bottom: 14px;
-  display: inline-block;
 }
 
-.notebook-handwritten-body {
-  font-family: var(--font-hand);
-  font-size: 1.3rem;
-  color: #1E3A8A;
-  line-height: 32px;
-  letter-spacing: 0.4px;
-  min-height: 140px;
-  margin-bottom: 16px;
+.notebook-canvas-toolbar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.notebook-draw-container {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid #93C5FD;
+  background: #FFFFFF;
+}
+
+/* DUAL BLUE RULED LINES WITH RED MARGIN */
+.notebook-ruled-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-color: #FFFFFF;
+  background-image: repeating-linear-gradient(
+    #FFFFFF 0px,
+    #FFFFFF 31px,
+    #93C5FD 32px
+  );
+  opacity: 0.65;
+  z-index: 1;
+}
+.notebook-ruled-lines::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 36px;
+  width: 2px;
+  height: 100%;
+  background: #F87171;
+}
+
+#notebookHandwritingCanvas {
+  position: absolute;
+  inset: 0;
+  cursor: crosshair;
+  touch-action: none;
+  z-index: 2;
 }
 
 .notebook-footer-row {
@@ -619,11 +663,13 @@ header {
   justify-content: space-between;
   align-items: center;
   border-top: 2px dashed #CBD5E1;
-  padding-top: 12px;
+  padding-top: 10px;
+  margin-top: 10px;
+  flex-shrink: 0;
 }
 
 .notebook-pony-corner {
-  width: 75px;
+  width: 65px;
   height: auto;
   object-fit: contain;
   filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
@@ -657,6 +703,11 @@ header {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  border: 3px solid #38BDF8;
 }
 .strip-table {
   width: 100%;
@@ -664,18 +715,19 @@ header {
   border-collapse: collapse;
 }
 .strip-table th {
-  background: #F8FAFC;
-  padding: 8px;
-  font-size: 0.9rem;
+  background: #F0F9FF;
+  padding: 10px;
+  font-size: 0.95rem;
   font-weight: 800;
-  color: #64748B;
-  border: 1px solid #E2E8F0;
+  color: #0369A1;
+  border: 1.5px solid #BAE6FD;
 }
 .strip-table td {
-  padding: 8px;
-  border: 1px solid #E2E8F0;
+  padding: 10px;
+  border: 1.5px solid #E2E8F0;
   vertical-align: middle;
   text-align: center;
+  background: #FFFFFF;
 }
 .strip-bar-visual {
   display: inline-flex;
@@ -770,11 +822,21 @@ header {
 <canvas id="milkyWayCanvas"></canvas>
 <canvas id="confettiSnowCanvas"></canvas>
 
-<!-- GLOBAL NOTEBOOK POPUP MODAL -->
+<!-- GLOBAL INTERACTIVE HANDWRITING NOTEBOOK MODAL -->
 <div class="notebook-popup-overlay" id="notebookPopupModal" onclick="closeNotebookPopup(event)">
   <div class="notebook-sheet" id="notebookSheetContent">
-    <div class="notebook-header-title">Exact Teacher Method</div>
-    <div class="notebook-handwritten-body" id="notebookPopupBodyText">Loading steps...</div>
+    <div class="notebook-header-row">
+      <div class="notebook-question-title" id="notebookPopupTitleText">Question Title</div>
+      <div class="notebook-canvas-toolbar">
+        <button class="canvas-tool-btn active" id="nbPenBtn" onclick="setNotebookTool('pen')">✏️ Pen</button>
+        <button class="canvas-tool-btn" id="nbEraserBtn" onclick="setNotebookTool('eraser')">🧹 Eraser</button>
+        <button class="canvas-tool-btn" onclick="clearNotebookCanvas()">Clear</button>
+      </div>
+    </div>
+    <div class="notebook-draw-container" id="notebookDrawWrap">
+      <div class="notebook-ruled-lines"></div>
+      <canvas id="notebookHandwritingCanvas"></canvas>
+    </div>
     <div class="notebook-footer-row">
       <button class="head-btn" onclick="closeNotebookPopupModal()">✕ Close Notebook</button>
       <img src="twilight.png" id="notebookPopupPonyImg" class="notebook-pony-corner" alt="Pony Companion" onerror="handleImageFallback(this)"/>
@@ -1384,35 +1446,25 @@ function inputBlankHtml(id, correctVal, formatRule = "any") {
                 oninput="handleDirectInput(this)"/>`;
 }
 
-/* NOTEBOOK MODAL OPENER */
-const CLASSWORK_NOTEBOOK_STEPS = {
-  "note_q5_c": "c. 702.913 (Classwork Sum)<br/>Line 1: [7 &times; 100] + [2 &times; 1] + 9/10 + 1/100 + 3/1000<br/>Line 2: 700 + 2 + 9/10 + 1/100 + 3/1000<br/>Line 3: = 702.913",
-  "note_q5_d": "d. 125.023 (Classwork Sum)<br/>Line 1: [1 &times; 100] + [2 &times; 10] + [5 &times; 1] + 2/100 + 3/1000<br/>Line 2: 100 + 20 + 5 + 2/100 + 3/1000<br/>Line 3: = 125.023",
-  "note_q6_a": "6. a. Three hundred eighty-five point one two<br/>Solution:<br/>&nbsp;&nbsp;&nbsp;&nbsp;385.12",
-  "note_q6_b": "6. b. Seven thousand ninety-nine and sixteen hundredths<br/>Solution:<br/>&nbsp;&nbsp;&nbsp;&nbsp;7099.16",
-  "note_q6_d": "6. d. Sixteen hundred and seventy-five thousandths<br/>Solution:<br/>&nbsp;&nbsp;&nbsp;&nbsp;1600.075",
-  "note_q7_a": "7. a. 400 + 50 + 8 + 2/10 + 1/100 + 8/1000<br/>Solution:<br/>&nbsp;&nbsp;&nbsp;&nbsp;458.218",
-  "note_q7_b": "7. b. 6000 + 20 + 1 + 358/1000<br/>Solution:<br/>&nbsp;&nbsp;&nbsp;&nbsp;6021.358",
-  "note_q7_c": "7. c. 100 + 4 + 9/10 + 5/100<br/>Solution:<br/>&nbsp;&nbsp;&nbsp;&nbsp;104.95",
-  "note_q7_d": "7. d. 8/100 + 1/1000<br/>Solution:<br/>&nbsp;&nbsp;&nbsp;&nbsp;0.081",
-  "note_52_d": "Ex 5.2 — 2. d. 98.089<br/>Solution:<br/>= 98 89/1000 (or) = 98089/1000",
-  "note_52_e": "Ex 5.2 — 2. e. 3.777<br/>Solution:<br/>= 3 777/1000 (or) = 3777/1000",
-  "note_52_f": "Ex 5.2 — 2. f. 4.19<br/>Solution:<br/>= 4 19/100 (or) = 419/100"
-};
+/* INTERACTIVE HANDWRITING NOTEBOOK MODAL ENGINE (EX 5.1 Q5, Q6, Q7 & EX 5.2 Q2) */
+let nbCanvas = null, nbCtx = null, nbIsDrawing = false, nbTool = "pen";
 
-function openNotebookPopup(key) {
+function notebookStorageKey(titleStr) {
+  return `v5_zaina_notebook_canvas::${titleStr.replace(/[^a-zA-Z0-9]/g, '_')}`;
+}
+
+function openNotebookPopup(qTitleStr) {
   playBubbleTap();
   const modal = document.getElementById("notebookPopupModal");
-  const bodyEl = document.getElementById("notebookPopupBodyText");
-  const ponyImg = document.getElementById("notebookPopupPonyImg");
-
-  bodyEl.innerHTML = CLASSWORK_NOTEBOOK_STEPS[key] || "Classwork notebook reference step.";
-  ponyImg.src = SECTIONS_DATA[selectedSectionIdx].avatar;
+  document.getElementById("notebookPopupTitleText").textContent = qTitleStr;
+  document.getElementById("notebookPopupPonyImg").src = SECTIONS_DATA[selectedSectionIdx].avatar;
   modal.classList.add("open");
+  setTimeout(initNotebookCanvas, 70);
 }
 
 function closeNotebookPopupModal() {
   playBubbleTap();
+  saveNotebookCanvas();
   document.getElementById("notebookPopupModal").classList.remove("open");
 }
 
@@ -1420,6 +1472,109 @@ function closeNotebookPopup(e) {
   if (e.target.id === "notebookPopupModal") {
     closeNotebookPopupModal();
   }
+}
+
+function setNotebookTool(tool) {
+  nbTool = tool;
+  document.getElementById("nbPenBtn").classList.toggle("active", tool === "pen");
+  document.getElementById("nbEraserBtn").classList.toggle("active", tool === "eraser");
+}
+
+function initNotebookCanvas() {
+  nbCanvas = document.getElementById("notebookHandwritingCanvas");
+  if (!nbCanvas) return;
+  nbCtx = nbCanvas.getContext("2d");
+
+  const wrap = document.getElementById("notebookDrawWrap");
+  const r = wrap.getBoundingClientRect();
+  if (r.width <= 0 || r.height <= 0) return;
+  const dpr = window.devicePixelRatio || 1;
+  nbCanvas.width = Math.floor(r.width * dpr);
+  nbCanvas.height = Math.floor(r.height * dpr);
+  nbCanvas.style.width = r.width + "px";
+  nbCanvas.style.height = r.height + "px";
+  nbCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  nbCtx.fillStyle = "#FFFFFF";
+  nbCtx.fillRect(0, 0, r.width, r.height);
+
+  const qTitle = document.getElementById("notebookPopupTitleText").textContent;
+  const saved = localStorage.getItem(notebookStorageKey(qTitle));
+  if (saved) {
+    const img = new Image();
+    img.onload = () => {
+      nbCtx.save();
+      nbCtx.setTransform(1, 0, 0, 1, 0, 0);
+      nbCtx.drawImage(img, 0, 0, nbCanvas.width, nbCanvas.height);
+      nbCtx.restore();
+    };
+    img.src = saved;
+  }
+
+  let lastX = 0, lastY = 0;
+  nbCanvas.onpointerdown = (e) => {
+    nbIsDrawing = true;
+    try { nbCanvas.setPointerCapture(e.pointerId); } catch(_) {}
+    const rect = nbCanvas.getBoundingClientRect();
+    lastX = e.clientX - rect.left;
+    lastY = e.clientY - rect.top;
+    e.preventDefault();
+  };
+
+  nbCanvas.onpointermove = (e) => {
+    if (!nbIsDrawing) return;
+    const rect = nbCanvas.getBoundingClientRect();
+    const currX = e.clientX - rect.left;
+    const currY = e.clientY - rect.top;
+    nbCtx.beginPath();
+    nbCtx.moveTo(lastX, lastY);
+    nbCtx.lineTo(currX, currY);
+    nbCtx.lineCap = "round";
+    nbCtx.lineJoin = "round";
+
+    if (nbTool === "eraser") {
+      nbCtx.strokeStyle = "#FFFFFF";
+      nbCtx.lineWidth = 28;
+    } else {
+      nbCtx.strokeStyle = "#1E3A8A"; // Handwritten ink blue
+      const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
+      nbCtx.lineWidth = 3.6 * (pressure * 1.4 + 0.35);
+    }
+    nbCtx.stroke();
+    lastX = currX;
+    lastY = currY;
+    e.preventDefault();
+  };
+
+  const stopNb = (e) => {
+    if (nbIsDrawing) {
+      nbIsDrawing = false;
+      try { nbCanvas.releasePointerCapture(e.pointerId); } catch(_) {}
+      saveNotebookCanvas();
+    }
+  };
+  nbCanvas.onpointerup = stopNb;
+  nbCanvas.onpointercancel = stopNb;
+  nbCanvas.onpointerleave = stopNb;
+}
+
+function saveNotebookCanvas() {
+  if (!nbCanvas || nbCanvas.width <= 0) return;
+  try {
+    const qTitle = document.getElementById("notebookPopupTitleText").textContent;
+    const data = nbCanvas.toDataURL("image/png");
+    localStorage.setItem(notebookStorageKey(qTitle), data);
+  } catch(e) {}
+}
+
+function clearNotebookCanvas() {
+  if (!nbCanvas || !nbCtx) return;
+  const wrap = document.getElementById("notebookDrawWrap");
+  const r = wrap.getBoundingClientRect();
+  nbCtx.fillStyle = "#FFFFFF";
+  nbCtx.fillRect(0, 0, r.width, r.height);
+  const qTitle = document.getElementById("notebookPopupTitleText").textContent;
+  localStorage.removeItem(notebookStorageKey(qTitle));
 }
 
 function clearCurrentSectionInputs() {
@@ -1437,7 +1592,7 @@ function frac(n, d) {
   return `<span class="stack-frac"><span class="num">${n}</span><span class="den">${d}</span></span>`;
 }
 
-/* VERBATIM TEXTBOOK CONTENT DATA (HINT BOXES REMOVED; CLASSWORK QUESTIONS FEATURE NOTEBOOK PONY BUTTONS) */
+/* VERBATIM TEXTBOOK CONTENT DATA (NOTEBOOK BUTTONS ATTACHED TO Q5, Q6, Q7, AND EX 5.2 Q2) */
 const SECTIONS_DATA = [
   /* 0: Ex 5.1 Q1 */
   {
@@ -1535,7 +1690,7 @@ const SECTIONS_DATA = [
     `
   },
 
-  /* 3: Ex 5.1 Q5 (Includes Classwork Notebook Buttons for c and d) */
+  /* 3: Ex 5.1 Q5 (Interactive Notebook Button Added) */
   {
     title: "Exercise 5.1 — 5. Expanded Form of Decimals",
     ponyName: "Rainbow Dash",
@@ -1545,78 +1700,78 @@ const SECTIONS_DATA = [
       <div class="problem-card">
         <div class="problem-q-text">
           <b>a. 34.304</b> = 30 + 4 + ${stackedFractionSlotHtml('e51_q5_a_1', '3/10|0.3')} + ${stackedFractionSlotHtml('e51_q5_a_2', '4/1000|0.004')}
+          <button class="notebook-peek-btn" onclick="openNotebookPopup('Ex 5.1 — Q5. a. 34.304')" title="Open Notebook">📓</button>
         </div>
       </div>
 
       <div class="problem-card">
         <div class="problem-q-text">
           <b>b. 91.445</b> = 90 + 1 + ${stackedFractionSlotHtml('e51_q5_b_1', '4/10|0.4')} + ${stackedFractionSlotHtml('e51_q5_b_2', '4/100|0.04')} + ${stackedFractionSlotHtml('e51_q5_b_3', '5/1000|0.005')}
+          <button class="notebook-peek-btn" onclick="openNotebookPopup('Ex 5.1 — Q5. b. 91.445')" title="Open Notebook">📓</button>
         </div>
       </div>
 
       <div class="problem-card">
         <div class="problem-q-text">
           <b>c. 702.913</b> = 700 + 2 + ${stackedFractionSlotHtml('e51_q5_c_1', '9/10|0.9')} + ${stackedFractionSlotHtml('e51_q5_c_2', '1/100|0.01')} + ${stackedFractionSlotHtml('e51_q5_c_3', '3/1000|0.003')}
-          <button class="notebook-peek-btn" onclick="openNotebookPopup('note_q5_c')" title="Notebook Classwork">📓</button>
+          <button class="notebook-peek-btn" onclick="openNotebookPopup('Ex 5.1 — Q5. c. 702.913')" title="Open Notebook">📓</button>
         </div>
       </div>
 
       <div class="problem-card">
         <div class="problem-q-text">
           <b>d. 125.023</b> = 100 + 20 + 5 + ${stackedFractionSlotHtml('e51_q5_d_1', '2/100|0.02')} + ${stackedFractionSlotHtml('e51_q5_d_2', '3/1000|0.003')}
-          <button class="notebook-peek-btn" onclick="openNotebookPopup('note_q5_d')" title="Notebook Classwork">📓</button>
+          <button class="notebook-peek-btn" onclick="openNotebookPopup('Ex 5.1 — Q5. d. 125.023')" title="Open Notebook">📓</button>
         </div>
       </div>
 
       <div class="problem-card">
         <div class="problem-q-text">
           <b>e. 623.008</b> = 600 + 20 + 3 + ${stackedFractionSlotHtml('e51_q5_e_1', '8/1000|0.008')}
+          <button class="notebook-peek-btn" onclick="openNotebookPopup('Ex 5.1 — Q5. e. 623.008')" title="Open Notebook">📓</button>
         </div>
       </div>
     `
   },
 
-  /* 4: Ex 5.1 Q6 (Includes Classwork Notebook Buttons for a, b, d) */
+  /* 4: Ex 5.1 Q6 (Interactive Notebook Button Added) */
   {
     title: "Exercise 5.1 — 6. Number Names to Decimals",
     ponyName: "Fluttershy",
     avatar: "fluttershy.png",
     sceneClass: "scene-flutter",
     render: () => `
-      <div class="chalkboard-container">
-        <div class="chalkboard-title">Fluttershy's Chalkboard — Write Decimals</div>
-        <div style="display:flex; flex-direction:column; gap:12px;">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <div class="chalk-text"><b>a.</b> Three hundred eighty-five point one two</div>
-              <div style="margin-top:4px;">Answer: ${inputBlankHtml('e51_q6_a', '385.12')}</div>
-            </div>
-            <button class="notebook-peek-btn" onclick="openNotebookPopup('note_q6_a')" title="Notebook Classwork">📓</button>
-          </div>
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <div class="chalk-text"><b>b.</b> Seven thousand ninety-nine and sixteen hundredths</div>
-              <div style="margin-top:4px;">Answer: ${inputBlankHtml('e51_q6_b', '7099.16')}</div>
-            </div>
-            <button class="notebook-peek-btn" onclick="openNotebookPopup('note_q6_b')" title="Notebook Classwork">📓</button>
-          </div>
-          <div>
-            <div class="chalk-text"><b>c.</b> Five point two three</div>
-            <div style="margin-top:4px;">Answer: ${inputBlankHtml('e51_q6_c', '5.23')}</div>
-          </div>
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <div class="chalk-text"><b>d.</b> Sixteen hundred and seventy-five thousandths</div>
-              <div style="margin-top:4px;">Answer: ${inputBlankHtml('e51_q6_d', '1600.075')}</div>
-            </div>
-            <button class="notebook-peek-btn" onclick="openNotebookPopup('note_q6_d')" title="Notebook Classwork">📓</button>
-          </div>
+      <div class="problem-card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div class="problem-q-text"><b>a.</b> Three hundred eighty-five point one two &nbsp;→&nbsp; ${inputBlankHtml('e51_q6_a', '385.12')}</div>
+          <button class="notebook-peek-btn" onclick="openNotebookPopup('Ex 5.1 — Q6. a. Three hundred eighty-five point one two')" title="Open Notebook">📓</button>
+        </div>
+      </div>
+
+      <div class="problem-card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div class="problem-q-text"><b>b.</b> Seven thousand ninety-nine and sixteen hundredths &nbsp;→&nbsp; ${inputBlankHtml('e51_q6_b', '7099.16')}</div>
+          <button class="notebook-peek-btn" onclick="openNotebookPopup('Ex 5.1 — Q6. b. Seven thousand ninety-nine and sixteen hundredths')" title="Open Notebook">📓</button>
+        </div>
+      </div>
+
+      <div class="problem-card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div class="problem-q-text"><b>c.</b> Five point two three &nbsp;→&nbsp; ${inputBlankHtml('e51_q6_c', '5.23')}</div>
+          <button class="notebook-peek-btn" onclick="openNotebookPopup('Ex 5.1 — Q6. c. Five point two three')" title="Open Notebook">📓</button>
+        </div>
+      </div>
+
+      <div class="problem-card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div class="problem-q-text"><b>d.</b> Sixteen hundred and seventy-five thousandths &nbsp;→&nbsp; ${inputBlankHtml('e51_q6_d', '1600.075')}</div>
+          <button class="notebook-peek-btn" onclick="openNotebookPopup('Ex 5.1 — Q6. d. Sixteen hundred and seventy-five thousandths')" title="Open Notebook">📓</button>
         </div>
       </div>
     `
   },
 
-  /* 5: Ex 5.1 Q7 (Includes Classwork Notebook Buttons for a, b, c, d) */
+  /* 5: Ex 5.1 Q7 (Interactive Notebook Button Added) */
   {
     title: "Exercise 5.1 — 7. Write in Decimal Form",
     ponyName: "Twilight Sparkle",
@@ -1626,28 +1781,28 @@ const SECTIONS_DATA = [
       <div class="problem-card">
         <div class="problem-q-text">
           <b>a.</b> 400 + 50 + 8 + ${frac(2, 10)} + ${frac(1, 100)} + ${frac(8, 1000)} = ${inputBlankHtml('e51_q7_a', '458.218')}
-          <button class="notebook-peek-btn" onclick="openNotebookPopup('note_q7_a')" title="Notebook Classwork">📓</button>
+          <button class="notebook-peek-btn" onclick="openNotebookPopup('Ex 5.1 — Q7. a')" title="Open Notebook">📓</button>
         </div>
       </div>
 
       <div class="problem-card">
         <div class="problem-q-text">
           <b>b.</b> 6000 + 20 + 1 + ${frac(358, 1000)} = ${inputBlankHtml('e51_q7_b', '6021.358')}
-          <button class="notebook-peek-btn" onclick="openNotebookPopup('note_q7_b')" title="Notebook Classwork">📓</button>
+          <button class="notebook-peek-btn" onclick="openNotebookPopup('Ex 5.1 — Q7. b')" title="Open Notebook">📓</button>
         </div>
       </div>
 
       <div class="problem-card">
         <div class="problem-q-text">
           <b>c.</b> 100 + 4 + ${frac(9, 10)} + ${frac(5, 100)} = ${inputBlankHtml('e51_q7_c', '104.95')}
-          <button class="notebook-peek-btn" onclick="openNotebookPopup('note_q7_c')" title="Notebook Classwork">📓</button>
+          <button class="notebook-peek-btn" onclick="openNotebookPopup('Ex 5.1 — Q7. c')" title="Open Notebook">📓</button>
         </div>
       </div>
 
       <div class="problem-card">
         <div class="problem-q-text">
           <b>d.</b> ${frac(8, 100)} + ${frac(1, 1000)} = ${inputBlankHtml('e51_q7_d', '0.081|.081')}
-          <button class="notebook-peek-btn" onclick="openNotebookPopup('note_q7_d')" title="Notebook Classwork">📓</button>
+          <button class="notebook-peek-btn" onclick="openNotebookPopup('Ex 5.1 — Q7. d')" title="Open Notebook">📓</button>
         </div>
       </div>
     `
@@ -1706,7 +1861,7 @@ const SECTIONS_DATA = [
     }
   },
 
-  /* 7: Ex 5.2 Q2 (Includes Classwork Notebook Buttons for d, e, f) */
+  /* 7: Ex 5.2 Q2 (Interactive Notebook Button Added) */
   {
     title: "Exercise 5.2 — 2. Convert Decimals to Fractions",
     ponyName: "Pinkie Pie",
@@ -1715,41 +1870,44 @@ const SECTIONS_DATA = [
     render: () => `
       <div style="display:flex; flex-direction:column; gap:10px;">
         <div class="problem-card">
-          <div class="problem-q-text">
-            <b>a. 3.89</b> &nbsp;→&nbsp; Mixed: ${stackedFractionSlotHtml('e52_q2_a_mix', '3 89/100', 'mixed', true)} &nbsp;or&nbsp; Improper: ${stackedFractionSlotHtml('e52_q2_a_imp', '389/100', 'improper', false)}
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="problem-q-text"><b>a. 3.89</b> &nbsp;→&nbsp; Mixed: ${stackedFractionSlotHtml('e52_q2_a_mix', '3 89/100', 'mixed', true)} &nbsp;or&nbsp; Imp: ${stackedFractionSlotHtml('e52_q2_a_imp', '389/100', 'improper', false)}</div>
+            <button class="notebook-peek-btn" onclick="openNotebookPopup('Ex 5.2 — Q2. a. 3.89')" title="Open Notebook">📓</button>
           </div>
         </div>
 
         <div class="problem-card">
-          <div class="problem-q-text">
-            <b>b. 5.907</b> &nbsp;→&nbsp; Mixed: ${stackedFractionSlotHtml('e52_q2_b_mix', '5 907/1000', 'mixed', true)} &nbsp;or&nbsp; Improper: ${stackedFractionSlotHtml('e52_q2_b_imp', '5907/1000', 'improper', false)}
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="problem-q-text"><b>b. 5.907</b> &nbsp;→&nbsp; Mixed: ${stackedFractionSlotHtml('e52_q2_b_mix', '5 907/1000', 'mixed', true)} &nbsp;or&nbsp; Imp: ${stackedFractionSlotHtml('e52_q2_b_imp', '5907/1000', 'improper', false)}</div>
+            <button class="notebook-peek-btn" onclick="openNotebookPopup('Ex 5.2 — Q2. b. 5.907')" title="Open Notebook">📓</button>
           </div>
         </div>
 
         <div class="problem-card">
-          <div class="problem-q-text">
-            <b>c. 4.006</b> &nbsp;→&nbsp; Mixed: ${stackedFractionSlotHtml('e52_q2_c_mix', '4 6/1000|4 3/500', 'mixed', true)} &nbsp;or&nbsp; Improper: ${stackedFractionSlotHtml('e52_q2_c_imp', '4006/1000|2003/500', 'improper', false)}
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="problem-q-text"><b>c. 4.006</b> &nbsp;→&nbsp; Mixed: ${stackedFractionSlotHtml('e52_q2_c_mix', '4 6/1000|4 3/500', 'mixed', true)} &nbsp;or&nbsp; Imp: ${stackedFractionSlotHtml('e52_q2_c_imp', '4006/1000|2003/500', 'improper', false)}</div>
+            <button class="notebook-peek-btn" onclick="openNotebookPopup('Ex 5.2 — Q2. c. 4.006')" title="Open Notebook">📓</button>
           </div>
         </div>
 
         <div class="problem-card">
-          <div class="problem-q-text">
-            <b>d. 98.089</b> &nbsp;→&nbsp; Mixed: ${stackedFractionSlotHtml('e52_q2_d_mix', '98 89/1000', 'mixed', true)} &nbsp;or&nbsp; Improper: ${stackedFractionSlotHtml('e52_q2_d_imp', '98089/1000', 'improper', false)}
-            <button class="notebook-peek-btn" onclick="openNotebookPopup('note_52_d')" title="Notebook Classwork">📓</button>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="problem-q-text"><b>d. 98.089</b> &nbsp;→&nbsp; Mixed: ${stackedFractionSlotHtml('e52_q2_d_mix', '98 89/1000', 'mixed', true)} &nbsp;or&nbsp; Imp: ${stackedFractionSlotHtml('e52_q2_d_imp', '98089/1000', 'improper', false)}</div>
+            <button class="notebook-peek-btn" onclick="openNotebookPopup('Ex 5.2 — Q2. d. 98.089')" title="Open Notebook">📓</button>
           </div>
         </div>
 
         <div class="problem-card">
-          <div class="problem-q-text">
-            <b>e. 3.777</b> &nbsp;→&nbsp; Mixed: ${stackedFractionSlotHtml('e52_q2_e_mix', '3 777/1000', 'mixed', true)} &nbsp;or&nbsp; Improper: ${stackedFractionSlotHtml('e52_q2_e_imp', '3777/1000', 'improper', false)}
-            <button class="notebook-peek-btn" onclick="openNotebookPopup('note_52_e')" title="Notebook Classwork">📓</button>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="problem-q-text"><b>e. 3.777</b> &nbsp;→&nbsp; Mixed: ${stackedFractionSlotHtml('e52_q2_e_mix', '3 777/1000', 'mixed', true)} &nbsp;or&nbsp; Imp: ${stackedFractionSlotHtml('e52_q2_e_imp', '3777/1000', 'improper', false)}</div>
+            <button class="notebook-peek-btn" onclick="openNotebookPopup('Ex 5.2 — Q2. e. 3.777')" title="Open Notebook">📓</button>
           </div>
         </div>
 
         <div class="problem-card">
-          <div class="problem-q-text">
-            <b>f. 4.19</b> &nbsp;→&nbsp; Mixed: ${stackedFractionSlotHtml('e52_q2_f_mix', '4 19/100', 'mixed', true)} &nbsp;or&nbsp; Improper: ${stackedFractionSlotHtml('e52_q2_f_imp', '419/100', 'improper', false)}
-            <button class="notebook-peek-btn" onclick="openNotebookPopup('note_52_f')" title="Notebook Classwork">📓</button>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="problem-q-text"><b>f. 4.19</b> &nbsp;→&nbsp; Mixed: ${stackedFractionSlotHtml('e52_q2_f_mix', '4 19/100', 'mixed', true)} &nbsp;or&nbsp; Imp: ${stackedFractionSlotHtml('e52_q2_f_imp', '419/100', 'improper', false)}</div>
+            <button class="notebook-peek-btn" onclick="openNotebookPopup('Ex 5.2 — Q2. f. 4.19')" title="Open Notebook">📓</button>
           </div>
         </div>
       </div>
@@ -1954,9 +2112,20 @@ window.addEventListener("resize", () => {
     saveRoughCanvas();
     setTimeout(initRoughCanvas, 100);
   }
+  const modal = document.getElementById("notebookPopupModal");
+  if (modal && modal.classList.contains("open")) {
+    saveNotebookCanvas();
+    setTimeout(initNotebookCanvas, 100);
+  }
 });
-window.addEventListener("beforeunload", saveRoughCanvas);
-window.addEventListener("pagehide", saveRoughCanvas);
+window.addEventListener("beforeunload", () => {
+  saveRoughCanvas();
+  saveNotebookCanvas();
+});
+window.addEventListener("pagehide", () => {
+  saveRoughCanvas();
+  saveNotebookCanvas();
+});
 </script>
 </body>
 </html>
