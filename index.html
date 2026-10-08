@@ -110,19 +110,24 @@
     .card-zaina { border-color: #C084FC; }
     .card-zaina:hover { border-color: #9333EA; }
 
-    .avatar {
+    .avatar-wrap {
       width: 110px;
       height: 110px;
       border-radius: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 4rem;
       border: 4px solid #FFF;
       box-shadow: 0 8px 18px rgba(0,0,0,0.1);
+      overflow: hidden;
     }
-    .card-humayun .avatar { background: #BAE6FD; }
-    .card-zaina .avatar { background: #E9D5FF; }
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .card-humayun .avatar-wrap { background: #BAE6FD; }
+    .card-zaina .avatar-wrap { background: #E9D5FF; }
 
     .name-title {
       font-size: 2.1rem;
@@ -178,6 +183,14 @@
       display: flex;
       align-items: center;
       gap: 10px;
+    }
+    .header-avatar-img {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #FFF;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
 
     .lessons-deck {
@@ -272,13 +285,17 @@
 
     <div class="names-grid">
       <div class="name-card card-humayun" onclick="openStudentView('humayun')">
-        <div class="avatar">👦</div>
+        <div class="avatar-wrap">
+          <img src="humayun-avatar.png" alt="Humayun" class="avatar-img" />
+        </div>
         <div class="name-title">Humayun</div>
         <span class="tap-tag">Tap to Open ➔</span>
       </div>
 
       <div class="name-card card-zaina" onclick="openStudentView('zaina')">
-        <div class="avatar">👧</div>
+        <div class="avatar-wrap">
+          <img src="zaina-avatar.png" alt="Zaina" class="avatar-img" />
+        </div>
         <div class="name-title">Zaina</div>
         <span class="tap-tag">Tap to Open ➔</span>
       </div>
@@ -289,7 +306,9 @@
   <div class="inside-view" id="studentView">
     <div class="top-nav">
       <button type="button" class="back-btn" onclick="showNameSelect()">⬅ Back</button>
-      <div class="current-student-title" id="activeStudentLabel"><span>👦</span> Humayun</div>
+      <div class="current-student-title" id="activeStudentLabel">
+        <img src="humayun-avatar.png" alt="Humayun" class="header-avatar-img" id="headerAvatar" /> Humayun
+      </div>
       <div style="width: 80px;"></div>
     </div>
 
@@ -299,7 +318,7 @@
     </div>
   </div>
 
-  <!-- SEAMLESS FULLSCREEN EMBED (KEEPS FULLSCREEN UNBROKEN) -->
+  <!-- SEAMLESS FULLSCREEN EMBED -->
   <div id="lessonFrameContainer">
     <iframe id="activeLessonFrame" src="about:blank" allow="autoplay; fullscreen"></iframe>
   </div>
@@ -400,7 +419,10 @@
       studentView.style.display = 'flex';
 
       const label = document.getElementById('activeStudentLabel');
-      label.innerHTML = name === 'humayun' ? '<span>👦</span> Humayun' : '<span>👧</span> Zaina';
+      const avatarSrc = name === 'humayun' ? 'humayun-avatar.png' : 'zaina-avatar.png';
+      const studentNameCapitalized = name.charAt(0).toUpperCase() + name.slice(1);
+      
+      label.innerHTML = `<img src="${avatarSrc}" alt="${studentNameCapitalized}" class="header-avatar-img" id="headerAvatar" /> ${studentNameCapitalized}`;
 
       const deck = document.getElementById('lessonsDeck');
       deck.innerHTML = '<div class="status-msg">Finding active lessons... 🔍</div>';
@@ -430,7 +452,6 @@
       document.getElementById('nameSelectView').style.display = 'flex';
     }
 
-    /* Launch lesson inside container without leaving page or losing fullscreen */
     function launchLesson(fileName) {
       requestFullScreenAuto();
       const container = document.getElementById('lessonFrameContainer');
@@ -439,7 +460,6 @@
       container.style.display = 'block';
     }
 
-    /* Listen for message from lesson's goToHub() */
     window.addEventListener("message", function(e) {
       if (e.data === "close-lesson-to-hub") {
         const container = document.getElementById('lessonFrameContainer');
