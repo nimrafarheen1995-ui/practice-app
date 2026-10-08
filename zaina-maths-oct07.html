@@ -3,14 +3,13 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
-<title>Zaina's Magical Maths Workbook: Chapter 5 Decimals</title>
+<title>Zaina's Magical Maths Adventure: Decimals</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700;800&family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700;800&family=Quicksand:wght@600;700;800&family=Kalam:wght@700&display=swap" rel="stylesheet">
 
 <style>
 :root {
-  --bg-gradient: linear-gradient(135deg, #FDF2F8 0%, #EDE9FE 45%, #E0F2FE 100%);
   --twilight: #8B5CF6;
   --twilight-dark: #6D28D9;
   --pinkie: #EC4899;
@@ -23,11 +22,10 @@
   --text-soft: #475569;
   --chalkboard-bg: #1B4332;
   --chalkboard-frame: #854D0E;
-  --math-blue: #BFDBFE;
-  --math-red: #F87171;
-  --shadow: 0 14px 34px rgba(139, 92, 246, 0.16);
+  --chalk-gold: #FACC15;
   --font-main: 'Quicksand', -apple-system, sans-serif;
   --font-display: 'Fredoka', cursive, sans-serif;
+  --font-hand: 'Kalam', cursive, sans-serif;
 }
 
 * {
@@ -43,8 +41,8 @@ html, body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: var(--bg-gradient);
   color: var(--text-dark);
+  background: #0F172A;
 }
 
 body {
@@ -52,10 +50,8 @@ body {
   flex-direction: column;
   height: 100vh;
   height: 100dvh;
-  padding: 8px 12px;
 }
 
-/* SCREEN DIM / WARM EYE-COMFORT TINT OVERLAY */
 #screenDimOverlay {
   display: none;
   position: fixed;
@@ -65,15 +61,20 @@ body {
   z-index: 99998;
 }
 
-/* PIXIE DUST CANVAS */
-#particleCanvas {
+#milkyWayCanvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+#confettiSnowCanvas {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 99999;
 }
 
-/* ASANA-STYLE SOARING CELEBRATION OVERLAY */
+/* ASANA-STYLE SOARING CELEBRATION */
 #celebrationOverlay {
   position: fixed;
   inset: 0;
@@ -84,12 +85,12 @@ body {
   justify-content: center;
   overflow: hidden;
 }
-.flying-pony-hero {
+.flying-avatar-hero {
   position: absolute;
   width: 260px;
   height: auto;
-  filter: drop-shadow(0 16px 30px rgba(0,0,0,0.35));
-  transform: translate(-150vw, 120vh) rotate(-12deg);
+  filter: drop-shadow(0 18px 36px rgba(0,0,0,0.45));
+  transform: translate(-150vw, 120vh) rotate(-14deg);
   will-change: transform;
 }
 .celebration-ribbon {
@@ -98,23 +99,26 @@ body {
   font-family: var(--font-display);
   font-size: 2.1rem;
   font-weight: 800;
-  padding: 14px 38px;
+  padding: 16px 42px;
   border-radius: 999px;
   box-shadow: 0 16px 40px rgba(236, 72, 153, 0.45);
   border: 4px solid #FDF2F8;
   opacity: 0;
   transform: scale(0.6);
-  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
   text-align: center;
 }
 
 .app-wrapper {
+  position: relative;
+  z-index: 10;
   display: flex;
   flex-direction: column;
   height: 100%;
   max-width: 1440px;
   margin: 0 auto;
   width: 100%;
+  padding: 10px 14px;
   gap: 8px;
 }
 
@@ -134,60 +138,22 @@ header {
 }
 .brand-title {
   font-family: var(--font-display);
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   font-weight: 800;
-  color: var(--twilight-dark);
+  color: #FFFFFF;
   display: flex;
   align-items: center;
   gap: 8px;
-  text-shadow: 0 2px 4px rgba(255,255,255,0.9);
+  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
 }
 .badge-ch {
-  background: #FDF2F8;
+  background: rgba(255, 255, 255, 0.88);
   color: var(--pinkie-dark);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 800;
-  padding: 3px 10px;
+  padding: 3px 12px;
   border-radius: 999px;
   border: 1.5px solid #FBCFE8;
-}
-
-.mode-pills-bar {
-  display: flex;
-  background: rgba(255, 255, 255, 0.95);
-  padding: 3px;
-  border-radius: 16px;
-  border: 2px solid #DDD6FE;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
-}
-.mode-pill {
-  border: none;
-  background: transparent;
-  padding: 6px 14px;
-  font-size: 0.86rem;
-  font-weight: 800;
-  color: #64748B;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.15s;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.mode-pill.active-study {
-  background: var(--twilight);
-  color: #FFF;
-  box-shadow: 0 3px 0 var(--twilight-dark);
-}
-.mode-pill.active-write {
-  background: var(--pinkie);
-  color: #FFF;
-  box-shadow: 0 3px 0 var(--pinkie-dark);
-}
-.mode-pill.active-parent {
-  background: #0284C7;
-  color: #FFF;
-  box-shadow: 0 3px 0 #0369A1;
 }
 
 .header-tools {
@@ -196,20 +162,21 @@ header {
   gap: 8px;
 }
 .head-btn {
-  background: #FFFFFF;
+  background: rgba(255, 255, 255, 0.95);
   border: 2px solid #CBD5E1;
   color: var(--text-dark);
-  font-size: 0.84rem;
+  font-size: 0.85rem;
   font-weight: 800;
-  padding: 6px 12px;
-  border-radius: 12px;
+  padding: 6px 14px;
+  border-radius: 14px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 36px;
+  height: 38px;
   box-shadow: 0 2px 0 #94A3B8;
   text-decoration: none;
+  transition: all 0.15s;
 }
 .head-btn:active { transform: translateY(2px); box-shadow: none; }
 .head-btn.rough-btn {
@@ -218,377 +185,378 @@ header {
   color: #92400E;
 }
 
-/* HORIZONTAL QUEST SELECTOR DECK (REPLACING VERTICAL SIDEBAR) */
-.quest-nav-strip {
+.views-container {
+  flex: 1;
+  min-height: 0;
   display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding: 4px 2px;
-  flex-shrink: 0;
-  scrollbar-width: thin;
+  position: relative;
+  align-items: center;
+  justify-content: center;
 }
-.quest-tab-btn {
-  flex: 0 0 auto;
+
+/* SCREEN 1: CHAPTER MENU (DIRECT 1-TAP PLAY) */
+#chapterMenuView {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  animation: fadeIn 0.3s ease;
+  position: relative;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+.hub-page-title {
+  font-family: var(--font-display);
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  text-shadow: 0 4px 12px rgba(139, 92, 246, 0.6);
+  margin-bottom: 12px;
+}
+.hub-deck-card {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(14px);
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  border-radius: 28px;
+  padding: 14px 18px;
+  width: 100%;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+.hub-item-row {
   background: #FFFFFF;
   border: 2px solid #E2E8F0;
   border-radius: 16px;
-  padding: 6px 12px;
+  padding: 10px 14px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: space-between;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   box-shadow: 0 3px 0 #CBD5E1;
 }
-.quest-tab-btn:hover {
-  transform: translateY(-2px);
-}
-.quest-tab-btn.active {
-  background: #EDE9FE;
+.hub-item-row:hover {
+  transform: translateY(-2px) scale(1.01);
   border-color: var(--twilight);
-  box-shadow: 0 3px 0 var(--twilight-dark);
-  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
 }
-body.write-mode .quest-tab-btn.active {
-  background: #FCE7F3;
-  border-color: var(--pinkie);
-  box-shadow: 0 3px 0 var(--pinkie-dark);
+.hub-item-row:active {
+  transform: translateY(2px) scale(0.99);
 }
-.quest-avatar-sm {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #DDD6FE;
-  background: #FFF;
-}
-.quest-tab-title {
-  font-weight: 800;
-  font-size: 0.85rem;
-  color: var(--text-dark);
-}
-
-/* MAIN STAGE (STORYBOOK WINDOW CARD) */
-.stage-card-window {
-  flex: 1;
-  background: rgba(255, 255, 255, 0.96);
-  border: 3.5px solid #DDD6FE;
-  border-radius: 28px;
-  padding: 14px 18px;
-  box-shadow: var(--shadow);
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  position: relative;
-  overflow: hidden;
-  animation: cardSwooshIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-@keyframes cardSwooshIn {
-  0% { transform: scale(0.97) translateY(8px); opacity: 0; }
-  100% { transform: scale(1) translateY(0); opacity: 1; }
-}
-
-.window-banner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 2px dashed #E2E8F0;
-  padding-bottom: 8px;
-  flex-shrink: 0;
-}
-.window-pony-header {
+.hub-item-left {
   display: flex;
   align-items: center;
   gap: 12px;
 }
-.window-hero-pony {
-  width: 68px;
-  height: 68px;
-  object-fit: contain;
-  filter: drop-shadow(0 6px 12px rgba(0,0,0,0.14));
-  flex-shrink: 0;
-  animation: gentleFloat 3s ease-in-out infinite alternate;
+.hub-cutie-icon {
+  font-size: 1.4rem;
+  width: 32px;
+  text-align: center;
 }
-@keyframes gentleFloat {
-  0% { transform: translateY(0px) rotate(-1deg); }
-  100% { transform: translateY(-5px) rotate(2deg); }
+.hub-item-text {
+  display: flex;
+  flex-direction: column;
 }
-.window-heading {
-  font-family: var(--font-display);
-  font-size: 1.3rem;
+.hub-item-title {
+  font-size: 0.92rem;
   font-weight: 800;
-  color: var(--twilight-dark);
+  color: var(--text-dark);
 }
-body.write-mode .window-heading { color: var(--pinkie-dark); }
-body.parent-mode .window-heading { color: #0284C7; }
-.window-sub {
-  font-size: 0.84rem;
+.hub-item-sub {
+  font-size: 0.76rem;
   font-weight: 700;
   color: var(--text-soft);
 }
+.hub-pony-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: contain;
+  border: 2px solid #DDD6FE;
+  background: #FFF;
+  flex-shrink: 0;
+  padding: 2px;
+}
 
+/* SCREEN 2: ACTIVE QUEST SCENE */
+#exerciseView {
+  display: none;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.96);
+  border: 3.5px solid #DDD6FE;
+  border-radius: 28px;
+  padding: 14px 18px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+  flex-direction: column;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+  animation: cardMorphIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes cardMorphIn {
+  0% { transform: scale(0.95) translateY(12px); opacity: 0; }
+  100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.quest-scene-container {
+  flex: 1;
+  display: flex;
+  gap: 18px;
+  min-height: 0;
+  margin-top: 6px;
+}
+
+/* LEFT: COZY QUIET COMPANION STAGE */
+.pony-companion-stage {
+  flex: 0 0 230px;
+  background: linear-gradient(180deg, #FAF5FF 0%, #F3E8FF 100%);
+  border: 2.5px solid #DDD6FE;
+  border-radius: 24px;
+  padding: 14px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.08);
+  position: relative;
+}
+
+/* SOFT HUMMING TUNE BADGE */
+.pony-hum-bubble {
+  background: #FFFFFF;
+  border: 2px solid #DDD6FE;
+  border-radius: 14px;
+  padding: 6px 14px;
+  font-size: 0.84rem;
+  font-weight: 800;
+  color: #7C3AED;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.06);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.hum-note {
+  animation: floatNote 2.4s infinite ease-in-out;
+}
+@keyframes floatNote {
+  0%, 100% { transform: translateY(0) scale(1); opacity: 0.8; }
+  50% { transform: translateY(-4px) scale(1.15); opacity: 1; color: var(--pinkie); }
+}
+
+.quiet-pony-box {
+  position: relative;
+  width: 170px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: auto 0;
+  animation: quietBreathe 4s infinite ease-in-out;
+}
+@keyframes quietBreathe {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-5px) scale(1.02); }
+}
+.companion-png-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 14px rgba(0,0,0,0.12));
+  transition: transform 0.3s;
+}
+
+.companion-name-badge {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #6D28D9;
+  background: #FFF;
+  border: 1.5px solid #DDD6FE;
+  padding: 5px 14px;
+  border-radius: 999px;
+  margin-top: 6px;
+}
+
+/* RIGHT: WORKSHEET */
 .exercise-scroll-body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 10px;
+  gap: 12px;
   min-height: 0;
   overflow-y: auto;
+  padding-right: 4px;
 }
 
 .problem-card {
   background: #FFFFFF;
   border: 2px solid #E2E8F0;
   border-radius: 18px;
-  padding: 12px 16px;
+  padding: 14px 18px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
 }
 .problem-q-text {
   font-size: 1.05rem;
   font-weight: 800;
   color: var(--text-dark);
-  line-height: 1.45;
+  line-height: 1.6;
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
 }
 
-/* INTERACTIVE TEACHER NOTEBOOK PEEK CARD (SPRING SLIDE MORPH) */
-.peek-toggle-pill {
-  background: #EDE9FE;
-  border: 2px solid #C4B5FD;
-  color: #6D28D9;
-  font-size: 0.84rem;
+/* TRUE VERTICAL STACKED FRACTIONS */
+.stack-frac {
+  display: inline-flex;
+  flex-direction: column;
+  vertical-align: middle;
+  text-align: center;
   font-weight: 800;
-  padding: 6px 14px;
-  border-radius: 999px;
+  line-height: 1;
+  padding: 0 3px;
+  margin: 0 2px;
+}
+.stack-frac .num {
+  display: block;
+  font-size: 0.9em;
+  padding-bottom: 2px;
+}
+.stack-frac .den {
+  display: block;
+  font-size: 0.9em;
+  border-top: 2px solid currentColor;
+  padding-top: 2px;
+}
+
+.notebook-peek-btn {
+  background: #F8FAFC;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 8px;
+  font-size: 1.15rem;
+  line-height: 1;
+  padding: 4px 7px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  box-shadow: 0 2px 0 #A78BFA;
+  gap: 4px;
   transition: all 0.15s;
 }
-.peek-toggle-pill:active { transform: translateY(1px); }
-body.write-mode .peek-toggle-pill { display: none !important; }
+.notebook-peek-btn:active { transform: scale(0.9); }
 
-.peek-notebook-card {
+.handwritten-steps-card {
   display: none;
-  background: #FFFBEB;
-  border: 2.5px solid #FCD34D;
-  border-radius: 18px;
-  padding: 14px 18px;
-  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.14);
-  margin: 6px 0;
-  position: relative;
-  overflow: hidden;
-  animation: notebookMorph 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: #FFFDF0;
+  border: 2px solid #FDE68A;
+  border-radius: 14px;
+  padding: 10px 14px;
+  margin-top: 4px;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.1);
+  animation: noteFade 0.2s ease;
 }
-@keyframes notebookMorph {
-  0% { transform: scale(0.95); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
+@keyframes noteFade {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-.peek-notebook-card.open { display: flex; flex-direction: column; gap: 8px; }
-.peek-header-title {
-  font-family: var(--font-display);
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: #92400E;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.handwritten-steps-card.open { display: block; }
+.handwritten-text {
+  font-family: var(--font-hand);
+  font-size: 1.15rem;
+  color: #1E3A8A;
+  line-height: 1.6;
+  letter-spacing: 0.3px;
 }
 
-/* INTERACTIVE PONY AUDIO CHEER BUBBLE (REPLACING TEACHER APPROVAL) */
-.pony-cheer-corner {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 6px;
-}
-.pony-bubble-speech {
-  background: #FFFFFF;
-  border: 2px solid #38BDF8;
-  color: #0369A1;
-  font-size: 0.86rem;
-  font-weight: 800;
-  padding: 6px 14px;
-  border-radius: 16px 16px 2px 16px;
-  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.15);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  transition: all 0.15s;
-  animation: pulseSpeech 2s infinite ease-in-out;
-}
-.pony-bubble-speech:active { transform: scale(0.95); }
-@keyframes pulseSpeech {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
-}
-.corner-pony-avatar {
-  width: 50px;
-  height: 50px;
-  object-fit: contain;
-  cursor: pointer;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
-  transition: transform 0.15s;
-}
-.corner-pony-avatar:active { transform: scale(1.15) rotate(5deg); }
-
-/* VIRTUAL INPUT BLANK */
+/* INPUT BLANK */
 .pony-input-blank {
   min-width: 95px;
-  height: 40px;
-  background: #F1F5F9;
+  min-height: 38px;
+  height: auto;
+  background: #F8FAFC;
   border: 2px solid #CBD5E1;
   border-radius: 12px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0 12px;
-  font-size: 1.15rem;
+  padding: 4px 10px;
+  font-size: 1.1rem;
   font-weight: 800;
   color: var(--twilight-dark);
   cursor: pointer;
+  outline: none;
   transition: all 0.15s;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
+.pony-input-blank:focus,
 .pony-input-blank.active-focus {
   background: #FFFFFF;
   border-color: var(--pinkie);
   box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.25);
 }
 .pony-input-blank:empty::before {
-  content: 'tap here';
+  content: 'tap / type';
   color: #94A3B8;
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 700;
 }
-
-/* SPIRAL NOTEBOOK CARD (EX 5.1 Q5) */
-.spiral-book-container {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0;
-  background: #FFF;
-  border: 3px solid #CBD5E1;
-  border-radius: 20px;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+.pony-input-blank.graded-correct {
+  background: #DCFCE7 !important;
+  border-color: #22C55E !important;
+  color: #15803D !important;
 }
-.spiral-rings-track {
-  height: 28px;
-  background: #F1F5F9;
-  border-bottom: 2px solid #E2E8F0;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 0 14px;
-}
-.spiral-ring {
-  width: 14px;
-  height: 22px;
-  border-radius: 6px;
-  background: #94A3B8;
-  border: 2px solid #64748B;
-  box-shadow: inset 0 2px 2px rgba(255,255,255,0.7);
+.pony-input-blank.graded-wrong {
+  background: #FEE2E2 !important;
+  border-color: #EF4444 !important;
+  color: #B91C1C !important;
 }
 
-/* WOODEN CHALKBOARD (EX 5.1 Q6) */
 .chalkboard-container {
   background: var(--chalkboard-bg);
-  border: 12px solid var(--chalkboard-frame);
-  border-radius: 20px;
-  box-shadow: inset 0 0 24px rgba(0,0,0,0.6), 0 8px 24px rgba(0,0,0,0.15);
+  border: 10px solid var(--chalkboard-frame);
+  border-radius: 18px;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
   padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  color: #FEF08A;
+  gap: 14px;
 }
 .chalkboard-title {
   font-family: var(--font-display);
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   color: #FFF;
   border-bottom: 2px dashed rgba(255,255,255,0.3);
   padding-bottom: 6px;
 }
-
-/* 25px BLUE MATH GRAPH CANVAS PAPER */
-.math-graph-wrapper {
-  position: relative;
-  flex: 1;
-  width: 100%;
-  min-height: 280px;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 2px solid #CBD5E1;
-  background: #FFFFFF;
-}
-.graph-25-texture {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-color: #FFFFFF;
-  background-image:
-    linear-gradient(to right, var(--math-blue) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--math-blue) 1px, transparent 1px);
-  background-size: 25px 25px;
-  opacity: 0.75;
-}
-.graph-25-texture::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 45px;
-  width: 2px;
-  height: 100%;
-  background: var(--math-red);
-}
-.graph-canvas {
-  position: absolute;
-  inset: 0;
-  cursor: crosshair;
-  touch-action: none;
-  z-index: 2;
-}
-
-.canvas-tools-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 10px;
-  background: #F8FAFC;
-  border-bottom: 2px solid #E2E8F0;
-  flex-shrink: 0;
-}
-.canvas-tool-btn {
-  background: #FFF;
-  border: 2px solid #CBD5E1;
-  border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 0.84rem;
+.chalk-text {
+  color: var(--chalk-gold);
   font-weight: 800;
-  cursor: pointer;
-}
-.canvas-tool-btn.active {
-  background: var(--twilight);
-  color: #FFF;
-  border-color: var(--twilight);
+  font-size: 1rem;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.6);
 }
 
-/* STRIP TABLE (EX 5.2 Q1) */
+.strip-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
 .strip-table {
   width: 100%;
+  min-width: 540px;
   border-collapse: collapse;
 }
 .strip-table th {
@@ -610,8 +578,9 @@ body.write-mode .peek-toggle-pill { display: none !important; }
   border: 2px solid #334155;
   border-radius: 5px;
   overflow: hidden;
-  height: 26px;
-  width: 230px;
+  height: 24px;
+  width: 170px;
+  max-width: 100%;
 }
 .strip-cell {
   flex: 1;
@@ -621,74 +590,151 @@ body.write-mode .peek-toggle-pill { display: none !important; }
 .strip-cell:last-child { border-right: none; }
 .strip-cell.shaded { background: #C084FC; }
 
-/* PARENT REVIEW BAR */
-.parent-review-strip {
-  display: none;
-  background: #F0F9FF;
-  border: 2px solid #BAE6FD;
-  padding: 8px 14px;
-  border-radius: 12px;
+.quest-finish-bar {
+  display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-top: 10px;
+  border-top: 1.5px dashed #E2E8F0;
+  gap: 10px;
   flex-shrink: 0;
-  margin-top: 6px;
 }
-body.parent-mode .parent-review-strip { display: flex; }
-.grade-btn {
-  border: none;
-  padding: 6px 14px;
-  border-radius: 10px;
+.quest-finish-btn {
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: #FFF;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
   font-weight: 800;
-  font-size: 0.85rem;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 14px;
   cursor: pointer;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
-.grade-btn.pass { background: #22C55E; color: #FFF; }
-.grade-btn.retry { background: #F97316; color: #FFF; }
+.quest-finish-btn:active { transform: scale(0.96); }
 
-/* ON-SCREEN KEYPAD */
-.pony-keypad-dock {
+/* FLOATING DUAL-MODE GEM KEYPAD */
+#floatingCrystalKeypad {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  width: 320px;
   background: rgba(255, 255, 255, 0.98);
-  border: 2px solid #DDD6FE;
-  border-radius: 16px;
-  padding: 6px 10px;
-  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.12);
+  backdrop-filter: blur(14px);
+  border: 3px solid #DDD6FE;
+  border-radius: 24px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.25);
+  display: none;
+  flex-direction: column;
+  z-index: 9999;
+  overflow: hidden;
+  animation: promptPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes promptPop {
+  0% { transform: scale(0.7); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.crystal-keypad-header {
+  height: 38px;
+  background: linear-gradient(135deg, #FDF2F8, #EDE9FE);
+  border-bottom: 2px solid #DDD6FE;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  padding: 0 10px;
+  cursor: move;
   flex-shrink: 0;
 }
-.keypad-keys {
+.crystal-keypad-title {
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: var(--twilight-dark);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.keypad-header-tools {
   display: flex;
   gap: 6px;
-  flex: 1;
-  overflow-x: auto;
+  align-items: center;
 }
-.k-btn {
-  flex: 1;
-  min-width: 44px;
+.switch-pad-mode-btn {
+  background: #EEF2FF;
+  border: 1.5px solid #C7D2FE;
+  color: #4338CA;
+  font-size: 0.76rem;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.crystal-keypad-body {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+.gem-grid-4x4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+}
+.gem-btn {
   height: 42px;
-  background: #F8FAFC;
+  border-radius: 12px;
   border: 2px solid #CBD5E1;
-  border-radius: 10px;
+  background: #FFF;
   font-size: 1.15rem;
   font-weight: 800;
-  color: var(--text-dark);
+  color: #1E1B4B;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.1s;
+  box-shadow: 0 2px 0 #CBD5E1;
 }
-.k-btn:active { transform: scale(0.94); background: #FEF08A; }
-.k-btn.action-k { background: #FDF2F8; border-color: #FBCFE8; color: var(--pinkie-dark); }
-.k-btn.submit-k { background: #DCFCE7; border-color: #86EFAC; color: #166534; min-width: 90px; }
+.gem-btn:active { transform: scale(0.92); }
+.gem-btn.gem-action { font-size: 0.85rem; }
+.gem-btn.gem-back { background: #FEF2F2; color: #DC2626; border-color: #FECACA; }
+.gem-btn.gem-clear { background: #F0FDF4; color: #16A34A; border-color: #BBF7D0; }
+.gem-btn.gem-done { background: linear-gradient(135deg, #FDE047, #F59E0B); border-color: #D97706; color: #78350F; font-size: 0.95rem; }
 
-/* DRAGGABLE ROUGH WORK PAD */
+.gem-alpha-deck {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+}
+.alpha-row {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+.alpha-key {
+  flex: 1;
+  height: 36px;
+  border-radius: 8px;
+  border: 1.5px solid #CBD5E1;
+  background: #FFFFFF;
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #1E1B4B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 1.5px 0 #CBD5E1;
+}
+.alpha-key:active { transform: scale(0.9); }
+
+/* DRAGGABLE ROUGH PAD */
 .floating-rough-pad {
   position: fixed;
   top: 70px;
-  right: 20px;
+  left: 20px;
   width: 320px;
   height: 380px;
   background: #FFFFFF;
@@ -702,7 +748,7 @@ body.parent-mode .parent-review-strip { display: flex; }
   resize: both;
 }
 .rough-header {
-  height: 40px;
+  height: 38px;
   background: #FEF3C7;
   border-bottom: 2px solid #FDE68A;
   display: flex;
@@ -712,235 +758,284 @@ body.parent-mode .parent-review-strip { display: flex; }
   cursor: move;
   flex-shrink: 0;
 }
-.rough-title { font-size: 0.9rem; font-weight: 800; color: #92400E; }
-.rough-body { position: relative; flex: 1; width: 100%; height: 100%; overflow: hidden; background: #FFF; }
-
-/* PIN MODAL */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.6);
-  backdrop-filter: blur(4px);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 100000;
-}
-.modal-overlay.open { display: flex; }
-.modal-box {
+.rough-title { font-size: 0.88rem; font-weight: 800; color: #92400E; }
+.canvas-tool-btn {
   background: #FFF;
-  border-radius: 20px;
-  padding: 22px;
-  width: 90%;
-  max-width: 320px;
-  text-align: center;
-  box-shadow: 0 16px 36px rgba(0,0,0,0.25);
-}
-.pin-dots {
-  font-size: 1.8rem;
-  letter-spacing: 6px;
-  background: #F1F5F9;
-  padding: 10px;
-  border-radius: 12px;
-  margin: 14px 0;
-  font-weight: 900;
-}
-.keypad-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-}
-.pin-key-btn {
-  padding: 12px;
-  font-size: 1.25rem;
+  border: 1.5px solid #FCD34D;
+  border-radius: 8px;
+  padding: 3px 8px;
+  font-size: 0.82rem;
   font-weight: 800;
-  border-radius: 12px;
-  border: 2px solid #E2E8F0;
-  background: #F8FAFC;
   cursor: pointer;
 }
+.canvas-tool-btn.active { background: #F59E0B; color: #FFF; }
+.rough-body { position: relative; flex: 1; width: 100%; height: 100%; overflow: hidden; background: #FFFFFF; }
+.graph-canvas { width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair; }
 </style>
 </head>
 <body>
 
 <div id="screenDimOverlay"></div>
-<canvas id="particleCanvas"></canvas>
+<canvas id="milkyWayCanvas"></canvas>
+<canvas id="confettiSnowCanvas"></canvas>
 
-<!-- ASANA-STYLE SOARING CELEBRATION OVERLAY -->
+<!-- ASANA-STYLE SOARING CELEBRATION -->
 <div id="celebrationOverlay">
-  <img src="rainbow.png" class="flying-pony-hero" id="flyingPonyImg" alt="Soaring Pony"/>
+  <img src="rainbow.png" id="flyingPonyHeroImg" class="flying-avatar-hero" alt="Soaring Companion" onerror="this.src='twilight.png'"/>
   <div class="celebration-ribbon" id="celebrationRibbon">🌟 Super Job, Zaina! 🌟</div>
 </div>
 
 <div class="app-wrapper">
   <header>
     <div class="brand-group">
-      <a href="javascript:void(0)" onclick="goToHub()" class="head-btn">🏰 Hub</a>
+      <a href="index.html" class="head-btn" title="Exit to Master Hub">🏰 Hub</a>
       <div class="brand-title">
         ✨ Zaina's Magical Maths <span class="badge-ch">Grade 5 • Decimals</span>
       </div>
     </div>
 
-    <div class="mode-pills-bar">
-      <button class="mode-pill active-study" id="pillStudy" onclick="setAppMode('study')">
-        🦄 Practice Mode
-      </button>
-      <button class="mode-pill" id="pillWrite" onclick="setAppMode('write')">
-        ✏️ Write (Test) Mode
-      </button>
-      <button class="mode-pill" id="pillParent" onclick="openPinModal()">
-        👑 Parent Review
-      </button>
-    </div>
-
     <div class="header-tools">
       <button class="head-btn" id="dimToggleBtn" onclick="toggleScreenDim()">💡 Dim</button>
-      <button class="head-btn rough-btn" onclick="toggleRoughPad()">📝 Rough Work Pad</button>
+      <button class="head-btn rough-btn" onclick="toggleRoughPad()">📝 Rough Pad</button>
       <button class="head-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
     </div>
   </header>
 
-  <!-- HORIZONTAL QUEST NAV BAR (NO VERTICAL STRIP) -->
-  <nav class="quest-nav-strip">
-    <button class="quest-tab-btn active" onclick="switchSection(0)">
-      <img src="twilight.png" class="quest-avatar-sm" alt="Twilight"/>
-      <span class="quest-tab-title">Ex 5.1 — Q1 (Places)</span>
-    </button>
-    <button class="quest-tab-btn" onclick="switchSection(1)">
-      <img src="rarity.png" class="quest-avatar-sm" alt="Rarity"/>
-      <span class="quest-tab-title">Ex 5.1 — Q2 (Values)</span>
-    </button>
-    <button class="quest-tab-btn" onclick="switchSection(2)">
-      <img src="pinkie.png" class="quest-avatar-sm" alt="Pinkie"/>
-      <span class="quest-tab-title">Ex 5.1 — Q3 & Q4</span>
-    </button>
-    <button class="quest-tab-btn" onclick="switchSection(3)">
-      <img src="rainbow.png" class="quest-avatar-sm" alt="Rainbow Dash"/>
-      <span class="quest-tab-title">Ex 5.1 — Q5 (Expanded)</span>
-    </button>
-    <button class="quest-tab-btn" onclick="switchSection(4)">
-      <img src="fluttershy.png" class="quest-avatar-sm" alt="Fluttershy"/>
-      <span class="quest-tab-title">Ex 5.1 — Q6 (Names)</span>
-    </button>
-    <button class="quest-tab-btn" onclick="switchSection(5)">
-      <img src="twilight.png" class="quest-avatar-sm" alt="Twilight"/>
-      <span class="quest-tab-title">Ex 5.1 — Q7 (Decimals)</span>
-    </button>
-    <button class="quest-tab-btn" onclick="switchSection(6)">
-      <img src="fluttershy.png" class="quest-avatar-sm" alt="Fluttershy"/>
-      <span class="quest-tab-title">Ex 5.2 — Q1 (Strips)</span>
-    </button>
-    <button class="quest-tab-btn" onclick="switchSection(7)">
-      <img src="pinkie.png" class="quest-avatar-sm" alt="Pinkie"/>
-      <span class="quest-tab-title">Ex 5.2 — Q2 (Fractions)</span>
-    </button>
-  </nav>
+  <div class="views-container">
+    <!-- SCREEN 1: CHAPTER MENU (DIRECT 1-TAP PLAY) -->
+    <section id="chapterMenuView">
+      <div class="hub-page-title">Chapter 5: Decimals Quests</div>
+      <div class="hub-deck-card">
+        <div class="hub-item-row" onclick="startQuestDirectly(0)">
+          <div class="hub-item-left">
+            <span class="hub-cutie-icon">🌟</span>
+            <div class="hub-item-text">
+              <span class="hub-item-title">Ex 5.1 — 1. Decimal Places</span>
+              <span class="hub-item-sub">Twilight Sparkle</span>
+            </div>
+          </div>
+          <img src="twilight.png" class="hub-pony-avatar" alt="Twilight Sparkle"/>
+        </div>
 
-  <!-- MAIN STAGE: STORYBOOK WINDOW CARD -->
-  <main class="stage-card-window" id="mainWorkspace">
-    <div class="window-banner">
-      <div class="window-pony-header">
-        <img src="twilight.png" id="heroPonyImg" class="window-hero-pony" alt="Host Pony"/>
+        <div class="hub-item-row" onclick="startQuestDirectly(1)">
+          <div class="hub-item-left">
+            <span class="hub-cutie-icon">💎</span>
+            <div class="hub-item-text">
+              <span class="hub-item-title">Ex 5.1 — 2. Place Value of Underlined Digit(s)</span>
+              <span class="hub-item-sub">Rarity</span>
+            </div>
+          </div>
+          <img src="rarity.png" class="hub-pony-avatar" alt="Rarity"/>
+        </div>
+
+        <div class="hub-item-row" onclick="startQuestDirectly(2)">
+          <div class="hub-item-left">
+            <span class="hub-cutie-icon">🎈</span>
+            <div class="hub-item-text">
+              <span class="hub-item-title">Ex 5.1 — 3 & 4. Fill in the Blanks & Questions</span>
+              <span class="hub-item-sub">Pinkie Pie</span>
+            </div>
+          </div>
+          <img src="pinkie.png" class="hub-pony-avatar" alt="Pinkie Pie"/>
+        </div>
+
+        <div class="hub-item-row" onclick="startQuestDirectly(3)">
+          <div class="hub-item-left">
+            <span class="hub-cutie-icon">⚡</span>
+            <div class="hub-item-text">
+              <span class="hub-item-title">Ex 5.1 — 5. Expanded Form of Decimals</span>
+              <span class="hub-item-sub">Rainbow Dash</span>
+            </div>
+          </div>
+          <img src="rainbow.png" class="hub-pony-avatar" alt="Rainbow Dash"/>
+        </div>
+
+        <div class="hub-item-row" onclick="startQuestDirectly(4)">
+          <div class="hub-item-left">
+            <span class="hub-cutie-icon">🦋</span>
+            <div class="hub-item-text">
+              <span class="hub-item-title">Ex 5.1 — 6. Number Names to Decimals</span>
+              <span class="hub-item-sub">Fluttershy</span>
+            </div>
+          </div>
+          <img src="fluttershy.png" class="hub-pony-avatar" alt="Fluttershy"/>
+        </div>
+
+        <div class="hub-item-row" onclick="startQuestDirectly(5)">
+          <div class="hub-item-left">
+            <span class="hub-cutie-icon">📜</span>
+            <div class="hub-item-text">
+              <span class="hub-item-title">Ex 5.1 — 7. Write in Decimal Form</span>
+              <span class="hub-item-sub">Twilight Sparkle</span>
+            </div>
+          </div>
+          <img src="twilight.png" class="hub-pony-avatar" alt="Twilight Sparkle"/>
+        </div>
+
+        <div class="hub-item-row" onclick="startQuestDirectly(6)">
+          <div class="hub-item-left">
+            <span class="hub-cutie-icon">🟩</span>
+            <div class="hub-item-text">
+              <span class="hub-item-title">Ex 5.2 — 1. 10-Block Strip Models</span>
+              <span class="hub-item-sub">Fluttershy</span>
+            </div>
+          </div>
+          <img src="fluttershy.png" class="hub-pony-avatar" alt="Fluttershy"/>
+        </div>
+
+        <div class="hub-item-row" onclick="startQuestDirectly(7)">
+          <div class="hub-item-left">
+            <span class="hub-cutie-icon">🧁</span>
+            <div class="hub-item-text">
+              <span class="hub-item-title">Ex 5.2 — 2. Convert Decimals to Fractions</span>
+              <span class="hub-item-sub">Pinkie Pie</span>
+            </div>
+          </div>
+          <img src="pinkie.png" class="hub-pony-avatar" alt="Pinkie Pie"/>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN 2: ACTIVE QUEST SCENE -->
+    <section id="exerciseView">
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px dashed #E2E8F0; padding-bottom:6px;">
         <div>
           <div class="window-heading" id="bannerHeading">Exercise 5.1 — Q1</div>
           <div class="window-sub" id="bannerSub">Hosted by Twilight Sparkle</div>
         </div>
+        <div style="display:flex; gap:8px;">
+          <button class="head-btn" onclick="clearCurrentSectionInputs()" title="Reset answers">🔄 Reset</button>
+          <button class="head-btn" onclick="returnToChapterMenu()">⬅️ Exercises</button>
+        </div>
       </div>
-      <button class="head-btn" onclick="speakCurrentHeader()">🔊 Read Question</button>
-    </div>
 
-    <div class="exercise-scroll-body" id="exerciseScrollBody"></div>
+      <div class="quest-scene-container">
+        <!-- LEFT: QUIET COMPANION IN THE CORNER -->
+        <div class="pony-companion-stage">
+          <div class="pony-hum-bubble">
+            <span class="hum-note">♪</span> <span>Sitting right by you</span> <span class="hum-note">♫</span>
+          </div>
 
-    <div class="parent-review-strip" id="parentReviewStrip">
-      <span style="font-weight:800; color:#0369A1;" id="parentAnswerHint">Teacher Answer: ...</span>
-      <div style="display:flex; gap:8px;">
-        <button class="grade-btn pass" onclick="markCardGrade('pass')">⭐ Correct</button>
-        <button class="grade-btn retry" onclick="markCardGrade('retry')">🔄 Try Again</button>
+          <div class="quiet-pony-box" id="companionBox">
+            <img src="twilight.png" id="companionPng" class="companion-png-img" alt="Pony Companion"/>
+          </div>
+
+          <div class="companion-name-badge" id="companionNameBadge">Twilight Sparkle</div>
+        </div>
+
+        <!-- RIGHT: WORKSHEET -->
+        <div class="exercise-scroll-body" id="exerciseScrollBody"></div>
       </div>
-    </div>
-  </main>
 
-  <!-- ON-SCREEN KEYPAD (SHOWN DURING SHORT ANSWER SUMS) -->
-  <div class="pony-keypad-dock" id="keypadDock">
-    <div class="keypad-keys">
-      <button class="k-btn" onclick="pressKey('1')">1</button>
-      <button class="k-btn" onclick="pressKey('2')">2</button>
-      <button class="k-btn" onclick="pressKey('3')">3</button>
-      <button class="k-btn" onclick="pressKey('4')">4</button>
-      <button class="k-btn" onclick="pressKey('5')">5</button>
-      <button class="k-btn" onclick="pressKey('6')">6</button>
-      <button class="k-btn" onclick="pressKey('7')">7</button>
-      <button class="k-btn" onclick="pressKey('8')">8</button>
-      <button class="k-btn" onclick="pressKey('9')">9</button>
-      <button class="k-btn" onclick="pressKey('0')">0</button>
-      <button class="k-btn action-k" onclick="pressKey('.')">.</button>
-      <button class="k-btn action-k" onclick="pressKey('/')">/</button>
-      <button class="k-btn action-k" onclick="pressKey(' ')">Space</button>
-      <button class="k-btn action-k" onclick="pressKey('BACK')">⌫</button>
-      <button class="k-btn action-k" onclick="pressKey('CLEAR')">Clear</button>
-    </div>
-    <button class="k-btn submit-k" onclick="submitCurrentAnswer()">✨ Done</button>
+      <div class="quest-finish-bar">
+        <span style="font-size:0.88rem; font-weight:800; color:#6D28D9;" id="modeStatusText">🦄 Interactive Quest</span>
+        <button class="quest-finish-btn" onclick="completeCurrentExerciseQuest()">
+          <span>🌟</span> Check & Finish Quest!
+        </button>
+      </div>
+    </section>
   </div>
 </div>
 
-<!-- DRAGGABLE ROUGH WORK GRAPH PAD -->
+<!-- AUTO-POPUP SMART KEYPAD -->
+<div id="floatingCrystalKeypad">
+  <div class="crystal-keypad-header" id="keypadDragHandle">
+    <div class="crystal-keypad-title">
+      <span>✨</span> <span id="keypadTitleLabel">Gem Pad (Numbers)</span>
+    </div>
+    <div class="keypad-header-tools">
+      <button class="switch-pad-mode-btn" id="togglePadAlphaBtn" onclick="toggleKeypadMode()">ABC</button>
+      <button class="canvas-tool-btn" style="background:#FEE2E2; color:#DC2626; border-color:#FECACA;" onclick="closeCrystalKeypad()">✕</button>
+    </div>
+  </div>
+  <div class="crystal-keypad-body">
+    <div class="gem-grid-4x4" id="keypadNumDeck">
+      <button class="gem-btn" onpointerdown="handleKeypadTap(event, '7')">7</button>
+      <button class="gem-btn" onpointerdown="handleKeypadTap(event, '8')">8</button>
+      <button class="gem-btn" onpointerdown="handleKeypadTap(event, '9')">9</button>
+      <button class="gem-btn gem-action gem-back" onpointerdown="handleKeypadTap(event, 'BACK')">⌫</button>
+
+      <button class="gem-btn" onpointerdown="handleKeypadTap(event, '4')">4</button>
+      <button class="gem-btn" onpointerdown="handleKeypadTap(event, '5')">5</button>
+      <button class="gem-btn" onpointerdown="handleKeypadTap(event, '6')">6</button>
+      <button class="gem-btn gem-action gem-clear" onpointerdown="handleKeypadTap(event, 'CLEAR')">C</button>
+
+      <button class="gem-btn" onpointerdown="handleKeypadTap(event, '1')">1</button>
+      <button class="gem-btn" onpointerdown="handleKeypadTap(event, '2')">2</button>
+      <button class="gem-btn" onpointerdown="handleKeypadTap(event, '3')">3</button>
+      <button class="gem-btn" onpointerdown="handleKeypadTap(event, '/')">/</button>
+
+      <button class="gem-btn" onpointerdown="handleKeypadTap(event, '0')">0</button>
+      <button class="gem-btn" onpointerdown="handleKeypadTap(event, '.')">.</button>
+      <button class="gem-btn" onpointerdown="handleKeypadTap(event, ' ')">␣</button>
+      <button class="gem-btn gem-done" onpointerdown="handleKeypadDone(event)">OK</button>
+    </div>
+
+    <div class="gem-alpha-deck" id="keypadAlphaDeck">
+      <div class="alpha-row">
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 'q')">q</button>
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 'w')">w</button>
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 'e')">e</button>
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 'r')">r</button>
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 't')">t</button>
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 'y')">y</button>
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 'u')">u</button>
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 'i')">i</button>
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 'o')">o</button>
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 'p')">p</button>
+      </div>
+      <div class="alpha-row">
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 'a')">a</button>
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 's')">s</button>
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 'd')">d</button>
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 'f')">f</button>
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 'g')">g</button>
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 'h')">h</button>
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 'j')">j</button>
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 'k')">k</button>
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 'l')">l</button>
+      </div>
+      <div class="alpha-row">
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 'z')">z</button>
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 'x')">x</button>
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 'c')">c</button>
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 'v')">v</button>
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 'b')">b</button>
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 'n')">n</button>
+        <button class="alpha-key" onpointerdown="handleKeypadTap(event, 'm')">m</button>
+        <button class="alpha-key" style="background:#FEF2F2; color:#DC2626;" onpointerdown="handleKeypadTap(event, 'BACK')">⌫</button>
+      </div>
+      <div class="alpha-row">
+        <button class="alpha-key" style="flex:2;" onpointerdown="handleKeypadTap(event, ' ')">space</button>
+        <button class="alpha-key" style="background:#F0FDF4; color:#16A34A;" onpointerdown="handleKeypadTap(event, 'CLEAR')">Clear</button>
+        <button class="alpha-key" style="background:linear-gradient(135deg, #FDE047, #F59E0B); color:#78350F; font-weight:800;" onpointerdown="handleKeypadDone(event)">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DRAGGABLE ROUGH PAD -->
 <div class="floating-rough-pad" id="floatingRoughPad">
   <div class="rough-header" id="roughHeader">
-    <div class="rough-title">📝 Rough Work Graph Paper</div>
+    <div class="rough-title">📝 Rough Pad</div>
     <div style="display:flex; gap:6px;">
-      <button class="canvas-tool-btn active" id="roughPenBtn" onclick="setRoughTool('pen')">✏️ Pen</button>
-      <button class="canvas-tool-btn" id="roughEraserBtn" onclick="setRoughTool('eraser')">🧹 Eraser</button>
+      <button class="canvas-tool-btn active" id="roughPenBtn" onclick="setRoughTool('pen')">✏️</button>
+      <button class="canvas-tool-btn" id="roughEraserBtn" onclick="setRoughTool('eraser')">🧹</button>
       <button class="canvas-tool-btn" onclick="clearRoughCanvas()">Clear</button>
       <button class="canvas-tool-btn" style="background:#FEE2E2; color:#DC2626;" onclick="toggleRoughPad()">✕</button>
     </div>
   </div>
   <div class="rough-body" id="roughBody">
-    <div class="graph-25-texture"></div>
     <canvas class="graph-canvas" id="roughCanvas"></canvas>
   </div>
 </div>
 
-<!-- PARENT PIN MODAL -->
-<div class="modal-overlay" id="pinModal">
-  <div class="modal-box">
-    <h3 style="font-weight:900; color:#0F172A;">Parent Access</h3>
-    <p style="font-size:0.85rem; color:#647488; margin-top:4px;">Enter 4-digit PIN</p>
-    <div class="pin-dots" id="pinDots">----</div>
-    <div class="keypad-grid">
-      <button class="pin-key-btn" onclick="pressPin('1')">1</button>
-      <button class="pin-key-btn" onclick="pressPin('2')">2</button>
-      <button class="pin-key-btn" onclick="pressPin('3')">3</button>
-      <button class="pin-key-btn" onclick="pressPin('4')">4</button>
-      <button class="pin-key-btn" onclick="pressPin('5')">5</button>
-      <button class="pin-key-btn" onclick="pressPin('6')">6</button>
-      <button class="pin-key-btn" onclick="pressPin('7')">7</button>
-      <button class="pin-key-btn" onclick="pressPin('8')">8</button>
-      <button class="pin-key-btn" onclick="pressPin('9')">9</button>
-      <button class="pin-key-btn" onclick="clearPin()">C</button>
-      <button class="pin-key-btn" onclick="pressPin('0')">0</button>
-      <button class="pin-key-btn" onclick="closePinModal()">X</button>
-    </div>
-  </div>
-</div>
-
 <script>
-const PARENT_PIN = "1995";
-let enteredPin = "";
-let appMode = "study"; // 'study' | 'write' | 'parent'
-let currentSectionIdx = 0;
-let currentQ5SubIdx = 0;
-let currentQ7SubIdx = 0;
+let selectedSectionIdx = 0;
 let activeFocusedInputId = null;
+let keypadMode = "num"; // "num" | "alpha"
 
-const PONY_SQUAD = [
-  { img: "rainbow.png", cheer: "20% Cooler, Zaina! You rock!" },
-  { img: "twilight.png", cheer: "Magical calculations, Zaina! Spot on!" },
-  { img: "pinkie.png", cheer: "Yippee! Party time for brilliant maths!" },
-  { img: "fluttershy.png", cheer: "Yay! You did it so beautifully, Zaina!" },
-  { img: "rarity.png", cheer: "Simply fabulous work, darling Zaina!" }
-];
-
-/* WEB AUDIO ARPEGGIOS & CHIMES */
+/* WEB AUDIO ARPEGGIOS */
 let audioCtx = null;
 function getAudioContext() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -967,22 +1062,21 @@ function playPonyChime() {
   } catch (e) {}
 }
 
-function playAsanaSwooshSound() {
+function playSlowAsanaSwooshSound() {
   try {
     const ctx = getAudioContext();
-    // Fast rising soaring chord arpeggio
-    const harpNotes = [440, 554.37, 659.25, 880, 1108.73, 1318.51, 1760];
+    const harpNotes = [392, 440, 523.25, 659.25, 783.99, 880, 1046.5, 1318.5];
     harpNotes.forEach((freq, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'triangle';
-      osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.06);
-      gain.gain.setValueAtTime(0.18, ctx.currentTime + i * 0.06);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.06 + 0.4);
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.18);
+      gain.gain.setValueAtTime(0.18, ctx.currentTime + i * 0.18);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.18 + 0.9);
       osc.connect(gain);
       gain.connect(ctx.destination);
-      osc.start(ctx.currentTime + i * 0.06);
-      osc.stop(ctx.currentTime + i * 0.06 + 0.45);
+      osc.start(ctx.currentTime + i * 0.18);
+      osc.stop(ctx.currentTime + i * 0.18 + 0.95);
     });
   } catch(e) {}
 }
@@ -1004,130 +1098,243 @@ function playBubbleTap() {
   } catch(e) {}
 }
 
-/* TUNED HIGH-PITCH TWILIGHT SPARKLE VOICE */
-function speakPonyVoice(text) {
-  if (!('speechSynthesis' in window)) return;
-  window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'en-US';
-  u.pitch = 1.45;
-  u.rate = 1.02;
-  window.speechSynthesis.speak(u);
-}
+/* BACKGROUND MILKY WAY */
+const mCanvas = document.getElementById("milkyWayCanvas");
+const mCtx = mCanvas.getContext("2d");
+let stars = [];
 
-/* PIXIE DUST CANVAS ENGINE */
-const pCanvas = document.getElementById("particleCanvas");
-const pCtx = pCanvas.getContext("2d");
-let particles = [];
-
-function resizeParticleCanvas() {
-  pCanvas.width = window.innerWidth;
-  pCanvas.height = window.innerHeight;
-}
-window.addEventListener("resize", resizeParticleCanvas);
-resizeParticleCanvas();
-
-function triggerPixieDust(x, y) {
-  const originX = x || window.innerWidth / 2;
-  const originY = y || window.innerHeight / 2;
-  const colors = ['#F472B6', '#C084FC', '#38BDF8', '#FDE047', '#4ADE80'];
-  for (let i = 0; i < 55; i++) {
-    particles.push({
-      x: originX,
-      y: originY,
-      vx: (Math.random() - 0.5) * 16,
-      vy: (Math.random() - 0.7) * 18,
-      size: Math.random() * 6 + 3,
-      color: colors[Math.floor(Math.random() * colors.length)],
-      alpha: 1,
-      rotation: Math.random() * 360,
-      vRot: (Math.random() - 0.5) * 10
+function resizeMilkyWay() {
+  mCanvas.width = window.innerWidth;
+  mCanvas.height = window.innerHeight;
+  stars = [];
+  for (let i = 0; i < 90; i++) {
+    stars.push({
+      x: Math.random() * mCanvas.width,
+      y: Math.random() * mCanvas.height,
+      radius: Math.random() * 2.2 + 0.6,
+      vx: (Math.random() - 0.5) * 0.35,
+      vy: -Math.random() * 0.5 - 0.2,
+      alpha: Math.random() * 0.75 + 0.25,
+      dAlpha: (Math.random() - 0.5) * 0.012,
+      color: ['#FDF2F8', '#DDD6FE', '#BAE6FD', '#FDE047'][Math.floor(Math.random() * 4)]
     });
   }
 }
+window.addEventListener("resize", resizeMilkyWay);
+resizeMilkyWay();
 
-function updateParticles() {
-  pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
-  for (let i = particles.length - 1; i >= 0; i--) {
-    const p = particles[i];
-    p.x += p.vx;
+function renderMilkyWay() {
+  mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height);
+  const grad = mCtx.createLinearGradient(0, 0, mCanvas.width, mCanvas.height);
+  grad.addColorStop(0, '#1E1B4B');
+  grad.addColorStop(0.45, '#3B0764');
+  grad.addColorStop(0.75, '#1E3A8A');
+  grad.addColorStop(1, '#0C4A6E');
+  mCtx.fillStyle = grad;
+  mCtx.fillRect(0, 0, mCanvas.width, mCanvas.height);
+
+  for (let s of stars) {
+    s.x += s.vx;
+    s.y += s.vy;
+    s.alpha += s.dAlpha;
+    if (s.alpha > 0.95 || s.alpha < 0.2) s.dAlpha = -s.dAlpha;
+    if (s.y < 0) s.y = mCanvas.height;
+    if (s.x < 0) s.x = mCanvas.width;
+    if (s.x > mCanvas.width) s.x = 0;
+
+    mCtx.save();
+    mCtx.globalAlpha = s.alpha;
+    mCtx.fillStyle = s.color;
+    mCtx.beginPath();
+    mCtx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+    mCtx.fill();
+    mCtx.restore();
+  }
+  requestAnimationFrame(renderMilkyWay);
+}
+requestAnimationFrame(renderMilkyWay);
+
+/* CONFETTI DRIFT */
+const snowCanvas = document.getElementById("confettiSnowCanvas");
+const snowCtx = snowCanvas.getContext("2d");
+let snowParticles = [];
+let isSnowingActive = false;
+
+function resizeSnowCanvas() {
+  snowCanvas.width = window.innerWidth;
+  snowCanvas.height = window.innerHeight;
+}
+window.addEventListener("resize", resizeSnowCanvas);
+resizeSnowCanvas();
+
+function startSnowingPixieConfetti() {
+  isSnowingActive = true;
+  snowParticles = [];
+  const colors = ['#F472B6', '#C084FC', '#38BDF8', '#FDE047', '#4ADE80', '#FFFFFF'];
+  for (let i = 0; i < 90; i++) {
+    snowParticles.push({
+      x: Math.random() * snowCanvas.width,
+      y: Math.random() * -snowCanvas.height,
+      vx: (Math.random() - 0.5) * 1.5,
+      vy: Math.random() * 1.6 + 1.2,
+      size: Math.random() * 7 + 4,
+      rotation: Math.random() * 360,
+      vRot: (Math.random() - 0.5) * 4,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      alpha: 1
+    });
+  }
+  requestAnimationFrame(updateSnow);
+}
+
+function updateSnow() {
+  if (!isSnowingActive) return;
+  snowCtx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
+  let livingCount = 0;
+
+  for (let p of snowParticles) {
+    p.x += p.vx + Math.sin(p.y * 0.02) * 0.8;
     p.y += p.vy;
-    p.vy += 0.38;
-    p.alpha -= 0.022;
     p.rotation += p.vRot;
+    if (p.y > snowCanvas.height - 80) p.alpha -= 0.012;
 
-    if (p.alpha <= 0) {
-      particles.splice(i, 1);
-      continue;
+    if (p.alpha > 0) {
+      livingCount++;
+      snowCtx.save();
+      snowCtx.globalAlpha = Math.max(0, p.alpha);
+      snowCtx.translate(p.x, p.y);
+      snowCtx.rotate((p.rotation * Math.PI) / 180);
+      snowCtx.fillStyle = p.color;
+      snowCtx.beginPath();
+      snowCtx.moveTo(0, -p.size);
+      snowCtx.quadraticCurveTo(0, 0, p.size, 0);
+      snowCtx.quadraticCurveTo(0, 0, 0, p.size);
+      snowCtx.quadraticCurveTo(0, 0, -p.size, 0);
+      snowCtx.quadraticCurveTo(0, 0, 0, -p.size);
+      snowCtx.fill();
+      snowCtx.restore();
+    }
+  }
+
+  if (livingCount > 0) {
+    requestAnimationFrame(updateSnow);
+  } else {
+    isSnowingActive = false;
+    snowCtx.clearRect(0, 0, snowCanvas.width, snowCanvas.height);
+  }
+}
+
+/* SMART MATH CHECKER (SUPPORTS BOTH SLICE "3/10" AND TYPED EQUIVALENTS) */
+function checkMathAnswersMatch(entered, targetAllowedStr, formatRule = "any") {
+  if (!entered || !targetAllowedStr) return false;
+  const cleanEntered = entered.trim().toLowerCase().replace(/\s+/g, ' ');
+  const targets = targetAllowedStr.split('|').map(t => t.trim().toLowerCase().replace(/\s+/g, ' '));
+
+  if (targets.includes(cleanEntered)) return true;
+
+  const isMixedInput = /^\d+\s+\d+\/\d+$/.test(cleanEntered);
+  const isImproperInput = /^\d+\/\d+$/.test(cleanEntered);
+
+  if (formatRule === "mixed" && !isMixedInput) return false;
+  if (formatRule === "improper" && !isImproperInput) return false;
+
+  const parseVal = (str) => {
+    const mm = str.match(/^(\d+)\s+(\d+)\/(\d+)$/);
+    if (mm) {
+      const d = parseFloat(mm[3]);
+      return d === 0 ? null : parseFloat(mm[1]) + (parseFloat(mm[2]) / d);
+    }
+    const fm = str.match(/^(\d+)\/(\d+)$/);
+    if (fm) {
+      const d = parseFloat(fm[2]);
+      return d === 0 ? null : parseFloat(fm[1]) / d;
+    }
+    const num = parseFloat(str);
+    return isNaN(num) ? null : num;
+  };
+
+  const valEntered = parseVal(cleanEntered);
+  if (valEntered !== null) {
+    for (let t of targets) {
+      const valT = parseVal(t);
+      if (valT !== null && Math.abs(valEntered - valT) < 0.00001) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+/* CELEBRATION DISPATCH */
+function completeCurrentExerciseQuest() {
+  let anyWrong = false;
+  const blanks = document.querySelectorAll('.pony-input-blank');
+
+  blanks.forEach(el => {
+    const entered = (el.textContent || el.innerText || "")
+      .replace(/[\u200B-\u200D\uFEFF]/g, '')
+      .trim();
+    const targets = el.getAttribute('data-correct') || "";
+    const formatRule = el.getAttribute('data-format') || "any";
+
+    if (!entered) {
+      anyWrong = true;
+      el.classList.add('graded-wrong');
+      el.classList.remove('graded-correct');
+      return;
     }
 
-    pCtx.save();
-    pCtx.globalAlpha = p.alpha;
-    pCtx.translate(p.x, p.y);
-    pCtx.rotate((p.rotation * Math.PI) / 180);
-    pCtx.fillStyle = p.color;
+    if (targets && checkMathAnswersMatch(entered, targets, formatRule)) {
+      el.classList.add('graded-correct');
+      el.classList.remove('graded-wrong');
+    } else {
+      el.classList.add('graded-wrong');
+      el.classList.remove('graded-correct');
+      anyWrong = true;
+    }
+  });
 
-    pCtx.beginPath();
-    pCtx.moveTo(0, -p.size);
-    pCtx.quadraticCurveTo(0, 0, p.size, 0);
-    pCtx.quadraticCurveTo(0, 0, 0, p.size);
-    pCtx.quadraticCurveTo(0, 0, -p.size, 0);
-    pCtx.quadraticCurveTo(0, 0, 0, -p.size);
-    pCtx.fill();
-    pCtx.restore();
+  if (anyWrong) {
+    playBubbleTap();
+    return;
   }
-  requestAnimationFrame(updateParticles);
-}
-requestAnimationFrame(updateParticles);
 
-/* ASANA-STYLE SOARING CELEBRATION WITH RANDOM PONY */
-function triggerAsanaCelebration() {
-  playAsanaSwooshSound();
-  triggerPixieDust();
+  // 100% Correct -> Trigger Soaring Flying Pony & Pixie Snow
+  playSlowAsanaSwooshSound();
+  startSnowingPixieConfetti();
+
   const overlay = document.getElementById("celebrationOverlay");
-  const pony = document.getElementById("flyingPonyImg");
+  const heroFlyer = document.getElementById("flyingPonyHeroImg");
   const ribbon = document.getElementById("celebrationRibbon");
 
-  // Pick random pony for celebration flight
-  const chosen = PONY_SQUAD[Math.floor(Math.random() * PONY_SQUAD.length)];
-  pony.src = chosen.img;
-
+  heroFlyer.src = SECTIONS_DATA[selectedSectionIdx].avatar;
   overlay.style.display = "flex";
-  pony.style.transition = "none";
-  pony.style.transform = "translate(-130vw, 110vh) rotate(-14deg)";
+  heroFlyer.style.transition = "none";
+  heroFlyer.style.transform = "translate(-140vw, 115vh) rotate(-14deg)";
   ribbon.style.opacity = "0";
   ribbon.style.transform = "scale(0.6)";
 
   setTimeout(() => {
-    // Soar diagonally across screen
-    pony.style.transition = "transform 1.6s cubic-bezier(0.22, 1, 0.36, 1)";
-    pony.style.transform = "translate(150vw, -120vh) rotate(18deg)";
+    heroFlyer.style.transition = "transform 3.2s cubic-bezier(0.25, 0.8, 0.25, 1)";
+    heroFlyer.style.transform = "translate(150vw, -125vh) rotate(18deg)";
 
-    // Cheer message in center
     setTimeout(() => {
-      ribbon.textContent = `🌟 ${chosen.cheer} 🌟`;
+      ribbon.textContent = "🌟 Magical calculations, Zaina! Quest Complete! 🌟";
       ribbon.style.opacity = "1";
       ribbon.style.transform = "scale(1)";
-      speakPonyVoice(chosen.cheer);
-    }, 300);
+    }, 600);
 
     setTimeout(() => {
       ribbon.style.opacity = "0";
       ribbon.style.transform = "scale(0.8)";
       setTimeout(() => {
         overlay.style.display = "none";
-      }, 400);
-    }, 2200);
-  }, 40);
+      }, 500);
+    }, 3800);
+  }, 50);
 }
 
-function playPonyAudioCheer(customPhrase) {
-  playPonyChime();
-  triggerPixieDust();
-  speakPonyVoice(customPhrase || "Awesome Job, Zaina! That is twenty percent cooler!");
-}
-
-/* SCREEN DIM TOGGLE */
 function toggleScreenDim() {
   const overlay = document.getElementById("screenDimOverlay");
   const btn = document.getElementById("dimToggleBtn");
@@ -1136,15 +1343,20 @@ function toggleScreenDim() {
   btn.textContent = isDim ? "💡 Dim" : "☀️ Bright";
 }
 
-/* MODE ISOLATION FORMULA */
 function storageKeyForId(itemId) {
-  const targetSlot = (appMode === "parent") ? "write" : appMode;
-  return `v2_isolated_ink::zaina::maths_oct08::${targetSlot}::${itemId}`;
+  return `v5_zaina_maths::${itemId}`;
 }
 
-function inputBlankHtml(id) {
+function inputBlankHtml(id, correctVal, formatRule = "any") {
   const savedVal = localStorage.getItem(storageKeyForId(id)) || "";
-  return `<span class="pony-input-blank ${activeFocusedInputId === id ? 'active-focus' : ''}" id="input_${id}" onclick="focusInput('${id}')">${savedVal}</span>`;
+  return `<span class="pony-input-blank ${activeFocusedInputId === id ? 'active-focus' : ''}" 
+               id="input_${id}" 
+               data-id="${id}"
+               data-correct="${correctVal || ''}"
+               data-format="${formatRule}"
+               tabindex="0"
+               onfocus="focusInput('${id}')"
+               onclick="focusInput('${id}')">${savedVal}</span>`;
 }
 
 function focusInput(id) {
@@ -1152,15 +1364,28 @@ function focusInput(id) {
   activeFocusedInputId = id;
   document.querySelectorAll(".pony-input-blank").forEach(el => el.classList.remove("active-focus"));
   const target = document.getElementById(`input_${id}`);
-  if (target) target.classList.add("active-focus");
+  if (target) {
+    target.classList.add("active-focus");
+    const correct = target.getAttribute('data-correct') || "";
+    const hasWordTarget = /[a-zA-Z]{3,}/.test(correct);
+    if (hasWordTarget) {
+      setKeypadMode('alpha');
+    } else {
+      setKeypadMode('num');
+    }
+  }
+  document.getElementById("floatingCrystalKeypad").style.display = "flex";
 }
 
-function pressKey(char) {
+function handleKeypadTap(e, char) {
+  if (e && e.preventDefault) e.preventDefault();
   playBubbleTap();
+
   if (!activeFocusedInputId) return;
   const target = document.getElementById(`input_${activeFocusedInputId}`);
   if (!target) return;
-  let curr = localStorage.getItem(storageKeyForId(activeFocusedInputId)) || "";
+
+  let curr = (target.textContent || "").trim();
 
   if (char === 'CLEAR') {
     curr = "";
@@ -1169,91 +1394,126 @@ function pressKey(char) {
   } else {
     curr += char;
   }
+
   localStorage.setItem(storageKeyForId(activeFocusedInputId), curr);
   target.textContent = curr;
-}
 
-function submitCurrentAnswer() {
-  triggerAsanaCelebration();
-}
-
-/* INTERACTIVE TEACHER NOTEBOOK PEEK CARD HANDLER */
-function toggleTeacherPeek(cardId) {
-  playBubbleTap();
-  const card = document.getElementById(cardId);
-  if (card) {
-    card.classList.toggle("open");
+  const correct = target.getAttribute('data-correct');
+  const formatRule = target.getAttribute('data-format') || "any";
+  if (correct && checkMathAnswersMatch(curr, correct, formatRule)) {
+    target.classList.add('graded-correct');
+    target.classList.remove('graded-wrong');
+  } else {
+    target.classList.remove('graded-correct');
   }
 }
 
-/* VERBATIM TEXTBOOK SECTIONS */
+function handleKeypadDone(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  playBubbleTap();
+  closeCrystalKeypad();
+  if (activeFocusedInputId) {
+    const target = document.getElementById(`input_${activeFocusedInputId}`);
+    if (target) target.classList.remove("active-focus");
+    activeFocusedInputId = null;
+  }
+}
+
+function closeCrystalKeypad() {
+  document.getElementById("floatingCrystalKeypad").style.display = "none";
+}
+
+function setKeypadMode(mode) {
+  keypadMode = mode;
+  const isAlpha = mode === "alpha";
+  document.getElementById("keypadNumDeck").style.display = isAlpha ? "none" : "grid";
+  document.getElementById("keypadAlphaDeck").style.display = isAlpha ? "flex" : "none";
+  document.getElementById("togglePadAlphaBtn").textContent = isAlpha ? "123" : "ABC";
+  document.getElementById("keypadTitleLabel").textContent = isAlpha ? "Gem Pad (Letters)" : "Gem Pad (Numbers)";
+}
+
+function toggleKeypadMode() {
+  playBubbleTap();
+  setKeypadMode(keypadMode === "num" ? "alpha" : "num");
+}
+
+function toggleNotebookNote(noteId) {
+  playBubbleTap();
+  const el = document.getElementById(noteId);
+  if (el) el.classList.toggle("open");
+}
+
+function clearCurrentSectionInputs() {
+  if (!confirm("Reset all answers on this page?")) return;
+  document.querySelectorAll('.pony-input-blank').forEach(el => {
+    const id = el.getAttribute('data-id');
+    if (id) localStorage.removeItem(storageKeyForId(id));
+    el.textContent = "";
+    el.classList.remove('graded-correct', 'graded-wrong');
+  });
+  playBubbleTap();
+}
+
+/* HARDWARE KEYBOARD LISTENER */
+document.addEventListener("keydown", (e) => {
+  if (!activeFocusedInputId) return;
+  const target = document.getElementById(`input_${activeFocusedInputId}`);
+  if (!target) return;
+
+  if (e.key === "Backspace") {
+    handleKeypadTap(e, "BACK");
+  } else if (e.key === "Enter") {
+    handleKeypadDone(e);
+  } else if (e.key === "Escape") {
+    closeCrystalKeypad();
+  } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    handleKeypadTap(e, e.key);
+  }
+});
+
+/* HELPER TO RENDER A STACKED FRACTION (NUM OVER DEN) */
+function frac(n, d) {
+  return `<span class="stack-frac"><span class="num">${n}</span><span class="den">${d}</span></span>`;
+}
+
+/* VERBATIM TEXTBOOK SECTIONS (WITH STACKED FRACTIONS) */
 const SECTIONS_DATA = [
   /* 0: Ex 5.1 Q1 */
   {
     title: "Exercise 5.1 — 1. Decimal Places",
     ponyName: "Twilight Sparkle",
-    ponyAvatar: "twilight.png",
-    speech: "Exercise 5.1 Question 1: Write how many decimal places are there in the following decimal numbers.",
-    hint: "a. 1 decimal place | b. 2 decimal places | c. 3 decimal places",
-    hasKeypad: true,
+    avatar: "twilight.png",
     render: () => `
       <div class="problem-card">
         <div class="problem-q-text">
           <b>a.</b> The average body temperature is 98.6° Fahrenheit.
-          ${inputBlankHtml('e51_q1_a')} <span style="font-weight:800; color:var(--text-soft);">decimal place(s)</span>
+          ${inputBlankHtml('e51_q1_a', '1')} <span>decimal place(s)</span>
+          <button class="notebook-peek-btn" onclick="toggleNotebookNote('note_q1_a')" title="Teacher Note">📓</button>
         </div>
-        <button class="peek-toggle-pill" onclick="toggleTeacherPeek('peek_q1_a')">📖 Peek Teacher's Note</button>
-        <div class="peek-notebook-card" id="peek_q1_a">
-          <div class="peek-header-title">
-            <span>Classwork Note: 98.6°</span>
-          </div>
-          <div>There is 1 digit after the decimal point (6) → <b>1 decimal place</b>.</div>
-          <div class="pony-cheer-corner">
-            <div class="pony-bubble-speech" onclick="playPonyAudioCheer('Awesome job Zaina! Exactly one decimal place!')">
-              💬 "You got this, Zaina! Tap to hear me cheer!" 🔊
-            </div>
-            <img src="twilight.png" class="corner-pony-avatar" alt="Twilight" onclick="playPonyAudioCheer('Keep going Zaina!')"/>
-          </div>
+        <div class="handwritten-steps-card" id="note_q1_a">
+          <div class="handwritten-text">98.6 → Count digits after point. Only 1 digit (6) = 1 decimal place.</div>
         </div>
       </div>
 
       <div class="problem-card">
         <div class="problem-q-text">
           <b>b.</b> Mahua's slice of pizza cost ₹90.35.
-          ${inputBlankHtml('e51_q1_b')} <span style="font-weight:800; color:var(--text-soft);">decimal place(s)</span>
+          ${inputBlankHtml('e51_q1_b', '2')} <span>decimal place(s)</span>
+          <button class="notebook-peek-btn" onclick="toggleNotebookNote('note_q1_b')" title="Teacher Note">📓</button>
         </div>
-        <button class="peek-toggle-pill" onclick="toggleTeacherPeek('peek_q1_b')">📖 Peek Teacher's Note</button>
-        <div class="peek-notebook-card" id="peek_q1_b">
-          <div class="peek-header-title">
-            <span>Classwork Note: ₹90.35</span>
-          </div>
-          <div>There are 2 digits after the point (3 and 5) → <b>2 decimal places</b>.</div>
-          <div class="pony-cheer-corner">
-            <div class="pony-bubble-speech" onclick="playPonyAudioCheer('Super Zaina! Two digits after the decimal!')">
-              💬 "Spot on, Zaina!" 🔊
-            </div>
-            <img src="twilight.png" class="corner-pony-avatar" alt="Twilight" onclick="playPonyAudioCheer('Super work!')"/>
-          </div>
+        <div class="handwritten-steps-card" id="note_q1_b">
+          <div class="handwritten-text">₹90.35 → Two digits after the point (3 and 5) = 2 decimal places.</div>
         </div>
       </div>
 
       <div class="problem-card">
         <div class="problem-q-text">
           <b>c.</b> In long jump in school, Maria set a record of 4.963 m.
-          ${inputBlankHtml('e51_q1_c')} <span style="font-weight:800; color:var(--text-soft);">decimal place(s)</span>
+          ${inputBlankHtml('e51_q1_c', '3')} <span>decimal place(s)</span>
+          <button class="notebook-peek-btn" onclick="toggleNotebookNote('note_q1_c')" title="Teacher Note">📓</button>
         </div>
-        <button class="peek-toggle-pill" onclick="toggleTeacherPeek('peek_q1_c')">📖 Peek Teacher's Note</button>
-        <div class="peek-notebook-card" id="peek_q1_c">
-          <div class="peek-header-title">
-            <span>Classwork Note: 4.963 m</span>
-          </div>
-          <div>There are 3 digits after the point (9, 6, and 3) → <b>3 decimal places</b>.</div>
-          <div class="pony-cheer-corner">
-            <div class="pony-bubble-speech" onclick="playPonyAudioCheer('Three decimal places! Brilliant maths, Zaina!')">
-              💬 "Three places! You're a star, Zaina!" 🔊
-            </div>
-            <img src="twilight.png" class="corner-pony-avatar" alt="Twilight" onclick="playPonyAudioCheer('You are a star!')"/>
-          </div>
+        <div class="handwritten-steps-card" id="note_q1_c">
+          <div class="handwritten-text">4.963 m → Three digits after point (9, 6, 3) = 3 decimal places.</div>
         </div>
       </div>
     `
@@ -1263,78 +1523,45 @@ const SECTIONS_DATA = [
   {
     title: "Exercise 5.1 — 2. Place Value of Underlined Digit(s)",
     ponyName: "Rarity",
-    ponyAvatar: "rarity.png",
-    speech: "Exercise 5.1 Question 2: Identify the place value of the underlined digits.",
-    hint: "a. 7/100 or 0.07 | b. 3/1000 or 0.003 | c. 2/10 or 0.2 | d. 400 and 9/100",
-    hasKeypad: true,
+    avatar: "rarity.png",
     render: () => `
       <div class="problem-card">
-        <div class="problem-q-text"><b>a.</b> 8.9<u>7</u>6 &nbsp;→&nbsp; Place value: ${inputBlankHtml('e51_q2_a')}</div>
-        <button class="peek-toggle-pill" onclick="toggleTeacherPeek('peek_q2_a')">📖 Peek Teacher's Note</button>
-        <div class="peek-notebook-card" id="peek_q2_a">
-          <div class="peek-header-title">
-            <span>Place Value Guide: 8.976</span>
-          </div>
-          <div>7 is in hundredths place → <b>7/100</b> or <b>0.07</b> (7 hundredths).</div>
-          <div class="pony-cheer-corner">
-            <div class="pony-bubble-speech" onclick="playPonyAudioCheer('Fabulous, darling! 7 hundredths is perfect!')">
-              💬 "Simply fabulous, Zaina!" 🔊
-            </div>
-            <img src="rarity.png" class="corner-pony-avatar" alt="Rarity"/>
-          </div>
+        <div class="problem-q-text">
+          <b>a.</b> 8.9<u>7</u>6 &nbsp;→&nbsp; Place value: ${inputBlankHtml('e51_q2_a', '7/100|0.07|7 hundredths')}
+          <button class="notebook-peek-btn" onclick="toggleNotebookNote('note_q2_a')" title="Teacher Note">📓</button>
         </div>
-      </div>
-
-      <div class="problem-card">
-        <div class="problem-q-text"><b>b.</b> 1.00<u>3</u> &nbsp;→&nbsp; Place value: ${inputBlankHtml('e51_q2_b')}</div>
-        <button class="peek-toggle-pill" onclick="toggleTeacherPeek('peek_q2_b')">📖 Peek Teacher's Note</button>
-        <div class="peek-notebook-card" id="peek_q2_b">
-          <div class="peek-header-title">
-            <span>Place Value Guide: 1.003</span>
-          </div>
-          <div>3 is in thousandths place → <b>3/1000</b> or <b>0.003</b> (3 thousandths).</div>
-          <div class="pony-cheer-corner">
-            <div class="pony-bubble-speech" onclick="playPonyAudioCheer('Magnificent, Zaina! Three thousandths!')">
-              💬 "Dazzling answer!" 🔊
-            </div>
-            <img src="rarity.png" class="corner-pony-avatar" alt="Rarity"/>
-          </div>
-        </div>
-      </div>
-
-      <div class="problem-card">
-        <div class="problem-q-text"><b>c.</b> 54.<u>2</u>7 &nbsp;→&nbsp; Place value: ${inputBlankHtml('e51_q2_c')}</div>
-        <button class="peek-toggle-pill" onclick="toggleTeacherPeek('peek_q2_c')">📖 Peek Teacher's Note</button>
-        <div class="peek-notebook-card" id="peek_q2_c">
-          <div class="peek-header-title">
-            <span>Place Value Guide: 54.27</span>
-          </div>
-          <div>2 is in tenths place → <b>2/10</b> or <b>0.2</b> (2 tenths).</div>
-          <div class="pony-cheer-corner">
-            <div class="pony-bubble-speech" onclick="playPonyAudioCheer('Splendid! Two tenths!')">
-              💬 "Pure perfection, Zaina!" 🔊
-            </div>
-            <img src="rarity.png" class="corner-pony-avatar" alt="Rarity"/>
-          </div>
+        <div class="handwritten-steps-card" id="note_q2_a">
+          <div class="handwritten-text">7 is in hundredths column → ${frac(7, 100)} or 0.07</div>
         </div>
       </div>
 
       <div class="problem-card">
         <div class="problem-q-text">
-          <b>d.</b> <u>4</u>53.6<u>9</u>1 &nbsp;→&nbsp; Value of 4: ${inputBlankHtml('e51_q2_d1')} &nbsp;|&nbsp; Value of 9: ${inputBlankHtml('e51_q2_d2')}
+          <b>b.</b> 1.00<u>3</u> &nbsp;→&nbsp; Place value: ${inputBlankHtml('e51_q2_b', '3/1000|0.003|3 thousandths')}
+          <button class="notebook-peek-btn" onclick="toggleNotebookNote('note_q2_b')" title="Teacher Note">📓</button>
         </div>
-        <button class="peek-toggle-pill" onclick="toggleTeacherPeek('peek_q2_d')">📖 Peek Teacher's Note</button>
-        <div class="peek-notebook-card" id="peek_q2_d">
-          <div class="peek-header-title">
-            <span>Place Value Guide: 453.691</span>
-          </div>
-          <div>Whole hundreds digit 4 = <b>400</b>. Decimal hundredths digit 9 = <b>9/100</b> or <b>0.09</b>.</div>
-          <div class="pony-cheer-corner">
-            <div class="pony-bubble-speech" onclick="playPonyAudioCheer('Magnifique, Zaina! Both digits are correct!')">
-              💬 "Magnifique, Zaina!" 🔊
-            </div>
-            <img src="rarity.png" class="corner-pony-avatar" alt="Rarity"/>
-          </div>
+        <div class="handwritten-steps-card" id="note_q2_b">
+          <div class="handwritten-text">3 is in thousandths column → ${frac(3, 1000)} or 0.003</div>
+        </div>
+      </div>
+
+      <div class="problem-card">
+        <div class="problem-q-text">
+          <b>c.</b> 54.<u>2</u>7 &nbsp;→&nbsp; Place value: ${inputBlankHtml('e51_q2_c', '2/10|0.2|1/5|2 tenths')}
+          <button class="notebook-peek-btn" onclick="toggleNotebookNote('note_q2_c')" title="Teacher Note">📓</button>
+        </div>
+        <div class="handwritten-steps-card" id="note_q2_c">
+          <div class="handwritten-text">2 is first after point (tenths) → ${frac(2, 10)} or 0.2</div>
+        </div>
+      </div>
+
+      <div class="problem-card">
+        <div class="problem-q-text">
+          <b>d.</b> <u>4</u>53.6<u>9</u>1 &nbsp;→&nbsp; Value of 4: ${inputBlankHtml('e51_q2_d1', '400|4 hundreds')} &nbsp;|&nbsp; Value of 9: ${inputBlankHtml('e51_q2_d2', '9/100|0.09|9 hundredths')}
+          <button class="notebook-peek-btn" onclick="toggleNotebookNote('note_q2_d')" title="Teacher Note">📓</button>
+        </div>
+        <div class="handwritten-steps-card" id="note_q2_d">
+          <div class="handwritten-text">4 is hundreds = 400.<br/>9 is hundredths = ${frac(9, 100)} or 0.09.</div>
         </div>
       </div>
     `
@@ -1344,467 +1571,266 @@ const SECTIONS_DATA = [
   {
     title: "Exercise 5.1 — 3 & 4. Fill Blanks & Questions",
     ponyName: "Pinkie Pie",
-    ponyAvatar: "pinkie.png",
-    speech: "Exercise 5.1 Questions 3 and 4: Fill in the blanks and answer the place value questions.",
-    hint: "Q3: a. 3, 1 | b. 3, 7 | c. tens, 6 hundredths | d. 9, thousandths. Q4: a. 0.013 | b. 9000 and 9/100",
-    hasKeypad: true,
+    avatar: "pinkie.png",
     render: () => `
       <div class="problem-card">
         <div style="font-weight:800; color:var(--pinkie-dark); font-size:1.05rem;">Q3. Fill in the blanks:</div>
-        <div class="problem-q-text"><b>a.</b> 0.381 = ${inputBlankHtml('e51_q3_a1')} tenths + 8 hundredths + ${inputBlankHtml('e51_q3_a2')} thousandths</div>
-        <div class="problem-q-text"><b>b.</b> 0.737 = 7 tenths + ${inputBlankHtml('e51_q3_b1')} hundredths + ${inputBlankHtml('e51_q3_b2')} thousandths</div>
-        <div class="problem-q-text"><b>c.</b> 75.06 = 7 ${inputBlankHtml('e51_q3_c1')} + 5 ones + ${inputBlankHtml('e51_q3_c2')}</div>
-        <div class="problem-q-text"><b>d.</b> 9.114 = ${inputBlankHtml('e51_q3_d1')} + 114 ${inputBlankHtml('e51_q3_d2')}</div>
+        <div class="problem-q-text"><b>a.</b> 0.381 = ${inputBlankHtml('e51_q3_a1', '3')} tenths + 8 hundredths + ${inputBlankHtml('e51_q3_a2', '1')} thousandths</div>
+        <div class="problem-q-text"><b>b.</b> 0.737 = 7 tenths + ${inputBlankHtml('e51_q3_b1', '3')} hundredths + ${inputBlankHtml('e51_q3_b2', '7')} thousandths</div>
+        <div class="problem-q-text"><b>c.</b> 75.06 = 7 ${inputBlankHtml('e51_q3_c1', 'tens')} + 5 ones + ${inputBlankHtml('e51_q3_c2', '6 hundredths|6/100')}</div>
+        <div class="problem-q-text"><b>d.</b> 9.114 = ${inputBlankHtml('e51_q3_d1', '9|9 ones')} + 114 ${inputBlankHtml('e51_q3_d2', 'thousandths')}</div>
       </div>
 
       <div class="problem-card">
-        <div style="font-weight:800; color:var(--pinkie-dark); font-size:1.05rem;">Q4. Answer the following questions:</div>
+        <div style="font-weight:800; color:var(--pinkie-dark); font-size:1.05rem;">Q4. Answer the questions:</div>
         <div class="problem-q-text">
-          <b>a.</b> Write the number thirteen thousandths in decimal form: ${inputBlankHtml('e51_q4_a')}
+          <b>a.</b> Write thirteen thousandths in decimal form: ${inputBlankHtml('e51_q4_a', '0.013|.013')}
+          <button class="notebook-peek-btn" onclick="toggleNotebookNote('note_q4_a')" title="Teacher Note">📓</button>
         </div>
+        <div class="handwritten-steps-card" id="note_q4_a">
+          <div class="handwritten-text">13 thousandths = ${frac(13, 1000)} = 0.013</div>
+        </div>
+
         <div class="problem-q-text" style="margin-top:6px;">
-          <b>b.</b> What are the place values of 9 in 19842.0975?
-        </div>
-        <div style="display:flex; gap:12px; flex-wrap:wrap;">
-          <span>First 9: ${inputBlankHtml('e51_q4_b1')}</span>
-          <span>Second 9: ${inputBlankHtml('e51_q4_b2')}</span>
+          <b>b.</b> Place values of 9 in 19842.0975:
+          First 9: ${inputBlankHtml('e51_q4_b1', '9000|9 thousands')} &nbsp;|&nbsp; Second 9: ${inputBlankHtml('e51_q4_b2', '9/100|0.09|9 hundredths')}
         </div>
       </div>
     `
   },
 
-  /* 3: Ex 5.1 Q5 (SPIRAL RING-BINDER NOTEBOOK) */
+  /* 3: Ex 5.1 Q5 */
   {
-    title: "Exercise 5.1 — 5. Expanded Form (Notebook Canvas)",
+    title: "Exercise 5.1 — 5. Expanded Form of Decimals",
     ponyName: "Rainbow Dash",
-    ponyAvatar: "rainbow.png",
-    speech: "Exercise 5.1 Question 5: Write the decimal numbers in expanded form with teacher's exact notebook steps.",
-    hint: "Line 1: Bracket Products | Line 2: Fraction additions | Line 3: Final decimal",
-    hasKeypad: false,
-    render: () => {
-      const q5Items = [
-        { id: "e51_q5_c", label: "c. 702.913 (Classwork)", num: "702.913", taught: true,
-          lines: [
-            "Line 1: [7 × 100] + [2 × 1] + [9/10] + [1/100] + [3/1000]",
-            "Line 2: 700 + 2 + 9/10 + 1/100 + 3/1000",
-            "Line 3: = 702.913"
-          ]
-        },
-        { id: "e51_q5_d", label: "d. 125.023 (Classwork)", num: "125.023", taught: true,
-          lines: [
-            "Line 1: [1 × 100] + [2 × 10] + [5 × 1] + [0 × 1] + [2/100] + [3/1000]",
-            "Line 2: 100 + 20 + 5 + 2/100 + 3/1000",
-            "Line 3: = 125.023"
-          ]
-        },
-        { id: "e51_q5_a", label: "a. 34.304 (Textbook)", num: "34.304", taught: false,
-          lines: [
-            "Line 1: [3 × 10] + [4 × 1] + [3/10] + [4/1000]",
-            "Line 2: 30 + 4 + 3/10 + 4/1000",
-            "Line 3: = 34.304"
-          ]
-        },
-        { id: "e51_q5_b", label: "b. 91.445 (Textbook)", num: "91.445", taught: false,
-          lines: [
-            "Line 1: [9 × 10] + [1 × 1] + [4/10] + [4/100] + [5/1000]",
-            "Line 2: 90 + 1 + 4/10 + 4/100 + 5/1000",
-            "Line 3: = 91.445"
-          ]
-        },
-        { id: "e51_q5_e", label: "e. 623.008 (Textbook)", num: "623.008", taught: false,
-          lines: [
-            "Line 1: [6 × 100] + [2 × 10] + [3 × 1] + [8/1000]",
-            "Line 2: 600 + 20 + 3 + 8/1000",
-            "Line 3: = 623.008"
-          ]
-        }
-      ];
-
-      const cur = q5Items[currentQ5SubIdx];
-
-      return `
-        <div style="display:flex; gap:6px; overflow-x:auto; margin-bottom:6px;">
-          ${q5Items.map((item, idx) => `
-            <button class="canvas-tool-btn ${idx === currentQ5SubIdx ? 'active' : ''}" onclick="switchQ5Sub(${idx})">
-              ${item.label}
-            </button>
-          `).join("")}
+    avatar: "rainbow.png",
+    render: () => `
+      <div class="problem-card">
+        <div class="problem-q-text">
+          <b>a. 34.304</b> = 30 + 4 + ${inputBlankHtml('e51_q5_a_1', '3/10|0.3')} + ${inputBlankHtml('e51_q5_a_2', '4/1000|0.004')}
+          <button class="notebook-peek-btn" onclick="toggleNotebookNote('note_q5_a')" title="Teacher Note">📓</button>
         </div>
-
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div style="font-size:1.15rem; font-weight:800; color:var(--text-dark);">
-            Write in expanded form: <u>${cur.num}</u>
-          </div>
-          <button class="peek-toggle-pill" onclick="toggleTeacherPeek('peek_q5_${cur.id}')">
-            📖 Peek Teacher's Classwork Steps
-          </button>
+        <div class="handwritten-steps-card" id="note_q5_a">
+          <div class="handwritten-text">= 30 + 4 + ${frac(3, 10)} + ${frac(4, 1000)}</div>
         </div>
+      </div>
 
-        <div class="peek-notebook-card" id="peek_q5_${cur.id}">
-          <div class="peek-header-title">
-            <span>Exact Teacher Method (${cur.taught ? 'Classwork Sum' : 'Textbook Sum'})</span>
-          </div>
-          <div style="font-size:0.95rem; line-height:1.6; color:#78350F;">
-            ${cur.lines.join("<br/>")}
-          </div>
-          <div class="pony-cheer-corner">
-            <div class="pony-bubble-speech" onclick="playPonyAudioCheer('Awesome job Zaina! That is twenty percent cooler!')">
-              💬 "That is 20% cooler, Zaina! Tap to hear me cheer!" 🔊
-            </div>
-            <img src="rainbow.png" class="corner-pony-avatar" alt="Rainbow Dash" onclick="playPonyAudioCheer('You are unstoppable Zaina!')"/>
-          </div>
+      <div class="problem-card">
+        <div class="problem-q-text">
+          <b>b. 91.445</b> = 90 + 1 + ${inputBlankHtml('e51_q5_b_1', '4/10|0.4')} + ${inputBlankHtml('e51_q5_b_2', '4/100|0.04')} + ${inputBlankHtml('e51_q5_b_3', '5/1000|0.005')}
+          <button class="notebook-peek-btn" onclick="toggleNotebookNote('note_q5_b')" title="Teacher Note">📓</button>
         </div>
+        <div class="handwritten-steps-card" id="note_q5_b">
+          <div class="handwritten-text">= 90 + 1 + ${frac(4, 10)} + ${frac(4, 100)} + ${frac(5, 1000)}</div>
+        </div>
+      </div>
 
-        <div class="spiral-book-container">
-          <div class="spiral-rings-track">
-            <div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div>
-            <div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div>
-            <div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div>
-          </div>
-          <div class="canvas-tools-bar">
-            <div style="display:flex; gap:6px;">
-              <button class="canvas-tool-btn active" id="q5Pen" onclick="setQ5Tool('pen')">✏️ Pen</button>
-              <button class="canvas-tool-btn" id="q5Eraser" onclick="setQ5Tool('eraser')">🧹 Eraser</button>
-              <button class="canvas-tool-btn" onclick="clearQ5Canvas()">Clear</button>
-            </div>
-            <div style="display:flex; gap:6px;">
-              <button class="canvas-tool-btn" onclick="setQ5Width(2)">Thin</button>
-              <button class="canvas-tool-btn active" id="q5Med" onclick="setQ5Width(4)">Med</button>
-              <button class="canvas-tool-btn" onclick="setQ5Width(7)">Thick</button>
-            </div>
-          </div>
-          <div class="math-graph-wrapper" style="border:none; border-radius:0;">
-            <div class="graph-25-texture"></div>
-            <canvas class="graph-canvas" id="q5ActiveCanvas"></canvas>
-          </div>
+      <div class="problem-card">
+        <div class="problem-q-text">
+          <b>c. 702.913</b> = 700 + 2 + ${inputBlankHtml('e51_q5_c_1', '9/10|0.9')} + ${inputBlankHtml('e51_q5_c_2', '1/100|0.01')} + ${inputBlankHtml('e51_q5_c_3', '3/1000|0.003')}
+          <button class="notebook-peek-btn" onclick="toggleNotebookNote('note_q5_c')" title="Teacher Note">📓</button>
         </div>
-      `;
-    }
+        <div class="handwritten-steps-card" id="note_q5_c">
+          <div class="handwritten-text">= 700 + 2 + ${frac(9, 10)} + ${frac(1, 100)} + ${frac(3, 1000)}</div>
+        </div>
+      </div>
+
+      <div class="problem-card">
+        <div class="problem-q-text">
+          <b>d. 125.023</b> = 100 + 20 + 5 + ${inputBlankHtml('e51_q5_d_1', '2/100|0.02')} + ${inputBlankHtml('e51_q5_d_2', '3/1000|0.003')}
+          <button class="notebook-peek-btn" onclick="toggleNotebookNote('note_q5_d')" title="Teacher Note">📓</button>
+        </div>
+        <div class="handwritten-steps-card" id="note_q5_d">
+          <div class="handwritten-text">= 100 + 20 + 5 + ${frac(2, 100)} + ${frac(3, 1000)}</div>
+        </div>
+      </div>
+
+      <div class="problem-card">
+        <div class="problem-q-text">
+          <b>e. 623.008</b> = 600 + 20 + 3 + ${inputBlankHtml('e51_q5_e_1', '8/1000|0.008')}
+          <button class="notebook-peek-btn" onclick="toggleNotebookNote('note_q5_e')" title="Teacher Note">📓</button>
+        </div>
+        <div class="handwritten-steps-card" id="note_q5_e">
+          <div class="handwritten-text">= 600 + 20 + 3 + ${frac(8, 1000)}</div>
+        </div>
+      </div>
+    `
   },
 
-  /* 4: Ex 5.1 Q6 (WOODEN CLASSROOM CHALKBOARD) */
+  /* 4: Ex 5.1 Q6 */
   {
     title: "Exercise 5.1 — 6. Number Names to Decimals",
     ponyName: "Fluttershy",
-    ponyAvatar: "fluttershy.png",
-    speech: "Exercise 5.1 Question 6: Write the decimal number for the following.",
-    hint: "a. 385.12 | b. 7099.16 | c. 5.23 | d. 1600.075",
-    hasKeypad: true,
+    avatar: "fluttershy.png",
     render: () => `
       <div class="chalkboard-container">
-        <div class="chalkboard-title">Fluttershy's Classroom Chalkboard — Write Decimals</div>
+        <div class="chalkboard-title">Fluttershy's Chalkboard — Write Decimals</div>
         <div style="display:flex; flex-direction:column; gap:12px;">
           <div>
-            <div><b>a.</b> Three hundred eighty-five point one two</div>
-            <div style="margin-top:4px;">Answer: ${inputBlankHtml('e51_q6_a')}</div>
-            <button class="peek-toggle-pill" style="margin-top:4px;" onclick="toggleTeacherPeek('peek_q6_a')">📖 Peek Answer</button>
-            <div class="peek-notebook-card" id="peek_q6_a">
-              <div class="peek-header-title">
-                <span>Classwork Note</span>
-              </div>
-              <div>385 (whole) point 1 2 → <b>385.12</b></div>
-              <div class="pony-cheer-corner">
-                <div class="pony-bubble-speech" onclick="playPonyAudioCheer('Yay! You are doing so well Zaina!')">
-                  💬 "Yay! Tap to cheer!" 🔊
-                </div>
-                <img src="fluttershy.png" class="corner-pony-avatar" alt="Fluttershy"/>
-              </div>
-            </div>
+            <div class="chalk-text"><b>a.</b> Three hundred eighty-five point one two</div>
+            <div style="margin-top:4px;">Answer: ${inputBlankHtml('e51_q6_a', '385.12')}</div>
           </div>
-
           <div>
-            <div><b>b.</b> Seven thousand ninety-nine and sixteen hundredths</div>
-            <div style="margin-top:4px;">Answer: ${inputBlankHtml('e51_q6_b')}</div>
-            <button class="peek-toggle-pill" style="margin-top:4px;" onclick="toggleTeacherPeek('peek_q6_b')">📖 Peek Answer</button>
-            <div class="peek-notebook-card" id="peek_q6_b">
-              <div class="peek-header-title">
-                <span>Classwork Note</span>
-              </div>
-              <div>7099 (whole) and sixteen hundredths (.16) → <b>7099.16</b></div>
-              <div class="pony-cheer-corner">
-                <div class="pony-bubble-speech" onclick="playPonyAudioCheer('Wonderful Zaina! 7099 point 16!')">
-                  💬 "So lovely, Zaina!" 🔊
-                </div>
-                <img src="fluttershy.png" class="corner-pony-avatar" alt="Fluttershy"/>
-              </div>
-            </div>
+            <div class="chalk-text"><b>b.</b> Seven thousand ninety-nine and sixteen hundredths</div>
+            <div style="margin-top:4px;">Answer: ${inputBlankHtml('e51_q6_b', '7099.16')}</div>
           </div>
-
           <div>
-            <div><b>c.</b> Five point two three</div>
-            <div style="margin-top:4px;">Answer: ${inputBlankHtml('e51_q6_c')}</div>
-            <button class="peek-toggle-pill" style="margin-top:4px;" onclick="toggleTeacherPeek('peek_q6_c')">📖 Peek Answer</button>
-            <div class="peek-notebook-card" id="peek_q6_c">
-              <div class="peek-header-title">
-                <span>Textbook Note</span>
-              </div>
-              <div>5 point 2 3 → <b>5.23</b></div>
-              <div class="pony-cheer-corner">
-                <div class="pony-bubble-speech" onclick="playPonyAudioCheer('Perfect! 5.23!')">
-                  💬 "Yay, Zaina!" 🔊
-                </div>
-                <img src="fluttershy.png" class="corner-pony-avatar" alt="Fluttershy"/>
-              </div>
-            </div>
+            <div class="chalk-text"><b>c.</b> Five point two three</div>
+            <div style="margin-top:4px;">Answer: ${inputBlankHtml('e51_q6_c', '5.23')}</div>
           </div>
-
           <div>
-            <div><b>d.</b> Sixteen hundred and seventy-five thousandths</div>
-            <div style="margin-top:4px;">Answer: ${inputBlankHtml('e51_q6_d')}</div>
-            <button class="peek-toggle-pill" style="margin-top:4px;" onclick="toggleTeacherPeek('peek_q6_d')">📖 Peek Answer</button>
-            <div class="peek-notebook-card" id="peek_q6_d">
-              <div class="peek-header-title">
-                <span>Classwork Note</span>
-              </div>
-              <div>Sixteen hundred = 1600; seventy-five thousandths = .075 → <b>1600.075</b></div>
-              <div class="pony-cheer-corner">
-                <div class="pony-bubble-speech" onclick="playPonyAudioCheer('Incredible Zaina! 1600 point 075!')">
-                  💬 "You did it, Zaina!" 🔊
-                </div>
-                <img src="fluttershy.png" class="corner-pony-avatar" alt="Fluttershy"/>
-              </div>
-            </div>
+            <div class="chalk-text"><b>d.</b> Sixteen hundred and seventy-five thousandths</div>
+            <div style="margin-top:4px;">Answer: ${inputBlankHtml('e51_q6_d', '1600.075')}</div>
           </div>
         </div>
       </div>
     `
   },
 
-  /* 5: Ex 5.1 Q7 (DEDICATED WORKING CANVAS FOR EACH SUM) */
+  /* 5: Ex 5.1 Q7 */
   {
-    title: "Exercise 5.1 — 7. Write in Decimal Form (Working Canvas)",
+    title: "Exercise 5.1 — 7. Write in Decimal Form",
     ponyName: "Twilight Sparkle",
-    ponyAvatar: "twilight.png",
-    speech: "Exercise 5.1 Question 7: Write the following in decimal form with your full working on the graph paper.",
-    hint: "a. 458.218 | b. 6021.358 | c. 104.95 | d. 0.081",
-    hasKeypad: true,
-    render: () => {
-      const q7Items = [
-        { id: "e51_q7_a", label: "a. 400 + 50 + 8 + 2/10 + 1/100 + 8/1000", q: "400 + 50 + 8 + 2/10 + 1/100 + 8/1000", ans: "458.218" },
-        { id: "e51_q7_b", label: "b. 6000 + 20 + 1 + 358/1000", q: "6000 + 20 + 1 + 358/1000", ans: "6021.358" },
-        { id: "e51_q7_c", label: "c. 100 + 4 + 9/10 + 5/100", q: "100 + 4 + 9/10 + 5/100", ans: "104.95" },
-        { id: "e51_q7_d", label: "d. 8/100 + 1/1000", q: "8/100 + 1/1000", ans: "0.081" }
-      ];
-
-      const cur = q7Items[currentQ7SubIdx];
-
-      return `
-        <div style="display:flex; gap:6px; overflow-x:auto; margin-bottom:6px;">
-          ${q7Items.map((item, idx) => `
-            <button class="canvas-tool-btn ${idx === currentQ7SubIdx ? 'active' : ''}" onclick="switchQ7Sub(${idx})">
-              Part ${item.label.split('.')[0]}
-            </button>
-          `).join("")}
+    avatar: "twilight.png",
+    render: () => `
+      <div class="problem-card">
+        <div class="problem-q-text">
+          <b>a.</b> 400 + 50 + 8 + ${frac(2, 10)} + ${frac(1, 100)} + ${frac(8, 1000)} = ${inputBlankHtml('e51_q7_a', '458.218')}
+          <button class="notebook-peek-btn" onclick="toggleNotebookNote('note_q7_a')" title="Teacher Note">📓</button>
         </div>
-
-        <div class="problem-card">
-          <div class="problem-q-text">
-            <b>${cur.label.split('.')[0]}.</b> ${cur.q}
-            &nbsp;=&nbsp; ${inputBlankHtml(cur.id)}
-          </div>
-          <button class="peek-toggle-pill" onclick="toggleTeacherPeek('peek_q7_${cur.id}')">📖 Peek Teacher's Classwork</button>
-          <div class="peek-notebook-card" id="peek_q7_${cur.id}">
-            <div class="peek-header-title">
-              <span>Exact Teacher Method</span>
-            </div>
-            <div>Final Decimal: <b>${cur.ans}</b></div>
-            <div class="pony-cheer-corner">
-              <div class="pony-bubble-speech" onclick="playPonyAudioCheer('Excellent calculation, Zaina!')">
-                💬 "Magical answer, Zaina!" 🔊
-              </div>
-              <img src="twilight.png" class="corner-pony-avatar" alt="Twilight"/>
-            </div>
-          </div>
+        <div class="handwritten-steps-card" id="note_q7_a">
+          <div class="handwritten-text">400 + 50 + 8 = 458.<br/>${frac(2, 10)} + ${frac(1, 100)} + ${frac(8, 1000)} = .218<br/>Result = 458.218</div>
         </div>
+      </div>
 
-        <div style="font-size:0.95rem; font-weight:800; color:var(--text-dark); margin-top:4px;">
-          📝 Column & Step Working Canvas:
+      <div class="problem-card">
+        <div class="problem-q-text">
+          <b>b.</b> 6000 + 20 + 1 + ${frac(358, 1000)} = ${inputBlankHtml('e51_q7_b', '6021.358')}
+          <button class="notebook-peek-btn" onclick="toggleNotebookNote('note_q7_b')" title="Teacher Note">📓</button>
         </div>
+        <div class="handwritten-steps-card" id="note_q7_b">
+          <div class="handwritten-text">6000 + 20 + 1 = 6021.<br/>${frac(358, 1000)} = .358<br/>Result = 6021.358</div>
+        </div>
+      </div>
 
-        <div class="math-graph-wrapper" style="min-height:260px;">
-          <div class="canvas-tools-bar">
-            <div style="display:flex; gap:6px;">
-              <button class="canvas-tool-btn active" id="q7Pen" onclick="setQ7Tool('pen')">✏️ Pen</button>
-              <button class="canvas-tool-btn" id="q7Eraser" onclick="setQ7Tool('eraser')">🧹 Eraser</button>
-              <button class="canvas-tool-btn" onclick="clearQ7Canvas()">Clear</button>
-            </div>
-            <div style="display:flex; gap:6px;">
-              <button class="canvas-tool-btn" onclick="setQ7Width(2)">Thin</button>
-              <button class="canvas-tool-btn active" id="q7Med" onclick="setQ7Width(4)">Med</button>
-              <button class="canvas-tool-btn" onclick="setQ7Width(7)">Thick</button>
-            </div>
-          </div>
-          <div style="position:relative; flex:1; height:calc(100% - 42px);">
-            <div class="graph-25-texture"></div>
-            <canvas class="graph-canvas" id="q7ActiveCanvas"></canvas>
-          </div>
+      <div class="problem-card">
+        <div class="problem-q-text">
+          <b>c.</b> 100 + 4 + ${frac(9, 10)} + ${frac(5, 100)} = ${inputBlankHtml('e51_q7_c', '104.95')}
+          <button class="notebook-peek-btn" onclick="toggleNotebookNote('note_q7_c')" title="Teacher Note">📓</button>
         </div>
-      `;
-    }
+        <div class="handwritten-steps-card" id="note_q7_c">
+          <div class="handwritten-text">100 + 4 = 104.<br/>${frac(9, 10)} + ${frac(5, 100)} = .95<br/>Result = 104.95</div>
+        </div>
+      </div>
+
+      <div class="problem-card">
+        <div class="problem-q-text">
+          <b>d.</b> ${frac(8, 100)} + ${frac(1, 1000)} = ${inputBlankHtml('e51_q7_d', '0.081|.081')}
+          <button class="notebook-peek-btn" onclick="toggleNotebookNote('note_q7_d')" title="Teacher Note">📓</button>
+        </div>
+        <div class="handwritten-steps-card" id="note_q7_d">
+          <div class="handwritten-text">No whole number. 0 tenths, 8 hundredths, 1 thousandth = 0.081</div>
+        </div>
+      </div>
+    `
   },
 
   /* 6: Ex 5.2 Q1 */
   {
-    title: "Exercise 5.2 — 1. Strip Models (Fractions & Decimals)",
+    title: "Exercise 5.2 — 1. 10-Block Strip Models",
     ponyName: "Fluttershy",
-    ponyAvatar: "fluttershy.png",
-    speech: "Exercise 5.2 Question 1: Represent the images as fractions and decimals.",
-    hint: "Row 1: 4/10, 0.4 | Row 2: 1/10, 0.1 | Row 3: 3/10, 0.3 | Row 4: 4/10, 0.4 | Row 5: 0/10, 0.0 | Row 6: 2/10, 0.2 | Row 7: 8/10, 0.8 | Row 8: 4/10, 0.4 | Row 9: 9/10, 0.9 | Row 10: 6/10, 0.6",
-    hasKeypad: true,
+    avatar: "fluttershy.png",
     render: () => {
       const strips = [
-        { row: 1, shaded: 4 },
-        { row: 2, shaded: 1 },
-        { row: 3, shaded: 3 },
-        { row: 4, shaded: 4 },
-        { row: 5, shaded: 0 },
-        { row: 6, shaded: 2 },
-        { row: 7, shaded: 8 },
-        { row: 8, shaded: 4 },
-        { row: 9, shaded: 9 },
-        { row: 10, shaded: 6 }
+        { row: 1, shaded: 4, f: '4/10|2/5', d: '0.4|.4' },
+        { row: 2, shaded: 1, f: '1/10', d: '0.1|.1' },
+        { row: 3, shaded: 3, f: '3/10', d: '0.3|.3' },
+        { row: 4, shaded: 4, f: '4/10|2/5', d: '0.4|.4' },
+        { row: 5, shaded: 0, f: '0/10|0', d: '0.0|0|.0' },
+        { row: 6, shaded: 2, f: '2/10|1/5', d: '0.2|.2' },
+        { row: 7, shaded: 8, f: '8/10|4/5', d: '0.8|.8' },
+        { row: 8, shaded: 4, f: '4/10|2/5', d: '0.4|.4' },
+        { row: 9, shaded: 9, f: '9/10', d: '0.9|.9' },
+        { row: 10, shaded: 6, f: '6/10|3/5', d: '0.6|.6' }
       ];
 
       return `
-        <table class="strip-table">
-          <thead>
-            <tr>
-              <th style="width:50px;">Row</th>
-              <th>10-Block Strip Model</th>
-              <th>Fraction</th>
-              <th>Decimal</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${strips.map(s => {
-              let cells = "";
-              for (let i = 0; i < 10; i++) {
-                cells += `<div class="strip-cell ${i < s.shaded ? 'shaded' : ''}"></div>`;
-              }
-              return `
-                <tr>
-                  <td><b>${s.row}</b></td>
-                  <td><div class="strip-bar-visual">${cells}</div></td>
-                  <td>${inputBlankHtml('strip_f_' + s.row)}</td>
-                  <td>${inputBlankHtml('strip_d_' + s.row)}</td>
-                </tr>
-              `;
-            }).join("")}
-          </tbody>
-        </table>
+        <div class="strip-table-wrapper">
+          <table class="strip-table">
+            <thead>
+              <tr>
+                <th style="width:40px;">Row</th>
+                <th>10-Block Strip Model</th>
+                <th>Fraction (e.g. 4/10)</th>
+                <th>Decimal</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${strips.map(s => {
+                let cells = "";
+                for (let i = 0; i < 10; i++) {
+                  cells += `<div class="strip-cell ${i < s.shaded ? 'shaded' : ''}"></div>`;
+                }
+                return `
+                  <tr>
+                    <td><b>${s.row}</b></td>
+                    <td><div class="strip-bar-visual">${cells}</div></td>
+                    <td>${inputBlankHtml('strip_f_' + s.row, s.f)}</td>
+                    <td>${inputBlankHtml('strip_d_' + s.row, s.d)}</td>
+                  </tr>
+                `;
+              }).join("")}
+            </tbody>
+          </table>
+        </div>
       `;
     }
   },
 
   /* 7: Ex 5.2 Q2 */
   {
-    title: "Exercise 5.2 — 2. Decimals to Fractions",
+    title: "Exercise 5.2 — 2. Convert Decimals to Fractions",
     ponyName: "Pinkie Pie",
-    ponyAvatar: "pinkie.png",
-    speech: "Exercise 5.2 Question 2: Convert the following decimals to fractions in mixed and improper formats.",
-    hint: "a. 3 89/100 (or) 389/100 | b. 5 907/1000 (or) 5907/1000 | c. 4 6/1000 (or) 4006/1000 | d. 98 89/1000 (or) 98089/1000 | e. 3 777/1000 (or) 3777/1000 | f. 4 19/100 (or) 419/100",
-    hasKeypad: true,
+    avatar: "pinkie.png",
     render: () => `
       <div style="display:flex; flex-direction:column; gap:10px;">
         <div class="problem-card">
-          <div class="problem-q-text"><b>a. 3.89</b></div>
-          <div style="display:flex; gap:12px; align-items:center;">
-            <span>Mixed: ${inputBlankHtml('e52_q2_a_mix')}</span>
-            <span style="font-weight:800; color:var(--pinkie);">(or)</span>
-            <span>Improper: ${inputBlankHtml('e52_q2_a_imp')}</span>
+          <div class="problem-q-text">
+            <b>a. 3.89</b> &nbsp;→&nbsp; Mixed: ${inputBlankHtml('e52_q2_a_mix', '3 89/100', 'mixed')} &nbsp;or&nbsp; Improper: ${inputBlankHtml('e52_q2_a_imp', '389/100', 'improper')}
+            <button class="notebook-peek-btn" onclick="toggleNotebookNote('note_52_a')" title="Teacher Note">📓</button>
           </div>
-          <button class="peek-toggle-pill" onclick="toggleTeacherPeek('peek_52_a')">📖 Peek Teacher's Format</button>
-          <div class="peek-notebook-card" id="peek_52_a">
-            <div class="peek-header-title">
-              <span>Classwork Solution</span>
-            </div>
-            <div>= 3 89/100 (or) = 389/100</div>
-            <div class="pony-cheer-corner">
-              <div class="pony-bubble-speech" onclick="playPonyAudioCheer('Super job, Zaina! Mixed and improper match!')">
-                💬 "Woohoo, Zaina!" 🔊
-              </div>
-              <img src="pinkie.png" class="corner-pony-avatar" alt="Pinkie Pie"/>
-            </div>
+          <div class="handwritten-steps-card" id="note_52_a">
+            <div class="handwritten-text">Two places = over 100.<br/>3.89 = 3 ${frac(89, 100)} = ${frac(389, 100)}</div>
           </div>
         </div>
 
         <div class="problem-card">
-          <div class="problem-q-text"><b>b. 5.907</b></div>
-          <div style="display:flex; gap:12px; align-items:center;">
-            <span>Mixed: ${inputBlankHtml('e52_q2_b_mix')}</span>
-            <span style="font-weight:800; color:var(--pinkie);">(or)</span>
-            <span>Improper: ${inputBlankHtml('e52_q2_b_imp')}</span>
-          </div>
-          <button class="peek-toggle-pill" onclick="toggleTeacherPeek('peek_52_b')">📖 Peek Teacher's Format</button>
-          <div class="peek-notebook-card" id="peek_52_b">
-            <div class="peek-header-title">
-              <span>Classwork Solution</span>
-            </div>
-            <div>= 5 907/1000 (or) = 5907/1000</div>
+          <div class="problem-q-text">
+            <b>b. 5.907</b> &nbsp;→&nbsp; Mixed: ${inputBlankHtml('e52_q2_b_mix', '5 907/1000', 'mixed')} &nbsp;or&nbsp; Improper: ${inputBlankHtml('e52_q2_b_imp', '5907/1000', 'improper')}
           </div>
         </div>
 
         <div class="problem-card">
-          <div class="problem-q-text"><b>c. 4.006</b></div>
-          <div style="display:flex; gap:12px; align-items:center;">
-            <span>Mixed: ${inputBlankHtml('e52_q2_c_mix')}</span>
-            <span style="font-weight:800; color:var(--pinkie);">(or)</span>
-            <span>Improper: ${inputBlankHtml('e52_q2_c_imp')}</span>
-          </div>
-          <button class="peek-toggle-pill" onclick="toggleTeacherPeek('peek_52_c')">📖 Peek Teacher's Format</button>
-          <div class="peek-notebook-card" id="peek_52_c">
-            <div class="peek-header-title">
-              <span>Classwork Solution</span>
-            </div>
-            <div>= 4 6/1000 (or) = 4006/1000</div>
+          <div class="problem-q-text">
+            <b>c. 4.006</b> &nbsp;→&nbsp; Mixed: ${inputBlankHtml('e52_q2_c_mix', '4 6/1000|4 3/500', 'mixed')} &nbsp;or&nbsp; Improper: ${inputBlankHtml('e52_q2_c_imp', '4006/1000|2003/500', 'improper')}
           </div>
         </div>
 
         <div class="problem-card">
-          <div class="problem-q-text"><b>d. 98.089 (Classwork)</b></div>
-          <div style="display:flex; gap:12px; align-items:center;">
-            <span>Mixed: ${inputBlankHtml('e52_q2_d_mix')}</span>
-            <span style="font-weight:800; color:var(--pinkie);">(or)</span>
-            <span>Improper: ${inputBlankHtml('e52_q2_d_imp')}</span>
-          </div>
-          <button class="peek-toggle-pill" onclick="toggleTeacherPeek('peek_52_d')">📖 Peek Teacher's Format</button>
-          <div class="peek-notebook-card" id="peek_52_d">
-            <div class="peek-header-title">
-              <span>Classwork Solution</span>
-            </div>
-            <div>= 98 89/1000 (or) = 98089/1000</div>
+          <div class="problem-q-text">
+            <b>d. 98.089</b> &nbsp;→&nbsp; Mixed: ${inputBlankHtml('e52_q2_d_mix', '98 89/1000', 'mixed')} &nbsp;or&nbsp; Improper: ${inputBlankHtml('e52_q2_d_imp', '98089/1000', 'improper')}
           </div>
         </div>
 
         <div class="problem-card">
-          <div class="problem-q-text"><b>e. 3.777 (Classwork)</b></div>
-          <div style="display:flex; gap:12px; align-items:center;">
-            <span>Mixed: ${inputBlankHtml('e52_q2_e_mix')}</span>
-            <span style="font-weight:800; color:var(--pinkie);">(or)</span>
-            <span>Improper: ${inputBlankHtml('e52_q2_e_imp')}</span>
-          </div>
-          <button class="peek-toggle-pill" onclick="toggleTeacherPeek('peek_52_e')">📖 Peek Teacher's Format</button>
-          <div class="peek-notebook-card" id="peek_52_e">
-            <div class="peek-header-title">
-              <span>Classwork Solution</span>
-            </div>
-            <div>= 3 777/1000 (or) = 3777/1000</div>
+          <div class="problem-q-text">
+            <b>e. 3.777</b> &nbsp;→&nbsp; Mixed: ${inputBlankHtml('e52_q2_e_mix', '3 777/1000', 'mixed')} &nbsp;or&nbsp; Improper: ${inputBlankHtml('e52_q2_e_imp', '3777/1000', 'improper')}
           </div>
         </div>
 
         <div class="problem-card">
-          <div class="problem-q-text"><b>f. 4.19 (Classwork)</b></div>
-          <div style="display:flex; gap:12px; align-items:center;">
-            <span>Mixed: ${inputBlankHtml('e52_q2_f_mix')}</span>
-            <span style="font-weight:800; color:var(--pinkie);">(or)</span>
-            <span>Improper: ${inputBlankHtml('e52_q2_f_imp')}</span>
-          </div>
-          <button class="peek-toggle-pill" onclick="toggleTeacherPeek('peek_52_f')">📖 Peek Teacher's Format</button>
-          <div class="peek-notebook-card" id="peek_52_f">
-            <div class="peek-header-title">
-              <span>Classwork Solution</span>
-            </div>
-            <div>= 4 19/100 (or) = 419/100</div>
+          <div class="problem-q-text">
+            <b>f. 4.19</b> &nbsp;→&nbsp; Mixed: ${inputBlankHtml('e52_q2_f_mix', '4 19/100', 'mixed')} &nbsp;or&nbsp; Improper: ${inputBlankHtml('e52_q2_f_imp', '419/100', 'improper')}
           </div>
         </div>
       </div>
@@ -1812,287 +1838,38 @@ const SECTIONS_DATA = [
   }
 ];
 
-/* SECTION SWITCHER */
-function switchSection(idx, doSave = true) {
+/* DIRECT 1-TAP PLAY */
+function startQuestDirectly(idx) {
   playPonyChime();
-  if (doSave) {
-    saveQ5Canvas();
-    saveQ7Canvas();
-    saveRoughCanvas();
-  }
-  currentSectionIdx = idx;
+  selectedSectionIdx = idx;
+  document.getElementById("chapterMenuView").style.display = "none";
+  document.getElementById("exerciseView").style.display = "flex";
+  switchSection(idx, false);
+}
+
+function returnToChapterMenu() {
+  playBubbleTap();
+  saveRoughCanvas();
+  closeCrystalKeypad();
+  document.getElementById("exerciseView").style.display = "none";
+  document.getElementById("chapterMenuView").style.display = "flex";
+}
+
+function switchSection(idx, doSave = true) {
+  if (doSave) saveRoughCanvas();
+  selectedSectionIdx = idx;
   const sec = SECTIONS_DATA[idx];
 
-  // Update Quest Nav Bar active tab
-  document.querySelectorAll(".quest-tab-btn").forEach((b, i) => b.classList.toggle("active", i === idx));
+  const companionImg = document.getElementById("companionPng");
+  companionImg.src = sec.avatar;
+  document.getElementById("companionNameBadge").textContent = sec.ponyName;
 
-  document.getElementById("heroPonyImg").src = sec.ponyAvatar;
   document.getElementById("bannerHeading").textContent = sec.title;
-  document.getElementById("bannerSub").textContent = "Hosted by " + sec.ponyName;
+  document.getElementById("bannerSub").textContent = `Cozy Maths with ${sec.ponyName}`;
   document.getElementById("exerciseScrollBody").innerHTML = sec.render();
-  document.getElementById("parentAnswerHint").textContent = "Teacher Answer: " + sec.hint;
-
-  // Keypad visibility
-  const keypad = document.getElementById("keypadDock");
-  keypad.style.display = sec.hasKeypad ? "flex" : "none";
-
-  if (idx === 3) {
-    setTimeout(initQ5Canvas, 50);
-  } else if (idx === 5) {
-    setTimeout(initQ7Canvas, 50);
-  }
 }
 
-function switchQ5Sub(subIdx) {
-  saveQ5Canvas();
-  currentQ5SubIdx = subIdx;
-  switchSection(3, false);
-}
-
-function switchQ7Sub(subIdx) {
-  saveQ7Canvas();
-  currentQ7SubIdx = subIdx;
-  switchSection(5, false);
-}
-
-function speakCurrentHeader() {
-  speakPonyVoice(SECTIONS_DATA[currentSectionIdx].speech);
-}
-
-/* APP MODE TOGGLE */
-function setAppMode(newMode) {
-  saveQ5Canvas();
-  saveQ7Canvas();
-  saveRoughCanvas();
-
-  appMode = newMode;
-  document.body.className = (newMode === 'write') ? "write-mode" : (newMode === 'parent' ? "parent-mode" : "");
-  document.getElementById("pillStudy").className = "mode-pill" + (newMode === 'study' ? " active-study" : "");
-  document.getElementById("pillWrite").className = "mode-pill" + (newMode === 'write' ? " active-write" : "");
-  document.getElementById("pillParent").className = "mode-pill" + (newMode === 'parent' ? " active-parent" : "");
-
-  switchSection(currentSectionIdx, false);
-}
-
-/* SPIRAL CANVAS ENGINE (Q5) */
-let q5Canvas = null, q5Ctx = null, q5IsDrawing = false, q5Tool = "pen", q5LineWidth = 4;
-let q5LastX = 0, q5LastY = 0, q5ActivePointerId = null;
-
-function q5StorageKey() {
-  const ids = ["e51_q5_c", "e51_q5_d", "e51_q5_a", "e51_q5_b", "e51_q5_e"];
-  const targetSlot = (appMode === "parent") ? "write" : appMode;
-  return `v2_isolated_ink::zaina::maths_oct08::${targetSlot}::${ids[currentQ5SubIdx]}`;
-}
-
-function initQ5Canvas() {
-  q5Canvas = document.getElementById("q5ActiveCanvas");
-  if (!q5Canvas) return;
-  q5Ctx = q5Canvas.getContext("2d");
-
-  const r = q5Canvas.parentElement.getBoundingClientRect();
-  const dpr = window.devicePixelRatio || 1;
-  q5Canvas.width = Math.floor(r.width * dpr);
-  q5Canvas.height = Math.floor(r.height * dpr);
-  q5Canvas.style.width = r.width + "px";
-  q5Canvas.style.height = r.height + "px";
-  q5Ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-  q5Ctx.clearRect(0, 0, q5Canvas.width, q5Canvas.height);
-  const saved = localStorage.getItem(q5StorageKey());
-  if (saved) {
-    const img = new Image();
-    img.onload = () => {
-      q5Ctx.save();
-      q5Ctx.setTransform(1, 0, 0, 1, 0, 0);
-      q5Ctx.drawImage(img, 0, 0, q5Canvas.width, q5Canvas.height);
-      q5Ctx.restore();
-    };
-    img.src = saved;
-  }
-
-  q5Canvas.onpointerdown = (e) => {
-    if (appMode === "parent") return;
-    if (e.pointerType !== "pen" && e.pointerType !== "mouse") return;
-    q5ActivePointerId = e.pointerId;
-    q5IsDrawing = true;
-    try { q5Canvas.setPointerCapture(e.pointerId); } catch(_) {}
-    const rect = q5Canvas.getBoundingClientRect();
-    q5LastX = e.clientX - rect.left;
-    q5LastY = e.clientY - rect.top;
-    e.preventDefault();
-  };
-
-  q5Canvas.onpointermove = (e) => {
-    if (!q5IsDrawing || e.pointerId !== q5ActivePointerId || appMode === "parent") return;
-    const rect = q5Canvas.getBoundingClientRect();
-    const currX = e.clientX - rect.left;
-    const currY = e.clientY - rect.top;
-    q5Ctx.beginPath();
-    q5Ctx.moveTo(q5LastX, q5LastY);
-    q5Ctx.lineTo(currX, currY);
-    q5Ctx.lineCap = "round";
-    q5Ctx.lineJoin = "round";
-
-    if (q5Tool === "eraser") {
-      q5Ctx.globalCompositeOperation = "destination-out";
-      q5Ctx.lineWidth = q5LineWidth * 6;
-    } else {
-      q5Ctx.globalCompositeOperation = "source-over";
-      q5Ctx.strokeStyle = "#4C1D95";
-      const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
-      q5Ctx.lineWidth = q5LineWidth * (pressure * 1.5 + 0.35);
-    }
-    q5Ctx.stroke();
-    q5LastX = currX;
-    q5LastY = currY;
-    e.preventDefault();
-  };
-
-  const stopQ5 = (e) => {
-    if (q5IsDrawing && (e.pointerId === q5ActivePointerId || q5ActivePointerId === null)) {
-      q5IsDrawing = false;
-      q5ActivePointerId = null;
-      try { q5Canvas.releasePointerCapture(e.pointerId); } catch(_) {}
-      saveQ5Canvas();
-    }
-  };
-  q5Canvas.onpointerup = stopQ5;
-  q5Canvas.onpointercancel = stopQ5;
-  q5Canvas.onpointerleave = stopQ5;
-}
-
-function saveQ5Canvas() {
-  if (!q5Canvas || q5Canvas.width <= 0 || appMode === "parent") return;
-  try {
-    const data = q5Canvas.toDataURL("image/png");
-    localStorage.setItem(q5StorageKey(), data);
-  } catch(e) {}
-}
-
-function clearQ5Canvas() {
-  if (!q5Canvas || !q5Ctx) return;
-  q5Ctx.clearRect(0, 0, q5Canvas.width, q5Canvas.height);
-  localStorage.removeItem(q5StorageKey());
-}
-
-function setQ5Tool(t) {
-  q5Tool = t;
-  document.getElementById("q5Pen").classList.toggle("active", t === "pen");
-  document.getElementById("q5Eraser").classList.toggle("active", t === "eraser");
-}
-
-function setQ5Width(w) { q5LineWidth = w; }
-
-/* WORKING CANVAS ENGINE FOR Q7 */
-let q7Canvas = null, q7Ctx = null, q7IsDrawing = false, q7Tool = "pen", q7LineWidth = 4;
-let q7LastX = 0, q7LastY = 0, q7ActivePointerId = null;
-
-function q7StorageKey() {
-  const ids = ["e51_q7_a", "e51_q7_b", "e51_q7_c", "e51_q7_d"];
-  const targetSlot = (appMode === "parent") ? "write" : appMode;
-  return `v2_isolated_ink::zaina::maths_oct08::${targetSlot}::canvas_${ids[currentQ7SubIdx]}`;
-}
-
-function initQ7Canvas() {
-  q7Canvas = document.getElementById("q7ActiveCanvas");
-  if (!q7Canvas) return;
-  q7Ctx = q7Canvas.getContext("2d");
-
-  const r = q7Canvas.parentElement.getBoundingClientRect();
-  const dpr = window.devicePixelRatio || 1;
-  q7Canvas.width = Math.floor(r.width * dpr);
-  q7Canvas.height = Math.floor(r.height * dpr);
-  q7Canvas.style.width = r.width + "px";
-  q7Canvas.style.height = r.height + "px";
-  q7Ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-  q7Ctx.clearRect(0, 0, q7Canvas.width, q7Canvas.height);
-  const saved = localStorage.getItem(q7StorageKey());
-  if (saved) {
-    const img = new Image();
-    img.onload = () => {
-      q7Ctx.save();
-      q7Ctx.setTransform(1, 0, 0, 1, 0, 0);
-      q7Ctx.drawImage(img, 0, 0, q7Canvas.width, q7Canvas.height);
-      q7Ctx.restore();
-    };
-    img.src = saved;
-  }
-
-  q7Canvas.onpointerdown = (e) => {
-    if (appMode === "parent") return;
-    if (e.pointerType !== "pen" && e.pointerType !== "mouse") return;
-    q7ActivePointerId = e.pointerId;
-    q7IsDrawing = true;
-    try { q7Canvas.setPointerCapture(e.pointerId); } catch(_) {}
-    const rect = q7Canvas.getBoundingClientRect();
-    q7LastX = e.clientX - rect.left;
-    q7LastY = e.clientY - rect.top;
-    e.preventDefault();
-  };
-
-  q7Canvas.onpointermove = (e) => {
-    if (!q7IsDrawing || e.pointerId !== q7ActivePointerId || appMode === "parent") return;
-    const rect = q7Canvas.getBoundingClientRect();
-    const currX = e.clientX - rect.left;
-    const currY = e.clientY - rect.top;
-    q7Ctx.beginPath();
-    q7Ctx.moveTo(q7LastX, q7LastY);
-    q7Ctx.lineTo(currX, currY);
-    q7Ctx.lineCap = "round";
-    q7Ctx.lineJoin = "round";
-
-    if (q7Tool === "eraser") {
-      q7Ctx.globalCompositeOperation = "destination-out";
-      q7Ctx.lineWidth = q7LineWidth * 6;
-    } else {
-      q7Ctx.globalCompositeOperation = "source-over";
-      q7Ctx.strokeStyle = "#1E40AF";
-      const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
-      q7Ctx.lineWidth = q7LineWidth * (pressure * 1.5 + 0.35);
-    }
-    q7Ctx.stroke();
-    q7LastX = currX;
-    q7LastY = currY;
-    e.preventDefault();
-  };
-
-  const stopQ7 = (e) => {
-    if (q7IsDrawing && (e.pointerId === q7ActivePointerId || q7ActivePointerId === null)) {
-      q7IsDrawing = false;
-      q7ActivePointerId = null;
-      try { q7Canvas.releasePointerCapture(e.pointerId); } catch(_) {}
-      saveQ7Canvas();
-    }
-  };
-  q7Canvas.onpointerup = stopQ7;
-  q7Canvas.onpointercancel = stopQ7;
-  q7Canvas.onpointerleave = stopQ7;
-}
-
-function saveQ7Canvas() {
-  if (!q7Canvas || q7Canvas.width <= 0 || appMode === "parent") return;
-  try {
-    const data = q7Canvas.toDataURL("image/png");
-    localStorage.setItem(q7StorageKey(), data);
-  } catch(e) {}
-}
-
-function clearQ7Canvas() {
-  if (!q7Canvas || !q7Ctx) return;
-  q7Ctx.clearRect(0, 0, q7Canvas.width, q7Canvas.height);
-  localStorage.removeItem(q7StorageKey());
-}
-
-function setQ7Tool(t) {
-  q7Tool = t;
-  document.getElementById("q7Pen").classList.toggle("active", t === "pen");
-  document.getElementById("q7Eraser").classList.toggle("active", t === "eraser");
-}
-
-function setQ7Width(w) { q7LineWidth = w; }
-
-/* ENHANCED ROUGH WORK PAD ENGINE */
+/* ROUGH PAD WITH SOLID WHITE BACKGROUND */
 let roughCanvas = null, roughCtx = null, roughIsDrawing = false, roughTool = "pen";
 
 function toggleRoughPad() {
@@ -2100,9 +1877,7 @@ function toggleRoughPad() {
   const pad = document.getElementById("floatingRoughPad");
   const isShown = pad.style.display === "flex";
   pad.style.display = isShown ? "none" : "flex";
-  if (!isShown) {
-    setTimeout(initRoughCanvas, 50);
-  }
+  if (!isShown) setTimeout(initRoughCanvas, 60);
 }
 
 function setRoughTool(tool) {
@@ -2112,8 +1887,7 @@ function setRoughTool(tool) {
 }
 
 function roughStorageKey() {
-  const targetSlot = (appMode === "parent") ? "write" : appMode;
-  return `v2_isolated_ink::zaina::maths_oct08::${targetSlot}::rough_pad`;
+  return "v5_zaina_rough_pad_canvas";
 }
 
 function initRoughCanvas() {
@@ -2122,6 +1896,7 @@ function initRoughCanvas() {
   roughCtx = roughCanvas.getContext("2d");
 
   const r = roughCanvas.parentElement.getBoundingClientRect();
+  if (r.width <= 0 || r.height <= 0) return;
   const dpr = window.devicePixelRatio || 1;
   roughCanvas.width = Math.floor(r.width * dpr);
   roughCanvas.height = Math.floor(r.height * dpr);
@@ -2129,7 +1904,9 @@ function initRoughCanvas() {
   roughCanvas.style.height = r.height + "px";
   roughCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  roughCtx.clearRect(0, 0, roughCanvas.width, roughCanvas.height);
+  roughCtx.fillStyle = "#FFFFFF";
+  roughCtx.fillRect(0, 0, r.width, r.height);
+
   const saved = localStorage.getItem(roughStorageKey());
   if (saved) {
     const img = new Image();
@@ -2164,10 +1941,9 @@ function initRoughCanvas() {
     roughCtx.lineJoin = "round";
 
     if (roughTool === "eraser") {
-      roughCtx.globalCompositeOperation = "destination-out";
-      roughCtx.lineWidth = 22;
+      roughCtx.strokeStyle = "#FFFFFF";
+      roughCtx.lineWidth = 26;
     } else {
-      roughCtx.globalCompositeOperation = "source-over";
       roughCtx.strokeStyle = "#B45309";
       roughCtx.lineWidth = 3.6;
     }
@@ -2199,94 +1975,48 @@ function saveRoughCanvas() {
 
 function clearRoughCanvas() {
   if (!roughCanvas || !roughCtx) return;
-  roughCtx.clearRect(0, 0, roughCanvas.width, roughCanvas.height);
+  const r = roughCanvas.parentElement.getBoundingClientRect();
+  roughCtx.fillStyle = "#FFFFFF";
+  roughCtx.fillRect(0, 0, r.width, r.height);
   localStorage.removeItem(roughStorageKey());
 }
 
-/* DRAGGABLE ROUGH PAD HANDLER */
-const roughPadEl = document.getElementById("floatingRoughPad");
-const roughHeaderEl = document.getElementById("roughHeader");
-let isDraggingPad = false;
-let padStartX = 0, padStartY = 0, padInitialLeft = 0, padInitialTop = 0;
+/* DRAGGABLE POPUPS */
+function makeDraggable(boxEl, handleEl) {
+  let isDragging = false;
+  let startX = 0, startY = 0, initLeft = 0, initTop = 0;
 
-roughHeaderEl.addEventListener("pointerdown", (e) => {
-  if (e.target.tagName === 'BUTTON') return;
-  isDraggingPad = true;
-  padStartX = e.clientX;
-  padStartY = e.clientY;
-  const rect = roughPadEl.getBoundingClientRect();
-  padInitialLeft = rect.left;
-  padInitialTop = rect.top;
-  roughHeaderEl.setPointerCapture(e.pointerId);
-});
+  handleEl.addEventListener("pointerdown", (e) => {
+    if (e.target.tagName === 'BUTTON') return;
+    isDragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    const rect = boxEl.getBoundingClientRect();
+    initLeft = rect.left;
+    initTop = rect.top;
+    handleEl.setPointerCapture(e.pointerId);
+  });
 
-roughHeaderEl.addEventListener("pointermove", (e) => {
-  if (!isDraggingPad) return;
-  const dx = e.clientX - padStartX;
-  const dy = e.clientY - padStartY;
-  roughPadEl.style.left = (padInitialLeft + dx) + "px";
-  roughPadEl.style.top = (padInitialTop + dy) + "px";
-  roughPadEl.style.right = "auto";
-});
+  handleEl.addEventListener("pointermove", (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    boxEl.style.left = (initLeft + dx) + "px";
+    boxEl.style.top = (initTop + dy) + "px";
+    boxEl.style.right = "auto";
+    boxEl.style.bottom = "auto";
+  });
 
-roughHeaderEl.addEventListener("pointerup", (e) => {
-  isDraggingPad = false;
-  try { roughHeaderEl.releasePointerCapture(e.pointerId); } catch(_) {}
-});
-
-/* PARENT PIN MODAL */
-function openPinModal() {
-  enteredPin = "";
-  updatePinDots();
-  document.getElementById("pinModal").classList.add("open");
-}
-function closePinModal() {
-  document.getElementById("pinModal").classList.remove("open");
-  enteredPin = "";
-}
-function pressPin(n) {
-  playBubbleTap();
-  if (enteredPin.length < 4) {
-    enteredPin += n;
-    updatePinDots();
-    if (enteredPin.length === 4) {
-      if (enteredPin === PARENT_PIN) {
-        closePinModal();
-        setAppMode('parent');
-      } else {
-        alert("Incorrect PIN");
-        clearPin();
-      }
-    }
-  }
-}
-function clearPin() {
-  enteredPin = "";
-  updatePinDots();
-}
-function updatePinDots() {
-  let str = "";
-  for (let i = 0; i < 4; i++) {
-    str += (i < enteredPin.length) ? "● " : "- ";
-  }
-  document.getElementById("pinDots").textContent = str.trim();
+  const stopDrag = (e) => {
+    isDragging = false;
+    try { handleEl.releasePointerCapture(e.pointerId); } catch(_) {}
+  };
+  handleEl.addEventListener("pointerup", stopDrag);
+  handleEl.addEventListener("pointercancel", stopDrag);
 }
 
-function markCardGrade(grade) {
-  triggerAsanaCelebration();
-  alert(grade === 'pass' ? "⭐ Marked as Correct!" : "🔄 Marked to Review Later.");
-}
-
-function goToHub() {
-  saveQ5Canvas();
-  saveQ7Canvas();
-  saveRoughCanvas();
-  if (window.parent && window.parent !== window) {
-    window.parent.postMessage("close-lesson-to-hub", "*");
-  } else {
-    window.location.href = "index.html";
-  }
-}
+makeDraggable(document.getElementById("floatingRoughPad"), document.getElementById("roughHeader"));
+makeDraggable(document.getElementById("floatingCrystalKeypad"), document.getElementById("keypadDragHandle"));
 
 function toggleFullscreen() {
   if (!document.fullscreenElement && !document.webkitFullscreenElement) {
@@ -2299,20 +2029,15 @@ function toggleFullscreen() {
   }
 }
 
-window.onload = function() {
-  switchSection(0, false);
-};
-
-window.addEventListener("beforeunload", () => {
-  saveQ5Canvas();
-  saveQ7Canvas();
-  saveRoughCanvas();
+window.addEventListener("resize", () => {
+  const pad = document.getElementById("floatingRoughPad");
+  if (pad && pad.style.display === "flex") {
+    saveRoughCanvas();
+    setTimeout(initRoughCanvas, 100);
+  }
 });
-window.addEventListener("pagehide", () => {
-  saveQ5Canvas();
-  saveQ7Canvas();
-  saveRoughCanvas();
-});
+window.addEventListener("beforeunload", saveRoughCanvas);
+window.addEventListener("pagehide", saveRoughCanvas);
 </script>
 </body>
 </html>
