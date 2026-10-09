@@ -46,7 +46,7 @@
     /* 3-PANE GRID */
     .ninja-triptych-grid {
       display: grid;
-      grid-template-columns: 300px 1.15fr 1.1fr;
+      grid-template-columns: 310px 1.15fr 1.1fr;
       gap: 12px;
       width: 100%;
       height: 100%;
@@ -89,27 +89,39 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 6px;
+    }
+
+    .header-btn-cluster {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .hud-hub-btn {
       background: #3E2413;
       border: 2px solid #D35400;
       color: #F1C40F;
-      padding: 5px 12px;
+      padding: 5px 10px;
       border-radius: 10px;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 900;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
       transition: all 0.15s;
     }
     .hud-hub-btn:active { transform: scale(0.96); }
+    .hud-reset-btn {
+      background: #2D1408;
+      border-color: #E74C3C;
+      color: #FF7675;
+    }
 
     .mission-pane-title {
       font-family: 'Cinzel', serif;
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       font-weight: 900;
       color: #7A3E0C;
     }
@@ -312,7 +324,7 @@
     }
     .strike-fx-flash.flash { opacity: 0.85; }
 
-    /* IN-GAME FAILURE OVERLAY: GLOWING CRIMSON TEXT */
+    /* IN-ARENA FAILURE OVERLAY */
     .failure-feedback-zone {
       position: absolute;
       inset: 0;
@@ -495,7 +507,7 @@
     }
     .tool-btn.active { background: #E67E22; color: #FFF; border-color: #D35400; }
 
-    /* CELEBRATION FINALE STAGE OVERLAY (OCT 09 ASANA PATTERN) */
+    /* CELEBRATION FINALE STAGE OVERLAY */
     #celebrationFinaleStage {
       position: fixed;
       inset: 0;
@@ -733,7 +745,10 @@
 
       <div class="mission-header-bar">
         <div class="header-top-row">
-          <button type="button" class="hud-hub-btn" onclick="goToHub()">🍃 Hub</button>
+          <div class="header-btn-cluster">
+            <button type="button" class="hud-hub-btn" onclick="goToHub()">🍃 Hub</button>
+            <button type="button" class="hud-hub-btn hud-reset-btn" onclick="resetEntireMission()">🔄 Restart</button>
+          </div>
           <span class="mission-pane-title">🍥 Genjutsu Dispel</span>
         </div>
         <div class="progress-banner-badge">
@@ -1061,7 +1076,23 @@
       document.getElementById('progressCounter').textContent = `${dispelledCount} / 4`;
     }
 
-    /* COMBAT EXECUTION & DYNAMIC FEEDBACK (NO BROWSER ALERTS) */
+    /* FULL RESET HANDLER */
+    function resetEntireMission() {
+      if (!confirm("Restart this entire mission from the beginning? All progress will reset.")) return;
+
+      SCROLLS.forEach(s => {
+        localStorage.removeItem(`v3_humayun_maths_oct08::${s.id}::verdict`);
+        localStorage.removeItem(`v3_humayun_maths_oct08::${s.id}::correction`);
+        localStorage.removeItem(`v3_humayun_maths_oct08::${s.id}::dispelled`);
+        localStorage.removeItem(`v3_humayun_maths_oct08::${s.id}::ink`);
+      });
+
+      clearScratchCanvas();
+      switchScroll(0, false);
+      updateOverallProgress();
+    }
+
+    /* COMBAT EXECUTION & DYNAMIC FEEDBACK */
     function executeDispelStrike() {
       const s = SCROLLS[currentScrollIdx];
       const selectedVerdict = localStorage.getItem(getStorageKey('verdict')) || "";
@@ -1094,7 +1125,7 @@
         }, 300);
 
       } else {
-        // FAILURE: SMOKE EXPANDS, SHINOBI VANISHES, GLOWING RED TEXT (NO POPUPS)
+        // FAILURE: SMOKE EXPANDS, SHINOBI VANISHES, GLOWING RED TEXT
         audio.playSmokePoof();
         
         const sprite = document.getElementById('challengerSprite');
@@ -1114,7 +1145,7 @@
       }
     }
 
-    /* CELEBRATION FINALE STAGE ENGINE (OCT 09 PATTERN) */
+    /* CELEBRATION FINALE STAGE ENGINE */
     const finaleStage = document.getElementById('celebrationFinaleStage');
     const finaleCanvas = document.getElementById('finaleCanvas');
     const finaleCtx = finaleCanvas.getContext('2d', { alpha: true });
