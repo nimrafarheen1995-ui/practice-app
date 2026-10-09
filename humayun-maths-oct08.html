@@ -3,17 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Humayun's Ninja Math Quest: Repeated Subtraction</title>
+  <title>Humayun's Ninja Math Mastery: Chapter 5</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Serif+JP:wght@900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Serif+JP:wght@800;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --konoha-glow: #ff4757;
-      --orange-neon: #ff7700;
-      --grid-line: rgba(205, 224, 236, 0.4);
-      --grid-major: rgba(150, 187, 207, 0.65);
-      --paper-cream: #fbf8ee;
+      --scroll-cream: #F8F3DC;
+      --scroll-border: #8B5A2B;
+      --konoha-red: #D63031;
+      --konoha-orange: #FF7700;
+      --konoha-green: #27AE60;
+      --ruled-line: #A0C4E2;
+      --paper-cream: #FBF8EE;
     }
 
     * {
@@ -22,6 +25,7 @@
       padding: 0;
       user-select: none;
       -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
       font-family: 'Nunito', sans-serif;
     }
 
@@ -29,106 +33,140 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: #090b0e;
-      color: #fff;
+      background: #090B0E;
+      color: #2D3436;
     }
 
     body {
       display: flex;
       flex-direction: column;
+      padding: 8px 12px;
+      gap: 8px;
+      position: relative;
     }
 
-    /* 1. FLOATING IMMERSIVE CINEMATIC HUD */
-    .top-cinematic-hud {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 60;
+    /* TOP CINEMATIC HUD & STAGE SWITCHER */
+    .master-top-hud {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 16px 24px;
-      pointer-events: none;
+      gap: 10px;
+      z-index: 60;
+      flex-shrink: 0;
     }
 
-    .hud-hub-btn, .scroll-toggle-btn, .mission-selector-btn {
-      pointer-events: auto;
-      background: linear-gradient(180deg, #2b170c 0%, #150c07 100%);
-      border: 2px solid #d35400;
-      border-radius: 14px;
-      padding: 10px 18px;
-      color: #f1c40f;
-      text-decoration: none;
-      font-size: 14px;
+    .hud-btn-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hud-action-btn {
+      background: #3E2413;
+      border: 2px solid #D35400;
+      color: #F1C40F;
+      padding: 6px 12px;
+      border-radius: 12px;
+      font-size: 0.85rem;
       font-weight: 900;
+      cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.8), inset 0 1px 2px rgba(255,165,0,0.4);
+      gap: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+      transition: all 0.15s;
+    }
+    .hud-action-btn:active { transform: scale(0.96); }
+    .hud-reset-btn {
+      background: #2D1408;
+      border-color: #E74C3C;
+      color: #FF7675;
+    }
+
+    .stage-switch-nav {
+      display: flex;
+      background: rgba(18, 12, 8, 0.9);
+      border: 2px solid #8B5A2B;
+      border-radius: 16px;
+      padding: 3px;
+      gap: 4px;
+    }
+
+    .stage-nav-pill {
+      background: transparent;
+      border: none;
+      color: #D7CCC8;
+      padding: 6px 14px;
+      border-radius: 12px;
+      font-size: 0.82rem;
+      font-weight: 900;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
       transition: all 0.2s;
     }
-    .hud-hub-btn:hover, .scroll-toggle-btn:hover, .mission-selector-btn:hover {
-      transform: translateY(-2px);
-      border-color: #f1c40f;
-      background: linear-gradient(180deg, #3a2212, #20100a);
+    .stage-nav-pill:hover { color: #FFF; }
+    .stage-nav-pill.active {
+      background: linear-gradient(180deg, #D35400, #A04000);
+      color: #FFF;
+      box-shadow: 0 0 12px rgba(211, 84, 0, 0.7);
     }
 
-    .chapter-title-badge {
-      background: rgba(10, 7, 5, 0.9);
-      border: 3px solid rgba(211, 84, 0, 0.85);
-      backdrop-filter: blur(6px);
-      padding: 12px 32px;
-      border-radius: 36px;
+    /* VIEW CONTAINERS */
+    .main-stage-viewport {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      position: relative;
+    }
+
+    /* STAGE 1: ARENA COMBAT VIEWPORT */
+    #stage1View {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.9);
-      pointer-events: auto;
-    }
-    .chapter-main-text {
-      font-family: 'Cinzel', serif;
-      font-size: 22px;
-      font-weight: 900;
-      color: #ffd700;
-      text-shadow: 0 0 16px rgba(255, 215, 0, 0.9);
-      letter-spacing: 1.5px;
-    }
-    .chapter-sub-text {
-      font-size: 11px;
-      font-weight: 900;
-      color: #e0ac69;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      margin-top: 2px;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 4px solid #5A3C22;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.8);
     }
 
-    /* BOSS HP BAR */
-    .boss-status-hud {
+    .arena-video-bg {
       position: absolute;
-      top: 105px;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.72) contrast(1.1);
+      z-index: 1;
+    }
+
+    .arena-status-overlay {
+      position: absolute;
+      top: 14px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 55;
-      width: 340px;
-      background: rgba(15, 10, 8, 0.85);
-      border: 2px solid #5a3c22;
-      border-radius: 12px;
+      z-index: 20;
+      width: 360px;
+      background: rgba(15, 10, 8, 0.88);
+      border: 2px solid #5A3C22;
+      border-radius: 14px;
       padding: 8px 14px;
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 6px;
       backdrop-filter: blur(4px);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.7);
-      pointer-events: none;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.8);
     }
     .boss-info-row {
       display: flex;
       justify-content: space-between;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 900;
-      color: #ffbe76;
+      color: #FFBE76;
     }
     .boss-hp-track {
       width: 100%;
@@ -136,73 +174,17 @@
       background: #251711;
       border-radius: 6px;
       overflow: hidden;
-      border: 1px solid #7a4a28;
+      border: 1px solid #7A4A28;
     }
     .boss-hp-fill {
       width: 0%;
       height: 100%;
-      background: linear-gradient(90deg, #ff4757, #ff6b81);
+      background: linear-gradient(90deg, #FF4757, #FF6B81);
       border-radius: 4px;
       transition: width 0.3s ease-out;
     }
 
-    /* 2. FULL-SCREEN ARENA VIEWPORT */
-    .viewport-stage {
-      position: relative;
-      flex: 1;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-    }
-
-    .backdrop-wrapper {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      overflow: hidden;
-      pointer-events: none;
-    }
-    .backdrop-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      filter: brightness(0.85) contrast(1.1);
-    }
-    .backdrop-wash {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(8,10,13,0.3) 0%, rgba(8,10,13,0.65) 100%);
-    }
-
-    #fxCanvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 15;
-      pointer-events: none;
-    }
-
-    .lightning-flash-overlay {
-      position: absolute;
-      inset: 0;
-      background: #fff;
-      opacity: 0;
-      pointer-events: none;
-      z-index: 45;
-      transition: opacity 0.08s ease-out;
-    }
-    .lightning-flash-overlay.flash { opacity: 0.85; }
-
-    /* COMBAT ZONE: 4 CORNER RAIDERS */
-    .combat-ground-zone {
-      position: absolute;
-      inset: 0;
-      z-index: 20;
-      pointer-events: none;
-    }
-
+    /* 4-CORNER RAIDERS */
     .corner-raider {
       position: absolute;
       width: 150px;
@@ -213,7 +195,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      will-change: transform, opacity, top, bottom, left, right;
       transition: all 0.7s cubic-bezier(0.2, 0.9, 0.3, 1);
     }
     .corner-raider img {
@@ -232,12 +213,12 @@
     .corner-raider.clash.bottom-left { bottom: 28%; left: 38%; opacity: 1; transform: scale(1.35) rotate(-5deg); }
     .corner-raider.clash.bottom-right { bottom: 28%; right: 38%; opacity: 1; transform: scale(1.35) rotate(5deg); }
 
-    .strike-lightning-layer {
+    .arena-strike-lightning {
       position: absolute;
       inset: 0;
       margin: auto;
-      width: 420px;
-      height: 420px;
+      width: 440px;
+      height: 440px;
       z-index: 38;
       pointer-events: none;
       mix-blend-mode: screen;
@@ -246,12 +227,9 @@
       filter: brightness(250%) drop-shadow(0 0 35px #00e5ff);
       transition: transform 0.25s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.2s ease-out;
     }
-    .strike-lightning-layer.zap {
-      opacity: 1;
-      transform: scale(1.5) rotate(-5deg);
-    }
+    .arena-strike-lightning.zap { opacity: 1; transform: scale(1.5) rotate(-5deg); }
 
-    .dynamic-smoke-puff {
+    .arena-smoke-puff {
       position: absolute;
       inset: 0;
       margin: auto;
@@ -261,114 +239,43 @@
       pointer-events: none;
       opacity: 0;
       transform: scale(0.2);
-      transition: transform 0.4s cubic-bezier(0.1, 0.85, 0.2, 1), opacity 0.35s ease-out;
+      transition: transform 0.35s cubic-bezier(0.1, 0.85, 0.2, 1), opacity 0.3s ease-out;
     }
-    .dynamic-smoke-puff.puffff {
-      opacity: 1;
-      transform: scale(1.65);
-    }
+    .arena-smoke-puff.puff { opacity: 1; transform: scale(1.65); }
 
-    /* 3. NOTEPAD DRAWER */
-    .ninja-scroll-drawer {
+    .strike-fx-flash {
       position: absolute;
-      top: 95px;
-      right: -400px;
-      bottom: 24px;
-      width: 380px;
+      inset: 0;
+      background: #FFF;
+      z-index: 45;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.08s ease-out;
+    }
+    .strike-fx-flash.flash { opacity: 0.85; }
+
+    /* STAGE 1 SLIDE-OUT NOTEPAD DRAWER */
+    .stage1-scroll-drawer {
+      position: absolute;
+      top: 14px;
+      right: -390px;
+      bottom: 14px;
+      width: 370px;
       z-index: 50;
       display: flex;
       flex-direction: column;
       background: var(--paper-cream);
-      border: 4px solid #5a3c22;
+      border: 4px solid #5A3C22;
       border-radius: 18px 0 0 18px;
-      box-shadow: -12px 16px 45px rgba(0,0,0,0.85), inset 0 0 12px rgba(184, 134, 11, 0.25);
-      overflow: hidden;
-      will-change: right;
+      box-shadow: -12px 16px 45px rgba(0,0,0,0.85);
       transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      overflow: hidden;
     }
-    .ninja-scroll-drawer.open {
-      right: 16px;
-    }
+    .stage1-scroll-drawer.open { right: 0; }
 
-    .notepad-header-controls {
-      background: #251d18;
-      border-bottom: 2px solid #5a3c22;
-      padding: 6px 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .tools-icon-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .btn-icon-tool {
-      background: transparent;
-      border: none;
-      color: #b59b84;
-      font-size: 18px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.15s;
-      padding: 2px;
-    }
-    .btn-icon-tool:hover { color: #fff; transform: scale(1.1); }
-    .btn-icon-tool.active {
-      color: var(--orange-neon);
-      transform: scale(1.15);
-      text-shadow: 0 0 8px rgba(255, 119, 0, 0.6);
-    }
-
-    .color-swatch-row {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-    .color-swatch {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      border: 2px solid #fff;
-      cursor: pointer;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.4);
-      transition: transform 0.15s;
-    }
-    .color-swatch.active { transform: scale(1.25); border-color: #ffd080; }
-
-    .notepad-scroll-viewport {
-      position: relative;
-      flex: 1;
-      width: 100%;
-      height: 100%;
-      overflow-y: auto;
-      overflow-x: hidden;
-      touch-action: pan-y;
-      background-color: var(--paper-cream);
-      background-image: 
-        linear-gradient(var(--grid-major) 1px, transparent 1px),
-        linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
-        linear-gradient(var(--grid-line) 1px, transparent 1px),
-        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-      background-size: 90px 90px, 90px 90px, 18px 18px, 18px 18px;
-      background-position: -1px -1px;
-    }
-
-    #inkCanvas {
-      display: block;
-      width: 100%;
-      cursor: crosshair;
-      touch-action: none;
-    }
-
-    .notepad-submission-dock {
-      background: #251d18;
-      border-top: 2px solid #5a3c22;
+    .stage1-drawer-dock {
+      background: #251D18;
+      border-top: 2px solid #5A3C22;
       padding: 10px;
       display: flex;
       flex-direction: column;
@@ -376,54 +283,45 @@
     }
 
     .btn-lightning-strike {
-      background: linear-gradient(180deg, #ff4757 0%, #c0392b 100%);
-      border: 2px solid #ff7979;
-      color: #fff;
-      font-size: 22px;
-      padding: 8px;
+      background: linear-gradient(180deg, #FF4757 0%, #C0392B 100%);
+      border: 2px solid #FF7979;
+      color: #FFF;
+      font-size: 20px;
+      padding: 7px;
       border-radius: 10px;
       cursor: pointer;
-      box-shadow: 0 4px 14px rgba(255, 71, 87, 0.5);
-      transition: all 0.2s;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: 0 4px 14px rgba(255, 71, 87, 0.5);
     }
-    .btn-lightning-strike:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(255, 71, 87, 0.75);
-      background: linear-gradient(180deg, #ff6b81 0%, #ff4757 100%);
-    }
+    .btn-lightning-strike:active { transform: scale(0.96); }
 
     .quotient-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      background: #15110e;
-      border: 1px solid #5a3c22;
+      background: #15110E;
+      border: 1px solid #5A3C22;
       padding: 8px 10px;
       border-radius: 8px;
     }
-    .quotient-label {
-      font-size: 14px;
-      font-weight: 900;
-      color: #ffbe76;
-    }
+    .quotient-label { font-size: 14px; font-weight: 900; color: #FFBE76; }
     .quotient-input {
-      width: 55px;
+      width: 60px;
       padding: 5px;
       text-align: center;
       font-size: 15px;
       font-weight: 900;
-      border: 2px solid #ff9f43;
+      border: 2px solid #FF9F43;
       border-radius: 6px;
-      background: #251c14;
-      color: #fff;
+      background: #251C14;
+      color: #FFF;
       outline: none;
     }
     .btn-submit-quotient {
-      background: #ff9f43;
+      background: #FF9F43;
       color: #271403;
       border: none;
       font-size: 12px;
@@ -431,108 +329,385 @@
       padding: 7px 12px;
       border-radius: 6px;
       cursor: pointer;
-      transition: 0.15s;
     }
-    .btn-submit-quotient:hover { background: #ffa801; }
 
-    /* 4. MISSION SELECTOR MODAL */
-    #missionModal {
-      position: fixed;
-      inset: 0;
-      z-index: 10000;
-      background: rgba(7, 9, 12, 0.85);
-      backdrop-filter: blur(8px);
+    /* STAGES 2 & 3: 3-PANE TRIPTYCH LAYOUT */
+    #triptychView {
       display: none;
-      align-items: center;
-      justify-content: center;
+      grid-template-columns: 300px 1.15fr 1.1fr;
+      gap: 12px;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
     }
-    .modal-content-box {
-      width: 90%;
-      max-width: 680px;
-      background: linear-gradient(180deg, #251710 0%, #120b07 100%);
-      border: 3.5px solid #d35400;
+
+    .mission-pane-scroll {
+      background: #FDF9EA;
+      border: 4px solid var(--scroll-border);
       border-radius: 20px;
-      padding: 24px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.9);
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      padding: 12px 14px;
+      gap: 8px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.7);
+      position: relative;
+      overflow-y: auto;
     }
-    .modal-title {
-      font-family: 'Cinzel', serif;
-      font-size: 22px;
+
+    .scroll-rod-left, .scroll-rod-right {
+      position: absolute;
+      top: -6px;
+      bottom: -6px;
+      width: 14px;
+      background: linear-gradient(90deg, #5C381E, #8B5A2B, #3E2413);
+      border-radius: 4px;
+    }
+    .scroll-rod-left { left: -10px; }
+    .scroll-rod-right { right: -10px; }
+
+    .scroll-selector-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+
+    .scroll-tab-card {
+      background: #FFF;
+      border: 2px solid #C89B68;
+      border-radius: 12px;
+      padding: 8px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .scroll-tab-card:hover { transform: translateY(-2px); border-color: #E67E22; }
+    .scroll-tab-card.active {
+      background: #FFF7ED;
+      border-color: #D35400;
+      box-shadow: 0 0 0 3px rgba(211, 84, 0, 0.35);
+    }
+    .scroll-tab-card.dispelled {
+      border-color: #22C55E;
+      background: #F0FDF4;
+    }
+    .dispelled-stamp {
+      display: none;
+      font-size: 0.62rem;
       font-weight: 900;
-      color: #f1c40f;
+      color: #15803D;
+      background: #DCFCE7;
+      padding: 1px 5px;
+      border-radius: 5px;
+      border: 1px solid #86EFAC;
+    }
+    .scroll-tab-card.dispelled .dispelled-stamp { display: inline-block; }
+
+    .triptych-center-stage {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 4px solid #5A3C22;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.7);
+    }
+
+    .genjutsu-prompt-scroll {
+      position: relative;
+      z-index: 10;
+      background: #FFF9E6;
+      border: 3px solid #8B5A2B;
+      border-radius: 16px;
+      padding: 10px 16px;
       text-align: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      width: 94%;
+      max-width: 420px;
+    }
+    .shinobi-caller {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: #8C5727;
+      text-transform: uppercase;
       letter-spacing: 1px;
     }
-    .mission-grid-options {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      max-height: 380px;
-      overflow-y: auto;
-      padding: 4px;
+    .genjutsu-statement-text {
+      font-family: 'Cinzel', serif;
+      font-size: 1.45rem;
+      font-weight: 900;
+      color: #1E1B4B;
+      margin: 4px 0;
     }
-    .mission-card-option {
-      background: linear-gradient(180deg, #332219 0%, #1c110c 100%);
-      border: 2px solid #6b4d32;
-      border-radius: 14px;
-      padding: 12px 16px;
+    .puzzle-narrative-text {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: #334155;
+      line-height: 1.35;
+      text-align: left;
+      margin-top: 4px;
+    }
+
+    .shinobi-avatar-zone {
+      position: relative;
+      z-index: 10;
+      flex: 1;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      width: 100%;
+      pointer-events: none;
+    }
+    .challenger-sprite {
+      max-height: 220px;
+      max-width: 200px;
+      object-fit: contain;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.85));
+      transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1), opacity 0.3s ease;
+    }
+    .challenger-sprite.vanished {
+      opacity: 0 !important;
+      transform: scale(0.6) translateY(40px) !important;
+    }
+
+    .kunai-dispel-btn {
+      position: relative;
+      z-index: 10;
+      background: linear-gradient(180deg, #D35400, #A04000);
+      border: 2px solid #F39C12;
+      color: #FFF;
+      font-size: 1rem;
+      font-weight: 900;
+      padding: 10px 28px;
+      border-radius: 30px;
+      cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      transition: all 0.2s;
+      gap: 8px;
+      box-shadow: 0 6px 20px rgba(211, 84, 0, 0.6);
+      transition: all 0.15s;
     }
-    .mission-card-option:hover {
-      border-color: #f1c40f;
-      transform: translateY(-2px);
-      background: linear-gradient(180deg, #442e22, #261710);
-    }
-    .mission-card-option.active {
-      border-color: #f1c40f;
-      background: linear-gradient(180deg, #d35400, #a04000);
-      box-shadow: 0 0 16px rgba(211, 84, 0, 0.8);
-    }
-    .mission-card-avatar {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      overflow: hidden;
-      border: 2px solid #f1c40f;
-      background: #000;
-      flex-shrink: 0;
-    }
-    .mission-card-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .mission-card-info {
+    .kunai-dispel-btn:active { transform: scale(0.96); }
+
+    /* RIGHT WORKSPACE BOOK */
+    .workspace-pane-book {
+      background: #FFFDF0;
+      border: 4px solid #5A3C22;
+      border-radius: 20px;
+      padding: 12px 16px;
       display: flex;
       flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.7);
+      position: relative;
+      min-height: 0;
     }
-    .mission-card-title {
-      font-size: 15px;
-      font-weight: 900;
-      color: #fff;
-    }
-    .mission-card-sub {
-      font-size: 11px;
-      font-weight: 800;
-      color: #e0ac69;
-    }
-    .btn-close-modal {
-      align-self: center;
-      background: #e67e22;
-      border: 2px solid #f39c12;
-      color: #fff;
-      font-weight: 900;
-      padding: 8px 24px;
-      border-radius: 10px;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    }
-    .btn-close-modal:hover { background: #d35400; }
 
-    /* 5. CELEBRATION FINALE STAGE OVERLAY */
+    .verdict-header-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.96rem;
+      font-weight: 900;
+      color: #7A3E0C;
+      border-bottom: 2px solid #E2E8F0;
+      padding-bottom: 4px;
+    }
+
+    .verdict-btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 2px;
+    }
+
+    .verdict-seal-btn {
+      flex: 1;
+      background: #FFF;
+      border: 2px solid #CBD5E1;
+      border-radius: 12px;
+      padding: 8px;
+      font-size: 0.9rem;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 3px 0 #CBD5E1;
+    }
+    .verdict-seal-btn:active { transform: translateY(2px); box-shadow: none; }
+    .verdict-seal-btn.yes-btn.selected {
+      background: #DCFCE7;
+      border-color: #22C55E;
+      color: #15803D;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.35);
+    }
+    .verdict-seal-btn.no-btn.selected {
+      background: #FEE2E2;
+      border-color: #EF4444;
+      color: #B91C1C;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.35);
+    }
+
+    .correction-box {
+      background: #F8FAFC;
+      border: 2px dashed #CBD5E1;
+      border-radius: 12px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .correction-label { font-size: 0.85rem; font-weight: 800; color: #475569; }
+    .correction-input {
+      width: 75px;
+      height: 34px;
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #1E1B4B;
+      border: 2px solid #E67E22;
+      border-radius: 8px;
+      outline: none;
+      background: #FFF;
+    }
+
+    .ladder-table-wrapper {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      background: #FFF1F2;
+      border: 2px solid #FDA4AF;
+      border-radius: 12px;
+      padding: 8px;
+    }
+    .ladder-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #FFF;
+      border: 1px solid #FECDD3;
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 0.95rem;
+      font-weight: 900;
+      color: #9F1239;
+    }
+    .ladder-row input {
+      width: 55px;
+      height: 28px;
+      border: 1.5px solid #FB7185;
+      border-radius: 6px;
+      text-align: center;
+      font-weight: 900;
+      outline: none;
+    }
+
+    /* UNIVERSAL INK CANVAS ENGINE (WITH S PEN PALM REJECTION) */
+    .notepad-canvas-wrapper {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      min-height: 140px;
+      border: 2px solid #CBD5E1;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #FFFFFF;
+    }
+
+    .dual-ruled-texture {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image: repeating-linear-gradient(
+        #FFFFFF 0px,
+        #FFFFFF 24px,
+        var(--ruled-line) 25px,
+        #FFFFFF 26px,
+        #FFFFFF 48px,
+        var(--ruled-line) 49px,
+        #FFFFFF 50px,
+        #FFFFFF 72px
+      );
+      opacity: 0.65;
+    }
+    .dual-ruled-texture::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 28px;
+      width: 2px;
+      height: 100%;
+      background: #F87171;
+    }
+
+    .shared-ink-canvas {
+      position: absolute;
+      inset: 0;
+      cursor: crosshair;
+      touch-action: none !important;
+      z-index: 2;
+    }
+
+    .canvas-tool-strip {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .tool-btn {
+      background: #FFF;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 8px;
+      padding: 4px 8px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .tool-btn.active { background: #E67E22; color: #FFF; border-color: #D35400; }
+    .tool-btn.palm-locked {
+      background: #DCFCE7;
+      border-color: #22C55E;
+      color: #15803D;
+    }
+
+    /* IN-ARENA FAILURE OVERLAY */
+    .failure-feedback-zone {
+      position: absolute;
+      inset: 0;
+      z-index: 40;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+      transform: scale(0.7);
+      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .failure-feedback-zone.active { opacity: 1; transform: scale(1); }
+    .failure-kanji {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 56px;
+      font-weight: 900;
+      color: #FF4757;
+      text-shadow: 0 0 20px #FF4757, 0 0 35px #C0392B, 0 0 60px #E74C3C;
+      line-height: 1;
+    }
+    .failure-subtext {
+      font-family: 'Cinzel', serif;
+      font-size: 24px;
+      font-weight: 900;
+      color: #FFF;
+      text-shadow: 0 0 15px #FF4757, 0 0 25px #C0392B;
+      letter-spacing: 3px;
+      margin-top: 4px;
+    }
+
+    /* CELEBRATION FINALE STAGE OVERLAY */
     #celebrationFinaleStage {
       position: fixed;
       inset: 0;
@@ -566,10 +741,7 @@
       pointer-events: none;
       transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
     }
-    .kanji-banner-centerpiece.impact {
-      transform: translate(-50%, -50%) scale(1);
-      opacity: 1;
-    }
+    .kanji-banner-centerpiece.impact { transform: translate(-50%, -50%) scale(1); opacity: 1; }
 
     .enso-brush-crescent {
       position: absolute;
@@ -583,40 +755,25 @@
       filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.6));
       transform: rotate(-35deg);
       pointer-events: none;
-      animation: ensoPulse 4s infinite alternate ease-in-out;
-    }
-    @keyframes ensoPulse {
-      0% { transform: rotate(-35deg) scale(0.98); }
-      100% { transform: rotate(-30deg) scale(1.02); }
     }
 
     .kanji-top-title {
       font-family: 'Noto Serif JP', serif;
       font-size: 72px;
       font-weight: 900;
-      color: #ffd700;
-      text-shadow:
-        -3px -3px 0 #5c3b12,
-         3px -3px 0 #5c3b12,
-        -3px  3px 0 #5c3b12,
-         3px  3px 0 #5c3b12,
-         0 0 20px #ffb700,
-         0 0 40px #ff9500;
+      color: #FFD700;
+      text-shadow: 0 0 20px #FFB700, 0 0 40px #FF9500;
       letter-spacing: 12px;
-      margin-left: 12px;
       line-height: 1.1;
-      white-space: nowrap;
     }
 
     .kanji-subtitle-gold {
       font-family: 'Cinzel', serif;
       font-size: 24px;
       font-weight: 900;
-      color: #fff4d0;
+      color: #FFF4D0;
       letter-spacing: 6px;
-      text-shadow: 0 2px 4px #000, 0 0 15px rgba(255, 215, 0, 0.9);
-      margin-top: 6px;
-      white-space: nowrap;
+      text-shadow: 0 2px 4px #000;
     }
 
     .flying-shinobi-rocket {
@@ -626,13 +783,9 @@
       z-index: 20;
       pointer-events: none;
       transform: rotate(38deg);
-      filter: drop-shadow(0 0 20px #00e5ff);
+      filter: drop-shadow(0 0 20px #00E5FF);
     }
-    .flying-shinobi-rocket img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
+    .flying-shinobi-rocket img { width: 100%; height: 100%; object-fit: contain; }
 
     .landing-zone-right {
       position: absolute;
@@ -648,355 +801,298 @@
       transition: transform 0.65s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.5s ease;
       pointer-events: none;
     }
-    .landing-zone-right.landed {
-      transform: translateY(-50%) translateX(0);
-      opacity: 1;
-      pointer-events: auto;
-    }
+    .landing-zone-right.landed { transform: translateY(-50%) translateX(0); opacity: 1; pointer-events: auto; }
 
     .unfurled-scroll-report {
       flex: 1;
-      background: #fcf4de;
-      border: 4px solid #8c5727;
+      background: #FCF4DE;
+      border: 4px solid #8C5727;
       border-radius: 14px;
       padding: 16px 20px;
-      box-shadow: 0 16px 36px rgba(0,0,0,0.8), inset 0 0 12px rgba(166, 114, 60, 0.4);
-      color: #3b220e;
-      position: relative;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.8);
+      color: #3B220E;
     }
-    .unfurled-scroll-report::before, .unfurled-scroll-report::after {
-      content: '';
-      position: absolute;
-      top: -12px;
-      width: 26px;
-      height: calc(100% + 24px);
-      background: #5d3916;
-      border: 2px solid #8e5828;
-      border-radius: 6px;
-    }
-    .unfurled-scroll-report::before { left: -14px; }
-    .unfurled-scroll-report::after { right: -14px; }
-
     .scroll-report-title {
       font-size: 16px;
       font-weight: 900;
-      color: #7a3e0c;
-      border-bottom: 2px dashed #b58252;
+      color: #7A3E0C;
+      border-bottom: 2px dashed #B58252;
       padding-bottom: 4px;
       margin-bottom: 8px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
     }
-    .scroll-report-body {
-      font-size: 13px;
-      font-weight: 800;
-      line-height: 1.5;
-      color: #4a2910;
-      margin-bottom: 12px;
-    }
+    .scroll-report-body { font-size: 13px; font-weight: 800; line-height: 1.5; color: #4A2910; margin-bottom: 12px; }
 
     .btn-finale-close {
-      background: linear-gradient(180deg, #ff9f43 0%, #e67e22 100%);
-      border: 2px solid #fed330;
-      color: #2b1704;
+      background: linear-gradient(180deg, #FF9F43 0%, #E67E22 100%);
+      border: 2px solid #FED330;
+      color: #2B1704;
       font-weight: 900;
       font-size: 13px;
       padding: 8px 16px;
       border-radius: 8px;
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-      transition: all 0.2s;
-    }
-    .btn-finale-close:hover {
-      transform: translateY(-2px);
-      background: #ffa801;
     }
 
     .shinobi-victory-posture {
       width: 170px;
       height: 250px;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: flex-end;
-      position: relative;
-      flex-shrink: 0;
     }
-    .shinobi-victory-posture img {
-      max-width: 100%;
-      max-height: 100%;
-      object-fit: contain;
-      filter: drop-shadow(0 10px 16px rgba(0,0,0,0.7));
-    }
-    .landing-dust-smoke {
-      position: absolute;
-      bottom: -15px;
-      width: 140px;
-      height: 80px;
-      pointer-events: none;
-    }
+    .shinobi-victory-posture img { max-width: 100%; max-height: 100%; object-fit: contain; }
   </style>
 </head>
 <body>
 
-  <!-- 1. FLOATING IMMERSIVE CINEMATIC HUD -->
-  <header class="top-cinematic-hud">
-    <button type="button" class="hud-hub-btn" onclick="goToHub()">🍃 Hub</button>
-
-    <div class="chapter-title-badge">
-      <span class="chapter-main-text" id="hudChapterTitle">Mission A: 18 ÷ 6</span>
-      <span class="chapter-sub-text">Repeated Subtraction Arena</span>
+  <!-- MASTER TOP HUD & 3-STAGE SWITCHER -->
+  <header class="master-top-hud">
+    <div class="hud-btn-group">
+      <button type="button" class="hud-action-btn" onclick="goToHub()">🍃 Hub</button>
+      <button type="button" class="hud-action-btn hud-reset-btn" onclick="resetEntireMission()">🔄 Restart</button>
     </div>
 
-    <div style="display: flex; gap: 10px;">
-      <button class="mission-selector-btn" id="openMissionModalBtn">📜 Missions</button>
-      <button class="scroll-toggle-btn" id="toggleScrollBtn">📜 Open Scroll</button>
+    <nav class="stage-switch-nav">
+      <button type="button" class="stage-nav-pill active" id="btnStage1" onclick="switchMainStage(1)">⚔️ Stage 1: Arena Combat</button>
+      <button type="button" class="stage-nav-pill" id="btnStage2" onclick="switchMainStage(2)">🦋 Stage 2: Garden Ladder</button>
+      <button type="button" class="stage-nav-pill" id="btnStage3" onclick="switchMainStage(3)">🍥 Stage 3: Genjutsu Dispel</button>
+    </nav>
+
+    <div class="hud-btn-group">
+      <button type="button" class="hud-action-btn" id="drawerToggleBtn" onclick="toggleStage1Drawer()">📜 Scroll</button>
     </div>
   </header>
 
-  <!-- FILLING HP BAR -->
-  <div class="boss-status-hud">
-    <div class="boss-info-row">
-      <span id="bossNameLabel">Rival Defender</span>
-      <span id="bossHpText">0 / 18 HP Completed</span>
-    </div>
-    <div class="boss-hp-track">
-      <div class="boss-hp-fill" id="bossHpFill"></div>
-    </div>
-  </div>
+  <!-- VIEWPORT CONTAINER -->
+  <main class="main-stage-viewport">
 
-  <!-- 2. FULL-SCREEN ARENA VIEWPORT WITH VIDEO BACKGROUND -->
-  <main class="viewport-stage" id="viewportStage">
-    
-    <div class="backdrop-wrapper">
-      <video autoplay muted loop playsinline class="backdrop-img">
-        <source src="assets/battlefield-bg.mp4" type="video/mp4">
+    <!-- ================= STAGE 1: ARENA COMBAT VIEWPORT ================= -->
+    <div id="stage1View">
+      <video autoplay muted loop playsinline class="arena-video-bg">
+        <source src="assets/battlefield-bg.mp4" type="video/mp4" />
       </video>
-      <div class="backdrop-wash"></div>
+      <div class="strike-fx-flash" id="stage1Flash"></div>
+
+      <!-- RAIDERS -->
+      <div class="corner-raider top-left" id="raiderTL"><img id="rImgTL" src="assets/kakashi.png" alt=""></div>
+      <div class="corner-raider top-right" id="raiderTR"><img id="rImgTR" src="assets/lee.png" alt=""></div>
+      <div class="corner-raider bottom-left" id="raiderBL"><img id="rImgBL" src="assets/neji.png" alt=""></div>
+      <div class="corner-raider bottom-right" id="raiderBR"><img id="rImgBR" src="assets/sasuke.png" alt=""></div>
+
+      <img src="assets/lightning.png" class="arena-strike-lightning" id="stage1Lightning" alt="" onerror="this.style.display='none'">
+      <img src="assets/smoke-poof.png" class="arena-smoke-puff" id="stage1Smoke" alt="" onerror="this.style.display='none'">
+
+      <!-- ARENA HP GAUGE -->
+      <div class="arena-status-overlay">
+        <div class="boss-info-row">
+          <span id="stage1BossName">Sasuke Uchiha (Defender)</span>
+          <span id="stage1HpText">0 / 18 HP Completed</span>
+        </div>
+        <div class="boss-hp-track">
+          <div class="boss-hp-fill" id="stage1HpFill"></div>
+        </div>
+      </div>
+
+      <!-- SLIDE-OUT NOTEPAD DRAWER (STAGE 1) -->
+      <aside class="stage1-scroll-drawer open" id="stage1Drawer">
+        <div style="background:#251D18; padding:8px 10px; display:flex; justify-content:space-between; align-items:center;">
+          <div class="canvas-tool-strip">
+            <button type="button" class="tool-btn active" id="s1PenBtn" onclick="setInkTool('pen')">✏️ Pen</button>
+            <button type="button" class="tool-btn" id="s1EraserBtn" onclick="setInkTool('eraser')">🧹 Eraser</button>
+            <button type="button" class="tool-btn" onclick="clearActiveInkCanvas()">🗑️</button>
+            <button type="button" class="tool-btn" id="s1PalmBtn" onclick="togglePalmRejection()">🖐️ Palm Lock</button>
+          </div>
+          <button type="button" class="tool-btn" onclick="toggleStage1Drawer()">✕</button>
+        </div>
+
+        <div class="notepad-canvas-wrapper" style="flex:1;">
+          <div class="dual-ruled-texture"></div>
+          <canvas class="shared-ink-canvas" id="stage1InkCanvas"></canvas>
+        </div>
+
+        <div class="stage1-drawer-dock">
+          <button type="button" class="btn-lightning-strike" onclick="executeStage1Strike()">⚡ Jutsu Strike!</button>
+          <div class="quotient-row">
+            <span class="quotient-label" id="stage1QuotientLabel">18 ÷ 6 =</span>
+            <input type="number" id="stage1QuotientInput" class="quotient-input" placeholder="?">
+            <button type="button" class="btn-submit-quotient" onclick="submitStage1Quotient()">Submit</button>
+          </div>
+        </div>
+      </aside>
     </div>
 
-    <canvas id="fxCanvas"></canvas>
-    <div class="lightning-flash-overlay" id="lightningFlash"></div>
+    <!-- ================= STAGES 2 & 3: 3-PANE TRIPTYCH VIEWPORT ================= -->
+    <div id="triptychView">
 
-    <!-- COMBAT ZONE: 4 CORNER RAIDERS -->
-    <div class="combat-ground-zone">
-      <div class="corner-raider top-left" id="raiderTL"><img id="raiderImgTL" src="assets/kakashi.png" alt="Raider TL" onerror="handleImageFallback(this)"></div>
-      <div class="corner-raider top-right" id="raiderTR"><img id="raiderImgTR" src="assets/lee.png" alt="Raider TR" onerror="handleImageFallback(this)"></div>
-      <div class="corner-raider bottom-left" id="raiderBL"><img id="raiderImgBL" src="assets/neji.png" alt="Raider BL" onerror="handleImageFallback(this)"></div>
-      <div class="corner-raider bottom-right" id="raiderBR"><img id="raiderImgBR" src="assets/sasuke.png" alt="Raider BR" onerror="handleImageFallback(this)"></div>
+      <!-- PANE 1: MISSION SELECTOR SCROLL -->
+      <aside class="mission-pane-scroll">
+        <div class="scroll-rod-left"></div>
+        <div class="scroll-rod-right"></div>
+        <div style="font-family:'Cinzel',serif; font-size:1rem; font-weight:900; color:#7A3E0C;" id="triptychMenuTitle">Mission Scrolls</div>
+        <div class="scroll-selector-grid" id="triptychScrollGrid"></div>
+      </aside>
 
-      <img src="assets/lightning.png" class="strike-lightning-layer" id="strikeLightningImg" alt="Lightning Strike" onerror="this.style.display='none'" />
-      <img src="assets/smoke-poof.png" alt="Smoke" class="dynamic-smoke-puff" id="strikeSmokePuff" onerror="this.style.display='none'" />
+      <!-- PANE 2: ARENA BATTLEFIELD -->
+      <section class="triptych-center-stage">
+        <video autoplay muted loop playsinline class="arena-video-bg">
+          <source src="assets/battlefield-bg.mp4" type="video/mp4" />
+        </video>
+        <div class="strike-fx-flash" id="triptychFlash"></div>
+
+        <img src="assets/lightning.png" class="arena-strike-lightning" id="triptychLightning" alt="" onerror="this.style.display='none'">
+        <img src="assets/smoke-poof.png" class="arena-smoke-puff" id="triptychSmoke" alt="" onerror="this.style.display='none'">
+
+        <div class="failure-feedback-zone" id="triptychFailOverlay">
+          <div class="failure-kanji">幻術 UNBROKEN!</div>
+          <div class="failure-subtext">TRY AGAIN!</div>
+        </div>
+
+        <div class="genjutsu-prompt-scroll">
+          <div class="shinobi-caller" id="triptychCallerLabel">Challenger</div>
+          <div class="genjutsu-statement-text" id="triptychStatementText">Equation</div>
+          <div class="puzzle-narrative-text" id="triptychNarrativeText" style="display:none;"></div>
+        </div>
+
+        <div class="shinobi-avatar-zone">
+          <img src="assets/sasuke.png" class="challenger-sprite" id="triptychSprite" alt="" onerror="handleImageFallback(this)">
+        </div>
+
+        <button type="button" class="kunai-dispel-btn" onclick="executeTriptychStrike()">🗡️ Dispel Strike!</button>
+      </section>
+
+      <!-- PANE 3: WORKSPACE & INK NOTEPAD -->
+      <aside class="workspace-pane-book">
+        <div class="verdict-header-title" id="triptychWorkTitle">WORKSPACE</div>
+        <div style="font-size:0.86rem; font-weight:800; color:#475569;" id="triptychWorkInstr">Verify chakra statement:</div>
+
+        <!-- STAGE 3 YES/NO ROW -->
+        <div class="verdict-btn-row" id="triptychVerdictRow">
+          <button type="button" class="verdict-seal-btn yes-btn" id="vBtnYes" onclick="selectTriptychVerdict('Yes')">⭕ YES (Truth)</button>
+          <button type="button" class="verdict-seal-btn no-btn" id="vBtnNo" onclick="selectTriptychVerdict('No')">❌ NO (Illusion)</button>
+        </div>
+
+        <!-- STAGE 2 LADDER TABLE -->
+        <div class="ladder-table-wrapper" id="triptychLadderBox">
+          <div class="ladder-row"><span>15 - 3 =</span> <b>12</b></div>
+          <div class="ladder-row"><span>12 - 3 =</span> <b>9</b></div>
+          <div class="ladder-row"><span>9 - 3 =</span> <input type="number" id="inpL3" oninput="saveLadderState()" placeholder="?"></div>
+          <div class="ladder-row"><span>6 - 3 =</span> <input type="number" id="inpL4" oninput="saveLadderState()" placeholder="?"></div>
+          <div class="ladder-row"><span>3 - 3 =</span> <input type="number" id="inpL5" oninput="saveLadderState()" placeholder="?"></div>
+        </div>
+
+        <!-- CORRECTION / FINAL VALUE SLOT -->
+        <div class="correction-box" id="triptychCorrectionBox">
+          <span class="correction-label" id="triptychPromptLabel">True Answer:</span>
+          <input type="number" id="triptychInput" class="correction-input" placeholder="?" oninput="saveTriptychInput(this)">
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+          <span style="font-size:0.78rem; font-weight:900; color:#64748B;">DUAL-RULED INK WORKINGS</span>
+          <div class="canvas-tool-strip">
+            <button type="button" class="tool-btn active" id="tPenBtn" onclick="setInkTool('pen')">✏️ Pen</button>
+            <button type="button" class="tool-btn" id="tEraserBtn" onclick="setInkTool('eraser')">🧹 Eraser</button>
+            <button type="button" class="tool-btn" onclick="clearActiveInkCanvas()">🗑️</button>
+            <button type="button" class="tool-btn" id="tPalmBtn" onclick="togglePalmRejection()">🖐️ Palm Lock</button>
+          </div>
+        </div>
+
+        <div class="notepad-canvas-wrapper">
+          <div class="dual-ruled-texture"></div>
+          <canvas class="shared-ink-canvas" id="triptychInkCanvas"></canvas>
+        </div>
+      </aside>
+
     </div>
-
-    <!-- 3. NOTEPAD DRAWER -->
-    <aside class="ninja-scroll-drawer" id="ninjaScrollDrawer">
-      <div class="notepad-header-controls">
-        <div class="tools-icon-row">
-          <button class="btn-icon-tool active" id="toolPen" title="Pen">✏</button>
-          <button class="btn-icon-tool" id="toolEraser" title="Eraser">🧹</button>
-          <button class="btn-icon-tool" id="toolClear" title="Clear">🗑</button>
-          <button class="btn-icon-tool" id="toolUndo" title="Undo">↩</button>
-        </div>
-        <div class="color-swatch-row">
-          <span class="color-swatch active" data-color="#1e272e" style="background:#1e272e;"></span>
-          <span class="color-swatch" data-color="#0984e3" style="background:#0984e3;"></span>
-          <span class="color-swatch" data-color="#d63031" style="background:#d63031;"></span>
-        </div>
-      </div>
-
-      <div class="notepad-scroll-viewport" id="notepadScrollViewport">
-        <canvas id="inkCanvas"></canvas>
-      </div>
-
-      <div class="notepad-submission-dock">
-        <button class="btn-lightning-strike" id="btnJutsuStrike" title="Jutsu Strike">
-          ⚡
-        </button>
-
-        <div class="quotient-row">
-          <span class="quotient-label" id="quotientLabel">18 ÷ 6 =</span>
-          <input type="number" id="inputQuotient" class="quotient-input" placeholder="?" min="0" max="99">
-          <button class="btn-submit-quotient" id="btnSubmitQuotient">Submit</button>
-        </div>
-      </div>
-    </aside>
-
   </main>
 
-  <!-- 4. MISSION SELECTOR MODAL -->
-  <div id="missionModal">
-    <div class="modal-content-box">
-      <div class="modal-title">SELECT SHINOBI MISSION</div>
-      <div class="mission-grid-options" id="missionGridOptions"></div>
-      <button class="btn-close-modal" id="closeMissionModalBtn">Close Arena</button>
-    </div>
-  </div>
-
-  <!-- 5. CELEBRATION FINALE STAGE OVERLAY -->
+  <!-- CELEBRATION FINALE STAGE OVERLAY -->
   <div id="celebrationFinaleStage">
     <canvas id="finaleCanvas"></canvas>
 
     <div class="kanji-banner-centerpiece" id="kanjiCenterpiece">
       <div class="enso-brush-crescent"></div>
       <div class="kanji-top-title">任務完了</div>
-      <div class="kanji-subtitle-gold">MISSION ACCOMPLISHED</div>
+      <div class="kanji-subtitle-gold">MISSION ACCOMPLISHED!</div>
     </div>
 
     <div class="flying-shinobi-rocket" id="flyingShinobiRocket">
-      <img src="assets/naruto.png" id="flyingShinobiImg" alt="Shinobi In Flight" onerror="handleImageFallback(this)">
+      <img src="assets/naruto.png" id="flyingShinobiImg" alt="" onerror="handleImageFallback(this)">
     </div>
 
     <div class="landing-zone-right" id="landingZoneRight">
       <div class="unfurled-scroll-report">
-        <div class="scroll-report-title" id="reportScrollTitle">任務完了 — MISSION ACCOMPLISHED!</div>
-        <div class="scroll-report-body" id="reportScrollBody">
-          Repeated subtraction successfully completed!
-        </div>
-        <button class="btn-finale-close" onclick="closeCelebrationFinale()">Continue Training ➔</button>
+        <div class="scroll-report-title" id="reportScrollTitle">任務完了 — SOLVED!</div>
+        <div class="scroll-report-body" id="reportScrollBody">Equation verified!</div>
+        <button type="button" class="btn-finale-close" onclick="closeCelebrationFinale()">Continue Training ➔</button>
       </div>
-
       <div class="shinobi-victory-posture">
-        <img src="assets/naruto.png" id="victoryPoseImg" alt="Victory Shinobi" onerror="handleImageFallback(this)">
-        <img src="assets/smoke-poof.png" class="landing-dust-smoke" id="landingDustImg" alt="Dust Cloud" onerror="this.style.display='none'">
+        <img src="assets/naruto.png" id="victoryPoseImg" alt="" onerror="handleImageFallback(this)">
       </div>
     </div>
   </div>
 
   <script>
-    function goToHub() {
-      saveInkToStorage();
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage("close-lesson-to-hub", "*");
-      } else {
-        window.location.href = "index.html";
-      }
-    }
+    /* ========================================================= */
+    /* 1. DATA CONFIGURATION FOR ALL 3 STAGES                    */
+    /* ========================================================= */
+    let activeStage = 1;
 
-    function handleImageFallback(imgEl) {
-      imgEl.onerror = null;
-      imgEl.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><circle cx='70' cy='70' r='65' fill='%232b170c' stroke='%23ff9f43' stroke-width='4'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='42'>🍥</text></svg>";
-    }
+    // Stage 1 Missions (Arena Repeated Subtraction Boss Fights)
+    const STAGE1_MISSIONS = [
+      { id: 's1_a', code: 'Mission 1: 18 ÷ 6', dividend: 18, divisor: 6, hero: 'Naruto', heroImg: 'assets/naruto.png', rival: 'Sasuke Uchiha', rivalImg: 'assets/sasuke.png', color: '#00d2ff' },
+      { id: 's1_b', code: 'Mission 2: 45 ÷ 5', dividend: 45, divisor: 5, hero: 'Sasuke', heroImg: 'assets/sasuke.png', rival: 'Kakashi Hatake', rivalImg: 'assets/kakashi.png', color: '#a55eea' },
+      { id: 's1_c', code: 'Mission 3: 28 ÷ 4', dividend: 28, divisor: 4, hero: 'Kakashi', heroImg: 'assets/kakashi.png', rival: 'Rock Lee', rivalImg: 'assets/lee.png', color: '#45aaf2' },
+      { id: 's1_d', code: 'Mission 4: 48 ÷ 8', dividend: 48, divisor: 8, hero: 'Rock Lee', heroImg: 'assets/lee.png', rival: 'Neji Hyuga', rivalImg: 'assets/neji.png', color: '#26de81' }
+    ];
+    let s1Index = 0;
+    let s1CurrentHP = 0;
 
-    /* 1. MISSIONS CONFIG */
-    const MISSIONS = [
+    // Stage 2 Missions (Garden Ladder)
+    const STAGE2_MISSIONS = [
       {
-        id: 'mission_a',
-        code: 'Mission A: 18 ÷ 6',
-        dividend: 18,
-        divisor: 6,
-        hero: 'Naruto Uzumaki',
-        heroImg: 'assets/naruto.png',
-        rival: 'Sasuke Uchiha',
-        rivalImg: 'assets/sasuke.png',
-        color: '#00d2ff',
-        slipstreamType: 'rasengan'
+        id: 's2_a',
+        title: '3.a 15 Butterflies',
+        type: 'ladder',
+        caller: "Manisha's Garden (3.a)",
+        sprite: 'assets/naruto.png',
+        statement: '15 Butterflies ÷ 3 per flower',
+        narrative: 'There are 15 butterflies in total. On each flower there are 3 butterflies. Subtract 3 repeatedly to find the total flowers!',
+        correctAnswer: '5',
+        equationLeft: 'Total Flowers = 15 ÷ 3 =',
+        color: '#ec4899'
       },
       {
-        id: 'mission_b',
-        code: 'Mission B: 45 ÷ 5',
-        dividend: 45,
-        divisor: 5,
-        hero: 'Sasuke Uchiha',
-        heroImg: 'assets/sasuke.png',
-        rival: 'Kakashi Hatake',
-        rivalImg: 'assets/kakashi.png',
-        color: '#a55eea',
-        slipstreamType: 'chidori'
-      },
-      {
-        id: 'mission_c',
-        code: 'Mission C: 28 ÷ 4',
-        dividend: 28,
-        divisor: 4,
-        hero: 'Kakashi Hatake',
-        heroImg: 'assets/kakashi.png',
-        rival: 'Rock Lee',
-        rivalImg: 'assets/lee.png',
-        color: '#45aaf2',
-        slipstreamType: 'raikiri'
-      },
-      {
-        id: 'mission_d',
-        code: 'Mission D: 35 ÷ 5',
-        dividend: 35,
-        divisor: 5,
-        hero: 'Rock Lee',
-        heroImg: 'assets/lee.png',
-        rival: 'Neji Hyuga',
-        rivalImg: 'assets/neji.png',
-        color: '#26de81',
-        slipstreamType: 'youth'
-      },
-      {
-        id: 'mission_e',
-        code: 'Mission E: 42 ÷ 7',
-        dividend: 42,
-        divisor: 7,
-        hero: 'Shikamaru Nara',
-        heroImg: 'assets/shikamaru.png',
-        rival: 'Naruto Uzumaki',
-        rivalImg: 'assets/naruto.png',
-        color: '#4b6584',
-        slipstreamType: 'shadow'
-      },
-      {
-        id: 'mission_f',
-        code: 'Mission F: 60 ÷ 10',
-        dividend: 60,
-        divisor: 10,
-        hero: 'Neji Hyuga',
-        heroImg: 'assets/neji.png',
-        rival: 'Kakashi Hatake',
-        rivalImg: 'assets/kakashi.png',
-        color: '#70a1ff',
-        slipstreamType: 'byakugan'
+        id: 's2_b',
+        title: '3.b +10 Butterflies',
+        type: 'word',
+        caller: "Manisha's Garden (3.b)",
+        sprite: 'assets/kakashi.png',
+        statement: '10 More Butterflies Arrive!',
+        narrative: '10 more butterflies arrive (15 + 10 = 25 total). Distributed equally among the 5 flowers. How many butterflies on each flower?',
+        correctAnswer: '5',
+        equationLeft: 'Butterflies per flower = 25 ÷ 5 =',
+        color: '#8b5cf6'
       }
     ];
 
-    const ALL_CHARACTER_SPRITES = [
-      'assets/naruto.png',
-      'assets/sasuke.png',
-      'assets/kakashi.png',
-      'assets/lee.png',
-      'assets/neji.png',
-      'assets/shikamaru.png'
+    // Stage 3 Missions (Genjutsu Dispel)
+    const STAGE3_MISSIONS = [
+      { id: 's3_a', title: 'Scroll A', type: 'genjutsu', caller: 'Sasuke Uchiha', sprite: 'assets/sasuke.png', statement: '36 ÷ 4 = 8', truthValue: 'No', correctAnswer: '9', equationLeft: '36 ÷ 4 =', color: '#00d2ff' },
+      { id: 's3_b', title: 'Scroll B', type: 'genjutsu', caller: 'Naruto Uzumaki', sprite: 'assets/naruto.png', statement: '80 ÷ 8 = 10', truthValue: 'Yes', correctAnswer: '10', equationLeft: '80 ÷ 8 =', color: '#ff7700' },
+      { id: 's3_c', title: 'Scroll C', type: 'genjutsu', caller: 'Kakashi Hatake', sprite: 'assets/kakashi.png', statement: '56 ÷ 7 = 9', truthValue: 'No', correctAnswer: '8', equationLeft: '56 ÷ 7 =', color: '#45aaf2' },
+      { id: 's3_d', title: 'Scroll D', type: 'genjutsu', caller: 'Rock Lee', sprite: 'assets/lee.png', statement: '48 ÷ 8 = 7', truthValue: 'No', correctAnswer: '6', equationLeft: '48 ÷ 8 =', color: '#26de81' }
     ];
+    let triptychIndex = 0;
 
-    let currentMissionIdx = 0;
-    let accumulatedProgressHP = 0;
-    let maxHealth = 18;
-    let totalRequiredSteps = 3;
-
-    /* 2. WARFARE AUDIO ENGINE */
-    class NinjaAudioEngine {
+    /* ========================================================= */
+    /* 2. AUDIO ENGINE (WEB AUDIO API)                           */
+    /* ========================================================= */
+    class WarfareAudio {
       constructor() { this.ctx = null; }
       init() {
-        if (!this.ctx) {
-          const AudioContext = window.AudioContext || window.webkitAudioContext;
-          this.ctx = new AudioContext();
-        }
+        if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
         if (this.ctx.state === 'suspended') this.ctx.resume();
       }
-
-      playCornerChargeChime() {
-        this.init();
-        const t0 = this.ctx.currentTime;
-        [300, 450, 600, 750].forEach((freq, idx) => {
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, t0 + idx * 0.08);
-          gain.gain.setValueAtTime(0.01, t0 + idx * 0.08);
-          gain.gain.linearRampToValueAtTime(0.12, t0 + idx * 0.08 + 0.05);
-          gain.gain.exponentialRampToValueAtTime(0.001, t0 + idx * 0.08 + 0.25);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start(t0 + idx * 0.08);
-          osc.stop(t0 + idx * 0.08 + 0.3);
-        });
-      }
-
       playMultiHitClashShockwave() {
         this.init();
         const t0 = this.ctx.currentTime;
@@ -1012,27 +1108,6 @@
         osc.start(t0);
         osc.stop(t0 + 0.45);
       }
-
-      playSmokePoof() {
-        this.init();
-        const bufferSize = this.ctx.sampleRate * 0.25;
-        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (this.ctx.sampleRate * 0.05));
-        const source = this.ctx.createBufferSource();
-        source.buffer = buffer;
-        const filter = this.ctx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(700, this.ctx.currentTime);
-        const gain = this.ctx.createGain();
-        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
-        source.connect(filter);
-        filter.connect(gain);
-        gain.connect(this.ctx.destination);
-        source.start();
-      }
-
       playTaikoGongImpact() {
         this.init();
         const t0 = this.ctx.currentTime;
@@ -1048,7 +1123,6 @@
         osc.start(t0);
         osc.stop(t0 + 0.9);
       }
-
       playFlyThroughWhoosh() {
         this.init();
         const t0 = this.ctx.currentTime;
@@ -1057,7 +1131,6 @@
         const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
         const data = buffer.getChannelData(0);
         for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-
         const noise = this.ctx.createBufferSource();
         noise.buffer = buffer;
         const filter = this.ctx.createBiquadFilter();
@@ -1065,631 +1138,564 @@
         filter.Q.value = 3.0;
         filter.frequency.setValueAtTime(300, t0);
         filter.frequency.exponentialRampToValueAtTime(2400, t0 + dur);
-
         const gain = this.ctx.createGain();
         gain.gain.setValueAtTime(0.01, t0);
         gain.gain.linearRampToValueAtTime(0.3, t0 + dur * 0.4);
         gain.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
-
         noise.connect(filter);
         filter.connect(gain);
         gain.connect(this.ctx.destination);
         noise.start(t0);
         noise.stop(t0 + dur);
       }
-
-      playJapaneseKotoMelody() {
+      playSmokePoof() {
         this.init();
-        const melody = [
-          { f: 523.25, time: 0.00 },
-          { f: 587.33, time: 0.16 },
-          { f: 622.25, time: 0.32 },
-          { f: 783.99, time: 0.52 }
-        ];
-        const t0 = this.ctx.currentTime;
-        melody.forEach(note => {
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(note.f, t0 + note.time);
-          gain.gain.setValueAtTime(0.2, t0 + note.time);
-          gain.gain.exponentialRampToValueAtTime(0.001, t0 + note.time + 0.5);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start(t0 + note.time);
-          osc.stop(t0 + note.time + 0.55);
-        });
+        const bufferSize = this.ctx.sampleRate * 0.25;
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (this.ctx.sampleRate * 0.05));
+        const src = this.ctx.createBufferSource();
+        src.buffer = buffer;
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(600, this.ctx.currentTime);
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.35, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+        src.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+        src.start();
       }
     }
-    const soundFX = new NinjaAudioEngine();
+    const audio = new WarfareAudio();
 
-    /* 3. DYNAMIC HUD & MISSION UPDATER */
-    const hudChapterTitle = document.getElementById('hudChapterTitle');
-    const bossNameLabel = document.getElementById('bossNameLabel');
-    const bossHpText = document.getElementById('bossHpText');
-    const bossHpFill = document.getElementById('bossHpFill');
-
-    function updateFighters(m) {
-      hudChapterTitle.innerText = m.code;
-      bossNameLabel.innerText = `${m.rival} (Defender)`;
-      accumulatedProgressHP = 0;
-      updateBossHP();
-      randomizeCornerRaiders();
-    }
-
-    function randomizeCornerRaiders() {
-      const shuffled = [...ALL_CHARACTER_SPRITES].sort(() => 0.5 - Math.random());
-      document.getElementById('raiderImgTL').src = shuffled[0];
-      document.getElementById('raiderImgTR').src = shuffled[1];
-      document.getElementById('raiderImgBL').src = shuffled[2];
-      document.getElementById('raiderImgBR').src = shuffled[3];
-    }
-
-    function updateBossHP() {
-      bossHpText.innerText = `${accumulatedProgressHP} / ${maxHealth} HP Completed`;
-      const pct = Math.min(100, (accumulatedProgressHP / maxHealth) * 100);
-      bossHpFill.style.width = `${pct}%`;
-    }
-
-    /* 4. INK CANVAS ENGINE WITH ROBUST DPR SCALING */
-    const inkCanvas = document.getElementById('inkCanvas');
-    const inkCtx = inkCanvas.getContext('2d', { alpha: true });
-    const scrollContainer = document.getElementById('notepadScrollViewport');
-
+    /* ========================================================= */
+    /* 3. HARDWARE-LEVEL S PEN PALM REJECTION & INK ENGINE       */
+    /* ========================================================= */
+    let palmRejectionActive = true;
+    let inkTool = 'pen';
     let isDrawing = false;
-    let currentTool = 'pen';
-    let strokeColor = '#1e272e';
-    let strokeWidth = 3.5;
-    let undoStack = [];
-    const VIRTUAL_CANVAS_HEIGHT = 4000;
+    let lastX = 0, lastY = 0;
 
-    function resizeCanvas() {
-      const rect = scrollContainer.getBoundingClientRect();
-      if (rect.width <= 0) return;
-      const dpr = window.devicePixelRatio || 1;
+    const s1Canvas = document.getElementById('stage1InkCanvas');
+    const s1Ctx = s1Canvas.getContext('2d');
+    const tripCanvas = document.getElementById('triptychInkCanvas');
+    const tripCtx = tripCanvas.getContext('2d');
 
-      let temp = document.createElement('canvas');
-      temp.width = inkCanvas.width;
-      temp.height = inkCanvas.height;
-      let tCtx = temp.getContext('2d');
-      if (inkCanvas.width > 0 && inkCanvas.height > 0) {
-        tCtx.drawImage(inkCanvas, 0, 0);
-      }
-
-      inkCanvas.width = Math.floor(rect.width * dpr);
-      inkCanvas.height = Math.floor(VIRTUAL_CANVAS_HEIGHT * dpr);
-      inkCanvas.style.width = `${rect.width}px`;
-      inkCanvas.style.height = `${VIRTUAL_CANVAS_HEIGHT}px`;
-
-      inkCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-      if (temp.width > 0 && temp.height > 0) {
-        inkCtx.drawImage(temp, 0, 0, rect.width, VIRTUAL_CANVAS_HEIGHT);
-      }
+    function getActiveCanvas() {
+      return (activeStage === 1) ? { c: s1Canvas, ctx: s1Ctx } : { c: tripCanvas, ctx: tripCtx };
     }
 
-    function getStorageKey(missionId) {
-      return `v11_isolated_ink::humayun::maths_oct09::${missionId}`;
-    }
-
-    function saveInkToStorage() {
-      const m = MISSIONS[currentMissionIdx];
-      try {
-        const dataUrl = inkCanvas.toDataURL();
-        localStorage.setItem(getStorageKey(m.id), dataUrl);
-      } catch (e) {}
-    }
-
-    function loadInkFromStorage() {
-      const m = MISSIONS[currentMissionIdx];
-      const dpr = window.devicePixelRatio || 1;
-      inkCtx.save();
-      inkCtx.setTransform(1, 0, 0, 1, 0, 0);
-      inkCtx.clearRect(0, 0, inkCanvas.width, inkCanvas.height);
-      inkCtx.restore();
-      
-      undoStack = [];
-      const saved = localStorage.getItem(getStorageKey(m.id));
-      if (saved) {
-        const img = new Image();
-        img.onload = () => {
-          inkCtx.save();
-          inkCtx.setTransform(1, 0, 0, 1, 0, 0);
-          inkCtx.drawImage(img, 0, 0, inkCanvas.width, inkCanvas.height);
-          inkCtx.restore();
-          pushUndoState();
-        };
-        img.src = saved;
-      } else {
-        pushUndoState();
-      }
-    }
-
-    function pushUndoState() {
-      try {
-        undoStack.push(inkCanvas.toDataURL());
-        if (undoStack.length > 15) undoStack.shift();
-      } catch (e) {}
-    }
-
-    function undoLast() {
-      if (undoStack.length > 1) {
-        undoStack.pop();
-        const prevState = undoStack[undoStack.length - 1];
-        const img = new Image();
-        img.onload = () => {
-          inkCtx.save();
-          inkCtx.setTransform(1, 0, 0, 1, 0, 0);
-          inkCtx.clearRect(0, 0, inkCanvas.width, inkCanvas.height);
-          inkCtx.drawImage(img, 0, 0, inkCanvas.width, inkCanvas.height);
-          inkCtx.restore();
-          saveInkToStorage();
-        };
-        img.src = prevState;
-      }
-    }
-
-    function getCanvasPos(e) {
-      const rect = inkCanvas.getBoundingClientRect();
-      return { x: e.clientX - rect.left, y: e.clientY - rect.top };
-    }
-
-    function startDraw(e) {
-      isDrawing = true;
-      try { inkCanvas.setPointerCapture(e.pointerId); } catch (_) {}
-      const pos = getCanvasPos(e);
-      inkCtx.beginPath();
-      inkCtx.moveTo(pos.x, pos.y);
-      inkCtx.lineCap = 'round';
-      inkCtx.lineJoin = 'round';
-
-      if (currentTool === 'eraser') {
-        inkCtx.globalCompositeOperation = 'destination-out';
-        inkCtx.lineWidth = strokeWidth * 6;
-      } else {
-        inkCtx.globalCompositeOperation = 'source-over';
-        inkCtx.strokeStyle = strokeColor;
-        const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
-        inkCtx.lineWidth = strokeWidth * (pressure * 1.5 + 0.35);
-      }
-      e.preventDefault();
-    }
-
-    function moveDraw(e) {
-      if (!isDrawing) return;
-      const pos = getCanvasPos(e);
-      inkCtx.lineTo(pos.x, pos.y);
-      inkCtx.stroke();
-      e.preventDefault();
-    }
-
-    function stopDraw(e) {
-      if (!isDrawing) return;
-      isDrawing = false;
-      try { inkCanvas.releasePointerCapture(e.pointerId); } catch (_) {}
-      inkCtx.closePath();
-      inkCtx.globalCompositeOperation = 'source-over';
-      pushUndoState();
-      saveInkToStorage();
-    }
-
-    inkCanvas.addEventListener('pointerdown', startDraw);
-    inkCanvas.addEventListener('pointermove', moveDraw);
-    inkCanvas.addEventListener('pointerup', stopDraw);
-    inkCanvas.addEventListener('pointercancel', stopDraw);
-    inkCanvas.addEventListener('pointerleave', stopDraw);
-
-    /* 5. ARENA FX CANVAS */
-    const fxCanvas = document.getElementById('fxCanvas');
-    const fxCtx = fxCanvas.getContext('2d', { alpha: true });
-    let arenaParticles = [];
-
-    function resizeFxCanvas() {
-      fxCanvas.width = window.innerWidth;
-      fxCanvas.height = window.innerHeight;
-    }
-
-    class ArenaFxParticle {
-      constructor(x, y, color) {
-        this.x = x;
-        this.y = y;
-        this.color = color;
-        this.radius = Math.random() * 5 + 2;
-        this.speedX = (Math.random() - 0.5) * 12;
-        this.speedY = (Math.random() - 0.5) * 12;
-        this.life = 1;
-        this.decay = 0.05;
-      }
-      update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        this.life -= this.decay;
-      }
-      draw(c) {
-        c.save();
-        c.globalAlpha = Math.max(0, this.life);
-        c.fillStyle = this.color;
-        c.beginPath();
-        c.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        c.fill();
-        c.restore();
-      }
-    }
-
-    function spawnArenaBurst(x, y, color, count = 30) {
-      for (let i = 0; i < count; i++) {
-        arenaParticles.push(new ArenaFxParticle(x, y, color));
-      }
-    }
-
-    function renderArenaFX() {
-      fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
-      for (let i = arenaParticles.length - 1; i >= 0; i--) {
-        arenaParticles[i].update();
-        arenaParticles[i].draw(fxCtx);
-        if (arenaParticles[i].life <= 0) arenaParticles.splice(i, 1);
-      }
-      requestAnimationFrame(renderArenaFX);
-    }
-    requestAnimationFrame(renderArenaFX);
-
-    /* 6. GAME CONTROLS & 4-CORNER GLIDE-TO-CLASH STRIKES */
-    const ninjaScrollDrawer = document.getElementById('ninjaScrollDrawer');
-    const toggleScrollBtn = document.getElementById('toggleScrollBtn');
-    const strikeLightningImg = document.getElementById('strikeLightningImg');
-    const strikeSmokePuff = document.getElementById('strikeSmokePuff');
-    const lightningFlash = document.getElementById('lightningFlash');
-    const btnJutsuStrike = document.getElementById('btnJutsuStrike');
-    const quotientLabel = document.getElementById('quotientLabel');
-    const inputQuotient = document.getElementById('inputQuotient');
-
-    const raiderTL = document.getElementById('raiderTL');
-    const raiderTR = document.getElementById('raiderTR');
-    const raiderBL = document.getElementById('raiderBL');
-    const raiderBR = document.getElementById('raiderBR');
-
-    toggleScrollBtn.onclick = () => {
-      ninjaScrollDrawer.classList.toggle('open');
-      toggleScrollBtn.innerText = ninjaScrollDrawer.classList.contains('open') ? '📜 Close Scroll' : '📜 Open Scroll';
-      setTimeout(resizeCanvas, 300);
-    };
-
-    const missionModal = document.getElementById('missionModal');
-    const missionGridOptions = document.getElementById('missionGridOptions');
-    document.getElementById('openMissionModalBtn').onclick = () => {
-      buildMissionGrid();
-      missionModal.style.display = 'flex';
-    };
-    document.getElementById('closeMissionModalBtn').onclick = () => {
-      missionModal.style.display = 'none';
-    };
-
-    function buildMissionGrid() {
-      missionGridOptions.innerHTML = '';
-      MISSIONS.forEach((m, idx) => {
-        const card = document.createElement('div');
-        card.className = `mission-card-option ${idx === currentMissionIdx ? 'active' : ''}`;
-        card.innerHTML = `
-          <div class="mission-card-avatar"><img src="${m.heroImg}" alt="${m.hero}" onerror="handleImageFallback(this)" /></div>
-          <div class="mission-card-info">
-            <span class="mission-card-title">${m.code}</span>
-            <span class="mission-card-sub">Hero: ${m.hero}</span>
-          </div>
-        `;
-        card.onclick = () => {
-          selectMission(idx);
-          missionModal.style.display = 'none';
-        };
-        missionGridOptions.appendChild(card);
+    function fitAllCanvases() {
+      [s1Canvas, tripCanvas].forEach(canv => {
+        const wrap = canv.parentElement;
+        if (!wrap || wrap.clientWidth <= 0) return;
+        const dpr = window.devicePixelRatio || 1;
+        canv.width = wrap.clientWidth * dpr;
+        canv.height = wrap.clientHeight * dpr;
+        canv.style.width = wrap.clientWidth + 'px';
+        canv.style.height = wrap.clientHeight + 'px';
+        const ctx = canv.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       });
     }
 
-    function selectMission(idx) {
-      saveInkToStorage();
-      currentMissionIdx = idx;
-      const m = MISSIONS[idx];
-      totalRequiredSteps = m.dividend / m.divisor;
-      maxHealth = m.dividend;
-      accumulatedProgressHP = 0;
-
-      quotientLabel.innerText = `${m.dividend} ÷ ${m.divisor} =`;
-      inputQuotient.value = '';
-
-      updateFighters(m);
-      loadInkFromStorage();
+    function togglePalmRejection() {
+      palmRejectionActive = !palmRejectionActive;
+      document.getElementById('s1PalmBtn').classList.toggle('palm-locked', palmRejectionActive);
+      document.getElementById('tPalmBtn').classList.toggle('palm-locked', palmRejectionActive);
     }
 
-    btnJutsuStrike.onclick = () => {
-      if (accumulatedProgressHP >= maxHealth) return;
-      const m = MISSIONS[currentMissionIdx];
+    function setInkTool(t) {
+      inkTool = t;
+      document.getElementById('s1PenBtn').classList.toggle('active', t === 'pen');
+      document.getElementById('s1EraserBtn').classList.toggle('active', t === 'eraser');
+      document.getElementById('tPenBtn').classList.toggle('active', t === 'pen');
+      document.getElementById('tEraserBtn').classList.toggle('active', t === 'eraser');
+    }
 
-      soundFX.playCornerChargeChime();
+    function setupCanvasPointerEvents(canvasEl, getSubKeyFn) {
+      canvasEl.onpointerdown = (e) => {
+        // S PEN PALM REJECTION FILTER
+        if (palmRejectionActive && e.pointerType === 'touch') return;
 
-      raiderTL.classList.add('clash');
-      raiderTR.classList.add('clash');
-      raiderBL.classList.add('clash');
-      raiderBR.classList.add('clash');
+        isDrawing = true;
+        try { canvasEl.setPointerCapture(e.pointerId); } catch (_) {}
+        const rect = canvasEl.getBoundingClientRect();
+        lastX = e.clientX - rect.left;
+        lastY = e.clientY - rect.top;
+        e.preventDefault();
+      };
+
+      canvasEl.onpointermove = (e) => {
+        if (!isDrawing) return;
+        if (palmRejectionActive && e.pointerType === 'touch') return;
+
+        const ctx = canvasEl.getContext('2d');
+        const rect = canvasEl.getBoundingClientRect();
+        const currX = e.clientX - rect.left;
+        const currY = e.clientY - rect.top;
+
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(currX, currY);
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        if (inkTool === 'eraser') {
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.lineWidth = 22;
+        } else {
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.strokeStyle = '#1E293B';
+          // Pressure scaling for S Pen
+          const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
+          ctx.lineWidth = 3.6 * (pressure * 1.5 + 0.35);
+        }
+        ctx.stroke();
+
+        lastX = currX;
+        lastY = currY;
+        e.preventDefault();
+      };
+
+      const stopDraw = (e) => {
+        if (isDrawing) {
+          isDrawing = false;
+          try { canvasEl.releasePointerCapture(e.pointerId); } catch (_) {}
+          saveCanvasState(canvasEl, getSubKeyFn());
+        }
+      };
+      canvasEl.onpointerup = stopDraw;
+      canvasEl.onpointercancel = stopDraw;
+      canvasEl.onpointerleave = stopDraw;
+    }
+
+    function saveCanvasState(canvasEl, key) {
+      if (!canvasEl || canvasEl.width <= 0) return;
+      try { localStorage.setItem(key, canvasEl.toDataURL()); } catch (e) {}
+    }
+
+    function restoreCanvasState(canvasEl, key) {
+      const ctx = canvasEl.getContext('2d');
+      ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+      const saved = localStorage.getItem(key);
+      if (saved) {
+        const img = new Image();
+        img.onload = () => {
+          ctx.save();
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
+          ctx.drawImage(img, 0, 0, canvasEl.width, canvasEl.height);
+          ctx.restore();
+        };
+        img.src = saved;
+      }
+    }
+
+    function clearActiveInkCanvas() {
+      const { c, ctx } = getActiveCanvas();
+      ctx.clearRect(0, 0, c.width, c.height);
+      const key = (activeStage === 1) ? `v4_ink_s1_${STAGE1_MISSIONS[s1Index].id}` : `v4_ink_trip_${getTriptychCurrentMission().id}`;
+      localStorage.removeItem(key);
+    }
+
+    setupCanvasPointerEvents(s1Canvas, () => `v4_ink_s1_${STAGE1_MISSIONS[s1Index].id}`);
+    setupCanvasPointerEvents(tripCanvas, () => `v4_ink_trip_${getTriptychCurrentMission().id}`);
+
+    /* ========================================================= */
+    /* 4. MAIN STAGE NAVIGATION (1 ➔ 2 ➔ 3)                      */
+    /* ========================================================= */
+    function switchMainStage(stageNum) {
+      activeStage = stageNum;
+      document.querySelectorAll('.stage-nav-pill').forEach((pill, idx) => {
+        pill.classList.toggle('active', idx === (stageNum - 1));
+      });
+
+      const s1View = document.getElementById('stage1View');
+      const tripView = document.getElementById('triptychView');
+      const drawerBtn = document.getElementById('drawerToggleBtn');
+
+      if (stageNum === 1) {
+        s1View.style.display = 'flex';
+        tripView.style.display = 'none';
+        drawerBtn.style.display = 'inline-flex';
+        renderStage1Mission();
+      } else {
+        s1View.style.display = 'none';
+        tripView.style.display = 'grid';
+        drawerBtn.style.display = 'none';
+        triptychIndex = 0;
+        buildTriptychMenu();
+        renderTriptychMission();
+      }
 
       setTimeout(() => {
-        soundFX.playMultiHitClashShockwave();
-        lightningFlash.classList.add('flash');
-        setTimeout(() => lightningFlash.classList.remove('flash'), 80);
+        fitAllCanvases();
+        if (stageNum === 1) {
+          restoreCanvasState(s1Canvas, `v4_ink_s1_${STAGE1_MISSIONS[s1Index].id}`);
+        } else {
+          restoreCanvasState(tripCanvas, `v4_ink_trip_${getTriptychCurrentMission().id}`);
+        }
+      }, 50);
+    }
 
-        const cx = window.innerWidth / 2;
-        const cy = window.innerHeight / 2;
-        spawnArenaBurst(cx, cy, m.color, 40);
+    function toggleStage1Drawer() {
+      document.getElementById('stage1Drawer').classList.toggle('open');
+      setTimeout(fitAllCanvases, 250);
+    }
 
-        strikeLightningImg.classList.add('zap');
-        setTimeout(() => strikeLightningImg.classList.remove('zap'), 300);
+    /* ========================================================= */
+    /* 5. STAGE 1 (ARENA REPEATED SUBTRACTION) LOGIC             */
+    /* ========================================================= */
+    function renderStage1Mission() {
+      const m = STAGE1_MISSIONS[s1Index];
+      document.getElementById('stage1BossName').textContent = `${m.rival} (Defender)`;
+      document.getElementById('stage1QuotientLabel').textContent = `${m.dividend} ÷ ${m.divisor} =`;
+      document.getElementById('stage1QuotientInput').value = '';
+      s1CurrentHP = 0;
+      updateStage1HP();
 
-        strikeSmokePuff.classList.add('puffff');
-        soundFX.playSmokePoof();
+      // Randomize raider corners
+      const shuffled = ['assets/naruto.png', 'assets/sasuke.png', 'assets/kakashi.png', 'assets/lee.png'].sort(() => 0.5 - Math.random());
+      document.getElementById('rImgTL').src = shuffled[0];
+      document.getElementById('rImgTR').src = shuffled[1];
+      document.getElementById('rImgBL').src = shuffled[2];
+      document.getElementById('rImgBR').src = shuffled[3];
 
-        accumulatedProgressHP = Math.min(maxHealth, accumulatedProgressHP + m.divisor);
-        updateBossHP();
+      restoreCanvasState(s1Canvas, `v4_ink_s1_${m.id}`);
+    }
+
+    function updateStage1HP() {
+      const m = STAGE1_MISSIONS[s1Index];
+      document.getElementById('stage1HpText').textContent = `${s1CurrentHP} / ${m.dividend} HP Depleted`;
+      const pct = Math.min(100, (s1CurrentHP / m.dividend) * 100);
+      document.getElementById('stage1HpFill').style.width = `${pct}%`;
+    }
+
+    function executeStage1Strike() {
+      const m = STAGE1_MISSIONS[s1Index];
+      if (s1CurrentHP >= m.dividend) return;
+
+      audio.playMultiHitClashShockwave();
+      ['raiderTL', 'raiderTR', 'raiderBL', 'raiderBR'].forEach(id => document.getElementById(id).classList.add('clash'));
+
+      setTimeout(() => {
+        const flash = document.getElementById('stage1Flash');
+        flash.classList.add('flash');
+        setTimeout(() => flash.classList.remove('flash'), 100);
+
+        const zap = document.getElementById('stage1Lightning');
+        zap.classList.add('zap');
+        setTimeout(() => zap.classList.remove('zap'), 300);
+
+        const smoke = document.getElementById('stage1Smoke');
+        smoke.classList.add('puff');
+        audio.playSmokePoof();
+
+        s1CurrentHP = Math.min(m.dividend, s1CurrentHP + m.divisor);
+        updateStage1HP();
 
         setTimeout(() => {
-          raiderTL.classList.remove('clash');
-          raiderTR.classList.remove('clash');
-          raiderBL.classList.remove('clash');
-          raiderBR.classList.remove('clash');
-          strikeSmokePuff.classList.remove('puffff');
-          randomizeCornerRaiders();
-        }, 500);
-      }, 550);
-    };
+          ['raiderTL', 'raiderTR', 'raiderBL', 'raiderBR'].forEach(id => document.getElementById(id).classList.remove('clash'));
+          smoke.classList.remove('puff');
+        }, 450);
+      }, 500);
+    }
 
-    document.getElementById('btnSubmitQuotient').onclick = () => {
-      const val = parseInt(inputQuotient.value.trim(), 10);
-      const m = MISSIONS[currentMissionIdx];
-      
-      if (isNaN(val)) {
-        alert("Enter your final step quotient count!");
-        return;
-      }
-      
-      if (val === totalRequiredSteps) {
-        soundFX.playJapaneseKotoMelody();
-        triggerCelebratoryFinale(m);
+    function submitStage1Quotient() {
+      const m = STAGE1_MISSIONS[s1Index];
+      const val = parseInt(document.getElementById('stage1QuotientInput').value.trim(), 10);
+      const expected = m.dividend / m.divisor;
+
+      if (val === expected) {
+        audio.playTaikoGongImpact();
+        triggerCelebrationFinale({
+          hero: m.hero,
+          sprite: m.heroImg,
+          title: `STAGE 1: ${m.code} CLEARED!`,
+          body: `Repeatedly subtracted <b>${m.divisor}</b> exactly <b>${expected} times</b> to deplete all ${m.dividend} HP!`
+        });
       } else {
+        audio.playSmokePoof();
         alert(`Almost there! How many times did you subtract ${m.divisor} to reach 0?`);
       }
-    };
+    }
 
-    /* 7. CELEBRATION FINALE STAGE ENGINE */
+    /* ========================================================= */
+    /* 6. STAGES 2 & 3 (TRIPTYCH RUNNER) LOGIC                   */
+    /* ========================================================= */
+    function getTriptychActiveList() {
+      return (activeStage === 2) ? STAGE2_MISSIONS : STAGE3_MISSIONS;
+    }
+
+    function getTriptychCurrentMission() {
+      return getTriptychActiveList()[triptychIndex];
+    }
+
+    function buildTriptychMenu() {
+      const list = getTriptychActiveList();
+      const grid = document.getElementById('triptychScrollGrid');
+      const menuTitle = document.getElementById('triptychMenuTitle');
+      menuTitle.textContent = (activeStage === 2) ? "Stage 2: Garden Scrolls" : "Stage 3: Genjutsu Scrolls";
+
+      grid.innerHTML = '';
+      list.forEach((m, idx) => {
+        const isDone = localStorage.getItem(`v4_done_${m.id}`) === 'true';
+        const card = document.createElement('div');
+        card.className = `scroll-tab-card ${idx === triptychIndex ? 'active' : ''} ${isDone ? 'dispelled' : ''}`;
+        card.innerHTML = `
+          <span style="font-size:1.3rem;">${activeStage === 2 ? '🦋' : '📜'}</span>
+          <span class="scroll-title">${m.title}</span>
+          <span class="dispelled-stamp">⭐ DONE</span>
+        `;
+        card.onclick = () => {
+          triptychIndex = idx;
+          document.querySelectorAll('.scroll-tab-card').forEach((c, i) => c.classList.toggle('active', i === idx));
+          renderTriptychMission();
+        };
+        grid.appendChild(card);
+      });
+    }
+
+    function renderTriptychMission() {
+      const m = getTriptychCurrentMission();
+      document.getElementById('triptychCallerLabel').textContent = m.caller;
+      document.getElementById('triptychStatementText').textContent = m.statement;
+      document.getElementById('triptychSprite').src = m.sprite;
+      document.getElementById('triptychSprite').classList.remove('vanished');
+      document.getElementById('triptychFailOverlay').classList.remove('active');
+
+      const narr = document.getElementById('triptychNarrativeText');
+      if (m.narrative) {
+        narr.textContent = m.narrative;
+        narr.style.display = 'block';
+      } else {
+        narr.style.display = 'none';
+      }
+
+      // Panel toggles
+      const verdictRow = document.getElementById('triptychVerdictRow');
+      const ladderBox = document.getElementById('triptychLadderBox');
+      const workTitle = document.getElementById('triptychWorkTitle');
+      const workInstr = document.getElementById('triptychWorkInstr');
+
+      if (m.type === 'ladder') {
+        verdictRow.style.display = 'none';
+        ladderBox.style.display = 'flex';
+        workTitle.textContent = "SUBTRACTION LADDER";
+        workInstr.textContent = "Fill in the repeated subtractions until reaching 0:";
+        loadLadderState();
+      } else if (m.type === 'word') {
+        verdictRow.style.display = 'none';
+        ladderBox.style.display = 'none';
+        workTitle.textContent = "GARDEN PUZZLE SOLVER";
+        workInstr.textContent = "Calculate butterflies per flower:";
+      } else {
+        verdictRow.style.display = 'flex';
+        ladderBox.style.display = 'none';
+        workTitle.textContent = "GENJUTSU DISPEL VERDICT";
+        workInstr.textContent = "Is this chakra statement correct?";
+      }
+
+      document.getElementById('triptychPromptLabel').textContent = m.equationLeft;
+      const savedVerdict = localStorage.getItem(`v4_verdict_${m.id}`) || "";
+      const savedInput = localStorage.getItem(`v4_input_${m.id}`) || "";
+
+      document.getElementById('vBtnYes').classList.toggle('selected', savedVerdict === 'Yes');
+      document.getElementById('vBtnNo').classList.toggle('selected', savedVerdict === 'No');
+      document.getElementById('triptychInput').value = savedInput;
+
+      restoreCanvasState(tripCanvas, `v4_ink_trip_${m.id}`);
+    }
+
+    function selectTriptychVerdict(v) {
+      const m = getTriptychCurrentMission();
+      localStorage.setItem(`v4_verdict_${m.id}`, v);
+      document.getElementById('vBtnYes').classList.toggle('selected', v === 'Yes');
+      document.getElementById('vBtnNo').classList.toggle('selected', v === 'No');
+    }
+
+    function saveTriptychInput(el) {
+      const m = getTriptychCurrentMission();
+      localStorage.setItem(`v4_input_${m.id}`, el.value.trim());
+    }
+
+    function saveLadderState() {
+      const m = getTriptychCurrentMission();
+      const l3 = document.getElementById('inpL3').value.trim();
+      const l4 = document.getElementById('inpL4').value.trim();
+      const l5 = document.getElementById('inpL5').value.trim();
+      localStorage.setItem(`v4_ladder_${m.id}`, JSON.stringify({ l3, l4, l5 }));
+    }
+
+    function loadLadderState() {
+      const m = getTriptychCurrentMission();
+      const data = JSON.parse(localStorage.getItem(`v4_ladder_${m.id}`) || "{}");
+      document.getElementById('inpL3').value = data.l3 || "";
+      document.getElementById('inpL4').value = data.l4 || "";
+      document.getElementById('inpL5').value = data.l5 || "";
+    }
+
+    function executeTriptychStrike() {
+      const m = getTriptychCurrentMission();
+      const selectedVerdict = localStorage.getItem(`v4_verdict_${m.id}`) || "";
+      const enteredInput = (localStorage.getItem(`v4_input_${m.id}`) || "").trim();
+
+      let isSuccess = false;
+
+      if (m.type === 'ladder') {
+        const l3 = document.getElementById('inpL3').value.trim();
+        const l4 = document.getElementById('inpL4').value.trim();
+        const l5 = document.getElementById('inpL5').value.trim();
+        if (l3 === "6" && l4 === "3" && l5 === "0" && enteredInput === "5") isSuccess = true;
+      } else if (m.type === 'word') {
+        if (enteredInput === m.correctAnswer) isSuccess = true;
+      } else {
+        if (m.truthValue === "Yes" && selectedVerdict === "Yes") isSuccess = true;
+        else if (m.truthValue === "No" && selectedVerdict === "No" && enteredInput === m.correctAnswer) isSuccess = true;
+      }
+
+      if (isSuccess) {
+        audio.playMultiHitClashShockwave();
+        localStorage.setItem(`v4_done_${m.id}`, 'true');
+        buildTriptychMenu();
+
+        const flash = document.getElementById('triptychFlash');
+        flash.classList.add('flash');
+        setTimeout(() => flash.classList.remove('flash'), 100);
+
+        const zap = document.getElementById('triptychLightning');
+        zap.classList.add('zap');
+        setTimeout(() => zap.classList.remove('zap'), 300);
+
+        setTimeout(() => {
+          triggerCelebrationFinale({
+            hero: 'Shinobi',
+            sprite: m.sprite,
+            title: `DISPELLED: ${m.title}!`,
+            body: m.narrative ? m.narrative : `Genjutsu shattered! The true answer is <b>${m.equationLeft} ${m.correctAnswer}</b>!`
+          });
+        }, 350);
+      } else {
+        // SMOKE POOF & RED FEEDBACK (ZERO POPUPS)
+        audio.playSmokePoof();
+        const sprite = document.getElementById('triptychSprite');
+        sprite.classList.add('vanished');
+
+        const smoke = document.getElementById('triptychSmoke');
+        smoke.classList.add('puff');
+
+        const failOverlay = document.getElementById('triptychFailOverlay');
+        failOverlay.classList.add('active');
+
+        setTimeout(() => {
+          smoke.classList.remove('puff');
+          failOverlay.classList.remove('active');
+          sprite.classList.remove('vanished');
+        }, 1300);
+      }
+    }
+
+    /* ========================================================= */
+    /* 7. CELEBRATION FINALE STAGE OVERLAY                       */
+    /* ========================================================= */
     const finaleStage = document.getElementById('celebrationFinaleStage');
     const finaleCanvas = document.getElementById('finaleCanvas');
-    const finaleCtx = finaleCanvas.getContext('2d', { alpha: true });
-    const kanjiCenterpiece = document.getElementById('kanjiCenterpiece');
-    const flyingShinobiRocket = document.getElementById('flyingShinobiRocket');
-    const flyingShinobiImg = document.getElementById('flyingShinobiImg');
-    const landingZoneRight = document.getElementById('landingZoneRight');
-    const reportScrollTitle = document.getElementById('reportScrollTitle');
-    const reportScrollBody = document.getElementById('reportScrollBody');
-    const victoryPoseImg = document.getElementById('victoryPoseImg');
-
-    let finaleAnimRunning = false;
+    const finaleCtx = finaleCanvas.getContext('2d');
+    let finaleRunning = false;
     let confettiStorm = [];
-    let slipstreamParticles = [];
-    let flyThroughStartTime = 0;
-    let cornerCycleIdx = 0;
 
-    function resizeFinaleCanvas() {
-      finaleCanvas.width = window.innerWidth;
-      finaleCanvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeFinaleCanvas);
-
-    class TacticalConfetti {
-      constructor(type = 'leaf') {
-        this.x = Math.random() * window.innerWidth;
-        this.y = -40 - Math.random() * 200;
-        this.type = type;
-        this.size = type === 'leaf' ? (Math.random() * 10 + 8) : (Math.random() * 8 + 6);
-        this.vx = (Math.random() - 0.5) * 1.5;
-        this.vy = Math.random() * 2.2 + 1.8;
-        this.rot = Math.random() * Math.PI * 2;
-        this.rotSpeed = (Math.random() - 0.5) * 0.06;
-        this.color = type === 'leaf' ? '#2ecc71' : (type === 'shuriken' ? '#bdc3c7' : '#ffd32a');
-      }
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        this.rot += this.rotSpeed;
-        if (this.y > window.innerHeight + 50) {
-          this.y = -30;
-          this.x = Math.random() * window.innerWidth;
-        }
-      }
-      draw(c) {
-        c.save();
-        c.translate(this.x, this.y);
-        c.rotate(this.rot);
-        c.fillStyle = this.color;
-        c.beginPath();
-        c.arc(0, 0, this.size * 0.5, 0, Math.PI * 2);
-        c.fill();
-        c.restore();
-      }
-    }
-
-    class SlipstreamTrailParticle {
-      constructor(x, y, color) {
-        this.x = x + (Math.random() - 0.5) * 30;
-        this.y = y + (Math.random() - 0.5) * 30;
-        this.color = color;
-        this.size = Math.random() * 6 + 2;
-        this.vx = (Math.random() - 0.5) * 3 - 1.5;
-        this.vy = (Math.random() - 0.5) * 3 + 1.5;
-        this.life = 1;
-        this.decay = 0.03;
-      }
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        this.life -= this.decay;
-      }
-      draw(c) {
-        c.save();
-        c.globalAlpha = Math.max(0, this.life);
-        c.fillStyle = this.color;
-        c.beginPath();
-        c.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        c.fill();
-        c.restore();
-      }
-    }
-
-    function triggerCelebratoryFinale(mission) {
-      resizeFinaleCanvas();
+    function triggerCelebrationFinale(data) {
       finaleStage.style.display = 'block';
-      finaleAnimRunning = true;
+      finaleRunning = true;
+      audio.playTaikoGongImpact();
 
-      soundFX.playTaikoGongImpact();
-      kanjiCenterpiece.className = 'kanji-banner-centerpiece impact';
-
-      flyingShinobiImg.src = mission.heroImg;
-      victoryPoseImg.src = mission.heroImg;
-
-      reportScrollTitle.innerText = `任務完了 — ${mission.hero.toUpperCase()}!`;
-      reportScrollBody.innerHTML = `
-        ${mission.dividend} ÷ ${mission.divisor} = <b>${mission.dividend / mission.divisor}</b><br/>
-        Repeatedly subtracted <b>${mission.divisor}</b> exactly <b>${mission.dividend / mission.divisor} times</b>!
-      `;
+      document.getElementById('kanjiCenterpiece').className = 'kanji-banner-centerpiece impact';
+      document.getElementById('flyingShinobiImg').src = data.sprite;
+      document.getElementById('victoryPoseImg').src = data.sprite;
+      document.getElementById('reportScrollTitle').textContent = data.title;
+      document.getElementById('reportScrollBody').innerHTML = data.body;
 
       confettiStorm = [];
-      for (let i = 0; i < 40; i++) confettiStorm.push(new TacticalConfetti('leaf'));
-      for (let i = 0; i < 25; i++) confettiStorm.push(new TacticalConfetti('shuriken'));
-
-      slipstreamParticles = [];
+      for (let i = 0; i < 60; i++) {
+        confettiStorm.push({
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * -window.innerHeight,
+          vy: Math.random() * 2.5 + 2,
+          size: Math.random() * 8 + 5,
+          color: ['#FFD700', '#FF7700', '#2ECC71', '#00D2FF'][Math.floor(Math.random() * 4)]
+        });
+      }
 
       setTimeout(() => {
-        soundFX.playFlyThroughWhoosh();
-        flyThroughStartTime = performance.now();
-        animateSlowCornerGlide(mission);
-      }, 400);
-
-      setTimeout(() => {
-        landingZoneRight.className = 'landing-zone-right landed';
-        soundFX.playSmokePoof();
-        soundFX.playJapaneseKotoMelody();
-      }, 2400);
+        audio.playFlyThroughWhoosh();
+        document.getElementById('landingZoneRight').className = 'landing-zone-right landed';
+      }, 600);
 
       requestAnimationFrame(renderFinaleScene);
     }
 
-    function animateSlowCornerGlide(mission) {
-      const dur = 3200;
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-
-      const corners = [
-        { x: -150, y: -150, tx: w * 0.4, ty: h * 0.5 },
-        { x: w + 150, y: -150, tx: w * 0.4, ty: h * 0.5 },
-        { x: -150, y: h + 150, tx: w * 0.4, ty: h * 0.5 },
-        { x: w + 150, y: h + 150, tx: w * 0.4, ty: h * 0.5 }
-      ];
-
-      const start = corners[cornerCycleIdx % corners.length];
-      cornerCycleIdx++;
-
-      function stepGlide(now) {
-        const elapsed = now - flyThroughStartTime;
-        const progress = Math.min(1, elapsed / dur);
-        const ease = 1 - Math.pow(1 - progress, 3);
-
-        const curX = start.x + (start.tx - start.x) * ease;
-        const curY = start.y + (start.ty - start.y) * ease;
-
-        flyingShinobiRocket.style.left = `${curX}px`;
-        flyingShinobiRocket.style.top = `${curY}px`;
-
-        for (let k = 0; k < 3; k++) {
-          slipstreamParticles.push(new SlipstreamTrailParticle(curX + 60, curY + 60, mission.color));
-        }
-
-        if (progress < 1 && finaleAnimRunning) {
-          requestAnimationFrame(stepGlide);
-        }
-      }
-      requestAnimationFrame(stepGlide);
-    }
-
     function renderFinaleScene() {
-      if (!finaleAnimRunning) return;
+      if (!finaleRunning) return;
+      finaleCanvas.width = window.innerWidth;
+      finaleCanvas.height = window.innerHeight;
       finaleCtx.clearRect(0, 0, finaleCanvas.width, finaleCanvas.height);
 
-      for (let i = slipstreamParticles.length - 1; i >= 0; i--) {
-        slipstreamParticles[i].update();
-        slipstreamParticles[i].draw(finaleCtx);
-        if (slipstreamParticles[i].life <= 0) slipstreamParticles.splice(i, 1);
-      }
-
-      for (let c of confettiStorm) {
-        c.update();
-        c.draw(finaleCtx);
-      }
+      confettiStorm.forEach(c => {
+        c.y += c.vy;
+        if (c.y > window.innerHeight) c.y = -10;
+        finaleCtx.fillStyle = c.color;
+        finaleCtx.beginPath();
+        finaleCtx.arc(c.x, c.y, c.size, 0, Math.PI * 2);
+        finaleCtx.fill();
+      });
 
       requestAnimationFrame(renderFinaleScene);
     }
 
     function closeCelebrationFinale() {
-      finaleAnimRunning = false;
+      finaleRunning = false;
       finaleStage.style.display = 'none';
-      kanjiCenterpiece.className = 'kanji-banner-centerpiece';
-      landingZoneRight.className = 'landing-zone-right';
-      confettiStorm = [];
-      slipstreamParticles = [];
-      selectMission((currentMissionIdx + 1) % MISSIONS.length);
+      document.getElementById('kanjiCenterpiece').className = 'kanji-banner-centerpiece';
+      document.getElementById('landingZoneRight').className = 'landing-zone-right';
+      if (activeStage === 1) {
+        s1Index = (s1Index + 1) % STAGE1_MISSIONS.length;
+        renderStage1Mission();
+      } else {
+        triptychIndex = (triptychIndex + 1) % getTriptychActiveList().length;
+        buildTriptychMenu();
+        renderTriptychMission();
+      }
     }
 
-    /* 8. TOOLBAR HANDLERS & INIT */
-    document.getElementById('toolPen').onclick = (e) => {
-      currentTool = 'pen';
-      document.querySelectorAll('.tools-icon-row .btn-icon-tool').forEach(b => b.classList.remove('active'));
-      e.target.classList.add('active');
-    };
-    document.getElementById('toolEraser').onclick = (e) => {
-      currentTool = 'eraser';
-      document.querySelectorAll('.tools-icon-row .btn-icon-tool').forEach(b => b.classList.remove('active'));
-      e.target.classList.add('active');
-    };
-    document.getElementById('toolClear').onclick = () => {
-      inkCtx.save();
-      inkCtx.setTransform(1, 0, 0, 1, 0, 0);
-      inkCtx.clearRect(0, 0, inkCanvas.width, inkCanvas.height);
-      inkCtx.restore();
-      pushUndoState();
-      saveInkToStorage();
-    };
-    document.getElementById('toolUndo').onclick = undoLast;
+    /* ========================================================= */
+    /* 8. RESET & HUB ROUTING                                    */
+    /* ========================================================= */
+    function resetEntireMission() {
+      if (!confirm("Restart all Chapter 5 missions from the beginning? All progress will reset.")) return;
+      localStorage.clear();
+      s1Index = 0;
+      triptychIndex = 0;
+      clearActiveInkCanvas();
+      switchMainStage(1);
+    }
 
-    document.querySelectorAll('.color-swatch').forEach(sw => {
-      sw.onclick = () => {
-        document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
-        sw.classList.add('active');
-        strokeColor = sw.getAttribute('data-color');
-        currentTool = 'pen';
-        document.getElementById('toolPen').classList.add('active');
-        document.getElementById('toolEraser').classList.remove('active');
-      };
-    });
+    function goToHub() {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage("close-lesson-to-hub", "*");
+      } else {
+        window.location.href = "index.html";
+      }
+    }
 
-    window.addEventListener('resize', () => {
-      resizeCanvas();
-      resizeFxCanvas();
-      resizeFinaleCanvas();
-    });
+    function handleImageFallback(img) {
+      img.onerror = null;
+      img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><circle cx='70' cy='70' r='65' fill='%233E2413' stroke='%23E67E22' stroke-width='4'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='45'>🍥</text></svg>";
+    }
 
-    window.addEventListener('load', () => {
-      resizeCanvas();
-      resizeFxCanvas();
-      resizeFinaleCanvas();
-      selectMission(0);
-    });
-
-    window.addEventListener('beforeunload', saveInkToStorage);
-    window.addEventListener('pagehide', saveInkToStorage);
+    window.onload = () => switchMainStage(1);
+    window.addEventListener('resize', fitAllCanvases);
   </script>
 </body>
 </html>
