@@ -205,8 +205,8 @@
 
     .duel-fighter {
       position: absolute;
-      width: 220px;
-      height: 280px;
+      width: 230px;
+      height: 290px;
       z-index: 32;
       display: flex;
       align-items: center;
@@ -223,24 +223,65 @@
 
     .duel-hero {
       bottom: 12%;
-      left: -260px;
+      left: -280px;
       opacity: 0;
     }
     .duel-rival {
       bottom: 12%;
-      right: -260px;
+      right: -280px;
       opacity: 0;
     }
 
     .duel-hero.charge {
       left: 28%;
       opacity: 1;
-      transform: scale(1.15) rotate(4deg);
+      transform: scale(1.18) rotate(4deg);
     }
     .duel-rival.charge {
       right: 28%;
       opacity: 1;
-      transform: scale(1.15) rotate(-4deg);
+      transform: scale(1.18) rotate(-4deg);
+    }
+
+    /* MANGA CLASH IMPACT BANNER */
+    .manga-clash-banner {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.2);
+      z-index: 42;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      opacity: 0;
+      transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease-out;
+      width: 90%;
+      max-width: 650px;
+    }
+    .manga-clash-banner.pop {
+      transform: translate(-50%, -50%) scale(1.12);
+      opacity: 1;
+    }
+
+    .clash-kanji-shout {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 44px;
+      font-weight: 900;
+      letter-spacing: 6px;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+    .clash-romaji-shout {
+      font-family: 'Cinzel', serif;
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      margin-top: 4px;
+      text-transform: uppercase;
+      white-space: nowrap;
     }
 
     .strike-lightning-layer {
@@ -279,7 +320,7 @@
       transform: scale(1.7);
     }
 
-    /* 3. NOTEPAD DRAWER (FIXED WIDTH TO ENSURE LIGHTNING S-PEN SPEED) */
+    /* 3. NOTEPAD DRAWER */
     .ninja-scroll-drawer {
       position: absolute;
       top: 92px;
@@ -300,7 +341,6 @@
     .ninja-scroll-drawer.open {
       right: 12px;
     }
-    /* Auto-slide tuck out during clash */
     .ninja-scroll-drawer.combat-tucked {
       right: -460px !important;
     }
@@ -773,11 +813,17 @@
         <img id="duelRivalImg" src="assets/sasuke.png" alt="Rival">
       </div>
 
+      <!-- MANGA CLASH IMPACT BANNER -->
+      <div class="manga-clash-banner" id="mangaClashBanner">
+        <div class="clash-kanji-shout" id="clashKanji">千鳥 vs 螺旋丸</div>
+        <div class="clash-romaji-shout" id="clashRomaji">CHIDORI vs RASENGAN!</div>
+      </div>
+
       <img src="assets/lightning.png" class="strike-lightning-layer" id="strikeLightningImg" alt="Lightning Strike" onerror="this.style.display='none'" />
       <img src="assets/smoke-poof.png" alt="Smoke" class="dynamic-smoke-puff" id="strikeSmokePuff" onerror="this.style.display='none'" />
     </div>
 
-    <!-- 3. NOTEPAD DRAWER (PERFECT 420PX WIDTH, 4-PAGE CAPACITY) -->
+    <!-- 3. NOTEPAD DRAWER (FIXED 420PX, 4-PAGE CAPACITY) -->
     <aside class="ninja-scroll-drawer" id="ninjaScrollDrawer">
       <div class="notepad-header-controls">
         <div class="tools-icon-row">
@@ -965,6 +1011,61 @@
       }
     ];
 
+    const ALL_SHINOBI_ROSTER = [
+      { name: 'Naruto', img: 'assets/naruto.png' },
+      { name: 'Sasuke', img: 'assets/sasuke.png' },
+      { name: 'Kakashi', img: 'assets/kakashi.png' },
+      { name: 'Rock Lee', img: 'assets/lee.png' },
+      { name: 'Neji', img: 'assets/neji.png' },
+      { name: 'Shikamaru', img: 'assets/shikamaru.png' }
+    ];
+
+    /* MANGA CLASH SHOUT BANNER POOL (JUTSU & RESOLVE QUOTES) */
+    const CLASH_SHOUTS = [
+      {
+        kanji: '千鳥 vs 螺旋丸',
+        romaji: 'CHIDORI vs RASENGAN!',
+        color1: '#00e5ff',
+        color2: '#ff4757',
+        glow: '0 0 25px #00e5ff, 0 0 45px #ff4757'
+      },
+      {
+        kanji: '諦めねェのがオレの忍道だ!',
+        romaji: "NEVER GIVE UP! THAT'S MY NINJA WAY!",
+        color1: '#ffd32a',
+        color2: '#ff6b81',
+        glow: '0 0 25px #ffd32a, 0 0 45px #ff4757'
+      },
+      {
+        kanji: '雷切! 一刀両断!',
+        romaji: 'RAIKIRI! LIGHTNING BLADE!',
+        color1: '#ffffff',
+        color2: '#a55eea',
+        glow: '0 0 25px #a55eea, 0 0 50px #00e5ff'
+      },
+      {
+        kanji: '木ノ葉旋風! これぞ青春だ!',
+        romaji: 'LEAF HURRICANE! POWER OF YOUTH!',
+        color1: '#2ed573',
+        color2: '#7bed9f',
+        glow: '0 0 25px #2ed573, 0 0 45px #26de81'
+      },
+      {
+        kanji: '八卦六十四掌! 逃げ場はない!',
+        romaji: '64 PALMS! NOWHERE TO ESCAPE!',
+        color1: '#70a1ff',
+        color2: '#dfe4ea',
+        glow: '0 0 25px #70a1ff, 0 0 45px #ffffff'
+      },
+      {
+        kanji: '影真似の術! 作戦完了!',
+        romaji: 'SHADOW STRANGLE! CHECKMATE!',
+        color1: '#ff3838',
+        color2: '#ff9f43',
+        glow: '0 0 25px #ff3838, 0 0 45px #ff793f'
+      }
+    ];
+
     let currentMissionIdx = 0;
     let accumulatedProgressHP = 0;
     let maxHealth = 18;
@@ -972,11 +1073,10 @@
     let keypadInputValue = "";
     let isPenOnlyMode = false;
 
-    /* FIXED 4-PAGE CAPACITY */
     let currentPageIdx = 1;
     const TOTAL_PAGES = 4;
 
-    /* 2. WARFARE AUDIO ENGINE */
+    /* 2. AUDIO ENGINE */
     class NinjaAudioEngine {
       constructor() { this.ctx = null; }
       init() {
@@ -1008,12 +1108,12 @@
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(140, t0);
         osc.frequency.exponentialRampToValueAtTime(30, t0 + 0.35);
-        gain.gain.setValueAtTime(0.6, t0);
-        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.4);
+        gain.gain.setValueAtTime(0.65, t0);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.45);
         osc.connect(gain);
         gain.connect(this.ctx.destination);
         osc.start(t0);
-        osc.stop(t0 + 0.45);
+        osc.stop(t0 + 0.48);
       }
       playSmoke() {
         this.init();
@@ -1101,7 +1201,7 @@
       document.getElementById('pageIndicatorText').textContent = `Pg ${currentPageIdx} / ${TOTAL_PAGES}`;
     }
 
-    /* 5. LIGHTWEIGHT NATIVE-RESOLUTION INK CANVAS */
+    /* 5. HIGH-SPEED NATIVE INK CANVAS ENGINE */
     const inkCanvas = document.getElementById('inkCanvas');
     const inkCtx = inkCanvas.getContext('2d', { alpha: true });
     const scrollContainer = document.getElementById('notepadScrollViewport');
@@ -1250,7 +1350,91 @@
     inkCanvas.addEventListener('pointercancel', stopDraw);
     inkCanvas.addEventListener('pointerleave', stopDraw);
 
-    /* 6. IN-GAME KEYPAD & STRIKE ACTION WITH AUTO-SLIDE DRAWER */
+    /* 6. LIGHTNING DRIZZLE BACKGROUND FX ENGINE */
+    const fxCanvas = document.getElementById('fxCanvas');
+    const fxCtx = fxCanvas.getContext('2d', { alpha: true });
+    let rainDrops = [];
+    let microLightningBolts = [];
+    let weatherActive = true;
+
+    function resizeFxCanvas() {
+      fxCanvas.width = window.innerWidth;
+      fxCanvas.height = window.innerHeight;
+      initRain();
+    }
+
+    function initRain() {
+      rainDrops = [];
+      for (let i = 0; i < 40; i++) {
+        rainDrops.push({
+          x: Math.random() * window.innerWidth,
+          y: Math.random() * window.innerHeight,
+          len: Math.random() * 20 + 15,
+          speed: Math.random() * 8 + 14,
+          alpha: Math.random() * 0.35 + 0.25
+        });
+      }
+    }
+
+    function spawnMicroLightning() {
+      const startX = Math.random() * window.innerWidth;
+      let curX = startX;
+      let curY = 0;
+      let segments = [];
+      while (curY < window.innerHeight * 0.8) {
+        let nextX = curX + (Math.random() - 0.5) * 45;
+        let nextY = curY + Math.random() * 35 + 20;
+        segments.push({ x1: curX, y1: curY, x2: nextX, y2: nextY });
+        curX = nextX;
+        curY = nextY;
+      }
+      microLightningBolts.push({ segments, life: 1.0 });
+    }
+
+    function renderWeatherFX() {
+      if (!weatherActive) return;
+      fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+
+      // Render Rain Drizzle
+      fxCtx.strokeStyle = 'rgba(126, 214, 223, 0.45)';
+      fxCtx.lineWidth = 1.4;
+      for (let r of rainDrops) {
+        fxCtx.beginPath();
+        fxCtx.moveTo(r.x, r.y);
+        fxCtx.lineTo(r.x - 3, r.y + r.len);
+        fxCtx.stroke();
+        r.y += r.speed;
+        r.x -= 1.5;
+        if (r.y > window.innerHeight) {
+          r.y = -20;
+          r.x = Math.random() * (window.innerWidth + 50);
+        }
+      }
+
+      // Render Micro Lightning Arcs
+      for (let i = microLightningBolts.length - 1; i >= 0; i--) {
+        let b = microLightningBolts[i];
+        fxCtx.save();
+        fxCtx.strokeStyle = `rgba(0, 229, 255, ${b.life})`;
+        fxCtx.shadowColor = '#00e5ff';
+        fxCtx.shadowBlur = 12;
+        fxCtx.lineWidth = 2.2;
+        for (let seg of b.segments) {
+          fxCtx.beginPath();
+          fxCtx.moveTo(seg.x1, seg.y1);
+          fxCtx.lineTo(seg.x2, seg.y2);
+          fxCtx.stroke();
+        }
+        fxCtx.restore();
+        b.life -= 0.12;
+        if (b.life <= 0) microLightningBolts.splice(i, 1);
+      }
+
+      requestAnimationFrame(renderWeatherFX);
+    }
+    requestAnimationFrame(renderWeatherFX);
+
+    /* 7. RANDOMIZED CLASH LOGIC & VIRAL SHOUTS */
     function pressKeypad(key) {
       if (key === 'del') {
         keypadInputValue = keypadInputValue.slice(0, -1);
@@ -1272,21 +1456,46 @@
       clashInProgress = true;
       const m = MISSIONS[currentMissionIdx];
 
-      // Auto-slide tuck out so arena is 100% visible
+      // RANDOMIZE DUEL PAIRINGS: Keeps combat varied on every attempt
+      const shuffledRoster = [...ALL_SHINOBI_ROSTER].sort(() => 0.5 - Math.random());
+      duelHeroImg.src = shuffledRoster[0].img;
+      duelRivalImg.src = shuffledRoster[1].img;
+
+      // RANDOMIZE MANGA CLASH SHOUT
+      const shout = CLASH_SHOUTS[Math.floor(Math.random() * CLASH_SHOUTS.length)];
+      const clashBanner = document.getElementById('mangaClashBanner');
+      const kanjiEl = document.getElementById('clashKanji');
+      const romajiEl = document.getElementById('clashRomaji');
+
+      kanjiEl.textContent = shout.kanji;
+      kanjiEl.style.color = shout.color1;
+      kanjiEl.style.textShadow = shout.glow;
+
+      romajiEl.textContent = shout.romaji;
+      romajiEl.style.color = shout.color2;
+      romajiEl.style.textShadow = shout.glow;
+
+      // Auto-slide tuck out drawer
       const drawer = document.getElementById('ninjaScrollDrawer');
       const wasOpen = drawer.classList.contains('open');
       if (wasOpen) drawer.classList.add('combat-tucked');
 
       soundFX.playChime();
 
+      // Duel Stage 1: Hero charges
       duelHero.classList.add('charge');
 
+      // Duel Stage 2: Defender counters
       setTimeout(() => {
         duelRival.classList.add('charge');
       }, 250);
 
+      // Duel Stage 3: The Clashing Impact Hold
       setTimeout(() => {
         soundFX.playImpact();
+        spawnMicroLightning();
+        spawnMicroLightning();
+
         const flash = document.getElementById('lightningFlash');
         flash.classList.add('flash');
         setTimeout(() => flash.classList.remove('flash'), 90);
@@ -1299,10 +1508,15 @@
         smoke.classList.add('puffff');
         soundFX.playSmoke();
 
+        // Reveal Manga Clash Banner
+        clashBanner.classList.add('pop');
+
         accumulatedProgressHP = Math.min(maxHealth, accumulatedProgressHP + m.divisor);
         updateBossHP();
 
+        // Hold clash stance for 1.2s before restoring
         setTimeout(() => {
+          clashBanner.classList.remove('pop');
           smoke.classList.remove('puffff');
           duelHero.classList.remove('charge');
           duelRival.classList.remove('charge');
@@ -1335,7 +1549,7 @@
       }
     }
 
-    /* 7. FULL-SIZE SHINOBI DOSSIER MODAL */
+    /* 8. FULL-SIZE SHINOBI DOSSIER MODAL */
     const missionModal = document.getElementById('missionModal');
     const missionGridOptions = document.getElementById('missionGridOptions');
     document.getElementById('openMissionModalBtn').onclick = () => {
@@ -1386,7 +1600,7 @@
       loadInkFromStorage();
     }
 
-    /* 8. CELEBRATION FINALE STAGE ENGINE */
+    /* 9. CELEBRATION FINALE STAGE ENGINE */
     const finaleStage = document.getElementById('celebrationFinaleStage');
     const finaleCanvas = document.getElementById('finaleCanvas');
     const finaleCtx = finaleCanvas.getContext('2d', { alpha: true });
@@ -1513,7 +1727,7 @@
       selectMission((currentMissionIdx + 1) % MISSIONS.length);
     }
 
-    /* 9. TOOLBAR HANDLERS & INIT */
+    /* 10. TOOLBAR HANDLERS & INIT */
     document.getElementById('toggleScrollBtn').onclick = () => {
       const drawer = document.getElementById('ninjaScrollDrawer');
       drawer.classList.toggle('open');
@@ -1554,11 +1768,13 @@
 
     window.addEventListener('resize', () => {
       resizeCanvas();
+      resizeFxCanvas();
       resizeFinaleCanvas();
     });
 
     window.addEventListener('load', () => {
       resizeCanvas();
+      resizeFxCanvas();
       resizeFinaleCanvas();
       selectMission(0);
     });
