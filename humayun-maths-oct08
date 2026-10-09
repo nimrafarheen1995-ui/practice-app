@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Humayun's Ninja Maths: Genjutsu Dispel (Oct 08)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Serif+JP:wght@800;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --scroll-cream: #F8F3DC;
+      --scroll-border: #8B5A2B;
+      --konoha-red: #D63031;
+      --konoha-green: #27AE60;
+      --ruled-line: #A0C4E2;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #090B0E;
+      color: #2D3436;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      padding: 8px 12px;
+      gap: 8px;
+    }
+
+    /* 3-PANE CONTAINER (Matches the visual sketch) */
+    .ninja-triptych-grid {
+      display: grid;
+      grid-template-columns: 310px 1.1fr 1.1fr;
+      gap: 12px;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+    }
+
+    /* PANE 1: MISSION CONTROL SCROLL */
+    .mission-pane-scroll {
+      background: #FDF9EA;
+      border: 4px solid var(--scroll-border);
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      padding: 12px 14px;
+      gap: 10px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.7), inset 0 0 16px rgba(139, 90, 43, 0.2);
+      position: relative;
+    }
+
+    .scroll-rod-left, .scroll-rod-right {
+      position: absolute;
+      top: -6px;
+      bottom: -6px;
+      width: 14px;
+      background: linear-gradient(90deg, #5C381E, #8B5A2B, #3E2413);
+      border-radius: 4px;
+    }
+    .scroll-rod-left { left: -10px; }
+    .scroll-rod-right { right: -10px; }
+
+    .mission-header-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      border-bottom: 2px dashed #B8860B;
+      padding-bottom: 8px;
+    }
+
+    .header-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .hud-hub-btn {
+      background: #3E2413;
+      border: 2px solid #D35400;
+      color: #F1C40F;
+      padding: 4px 10px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .mission-pane-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: #7A3E0C;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mode-pills-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .mode-pill {
+      flex: 1;
+      background: #FFF;
+      border: 1.5px solid #CBD5E1;
+      padding: 4px;
+      border-radius: 8px;
+      font-size: 0.76rem;
+      font-weight: 900;
+      color: #64748B;
+      cursor: pointer;
+      text-align: center;
+    }
+    .mode-pill.active { background: #E67E22; color: #FFF; border-color: #D35400; }
+    body.test-mode .mode-pill.active { background: #8E44AD; border-color: #6C3483; }
+
+    .scroll-selector-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      flex: 1;
+      align-content: start;
+    }
+
+    .scroll-tab-card {
+      background: #FFF;
+      border: 2px solid #C89B68;
+      border-radius: 12px;
+      padding: 8px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .scroll-tab-card:hover { transform: translateY(-2px); border-color: #E67E22; }
+    .scroll-tab-card.active {
+      background: #FFF7ED;
+      border-color: #D35400;
+      box-shadow: 0 0 0 3px rgba(211, 84, 0, 0.35);
+    }
+    .scroll-icon { font-size: 1.35rem; }
+    .scroll-title { font-size: 0.8rem; font-weight: 900; color: #2D3436; text-align: center; }
+
+    /* PANE 2: ARENA BATTLEFIELD & CHALLENGER */
+    .arena-pane-stage {
+      position: relative;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 4px solid #5A3C22;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.7);
+    }
+
+    .arena-video-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.7) contrast(1.1);
+      z-index: 1;
+    }
+
+    .genjutsu-prompt-scroll {
+      position: relative;
+      z-index: 10;
+      background: #FFF9E6;
+      border: 3px solid #8B5A2B;
+      border-radius: 16px;
+      padding: 10px 18px;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+      width: 90%;
+      max-width: 380px;
+    }
+    .shinobi-caller {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #8C5727;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .genjutsu-statement-text {
+      font-family: 'Cinzel', serif;
+      font-size: 1.7rem;
+      font-weight: 900;
+      color: #1E1B4B;
+      margin: 4px 0;
+    }
+
+    .shinobi-avatar-zone {
+      position: relative;
+      z-index: 10;
+      flex: 1;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      width: 100%;
+      pointer-events: none;
+    }
+    .challenger-sprite {
+      max-height: 230px;
+      max-width: 210px;
+      object-fit: contain;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.85));
+      transition: transform 0.2s ease-out;
+    }
+
+    .kunai-dispel-btn {
+      position: relative;
+      z-index: 10;
+      background: linear-gradient(180deg, #2B170C, #150C07);
+      border: 2px solid #E67E22;
+      color: #F1C40F;
+      font-size: 0.95rem;
+      font-weight: 900;
+      padding: 10px 24px;
+      border-radius: 30px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.7);
+      transition: all 0.15s;
+    }
+    .kunai-dispel-btn:active { transform: scale(0.96); }
+
+    .strike-fx-flash {
+      position: absolute;
+      inset: 0;
+      background: #FFF;
+      z-index: 30;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.08s ease-out;
+    }
+    .strike-fx-flash.flash { opacity: 0.75; }
+
+    /* PANE 3: GENJUTSU VERDICT & NOTEPAD SCRATCHPAD */
+    .workspace-pane-book {
+      background: #FFFDF0;
+      border: 4px solid #5A3C22;
+      border-radius: 20px;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.7);
+      position: relative;
+      min-height: 0;
+    }
+
+    .verdict-header-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1rem;
+      font-weight: 900;
+      color: #7A3E0C;
+      border-bottom: 2px solid #E2E8F0;
+      padding-bottom: 4px;
+    }
+
+    .verdict-btn-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .verdict-seal-btn {
+      flex: 1;
+      background: #FFF;
+      border: 2px solid #CBD5E1;
+      border-radius: 14px;
+      padding: 10px;
+      font-size: 1rem;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 0 #CBD5E1;
+      transition: all 0.15s;
+    }
+    .verdict-seal-btn:active { transform: translateY(2px); box-shadow: none; }
+    .verdict-seal-btn.yes-btn.selected {
+      background: #DCFCE7;
+      border-color: #22C55E;
+      color: #15803D;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.35);
+    }
+    .verdict-seal-btn.no-btn.selected {
+      background: #FEE2E2;
+      border-color: #EF4444;
+      color: #B91C1C;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.35);
+    }
+
+    /* CORRECTION SLOT */
+    .correction-box {
+      background: #F8FAFC;
+      border: 2px dashed #CBD5E1;
+      border-radius: 12px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .correction-label { font-size: 0.9rem; font-weight: 800; color: #475569; }
+    .correction-input {
+      width: 70px;
+      height: 36px;
+      text-align: center;
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: #1E1B4B;
+      border: 2px solid #E67E22;
+      border-radius: 8px;
+      outline: none;
+      background: #FFF;
+    }
+    .correction-input.correct { background: #DCFCE7; border-color: #22C55E; color: #15803D; }
+
+    /* DUAL-RULED NOTEPAD CANVAS */
+    .notepad-canvas-wrapper {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      min-height: 180px;
+      border: 2px solid #CBD5E1;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #FFFFFF;
+    }
+
+    .dual-ruled-texture {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image: repeating-linear-gradient(
+        #FFFFFF 0px,
+        #FFFFFF 24px,
+        var(--ruled-line) 25px,
+        #FFFFFF 26px,
+        #FFFFFF 48px,
+        var(--ruled-line) 49px,
+        #FFFFFF 50px,
+        #FFFFFF 72px
+      );
+      opacity: 0.65;
+    }
+    .dual-ruled-texture::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 28px;
+      width: 2px;
+      height: 100%;
+      background: #F87171;
+    }
+
+    #scratchCanvas {
+      position: absolute;
+      inset: 0;
+      cursor: crosshair;
+      touch-action: none;
+      z-index: 2;
+    }
+
+    .canvas-tool-strip {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 4px;
+    }
+    .tool-btn {
+      background: #FFF;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .tool-btn.active { background: #E67E22; color: #FFF; border-color: #D35400; }
+
+    /* PARENT REVIEW BAR */
+    .parent-review-bar {
+      display: none;
+      background: #F0F9FF;
+      border: 2px solid #BAE6FD;
+      padding: 8px 12px;
+      border-radius: 10px;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #0369A1;
+    }
+    body.review-mode .parent-review-bar { display: flex; }
+
+    /* PIN MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100000;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #FFF;
+      border-radius: 20px;
+      padding: 22px;
+      width: 300px;
+      text-align: center;
+    }
+    .pin-dots { font-size: 1.8rem; font-weight: 900; letter-spacing: 6px; margin: 10px 0; }
+    .keypad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .key-btn { padding: 10px; font-size: 1.2rem; font-weight: 800; border-radius: 10px; border: 2px solid #E2E8F0; background: #F8FAFC; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <div class="ninja-triptych-grid">
+    
+    <!-- 1. MISSION CONTROL SCROLL (LEFT) -->
+    <aside class="mission-pane-scroll">
+      <div class="scroll-rod-left"></div>
+      <div class="scroll-rod-right"></div>
+
+      <div class="mission-header-bar">
+        <div class="header-top-row">
+          <button type="button" class="hud-hub-btn" onclick="goToHub()">🍃 Hub</button>
+          <span class="mission-pane-title">🍥 Genjutsu Dispel</span>
+          <button type="button" class="hud-hub-btn" onclick="openPinModal()">🔒 Parent</button>
+        </div>
+        <div class="mode-pills-row">
+          <div class="mode-pill active" id="pillLearn" onclick="setAppMode('learn')">📖 Practice</div>
+          <div class="mode-pill" id="pillTest" onclick="setAppMode('test')">✍️ Test</div>
+        </div>
+      </div>
+
+      <div class="scroll-selector-grid">
+        <div class="scroll-tab-card active" onclick="switchScroll(0)">
+          <span class="scroll-icon">🗡️</span>
+          <span class="scroll-title">Scroll A<br/><b>36 ÷ 4</b></span>
+        </div>
+        <div class="scroll-tab-card" onclick="switchScroll(1)">
+          <span class="scroll-icon">🍃</span>
+          <span class="scroll-title">Scroll B<br/><b>80 ÷ 8</b></span>
+        </div>
+        <div class="scroll-tab-card" onclick="switchScroll(2)">
+          <span class="scroll-icon">⚡</span>
+          <span class="scroll-title">Scroll C<br/><b>56 ÷ 7</b></span>
+        </div>
+        <div class="scroll-tab-card" onclick="switchScroll(3)">
+          <span class="scroll-icon">🔥</span>
+          <span class="scroll-title">Scroll D<br/><b>48 ÷ 8</b></span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 2. BATTLEFIELD & CHALLENGER (CENTER) -->
+    <main class="arena-pane-stage">
+      <video autoplay muted loop playsinline class="arena-video-bg">
+        <source src="assets/battlefield-bg.mp4" type="video/mp4" />
+      </video>
+      <div class="strike-fx-flash" id="strikeFlash"></div>
+
+      <div class="genjutsu-prompt-scroll">
+        <div class="shinobi-caller" id="challengerLabel">Shinobi Challenger: Sasuke Uchiha</div>
+        <div class="genjutsu-statement-text" id="statementText">36 ÷ 4 = 8</div>
+      </div>
+
+      <div class="shinobi-avatar-zone">
+        <img src="assets/sasuke.png" class="challenger-sprite" id="challengerSprite" alt="Challenger" onerror="handleImageFallback(this)" />
+      </div>
+
+      <button type="button" class="kunai-dispel-btn" onclick="triggerDispelStrike()">
+        🗡️ Dispel Strike!
+      </button>
+    </main>
+
+    <!-- 3. VERDICT, CORRECTION & INK NOTEPAD (RIGHT) -->
+    <aside class="workspace-pane-book">
+      <div class="verdict-header-title">GENJUTSU VERDICT</div>
+      <div style="font-size:0.88rem; font-weight:800; color:#475569;">Is the chakra statement correct?</div>
+
+      <div class="verdict-btn-row">
+        <button type="button" class="verdict-seal-btn yes-btn" id="btnVerdictYes" onclick="selectVerdict('Yes')">
+          ⭕ YES (Truth)
+        </button>
+        <button type="button" class="verdict-seal-btn no-btn" id="btnVerdictNo" onclick="selectVerdict('No')">
+          ❌ NO (Illusion)
+        </button>
+      </div>
+
+      <div class="correction-box" id="correctionBox">
+        <span class="correction-label" id="correctionPromptLabel">True Answer: 36 ÷ 4 =</span>
+        <input type="number" id="correctionInput" class="correction-input" placeholder="?" oninput="handleCorrectionInput(this)" />
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
+        <span style="font-size:0.8rem; font-weight:900; color:#64748B;">DUAL-RULED INK CANVAS (Scratch Working)</span>
+        <div class="canvas-tool-strip">
+          <button type="button" class="tool-btn active" id="btnPen" onclick="setCanvasTool('pen')">✏️ Pen</button>
+          <button type="button" class="tool-btn" id="btnEraser" onclick="setCanvasTool('eraser')">🧹 Eraser</button>
+          <button type="button" class="tool-btn" onclick="clearScratchCanvas()">🗑️</button>
+        </div>
+      </div>
+
+      <div class="notepad-canvas-wrapper" id="canvasWrapper">
+        <div class="dual-ruled-texture"></div>
+        <canvas id="scratchCanvas"></canvas>
+      </div>
+
+      <div class="parent-review-bar" id="reviewBar">
+        <span id="reviewHintText">Teacher Answer: No (36 ÷ 4 = 9)</span>
+        <span>⭐ Verified</span>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- PARENT PIN MODAL -->
+  <div class="modal-overlay" id="pinModal">
+    <div class="modal-box">
+      <h3 style="font-weight:900; color:#0F172A;">Parent Access</h3>
+      <p style="font-size:0.85rem; color:#64748B;">Enter 4-digit PIN</p>
+      <div class="pin-dots" id="pinDots">----</div>
+      <div class="keypad-grid">
+        <button class="key-btn" onclick="pressPin('1')">1</button>
+        <button class="key-btn" onclick="pressPin('2')">2</button>
+        <button class="key-btn" onclick="pressPin('3')">3</button>
+        <button class="key-btn" onclick="pressPin('4')">4</button>
+        <button class="key-btn" onclick="pressPin('5')">5</button>
+        <button class="key-btn" onclick="pressPin('6')">6</button>
+        <button class="key-btn" onclick="pressPin('7')">7</button>
+        <button class="key-btn" onclick="pressPin('8')">8</button>
+        <button class="key-btn" onclick="pressPin('9')">9</button>
+        <button class="key-btn" onclick="clearPin()">C</button>
+        <button class="key-btn" onclick="pressPin('0')">0</button>
+        <button class="key-btn" onclick="closePinModal()">✕</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PARENT_PIN = "1995";
+    let enteredPin = "";
+    let appMode = "learn";
+    let currentScrollIdx = 0;
+
+    const SCROLLS = [
+      {
+        id: "scroll_a",
+        tab: "Scroll A",
+        challenger: "Sasuke Uchiha",
+        sprite: "assets/sasuke.png",
+        statement: "36 ÷ 4 = 8",
+        isCorrect: false,
+        truthValue: "No",
+        correctAnswer: "9",
+        equationLeft: "36 ÷ 4 ="
+      },
+      {
+        id: "scroll_b",
+        tab: "Scroll B",
+        challenger: "Naruto Uzumaki",
+        sprite: "assets/naruto.png",
+        statement: "80 ÷ 8 = 10",
+        isCorrect: true,
+        truthValue: "Yes",
+        correctAnswer: "10",
+        equationLeft: "80 ÷ 8 ="
+      },
+      {
+        id: "scroll_c",
+        tab: "Scroll C",
+        challenger: "Kakashi Hatake",
+        sprite: "assets/kakashi.png",
+        statement: "56 ÷ 7 = 9",
+        isCorrect: false,
+        truthValue: "No",
+        correctAnswer: "8",
+        equationLeft: "56 ÷ 7 ="
+      },
+      {
+        id: "scroll_d",
+        tab: "Scroll D",
+        challenger: "Rock Lee",
+        sprite: "assets/lee.png",
+        statement: "48 ÷ 8 = 7",
+        isCorrect: false,
+        truthValue: "No",
+        correctAnswer: "6",
+        equationLeft: "48 ÷ 8 ="
+      }
+    ];
+
+    function goToHub() {
+      saveScratchCanvas();
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage("close-lesson-to-hub", "*");
+      } else {
+        window.location.href = "index.html";
+      }
+    }
+
+    function handleImageFallback(img) {
+      img.onerror = null;
+      img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><circle cx='70' cy='70' r='65' fill='%233E2413' stroke='%23E67E22' stroke-width='4'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='45'>🍥</text></svg>";
+    }
+
+    /* MODE ISOLATION STORAGE */
+    function getStorageKey(subKey) {
+      const targetSlot = (appMode === "review") ? "test" : appMode;
+      const s = SCROLLS[currentScrollIdx];
+      return `v2_isolated_ink::humayun::maths_oct08::${targetSlot}::${s.id}::${subKey}`;
+    }
+
+    function setAppMode(m) {
+      saveScratchCanvas();
+      appMode = m;
+      document.body.className = (m === 'test') ? "test-mode" : (m === 'review' ? "review-mode" : "");
+      document.getElementById('pillLearn').className = `mode-pill ${m === 'learn' ? 'active' : ''}`;
+      document.getElementById('pillTest').className = `mode-pill ${m === 'test' ? 'active' : ''}`;
+      switchScroll(currentScrollIdx, false);
+    }
+
+    function switchScroll(idx, doSave = true) {
+      if (doSave) saveScratchCanvas();
+      currentScrollIdx = idx;
+
+      // Update tabs
+      document.querySelectorAll('.scroll-tab-card').forEach((card, i) => {
+        card.classList.toggle('active', i === idx);
+      });
+
+      const s = SCROLLS[idx];
+      document.getElementById('challengerLabel').textContent = `Shinobi Challenger: ${s.challenger}`;
+      document.getElementById('statementText').textContent = s.statement;
+      document.getElementById('challengerSprite').src = s.sprite;
+      document.getElementById('correctionPromptLabel').textContent = `True Answer: ${s.equationLeft}`;
+
+      // Review hint
+      const hint = s.isCorrect ? "Statement is True (Yes)" : `No (${s.equationLeft} ${s.correctAnswer})`;
+      document.getElementById('reviewHintText').textContent = `Teacher Answer: ${hint}`;
+
+      // Restore verdict & input
+      const savedVerdict = localStorage.getItem(getStorageKey('verdict')) || "";
+      const savedInput = localStorage.getItem(getStorageKey('correction')) || "";
+
+      document.getElementById('btnVerdictYes').classList.toggle('selected', savedVerdict === 'Yes');
+      document.getElementById('btnVerdictNo').classList.toggle('selected', savedVerdict === 'No');
+      
+      const inputEl = document.getElementById('correctionInput');
+      inputEl.value = savedInput;
+      inputEl.classList.toggle('correct', appMode === 'learn' && savedInput === s.correctAnswer);
+
+      // Visibility of correction box
+      document.getElementById('correctionBox').style.opacity = (savedVerdict === 'No' || s.isCorrect === false) ? '1' : '0.6';
+
+      // Restore scratchpad
+      setTimeout(() => {
+        fitScratchCanvas();
+        restoreScratchCanvas();
+      }, 40);
+    }
+
+    function selectVerdict(val) {
+      if (appMode === "review") return;
+      localStorage.setItem(getStorageKey('verdict'), val);
+      document.getElementById('btnVerdictYes').classList.toggle('selected', val === 'Yes');
+      document.getElementById('btnVerdictNo').classList.toggle('selected', val === 'No');
+      document.getElementById('correctionBox').style.opacity = (val === 'No') ? '1' : '0.6';
+    }
+
+    function handleCorrectionInput(el) {
+      if (appMode === "review") return;
+      const s = SCROLLS[currentScrollIdx];
+      localStorage.setItem(getStorageKey('correction'), el.value.trim());
+      if (appMode === 'learn' && el.value.trim() === s.correctAnswer) {
+        el.classList.add('correct');
+      } else {
+        el.classList.remove('correct');
+      }
+    }
+
+    function triggerDispelStrike() {
+      const flash = document.getElementById('strikeFlash');
+      flash.classList.add('flash');
+      setTimeout(() => flash.classList.remove('flash'), 100);
+
+      const sprite = document.getElementById('challengerSprite');
+      sprite.style.transform = 'scale(0.92) rotate(4deg)';
+      setTimeout(() => {
+        sprite.style.transform = 'scale(1) rotate(0deg)';
+      }, 250);
+    }
+
+    /* DUAL-RULED INK CANVAS */
+    const canvas = document.getElementById('scratchCanvas');
+    const ctx = canvas.getContext('2d');
+    let isDrawing = false;
+    let canvasTool = 'pen';
+    let lastX = 0, lastY = 0;
+
+    function fitScratchCanvas() {
+      const wrap = document.getElementById('canvasWrapper');
+      if (!wrap || wrap.clientWidth <= 0) return;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = wrap.clientWidth * dpr;
+      canvas.height = wrap.clientHeight * dpr;
+      canvas.style.width = wrap.clientWidth + 'px';
+      canvas.style.height = wrap.clientHeight + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function restoreScratchCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const saved = localStorage.getItem(getStorageKey('ink'));
+      if (saved) {
+        const img = new Image();
+        img.onload = () => {
+          ctx.save();
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          ctx.restore();
+        };
+        img.src = saved;
+      }
+    }
+
+    function saveScratchCanvas() {
+      if (!canvas || canvas.width <= 0 || appMode === "review") return;
+      try {
+        localStorage.setItem(getStorageKey('ink'), canvas.toDataURL());
+      } catch (e) {}
+    }
+
+    function clearScratchCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      localStorage.removeItem(getStorageKey('ink'));
+    }
+
+    function setCanvasTool(tool) {
+      canvasTool = tool;
+      document.getElementById('btnPen').classList.toggle('active', tool === 'pen');
+      document.getElementById('btnEraser').classList.toggle('active', tool === 'eraser');
+    }
+
+    canvas.onpointerdown = (e) => {
+      if (appMode === "review") return;
+      isDrawing = true;
+      try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+      const rect = canvas.getBoundingClientRect();
+      lastX = e.clientX - rect.left;
+      lastY = e.clientY - rect.top;
+      e.preventDefault();
+    };
+
+    canvas.onpointermove = (e) => {
+      if (!isDrawing || appMode === "review") return;
+      const rect = canvas.getBoundingClientRect();
+      const currX = e.clientX - rect.left;
+      const currY = e.clientY - rect.top;
+
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(currX, currY);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      if (canvasTool === 'eraser') {
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.lineWidth = 22;
+      } else {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.strokeStyle = '#1E293B';
+        const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
+        ctx.lineWidth = 3.6 * (pressure * 1.5 + 0.35);
+      }
+      ctx.stroke();
+
+      lastX = currX;
+      lastY = currY;
+      e.preventDefault();
+    };
+
+    const stopDrawing = (e) => {
+      if (isDrawing) {
+        isDrawing = false;
+        try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+        saveScratchCanvas();
+      }
+    };
+    canvas.onpointerup = stopDrawing;
+    canvas.onpointercancel = stopDrawing;
+    canvas.onpointerleave = stopDrawing;
+
+    /* PARENT PIN LOGIC */
+    function openPinModal() {
+      enteredPin = "";
+      updatePinDots();
+      document.getElementById('pinModal').classList.add('open');
+    }
+    function closePinModal() {
+      document.getElementById('pinModal').classList.remove('open');
+      enteredPin = "";
+    }
+    function pressPin(n) {
+      if (enteredPin.length < 4) {
+        enteredPin += n;
+        updatePinDots();
+        if (enteredPin.length === 4) {
+          if (enteredPin === PARENT_PIN) {
+            closePinModal();
+            setAppMode('review');
+          } else {
+            alert("Incorrect PIN");
+            clearPin();
+          }
+        }
+      }
+    }
+    function clearPin() { enteredPin = ""; updatePinDots(); }
+    function updatePinDots() {
+      let str = "";
+      for (let i = 0; i < 4; i++) str += (i < enteredPin.length) ? "● " : "- ";
+      document.getElementById('pinDots').textContent = str.trim();
+    }
+
+    window.onload = () => switchScroll(0, false);
+    window.addEventListener('resize', () => {
+      saveScratchCanvas();
+      fitScratchCanvas();
+      restoreScratchCanvas();
+    });
+    window.addEventListener('beforeunload', saveScratchCanvas);
+    window.addEventListener('pagehide', saveScratchCanvas);
+  </script>
+</body>
+</html>
