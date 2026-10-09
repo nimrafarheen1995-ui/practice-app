@@ -270,13 +270,13 @@
       transform: scale(1.65);
     }
 
-    /* 3. COMPACT NOTEPAD DRAWER (4-COLUMN ICON TOOLS & LIGHTNING BUTTON) */
+    /* 3. NOTEPAD DRAWER (Offset cleanly to 95px below header buttons) */
     .ninja-scroll-drawer {
       position: absolute;
-      top: 155px;
-      right: -360px;
+      top: 95px;
+      right: -400px;
       bottom: 24px;
-      width: 320px;
+      width: 380px;
       z-index: 50;
       display: flex;
       flex-direction: column;
@@ -295,46 +295,43 @@
     .notepad-header-controls {
       background: #251d18;
       border-bottom: 2px solid #5a3c22;
-      padding: 8px 10px;
+      padding: 6px 10px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 4px;
+      gap: 8px;
     }
 
-    /* 4-Column Compact Icon Grid */
-    .tools-grid-4col {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 4px;
-      width: 100%;
+    /* Clean borderless icon row */
+    .tools-icon-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .btn-icon-tool {
-      background: #382c24;
-      border: 1px solid #6b4d32;
-      color: #eedccb;
-      font-size: 14px;
-      padding: 6px 0;
-      border-radius: 6px;
+      background: transparent;
+      border: none;
+      color: #b59b84;
+      font-size: 18px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       transition: all 0.15s;
+      padding: 2px;
     }
-    .btn-icon-tool:hover { background: #503d2e; color: #fff; }
+    .btn-icon-tool:hover { color: #fff; transform: scale(1.1); }
     .btn-icon-tool.active {
-      background: var(--orange-neon);
-      border-color: #ffd080;
-      color: #170f05;
+      color: var(--orange-neon);
+      transform: scale(1.15);
+      text-shadow: 0 0 8px rgba(255, 119, 0, 0.6);
     }
 
     .color-swatch-row {
       display: flex;
       gap: 6px;
       align-items: center;
-      padding: 0 4px;
     }
     .color-swatch {
       width: 16px;
@@ -796,10 +793,10 @@
       <img src="smoke-poof.png" alt="Smoke" class="dynamic-smoke-puff" id="strikeSmokePuff" />
     </div>
 
-    <!-- 3. UNFURLING SCROLL NOTEPAD DRAWER (4-COLUMN ICON TOOLS & LIGHTNING BUTTON) -->
+    <!-- 3. NOTEPAD DRAWER (Cleanly offset to 95px) -->
     <aside class="ninja-scroll-drawer" id="ninjaScrollDrawer">
       <div class="notepad-header-controls">
-        <div class="tools-grid-4col">
+        <div class="tools-icon-row">
           <button class="btn-icon-tool active" id="toolPen" title="Pen">✏</button>
           <button class="btn-icon-tool" id="toolEraser" title="Eraser">🧹</button>
           <button class="btn-icon-tool" id="toolClear" title="Clear">🗑</button>
@@ -817,7 +814,6 @@
       </div>
 
       <div class="notepad-submission-dock">
-        <!-- Sleek Lightning Strike Icon Button -->
         <button class="btn-lightning-strike" id="btnJutsuStrike" title="Jutsu Strike">
           ⚡
         </button>
@@ -1125,7 +1121,7 @@
     }
 
     /* ========================================================= */
-    /* 4. OPTIMIZED GRAPH INK CANVAS ENGINE                      */
+    /* 4. PERSISTENT INK CANVAS ENGINE (Enlarged Height: 4000px) */
     /* ========================================================= */
     const inkCanvas = document.getElementById('inkCanvas');
     const inkCtx = inkCanvas.getContext('2d', { alpha: true });
@@ -1136,7 +1132,7 @@
     let strokeColor = '#1e272e';
     let strokeWidth = 3.5;
     let undoStack = [];
-    const VIRTUAL_CANVAS_HEIGHT = 2000;
+    const VIRTUAL_CANVAS_HEIGHT = 4000;
 
     function resizeCanvas() {
       const rect = scrollContainer.getBoundingClientRect();
@@ -1201,7 +1197,7 @@
       inkCtx.save();
       inkCtx.globalCompositeOperation = 'source-over';
       undoStack.push(inkCanvas.toDataURL());
-      if (undoStack.length > 15) undoStack.shift();
+      if (undoStack.length > 20) undoStack.shift();
       inkCtx.restore();
     }
 
@@ -1242,7 +1238,7 @@
       inkCtx.lineJoin = 'round';
       if (currentTool === 'eraser') {
         inkCtx.globalCompositeOperation = 'destination-out';
-        inkCtx.lineWidth = strokeWidth * 4;
+        inkCtx.lineWidth = strokeWidth * 5;
       } else {
         inkCtx.globalCompositeOperation = 'source-over';
         inkCtx.strokeStyle = strokeColor;
@@ -1648,12 +1644,12 @@
     /* ========================================================= */
     document.getElementById('toolPen').onclick = (e) => {
       currentTool = 'pen';
-      document.querySelectorAll('.tools-grid-4col .btn-icon-tool').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tools-icon-row .btn-icon-tool').forEach(b => b.classList.remove('active'));
       e.target.classList.add('active');
     };
     document.getElementById('toolEraser').onclick = (e) => {
       currentTool = 'eraser';
-      document.querySelectorAll('.tools-grid-4col .btn-icon-tool').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tools-icon-row .btn-icon-tool').forEach(b => b.classList.remove('active'));
       e.target.classList.add('active');
     };
     document.getElementById('toolClear').onclick = () => {
