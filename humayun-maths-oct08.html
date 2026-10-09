@@ -279,7 +279,7 @@
       transform: scale(1.7);
     }
 
-    /* 3. NOTEPAD DRAWER (SUPPORTS SPLIT & FULLSCREEN EXPANSION) */
+    /* 3. NOTEPAD DRAWER */
     .ninja-scroll-drawer {
       position: absolute;
       top: 92px;
@@ -305,6 +305,10 @@
       left: 12px !important;
       width: calc(100vw - 24px) !important;
       border-radius: 18px !important;
+    }
+    /* TEMPORARY COMBAT RETRACTION CLASS */
+    .ninja-scroll-drawer.combat-tucked {
+      right: -460px !important;
     }
 
     .notepad-header-controls {
@@ -368,7 +372,6 @@
       color: #FFF;
     }
 
-    /* MULTI-PAGE CONTROLS */
     .page-pagination-strip {
       display: flex;
       align-items: center;
@@ -427,7 +430,7 @@
       touch-action: none;
     }
 
-    /* IN-GAME CARVED KEYPAD DOCK */
+    /* IN-GAME CARVED KEYPAD */
     .notepad-submission-dock {
       background: #1e1510;
       border-top: 2px solid #5a3c22;
@@ -467,7 +470,6 @@
       text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
     }
 
-    /* 3x4 CARVED NUMERIC KEYPAD */
     .carved-keypad-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -505,7 +507,7 @@
       grid-column: span 2;
     }
 
-    /* 4. MISSION SELECTOR - FULL SIZE SHINOBI DOSSIER CARDS */
+    /* 4. MISSION SELECTOR */
     #missionModal {
       position: fixed;
       inset: 0;
@@ -786,7 +788,7 @@
       <img src="assets/smoke-poof.png" alt="Smoke" class="dynamic-smoke-puff" id="strikeSmokePuff" onerror="this.style.display='none'" />
     </div>
 
-    <!-- 3. NOTEPAD DRAWER WITH MULTI-PAGE & FULLSCREEN TOGGLE -->
+    <!-- 3. NOTEPAD DRAWER WITH AUTO-SLIDE RETRACT ON CLASH -->
     <aside class="ninja-scroll-drawer" id="ninjaScrollDrawer">
       <div class="notepad-header-controls">
         <div class="tools-icon-row">
@@ -796,7 +798,7 @@
           <button class="btn-icon-tool" id="toolUndo" title="Undo">↩</button>
         </div>
 
-        <!-- MULTI-PAGE CONTROLS (OPTION 2) -->
+        <!-- MULTI-PAGE CONTROLS -->
         <div class="page-pagination-strip">
           <button type="button" class="page-ctrl-btn" onclick="changeNotepadPage(-1)">◀</button>
           <span class="page-indicator-text" id="pageIndicatorText">Pg 1 / 1</span>
@@ -809,7 +811,7 @@
           ✍️ Touch
         </button>
 
-        <!-- FULLSCREEN EXPAND TOGGLE (OPTION 3) -->
+        <!-- FULLSCREEN EXPAND TOGGLE -->
         <button type="button" class="expand-mode-btn" id="btnExpandMode" onclick="toggleDrawerFullscreen()">
           ⛶ Expand
         </button>
@@ -825,7 +827,7 @@
         <canvas id="inkCanvas"></canvas>
       </div>
 
-      <!-- IN-GAME CARVED KEYPAD (ZERO OS-FOCUS BLANKING) -->
+      <!-- IN-GAME CARVED KEYPAD -->
       <div class="notepad-submission-dock">
         <div class="quotient-display-row">
           <span class="quotient-label" id="quotientLabel">18 ÷ 6 =</span>
@@ -1101,7 +1103,6 @@
       const drawer = document.getElementById('ninjaScrollDrawer');
       const btn = document.getElementById('btnExpandMode');
 
-      // Save canvas prior to dimension changes
       saveInkToStorage();
 
       drawer.classList.toggle('fullscreen-expanded', isDrawerFullscreen);
@@ -1143,7 +1144,7 @@
       document.getElementById('pageIndicatorText').textContent = `Pg ${currentPageIdx} / ${totalPagesCount}`;
     }
 
-    /* 5. INK CANVAS ENGINE (ROBUST RESIZE & DPI MAPPING) */
+    /* 5. INK CANVAS ENGINE */
     const inkCanvas = document.getElementById('inkCanvas');
     const inkCtx = inkCanvas.getContext('2d', { alpha: true });
     const scrollContainer = document.getElementById('notepadScrollViewport');
@@ -1303,7 +1304,7 @@
     inkCanvas.addEventListener('pointercancel', stopDraw);
     inkCanvas.addEventListener('pointerleave', stopDraw);
 
-    /* 6. IN-GAME KEYPAD & STRIKE LOGIC */
+    /* 6. IN-GAME KEYPAD & STRIKE LOGIC WITH AUTO-SLIDE DRAWER */
     function pressKeypad(key) {
       if (key === 'del') {
         keypadInputValue = keypadInputValue.slice(0, -1);
@@ -1325,14 +1326,24 @@
       clashInProgress = true;
       const m = MISSIONS[currentMissionIdx];
 
+      // AUTO-SLIDE PEEK OUT: Temporarily retract the drawer off-screen so the whole arena is visible
+      const drawer = document.getElementById('ninjaScrollDrawer');
+      const wasOpen = drawer.classList.contains('open');
+      if (wasOpen) {
+        drawer.classList.add('combat-tucked');
+      }
+
       soundFX.playChime();
 
+      // Duel Stage 1: Hero charges inward
       duelHero.classList.add('charge');
 
+      // Duel Stage 2: Defender counters
       setTimeout(() => {
         duelRival.classList.add('charge');
       }, 250);
 
+      // Duel Stage 3: Clashing Impact Hold
       setTimeout(() => {
         soundFX.playImpact();
         const flash = document.getElementById('lightningFlash');
@@ -1350,10 +1361,15 @@
         accumulatedProgressHP = Math.min(maxHealth, accumulatedProgressHP + m.divisor);
         updateBossHP();
 
+        // Reset duel stance & restore drawer back to user
         setTimeout(() => {
           smoke.classList.remove('puffff');
           duelHero.classList.remove('charge');
           duelRival.classList.remove('charge');
+          
+          if (wasOpen) {
+            drawer.classList.remove('combat-tucked');
+          }
           clashInProgress = false;
         }, 1200);
 
@@ -1424,7 +1440,6 @@
       keypadInputValue = "";
       updateKeypadSlot();
 
-      // Reset page numbering for new mission
       currentPageIdx = 1;
       totalPagesCount = 1;
       updatePageIndicator();
