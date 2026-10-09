@@ -40,12 +40,13 @@
       flex-direction: column;
       padding: 8px 12px;
       gap: 8px;
+      position: relative;
     }
 
-    /* 3-PANE CONTAINER (Matches the visual sketch) */
+    /* 3-PANE GRID */
     .ninja-triptych-grid {
       display: grid;
-      grid-template-columns: 310px 1.1fr 1.1fr;
+      grid-template-columns: 300px 1.15fr 1.1fr;
       gap: 12px;
       width: 100%;
       height: 100%;
@@ -94,42 +95,37 @@
       background: #3E2413;
       border: 2px solid #D35400;
       color: #F1C40F;
-      padding: 4px 10px;
+      padding: 5px 12px;
       border-radius: 10px;
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       font-weight: 900;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s;
     }
+    .hud-hub-btn:active { transform: scale(0.96); }
 
     .mission-pane-title {
       font-family: 'Cinzel', serif;
       font-size: 1.05rem;
       font-weight: 900;
       color: #7A3E0C;
+    }
+
+    .progress-banner-badge {
+      background: #FFF7ED;
+      border: 2px solid #F97316;
+      border-radius: 10px;
+      padding: 6px 10px;
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 6px;
-    }
-
-    .mode-pills-row {
-      display: flex;
-      gap: 6px;
-    }
-
-    .mode-pill {
-      flex: 1;
-      background: #FFF;
-      border: 1.5px solid #CBD5E1;
-      padding: 4px;
-      border-radius: 8px;
-      font-size: 0.76rem;
+      font-size: 0.85rem;
       font-weight: 900;
-      color: #64748B;
-      cursor: pointer;
-      text-align: center;
+      color: #C2410C;
     }
-    .mode-pill.active { background: #E67E22; color: #FFF; border-color: #D35400; }
-    body.test-mode .mode-pill.active { background: #8E44AD; border-color: #6C3483; }
 
     .scroll-selector-grid {
       display: grid;
@@ -142,14 +138,15 @@
     .scroll-tab-card {
       background: #FFF;
       border: 2px solid #C89B68;
-      border-radius: 12px;
-      padding: 8px 6px;
+      border-radius: 14px;
+      padding: 10px 8px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
       cursor: pointer;
       transition: all 0.15s;
+      position: relative;
     }
     .scroll-tab-card:hover { transform: translateY(-2px); border-color: #E67E22; }
     .scroll-tab-card.active {
@@ -157,10 +154,25 @@
       border-color: #D35400;
       box-shadow: 0 0 0 3px rgba(211, 84, 0, 0.35);
     }
-    .scroll-icon { font-size: 1.35rem; }
-    .scroll-title { font-size: 0.8rem; font-weight: 900; color: #2D3436; text-align: center; }
+    .scroll-tab-card.dispelled {
+      border-color: #22C55E;
+      background: #F0FDF4;
+    }
+    .scroll-icon { font-size: 1.4rem; }
+    .scroll-title { font-size: 0.82rem; font-weight: 900; color: #2D3436; text-align: center; line-height: 1.3; }
+    .dispelled-stamp {
+      display: none;
+      font-size: 0.68rem;
+      font-weight: 900;
+      color: #15803D;
+      background: #DCFCE7;
+      padding: 2px 6px;
+      border-radius: 6px;
+      border: 1px solid #86EFAC;
+    }
+    .scroll-tab-card.dispelled .dispelled-stamp { display: inline-block; }
 
-    /* PANE 2: ARENA BATTLEFIELD & CHALLENGER */
+    /* PANE 2: ARENA BATTLEFIELD */
     .arena-pane-stage {
       position: relative;
       border-radius: 20px;
@@ -193,7 +205,7 @@
       padding: 10px 18px;
       text-align: center;
       box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-      width: 90%;
+      width: 92%;
       max-width: 380px;
     }
     .shinobi-caller {
@@ -226,27 +238,64 @@
       max-width: 210px;
       object-fit: contain;
       filter: drop-shadow(0 10px 20px rgba(0,0,0,0.85));
-      transition: transform 0.2s ease-out;
+      transition: transform 0.25s ease-out;
     }
 
     .kunai-dispel-btn {
       position: relative;
       z-index: 10;
-      background: linear-gradient(180deg, #2B170C, #150C07);
-      border: 2px solid #E67E22;
-      color: #F1C40F;
-      font-size: 0.95rem;
+      background: linear-gradient(180deg, #D35400, #A04000);
+      border: 2px solid #F39C12;
+      color: #FFF;
+      font-size: 1rem;
       font-weight: 900;
-      padding: 10px 24px;
+      padding: 10px 28px;
       border-radius: 30px;
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 8px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.7);
+      box-shadow: 0 6px 20px rgba(211, 84, 0, 0.6);
       transition: all 0.15s;
     }
     .kunai-dispel-btn:active { transform: scale(0.96); }
+
+    /* COMBAT OVERLAY FX */
+    .arena-strike-lightning {
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      width: 440px;
+      height: 440px;
+      z-index: 25;
+      pointer-events: none;
+      mix-blend-mode: screen;
+      opacity: 0;
+      transform: scale(0.3);
+      filter: brightness(250%) drop-shadow(0 0 35px #00e5ff);
+      transition: transform 0.25s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.2s ease-out;
+    }
+    .arena-strike-lightning.zap {
+      opacity: 1;
+      transform: scale(1.5) rotate(-5deg);
+    }
+
+    .arena-smoke-puff {
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      width: 380px;
+      height: 380px;
+      z-index: 26;
+      pointer-events: none;
+      opacity: 0;
+      transform: scale(0.2);
+      transition: transform 0.35s cubic-bezier(0.1, 0.85, 0.2, 1), opacity 0.3s ease-out;
+    }
+    .arena-smoke-puff.puff {
+      opacity: 1;
+      transform: scale(1.6);
+    }
 
     .strike-fx-flash {
       position: absolute;
@@ -257,9 +306,9 @@
       pointer-events: none;
       transition: opacity 0.08s ease-out;
     }
-    .strike-fx-flash.flash { opacity: 0.75; }
+    .strike-fx-flash.flash { opacity: 0.85; }
 
-    /* PANE 3: GENJUTSU VERDICT & NOTEPAD SCRATCHPAD */
+    /* PANE 3: VERDICT & INK WORKSPACE */
     .workspace-pane-book {
       background: #FFFDF0;
       border: 4px solid #5A3C22;
@@ -285,7 +334,7 @@
     .verdict-btn-row {
       display: flex;
       gap: 12px;
-      margin-top: 4px;
+      margin-top: 2px;
     }
 
     .verdict-seal-btn {
@@ -294,13 +343,13 @@
       border: 2px solid #CBD5E1;
       border-radius: 14px;
       padding: 10px;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 900;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
       box-shadow: 0 4px 0 #CBD5E1;
       transition: all 0.15s;
     }
@@ -318,7 +367,6 @@
       box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.35);
     }
 
-    /* CORRECTION SLOT */
     .correction-box {
       background: #F8FAFC;
       border: 2px dashed #CBD5E1;
@@ -328,10 +376,11 @@
       align-items: center;
       justify-content: space-between;
       gap: 8px;
+      transition: opacity 0.2s;
     }
-    .correction-label { font-size: 0.9rem; font-weight: 800; color: #475569; }
+    .correction-label { font-size: 0.88rem; font-weight: 800; color: #475569; }
     .correction-input {
-      width: 70px;
+      width: 75px;
       height: 36px;
       text-align: center;
       font-size: 1.15rem;
@@ -342,9 +391,8 @@
       outline: none;
       background: #FFF;
     }
-    .correction-input.correct { background: #DCFCE7; border-color: #22C55E; color: #15803D; }
 
-    /* DUAL-RULED NOTEPAD CANVAS */
+    /* DUAL-RULED INK NOTEPAD */
     .notepad-canvas-wrapper {
       position: relative;
       flex: 1;
@@ -392,61 +440,82 @@
 
     .canvas-tool-strip {
       display: flex;
-      justify-content: space-between;
+      gap: 6px;
       align-items: center;
-      padding-top: 4px;
     }
     .tool-btn {
       background: #FFF;
       border: 1.5px solid #CBD5E1;
       border-radius: 8px;
-      padding: 4px 10px;
-      font-size: 0.8rem;
+      padding: 4px 8px;
+      font-size: 0.78rem;
       font-weight: 800;
       cursor: pointer;
     }
     .tool-btn.active { background: #E67E22; color: #FFF; border-color: #D35400; }
 
-    /* PARENT REVIEW BAR */
-    .parent-review-bar {
-      display: none;
-      background: #F0F9FF;
-      border: 2px solid #BAE6FD;
-      padding: 8px 12px;
-      border-radius: 10px;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.85rem;
-      font-weight: 800;
-      color: #0369A1;
-    }
-    body.review-mode .parent-review-bar { display: flex; }
-
-    /* PIN MODAL */
-    .modal-overlay {
+    /* CELEBRATION CHAKRA SWIRL FULLSCREEN CANVAS */
+    #swirlCanvas {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.7);
-      backdrop-filter: blur(4px);
+      pointer-events: none;
+      z-index: 99998;
+    }
+
+    /* GOLDEN KANJI IMPACT OVERLAY */
+    .kanji-victory-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      pointer-events: none;
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 100000;
+      flex-direction: column;
+      background: radial-gradient(circle, rgba(15, 23, 42, 0.45) 0%, rgba(15, 23, 42, 0.85) 100%);
+      backdrop-filter: blur(3px);
     }
-    .modal-overlay.open { display: flex; }
-    .modal-box {
-      background: #FFF;
-      border-radius: 20px;
-      padding: 22px;
-      width: 300px;
-      text-align: center;
+    .kanji-stamp-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transform: scale(0.2);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    .pin-dots { font-size: 1.8rem; font-weight: 900; letter-spacing: 6px; margin: 10px 0; }
-    .keypad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-    .key-btn { padding: 10px; font-size: 1.2rem; font-weight: 800; border-radius: 10px; border: 2px solid #E2E8F0; background: #F8FAFC; cursor: pointer; }
+    .kanji-stamp-box.show {
+      transform: scale(1);
+      opacity: 1;
+    }
+    .kanji-glyph {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 110px;
+      font-weight: 900;
+      color: #FFD700;
+      text-shadow: 0 0 35px rgba(255, 215, 0, 0.9), 0 0 60px #FF9F43;
+      line-height: 1;
+    }
+    .kanji-sub-label {
+      font-family: 'Cinzel', serif;
+      font-size: 26px;
+      font-weight: 900;
+      color: #FFF;
+      letter-spacing: 4px;
+      text-shadow: 0 4px 12px rgba(0,0,0,0.8);
+      margin-top: 8px;
+    }
   </style>
 </head>
 <body>
+
+  <canvas id="swirlCanvas"></canvas>
+
+  <div class="kanji-victory-overlay" id="victoryOverlay">
+    <div class="kanji-stamp-box" id="victoryStamp">
+      <div class="kanji-glyph">破</div>
+      <div class="kanji-sub-label">GENJUTSU DISPELLED!</div>
+    </div>
+  </div>
 
   <div class="ninja-triptych-grid">
     
@@ -459,30 +528,33 @@
         <div class="header-top-row">
           <button type="button" class="hud-hub-btn" onclick="goToHub()">🍃 Hub</button>
           <span class="mission-pane-title">🍥 Genjutsu Dispel</span>
-          <button type="button" class="hud-hub-btn" onclick="openPinModal()">🔒 Parent</button>
         </div>
-        <div class="mode-pills-row">
-          <div class="mode-pill active" id="pillLearn" onclick="setAppMode('learn')">📖 Practice</div>
-          <div class="mode-pill" id="pillTest" onclick="setAppMode('test')">✍️ Test</div>
+        <div class="progress-banner-badge">
+          <span>Seals Shattered:</span>
+          <span id="progressCounter">0 / 4</span>
         </div>
       </div>
 
       <div class="scroll-selector-grid">
-        <div class="scroll-tab-card active" onclick="switchScroll(0)">
+        <div class="scroll-tab-card active" id="tabScroll0" onclick="switchScroll(0)">
           <span class="scroll-icon">🗡️</span>
-          <span class="scroll-title">Scroll A<br/><b>36 ÷ 4</b></span>
+          <span class="scroll-title">Scroll A<br/><b>36 ÷ 4 = 8</b></span>
+          <span class="dispelled-stamp">⭐ DISPELLED</span>
         </div>
-        <div class="scroll-tab-card" onclick="switchScroll(1)">
+        <div class="scroll-tab-card" id="tabScroll1" onclick="switchScroll(1)">
           <span class="scroll-icon">🍃</span>
-          <span class="scroll-title">Scroll B<br/><b>80 ÷ 8</b></span>
+          <span class="scroll-title">Scroll B<br/><b>80 ÷ 8 = 10</b></span>
+          <span class="dispelled-stamp">⭐ DISPELLED</span>
         </div>
-        <div class="scroll-tab-card" onclick="switchScroll(2)">
+        <div class="scroll-tab-card" id="tabScroll2" onclick="switchScroll(2)">
           <span class="scroll-icon">⚡</span>
-          <span class="scroll-title">Scroll C<br/><b>56 ÷ 7</b></span>
+          <span class="scroll-title">Scroll C<br/><b>56 ÷ 7 = 9</b></span>
+          <span class="dispelled-stamp">⭐ DISPELLED</span>
         </div>
-        <div class="scroll-tab-card" onclick="switchScroll(3)">
+        <div class="scroll-tab-card" id="tabScroll3" onclick="switchScroll(3)">
           <span class="scroll-icon">🔥</span>
-          <span class="scroll-title">Scroll D<br/><b>48 ÷ 8</b></span>
+          <span class="scroll-title">Scroll D<br/><b>48 ÷ 8 = 7</b></span>
+          <span class="dispelled-stamp">⭐ DISPELLED</span>
         </div>
       </div>
     </aside>
@@ -494,6 +566,9 @@
       </video>
       <div class="strike-fx-flash" id="strikeFlash"></div>
 
+      <img src="assets/lightning.png" class="arena-strike-lightning" id="lightningImg" alt="Lightning" onerror="this.style.display='none'" />
+      <img src="assets/smoke-poof.png" class="arena-smoke-puff" id="smokeImg" alt="Smoke" onerror="this.style.display='none'" />
+
       <div class="genjutsu-prompt-scroll">
         <div class="shinobi-caller" id="challengerLabel">Shinobi Challenger: Sasuke Uchiha</div>
         <div class="genjutsu-statement-text" id="statementText">36 ÷ 4 = 8</div>
@@ -503,7 +578,7 @@
         <img src="assets/sasuke.png" class="challenger-sprite" id="challengerSprite" alt="Challenger" onerror="handleImageFallback(this)" />
       </div>
 
-      <button type="button" class="kunai-dispel-btn" onclick="triggerDispelStrike()">
+      <button type="button" class="kunai-dispel-btn" onclick="executeDispelStrike()">
         🗡️ Dispel Strike!
       </button>
     </main>
@@ -511,7 +586,7 @@
     <!-- 3. VERDICT, CORRECTION & INK NOTEPAD (RIGHT) -->
     <aside class="workspace-pane-book">
       <div class="verdict-header-title">GENJUTSU VERDICT</div>
-      <div style="font-size:0.88rem; font-weight:800; color:#475569;">Is the chakra statement correct?</div>
+      <div style="font-size:0.86rem; font-weight:800; color:#475569;">Is this chakra statement correct?</div>
 
       <div class="verdict-btn-row">
         <button type="button" class="verdict-seal-btn yes-btn" id="btnVerdictYes" onclick="selectVerdict('Yes')">
@@ -527,8 +602,8 @@
         <input type="number" id="correctionInput" class="correction-input" placeholder="?" oninput="handleCorrectionInput(this)" />
       </div>
 
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px;">
-        <span style="font-size:0.8rem; font-weight:900; color:#64748B;">DUAL-RULED INK CANVAS (Scratch Working)</span>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+        <span style="font-size:0.78rem; font-weight:900; color:#64748B;">DUAL-RULED INK WORKINGS</span>
         <div class="canvas-tool-strip">
           <button type="button" class="tool-btn active" id="btnPen" onclick="setCanvasTool('pen')">✏️ Pen</button>
           <button type="button" class="tool-btn" id="btnEraser" onclick="setCanvasTool('eraser')">🧹 Eraser</button>
@@ -540,90 +615,95 @@
         <div class="dual-ruled-texture"></div>
         <canvas id="scratchCanvas"></canvas>
       </div>
-
-      <div class="parent-review-bar" id="reviewBar">
-        <span id="reviewHintText">Teacher Answer: No (36 ÷ 4 = 9)</span>
-        <span>⭐ Verified</span>
-      </div>
     </aside>
 
   </div>
 
-  <!-- PARENT PIN MODAL -->
-  <div class="modal-overlay" id="pinModal">
-    <div class="modal-box">
-      <h3 style="font-weight:900; color:#0F172A;">Parent Access</h3>
-      <p style="font-size:0.85rem; color:#64748B;">Enter 4-digit PIN</p>
-      <div class="pin-dots" id="pinDots">----</div>
-      <div class="keypad-grid">
-        <button class="key-btn" onclick="pressPin('1')">1</button>
-        <button class="key-btn" onclick="pressPin('2')">2</button>
-        <button class="key-btn" onclick="pressPin('3')">3</button>
-        <button class="key-btn" onclick="pressPin('4')">4</button>
-        <button class="key-btn" onclick="pressPin('5')">5</button>
-        <button class="key-btn" onclick="pressPin('6')">6</button>
-        <button class="key-btn" onclick="pressPin('7')">7</button>
-        <button class="key-btn" onclick="pressPin('8')">8</button>
-        <button class="key-btn" onclick="pressPin('9')">9</button>
-        <button class="key-btn" onclick="clearPin()">C</button>
-        <button class="key-btn" onclick="pressPin('0')">0</button>
-        <button class="key-btn" onclick="closePinModal()">✕</button>
-      </div>
-    </div>
-  </div>
-
   <script>
-    const PARENT_PIN = "1995";
-    let enteredPin = "";
-    let appMode = "learn";
     let currentScrollIdx = 0;
 
     const SCROLLS = [
       {
         id: "scroll_a",
-        tab: "Scroll A",
         challenger: "Sasuke Uchiha",
         sprite: "assets/sasuke.png",
         statement: "36 ÷ 4 = 8",
-        isCorrect: false,
         truthValue: "No",
         correctAnswer: "9",
         equationLeft: "36 ÷ 4 ="
       },
       {
         id: "scroll_b",
-        tab: "Scroll B",
         challenger: "Naruto Uzumaki",
         sprite: "assets/naruto.png",
         statement: "80 ÷ 8 = 10",
-        isCorrect: true,
         truthValue: "Yes",
         correctAnswer: "10",
         equationLeft: "80 ÷ 8 ="
       },
       {
         id: "scroll_c",
-        tab: "Scroll C",
         challenger: "Kakashi Hatake",
         sprite: "assets/kakashi.png",
         statement: "56 ÷ 7 = 9",
-        isCorrect: false,
         truthValue: "No",
         correctAnswer: "8",
         equationLeft: "56 ÷ 7 ="
       },
       {
         id: "scroll_d",
-        tab: "Scroll D",
         challenger: "Rock Lee",
         sprite: "assets/lee.png",
         statement: "48 ÷ 8 = 7",
-        isCorrect: false,
         truthValue: "No",
         correctAnswer: "6",
         equationLeft: "48 ÷ 8 ="
       }
     ];
+
+    /* AUDIO ENGINE */
+    class WarfareAudio {
+      constructor() { this.ctx = null; }
+      init() {
+        if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+      }
+      playVictoryImpact() {
+        this.init();
+        const t0 = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(160, t0);
+        osc.frequency.exponentialRampToValueAtTime(35, t0 + 0.45);
+        gain.gain.setValueAtTime(0.7, t0);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.5);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(t0);
+        osc.stop(t0 + 0.55);
+      }
+      playSmokePoof() {
+        this.init();
+        const bufferSize = this.ctx.sampleRate * 0.25;
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (this.ctx.sampleRate * 0.05));
+        const src = this.ctx.createBufferSource();
+        src.buffer = buffer;
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(600, this.ctx.currentTime);
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.35, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+        src.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+        src.start();
+      }
+    }
+    const audio = new WarfareAudio();
 
     function goToHub() {
       saveScratchCanvas();
@@ -639,27 +719,15 @@
       img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><circle cx='70' cy='70' r='65' fill='%233E2413' stroke='%23E67E22' stroke-width='4'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='45'>🍥</text></svg>";
     }
 
-    /* MODE ISOLATION STORAGE */
     function getStorageKey(subKey) {
-      const targetSlot = (appMode === "review") ? "test" : appMode;
       const s = SCROLLS[currentScrollIdx];
-      return `v2_isolated_ink::humayun::maths_oct08::${targetSlot}::${s.id}::${subKey}`;
-    }
-
-    function setAppMode(m) {
-      saveScratchCanvas();
-      appMode = m;
-      document.body.className = (m === 'test') ? "test-mode" : (m === 'review' ? "review-mode" : "");
-      document.getElementById('pillLearn').className = `mode-pill ${m === 'learn' ? 'active' : ''}`;
-      document.getElementById('pillTest').className = `mode-pill ${m === 'test' ? 'active' : ''}`;
-      switchScroll(currentScrollIdx, false);
+      return `v3_humayun_maths_oct08::${s.id}::${subKey}`;
     }
 
     function switchScroll(idx, doSave = true) {
       if (doSave) saveScratchCanvas();
       currentScrollIdx = idx;
 
-      // Update tabs
       document.querySelectorAll('.scroll-tab-card').forEach((card, i) => {
         card.classList.toggle('active', i === idx);
       });
@@ -670,60 +738,172 @@
       document.getElementById('challengerSprite').src = s.sprite;
       document.getElementById('correctionPromptLabel').textContent = `True Answer: ${s.equationLeft}`;
 
-      // Review hint
-      const hint = s.isCorrect ? "Statement is True (Yes)" : `No (${s.equationLeft} ${s.correctAnswer})`;
-      document.getElementById('reviewHintText').textContent = `Teacher Answer: ${hint}`;
-
-      // Restore verdict & input
       const savedVerdict = localStorage.getItem(getStorageKey('verdict')) || "";
       const savedInput = localStorage.getItem(getStorageKey('correction')) || "";
 
       document.getElementById('btnVerdictYes').classList.toggle('selected', savedVerdict === 'Yes');
       document.getElementById('btnVerdictNo').classList.toggle('selected', savedVerdict === 'No');
-      
+
       const inputEl = document.getElementById('correctionInput');
       inputEl.value = savedInput;
-      inputEl.classList.toggle('correct', appMode === 'learn' && savedInput === s.correctAnswer);
+      document.getElementById('correctionBox').style.opacity = (savedVerdict === 'No' || s.truthValue === "No") ? '1' : '0.5';
 
-      // Visibility of correction box
-      document.getElementById('correctionBox').style.opacity = (savedVerdict === 'No' || s.isCorrect === false) ? '1' : '0.6';
-
-      // Restore scratchpad
       setTimeout(() => {
         fitScratchCanvas();
         restoreScratchCanvas();
       }, 40);
+
+      updateOverallProgress();
     }
 
     function selectVerdict(val) {
-      if (appMode === "review") return;
       localStorage.setItem(getStorageKey('verdict'), val);
       document.getElementById('btnVerdictYes').classList.toggle('selected', val === 'Yes');
       document.getElementById('btnVerdictNo').classList.toggle('selected', val === 'No');
-      document.getElementById('correctionBox').style.opacity = (val === 'No') ? '1' : '0.6';
+      document.getElementById('correctionBox').style.opacity = (val === 'No') ? '1' : '0.5';
     }
 
     function handleCorrectionInput(el) {
-      if (appMode === "review") return;
-      const s = SCROLLS[currentScrollIdx];
       localStorage.setItem(getStorageKey('correction'), el.value.trim());
-      if (appMode === 'learn' && el.value.trim() === s.correctAnswer) {
-        el.classList.add('correct');
+    }
+
+    function updateOverallProgress() {
+      let dispelledCount = 0;
+      SCROLLS.forEach((s, i) => {
+        const isDispelled = localStorage.getItem(`v3_humayun_maths_oct08::${s.id}::dispelled`) === 'true';
+        document.getElementById(`tabScroll${i}`).classList.toggle('dispelled', isDispelled);
+        if (isDispelled) dispelledCount++;
+      });
+      document.getElementById('progressCounter').textContent = `${dispelledCount} / 4`;
+    }
+
+    /* COMBAT EXECUTION & PARTICLES */
+    function executeDispelStrike() {
+      const s = SCROLLS[currentScrollIdx];
+      const selectedVerdict = localStorage.getItem(getStorageKey('verdict')) || "";
+      const enteredCorrection = (localStorage.getItem(getStorageKey('correction')) || "").trim();
+
+      let isSuccess = false;
+
+      if (s.truthValue === "Yes" && selectedVerdict === "Yes") {
+        isSuccess = true;
+      } else if (s.truthValue === "No" && selectedVerdict === "No" && enteredCorrection === s.correctAnswer) {
+        isSuccess = true;
+      }
+
+      if (isSuccess) {
+        audio.playVictoryImpact();
+        localStorage.setItem(`v3_humayun_maths_oct08::${s.id}::dispelled`, 'true');
+        updateOverallProgress();
+
+        // 1. Flash white
+        const flash = document.getElementById('strikeFlash');
+        flash.classList.add('flash');
+        setTimeout(() => flash.classList.remove('flash'), 100);
+
+        // 2. Lightning strike
+        const zap = document.getElementById('lightningImg');
+        zap.classList.add('zap');
+        setTimeout(() => zap.classList.remove('zap'), 350);
+
+        // 3. Trigger Fullscreen Chakra Swirl Particles
+        triggerChakraSwirl();
+
+        // 4. Gold Kanji Impact
+        const overlay = document.getElementById('victoryOverlay');
+        const stamp = document.getElementById('victoryStamp');
+        overlay.style.display = 'flex';
+        setTimeout(() => stamp.classList.add('show'), 40);
+
+        setTimeout(() => {
+          stamp.classList.remove('show');
+          setTimeout(() => {
+            overlay.style.display = 'none';
+          }, 350);
+        }, 1600);
+
       } else {
-        el.classList.remove('correct');
+        // WRONG / SMOKE POOF REACTION
+        audio.playSmokePoof();
+        const smoke = document.getElementById('smokeImg');
+        smoke.classList.add('puff');
+        setTimeout(() => smoke.classList.remove('puff'), 450);
+
+        const sprite = document.getElementById('challengerSprite');
+        sprite.style.transform = 'translateX(-12px)';
+        setTimeout(() => sprite.style.transform = 'translateX(12px)', 80);
+        setTimeout(() => sprite.style.transform = 'translateX(0)', 160);
+
+        alert("The Genjutsu holds unbroken! Recheck your logic and calculations.");
       }
     }
 
-    function triggerDispelStrike() {
-      const flash = document.getElementById('strikeFlash');
-      flash.classList.add('flash');
-      setTimeout(() => flash.classList.remove('flash'), 100);
+    /* CHAKRA SWIRL VORTEX CANVAS */
+    const sCanvas = document.getElementById('swirlCanvas');
+    const sCtx = sCanvas.getContext('2d');
+    let swirlParticles = [];
+    let swirlActive = false;
 
-      const sprite = document.getElementById('challengerSprite');
-      sprite.style.transform = 'scale(0.92) rotate(4deg)';
-      setTimeout(() => {
-        sprite.style.transform = 'scale(1) rotate(0deg)';
-      }, 250);
+    function resizeSwirlCanvas() {
+      sCanvas.width = window.innerWidth;
+      sCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeSwirlCanvas);
+    resizeSwirlCanvas();
+
+    function triggerChakraSwirl() {
+      swirlActive = true;
+      swirlParticles = [];
+      const cx = window.innerWidth * 0.45;
+      const cy = window.innerHeight * 0.5;
+
+      for (let i = 0; i < 90; i++) {
+        swirlParticles.push({
+          angle: Math.random() * Math.PI * 2,
+          radius: Math.random() * 80 + 20,
+          speed: Math.random() * 0.08 + 0.04,
+          radialSpeed: Math.random() * 7 + 4,
+          size: Math.random() * 7 + 3,
+          color: ['#00E5FF', '#38BDF8', '#FFD700', '#FFFFFF'][Math.floor(Math.random() * 4)],
+          alpha: 1,
+          cx: cx,
+          cy: cy
+        });
+      }
+      requestAnimationFrame(renderSwirl);
+    }
+
+    function renderSwirl() {
+      if (!swirlActive) return;
+      sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
+      let living = 0;
+
+      for (let p of swirlParticles) {
+        p.angle += p.speed;
+        p.radius += p.radialSpeed;
+        p.alpha -= 0.016;
+
+        if (p.alpha > 0) {
+          living++;
+          const x = p.cx + Math.cos(p.angle) * p.radius;
+          const y = p.cy + Math.sin(p.angle) * p.radius;
+
+          sCtx.save();
+          sCtx.globalAlpha = Math.max(0, p.alpha);
+          sCtx.fillStyle = p.color;
+          sCtx.beginPath();
+          sCtx.arc(x, y, p.size, 0, Math.PI * 2);
+          sCtx.fill();
+          sCtx.restore();
+        }
+      }
+
+      if (living > 0) {
+        requestAnimationFrame(renderSwirl);
+      } else {
+        swirlActive = false;
+        sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
+      }
     }
 
     /* DUAL-RULED INK CANVAS */
@@ -760,7 +940,7 @@
     }
 
     function saveScratchCanvas() {
-      if (!canvas || canvas.width <= 0 || appMode === "review") return;
+      if (!canvas || canvas.width <= 0) return;
       try {
         localStorage.setItem(getStorageKey('ink'), canvas.toDataURL());
       } catch (e) {}
@@ -778,7 +958,6 @@
     }
 
     canvas.onpointerdown = (e) => {
-      if (appMode === "review") return;
       isDrawing = true;
       try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
       const rect = canvas.getBoundingClientRect();
@@ -788,7 +967,7 @@
     };
 
     canvas.onpointermove = (e) => {
-      if (!isDrawing || appMode === "review") return;
+      if (!isDrawing) return;
       const rect = canvas.getBoundingClientRect();
       const currX = e.clientX - rect.left;
       const currY = e.clientY - rect.top;
@@ -825,38 +1004,6 @@
     canvas.onpointerup = stopDrawing;
     canvas.onpointercancel = stopDrawing;
     canvas.onpointerleave = stopDrawing;
-
-    /* PARENT PIN LOGIC */
-    function openPinModal() {
-      enteredPin = "";
-      updatePinDots();
-      document.getElementById('pinModal').classList.add('open');
-    }
-    function closePinModal() {
-      document.getElementById('pinModal').classList.remove('open');
-      enteredPin = "";
-    }
-    function pressPin(n) {
-      if (enteredPin.length < 4) {
-        enteredPin += n;
-        updatePinDots();
-        if (enteredPin.length === 4) {
-          if (enteredPin === PARENT_PIN) {
-            closePinModal();
-            setAppMode('review');
-          } else {
-            alert("Incorrect PIN");
-            clearPin();
-          }
-        }
-      }
-    }
-    function clearPin() { enteredPin = ""; updatePinDots(); }
-    function updatePinDots() {
-      let str = "";
-      for (let i = 0; i < 4; i++) str += (i < enteredPin.length) ? "● " : "- ";
-      document.getElementById('pinDots').textContent = str.trim();
-    }
 
     window.onload = () => switchScroll(0, false);
     window.addEventListener('resize', () => {
