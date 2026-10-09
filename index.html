@@ -186,12 +186,12 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 20px 24px;
+      padding: 18px 24px;
       border-radius: 24px;
       text-decoration: none;
       color: #FFFFFF;
       font-weight: 800;
-      font-size: 1.3rem;
+      font-size: 1.25rem;
       cursor: pointer;
       border: none;
       box-shadow: 0 6px 0 rgba(0,0,0,0.18), 0 10px 20px rgba(0,0,0,0.08);
@@ -211,6 +211,15 @@
     .btn-arabic   { background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%); }
     .btn-default  { background: linear-gradient(135deg, #64748B 0%, #334155 100%); }
 
+    .badge-count {
+      background: rgba(255, 255, 255, 0.3);
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      margin-left: 8px;
+    }
+
     .arrow-circle {
       width: 42px;
       height: 42px;
@@ -220,6 +229,7 @@
       align-items: center;
       justify-content: center;
       font-size: 1.3rem;
+      flex-shrink: 0;
     }
 
     .status-msg {
@@ -231,6 +241,92 @@
       font-weight: 700;
       border: 2px dashed #CBD5E1;
     }
+
+    /* CHAPTER DRAWER MODAL */
+    .drawer-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .drawer-overlay.open { display: flex; }
+    
+    .drawer-box {
+      background: #FFFFFF;
+      border-radius: 28px;
+      padding: 22px;
+      max-width: 480px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      border: 4px solid #E2E8F0;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+      animation: popDrawer 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes popDrawer {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .drawer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px dashed #CBD5E1;
+      padding-bottom: 10px;
+    }
+    .drawer-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #0F172A;
+    }
+    .drawer-close {
+      background: #F1F5F9;
+      border: 2px solid #CBD5E1;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .chapter-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 55vh;
+      overflow-y: auto;
+    }
+    .chapter-item-btn {
+      background: #F8FAFC;
+      border: 2px solid #CBD5E1;
+      border-radius: 16px;
+      padding: 14px 18px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #1E293B;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.15s ease;
+      box-shadow: 0 3px 0 #CBD5E1;
+    }
+    .chapter-item-btn:hover {
+      background: #FEF08A;
+      border-color: #EAB308;
+      transform: translateY(-2px);
+    }
+    .chapter-item-btn:active { transform: translateY(2px); box-shadow: none; }
 
     /* Fullscreen Seamless Lesson Frame */
     #lessonFrameContainer {
@@ -268,13 +364,13 @@
     <div class="names-grid">
       <div class="name-card card-humayun" onclick="openStudentView('humayun')">
         <div class="avatar-full-wrap">
-          <img src="humayun-avatar.png" alt="Humayun" class="avatar-img" />
+          <img src="assets/humayun-avatar.png" alt="Humayun" class="avatar-img" onerror="handleAvatarFallback(this, '👦')" />
         </div>
       </div>
 
       <div class="name-card card-zaina" onclick="openStudentView('zaina')">
         <div class="avatar-full-wrap">
-          <img src="zaina-avatar.png" alt="Zaina" class="avatar-img" />
+          <img src="assets/zaina-avatar.png" alt="Zaina" class="avatar-img" onerror="handleAvatarFallback(this, '👧')" />
         </div>
       </div>
     </div>
@@ -285,14 +381,26 @@
     <div class="top-nav">
       <button type="button" class="back-btn" onclick="showNameSelect()">⬅ Back</button>
       <div class="current-student-title" id="activeStudentLabel">
-        <img src="humayun-avatar.png" alt="Humayun" class="header-avatar-img" id="headerAvatar" /> Humayun
+        <img src="assets/humayun-avatar.png" alt="Student" class="header-avatar-img" id="headerAvatar" onerror="handleAvatarFallback(this, '⭐')" />
+        <span>Student</span>
       </div>
       <div style="width: 80px;"></div>
     </div>
 
-    <!-- Automatically Populated Deck -->
+    <!-- Automatically Populated Deck (One card per Subject) -->
     <div class="lessons-deck" id="lessonsDeck">
       <div class="status-msg">Finding active lessons... 🔍</div>
+    </div>
+  </div>
+
+  <!-- CHAPTER / DATE PICKER DRAWER -->
+  <div class="drawer-overlay" id="chapterDrawer" onclick="closeDrawerOnBackdrop(event)">
+    <div class="drawer-box">
+      <div class="drawer-header">
+        <span class="drawer-title" id="drawerSubjectTitle">Maths Chapters</span>
+        <button class="drawer-close" onclick="closeDrawer()">✕</button>
+      </div>
+      <div class="chapter-list" id="drawerChapterList"></div>
     </div>
   </div>
 
@@ -306,25 +414,27 @@
     let lessonsCache = null;
 
     const SUBJECT_CONFIG = {
-      english:    { icon: "📖", colorClass: "btn-english", label: "English" },
-      math:       { icon: "🔢", colorClass: "btn-math",    label: "Maths" },
-      maths:      { icon: "🔢", colorClass: "btn-math",    label: "Maths" },
-      evs:        { icon: "🌱", colorClass: "btn-evs",     label: "EVS" },
-      science:    { icon: "🔬", colorClass: "btn-evs",     label: "EVS Science" },
-      islamiyath: { icon: "🌙", colorClass: "btn-islam",   label: "Islamiyath" },
-      islam:      { icon: "🌙", colorClass: "btn-islam",   label: "Islamiyath" },
-      tamil:      { icon: "🪔", colorClass: "btn-tamil",   label: "Tamil" },
-      arabic:     { icon: "📜", colorClass: "btn-arabic",  label: "Arabic" }
+      english:    { key: "english",    icon: "📖", colorClass: "btn-english", label: "English" },
+      maths:      { key: "maths",      icon: "🔢", colorClass: "btn-math",    label: "Maths" },
+      math:       { key: "maths",      icon: "🔢", colorClass: "btn-math",    label: "Maths" },
+      evs:        { key: "evs",        icon: "🌱", colorClass: "btn-evs",     label: "EVS" },
+      science:    { key: "evs",        icon: "🔬", colorClass: "btn-evs",     label: "EVS Science" },
+      islamiyath: { key: "islamiyath", icon: "🌙", colorClass: "btn-islam",   label: "Islamiyath" },
+      islam:      { key: "islamiyath", icon: "🌙", colorClass: "btn-islam",   label: "Islamiyath" },
+      tamil:      { key: "tamil",      icon: "🪔", colorClass: "btn-tamil",   label: "Tamil" },
+      arabic:     { key: "arabic",     icon: "📜", colorClass: "btn-arabic",  label: "Arabic" }
     };
+
+    function handleAvatarFallback(img, emoji) {
+      img.onerror = null;
+      img.src = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><circle cx='80' cy='80' r='75' fill='%23F1F5F9' stroke='%23CBD5E1' stroke-width='4'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='70'>${emoji}</text></svg>`;
+    }
 
     function requestFullScreenAuto() {
       const el = document.documentElement;
       if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-        if (el.requestFullscreen) {
-          el.requestFullscreen().catch(() => {});
-        } else if (el.webkitRequestFullscreen) {
-          el.webkitRequestFullscreen();
-        }
+        if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
       }
     }
 
@@ -339,27 +449,26 @@
       let remainder = base.replace(new RegExp(`^${student}[-_]?`, "i"), "").toLowerCase();
       if (!remainder) remainder = "english";
 
-      let matchedConfig = { icon: "📝", colorClass: "btn-default", label: "Lesson" };
-      let displayLabel = "";
+      let matchedConfig = { key: remainder, icon: "📝", colorClass: "btn-default", label: "Lesson" };
 
-      for (const key of Object.keys(SUBJECT_CONFIG)) {
+      for (const [key, cfg] of Object.entries(SUBJECT_CONFIG)) {
         if (remainder.includes(key)) {
-          matchedConfig = SUBJECT_CONFIG[key];
-          displayLabel = matchedConfig.label;
+          matchedConfig = cfg;
           break;
         }
       }
 
-      if (!displayLabel) {
-        displayLabel = remainder.replace(/[-_]/g, " ").trim();
-        displayLabel = displayLabel.charAt(0).toUpperCase() + displayLabel.slice(1);
-      }
+      // Extract optional date or chapter label (e.g. oct06, oct09)
+      const dateMatch = remainder.match(/(oct\d+|nov\d+|dec\d+|jan\d+|feb\d+|ch\d+|part\d+|\d+)/i);
+      const chapterLabel = dateMatch ? dateMatch[0].toUpperCase() : "Today's Lesson";
 
       return {
         student: student,
         fileName: fileName,
-        title: `${matchedConfig.icon} ${displayLabel}`,
-        colorClass: matchedConfig.colorClass
+        subjectKey: matchedConfig.key,
+        subjectTitle: `${matchedConfig.icon} ${matchedConfig.label}`,
+        colorClass: matchedConfig.colorClass,
+        chapterLabel: chapterLabel
       };
     }
 
@@ -383,11 +492,17 @@
         return lessonsCache;
       } catch (err) {
         return [
-          { student: "humayun", fileName: "humayun.html", title: "📖 English", colorClass: "btn-english" },
-          { student: "zaina", fileName: "zaina.html", title: "📖 English", colorClass: "btn-english" }
+          { student: "humayun", fileName: "humayun-english-oct07.html", subjectKey: "english", subjectTitle: "📖 English", colorClass: "btn-english", chapterLabel: "OCT07" },
+          { student: "humayun", fileName: "humayun-evs-oct07.html", subjectKey: "evs", subjectTitle: "🌱 EVS", colorClass: "btn-evs", chapterLabel: "OCT07" },
+          { student: "humayun", fileName: "humayun-maths-oct06.html", subjectKey: "maths", subjectTitle: "🔢 Maths", colorClass: "btn-math", chapterLabel: "OCT06" },
+          { student: "humayun", fileName: "humayun-maths-oct09.html", subjectKey: "maths", subjectTitle: "🔢 Maths", colorClass: "btn-math", chapterLabel: "OCT09" },
+          { student: "humayun", fileName: "humayun-tamil-oct07.html", subjectKey: "tamil", subjectTitle: "🪔 Tamil", colorClass: "btn-tamil", chapterLabel: "OCT07" },
+          { student: "zaina", fileName: "zaina-maths-oct07.html", subjectKey: "maths", subjectTitle: "🔢 Maths", colorClass: "btn-math", chapterLabel: "OCT07" }
         ];
       }
     }
+
+    let activeStudentGroupedLessons = {};
 
     async function openStudentView(name) {
       requestFullScreenAuto();
@@ -396,11 +511,14 @@
       const studentView = document.getElementById('studentView');
       studentView.style.display = 'flex';
 
-      const label = document.getElementById('activeStudentLabel');
-      const avatarSrc = name === 'humayun' ? 'humayun-avatar.png' : 'zaina-avatar.png';
+      const avatarSrc = name === 'humayun' ? 'assets/humayun-avatar.png' : 'assets/zaina-avatar.png';
       const studentNameCapitalized = name.charAt(0).toUpperCase() + name.slice(1);
       
-      label.innerHTML = `<img src="${avatarSrc}" alt="${studentNameCapitalized}" class="header-avatar-img" id="headerAvatar" /> ${studentNameCapitalized}`;
+      const label = document.getElementById('activeStudentLabel');
+      label.innerHTML = `
+        <img src="${avatarSrc}" alt="${studentNameCapitalized}" class="header-avatar-img" onerror="handleAvatarFallback(this, '${name === 'humayun' ? '👦' : '👧'}')" /> 
+        <span>${studentNameCapitalized}</span>
+      `;
 
       const deck = document.getElementById('lessonsDeck');
       deck.innerHTML = '<div class="status-msg">Finding active lessons... 🔍</div>';
@@ -415,17 +533,78 @@
         return;
       }
 
-      studentFiles.forEach(item => {
+      // Group by canonical subject key
+      activeStudentGroupedLessons = {};
+      studentFiles.forEach(file => {
+        if (!activeStudentGroupedLessons[file.subjectKey]) {
+          activeStudentGroupedLessons[file.subjectKey] = {
+            subjectKey: file.subjectKey,
+            subjectTitle: file.subjectTitle,
+            colorClass: file.colorClass,
+            files: []
+          };
+        }
+        activeStudentGroupedLessons[file.subjectKey].files.push(file);
+      });
+
+      // Render ONE button per subject
+      Object.values(activeStudentGroupedLessons).forEach(subjectGroup => {
+        // Sort files newest date first
+        subjectGroup.files.sort((a, b) => b.fileName.localeCompare(a.fileName));
+
+        const countBadge = subjectGroup.files.length > 1 ? `<span class="badge-count">${subjectGroup.files.length} Chapters</span>` : '';
         const btn = document.createElement("button");
         btn.type = "button";
-        btn.className = `lesson-btn ${item.colorClass}`;
-        btn.innerHTML = `<span>${item.title}</span><div class="arrow-circle">➔</div>`;
-        btn.onclick = () => launchLesson(item.fileName);
+        btn.className = `lesson-btn ${subjectGroup.colorClass}`;
+        btn.innerHTML = `
+          <span>${subjectGroup.subjectTitle} ${countBadge}</span>
+          <div class="arrow-circle">➔</div>
+        `;
+        
+        btn.onclick = () => {
+          if (subjectGroup.files.length === 1) {
+            launchLesson(subjectGroup.files[0].fileName);
+          } else {
+            openChapterDrawer(subjectGroup);
+          }
+        };
         deck.appendChild(btn);
       });
     }
 
+    function openChapterDrawer(subjectGroup) {
+      document.getElementById('drawerSubjectTitle').textContent = `${subjectGroup.subjectTitle} Chapters`;
+      const list = document.getElementById('drawerChapterList');
+      list.innerHTML = "";
+
+      subjectGroup.files.forEach(f => {
+        const itemBtn = document.createElement("button");
+        itemBtn.type = "button";
+        itemBtn.className = "chapter-item-btn";
+        itemBtn.innerHTML = `
+          <span>📅 Lesson: <b>${f.chapterLabel}</b></span>
+          <span>Start ▶</span>
+        `;
+        itemBtn.onclick = () => {
+          closeDrawer();
+          launchLesson(f.fileName);
+        };
+        list.appendChild(itemBtn);
+      });
+
+      document.getElementById('chapterDrawer').classList.add('open');
+    }
+
+    function closeDrawer() {
+      document.getElementById('chapterDrawer').classList.remove('open');
+    }
+
+    function closeDrawerOnBackdrop(e) {
+      if (e.target.id === 'chapterDrawer') closeDrawer();
+    }
+
     function showNameSelect() {
+      closeDrawer();
       document.getElementById('studentView').style.display = 'none';
       document.getElementById('nameSelectView').style.display = 'flex';
     }
