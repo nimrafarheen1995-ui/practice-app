@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Humayun's Ninja Math Quest: Repeated Subtraction</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Serif+JP:wght@900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --konoha-glow: #ff4757;
+      --orange-neon: #ff7700;
+      --grid-line: rgba(205, 224, 236, 0.4);
+      --grid-major: rgba(150, 187, 207, 0.65);
+      --paper-cream: #fbf8ee;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #090b0e;
+      color: #fff;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 1. FLOATING IMMERSIVE CINEMATIC HUD (LARGER HEADER) */
+    .top-cinematic-hud {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 60;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      pointer-events: none;
+    }
+
+    .hud-hub-btn, .scroll-toggle-btn, .mission-selector-btn {
+      pointer-events: auto;
+      background: linear-gradient(180deg, #2b170c 0%, #150c07 100%);
+      border: 2px solid #d35400;
+      border-radius: 14px;
+      padding: 10px 18px;
+      color: #f1c40f;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.8), inset 0 1px 2px rgba(255,165,0,0.4);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .hud-hub-btn:hover, .scroll-toggle-btn:hover, .mission-selector-btn:hover {
+      transform: translateY(-2px);
+      border-color: #f1c40f;
+      background: linear-gradient(180deg, #3a2212, #20100a);
+    }
+
+    .chapter-title-badge {
+      background: rgba(10, 7, 5, 0.9);
+      border: 3px solid rgba(211, 84, 0, 0.85);
+      backdrop-filter: blur(6px);
+      padding: 12px 32px;
+      border-radius: 36px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+      pointer-events: auto;
+    }
+    .chapter-main-text {
+      font-family: 'Cinzel', serif;
+      font-size: 22px;
+      font-weight: 900;
+      color: #ffd700;
+      text-shadow: 0 0 16px rgba(255, 215, 0, 0.9);
+      letter-spacing: 1.5px;
+    }
+    .chapter-sub-text {
+      font-size: 11px;
+      font-weight: 900;
+      color: #e0ac69;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    /* FILLING HP BAR */
+    .boss-status-hud {
+      position: absolute;
+      top: 105px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 55;
+      width: 340px;
+      background: rgba(15, 10, 8, 0.85);
+      border: 2px solid #5a3c22;
+      border-radius: 12px;
+      padding: 8px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.7);
+      pointer-events: none;
+    }
+    .boss-info-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 900;
+      color: #ffbe76;
+    }
+    .boss-hp-track {
+      width: 100%;
+      height: 12px;
+      background: #251711;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid #7a4a28;
+    }
+    .boss-hp-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #ff4757, #ff6b81);
+      border-radius: 4px;
+      transition: width 0.3s ease-out;
+    }
+
+    /* 2. FULL-SCREEN ARENA VIEWPORT */
+    .viewport-stage {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .backdrop-wrapper {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .backdrop-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      filter: brightness(0.85) contrast(1.1);
+    }
+    .backdrop-wash {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(8,10,13,0.3) 0%, rgba(8,10,13,0.65) 100%);
+    }
+
+    #fxCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 15;
+      pointer-events: none;
+    }
+
+    .lightning-flash-overlay {
+      position: absolute;
+      inset: 0;
+      background: #fff;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 45;
+      transition: opacity 0.08s ease-out;
+    }
+    .lightning-flash-overlay.flash { opacity: 0.85; }
+
+    /* COMBAT ZONE: 4 CORNER AMBUSH RAIDERS WITH SMOOTH GLIDE */
+    .combat-ground-zone {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    .corner-raider {
+      position: absolute;
+      width: 150px;
+      height: 190px;
+      z-index: 32;
+      opacity: 0;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      will-change: transform, opacity, top, bottom, left, right;
+      transition: all 0.7s cubic-bezier(0.2, 0.9, 0.3, 1);
+    }
+    .corner-raider img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 18px rgba(255,165,0,0.8));
+    }
+    /* Starting Off-Screen Corners */
+    .corner-raider.top-left { top: -220px; left: -220px; }
+    .corner-raider.top-right { top: -220px; right: -220px; }
+    .corner-raider.bottom-left { bottom: -220px; left: -220px; }
+    .corner-raider.bottom-right { bottom: -220px; right: -220px; }
+
+    /* Smooth Glide & Clash to Center Coordinates */
+    .corner-raider.clash.top-left { top: 32%; left: 38%; opacity: 1; transform: scale(1.35) rotate(5deg); }
+    .corner-raider.clash.top-right { top: 32%; right: 38%; opacity: 1; transform: scale(1.35) rotate(-5deg); }
+    .corner-raider.clash.bottom-left { bottom: 28%; left: 38%; opacity: 1; transform: scale(1.35) rotate(-5deg); }
+    .corner-raider.clash.bottom-right { bottom: 28%; right: 38%; opacity: 1; transform: scale(1.35) rotate(5deg); }
+
+    .strike-lightning-layer {
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      width: 420px;
+      height: 420px;
+      z-index: 38;
+      pointer-events: none;
+      mix-blend-mode: screen;
+      opacity: 0;
+      transform: scale(0.3);
+      filter: brightness(250%) drop-shadow(0 0 35px #00e5ff);
+      transition: transform 0.25s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.2s ease-out;
+    }
+    .strike-lightning-layer.zap {
+      opacity: 1;
+      transform: scale(1.5) rotate(-5deg);
+    }
+
+    .dynamic-smoke-puff {
+      position: absolute;
+      inset: 0;
+      margin: auto;
+      width: 380px;
+      height: 380px;
+      z-index: 36;
+      pointer-events: none;
+      opacity: 0;
+      transform: scale(0.2);
+      transition: transform 0.4s cubic-bezier(0.1, 0.85, 0.2, 1), opacity 0.35s ease-out;
+    }
+    .dynamic-smoke-puff.puffff {
+      opacity: 1;
+      transform: scale(1.65);
+    }
+
+    /* 3. COMPACT NOTEPAD DRAWER (4-COLUMN ICON TOOLS & LIGHTNING BUTTON) */
+    .ninja-scroll-drawer {
+      position: absolute;
+      top: 155px;
+      right: -360px;
+      bottom: 24px;
+      width: 320px;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      background: var(--paper-cream);
+      border: 4px solid #5a3c22;
+      border-radius: 18px 0 0 18px;
+      box-shadow: -12px 16px 45px rgba(0,0,0,0.85), inset 0 0 12px rgba(184, 134, 11, 0.25);
+      overflow: hidden;
+      will-change: right;
+      transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .ninja-scroll-drawer.open {
+      right: 16px;
+    }
+
+    .notepad-header-controls {
+      background: #251d18;
+      border-bottom: 2px solid #5a3c22;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+    }
+
+    /* 4-Column Compact Icon Grid */
+    .tools-grid-4col {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 4px;
+      width: 100%;
+    }
+
+    .btn-icon-tool {
+      background: #382c24;
+      border: 1px solid #6b4d32;
+      color: #eedccb;
+      font-size: 14px;
+      padding: 6px 0;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+    .btn-icon-tool:hover { background: #503d2e; color: #fff; }
+    .btn-icon-tool.active {
+      background: var(--orange-neon);
+      border-color: #ffd080;
+      color: #170f05;
+    }
+
+    .color-swatch-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      padding: 0 4px;
+    }
+    .color-swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+      transition: transform 0.15s;
+    }
+    .color-swatch.active { transform: scale(1.25); border-color: #ffd080; }
+
+    .notepad-scroll-viewport {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      touch-action: pan-y;
+      background-color: var(--paper-cream);
+      background-image: 
+        linear-gradient(var(--grid-major) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+        linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+      background-size: 90px 90px, 90px 90px, 18px 18px, 18px 18px;
+      background-position: -1px -1px;
+    }
+
+    #inkCanvas {
+      display: block;
+      width: 100%;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    .notepad-submission-dock {
+      background: #251d18;
+      border-top: 2px solid #5a3c22;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Sleek Lightning Strike Button */
+    .btn-lightning-strike {
+      background: linear-gradient(180deg, #ff4757 0%, #c0392b 100%);
+      border: 2px solid #ff7979;
+      color: #fff;
+      font-size: 22px;
+      padding: 8px;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(255, 71, 87, 0.5);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-lightning-strike:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 71, 87, 0.75);
+      background: linear-gradient(180deg, #ff6b81 0%, #ff4757 100%);
+    }
+
+    .quotient-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: #15110e;
+      border: 1px solid #5a3c22;
+      padding: 8px 10px;
+      border-radius: 8px;
+    }
+    .quotient-label {
+      font-size: 14px;
+      font-weight: 900;
+      color: #ffbe76;
+    }
+    .quotient-input {
+      width: 55px;
+      padding: 5px;
+      text-align: center;
+      font-size: 15px;
+      font-weight: 900;
+      border: 2px solid #ff9f43;
+      border-radius: 6px;
+      background: #251c14;
+      color: #fff;
+      outline: none;
+    }
+    .btn-submit-quotient {
+      background: #ff9f43;
+      color: #271403;
+      border: none;
+      font-size: 12px;
+      font-weight: 900;
+      padding: 7px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .btn-submit-quotient:hover { background: #ffa801; }
+
+    /* 4. MISSION SELECTOR MODAL */
+    #missionModal {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: rgba(7, 9, 12, 0.85);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-content-box {
+      width: 90%;
+      max-width: 680px;
+      background: linear-gradient(180deg, #251710 0%, #120b07 100%);
+      border: 3.5px solid #d35400;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .modal-title {
+      font-family: 'Cinzel', serif;
+      font-size: 22px;
+      font-weight: 900;
+      color: #f1c40f;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+    .mission-grid-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      max-height: 380px;
+      overflow-y: auto;
+      padding: 4px;
+    }
+    .mission-card-option {
+      background: linear-gradient(180deg, #332219 0%, #1c110c 100%);
+      border: 2px solid #6b4d32;
+      border-radius: 14px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mission-card-option:hover {
+      border-color: #f1c40f;
+      transform: translateY(-2px);
+      background: linear-gradient(180deg, #442e22, #261710);
+    }
+    .mission-card-option.active {
+      border-color: #f1c40f;
+      background: linear-gradient(180deg, #d35400, #a04000);
+      box-shadow: 0 0 16px rgba(211, 84, 0, 0.8);
+    }
+    .mission-card-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid #f1c40f;
+      background: #000;
+      flex-shrink: 0;
+    }
+    .mission-card-avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .mission-card-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .mission-card-title {
+      font-size: 15px;
+      font-weight: 900;
+      color: #fff;
+    }
+    .mission-card-sub {
+      font-size: 11px;
+      font-weight: 800;
+      color: #e0ac69;
+    }
+    .btn-close-modal {
+      align-self: center;
+      background: #e67e22;
+      border: 2px solid #f39c12;
+      color: #fff;
+      font-weight: 900;
+      padding: 8px 24px;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    .btn-close-modal:hover { background: #d35400; }
+
+    /* 5. CELEBRATION FINALE STAGE OVERLAY */
+    #celebrationFinaleStage {
+      position: fixed;
+      inset: 0;
+      z-index: 100000;
+      pointer-events: none;
+      display: none;
+      overflow: hidden;
+      background: radial-gradient(circle at center, rgba(16, 20, 26, 0.35) 0%, rgba(7, 9, 12, 0.88) 100%);
+      backdrop-filter: blur(4px);
+    }
+
+    #finaleCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+    }
+
+    .kanji-banner-centerpiece {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 25;
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+    }
+    .kanji-banner-centerpiece.impact {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+
+    .enso-brush-crescent {
+      position: absolute;
+      width: 440px;
+      height: 440px;
+      border-radius: 50%;
+      border: 32px solid transparent;
+      border-top-color: rgba(255, 215, 0, 0.75);
+      border-right-color: rgba(212, 175, 55, 0.65);
+      border-bottom-color: rgba(184, 134, 11, 0.3);
+      filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.6));
+      transform: rotate(-35deg);
+      pointer-events: none;
+      animation: ensoPulse 4s infinite alternate ease-in-out;
+    }
+    @keyframes ensoPulse {
+      0% { transform: rotate(-35deg) scale(0.98); }
+      100% { transform: rotate(-30deg) scale(1.02); }
+    }
+
+    .kanji-top-title {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 72px;
+      font-weight: 900;
+      color: #ffd700;
+      text-shadow:
+        -3px -3px 0 #5c3b12,
+         3px -3px 0 #5c3b12,
+        -3px  3px 0 #5c3b12,
+         3px  3px 0 #5c3b12,
+         0 0 20px #ffb700,
+         0 0 40px #ff9500;
+      letter-spacing: 12px;
+      margin-left: 12px;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+
+    .kanji-subtitle-gold {
+      font-family: 'Cinzel', serif;
+      font-size: 24px;
+      font-weight: 900;
+      color: #fff4d0;
+      letter-spacing: 6px;
+      text-shadow: 0 2px 4px #000, 0 0 15px rgba(255, 215, 0, 0.9);
+      margin-top: 6px;
+      white-space: nowrap;
+    }
+
+    .flying-shinobi-rocket {
+      position: absolute;
+      width: 170px;
+      height: 170px;
+      z-index: 20;
+      pointer-events: none;
+      transform: rotate(38deg);
+      filter: drop-shadow(0 0 20px #00e5ff);
+    }
+    .flying-shinobi-rocket img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .landing-zone-right {
+      position: absolute;
+      top: 50%;
+      right: 40px;
+      transform: translateY(-50%) translateX(220px);
+      width: 480px;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      opacity: 0;
+      transition: transform 0.65s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.5s ease;
+      pointer-events: none;
+    }
+    .landing-zone-right.landed {
+      transform: translateY(-50%) translateX(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .unfurled-scroll-report {
+      flex: 1;
+      background: #fcf4de;
+      border: 4px solid #8c5727;
+      border-radius: 14px;
+      padding: 16px 20px;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.8), inset 0 0 12px rgba(166, 114, 60, 0.4);
+      color: #3b220e;
+      position: relative;
+    }
+    .unfurled-scroll-report::before, .unfurled-scroll-report::after {
+      content: '';
+      position: absolute;
+      top: -12px;
+      width: 26px;
+      height: calc(100% + 24px);
+      background: #5d3916;
+      border: 2px solid #8e5828;
+      border-radius: 6px;
+    }
+    .unfurled-scroll-report::before { left: -14px; }
+    .unfurled-scroll-report::after { right: -14px; }
+
+    .scroll-report-title {
+      font-size: 16px;
+      font-weight: 900;
+      color: #7a3e0c;
+      border-bottom: 2px dashed #b58252;
+      padding-bottom: 4px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .scroll-report-body {
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.5;
+      color: #4a2910;
+      margin-bottom: 12px;
+    }
+
+    .btn-finale-close {
+      background: linear-gradient(180deg, #ff9f43 0%, #e67e22 100%);
+      border: 2px solid #fed330;
+      color: #2b1704;
+      font-weight: 900;
+      font-size: 13px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: all 0.2s;
+    }
+    .btn-finale-close:hover {
+      transform: translateY(-2px);
+      background: #ffa801;
+    }
+
+    .shinobi-victory-posture {
+      width: 170px;
+      height: 250px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .shinobi-victory-posture img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 10px 16px rgba(0,0,0,0.7));
+    }
+    .landing-dust-smoke {
+      position: absolute;
+      bottom: -15px;
+      width: 140px;
+      height: 80px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. FLOATING IMMERSIVE CINEMATIC HUD (LARGER HEADER) -->
+  <header class="top-cinematic-hud">
+    <a href="index.html" class="hud-hub-btn">🍃 Hub</a>
+
+    <div class="chapter-title-badge">
+      <span class="chapter-main-text" id="hudChapterTitle">Mission A: 18 ÷ 6</span>
+      <span class="chapter-sub-text">Repeated Subtraction Arena</span>
+    </div>
+
+    <div style="display: flex; gap: 10px;">
+      <button class="mission-selector-btn" id="openMissionModalBtn">📜 Missions</button>
+      <button class="scroll-toggle-btn" id="toggleScrollBtn">📜 Open Scroll</button>
+    </div>
+  </header>
+
+  <!-- FILLING HP BAR -->
+  <div class="boss-status-hud">
+    <div class="boss-info-row">
+      <span id="bossNameLabel">Rival Defender</span>
+      <span id="bossHpText">0 / 18 HP Completed</span>
+    </div>
+    <div class="boss-hp-track">
+      <div class="boss-hp-fill" id="bossHpFill"></div>
+    </div>
+  </div>
+
+  <!-- 2. FULL-SCREEN ARENA VIEWPORT WITH VIDEO BACKGROUND -->
+  <main class="viewport-stage" id="viewportStage">
+    
+    <div class="backdrop-wrapper">
+      <video autoplay muted loop playsinline class="backdrop-img">
+        <source src="battlefield-bg.mp4" type="video/mp4">
+      </video>
+      <div class="backdrop-wash"></div>
+    </div>
+
+    <canvas id="fxCanvas"></canvas>
+    <div class="lightning-flash-overlay" id="lightningFlash"></div>
+
+    <!-- COMBAT ZONE: 4 CORNER AMBUSH RAIDERS -->
+    <div class="combat-ground-zone">
+      <div class="corner-raider top-left" id="raiderTL"><img id="raiderImgTL" src="kakashi.png" alt="Raider TL"></div>
+      <div class="corner-raider top-right" id="raiderTR"><img id="raiderImgTR" src="lee.png" alt="Raider TR"></div>
+      <div class="corner-raider bottom-left" id="raiderBL"><img id="raiderImgBL" src="neji.png" alt="Raider BL"></div>
+      <div class="corner-raider bottom-right" id="raiderBR"><img id="raiderImgBR" src="sasuke.png" alt="Raider BR"></div>
+
+      <img src="lightning.png" class="strike-lightning-layer" id="strikeLightningImg" alt="Lightning Strike" />
+      <img src="smoke-poof.png" alt="Smoke" class="dynamic-smoke-puff" id="strikeSmokePuff" />
+    </div>
+
+    <!-- 3. UNFURLING SCROLL NOTEPAD DRAWER (4-COLUMN ICON TOOLS & LIGHTNING BUTTON) -->
+    <aside class="ninja-scroll-drawer" id="ninjaScrollDrawer">
+      <div class="notepad-header-controls">
+        <div class="tools-grid-4col">
+          <button class="btn-icon-tool active" id="toolPen" title="Pen">✏</button>
+          <button class="btn-icon-tool" id="toolEraser" title="Eraser">🧹</button>
+          <button class="btn-icon-tool" id="toolClear" title="Clear">🗑</button>
+          <button class="btn-icon-tool" id="toolUndo" title="Undo">↩</button>
+        </div>
+        <div class="color-swatch-row">
+          <span class="color-swatch active" data-color="#1e272e" style="background:#1e272e;"></span>
+          <span class="color-swatch" data-color="#0984e3" style="background:#0984e3;"></span>
+          <span class="color-swatch" data-color="#d63031" style="background:#d63031;"></span>
+        </div>
+      </div>
+
+      <div class="notepad-scroll-viewport" id="notepadScrollViewport">
+        <canvas id="inkCanvas"></canvas>
+      </div>
+
+      <div class="notepad-submission-dock">
+        <!-- Sleek Lightning Strike Icon Button -->
+        <button class="btn-lightning-strike" id="btnJutsuStrike" title="Jutsu Strike">
+          ⚡
+        </button>
+
+        <div class="quotient-row">
+          <span class="quotient-label" id="quotientLabel">18 ÷ 6 =</span>
+          <input type="number" id="inputQuotient" class="quotient-input" placeholder="?" min="0" max="99">
+          <button class="btn-submit-quotient" id="btnSubmitQuotient">Submit</button>
+        </div>
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- 4. MISSION SELECTOR MODAL -->
+  <div id="missionModal">
+    <div class="modal-content-box">
+      <div class="modal-title">SELECT SHINOBI MISSION</div>
+      <div class="mission-grid-options" id="missionGridOptions"></div>
+      <button class="btn-close-modal" id="closeMissionModalBtn">Close Arena</button>
+    </div>
+  </div>
+
+  <!-- 5. CELEBRATION FINALE STAGE OVERLAY -->
+  <div id="celebrationFinaleStage">
+    <canvas id="finaleCanvas"></canvas>
+
+    <div class="kanji-banner-centerpiece" id="kanjiCenterpiece">
+      <div class="enso-brush-crescent"></div>
+      <div class="kanji-top-title">任務完了</div>
+      <div class="kanji-subtitle-gold">MISSION ACCOMPLISHED</div>
+    </div>
+
+    <div class="flying-shinobi-rocket" id="flyingShinobiRocket">
+      <img src="naruto.png" id="flyingShinobiImg" alt="Shinobi In Flight">
+    </div>
+
+    <div class="landing-zone-right" id="landingZoneRight">
+      <div class="unfurled-scroll-report">
+        <div class="scroll-report-title" id="reportScrollTitle">任務完了 — MISSION ACCOMPLISHED!</div>
+        <div class="scroll-report-body" id="reportScrollBody">
+          Repeated subtraction successfully completed!
+        </div>
+        <button class="btn-finale-close" onclick="closeCelebrationFinale()">Continue Training ➔</button>
+      </div>
+
+      <div class="shinobi-victory-posture">
+        <img src="naruto.png" id="victoryPoseImg" alt="Victory Shinobi">
+        <img src="smoke-poof.png" class="landing-dust-smoke" id="landingDustImg" alt="Dust Cloud">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ========================================================= */
+    /* 1. MISSIONS CONFIG                                        */
+    /* ========================================================= */
+    const MISSIONS = [
+      {
+        id: 'mission_a',
+        code: 'Mission A: 18 ÷ 6',
+        dividend: 18,
+        divisor: 6,
+        hero: 'Naruto Uzumaki',
+        heroImg: 'naruto.png',
+        rival: 'Sasuke Uchiha',
+        rivalImg: 'sasuke.png',
+        color: '#00d2ff',
+        slipstreamType: 'rasengan'
+      },
+      {
+        id: 'mission_b',
+        code: 'Mission B: 45 ÷ 5',
+        dividend: 45,
+        divisor: 5,
+        hero: 'Sasuke Uchiha',
+        heroImg: 'sasuke.png',
+        rival: 'Kakashi Hatake',
+        rivalImg: 'kakashi.png',
+        color: '#a55eea',
+        slipstreamType: 'chidori'
+      },
+      {
+        id: 'mission_c',
+        code: 'Mission C: 28 ÷ 4',
+        dividend: 28,
+        divisor: 4,
+        hero: 'Kakashi Hatake',
+        heroImg: 'kakashi.png',
+        rival: 'Rock Lee',
+        rivalImg: 'lee.png',
+        color: '#45aaf2',
+        slipstreamType: 'raikiri'
+      },
+      {
+        id: 'mission_d',
+        code: 'Mission D: 35 ÷ 5',
+        dividend: 35,
+        divisor: 5,
+        hero: 'Rock Lee',
+        heroImg: 'lee.png',
+        rival: 'Neji Hyuga',
+        rivalImg: 'neji.png',
+        color: '#26de81',
+        slipstreamType: 'youth'
+      },
+      {
+        id: 'mission_e',
+        code: 'Mission E: 42 ÷ 7',
+        dividend: 42,
+        divisor: 7,
+        hero: 'Shikamaru Nara',
+        heroImg: 'shikamaru.png',
+        rival: 'Naruto Uzumaki',
+        rivalImg: 'naruto.png',
+        color: '#4b6584',
+        slipstreamType: 'shadow'
+      },
+      {
+        id: 'mission_f',
+        code: 'Mission F: 60 ÷ 10',
+        dividend: 60,
+        divisor: 10,
+        hero: 'Neji Hyuga',
+        heroImg: 'neji.png',
+        rival: 'Kakashi Hatake',
+        rivalImg: 'kakashi.png',
+        color: '#70a1ff',
+        slipstreamType: 'byakugan'
+      }
+    ];
+
+    const ALL_CHARACTER_SPRITES = ['naruto.png', 'sasuke.png', 'kakashi.png', 'lee.png', 'neji.png', 'shikamaru.png'];
+
+    let currentMissionIdx = 0;
+    let accumulatedProgressHP = 0;
+    let maxHealth = 18;
+    let totalRequiredSteps = 3;
+
+    /* ========================================================= */
+    /* 2. OPTIMIZED WARFARE AUDIO ENGINE (WEB AUDIO API)         */
+    /* ========================================================= */
+    class NinjaAudioEngine {
+      constructor() { this.ctx = null; }
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+      }
+
+      playCornerChargeChime() {
+        this.init();
+        const t0 = this.ctx.currentTime;
+        [300, 450, 600, 750].forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, t0 + idx * 0.08);
+          gain.gain.setValueAtTime(0.01, t0 + idx * 0.08);
+          gain.gain.linearRampToValueAtTime(0.12, t0 + idx * 0.08 + 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.001, t0 + idx * 0.08 + 0.25);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(t0 + idx * 0.08);
+          osc.stop(t0 + idx * 0.08 + 0.3);
+        });
+      }
+
+      playMultiHitClashShockwave() {
+        this.init();
+        const t0 = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(140, t0);
+        osc.frequency.exponentialRampToValueAtTime(30, t0 + 0.35);
+        gain.gain.setValueAtTime(0.6, t0);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.4);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(t0);
+        osc.stop(t0 + 0.45);
+      }
+
+      playSmokePoof() {
+        this.init();
+        const bufferSize = this.ctx.sampleRate * 0.25;
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (this.ctx.sampleRate * 0.05));
+        const source = this.ctx.createBufferSource();
+        source.buffer = buffer;
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(700, this.ctx.currentTime);
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+        source.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+        source.start();
+      }
+
+      playTaikoGongImpact() {
+        this.init();
+        const t0 = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(95, t0);
+        osc.frequency.exponentialRampToValueAtTime(26, t0 + 0.75);
+        gain.gain.setValueAtTime(0.7, t0);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.85);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(t0);
+        osc.stop(t0 + 0.9);
+      }
+
+      playFlyThroughWhoosh() {
+        this.init();
+        const t0 = this.ctx.currentTime;
+        const dur = 2.5;
+        const bufferSize = this.ctx.sampleRate * dur;
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = buffer;
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.Q.value = 3.0;
+        filter.frequency.setValueAtTime(300, t0);
+        filter.frequency.exponentialRampToValueAtTime(2400, t0 + dur);
+
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.01, t0);
+        gain.gain.linearRampToValueAtTime(0.3, t0 + dur * 0.4);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+        noise.start(t0);
+        noise.stop(t0 + dur);
+      }
+
+      playJapaneseKotoMelody() {
+        this.init();
+        const melody = [
+          { f: 523.25, time: 0.00 },
+          { f: 587.33, time: 0.16 },
+          { f: 622.25, time: 0.32 },
+          { f: 783.99, time: 0.52 }
+        ];
+        const t0 = this.ctx.currentTime;
+        melody.forEach(note => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(note.f, t0 + note.time);
+          gain.gain.setValueAtTime(0.2, t0 + note.time);
+          gain.gain.exponentialRampToValueAtTime(0.001, t0 + note.time + 0.5);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(t0 + note.time);
+          osc.stop(t0 + note.time + 0.55);
+        });
+      }
+    }
+    const soundFX = new NinjaAudioEngine();
+
+    /* ========================================================= */
+    /* 3. DYNAMIC HUD & MISSION UPDATER                          */
+    /* ========================================================= */
+    const hudChapterTitle = document.getElementById('hudChapterTitle');
+    const bossNameLabel = document.getElementById('bossNameLabel');
+    const bossHpText = document.getElementById('bossHpText');
+    const bossHpFill = document.getElementById('bossHpFill');
+
+    function updateFighters(m) {
+      hudChapterTitle.innerText = m.code;
+      bossNameLabel.innerText = `${m.rival} (Defender)`;
+      accumulatedProgressHP = 0;
+      updateBossHP();
+      randomizeCornerRaiders();
+    }
+
+    function randomizeCornerRaiders() {
+      const shuffled = [...ALL_CHARACTER_SPRITES].sort(() => 0.5 - Math.random());
+      document.getElementById('raiderImgTL').src = shuffled[0];
+      document.getElementById('raiderImgTR').src = shuffled[1];
+      document.getElementById('raiderImgBL').src = shuffled[2];
+      document.getElementById('raiderImgBR').src = shuffled[3];
+    }
+
+    function updateBossHP() {
+      bossHpText.innerText = `${accumulatedProgressHP} / ${maxHealth} HP Completed`;
+      const pct = Math.min(100, (accumulatedProgressHP / maxHealth) * 100);
+      bossHpFill.style.width = `${pct}%`;
+    }
+
+    /* ========================================================= */
+    /* 4. OPTIMIZED GRAPH INK CANVAS ENGINE                      */
+    /* ========================================================= */
+    const inkCanvas = document.getElementById('inkCanvas');
+    const inkCtx = inkCanvas.getContext('2d', { alpha: true });
+    const scrollContainer = document.getElementById('notepadScrollViewport');
+
+    let isDrawing = false;
+    let currentTool = 'pen';
+    let strokeColor = '#1e272e';
+    let strokeWidth = 3.5;
+    let undoStack = [];
+    const VIRTUAL_CANVAS_HEIGHT = 2000;
+
+    function resizeCanvas() {
+      const rect = scrollContainer.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+
+      let temp = document.createElement('canvas');
+      temp.width = inkCanvas.width;
+      temp.height = inkCanvas.height;
+      let tCtx = temp.getContext('2d');
+      tCtx.drawImage(inkCanvas, 0, 0);
+
+      inkCanvas.width = rect.width * dpr;
+      inkCanvas.height = VIRTUAL_CANVAS_HEIGHT * dpr;
+      inkCtx.scale(dpr, dpr);
+      inkCanvas.style.width = `${rect.width}px`;
+      inkCanvas.style.height = `${VIRTUAL_CANVAS_HEIGHT}px`;
+
+      if (temp.width > 0) {
+        inkCtx.drawImage(temp, 0, 0, temp.width / dpr, temp.height / dpr);
+      }
+    }
+
+    function getStorageKey(missionId) {
+      return `v11_isolated_ink::humayun::maths_oct09::${missionId}`;
+    }
+
+    function saveInkToStorage() {
+      const m = MISSIONS[currentMissionIdx];
+      inkCtx.save();
+      inkCtx.globalCompositeOperation = 'source-over';
+      const dataUrl = inkCanvas.toDataURL();
+      localStorage.setItem(getStorageKey(m.id), dataUrl);
+      inkCtx.restore();
+    }
+
+    function loadInkFromStorage() {
+      const m = MISSIONS[currentMissionIdx];
+      inkCtx.save();
+      inkCtx.globalCompositeOperation = 'source-over';
+      inkCtx.clearRect(0, 0, inkCanvas.width, inkCanvas.height);
+      inkCtx.restore();
+      
+      undoStack = [];
+      const saved = localStorage.getItem(getStorageKey(m.id));
+      if (saved) {
+        const img = new Image();
+        img.onload = () => {
+          const dpr = window.devicePixelRatio || 1;
+          inkCtx.save();
+          inkCtx.globalCompositeOperation = 'source-over';
+          inkCtx.drawImage(img, 0, 0, inkCanvas.width / dpr, inkCanvas.height / dpr);
+          inkCtx.restore();
+          pushUndoState();
+        };
+        img.src = saved;
+      } else {
+        pushUndoState();
+      }
+    }
+
+    function pushUndoState() {
+      inkCtx.save();
+      inkCtx.globalCompositeOperation = 'source-over';
+      undoStack.push(inkCanvas.toDataURL());
+      if (undoStack.length > 15) undoStack.shift();
+      inkCtx.restore();
+    }
+
+    function undoLast() {
+      if (undoStack.length > 1) {
+        undoStack.pop();
+        const prevState = undoStack[undoStack.length - 1];
+        const img = new Image();
+        img.onload = () => {
+          const dpr = window.devicePixelRatio || 1;
+          inkCtx.save();
+          inkCtx.globalCompositeOperation = 'source-over';
+          inkCtx.clearRect(0, 0, inkCanvas.width, inkCanvas.height);
+          inkCtx.drawImage(img, 0, 0, inkCanvas.width / dpr, inkCanvas.height / dpr);
+          inkCtx.restore();
+          saveInkToStorage();
+        };
+        img.src = prevState;
+      }
+    }
+
+    function getCanvasPos(e) {
+      const rect = inkCanvas.getBoundingClientRect();
+      let clientX = e.clientX, clientY = e.clientY;
+      if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      }
+      return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+
+    function startDraw(e) {
+      isDrawing = true;
+      const pos = getCanvasPos(e);
+      inkCtx.beginPath();
+      inkCtx.moveTo(pos.x, pos.y);
+      inkCtx.lineCap = 'round';
+      inkCtx.lineJoin = 'round';
+      if (currentTool === 'eraser') {
+        inkCtx.globalCompositeOperation = 'destination-out';
+        inkCtx.lineWidth = strokeWidth * 4;
+      } else {
+        inkCtx.globalCompositeOperation = 'source-over';
+        inkCtx.strokeStyle = strokeColor;
+        inkCtx.lineWidth = strokeWidth;
+      }
+    }
+
+    function moveDraw(e) {
+      if (!isDrawing) return;
+      const pos = getCanvasPos(e);
+      inkCtx.lineTo(pos.x, pos.y);
+      inkCtx.stroke();
+    }
+
+    function stopDraw() {
+      if (!isDrawing) return;
+      isDrawing = false;
+      inkCtx.closePath();
+      inkCtx.globalCompositeOperation = 'source-over';
+      pushUndoState();
+      saveInkToStorage();
+    }
+
+    inkCanvas.addEventListener('pointerdown', startDraw);
+    inkCanvas.addEventListener('pointermove', moveDraw);
+    inkCanvas.addEventListener('pointerup', stopDraw);
+    inkCanvas.addEventListener('pointerleave', stopDraw);
+
+    /* ========================================================= */
+    /* 5. LIGHTWEIGHT PERFORMANCE-THROTTLED FX CANVAS            */
+    /* ========================================================= */
+    const fxCanvas = document.getElementById('fxCanvas');
+    const fxCtx = fxCanvas.getContext('2d', { alpha: true });
+    let arenaParticles = [];
+
+    function resizeFxCanvas() {
+      fxCanvas.width = window.innerWidth;
+      fxCanvas.height = window.innerHeight;
+    }
+
+    class ArenaFxParticle {
+      constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        this.radius = Math.random() * 5 + 2;
+        this.speedX = (Math.random() - 0.5) * 12;
+        this.speedY = (Math.random() - 0.5) * 12;
+        this.life = 1;
+        this.decay = 0.05;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.life -= this.decay;
+      }
+      draw(c) {
+        c.save();
+        c.globalAlpha = Math.max(0, this.life);
+        c.fillStyle = this.color;
+        c.beginPath();
+        c.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        c.fill();
+        c.restore();
+      }
+    }
+
+    function spawnArenaBurst(x, y, color, count = 30) {
+      for (let i = 0; i < count; i++) {
+        arenaParticles.push(new ArenaFxParticle(x, y, color));
+      }
+    }
+
+    function renderArenaFX() {
+      fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+      for (let i = arenaParticles.length - 1; i >= 0; i--) {
+        arenaParticles[i].update();
+        arenaParticles[i].draw(fxCtx);
+        if (arenaParticles[i].life <= 0) arenaParticles.splice(i, 1);
+      }
+      requestAnimationFrame(renderArenaFX);
+    }
+    requestAnimationFrame(renderArenaFX);
+
+    /* ========================================================= */
+    /* 6. GAME CONTROLS & 4-CORNER GLIDE-TO-CLASH STRIKES        */
+    /* ========================================================= */
+    const ninjaScrollDrawer = document.getElementById('ninjaScrollDrawer');
+    const toggleScrollBtn = document.getElementById('toggleScrollBtn');
+    const strikeLightningImg = document.getElementById('strikeLightningImg');
+    const strikeSmokePuff = document.getElementById('strikeSmokePuff');
+    const lightningFlash = document.getElementById('lightningFlash');
+    const btnJutsuStrike = document.getElementById('btnJutsuStrike');
+    const quotientLabel = document.getElementById('quotientLabel');
+    const inputQuotient = document.getElementById('inputQuotient');
+
+    const raiderTL = document.getElementById('raiderTL');
+    const raiderTR = document.getElementById('raiderTR');
+    const raiderBL = document.getElementById('raiderBL');
+    const raiderBR = document.getElementById('raiderBR');
+
+    toggleScrollBtn.onclick = () => {
+      ninjaScrollDrawer.classList.toggle('open');
+      toggleScrollBtn.innerText = ninjaScrollDrawer.classList.contains('open') ? '📜 Close Scroll' : '📜 Open Scroll';
+      setTimeout(resizeCanvas, 300);
+    };
+
+    const missionModal = document.getElementById('missionModal');
+    const missionGridOptions = document.getElementById('missionGridOptions');
+    document.getElementById('openMissionModalBtn').onclick = () => {
+      buildMissionGrid();
+      missionModal.style.display = 'flex';
+    };
+    document.getElementById('closeMissionModalBtn').onclick = () => {
+      missionModal.style.display = 'none';
+    };
+
+    function buildMissionGrid() {
+      missionGridOptions.innerHTML = '';
+      MISSIONS.forEach((m, idx) => {
+        const card = document.createElement('div');
+        card.className = `mission-card-option ${idx === currentMissionIdx ? 'active' : ''}`;
+        card.innerHTML = `
+          <div class="mission-card-avatar"><img src="${m.heroImg}" alt="${m.hero}" /></div>
+          <div class="mission-card-info">
+            <span class="mission-card-title">${m.code}</span>
+            <span class="mission-card-sub">Hero: ${m.hero}</span>
+          </div>
+        `;
+        card.onclick = () => {
+          selectMission(idx);
+          missionModal.style.display = 'none';
+        };
+        missionGridOptions.appendChild(card);
+      });
+    }
+
+    function selectMission(idx) {
+      saveInkToStorage();
+      currentMissionIdx = idx;
+      const m = MISSIONS[idx];
+      totalRequiredSteps = m.dividend / m.divisor;
+      maxHealth = m.dividend;
+      accumulatedProgressHP = 0;
+
+      quotientLabel.innerText = `${m.dividend} ÷ ${m.divisor} =`;
+      inputQuotient.value = '';
+
+      updateFighters(m);
+      loadInkFromStorage();
+    }
+
+    // 4-Corner Glide-to-Clash Strike Action
+    btnJutsuStrike.onclick = () => {
+      if (accumulatedProgressHP >= maxHealth) return;
+      const m = MISSIONS[currentMissionIdx];
+
+      soundFX.playCornerChargeChime();
+
+      raiderTL.classList.add('clash');
+      raiderTR.classList.add('clash');
+      raiderBL.classList.add('clash');
+      raiderBR.classList.add('clash');
+
+      setTimeout(() => {
+        soundFX.playMultiHitClashShockwave();
+        lightningFlash.classList.add('flash');
+        setTimeout(() => lightningFlash.classList.remove('flash'), 80);
+
+        const cx = window.innerWidth / 2;
+        const cy = window.innerHeight / 2;
+        spawnArenaBurst(cx, cy, m.color, 40);
+
+        strikeLightningImg.classList.add('zap');
+        setTimeout(() => strikeLightningImg.classList.remove('zap'), 300);
+
+        strikeSmokePuff.classList.add('puffff');
+        soundFX.playSmokePoof();
+
+        accumulatedProgressHP = Math.min(maxHealth, accumulatedProgressHP + m.divisor);
+        updateBossHP();
+
+        setTimeout(() => {
+          raiderTL.classList.remove('clash');
+          raiderTR.classList.remove('clash');
+          raiderBL.classList.remove('clash');
+          raiderBR.classList.remove('clash');
+          strikeSmokePuff.classList.remove('puffff');
+          randomizeCornerRaiders();
+        }, 500);
+      }, 550);
+    };
+
+    // Final quotient submit triggers Grand Celebration Finale
+    document.getElementById('btnSubmitQuotient').onclick = () => {
+      const val = parseInt(inputQuotient.value.trim(), 10);
+      const m = MISSIONS[currentMissionIdx];
+      
+      if (isNaN(val)) {
+        alert("Enter your final step quotient count!");
+        return;
+      }
+      
+      if (val === totalRequiredSteps) {
+        soundFX.playJapaneseKotoMelody();
+        triggerCelebratoryFinale(m);
+      } else {
+        alert(`Almost there! How many times did you subtract ${m.divisor} to reach 0? (Total steps: ${totalRequiredSteps})`);
+      }
+    };
+
+    /* ========================================================= */
+    /* 7. CELEBRATION FINALE STAGE ENGINE                        */
+    /* ========================================================= */
+    const finaleStage = document.getElementById('celebrationFinaleStage');
+    const finaleCanvas = document.getElementById('finaleCanvas');
+    const finaleCtx = finaleCanvas.getContext('2d', { alpha: true });
+    const kanjiCenterpiece = document.getElementById('kanjiCenterpiece');
+    const flyingShinobiRocket = document.getElementById('flyingShinobiRocket');
+    const flyingShinobiImg = document.getElementById('flyingShinobiImg');
+    const landingZoneRight = document.getElementById('landingZoneRight');
+    const reportScrollTitle = document.getElementById('reportScrollTitle');
+    const reportScrollBody = document.getElementById('reportScrollBody');
+    const victoryPoseImg = document.getElementById('victoryPoseImg');
+
+    let finaleAnimRunning = false;
+    let confettiStorm = [];
+    let slipstreamParticles = [];
+    let flyThroughStartTime = 0;
+    let cornerCycleIdx = 0;
+
+    function resizeFinaleCanvas() {
+      finaleCanvas.width = window.innerWidth;
+      finaleCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeFinaleCanvas);
+
+    class TacticalConfetti {
+      constructor(type = 'leaf') {
+        this.x = Math.random() * window.innerWidth;
+        this.y = -40 - Math.random() * 200;
+        this.type = type;
+        this.size = type === 'leaf' ? (Math.random() * 10 + 8) : (Math.random() * 8 + 6);
+        this.vx = (Math.random() - 0.5) * 1.5;
+        this.vy = Math.random() * 2.2 + 1.8;
+        this.rot = Math.random() * Math.PI * 2;
+        this.rotSpeed = (Math.random() - 0.5) * 0.06;
+        this.color = type === 'leaf' ? '#2ecc71' : (type === 'shuriken' ? '#bdc3c7' : '#ffd32a');
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.rot += this.rotSpeed;
+        if (this.y > window.innerHeight + 50) {
+          this.y = -30;
+          this.x = Math.random() * window.innerWidth;
+        }
+      }
+      draw(c) {
+        c.save();
+        c.translate(this.x, this.y);
+        c.rotate(this.rot);
+        c.fillStyle = this.color;
+        c.beginPath();
+        c.arc(0, 0, this.size * 0.5, 0, Math.PI * 2);
+        c.fill();
+        c.restore();
+      }
+    }
+
+    class SlipstreamTrailParticle {
+      constructor(x, y, color) {
+        this.x = x + (Math.random() - 0.5) * 30;
+        this.y = y + (Math.random() - 0.5) * 30;
+        this.color = color;
+        this.size = Math.random() * 6 + 2;
+        this.vx = (Math.random() - 0.5) * 3 - 1.5;
+        this.vy = (Math.random() - 0.5) * 3 + 1.5;
+        this.life = 1;
+        this.decay = 0.03;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.life -= this.decay;
+      }
+      draw(c) {
+        c.save();
+        c.globalAlpha = Math.max(0, this.life);
+        c.fillStyle = this.color;
+        c.beginPath();
+        c.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        c.fill();
+        c.restore();
+      }
+    }
+
+    function triggerCelebratoryFinale(mission) {
+      resizeFinaleCanvas();
+      finaleStage.style.display = 'block';
+      finaleAnimRunning = true;
+
+      soundFX.playTaikoGongImpact();
+      kanjiCenterpiece.className = 'kanji-banner-centerpiece impact';
+
+      flyingShinobiImg.src = mission.heroImg;
+      victoryPoseImg.src = mission.heroImg;
+
+      reportScrollTitle.innerText = `任務完了 — ${mission.hero.toUpperCase()}!`;
+      reportScrollBody.innerHTML = `
+        ${mission.dividend} ÷ ${mission.divisor} = <b>${mission.dividend / mission.divisor}</b><br/>
+        Repeatedly subtracted <b>${mission.divisor}</b> exactly <b>${mission.dividend / mission.divisor} times</b>!
+      `;
+
+      confettiStorm = [];
+      for (let i = 0; i < 40; i++) confettiStorm.push(new TacticalConfetti('leaf'));
+      for (let i = 0; i < 25; i++) confettiStorm.push(new TacticalConfetti('shuriken'));
+
+      slipstreamParticles = [];
+
+      setTimeout(() => {
+        soundFX.playFlyThroughWhoosh();
+        flyThroughStartTime = performance.now();
+        animateSlowCornerGlide(mission);
+      }, 400);
+
+      setTimeout(() => {
+        landingZoneRight.className = 'landing-zone-right landed';
+        soundFX.playSmokePoof();
+        soundFX.playJapaneseKotoMelody();
+      }, 2400);
+
+      requestAnimationFrame(renderFinaleScene);
+    }
+
+    function animateSlowCornerGlide(mission) {
+      const dur = 3200;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      const corners = [
+        { x: -150, y: -150, tx: w * 0.4, ty: h * 0.5 },
+        { x: w + 150, y: -150, tx: w * 0.4, ty: h * 0.5 },
+        { x: -150, y: h + 150, tx: w * 0.4, ty: h * 0.5 },
+        { x: w + 150, y: h + 150, tx: w * 0.4, ty: h * 0.5 }
+      ];
+
+      const start = corners[cornerCycleIdx % corners.length];
+      cornerCycleIdx++;
+
+      function stepGlide(now) {
+        const elapsed = now - flyThroughStartTime;
+        const progress = Math.min(1, elapsed / dur);
+        const ease = 1 - Math.pow(1 - progress, 3);
+
+        const curX = start.x + (start.tx - start.x) * ease;
+        const curY = start.y + (start.ty - start.y) * ease;
+
+        flyingShinobiRocket.style.left = `${curX}px`;
+        flyingShinobiRocket.style.top = `${curY}px`;
+
+        for (let k = 0; k < 3; k++) {
+          slipstreamParticles.push(new SlipstreamTrailParticle(curX + 60, curY + 60, mission.color));
+        }
+
+        if (progress < 1 && finaleAnimRunning) {
+          requestAnimationFrame(stepGlide);
+        }
+      }
+      requestAnimationFrame(stepGlide);
+    }
+
+    function renderFinaleScene() {
+      if (!finaleAnimRunning) return;
+      finaleCtx.clearRect(0, 0, finaleCanvas.width, finaleCanvas.height);
+
+      for (let i = slipstreamParticles.length - 1; i >= 0; i--) {
+        slipstreamParticles[i].update();
+        slipstreamParticles[i].draw(finaleCtx);
+        if (slipstreamParticles[i].life <= 0) slipstreamParticles.splice(i, 1);
+      }
+
+      for (let c of confettiStorm) {
+        c.update();
+        c.draw(finaleCtx);
+      }
+
+      requestAnimationFrame(renderFinaleScene);
+    }
+
+    function closeCelebrationFinale() {
+      finaleAnimRunning = false;
+      finaleStage.style.display = 'none';
+      kanjiCenterpiece.className = 'kanji-banner-centerpiece';
+      landingZoneRight.className = 'landing-zone-right';
+      confettiStorm = [];
+      slipstreamParticles = [];
+      selectMission((currentMissionIdx + 1) % MISSIONS.length);
+    }
+
+    /* ========================================================= */
+    /* 8. TOOLBAR HANDLERS & INIT                                */
+    /* ========================================================= */
+    document.getElementById('toolPen').onclick = (e) => {
+      currentTool = 'pen';
+      document.querySelectorAll('.tools-grid-4col .btn-icon-tool').forEach(b => b.classList.remove('active'));
+      e.target.classList.add('active');
+    };
+    document.getElementById('toolEraser').onclick = (e) => {
+      currentTool = 'eraser';
+      document.querySelectorAll('.tools-grid-4col .btn-icon-tool').forEach(b => b.classList.remove('active'));
+      e.target.classList.add('active');
+    };
+    document.getElementById('toolClear').onclick = () => {
+      inkCtx.save();
+      inkCtx.globalCompositeOperation = 'source-over';
+      inkCtx.clearRect(0, 0, inkCanvas.width, inkCanvas.height);
+      inkCtx.restore();
+      pushUndoState();
+      saveInkToStorage();
+    };
+    document.getElementById('toolUndo').onclick = undoLast;
+
+    document.querySelectorAll('.color-swatch').forEach(sw => {
+      sw.onclick = () => {
+        document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('active'));
+        sw.classList.add('active');
+        strokeColor = sw.getAttribute('data-color');
+        currentTool = 'pen';
+        document.getElementById('toolPen').classList.add('active');
+        document.getElementById('toolEraser').classList.remove('active');
+      };
+    });
+
+    window.addEventListener('resize', () => {
+      resizeCanvas();
+      resizeFxCanvas();
+      resizeFinaleCanvas();
+    });
+
+    window.addEventListener('load', () => {
+      resizeCanvas();
+      resizeFxCanvas();
+      resizeFinaleCanvas();
+      selectMission(0);
+    });
+  </script>
+</body>
+</html>
