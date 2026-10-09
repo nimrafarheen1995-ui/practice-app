@@ -279,7 +279,7 @@
       transform: scale(1.7);
     }
 
-    /* 3. NOTEPAD DRAWER */
+    /* 3. NOTEPAD DRAWER (FIXED WIDTH TO ENSURE LIGHTNING S-PEN SPEED) */
     .ninja-scroll-drawer {
       position: absolute;
       top: 92px;
@@ -294,19 +294,13 @@
       border-radius: 18px 0 0 18px;
       box-shadow: -12px 16px 45px rgba(0,0,0,0.85), inset 0 0 12px rgba(184, 134, 11, 0.25);
       overflow: hidden;
-      will-change: right, width, left;
-      transition: right 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), width 0.3s ease, border-radius 0.3s ease;
+      will-change: right;
+      transition: right 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .ninja-scroll-drawer.open {
       right: 12px;
     }
-    .ninja-scroll-drawer.fullscreen-expanded {
-      right: 12px !important;
-      left: 12px !important;
-      width: calc(100vw - 24px) !important;
-      border-radius: 18px !important;
-    }
-    /* TEMPORARY COMBAT RETRACTION CLASS */
+    /* Auto-slide tuck out during clash */
     .ninja-scroll-drawer.combat-tucked {
       right: -460px !important;
     }
@@ -319,7 +313,6 @@
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      flex-wrap: nowrap;
     }
 
     .tools-icon-row {
@@ -347,7 +340,7 @@
       text-shadow: 0 0 8px rgba(255, 119, 0, 0.6);
     }
 
-    .palm-mode-btn, .expand-mode-btn, .page-ctrl-btn {
+    .palm-mode-btn, .page-ctrl-btn {
       background: #3A2312;
       border: 1.5px solid #D35400;
       color: #F1C40F;
@@ -366,26 +359,22 @@
       border-color: #2ECC71;
       color: #FFF;
     }
-    .expand-mode-btn.active {
-      background: #E67E22;
-      border-color: #F39C12;
-      color: #FFF;
-    }
 
+    /* 4-PAGE PAGINATION STRIP */
     .page-pagination-strip {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
       background: #19120c;
-      padding: 2px 6px;
-      border-radius: 8px;
-      border: 1px solid #5a3c22;
+      padding: 3px 8px;
+      border-radius: 10px;
+      border: 1.5px solid #5a3c22;
     }
     .page-indicator-text {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 900;
-      color: #ffeedb;
-      min-width: 44px;
+      color: #ffd700;
+      min-width: 50px;
       text-align: center;
     }
 
@@ -410,9 +399,8 @@
       flex: 1;
       width: 100%;
       height: 100%;
-      overflow-y: auto;
-      overflow-x: hidden;
-      touch-action: pan-y;
+      overflow: hidden;
+      touch-action: none;
       background-color: var(--paper-cream);
       background-image: 
         linear-gradient(var(--grid-major) 1px, transparent 1px),
@@ -426,11 +414,12 @@
     #inkCanvas {
       display: block;
       width: 100%;
+      height: 100%;
       cursor: crosshair;
       touch-action: none;
     }
 
-    /* IN-GAME CARVED KEYPAD */
+    /* IN-GAME CARVED KEYPAD DOCK */
     .notepad-submission-dock {
       background: #1e1510;
       border-top: 2px solid #5a3c22;
@@ -788,7 +777,7 @@
       <img src="assets/smoke-poof.png" alt="Smoke" class="dynamic-smoke-puff" id="strikeSmokePuff" onerror="this.style.display='none'" />
     </div>
 
-    <!-- 3. NOTEPAD DRAWER WITH AUTO-SLIDE RETRACT ON CLASH -->
+    <!-- 3. NOTEPAD DRAWER (PERFECT 420PX WIDTH, 4-PAGE CAPACITY) -->
     <aside class="ninja-scroll-drawer" id="ninjaScrollDrawer">
       <div class="notepad-header-controls">
         <div class="tools-icon-row">
@@ -798,22 +787,16 @@
           <button class="btn-icon-tool" id="toolUndo" title="Undo">↩</button>
         </div>
 
-        <!-- MULTI-PAGE CONTROLS -->
+        <!-- 4-PAGE PAGINATION STRIP -->
         <div class="page-pagination-strip">
           <button type="button" class="page-ctrl-btn" onclick="changeNotepadPage(-1)">◀</button>
-          <span class="page-indicator-text" id="pageIndicatorText">Pg 1 / 1</span>
+          <span class="page-indicator-text" id="pageIndicatorText">Pg 1 / 4</span>
           <button type="button" class="page-ctrl-btn" onclick="changeNotepadPage(1)">▶</button>
-          <button type="button" class="page-ctrl-btn" onclick="addNewNotepadPage()" title="Add New Page">➕</button>
         </div>
         
         <!-- PALM REJECTION TOGGLE -->
         <button type="button" class="palm-mode-btn" id="btnPalmMode" onclick="togglePalmRejectionMode()">
           ✍️ Touch
-        </button>
-
-        <!-- FULLSCREEN EXPAND TOGGLE -->
-        <button type="button" class="expand-mode-btn" id="btnExpandMode" onclick="toggleDrawerFullscreen()">
-          ⛶ Expand
         </button>
 
         <div class="color-swatch-row">
@@ -988,13 +971,12 @@
     let totalRequiredSteps = 3;
     let keypadInputValue = "";
     let isPenOnlyMode = false;
-    let isDrawerFullscreen = false;
 
-    /* MULTI-PAGE STATE */
+    /* FIXED 4-PAGE CAPACITY */
     let currentPageIdx = 1;
-    let totalPagesCount = 1;
+    const TOTAL_PAGES = 4;
 
-    /* 2. AUDIO ENGINE */
+    /* 2. WARFARE AUDIO ENGINE */
     class NinjaAudioEngine {
       constructor() { this.ctx = null; }
       init() {
@@ -1097,24 +1079,7 @@
       bossHpFill.style.width = `${pct}%`;
     }
 
-    /* 4. MULTI-PAGE & FULLSCREEN LOGIC */
-    function toggleDrawerFullscreen() {
-      isDrawerFullscreen = !isDrawerFullscreen;
-      const drawer = document.getElementById('ninjaScrollDrawer');
-      const btn = document.getElementById('btnExpandMode');
-
-      saveInkToStorage();
-
-      drawer.classList.toggle('fullscreen-expanded', isDrawerFullscreen);
-      btn.textContent = isDrawerFullscreen ? "🗗 Split View" : "⛶ Expand";
-      btn.classList.toggle('active', isDrawerFullscreen);
-
-      setTimeout(() => {
-        resizeCanvas();
-        loadInkFromStorage();
-      }, 360);
-    }
-
+    /* 4. 4-PAGE NAVIGATION & PALM REJECTION */
     function togglePalmRejectionMode() {
       isPenOnlyMode = !isPenOnlyMode;
       const btn = document.getElementById('btnPalmMode');
@@ -1124,7 +1089,7 @@
 
     function changeNotepadPage(delta) {
       const nextPg = currentPageIdx + delta;
-      if (nextPg >= 1 && nextPg <= totalPagesCount) {
+      if (nextPg >= 1 && nextPg <= TOTAL_PAGES) {
         saveInkToStorage();
         currentPageIdx = nextPg;
         updatePageIndicator();
@@ -1132,19 +1097,11 @@
       }
     }
 
-    function addNewNotepadPage() {
-      saveInkToStorage();
-      totalPagesCount++;
-      currentPageIdx = totalPagesCount;
-      updatePageIndicator();
-      clearInkInMemory();
-    }
-
     function updatePageIndicator() {
-      document.getElementById('pageIndicatorText').textContent = `Pg ${currentPageIdx} / ${totalPagesCount}`;
+      document.getElementById('pageIndicatorText').textContent = `Pg ${currentPageIdx} / ${TOTAL_PAGES}`;
     }
 
-    /* 5. INK CANVAS ENGINE */
+    /* 5. LIGHTWEIGHT NATIVE-RESOLUTION INK CANVAS */
     const inkCanvas = document.getElementById('inkCanvas');
     const inkCtx = inkCanvas.getContext('2d', { alpha: true });
     const scrollContainer = document.getElementById('notepadScrollViewport');
@@ -1154,11 +1111,10 @@
     let strokeColor = '#1e272e';
     let strokeWidth = 3.5;
     let undoStack = [];
-    const VIRTUAL_CANVAS_HEIGHT = 4500;
 
     function resizeCanvas() {
       const rect = scrollContainer.getBoundingClientRect();
-      if (rect.width <= 0) return;
+      if (rect.width <= 0 || rect.height <= 0) return;
       const dpr = window.devicePixelRatio || 1;
 
       let temp = document.createElement('canvas');
@@ -1170,19 +1126,19 @@
       }
 
       inkCanvas.width = Math.floor(rect.width * dpr);
-      inkCanvas.height = Math.floor(VIRTUAL_CANVAS_HEIGHT * dpr);
+      inkCanvas.height = Math.floor(rect.height * dpr);
       inkCanvas.style.width = `${rect.width}px`;
-      inkCanvas.style.height = `${VIRTUAL_CANVAS_HEIGHT}px`;
+      inkCanvas.style.height = `${rect.height}px`;
 
       inkCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       if (temp.width > 0 && temp.height > 0) {
-        inkCtx.drawImage(temp, 0, 0, rect.width, VIRTUAL_CANVAS_HEIGHT);
+        inkCtx.drawImage(temp, 0, 0, rect.width, rect.height);
       }
     }
 
     function getStorageKey(missionId, pageNum = currentPageIdx) {
-      return `v11_isolated_ink::humayun::maths_oct08::${missionId}::pg${pageNum}`;
+      return `v12_speed_ink::humayun::maths_oct08::${missionId}::pg${pageNum}`;
     }
 
     function saveInkToStorage() {
@@ -1191,16 +1147,6 @@
         const dataUrl = inkCanvas.toDataURL();
         localStorage.setItem(getStorageKey(m.id, currentPageIdx), dataUrl);
       } catch (e) {}
-    }
-
-    function clearInkInMemory() {
-      const dpr = window.devicePixelRatio || 1;
-      inkCtx.save();
-      inkCtx.setTransform(1, 0, 0, 1, 0, 0);
-      inkCtx.clearRect(0, 0, inkCanvas.width, inkCanvas.height);
-      inkCtx.restore();
-      undoStack = [];
-      pushUndoState();
     }
 
     function loadInkFromStorage() {
@@ -1304,7 +1250,7 @@
     inkCanvas.addEventListener('pointercancel', stopDraw);
     inkCanvas.addEventListener('pointerleave', stopDraw);
 
-    /* 6. IN-GAME KEYPAD & STRIKE LOGIC WITH AUTO-SLIDE DRAWER */
+    /* 6. IN-GAME KEYPAD & STRIKE ACTION WITH AUTO-SLIDE DRAWER */
     function pressKeypad(key) {
       if (key === 'del') {
         keypadInputValue = keypadInputValue.slice(0, -1);
@@ -1326,24 +1272,19 @@
       clashInProgress = true;
       const m = MISSIONS[currentMissionIdx];
 
-      // AUTO-SLIDE PEEK OUT: Temporarily retract the drawer off-screen so the whole arena is visible
+      // Auto-slide tuck out so arena is 100% visible
       const drawer = document.getElementById('ninjaScrollDrawer');
       const wasOpen = drawer.classList.contains('open');
-      if (wasOpen) {
-        drawer.classList.add('combat-tucked');
-      }
+      if (wasOpen) drawer.classList.add('combat-tucked');
 
       soundFX.playChime();
 
-      // Duel Stage 1: Hero charges inward
       duelHero.classList.add('charge');
 
-      // Duel Stage 2: Defender counters
       setTimeout(() => {
         duelRival.classList.add('charge');
       }, 250);
 
-      // Duel Stage 3: Clashing Impact Hold
       setTimeout(() => {
         soundFX.playImpact();
         const flash = document.getElementById('lightningFlash');
@@ -1361,15 +1302,12 @@
         accumulatedProgressHP = Math.min(maxHealth, accumulatedProgressHP + m.divisor);
         updateBossHP();
 
-        // Reset duel stance & restore drawer back to user
         setTimeout(() => {
           smoke.classList.remove('puffff');
           duelHero.classList.remove('charge');
           duelRival.classList.remove('charge');
           
-          if (wasOpen) {
-            drawer.classList.remove('combat-tucked');
-          }
+          if (wasOpen) drawer.classList.remove('combat-tucked');
           clashInProgress = false;
         }, 1200);
 
@@ -1441,7 +1379,6 @@
       updateKeypadSlot();
 
       currentPageIdx = 1;
-      totalPagesCount = 1;
       updatePageIndicator();
 
       document.getElementById('quotientLabel').innerText = `${m.dividend} ÷ ${m.divisor} =`;
