@@ -238,7 +238,11 @@
       max-width: 210px;
       object-fit: contain;
       filter: drop-shadow(0 10px 20px rgba(0,0,0,0.85));
-      transition: transform 0.25s ease-out;
+      transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1), opacity 0.3s ease;
+    }
+    .challenger-sprite.vanished {
+      opacity: 0 !important;
+      transform: scale(0.6) translateY(40px) !important;
     }
 
     .kunai-dispel-btn {
@@ -307,6 +311,43 @@
       transition: opacity 0.08s ease-out;
     }
     .strike-fx-flash.flash { opacity: 0.85; }
+
+    /* IN-GAME FAILURE OVERLAY: GLOWING CRIMSON TEXT */
+    .failure-feedback-zone {
+      position: absolute;
+      inset: 0;
+      z-index: 28;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+      transform: scale(0.7);
+      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .failure-feedback-zone.active {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .failure-kanji {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 56px;
+      font-weight: 900;
+      color: #FF4757;
+      text-shadow: 0 0 20px #FF4757, 0 0 35px #C0392B, 0 0 60px #E74C3C;
+      letter-spacing: 4px;
+      line-height: 1;
+    }
+    .failure-subtext {
+      font-family: 'Cinzel', serif;
+      font-size: 24px;
+      font-weight: 900;
+      color: #FFF;
+      text-shadow: 0 0 15px #FF4757, 0 0 25px #C0392B;
+      letter-spacing: 3px;
+      margin-top: 4px;
+    }
 
     /* PANE 3: VERDICT & INK WORKSPACE */
     .workspace-pane-book {
@@ -454,66 +495,232 @@
     }
     .tool-btn.active { background: #E67E22; color: #FFF; border-color: #D35400; }
 
-    /* CELEBRATION CHAKRA SWIRL FULLSCREEN CANVAS */
-    #swirlCanvas {
+    /* CELEBRATION FINALE STAGE OVERLAY (OCT 09 ASANA PATTERN) */
+    #celebrationFinaleStage {
       position: fixed;
       inset: 0;
-      pointer-events: none;
-      z-index: 99998;
-    }
-
-    /* GOLDEN KANJI IMPACT OVERLAY */
-    .kanji-victory-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 99999;
+      z-index: 100000;
       pointer-events: none;
       display: none;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      background: radial-gradient(circle, rgba(15, 23, 42, 0.45) 0%, rgba(15, 23, 42, 0.85) 100%);
-      backdrop-filter: blur(3px);
+      overflow: hidden;
+      background: radial-gradient(circle at center, rgba(16, 20, 26, 0.35) 0%, rgba(7, 9, 12, 0.88) 100%);
+      backdrop-filter: blur(4px);
     }
-    .kanji-stamp-box {
+
+    #finaleCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+    }
+
+    .kanji-banner-centerpiece {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.2);
       display: flex;
       flex-direction: column;
       align-items: center;
-      transform: scale(0.2);
+      justify-content: center;
+      z-index: 25;
       opacity: 0;
-      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      pointer-events: none;
+      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
     }
-    .kanji-stamp-box.show {
-      transform: scale(1);
+    .kanji-banner-centerpiece.impact {
+      transform: translate(-50%, -50%) scale(1);
       opacity: 1;
     }
-    .kanji-glyph {
-      font-family: 'Noto Serif JP', serif;
-      font-size: 110px;
-      font-weight: 900;
-      color: #FFD700;
-      text-shadow: 0 0 35px rgba(255, 215, 0, 0.9), 0 0 60px #FF9F43;
-      line-height: 1;
+
+    .enso-brush-crescent {
+      position: absolute;
+      width: 440px;
+      height: 440px;
+      border-radius: 50%;
+      border: 32px solid transparent;
+      border-top-color: rgba(255, 215, 0, 0.75);
+      border-right-color: rgba(212, 175, 55, 0.65);
+      border-bottom-color: rgba(184, 134, 11, 0.3);
+      filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.6));
+      transform: rotate(-35deg);
+      pointer-events: none;
+      animation: ensoPulse 4s infinite alternate ease-in-out;
     }
-    .kanji-sub-label {
-      font-family: 'Cinzel', serif;
-      font-size: 26px;
+    @keyframes ensoPulse {
+      0% { transform: rotate(-35deg) scale(0.98); }
+      100% { transform: rotate(-30deg) scale(1.02); }
+    }
+
+    .kanji-top-title {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 72px;
       font-weight: 900;
-      color: #FFF;
-      letter-spacing: 4px;
-      text-shadow: 0 4px 12px rgba(0,0,0,0.8);
-      margin-top: 8px;
+      color: #ffd700;
+      text-shadow:
+        -3px -3px 0 #5c3b12,
+         3px -3px 0 #5c3b12,
+        -3px  3px 0 #5c3b12,
+         3px  3px 0 #5c3b12,
+         0 0 20px #ffb700,
+         0 0 40px #ff9500;
+      letter-spacing: 12px;
+      margin-left: 12px;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+
+    .kanji-subtitle-gold {
+      font-family: 'Cinzel', serif;
+      font-size: 24px;
+      font-weight: 900;
+      color: #fff4d0;
+      letter-spacing: 6px;
+      text-shadow: 0 2px 4px #000, 0 0 15px rgba(255, 215, 0, 0.9);
+      margin-top: 6px;
+      white-space: nowrap;
+    }
+
+    .flying-shinobi-rocket {
+      position: absolute;
+      width: 170px;
+      height: 170px;
+      z-index: 20;
+      pointer-events: none;
+      transform: rotate(38deg);
+      filter: drop-shadow(0 0 20px #00e5ff);
+    }
+    .flying-shinobi-rocket img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .landing-zone-right {
+      position: absolute;
+      top: 50%;
+      right: 40px;
+      transform: translateY(-50%) translateX(220px);
+      width: 480px;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      opacity: 0;
+      transition: transform 0.65s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.5s ease;
+      pointer-events: none;
+    }
+    .landing-zone-right.landed {
+      transform: translateY(-50%) translateX(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .unfurled-scroll-report {
+      flex: 1;
+      background: #fcf4de;
+      border: 4px solid #8c5727;
+      border-radius: 14px;
+      padding: 16px 20px;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.8), inset 0 0 12px rgba(166, 114, 60, 0.4);
+      color: #3b220e;
+      position: relative;
+    }
+    .unfurled-scroll-report::before, .unfurled-scroll-report::after {
+      content: '';
+      position: absolute;
+      top: -12px;
+      width: 26px;
+      height: calc(100% + 24px);
+      background: #5d3916;
+      border: 2px solid #8e5828;
+      border-radius: 6px;
+    }
+    .unfurled-scroll-report::before { left: -14px; }
+    .unfurled-scroll-report::after { right: -14px; }
+
+    .scroll-report-title {
+      font-size: 16px;
+      font-weight: 900;
+      color: #7a3e0c;
+      border-bottom: 2px dashed #b58252;
+      padding-bottom: 4px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .scroll-report-body {
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.5;
+      color: #4a2910;
+      margin-bottom: 12px;
+    }
+
+    .btn-finale-close {
+      background: linear-gradient(180deg, #ff9f43 0%, #e67e22 100%);
+      border: 2px solid #fed330;
+      color: #2b1704;
+      font-weight: 900;
+      font-size: 13px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      transition: all 0.2s;
+    }
+    .btn-finale-close:hover {
+      transform: translateY(-2px);
+      background: #ffa801;
+    }
+
+    .shinobi-victory-posture {
+      width: 170px;
+      height: 250px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      position: relative;
+      flex-shrink: 0;
+    }
+    .shinobi-victory-posture img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 10px 16px rgba(0,0,0,0.7));
     }
   </style>
 </head>
 <body>
 
-  <canvas id="swirlCanvas"></canvas>
+  <!-- CELEBRATION FINALE STAGE OVERLAY -->
+  <div id="celebrationFinaleStage">
+    <canvas id="finaleCanvas"></canvas>
 
-  <div class="kanji-victory-overlay" id="victoryOverlay">
-    <div class="kanji-stamp-box" id="victoryStamp">
-      <div class="kanji-glyph">破</div>
-      <div class="kanji-sub-label">GENJUTSU DISPELLED!</div>
+    <div class="kanji-banner-centerpiece" id="kanjiCenterpiece">
+      <div class="enso-brush-crescent"></div>
+      <div class="kanji-top-title">任務完了</div>
+      <div class="kanji-subtitle-gold">GENJUTSU DISPELLED!</div>
+    </div>
+
+    <div class="flying-shinobi-rocket" id="flyingShinobiRocket">
+      <img src="assets/naruto.png" id="flyingShinobiImg" alt="Shinobi In Flight" onerror="handleImageFallback(this)">
+    </div>
+
+    <div class="landing-zone-right" id="landingZoneRight">
+      <div class="unfurled-scroll-report">
+        <div class="scroll-report-title" id="reportScrollTitle">任務完了 — MISSION ACCOMPLISHED!</div>
+        <div class="scroll-report-body" id="reportScrollBody">
+          Statement successfully verified and genjutsu shattered!
+        </div>
+        <button class="btn-finale-close" onclick="closeCelebrationFinale()">Continue Training ➔</button>
+      </div>
+
+      <div class="shinobi-victory-posture">
+        <img src="assets/naruto.png" id="victoryPoseImg" alt="Victory Shinobi" onerror="handleImageFallback(this)">
+      </div>
     </div>
   </div>
 
@@ -568,6 +775,12 @@
 
       <img src="assets/lightning.png" class="arena-strike-lightning" id="lightningImg" alt="Lightning" onerror="this.style.display='none'" />
       <img src="assets/smoke-poof.png" class="arena-smoke-puff" id="smokeImg" alt="Smoke" onerror="this.style.display='none'" />
+
+      <!-- IN-ARENA FAILURE OVERLAY -->
+      <div class="failure-feedback-zone" id="failureOverlay">
+        <div class="failure-kanji">幻術 UNBROKEN!</div>
+        <div class="failure-subtext">TRY AGAIN!</div>
+      </div>
 
       <div class="genjutsu-prompt-scroll">
         <div class="shinobi-caller" id="challengerLabel">Shinobi Challenger: Sasuke Uchiha</div>
@@ -630,7 +843,8 @@
         statement: "36 ÷ 4 = 8",
         truthValue: "No",
         correctAnswer: "9",
-        equationLeft: "36 ÷ 4 ="
+        equationLeft: "36 ÷ 4 =",
+        color: "#00d2ff"
       },
       {
         id: "scroll_b",
@@ -639,7 +853,8 @@
         statement: "80 ÷ 8 = 10",
         truthValue: "Yes",
         correctAnswer: "10",
-        equationLeft: "80 ÷ 8 ="
+        equationLeft: "80 ÷ 8 =",
+        color: "#ff7700"
       },
       {
         id: "scroll_c",
@@ -648,7 +863,8 @@
         statement: "56 ÷ 7 = 9",
         truthValue: "No",
         correctAnswer: "8",
-        equationLeft: "56 ÷ 7 ="
+        equationLeft: "56 ÷ 7 =",
+        color: "#45aaf2"
       },
       {
         id: "scroll_d",
@@ -657,7 +873,8 @@
         statement: "48 ÷ 8 = 7",
         truthValue: "No",
         correctAnswer: "6",
-        equationLeft: "48 ÷ 8 ="
+        equationLeft: "48 ÷ 8 =",
+        color: "#26de81"
       }
     ];
 
@@ -668,20 +885,85 @@
         if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
         if (this.ctx.state === 'suspended') this.ctx.resume();
       }
-      playVictoryImpact() {
+      playMultiHitClashShockwave() {
         this.init();
         const t0 = this.ctx.currentTime;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(160, t0);
-        osc.frequency.exponentialRampToValueAtTime(35, t0 + 0.45);
-        gain.gain.setValueAtTime(0.7, t0);
-        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.5);
+        osc.frequency.setValueAtTime(140, t0);
+        osc.frequency.exponentialRampToValueAtTime(30, t0 + 0.35);
+        gain.gain.setValueAtTime(0.6, t0);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.4);
         osc.connect(gain);
         gain.connect(this.ctx.destination);
         osc.start(t0);
-        osc.stop(t0 + 0.55);
+        osc.stop(t0 + 0.45);
+      }
+      playTaikoGongImpact() {
+        this.init();
+        const t0 = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(95, t0);
+        osc.frequency.exponentialRampToValueAtTime(26, t0 + 0.75);
+        gain.gain.setValueAtTime(0.7, t0);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.85);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(t0);
+        osc.stop(t0 + 0.9);
+      }
+      playFlyThroughWhoosh() {
+        this.init();
+        const t0 = this.ctx.currentTime;
+        const dur = 2.5;
+        const bufferSize = this.ctx.sampleRate * dur;
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = buffer;
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.Q.value = 3.0;
+        filter.frequency.setValueAtTime(300, t0);
+        filter.frequency.exponentialRampToValueAtTime(2400, t0 + dur);
+
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.01, t0);
+        gain.gain.linearRampToValueAtTime(0.3, t0 + dur * 0.4);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+        noise.start(t0);
+        noise.stop(t0 + dur);
+      }
+      playJapaneseKotoMelody() {
+        this.init();
+        const melody = [
+          { f: 523.25, time: 0.00 },
+          { f: 587.33, time: 0.16 },
+          { f: 622.25, time: 0.32 },
+          { f: 783.99, time: 0.52 }
+        ];
+        const t0 = this.ctx.currentTime;
+        melody.forEach(note => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(note.f, t0 + note.time);
+          gain.gain.setValueAtTime(0.2, t0 + note.time);
+          gain.gain.exponentialRampToValueAtTime(0.001, t0 + note.time + 0.5);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(t0 + note.time);
+          osc.stop(t0 + note.time + 0.55);
+        });
       }
       playSmokePoof() {
         this.init();
@@ -736,6 +1018,8 @@
       document.getElementById('challengerLabel').textContent = `Shinobi Challenger: ${s.challenger}`;
       document.getElementById('statementText').textContent = s.statement;
       document.getElementById('challengerSprite').src = s.sprite;
+      document.getElementById('challengerSprite').classList.remove('vanished');
+      document.getElementById('failureOverlay').classList.remove('active');
       document.getElementById('correctionPromptLabel').textContent = `True Answer: ${s.equationLeft}`;
 
       const savedVerdict = localStorage.getItem(getStorageKey('verdict')) || "";
@@ -777,7 +1061,7 @@
       document.getElementById('progressCounter').textContent = `${dispelledCount} / 4`;
     }
 
-    /* COMBAT EXECUTION & PARTICLES */
+    /* COMBAT EXECUTION & DYNAMIC FEEDBACK (NO BROWSER ALERTS) */
     function executeDispelStrike() {
       const s = SCROLLS[currentScrollIdx];
       const selectedVerdict = localStorage.getItem(getStorageKey('verdict')) || "";
@@ -792,118 +1076,237 @@
       }
 
       if (isSuccess) {
-        audio.playVictoryImpact();
+        // SUCCESS: LIGHTNING STRIKE & ASANA FINALE
+        audio.playMultiHitClashShockwave();
         localStorage.setItem(`v3_humayun_maths_oct08::${s.id}::dispelled`, 'true');
         updateOverallProgress();
 
-        // 1. Flash white
         const flash = document.getElementById('strikeFlash');
         flash.classList.add('flash');
         setTimeout(() => flash.classList.remove('flash'), 100);
 
-        // 2. Lightning strike
         const zap = document.getElementById('lightningImg');
         zap.classList.add('zap');
         setTimeout(() => zap.classList.remove('zap'), 350);
 
-        // 3. Trigger Fullscreen Chakra Swirl Particles
-        triggerChakraSwirl();
-
-        // 4. Gold Kanji Impact
-        const overlay = document.getElementById('victoryOverlay');
-        const stamp = document.getElementById('victoryStamp');
-        overlay.style.display = 'flex';
-        setTimeout(() => stamp.classList.add('show'), 40);
-
         setTimeout(() => {
-          stamp.classList.remove('show');
-          setTimeout(() => {
-            overlay.style.display = 'none';
-          }, 350);
-        }, 1600);
+          triggerCelebratoryFinale(s);
+        }, 300);
 
       } else {
-        // WRONG / SMOKE POOF REACTION
+        // FAILURE: SMOKE EXPANDS, SHINOBI VANISHES, GLOWING RED TEXT (NO POPUPS)
         audio.playSmokePoof();
+        
+        const sprite = document.getElementById('challengerSprite');
+        sprite.classList.add('vanished');
+
         const smoke = document.getElementById('smokeImg');
         smoke.classList.add('puff');
-        setTimeout(() => smoke.classList.remove('puff'), 450);
 
-        const sprite = document.getElementById('challengerSprite');
-        sprite.style.transform = 'translateX(-12px)';
-        setTimeout(() => sprite.style.transform = 'translateX(12px)', 80);
-        setTimeout(() => sprite.style.transform = 'translateX(0)', 160);
+        const failOverlay = document.getElementById('failureOverlay');
+        failOverlay.classList.add('active');
 
-        alert("The Genjutsu holds unbroken! Recheck your logic and calculations.");
+        setTimeout(() => {
+          smoke.classList.remove('puff');
+          failOverlay.classList.remove('active');
+          sprite.classList.remove('vanished');
+        }, 1350);
       }
     }
 
-    /* CHAKRA SWIRL VORTEX CANVAS */
-    const sCanvas = document.getElementById('swirlCanvas');
-    const sCtx = sCanvas.getContext('2d');
-    let swirlParticles = [];
-    let swirlActive = false;
+    /* CELEBRATION FINALE STAGE ENGINE (OCT 09 PATTERN) */
+    const finaleStage = document.getElementById('celebrationFinaleStage');
+    const finaleCanvas = document.getElementById('finaleCanvas');
+    const finaleCtx = finaleCanvas.getContext('2d', { alpha: true });
+    const kanjiCenterpiece = document.getElementById('kanjiCenterpiece');
+    const flyingShinobiRocket = document.getElementById('flyingShinobiRocket');
+    const flyingShinobiImg = document.getElementById('flyingShinobiImg');
+    const landingZoneRight = document.getElementById('landingZoneRight');
+    const reportScrollTitle = document.getElementById('reportScrollTitle');
+    const reportScrollBody = document.getElementById('reportScrollBody');
+    const victoryPoseImg = document.getElementById('victoryPoseImg');
 
-    function resizeSwirlCanvas() {
-      sCanvas.width = window.innerWidth;
-      sCanvas.height = window.innerHeight;
+    let finaleAnimRunning = false;
+    let confettiStorm = [];
+    let slipstreamParticles = [];
+    let flyThroughStartTime = 0;
+    let cornerCycleIdx = 0;
+
+    function resizeFinaleCanvas() {
+      finaleCanvas.width = window.innerWidth;
+      finaleCanvas.height = window.innerHeight;
     }
-    window.addEventListener('resize', resizeSwirlCanvas);
-    resizeSwirlCanvas();
+    window.addEventListener('resize', resizeFinaleCanvas);
 
-    function triggerChakraSwirl() {
-      swirlActive = true;
-      swirlParticles = [];
-      const cx = window.innerWidth * 0.45;
-      const cy = window.innerHeight * 0.5;
-
-      for (let i = 0; i < 90; i++) {
-        swirlParticles.push({
-          angle: Math.random() * Math.PI * 2,
-          radius: Math.random() * 80 + 20,
-          speed: Math.random() * 0.08 + 0.04,
-          radialSpeed: Math.random() * 7 + 4,
-          size: Math.random() * 7 + 3,
-          color: ['#00E5FF', '#38BDF8', '#FFD700', '#FFFFFF'][Math.floor(Math.random() * 4)],
-          alpha: 1,
-          cx: cx,
-          cy: cy
-        });
+    class TacticalConfetti {
+      constructor(type = 'leaf') {
+        this.x = Math.random() * window.innerWidth;
+        this.y = -40 - Math.random() * 200;
+        this.type = type;
+        this.size = type === 'leaf' ? (Math.random() * 10 + 8) : (Math.random() * 8 + 6);
+        this.vx = (Math.random() - 0.5) * 1.5;
+        this.vy = Math.random() * 2.2 + 1.8;
+        this.rot = Math.random() * Math.PI * 2;
+        this.rotSpeed = (Math.random() - 0.5) * 0.06;
+        this.color = type === 'leaf' ? '#2ecc71' : (type === 'shuriken' ? '#bdc3c7' : '#ffd32a');
       }
-      requestAnimationFrame(renderSwirl);
-    }
-
-    function renderSwirl() {
-      if (!swirlActive) return;
-      sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
-      let living = 0;
-
-      for (let p of swirlParticles) {
-        p.angle += p.speed;
-        p.radius += p.radialSpeed;
-        p.alpha -= 0.016;
-
-        if (p.alpha > 0) {
-          living++;
-          const x = p.cx + Math.cos(p.angle) * p.radius;
-          const y = p.cy + Math.sin(p.angle) * p.radius;
-
-          sCtx.save();
-          sCtx.globalAlpha = Math.max(0, p.alpha);
-          sCtx.fillStyle = p.color;
-          sCtx.beginPath();
-          sCtx.arc(x, y, p.size, 0, Math.PI * 2);
-          sCtx.fill();
-          sCtx.restore();
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.rot += this.rotSpeed;
+        if (this.y > window.innerHeight + 50) {
+          this.y = -30;
+          this.x = Math.random() * window.innerWidth;
         }
       }
-
-      if (living > 0) {
-        requestAnimationFrame(renderSwirl);
-      } else {
-        swirlActive = false;
-        sCtx.clearRect(0, 0, sCanvas.width, sCanvas.height);
+      draw(c) {
+        c.save();
+        c.translate(this.x, this.y);
+        c.rotate(this.rot);
+        c.fillStyle = this.color;
+        c.beginPath();
+        c.arc(0, 0, this.size * 0.5, 0, Math.PI * 2);
+        c.fill();
+        c.restore();
       }
+    }
+
+    class SlipstreamTrailParticle {
+      constructor(x, y, color) {
+        this.x = x + (Math.random() - 0.5) * 30;
+        this.y = y + (Math.random() - 0.5) * 30;
+        this.color = color;
+        this.size = Math.random() * 6 + 2;
+        this.vx = (Math.random() - 0.5) * 3 - 1.5;
+        this.vy = (Math.random() - 0.5) * 3 + 1.5;
+        this.life = 1;
+        this.decay = 0.03;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.life -= this.decay;
+      }
+      draw(c) {
+        c.save();
+        c.globalAlpha = Math.max(0, this.life);
+        c.fillStyle = this.color;
+        c.beginPath();
+        c.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        c.fill();
+        c.restore();
+      }
+    }
+
+    function triggerCelebratoryFinale(mission) {
+      resizeFinaleCanvas();
+      finaleStage.style.display = 'block';
+      finaleAnimRunning = true;
+
+      audio.playTaikoGongImpact();
+      kanjiCenterpiece.className = 'kanji-banner-centerpiece impact';
+
+      flyingShinobiImg.src = mission.sprite;
+      victoryPoseImg.src = mission.sprite;
+
+      reportScrollTitle.innerText = `任務完了 — ${mission.challenger.toUpperCase()}!`;
+      if (mission.truthValue === "Yes") {
+        reportScrollBody.innerHTML = `
+          Statement verified as <b>TRUE</b>!<br/>
+          <b>${mission.statement}</b> is completely correct!
+        `;
+      } else {
+        reportScrollBody.innerHTML = `
+          Genjutsu illusion shattered!<br/>
+          <b>${mission.statement}</b> was false.<br/>
+          The true answer is <b>${mission.equationLeft} ${mission.correctAnswer}</b>!
+        `;
+      }
+
+      confettiStorm = [];
+      for (let i = 0; i < 40; i++) confettiStorm.push(new TacticalConfetti('leaf'));
+      for (let i = 0; i < 25; i++) confettiStorm.push(new TacticalConfetti('shuriken'));
+
+      slipstreamParticles = [];
+
+      setTimeout(() => {
+        audio.playFlyThroughWhoosh();
+        flyThroughStartTime = performance.now();
+        animateSlowCornerGlide(mission);
+      }, 400);
+
+      setTimeout(() => {
+        landingZoneRight.className = 'landing-zone-right landed';
+        audio.playSmokePoof();
+        audio.playJapaneseKotoMelody();
+      }, 2400);
+
+      requestAnimationFrame(renderFinaleScene);
+    }
+
+    function animateSlowCornerGlide(mission) {
+      const dur = 3000;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      const corners = [
+        { x: -150, y: -150, tx: w * 0.4, ty: h * 0.5 },
+        { x: w + 150, y: -150, tx: w * 0.4, ty: h * 0.5 },
+        { x: -150, y: h + 150, tx: w * 0.4, ty: h * 0.5 },
+        { x: w + 150, y: h + 150, tx: w * 0.4, ty: h * 0.5 }
+      ];
+
+      const start = corners[cornerCycleIdx % corners.length];
+      cornerCycleIdx++;
+
+      function stepGlide(now) {
+        const elapsed = now - flyThroughStartTime;
+        const progress = Math.min(1, elapsed / dur);
+        const ease = 1 - Math.pow(1 - progress, 3);
+
+        const curX = start.x + (start.tx - start.x) * ease;
+        const curY = start.y + (start.ty - start.y) * ease;
+
+        flyingShinobiRocket.style.left = `${curX}px`;
+        flyingShinobiRocket.style.top = `${curY}px`;
+
+        for (let k = 0; k < 3; k++) {
+          slipstreamParticles.push(new SlipstreamTrailParticle(curX + 60, curY + 60, mission.color));
+        }
+
+        if (progress < 1 && finaleAnimRunning) {
+          requestAnimationFrame(stepGlide);
+        }
+      }
+      requestAnimationFrame(stepGlide);
+    }
+
+    function renderFinaleScene() {
+      if (!finaleAnimRunning) return;
+      finaleCtx.clearRect(0, 0, finaleCanvas.width, finaleCanvas.height);
+
+      for (let i = slipstreamParticles.length - 1; i >= 0; i--) {
+        slipstreamParticles[i].update();
+        slipstreamParticles[i].draw(finaleCtx);
+        if (slipstreamParticles[i].life <= 0) slipstreamParticles.splice(i, 1);
+      }
+
+      for (let c of confettiStorm) {
+        c.update();
+        c.draw(finaleCtx);
+      }
+
+      requestAnimationFrame(renderFinaleScene);
+    }
+
+    function closeCelebrationFinale() {
+      finaleAnimRunning = false;
+      finaleStage.style.display = 'none';
+      kanjiCenterpiece.className = 'kanji-banner-centerpiece';
+      landingZoneRight.className = 'landing-zone-right';
+      confettiStorm = [];
+      slipstreamParticles = [];
+      switchScroll((currentScrollIdx + 1) % SCROLLS.length);
     }
 
     /* DUAL-RULED INK CANVAS */
