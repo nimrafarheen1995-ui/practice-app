@@ -195,7 +195,7 @@
     }
     .lightning-flash-overlay.flash { opacity: 0.85; }
 
-    /* DUEL COMBAT ARENA - SEQUENCED DUEL */
+    /* DUEL COMBAT ARENA */
     .combat-ground-zone {
       position: absolute;
       inset: 0;
@@ -221,7 +221,6 @@
       filter: drop-shadow(0 0 24px rgba(255,165,0,0.85));
     }
 
-    /* Start Stances */
     .duel-hero {
       bottom: 12%;
       left: -260px;
@@ -233,7 +232,6 @@
       opacity: 0;
     }
 
-    /* Clash Coordinates */
     .duel-hero.charge {
       left: 28%;
       opacity: 1;
@@ -281,13 +279,13 @@
       transform: scale(1.7);
     }
 
-    /* 3. NOTEPAD DRAWER */
+    /* 3. NOTEPAD DRAWER (SUPPORTS SPLIT & FULLSCREEN EXPANSION) */
     .ninja-scroll-drawer {
       position: absolute;
       top: 92px;
-      right: -420px;
+      right: -440px;
       bottom: 16px;
-      width: 400px;
+      width: 420px;
       z-index: 50;
       display: flex;
       flex-direction: column;
@@ -296,21 +294,28 @@
       border-radius: 18px 0 0 18px;
       box-shadow: -12px 16px 45px rgba(0,0,0,0.85), inset 0 0 12px rgba(184, 134, 11, 0.25);
       overflow: hidden;
-      will-change: right;
-      transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      will-change: right, width, left;
+      transition: right 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), width 0.3s ease, border-radius 0.3s ease;
     }
     .ninja-scroll-drawer.open {
       right: 12px;
+    }
+    .ninja-scroll-drawer.fullscreen-expanded {
+      right: 12px !important;
+      left: 12px !important;
+      width: calc(100vw - 24px) !important;
+      border-radius: 18px !important;
     }
 
     .notepad-header-controls {
       background: #251d18;
       border-bottom: 2px solid #5a3c22;
-      padding: 6px 10px;
+      padding: 6px 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 6px;
+      gap: 8px;
+      flex-wrap: nowrap;
     }
 
     .tools-icon-row {
@@ -338,20 +343,47 @@
       text-shadow: 0 0 8px rgba(255, 119, 0, 0.6);
     }
 
-    .palm-mode-btn {
+    .palm-mode-btn, .expand-mode-btn, .page-ctrl-btn {
       background: #3A2312;
       border: 1.5px solid #D35400;
       color: #F1C40F;
-      padding: 3px 8px;
+      padding: 4px 8px;
       border-radius: 8px;
       font-size: 11px;
       font-weight: 900;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s;
     }
     .palm-mode-btn.active {
       background: #27AE60;
       border-color: #2ECC71;
       color: #FFF;
+    }
+    .expand-mode-btn.active {
+      background: #E67E22;
+      border-color: #F39C12;
+      color: #FFF;
+    }
+
+    /* MULTI-PAGE CONTROLS */
+    .page-pagination-strip {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: #19120c;
+      padding: 2px 6px;
+      border-radius: 8px;
+      border: 1px solid #5a3c22;
+    }
+    .page-indicator-text {
+      font-size: 11px;
+      font-weight: 900;
+      color: #ffeedb;
+      min-width: 44px;
+      text-align: center;
     }
 
     .color-swatch-row {
@@ -741,7 +773,7 @@
     <canvas id="fxCanvas"></canvas>
     <div class="lightning-flash-overlay" id="lightningFlash"></div>
 
-    <!-- SEQUENCED COMBAT ZONE (Hero on Left, Rival on Right) -->
+    <!-- SEQUENCED COMBAT ZONE -->
     <div class="combat-ground-zone">
       <div class="duel-fighter duel-hero" id="duelHero">
         <img id="duelHeroImg" src="assets/naruto.png" alt="Hero">
@@ -754,7 +786,7 @@
       <img src="assets/smoke-poof.png" alt="Smoke" class="dynamic-smoke-puff" id="strikeSmokePuff" onerror="this.style.display='none'" />
     </div>
 
-    <!-- 3. NOTEPAD DRAWER WITH IN-GAME KEYPAD & S-PEN MODE -->
+    <!-- 3. NOTEPAD DRAWER WITH MULTI-PAGE & FULLSCREEN TOGGLE -->
     <aside class="ninja-scroll-drawer" id="ninjaScrollDrawer">
       <div class="notepad-header-controls">
         <div class="tools-icon-row">
@@ -763,9 +795,23 @@
           <button class="btn-icon-tool" id="toolClear" title="Clear">🗑</button>
           <button class="btn-icon-tool" id="toolUndo" title="Undo">↩</button>
         </div>
+
+        <!-- MULTI-PAGE CONTROLS (OPTION 2) -->
+        <div class="page-pagination-strip">
+          <button type="button" class="page-ctrl-btn" onclick="changeNotepadPage(-1)">◀</button>
+          <span class="page-indicator-text" id="pageIndicatorText">Pg 1 / 1</span>
+          <button type="button" class="page-ctrl-btn" onclick="changeNotepadPage(1)">▶</button>
+          <button type="button" class="page-ctrl-btn" onclick="addNewNotepadPage()" title="Add New Page">➕</button>
+        </div>
         
+        <!-- PALM REJECTION TOGGLE -->
         <button type="button" class="palm-mode-btn" id="btnPalmMode" onclick="togglePalmRejectionMode()">
-          ✍️ Touch Mode
+          ✍️ Touch
+        </button>
+
+        <!-- FULLSCREEN EXPAND TOGGLE (OPTION 3) -->
+        <button type="button" class="expand-mode-btn" id="btnExpandMode" onclick="toggleDrawerFullscreen()">
+          ⛶ Expand
         </button>
 
         <div class="color-swatch-row">
@@ -779,7 +825,7 @@
         <canvas id="inkCanvas"></canvas>
       </div>
 
-      <!-- IN-GAME CARVED KEYPAD (ZERO SCREEN-BLANK FOCUS) -->
+      <!-- IN-GAME CARVED KEYPAD (ZERO OS-FOCUS BLANKING) -->
       <div class="notepad-submission-dock">
         <div class="quotient-display-row">
           <span class="quotient-label" id="quotientLabel">18 ÷ 6 =</span>
@@ -940,6 +986,11 @@
     let totalRequiredSteps = 3;
     let keypadInputValue = "";
     let isPenOnlyMode = false;
+    let isDrawerFullscreen = false;
+
+    /* MULTI-PAGE STATE */
+    let currentPageIdx = 1;
+    let totalPagesCount = 1;
 
     /* 2. AUDIO ENGINE */
     class NinjaAudioEngine {
@@ -1044,7 +1095,55 @@
       bossHpFill.style.width = `${pct}%`;
     }
 
-    /* 4. PALM REJECTION & INK CANVAS */
+    /* 4. MULTI-PAGE & FULLSCREEN LOGIC */
+    function toggleDrawerFullscreen() {
+      isDrawerFullscreen = !isDrawerFullscreen;
+      const drawer = document.getElementById('ninjaScrollDrawer');
+      const btn = document.getElementById('btnExpandMode');
+
+      // Save canvas prior to dimension changes
+      saveInkToStorage();
+
+      drawer.classList.toggle('fullscreen-expanded', isDrawerFullscreen);
+      btn.textContent = isDrawerFullscreen ? "🗗 Split View" : "⛶ Expand";
+      btn.classList.toggle('active', isDrawerFullscreen);
+
+      setTimeout(() => {
+        resizeCanvas();
+        loadInkFromStorage();
+      }, 360);
+    }
+
+    function togglePalmRejectionMode() {
+      isPenOnlyMode = !isPenOnlyMode;
+      const btn = document.getElementById('btnPalmMode');
+      btn.textContent = isPenOnlyMode ? "✍️ S-Pen Only" : "👆 Touch";
+      btn.classList.toggle('active', isPenOnlyMode);
+    }
+
+    function changeNotepadPage(delta) {
+      const nextPg = currentPageIdx + delta;
+      if (nextPg >= 1 && nextPg <= totalPagesCount) {
+        saveInkToStorage();
+        currentPageIdx = nextPg;
+        updatePageIndicator();
+        loadInkFromStorage();
+      }
+    }
+
+    function addNewNotepadPage() {
+      saveInkToStorage();
+      totalPagesCount++;
+      currentPageIdx = totalPagesCount;
+      updatePageIndicator();
+      clearInkInMemory();
+    }
+
+    function updatePageIndicator() {
+      document.getElementById('pageIndicatorText').textContent = `Pg ${currentPageIdx} / ${totalPagesCount}`;
+    }
+
+    /* 5. INK CANVAS ENGINE (ROBUST RESIZE & DPI MAPPING) */
     const inkCanvas = document.getElementById('inkCanvas');
     const inkCtx = inkCanvas.getContext('2d', { alpha: true });
     const scrollContainer = document.getElementById('notepadScrollViewport');
@@ -1054,14 +1153,7 @@
     let strokeColor = '#1e272e';
     let strokeWidth = 3.5;
     let undoStack = [];
-    const VIRTUAL_CANVAS_HEIGHT = 4000;
-
-    function togglePalmRejectionMode() {
-      isPenOnlyMode = !isPenOnlyMode;
-      const btn = document.getElementById('btnPalmMode');
-      btn.textContent = isPenOnlyMode ? "✍️ S-Pen Only" : "👆 Touch Mode";
-      btn.classList.toggle('active', isPenOnlyMode);
-    }
+    const VIRTUAL_CANVAS_HEIGHT = 4500;
 
     function resizeCanvas() {
       const rect = scrollContainer.getBoundingClientRect();
@@ -1088,16 +1180,26 @@
       }
     }
 
-    function getStorageKey(missionId) {
-      return `v11_isolated_ink::humayun::maths_oct08::${missionId}`;
+    function getStorageKey(missionId, pageNum = currentPageIdx) {
+      return `v11_isolated_ink::humayun::maths_oct08::${missionId}::pg${pageNum}`;
     }
 
     function saveInkToStorage() {
       const m = MISSIONS[currentMissionIdx];
       try {
         const dataUrl = inkCanvas.toDataURL();
-        localStorage.setItem(getStorageKey(m.id), dataUrl);
+        localStorage.setItem(getStorageKey(m.id, currentPageIdx), dataUrl);
       } catch (e) {}
+    }
+
+    function clearInkInMemory() {
+      const dpr = window.devicePixelRatio || 1;
+      inkCtx.save();
+      inkCtx.setTransform(1, 0, 0, 1, 0, 0);
+      inkCtx.clearRect(0, 0, inkCanvas.width, inkCanvas.height);
+      inkCtx.restore();
+      undoStack = [];
+      pushUndoState();
     }
 
     function loadInkFromStorage() {
@@ -1109,7 +1211,7 @@
       inkCtx.restore();
       
       undoStack = [];
-      const saved = localStorage.getItem(getStorageKey(m.id));
+      const saved = localStorage.getItem(getStorageKey(m.id, currentPageIdx));
       if (saved) {
         const img = new Image();
         img.onload = () => {
@@ -1155,7 +1257,6 @@
     }
 
     function startDraw(e) {
-      // PALM REJECTION: Discard finger/palm if S-Pen mode is active
       if (isPenOnlyMode && e.pointerType !== 'pen') return;
 
       isDrawing = true;
@@ -1202,7 +1303,7 @@
     inkCanvas.addEventListener('pointercancel', stopDraw);
     inkCanvas.addEventListener('pointerleave', stopDraw);
 
-    /* 5. IN-GAME KEYPAD LOGIC (ELIMINATES VIRTUAL KEYBOARD GLITCH) */
+    /* 6. IN-GAME KEYPAD & STRIKE LOGIC */
     function pressKeypad(key) {
       if (key === 'del') {
         keypadInputValue = keypadInputValue.slice(0, -1);
@@ -1217,7 +1318,6 @@
       slot.textContent = keypadInputValue.length > 0 ? keypadInputValue : "?";
     }
 
-    /* 6. STAGGERED DUEL CLASH ACTION */
     let clashInProgress = false;
 
     function triggerJutsuClash() {
@@ -1227,15 +1327,12 @@
 
       soundFX.playChime();
 
-      // Stage 1: Hero charges first
       duelHero.classList.add('charge');
 
-      // Stage 2: Defender counters 250ms later
       setTimeout(() => {
         duelRival.classList.add('charge');
       }, 250);
 
-      // Stage 3: The Impact & Shockwave (Holds for 1.2s so Humayun can see)
       setTimeout(() => {
         soundFX.playImpact();
         const flash = document.getElementById('lightningFlash');
@@ -1253,7 +1350,6 @@
         accumulatedProgressHP = Math.min(maxHealth, accumulatedProgressHP + m.divisor);
         updateBossHP();
 
-        // Stage 4: Hold position before resetting
         setTimeout(() => {
           smoke.classList.remove('puffff');
           duelHero.classList.remove('charge');
@@ -1285,7 +1381,7 @@
       }
     }
 
-    /* 7. FULL-SIZE SHINOBI DOSSIER MODAL BUILDER */
+    /* 7. FULL-SIZE SHINOBI DOSSIER MODAL */
     const missionModal = document.getElementById('missionModal');
     const missionGridOptions = document.getElementById('missionGridOptions');
     document.getElementById('openMissionModalBtn').onclick = () => {
@@ -1327,6 +1423,11 @@
       accumulatedProgressHP = 0;
       keypadInputValue = "";
       updateKeypadSlot();
+
+      // Reset page numbering for new mission
+      currentPageIdx = 1;
+      totalPagesCount = 1;
+      updatePageIndicator();
 
       document.getElementById('quotientLabel').innerText = `${m.dividend} ÷ ${m.divisor} =`;
       updateFighters(m);
@@ -1465,7 +1566,7 @@
       const drawer = document.getElementById('ninjaScrollDrawer');
       drawer.classList.toggle('open');
       document.getElementById('toggleScrollBtn').innerText = drawer.classList.contains('open') ? '📜 Close Scroll' : '📜 Open Scroll';
-      setTimeout(resizeCanvas, 300);
+      setTimeout(resizeCanvas, 320);
     };
 
     document.getElementById('toolPen').onclick = (e) => {
