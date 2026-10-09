@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Humayun's Ninja Math Quest: Exercise 1.1</title>
+  <title>Humayun's Ninja Math Quest: Repeated Subtraction</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Serif+JP:wght@800;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Serif+JP:wght@900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
       --konoha-glow: #ff4757;
       --orange-neon: #ff7700;
-      --grid-line: rgba(205, 224, 236, 0.45);
-      --grid-major: rgba(150, 187, 207, 0.7);
+      --grid-line: rgba(205, 224, 236, 0.4);
+      --grid-major: rgba(150, 187, 207, 0.65);
       --paper-cream: #fbf8ee;
     }
 
@@ -22,7 +22,6 @@
       padding: 0;
       user-select: none;
       -webkit-user-select: none;
-      -webkit-tap-highlight-color: transparent;
       font-family: 'Nunito', sans-serif;
     }
 
@@ -37,7 +36,6 @@
     body {
       display: flex;
       flex-direction: column;
-      position: relative;
     }
 
     /* 1. FLOATING IMMERSIVE CINEMATIC HUD */
@@ -46,11 +44,11 @@
       top: 0;
       left: 0;
       right: 0;
-      z-index: 100;
+      z-index: 60;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 20px;
+      padding: 16px 24px;
       pointer-events: none;
     }
 
@@ -59,10 +57,10 @@
       background: linear-gradient(180deg, #2b170c 0%, #150c07 100%);
       border: 2px solid #d35400;
       border-radius: 14px;
-      padding: 9px 16px;
+      padding: 10px 18px;
       color: #f1c40f;
       text-decoration: none;
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 900;
       display: inline-flex;
       align-items: center;
@@ -81,7 +79,7 @@
       background: rgba(10, 7, 5, 0.9);
       border: 3px solid rgba(211, 84, 0, 0.85);
       backdrop-filter: blur(6px);
-      padding: 8px 24px;
+      padding: 12px 32px;
       border-radius: 36px;
       display: flex;
       flex-direction: column;
@@ -91,36 +89,36 @@
     }
     .chapter-main-text {
       font-family: 'Cinzel', serif;
-      font-size: 18px;
+      font-size: 22px;
       font-weight: 900;
       color: #ffd700;
       text-shadow: 0 0 16px rgba(255, 215, 0, 0.9);
-      letter-spacing: 1.2px;
+      letter-spacing: 1.5px;
     }
     .chapter-sub-text {
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 900;
       color: #e0ac69;
-      letter-spacing: 2px;
+      letter-spacing: 3px;
       text-transform: uppercase;
-      margin-top: 1px;
+      margin-top: 2px;
     }
 
-    /* BOSS HP HUD (STAGE 1) */
+    /* BOSS HP BAR */
     .boss-status-hud {
       position: absolute;
-      top: 86px;
+      top: 105px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 55;
-      width: 320px;
+      width: 340px;
       background: rgba(15, 10, 8, 0.85);
       border: 2px solid #5a3c22;
       border-radius: 12px;
-      padding: 6px 12px;
+      padding: 8px 14px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 5px;
       backdrop-filter: blur(4px);
       box-shadow: 0 6px 16px rgba(0,0,0,0.7);
       pointer-events: none;
@@ -128,13 +126,13 @@
     .boss-info-row {
       display: flex;
       justify-content: space-between;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 900;
       color: #ffbe76;
     }
     .boss-hp-track {
       width: 100%;
-      height: 10px;
+      height: 12px;
       background: #251711;
       border-radius: 6px;
       overflow: hidden;
@@ -248,7 +246,10 @@
       filter: brightness(250%) drop-shadow(0 0 35px #00e5ff);
       transition: transform 0.25s cubic-bezier(0.1, 0.9, 0.2, 1), opacity 0.2s ease-out;
     }
-    .strike-lightning-layer.zap { opacity: 1; transform: scale(1.5) rotate(-5deg); }
+    .strike-lightning-layer.zap {
+      opacity: 1;
+      transform: scale(1.5) rotate(-5deg);
+    }
 
     .dynamic-smoke-puff {
       position: absolute;
@@ -262,106 +263,32 @@
       transform: scale(0.2);
       transition: transform 0.4s cubic-bezier(0.1, 0.85, 0.2, 1), opacity 0.35s ease-out;
     }
-    .dynamic-smoke-puff.puffff { opacity: 1; transform: scale(1.65); }
-
-    /* ARENA CHALLENGER CARD (STAGE 2 & 3) */
-    .arena-challenger-card {
-      position: absolute;
-      bottom: 24px;
-      left: 36px;
-      z-index: 28;
-      display: flex;
-      align-items: flex-end;
-      gap: 16px;
-      pointer-events: none;
-    }
-    .challenger-avatar-img {
-      max-height: 250px;
-      max-width: 210px;
-      object-fit: contain;
-      filter: drop-shadow(0 12px 24px rgba(0,0,0,0.85));
-      transition: transform 0.25s ease, opacity 0.25s ease;
-    }
-    .challenger-avatar-img.vanished {
-      opacity: 0 !important;
-      transform: scale(0.6) translateY(40px) !important;
-    }
-    .arena-dialogue-scroll {
-      background: #fff9e6;
-      border: 3px solid #8b5a2b;
-      border-radius: 16px;
-      padding: 10px 18px;
-      color: #2c1a0e;
-      max-width: 340px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.7);
-    }
-    .arena-dialogue-scroll .caller-name {
-      font-size: 11px;
-      font-weight: 900;
-      color: #8c5727;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    .arena-dialogue-scroll .caller-math {
-      font-family: 'Cinzel', serif;
-      font-size: 22px;
-      font-weight: 900;
-      color: #1e1b4b;
-      margin-top: 2px;
+    .dynamic-smoke-puff.puffff {
+      opacity: 1;
+      transform: scale(1.65);
     }
 
-    /* IN-ARENA FAILURE OVERLAY */
-    .failure-feedback-zone {
-      position: absolute;
-      inset: 0;
-      z-index: 40;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none;
-      opacity: 0;
-      transform: scale(0.7);
-      transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .failure-feedback-zone.active { opacity: 1; transform: scale(1); }
-    .failure-kanji {
-      font-family: 'Noto Serif JP', serif;
-      font-size: 56px;
-      font-weight: 900;
-      color: #ff4757;
-      text-shadow: 0 0 20px #ff4757, 0 0 35px #c0392b, 0 0 60px #e74c3c;
-      line-height: 1;
-    }
-    .failure-subtext {
-      font-family: 'Cinzel', serif;
-      font-size: 24px;
-      font-weight: 900;
-      color: #fff;
-      text-shadow: 0 0 15px #ff4757, 0 0 25px #c0392b;
-      letter-spacing: 3px;
-      margin-top: 4px;
-    }
-
-    /* 3. NOTEPAD DRAWER (STANDARDIZED GRAPH CANVAS) */
+    /* 3. NOTEPAD DRAWER */
     .ninja-scroll-drawer {
       position: absolute;
-      top: 80px;
-      right: -420px;
-      bottom: 20px;
-      width: 400px;
-      z-index: 90;
+      top: 95px;
+      right: -400px;
+      bottom: 24px;
+      width: 380px;
+      z-index: 50;
       display: flex;
       flex-direction: column;
       background: var(--paper-cream);
       border: 4px solid #5a3c22;
       border-radius: 18px 0 0 18px;
-      box-shadow: -12px 16px 45px rgba(0,0,0,0.85);
+      box-shadow: -12px 16px 45px rgba(0,0,0,0.85), inset 0 0 12px rgba(184, 134, 11, 0.25);
       overflow: hidden;
       will-change: right;
       transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    .ninja-scroll-drawer.open { right: 14px; }
+    .ninja-scroll-drawer.open {
+      right: 16px;
+    }
 
     .notepad-header-controls {
       background: #251d18;
@@ -373,7 +300,12 @@
       gap: 8px;
     }
 
-    .tools-icon-row { display: flex; align-items: center; gap: 12px; }
+    .tools-icon-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
     .btn-icon-tool {
       background: transparent;
       border: none;
@@ -393,7 +325,11 @@
       text-shadow: 0 0 8px rgba(255, 119, 0, 0.6);
     }
 
-    .color-swatch-row { display: flex; gap: 6px; align-items: center; }
+    .color-swatch-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
     .color-swatch {
       width: 16px;
       height: 16px;
@@ -422,63 +358,14 @@
       background-size: 90px 90px, 90px 90px, 18px 18px, 18px 18px;
       background-position: -1px -1px;
     }
-    #inkCanvas { display: block; width: 100%; cursor: crosshair; touch-action: none; }
 
-    /* SECTION 3.A: DEDICATED SUBTRACTION LADDER CONTAINER (NO CANVAS) */
-    .ladder-table-container {
-      display: none;
-      flex-direction: column;
-      gap: 8px;
-      padding: 16px;
-      background: #fff1f2;
-      flex: 1;
-      overflow-y: auto;
-    }
-    .ladder-prompt-banner {
-      background: #ffe4e6;
-      border: 2px solid #fecdd3;
-      border-radius: 12px;
-      padding: 10px 14px;
-      font-size: 13px;
-      font-weight: 800;
-      color: #9f1239;
-      line-height: 1.4;
-    }
-    .ladder-table-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      background: #fff;
-      border: 2px solid #fda4af;
-      border-radius: 14px;
-      padding: 10px;
-    }
-    .ladder-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #fff1f2;
-      border: 1px solid #fecdd3;
-      border-radius: 8px;
-      padding: 7px 14px;
-      font-size: 15px;
-      font-weight: 900;
-      color: #9f1239;
-    }
-    .ladder-row input {
-      width: 65px;
-      height: 32px;
-      border: 2px solid #fb7185;
-      border-radius: 8px;
-      text-align: center;
-      font-size: 16px;
-      font-weight: 900;
-      color: #881337;
-      outline: none;
-      background: #fff;
+    #inkCanvas {
+      display: block;
+      width: 100%;
+      cursor: crosshair;
+      touch-action: none;
     }
 
-    /* ADAPTIVE BOTTOM SUBMISSION DOCK */
     .notepad-submission-dock {
       background: #251d18;
       border-top: 2px solid #5a3c22;
@@ -492,8 +379,8 @@
       background: linear-gradient(180deg, #ff4757 0%, #c0392b 100%);
       border: 2px solid #ff7979;
       color: #fff;
-      font-size: 18px;
-      padding: 7px;
+      font-size: 22px;
+      padding: 8px;
       border-radius: 10px;
       cursor: pointer;
       box-shadow: 0 4px 14px rgba(255, 71, 87, 0.5);
@@ -501,44 +388,11 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      font-weight: 900;
     }
     .btn-lightning-strike:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(255, 71, 87, 0.75);
-    }
-
-    /* SECTION 2 GENJUTSU VERDICT CONTROLS */
-    .genjutsu-verdict-row {
-      display: none;
-      gap: 8px;
-    }
-    .verdict-seal-btn {
-      flex: 1;
-      background: #33241b;
-      border: 2px solid #6b4d32;
-      border-radius: 10px;
-      padding: 8px;
-      font-size: 13px;
-      font-weight: 900;
-      color: #e0ac69;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: all 0.15s;
-    }
-    .verdict-seal-btn.yes-btn.selected {
-      background: #14532d;
-      border-color: #22c55e;
-      color: #86efac;
-    }
-    .verdict-seal-btn.no-btn.selected {
-      background: #7f1d1d;
-      border-color: #ef4444;
-      color: #fca5a5;
+      background: linear-gradient(180deg, #ff6b81 0%, #ff4757 100%);
     }
 
     .quotient-row {
@@ -552,12 +406,12 @@
       border-radius: 8px;
     }
     .quotient-label {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 900;
       color: #ffbe76;
     }
     .quotient-input {
-      width: 60px;
+      width: 55px;
       padding: 5px;
       text-align: center;
       font-size: 15px;
@@ -581,72 +435,54 @@
     }
     .btn-submit-quotient:hover { background: #ffa801; }
 
-    /* 4. EXPANDED MASTER MISSION MODAL */
+    /* 4. MISSION SELECTOR MODAL */
     #missionModal {
       position: fixed;
       inset: 0;
       z-index: 10000;
-      background: rgba(7, 9, 12, 0.88);
+      background: rgba(7, 9, 12, 0.85);
       backdrop-filter: blur(8px);
       display: none;
       align-items: center;
       justify-content: center;
-      pointer-events: auto;
     }
     .modal-content-box {
-      width: 92%;
-      max-width: 760px;
+      width: 90%;
+      max-width: 680px;
       background: linear-gradient(180deg, #251710 0%, #120b07 100%);
       border: 3.5px solid #d35400;
       border-radius: 20px;
-      padding: 20px;
+      padding: 24px;
       box-shadow: 0 20px 50px rgba(0,0,0,0.9);
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      max-height: 90vh;
-      pointer-events: auto;
+      gap: 16px;
     }
     .modal-title {
       font-family: 'Cinzel', serif;
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 900;
       color: #f1c40f;
       text-align: center;
-      letter-spacing: 1.5px;
-    }
-    .modal-scroll-area {
-      overflow-y: auto;
-      padding: 4px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      max-height: 60vh;
-    }
-    .modal-section-heading {
-      font-size: 12px;
-      font-weight: 900;
-      color: #e67e22;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      border-bottom: 1.5px dashed #5a3c22;
-      padding-bottom: 4px;
+      letter-spacing: 1px;
     }
     .mission-grid-options {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
+      gap: 12px;
+      max-height: 380px;
+      overflow-y: auto;
+      padding: 4px;
     }
     .mission-card-option {
       background: linear-gradient(180deg, #332219 0%, #1c110c 100%);
       border: 2px solid #6b4d32;
-      border-radius: 12px;
-      padding: 10px 12px;
+      border-radius: 14px;
+      padding: 12px 16px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       cursor: pointer;
-      pointer-events: auto;
       transition: all 0.2s;
     }
     .mission-card-option:hover {
@@ -660,44 +496,41 @@
       box-shadow: 0 0 16px rgba(211, 84, 0, 0.8);
     }
     .mission-card-avatar {
-      width: 40px;
-      height: 40px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
       overflow: hidden;
       border: 2px solid #f1c40f;
       background: #000;
       flex-shrink: 0;
-      pointer-events: none;
     }
     .mission-card-avatar img { width: 100%; height: 100%; object-fit: cover; }
-    .mission-card-info { display: flex; flex-direction: column; pointer-events: none; }
-    .mission-card-title { font-size: 14px; font-weight: 900; color: #fff; }
-    .mission-card-sub { font-size: 10px; font-weight: 800; color: #e0ac69; }
-
-    .modal-bottom-row {
+    .mission-card-info {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 4px;
+      flex-direction: column;
     }
-    .btn-reset-quest {
-      background: #2b120c;
-      border: 2px solid #c0392b;
-      color: #ff7675;
+    .mission-card-title {
+      font-size: 15px;
       font-weight: 900;
-      padding: 7px 18px;
-      border-radius: 8px;
-      cursor: pointer;
+      color: #fff;
+    }
+    .mission-card-sub {
+      font-size: 11px;
+      font-weight: 800;
+      color: #e0ac69;
     }
     .btn-close-modal {
+      align-self: center;
       background: #e67e22;
       border: 2px solid #f39c12;
       color: #fff;
       font-weight: 900;
-      padding: 7px 22px;
-      border-radius: 8px;
+      padding: 8px 24px;
+      border-radius: 10px;
       cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
+    .btn-close-modal:hover { background: #d35400; }
 
     /* 5. CELEBRATION FINALE STAGE OVERLAY */
     #celebrationFinaleStage {
@@ -762,7 +595,13 @@
       font-size: 72px;
       font-weight: 900;
       color: #ffd700;
-      text-shadow: 0 0 20px #ffb700, 0 0 40px #ff9500;
+      text-shadow:
+        -3px -3px 0 #5c3b12,
+         3px -3px 0 #5c3b12,
+        -3px  3px 0 #5c3b12,
+         3px  3px 0 #5c3b12,
+         0 0 20px #ffb700,
+         0 0 40px #ff9500;
       letter-spacing: 12px;
       margin-left: 12px;
       line-height: 1.1;
@@ -789,7 +628,11 @@
       transform: rotate(38deg);
       filter: drop-shadow(0 0 20px #00e5ff);
     }
-    .flying-shinobi-rocket img { width: 100%; height: 100%; object-fit: contain; }
+    .flying-shinobi-rocket img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
 
     .landing-zone-right {
       position: absolute;
@@ -819,7 +662,21 @@
       padding: 16px 20px;
       box-shadow: 0 16px 36px rgba(0,0,0,0.8), inset 0 0 12px rgba(166, 114, 60, 0.4);
       color: #3b220e;
+      position: relative;
     }
+    .unfurled-scroll-report::before, .unfurled-scroll-report::after {
+      content: '';
+      position: absolute;
+      top: -12px;
+      width: 26px;
+      height: calc(100% + 24px);
+      background: #5d3916;
+      border: 2px solid #8e5828;
+      border-radius: 6px;
+    }
+    .unfurled-scroll-report::before { left: -14px; }
+    .unfurled-scroll-report::after { right: -14px; }
+
     .scroll-report-title {
       font-size: 16px;
       font-weight: 900;
@@ -850,7 +707,10 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.3);
       transition: all 0.2s;
     }
-    .btn-finale-close:hover { transform: translateY(-2px); background: #ffa801; }
+    .btn-finale-close:hover {
+      transform: translateY(-2px);
+      background: #ffa801;
+    }
 
     .shinobi-victory-posture {
       width: 170px;
@@ -862,7 +722,19 @@
       position: relative;
       flex-shrink: 0;
     }
-    .shinobi-victory-posture img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .shinobi-victory-posture img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 10px 16px rgba(0,0,0,0.7));
+    }
+    .landing-dust-smoke {
+      position: absolute;
+      bottom: -15px;
+      width: 140px;
+      height: 80px;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -873,7 +745,7 @@
 
     <div class="chapter-title-badge">
       <span class="chapter-main-text" id="hudChapterTitle">Mission A: 18 ÷ 6</span>
-      <span class="chapter-sub-text">Exercise 1.1 • Shinobi Division Quest</span>
+      <span class="chapter-sub-text">Repeated Subtraction Arena</span>
     </div>
 
     <div style="display: flex; gap: 10px;">
@@ -882,8 +754,8 @@
     </div>
   </header>
 
-  <!-- BOSS HP BAR (STAGE 1) -->
-  <div class="boss-status-hud" id="bossStatusHud">
+  <!-- FILLING HP BAR -->
+  <div class="boss-status-hud">
     <div class="boss-info-row">
       <span id="bossNameLabel">Rival Defender</span>
       <span id="bossHpText">0 / 18 HP Completed</span>
@@ -893,8 +765,9 @@
     </div>
   </div>
 
-  <!-- 2. FULL-SCREEN ARENA VIEWPORT -->
+  <!-- 2. FULL-SCREEN ARENA VIEWPORT WITH VIDEO BACKGROUND -->
   <main class="viewport-stage" id="viewportStage">
+    
     <div class="backdrop-wrapper">
       <video autoplay muted loop playsinline class="backdrop-img">
         <source src="assets/battlefield-bg.mp4" type="video/mp4">
@@ -906,35 +779,19 @@
     <div class="lightning-flash-overlay" id="lightningFlash"></div>
 
     <!-- COMBAT ZONE: 4 CORNER RAIDERS -->
-    <div class="combat-ground-zone" id="combatGroundZone">
-      <div class="corner-raider top-left" id="raiderTL"><img id="raiderImgTL" src="assets/kakashi.png" alt="TL"></div>
-      <div class="corner-raider top-right" id="raiderTR"><img id="raiderImgTR" src="assets/lee.png" alt="TR"></div>
-      <div class="corner-raider bottom-left" id="raiderBL"><img id="raiderImgBL" src="assets/neji.png" alt="BL"></div>
-      <div class="corner-raider bottom-right" id="raiderBR"><img id="raiderImgBR" src="assets/sasuke.png" alt="BR"></div>
+    <div class="combat-ground-zone">
+      <div class="corner-raider top-left" id="raiderTL"><img id="raiderImgTL" src="assets/kakashi.png" alt="Raider TL" onerror="handleImageFallback(this)"></div>
+      <div class="corner-raider top-right" id="raiderTR"><img id="raiderImgTR" src="assets/lee.png" alt="Raider TR" onerror="handleImageFallback(this)"></div>
+      <div class="corner-raider bottom-left" id="raiderBL"><img id="raiderImgBL" src="assets/neji.png" alt="Raider BL" onerror="handleImageFallback(this)"></div>
+      <div class="corner-raider bottom-right" id="raiderBR"><img id="raiderImgBR" src="assets/sasuke.png" alt="Raider BR" onerror="handleImageFallback(this)"></div>
 
       <img src="assets/lightning.png" class="strike-lightning-layer" id="strikeLightningImg" alt="Lightning Strike" onerror="this.style.display='none'" />
       <img src="assets/smoke-poof.png" alt="Smoke" class="dynamic-smoke-puff" id="strikeSmokePuff" onerror="this.style.display='none'" />
     </div>
 
-    <!-- GENJUTSU / WORD PUZZLE CARD IN ARENA -->
-    <div class="arena-challenger-card" id="arenaChallengerCard" style="display:none;">
-      <img src="assets/sasuke.png" class="challenger-avatar-img" id="challengerAvatarImg" alt="Challenger" onerror="handleImageFallback(this)" />
-      <div class="arena-dialogue-scroll">
-        <div class="caller-name" id="arenaCallerName">Sasuke Uchiha</div>
-        <div class="caller-math" id="arenaCallerMath">36 ÷ 4 = 8</div>
-        <div style="font-size:12px; font-weight:800; color:#475569; margin-top:4px;" id="arenaCallerNarrative"></div>
-      </div>
-    </div>
-
-    <!-- IN-ARENA FAILURE OVERLAY -->
-    <div class="failure-feedback-zone" id="failureOverlay">
-      <div class="failure-kanji">幻術 UNBROKEN!</div>
-      <div class="failure-subtext">TRY AGAIN!</div>
-    </div>
-
     <!-- 3. NOTEPAD DRAWER -->
     <aside class="ninja-scroll-drawer" id="ninjaScrollDrawer">
-      <div class="notepad-header-controls" id="notepadToolbar">
+      <div class="notepad-header-controls">
         <div class="tools-icon-row">
           <button class="btn-icon-tool active" id="toolPen" title="Pen">✏</button>
           <button class="btn-icon-tool" id="toolEraser" title="Eraser">🧹</button>
@@ -948,39 +805,15 @@
         </div>
       </div>
 
-      <!-- STANDARDIZED GRAPH CANVAS (STAGES 1, 2, 3.B) -->
       <div class="notepad-scroll-viewport" id="notepadScrollViewport">
         <canvas id="inkCanvas"></canvas>
       </div>
 
-      <!-- PUZZLE 3.A SUBTRACTION LADDER (NO CANVAS) -->
-      <div class="ladder-table-container" id="ladderTableContainer">
-        <div class="ladder-prompt-banner">
-          <b>Garden Puzzle 3.a</b>: 15 butterflies in total. On each flower, there are 3 butterflies. Subtract 3 repeatedly until you reach 0!
-        </div>
-        <div class="ladder-table-grid">
-          <div class="ladder-row"><span>15 - 3 =</span> <b>12</b></div>
-          <div class="ladder-row"><span>12 - 3 =</span> <b>9</b></div>
-          <div class="ladder-row"><span>9 - 3 =</span> <input type="number" id="inpL3" oninput="saveLadderInput()" placeholder="?"></div>
-          <div class="ladder-row"><span>6 - 3 =</span> <input type="number" id="inpL4" oninput="saveLadderInput()" placeholder="?"></div>
-          <div class="ladder-row"><span>3 - 3 =</span> <input type="number" id="inpL5" oninput="saveLadderInput()" placeholder="?"></div>
-        </div>
-      </div>
-
-      <!-- ADAPTIVE SUBMISSION DOCK -->
       <div class="notepad-submission-dock">
-        <!-- STAGE 1 STRIKE BUTTON -->
         <button class="btn-lightning-strike" id="btnJutsuStrike" title="Jutsu Strike">
-          ⚡ Jutsu Strike
+          ⚡
         </button>
 
-        <!-- STAGE 2 YES/NO VERDICT SEALS -->
-        <div class="genjutsu-verdict-row" id="genjutsuVerdictRow">
-          <button type="button" class="verdict-seal-btn yes-btn" id="btnVerdictYes" onclick="selectVerdict('Yes')">⭕ YES (Truth)</button>
-          <button type="button" class="verdict-seal-btn no-btn" id="btnVerdictNo" onclick="selectVerdict('No')">❌ NO (Illusion)</button>
-        </div>
-
-        <!-- MAIN QUOTIENT INPUT -->
         <div class="quotient-row">
           <span class="quotient-label" id="quotientLabel">18 ÷ 6 =</span>
           <input type="number" id="inputQuotient" class="quotient-input" placeholder="?" min="0" max="99">
@@ -991,27 +824,12 @@
 
   </main>
 
-  <!-- 4. EXPANDED MASTER MISSION MODAL -->
+  <!-- 4. MISSION SELECTOR MODAL -->
   <div id="missionModal">
     <div class="modal-content-box">
-      <div class="modal-title">EXERCISE 1.1 — SHINOBI MISSION ARCHIVE</div>
-      <div class="modal-scroll-area">
-        
-        <div class="modal-section-heading">Part 1: Repeated Subtraction Arena</div>
-        <div class="mission-grid-options" id="gridPart1"></div>
-
-        <div class="modal-section-heading">Part 2: Genjutsu Dispel (True / False &amp; Fix)</div>
-        <div class="mission-grid-options" id="gridPart2"></div>
-
-        <div class="modal-section-heading">Part 3: Secret Garden Puzzles</div>
-        <div class="mission-grid-options" id="gridPart3"></div>
-
-      </div>
-
-      <div class="modal-bottom-row">
-        <button class="btn-reset-quest" onclick="resetAllExerciseProgress()">🔄 Reset All Exercise 1.1</button>
-        <button class="btn-close-modal" id="closeMissionModalBtn">Close Arena</button>
-      </div>
+      <div class="modal-title">SELECT SHINOBI MISSION</div>
+      <div class="mission-grid-options" id="missionGridOptions"></div>
+      <button class="btn-close-modal" id="closeMissionModalBtn">Close Arena</button>
     </div>
   </div>
 
@@ -1026,20 +844,21 @@
     </div>
 
     <div class="flying-shinobi-rocket" id="flyingShinobiRocket">
-      <img src="assets/naruto.png" id="flyingShinobiImg" alt="Shinobi In Flight">
+      <img src="assets/naruto.png" id="flyingShinobiImg" alt="Shinobi In Flight" onerror="handleImageFallback(this)">
     </div>
 
     <div class="landing-zone-right" id="landingZoneRight">
       <div class="unfurled-scroll-report">
         <div class="scroll-report-title" id="reportScrollTitle">任務完了 — MISSION ACCOMPLISHED!</div>
         <div class="scroll-report-body" id="reportScrollBody">
-          Calculation successfully completed!
+          Repeated subtraction successfully completed!
         </div>
         <button class="btn-finale-close" onclick="closeCelebrationFinale()">Continue Training ➔</button>
       </div>
 
       <div class="shinobi-victory-posture">
-        <img src="assets/naruto.png" id="victoryPoseImg" alt="Victory Shinobi">
+        <img src="assets/naruto.png" id="victoryPoseImg" alt="Victory Shinobi" onerror="handleImageFallback(this)">
+        <img src="assets/smoke-poof.png" class="landing-dust-smoke" id="landingDustImg" alt="Dust Cloud" onerror="this.style.display='none'">
       </div>
     </div>
   </div>
@@ -1059,126 +878,107 @@
       imgEl.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><circle cx='70' cy='70' r='65' fill='%232b170c' stroke='%23ff9f43' stroke-width='4'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='42'>🍥</text></svg>";
     }
 
-    /* 1. MASTER MISSIONS CONFIGURATION */
+    /* 1. MISSIONS CONFIG */
     const MISSIONS = [
-      /* PART 1: REPEATED SUBTRACTION COMBAT */
       {
-        id: 'p1_a', part: 1,
-        code: 'Mission A: 18 ÷ 6', dividend: 18, divisor: 6,
-        hero: 'Naruto Uzumaki', heroImg: 'assets/naruto.png',
-        rival: 'Sasuke Uchiha', rivalImg: 'assets/sasuke.png',
-        color: '#00d2ff'
+        id: 'mission_a',
+        code: 'Mission A: 18 ÷ 6',
+        dividend: 18,
+        divisor: 6,
+        hero: 'Naruto Uzumaki',
+        heroImg: 'assets/naruto.png',
+        rival: 'Sasuke Uchiha',
+        rivalImg: 'assets/sasuke.png',
+        color: '#00d2ff',
+        slipstreamType: 'rasengan'
       },
       {
-        id: 'p1_b', part: 1,
-        code: 'Mission B: 45 ÷ 5', dividend: 45, divisor: 5,
-        hero: 'Sasuke Uchiha', heroImg: 'assets/sasuke.png',
-        rival: 'Kakashi Hatake', rivalImg: 'assets/kakashi.png',
-        color: '#a55eea'
+        id: 'mission_b',
+        code: 'Mission B: 45 ÷ 5',
+        dividend: 45,
+        divisor: 5,
+        hero: 'Sasuke Uchiha',
+        heroImg: 'assets/sasuke.png',
+        rival: 'Kakashi Hatake',
+        rivalImg: 'assets/kakashi.png',
+        color: '#a55eea',
+        slipstreamType: 'chidori'
       },
       {
-        id: 'p1_c', part: 1,
-        code: 'Mission C: 28 ÷ 4', dividend: 28, divisor: 4,
-        hero: 'Kakashi Hatake', heroImg: 'assets/kakashi.png',
-        rival: 'Rock Lee', rivalImg: 'assets/lee.png',
-        color: '#45aaf2'
+        id: 'mission_c',
+        code: 'Mission C: 28 ÷ 4',
+        dividend: 28,
+        divisor: 4,
+        hero: 'Kakashi Hatake',
+        heroImg: 'assets/kakashi.png',
+        rival: 'Rock Lee',
+        rivalImg: 'assets/lee.png',
+        color: '#45aaf2',
+        slipstreamType: 'raikiri'
       },
       {
-        id: 'p1_d', part: 1,
-        code: 'Mission D: 35 ÷ 5', dividend: 35, divisor: 5,
-        hero: 'Rock Lee', heroImg: 'assets/lee.png',
-        rival: 'Neji Hyuga', rivalImg: 'assets/neji.png',
-        color: '#26de81'
+        id: 'mission_d',
+        code: 'Mission D: 35 ÷ 5',
+        dividend: 35,
+        divisor: 5,
+        hero: 'Rock Lee',
+        heroImg: 'assets/lee.png',
+        rival: 'Neji Hyuga',
+        rivalImg: 'assets/neji.png',
+        color: '#26de81',
+        slipstreamType: 'youth'
       },
       {
-        id: 'p1_e', part: 1,
-        code: 'Mission E: 42 ÷ 7', dividend: 42, divisor: 7,
-        hero: 'Shikamaru Nara', heroImg: 'assets/shikamaru.png',
-        rival: 'Naruto Uzumaki', rivalImg: 'assets/naruto.png',
-        color: '#4b6584'
+        id: 'mission_e',
+        code: 'Mission E: 42 ÷ 7',
+        dividend: 42,
+        divisor: 7,
+        hero: 'Shikamaru Nara',
+        heroImg: 'assets/shikamaru.png',
+        rival: 'Naruto Uzumaki',
+        rivalImg: 'assets/naruto.png',
+        color: '#4b6584',
+        slipstreamType: 'shadow'
       },
       {
-        id: 'p1_f', part: 1,
-        code: 'Mission F: 60 ÷ 10', dividend: 60, divisor: 10,
-        hero: 'Neji Hyuga', heroImg: 'assets/neji.png',
-        rival: 'Kakashi Hatake', rivalImg: 'assets/kakashi.png',
-        color: '#70a1ff'
-      },
-
-      /* PART 2: GENJUTSU DISPEL */
-      {
-        id: 'p2_a', part: 2,
-        code: 'Dispel A: 36 ÷ 4 = 8',
-        statement: '36 ÷ 4 = 8', truthValue: 'No', correctAnswer: '9',
-        equationLeft: 'True Answer: 36 ÷ 4 =',
-        hero: 'Naruto Uzumaki', heroImg: 'assets/naruto.png',
-        rival: 'Sasuke Uchiha', rivalImg: 'assets/sasuke.png',
-        color: '#00d2ff'
-      },
-      {
-        id: 'p2_b', part: 2,
-        code: 'Dispel B: 80 ÷ 8 = 10',
-        statement: '80 ÷ 8 = 10', truthValue: 'Yes', correctAnswer: '10',
-        equationLeft: 'True Answer: 80 ÷ 8 =',
-        hero: 'Sasuke Uchiha', heroImg: 'assets/sasuke.png',
-        rival: 'Naruto Uzumaki', rivalImg: 'assets/naruto.png',
-        color: '#ff7700'
-      },
-      {
-        id: 'p2_c', part: 2,
-        code: 'Dispel C: 56 ÷ 7 = 9',
-        statement: '56 ÷ 7 = 9', truthValue: 'No', correctAnswer: '8',
-        equationLeft: 'True Answer: 56 ÷ 7 =',
-        hero: 'Kakashi Hatake', heroImg: 'assets/kakashi.png',
-        rival: 'Kakashi Hatake', rivalImg: 'assets/kakashi.png',
-        color: '#45aaf2'
-      },
-      {
-        id: 'p2_d', part: 2,
-        code: 'Dispel D: 48 ÷ 8 = 7',
-        statement: '48 ÷ 8 = 7', truthValue: 'No', correctAnswer: '6',
-        equationLeft: 'True Answer: 48 ÷ 8 =',
-        hero: 'Rock Lee', heroImg: 'assets/lee.png',
-        rival: 'Rock Lee', rivalImg: 'assets/lee.png',
-        color: '#26de81'
-      },
-
-      /* PART 3: GARDEN PUZZLES */
-      {
-        id: 'p3_a', part: 3, type: 'ladder',
-        code: 'Garden 3.a: 15 Butterflies',
-        statement: '15 Butterflies ÷ 3 per flower',
-        narrative: '15 butterflies in total. 3 butterflies on each flower. How many flowers?',
-        correctAnswer: '5', equationLeft: 'Total Flowers = 15 ÷ 3 =',
-        hero: 'Naruto Uzumaki', heroImg: 'assets/naruto.png',
-        rival: 'Manisha (Garden)', rivalImg: 'assets/naruto.png',
-        color: '#ec4899'
-      },
-      {
-        id: 'p3_b', part: 3, type: 'word',
-        code: 'Garden 3.b: +10 Butterflies',
-        statement: '+10 More Butterflies!',
-        narrative: '10 more butterflies flew into the garden (15 + 10 = 25 total). Distributed equally among the 5 flowers. How many on each?',
-        correctAnswer: '5', equationLeft: 'Per flower = 25 ÷ 5 =',
-        hero: 'Kakashi Hatake', heroImg: 'assets/kakashi.png',
-        rival: 'Garden Friends', rivalImg: 'assets/kakashi.png',
-        color: '#8b5cf6'
+        id: 'mission_f',
+        code: 'Mission F: 60 ÷ 10',
+        dividend: 60,
+        divisor: 10,
+        hero: 'Neji Hyuga',
+        heroImg: 'assets/neji.png',
+        rival: 'Kakashi Hatake',
+        rivalImg: 'assets/kakashi.png',
+        color: '#70a1ff',
+        slipstreamType: 'byakugan'
       }
     ];
 
-    const ALL_CHARACTER_SPRITES = ['assets/naruto.png', 'assets/sasuke.png', 'assets/kakashi.png', 'assets/lee.png', 'assets/neji.png', 'assets/shikamaru.png'];
+    const ALL_CHARACTER_SPRITES = [
+      'assets/naruto.png',
+      'assets/sasuke.png',
+      'assets/kakashi.png',
+      'assets/lee.png',
+      'assets/neji.png',
+      'assets/shikamaru.png'
+    ];
 
     let currentMissionIdx = 0;
     let accumulatedProgressHP = 0;
     let maxHealth = 18;
+    let totalRequiredSteps = 3;
 
     /* 2. WARFARE AUDIO ENGINE */
     class NinjaAudioEngine {
       constructor() { this.ctx = null; }
       init() {
-        if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
         if (this.ctx.state === 'suspended') this.ctx.resume();
       }
+
       playCornerChargeChime() {
         this.init();
         const t0 = this.ctx.currentTime;
@@ -1196,6 +996,7 @@
           osc.stop(t0 + idx * 0.08 + 0.3);
         });
       }
+
       playMultiHitClashShockwave() {
         this.init();
         const t0 = this.ctx.currentTime;
@@ -1211,6 +1012,7 @@
         osc.start(t0);
         osc.stop(t0 + 0.45);
       }
+
       playSmokePoof() {
         this.init();
         const bufferSize = this.ctx.sampleRate * 0.25;
@@ -1230,6 +1032,7 @@
         gain.connect(this.ctx.destination);
         source.start();
       }
+
       playTaikoGongImpact() {
         this.init();
         const t0 = this.ctx.currentTime;
@@ -1245,6 +1048,7 @@
         osc.start(t0);
         osc.stop(t0 + 0.9);
       }
+
       playFlyThroughWhoosh() {
         this.init();
         const t0 = this.ctx.currentTime;
@@ -1253,6 +1057,7 @@
         const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
         const data = buffer.getChannelData(0);
         for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
         const noise = this.ctx.createBufferSource();
         noise.buffer = buffer;
         const filter = this.ctx.createBiquadFilter();
@@ -1260,19 +1065,27 @@
         filter.Q.value = 3.0;
         filter.frequency.setValueAtTime(300, t0);
         filter.frequency.exponentialRampToValueAtTime(2400, t0 + dur);
+
         const gain = this.ctx.createGain();
         gain.gain.setValueAtTime(0.01, t0);
         gain.gain.linearRampToValueAtTime(0.3, t0 + dur * 0.4);
         gain.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+
         noise.connect(filter);
         filter.connect(gain);
         gain.connect(this.ctx.destination);
         noise.start(t0);
         noise.stop(t0 + dur);
       }
+
       playJapaneseKotoMelody() {
         this.init();
-        const melody = [{ f: 523.25, time: 0 }, { f: 587.33, time: 0.16 }, { f: 622.25, time: 0.32 }, { f: 783.99, time: 0.52 }];
+        const melody = [
+          { f: 523.25, time: 0.00 },
+          { f: 587.33, time: 0.16 },
+          { f: 622.25, time: 0.32 },
+          { f: 783.99, time: 0.52 }
+        ];
         const t0 = this.ctx.currentTime;
         melody.forEach(note => {
           const osc = this.ctx.createOscillator();
@@ -1290,96 +1103,18 @@
     }
     const soundFX = new NinjaAudioEngine();
 
-    /* 3. DYNAMIC HUD & MISSION ROUTING */
+    /* 3. DYNAMIC HUD & MISSION UPDATER */
     const hudChapterTitle = document.getElementById('hudChapterTitle');
-    const bossStatusHud = document.getElementById('bossStatusHud');
     const bossNameLabel = document.getElementById('bossNameLabel');
     const bossHpText = document.getElementById('bossHpText');
     const bossHpFill = document.getElementById('bossHpFill');
 
-    const combatGroundZone = document.getElementById('combatGroundZone');
-    const arenaChallengerCard = document.getElementById('arenaChallengerCard');
-    const challengerAvatarImg = document.getElementById('challengerAvatarImg');
-    const arenaCallerName = document.getElementById('arenaCallerName');
-    const arenaCallerMath = document.getElementById('arenaCallerMath');
-    const arenaCallerNarrative = document.getElementById('arenaCallerNarrative');
-
-    const btnJutsuStrike = document.getElementById('btnJutsuStrike');
-    const genjutsuVerdictRow = document.getElementById('genjutsuVerdictRow');
-    const ladderTableContainer = document.getElementById('ladderTableContainer');
-    const notepadScrollViewport = document.getElementById('notepadScrollViewport');
-    const notepadToolbar = document.getElementById('notepadToolbar');
-    const quotientLabel = document.getElementById('quotientLabel');
-    const inputQuotient = document.getElementById('inputQuotient');
-
     function updateFighters(m) {
       hudChapterTitle.innerText = m.code;
-
-      if (m.part === 1) {
-        bossStatusHud.style.display = 'flex';
-        combatGroundZone.style.display = 'block';
-        arenaChallengerCard.style.display = 'none';
-
-        btnJutsuStrike.style.display = 'flex';
-        genjutsuVerdictRow.style.display = 'none';
-        ladderTableContainer.style.display = 'none';
-        notepadScrollViewport.style.display = 'block';
-        notepadToolbar.style.display = 'flex';
-
-        quotientLabel.innerText = `${m.dividend} ÷ ${m.divisor} =`;
-        bossNameLabel.innerText = `${m.rival} (Defender)`;
-        accumulatedProgressHP = parseInt(localStorage.getItem(getStorageKey(m.id + '_hp')) || "0", 10);
-        updateBossHP();
-        randomizeCornerRaiders();
-
-      } else if (m.part === 2) {
-        bossStatusHud.style.display = 'none';
-        combatGroundZone.style.display = 'none';
-        arenaChallengerCard.style.display = 'flex';
-
-        btnJutsuStrike.style.display = 'none';
-        genjutsuVerdictRow.style.display = 'flex';
-        ladderTableContainer.style.display = 'none';
-        notepadScrollViewport.style.display = 'block';
-        notepadToolbar.style.display = 'flex';
-
-        challengerAvatarImg.src = m.rivalImg;
-        arenaCallerName.innerText = m.rival;
-        arenaCallerMath.innerText = m.statement;
-        arenaCallerNarrative.innerText = "Is this chakra statement correct?";
-
-        quotientLabel.innerText = m.equationLeft;
-        restoreGenjutsuVerdict(m);
-
-      } else { // PART 3: GARDEN
-        bossStatusHud.style.display = 'none';
-        combatGroundZone.style.display = 'none';
-        arenaChallengerCard.style.display = 'flex';
-
-        btnJutsuStrike.style.display = 'none';
-        genjutsuVerdictRow.style.display = 'none';
-
-        challengerAvatarImg.src = m.heroImg;
-        arenaCallerName.innerText = m.rival;
-        arenaCallerMath.innerText = m.statement;
-        arenaCallerNarrative.innerText = m.narrative;
-        quotientLabel.innerText = m.equationLeft;
-
-        if (m.type === 'ladder') {
-          // NO NOTEPAD CANVAS PER USER REQUIREMENT FOR 3.A
-          ladderTableContainer.style.display = 'flex';
-          notepadScrollViewport.style.display = 'none';
-          notepadToolbar.style.display = 'none';
-          loadLadderInputs();
-        } else {
-          // GRAPH NOTEPAD ACTIVE FOR 3.B
-          ladderTableContainer.style.display = 'none';
-          notepadScrollViewport.style.display = 'block';
-          notepadToolbar.style.display = 'flex';
-        }
-      }
-
-      inputQuotient.value = localStorage.getItem(getStorageKey(m.id + '_val')) || '';
+      bossNameLabel.innerText = `${m.rival} (Defender)`;
+      accumulatedProgressHP = 0;
+      updateBossHP();
+      randomizeCornerRaiders();
     }
 
     function randomizeCornerRaiders() {
@@ -1391,12 +1126,12 @@
     }
 
     function updateBossHP() {
-      bossHpText.innerText = `${accumulatedProgressHP} / ${maxHealth} HP Subtracted`;
+      bossHpText.innerText = `${accumulatedProgressHP} / ${maxHealth} HP Completed`;
       const pct = Math.min(100, (accumulatedProgressHP / maxHealth) * 100);
       bossHpFill.style.width = `${pct}%`;
     }
 
-    /* 4. PERSISTENT INK CANVAS ENGINE */
+    /* 4. INK CANVAS ENGINE WITH ROBUST DPR SCALING */
     const inkCanvas = document.getElementById('inkCanvas');
     const inkCtx = inkCanvas.getContext('2d', { alpha: true });
     const scrollContainer = document.getElementById('notepadScrollViewport');
@@ -1409,7 +1144,6 @@
     const VIRTUAL_CANVAS_HEIGHT = 4000;
 
     function resizeCanvas() {
-      if (!scrollContainer) return;
       const rect = scrollContainer.getBoundingClientRect();
       if (rect.width <= 0) return;
       const dpr = window.devicePixelRatio || 1;
@@ -1434,16 +1168,15 @@
       }
     }
 
-    function getStorageKey(subKey) {
-      return `v11_isolated_ink::humayun::maths_ex1_1::${subKey}`;
+    function getStorageKey(missionId) {
+      return `v11_isolated_ink::humayun::maths_oct09::${missionId}`;
     }
 
     function saveInkToStorage() {
       const m = MISSIONS[currentMissionIdx];
-      if (m.part === 3 && m.type === 'ladder') return;
       try {
         const dataUrl = inkCanvas.toDataURL();
-        localStorage.setItem(getStorageKey(m.id + '_ink'), dataUrl);
+        localStorage.setItem(getStorageKey(m.id), dataUrl);
       } catch (e) {}
     }
 
@@ -1454,9 +1187,9 @@
       inkCtx.setTransform(1, 0, 0, 1, 0, 0);
       inkCtx.clearRect(0, 0, inkCanvas.width, inkCanvas.height);
       inkCtx.restore();
-
+      
       undoStack = [];
-      const saved = localStorage.getItem(getStorageKey(m.id + '_ink'));
+      const saved = localStorage.getItem(getStorageKey(m.id));
       if (saved) {
         const img = new Image();
         img.onload = () => {
@@ -1546,7 +1279,7 @@
     inkCanvas.addEventListener('pointercancel', stopDraw);
     inkCanvas.addEventListener('pointerleave', stopDraw);
 
-    /* 5. LIGHTWEIGHT FX CANVAS */
+    /* 5. ARENA FX CANVAS */
     const fxCanvas = document.getElementById('fxCanvas');
     const fxCtx = fxCanvas.getContext('2d', { alpha: true });
     let arenaParticles = [];
@@ -1558,13 +1291,20 @@
 
     class ArenaFxParticle {
       constructor(x, y, color) {
-        this.x = x; this.y = y; this.color = color;
+        this.x = x;
+        this.y = y;
+        this.color = color;
         this.radius = Math.random() * 5 + 2;
         this.speedX = (Math.random() - 0.5) * 12;
         this.speedY = (Math.random() - 0.5) * 12;
-        this.life = 1; this.decay = 0.05;
+        this.life = 1;
+        this.decay = 0.05;
       }
-      update() { this.x += this.speedX; this.y += this.speedY; this.life -= this.decay; }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        this.life -= this.decay;
+      }
       draw(c) {
         c.save();
         c.globalAlpha = Math.max(0, this.life);
@@ -1577,7 +1317,9 @@
     }
 
     function spawnArenaBurst(x, y, color, count = 30) {
-      for (let i = 0; i < count; i++) arenaParticles.push(new ArenaFxParticle(x, y, color));
+      for (let i = 0; i < count; i++) {
+        arenaParticles.push(new ArenaFxParticle(x, y, color));
+      }
     }
 
     function renderArenaFX() {
@@ -1591,12 +1333,20 @@
     }
     requestAnimationFrame(renderArenaFX);
 
-    /* 6. GAME CONTROLS & MODAL EVENTS */
+    /* 6. GAME CONTROLS & 4-CORNER GLIDE-TO-CLASH STRIKES */
     const ninjaScrollDrawer = document.getElementById('ninjaScrollDrawer');
     const toggleScrollBtn = document.getElementById('toggleScrollBtn');
     const strikeLightningImg = document.getElementById('strikeLightningImg');
     const strikeSmokePuff = document.getElementById('strikeSmokePuff');
     const lightningFlash = document.getElementById('lightningFlash');
+    const btnJutsuStrike = document.getElementById('btnJutsuStrike');
+    const quotientLabel = document.getElementById('quotientLabel');
+    const inputQuotient = document.getElementById('inputQuotient');
+
+    const raiderTL = document.getElementById('raiderTL');
+    const raiderTR = document.getElementById('raiderTR');
+    const raiderBL = document.getElementById('raiderBL');
+    const raiderBR = document.getElementById('raiderBR');
 
     toggleScrollBtn.onclick = () => {
       ninjaScrollDrawer.classList.toggle('open');
@@ -1605,6 +1355,7 @@
     };
 
     const missionModal = document.getElementById('missionModal');
+    const missionGridOptions = document.getElementById('missionGridOptions');
     document.getElementById('openMissionModalBtn').onclick = () => {
       buildMissionGrid();
       missionModal.style.display = 'flex';
@@ -1614,31 +1365,22 @@
     };
 
     function buildMissionGrid() {
-      const g1 = document.getElementById('gridPart1');
-      const g2 = document.getElementById('gridPart2');
-      const g3 = document.getElementById('gridPart3');
-      g1.innerHTML = ''; g2.innerHTML = ''; g3.innerHTML = '';
-
+      missionGridOptions.innerHTML = '';
       MISSIONS.forEach((m, idx) => {
-        const isDone = localStorage.getItem(getStorageKey(m.id + '_done')) === 'true';
         const card = document.createElement('div');
         card.className = `mission-card-option ${idx === currentMissionIdx ? 'active' : ''}`;
-        card.setAttribute('data-idx', idx);
         card.innerHTML = `
           <div class="mission-card-avatar"><img src="${m.heroImg}" alt="${m.hero}" onerror="handleImageFallback(this)" /></div>
           <div class="mission-card-info">
-            <span class="mission-card-title">${m.code} ${isDone ? '⭐' : ''}</span>
-            <span class="mission-card-sub">${m.part === 1 ? 'Hero: ' + m.hero : (m.part === 2 ? 'Challenger: ' + m.rival : 'Garden Mystery')}</span>
+            <span class="mission-card-title">${m.code}</span>
+            <span class="mission-card-sub">Hero: ${m.hero}</span>
           </div>
         `;
-        card.addEventListener('click', () => {
+        card.onclick = () => {
           selectMission(idx);
           missionModal.style.display = 'none';
-        });
-
-        if (m.part === 1) g1.appendChild(card);
-        else if (m.part === 2) g2.appendChild(card);
-        else g3.appendChild(card);
+        };
+        missionGridOptions.appendChild(card);
       });
     }
 
@@ -1646,34 +1388,37 @@
       saveInkToStorage();
       currentMissionIdx = idx;
       const m = MISSIONS[idx];
-      maxHealth = m.dividend || 18;
+      totalRequiredSteps = m.dividend / m.divisor;
+      maxHealth = m.dividend;
+      accumulatedProgressHP = 0;
+
+      quotientLabel.innerText = `${m.dividend} ÷ ${m.divisor} =`;
+      inputQuotient.value = '';
 
       updateFighters(m);
       loadInkFromStorage();
     }
 
-    /* PART 1 JUTSU STRIKE */
     btnJutsuStrike.onclick = () => {
+      if (accumulatedProgressHP >= maxHealth) return;
       const m = MISSIONS[currentMissionIdx];
-      if (m.part !== 1 || accumulatedProgressHP >= maxHealth) return;
 
       soundFX.playCornerChargeChime();
-      const rTL = document.getElementById('raiderTL');
-      const rTR = document.getElementById('raiderTR');
-      const rBL = document.getElementById('raiderBL');
-      const rBR = document.getElementById('raiderBR');
 
-      rTL.classList.add('clash');
-      rTR.classList.add('clash');
-      rBL.classList.add('clash');
-      rBR.classList.add('clash');
+      raiderTL.classList.add('clash');
+      raiderTR.classList.add('clash');
+      raiderBL.classList.add('clash');
+      raiderBR.classList.add('clash');
 
       setTimeout(() => {
         soundFX.playMultiHitClashShockwave();
         lightningFlash.classList.add('flash');
         setTimeout(() => lightningFlash.classList.remove('flash'), 80);
 
-        spawnArenaBurst(window.innerWidth / 2, window.innerHeight / 2, m.color, 40);
+        const cx = window.innerWidth / 2;
+        const cy = window.innerHeight / 2;
+        spawnArenaBurst(cx, cy, m.color, 40);
+
         strikeLightningImg.classList.add('zap');
         setTimeout(() => strikeLightningImg.classList.remove('zap'), 300);
 
@@ -1681,115 +1426,37 @@
         soundFX.playSmokePoof();
 
         accumulatedProgressHP = Math.min(maxHealth, accumulatedProgressHP + m.divisor);
-        localStorage.setItem(getStorageKey(m.id + '_hp'), accumulatedProgressHP);
         updateBossHP();
 
         setTimeout(() => {
-          rTL.classList.remove('clash');
-          rTR.classList.remove('clash');
-          rBL.classList.remove('clash');
-          rBR.classList.remove('clash');
+          raiderTL.classList.remove('clash');
+          raiderTR.classList.remove('clash');
+          raiderBL.classList.remove('clash');
+          raiderBR.classList.remove('clash');
           strikeSmokePuff.classList.remove('puffff');
           randomizeCornerRaiders();
         }, 500);
       }, 550);
     };
 
-    /* PART 2 GENJUTSU VERDICT LOGIC */
-    function selectVerdict(val) {
-      const m = MISSIONS[currentMissionIdx];
-      localStorage.setItem(getStorageKey(m.id + '_verdict'), val);
-      document.getElementById('btnVerdictYes').classList.toggle('selected', val === 'Yes');
-      document.getElementById('btnVerdictNo').classList.toggle('selected', val === 'No');
-    }
-
-    function restoreGenjutsuVerdict(m) {
-      const v = localStorage.getItem(getStorageKey(m.id + '_verdict')) || "";
-      document.getElementById('btnVerdictYes').classList.toggle('selected', v === 'Yes');
-      document.getElementById('btnVerdictNo').classList.toggle('selected', v === 'No');
-    }
-
-    /* PART 3.A LADDER INPUT PERSISTENCE */
-    function saveLadderInput() {
-      const m = MISSIONS[currentMissionIdx];
-      const l3 = document.getElementById('inpL3').value.trim();
-      const l4 = document.getElementById('inpL4').value.trim();
-      const l5 = document.getElementById('inpL5').value.trim();
-      localStorage.setItem(getStorageKey(m.id + '_ladder'), JSON.stringify({ l3, l4, l5 }));
-    }
-
-    function loadLadderInputs() {
-      const m = MISSIONS[currentMissionIdx];
-      const data = JSON.parse(localStorage.getItem(getStorageKey(m.id + '_ladder')) || "{}");
-      document.getElementById('inpL3').value = data.l3 || "";
-      document.getElementById('inpL4').value = data.l4 || "";
-      document.getElementById('inpL5').value = data.l5 || "";
-    }
-
-    /* UNIFIED SUBMISSION HANDLER */
     document.getElementById('btnSubmitQuotient').onclick = () => {
+      const val = parseInt(inputQuotient.value.trim(), 10);
       const m = MISSIONS[currentMissionIdx];
-      const entered = inputQuotient.value.trim();
-      localStorage.setItem(getStorageKey(m.id + '_val'), entered);
-
-      let isSuccess = false;
-
-      if (m.part === 1) {
-        const requiredSteps = m.dividend / m.divisor;
-        if (parseInt(entered, 10) === requiredSteps) isSuccess = true;
-      } else if (m.part === 2) {
-        const v = localStorage.getItem(getStorageKey(m.id + '_verdict')) || "";
-        if (m.truthValue === 'Yes' && v === 'Yes') isSuccess = true;
-        else if (m.truthValue === 'No' && v === 'No' && entered === m.correctAnswer) isSuccess = true;
-      } else { // PART 3
-        if (m.type === 'ladder') {
-          const l3 = document.getElementById('inpL3').value.trim();
-          const l4 = document.getElementById('inpL4').value.trim();
-          const l5 = document.getElementById('inpL5').value.trim();
-          if (l3 === "6" && l4 === "3" && l5 === "0" && entered === "5") isSuccess = true;
-        } else {
-          if (entered === m.correctAnswer) isSuccess = true;
-        }
+      
+      if (isNaN(val)) {
+        alert("Enter your final step quotient count!");
+        return;
       }
-
-      if (isSuccess) {
+      
+      if (val === totalRequiredSteps) {
         soundFX.playJapaneseKotoMelody();
-        localStorage.setItem(getStorageKey(m.id + '_done'), 'true');
         triggerCelebratoryFinale(m);
       } else {
-        soundFX.playSmokePoof();
-        const avatar = document.getElementById('challengerAvatarImg');
-        if (avatar) avatar.classList.add('vanished');
-
-        const failOverlay = document.getElementById('failureOverlay');
-        failOverlay.classList.add('active');
-
-        strikeSmokePuff.classList.add('puffff');
-
-        setTimeout(() => {
-          strikeSmokePuff.classList.remove('puffff');
-          failOverlay.classList.remove('active');
-          if (avatar) avatar.classList.remove('vanished');
-        }, 1300);
+        alert(`Almost there! How many times did you subtract ${m.divisor} to reach 0?`);
       }
     };
 
-    function resetAllExerciseProgress() {
-      if (!confirm("Reset all saved progress and scratchpads for Exercise 1.1?")) return;
-      MISSIONS.forEach(m => {
-        localStorage.removeItem(getStorageKey(m.id + '_val'));
-        localStorage.removeItem(getStorageKey(m.id + '_ink'));
-        localStorage.removeItem(getStorageKey(m.id + '_hp'));
-        localStorage.removeItem(getStorageKey(m.id + '_verdict'));
-        localStorage.removeItem(getStorageKey(m.id + '_ladder'));
-        localStorage.removeItem(getStorageKey(m.id + '_done'));
-      });
-      inkCtx.clearRect(0, 0, inkCanvas.width, inkCanvas.height);
-      selectMission(0);
-      missionModal.style.display = 'none';
-    }
-
-    /* 7. GRAND CELEBRATION FINALE STAGE */
+    /* 7. CELEBRATION FINALE STAGE ENGINE */
     const finaleStage = document.getElementById('celebrationFinaleStage');
     const finaleCanvas = document.getElementById('finaleCanvas');
     const finaleCtx = finaleCanvas.getContext('2d', { alpha: true });
@@ -1826,13 +1493,22 @@
         this.color = type === 'leaf' ? '#2ecc71' : (type === 'shuriken' ? '#bdc3c7' : '#ffd32a');
       }
       update() {
-        this.x += this.vx; this.y += this.vy; this.rot += this.rotSpeed;
-        if (this.y > window.innerHeight + 50) { this.y = -30; this.x = Math.random() * window.innerWidth; }
+        this.x += this.vx;
+        this.y += this.vy;
+        this.rot += this.rotSpeed;
+        if (this.y > window.innerHeight + 50) {
+          this.y = -30;
+          this.x = Math.random() * window.innerWidth;
+        }
       }
       draw(c) {
-        c.save(); c.translate(this.x, this.y); c.rotate(this.rot);
+        c.save();
+        c.translate(this.x, this.y);
+        c.rotate(this.rot);
         c.fillStyle = this.color;
-        c.beginPath(); c.arc(0, 0, this.size * 0.5, 0, Math.PI * 2); c.fill();
+        c.beginPath();
+        c.arc(0, 0, this.size * 0.5, 0, Math.PI * 2);
+        c.fill();
         c.restore();
       }
     }
@@ -1845,13 +1521,21 @@
         this.size = Math.random() * 6 + 2;
         this.vx = (Math.random() - 0.5) * 3 - 1.5;
         this.vy = (Math.random() - 0.5) * 3 + 1.5;
-        this.life = 1; this.decay = 0.03;
+        this.life = 1;
+        this.decay = 0.03;
       }
-      update() { this.x += this.vx; this.y += this.vy; this.life -= this.decay; }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.life -= this.decay;
+      }
       draw(c) {
-        c.save(); c.globalAlpha = Math.max(0, this.life);
+        c.save();
+        c.globalAlpha = Math.max(0, this.life);
         c.fillStyle = this.color;
-        c.beginPath(); c.arc(this.x, this.y, this.size, 0, Math.PI * 2); c.fill();
+        c.beginPath();
+        c.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        c.fill();
         c.restore();
       }
     }
@@ -1868,25 +1552,10 @@
       victoryPoseImg.src = mission.heroImg;
 
       reportScrollTitle.innerText = `任務完了 — ${mission.hero.toUpperCase()}!`;
-      if (mission.part === 1) {
-        reportScrollBody.innerHTML = `
-          Repeated Subtraction Cleared!<br/>
-          ${mission.dividend} ÷ ${mission.divisor} = <b>${mission.dividend / mission.divisor}</b><br/>
-          Subtracted <b>${mission.divisor}</b> exactly <b>${mission.dividend / mission.divisor} times</b>!
-        `;
-      } else if (mission.part === 2) {
-        if (mission.truthValue === 'Yes') {
-          reportScrollBody.innerHTML = `True Ninjutsu Verified!<br/><b>${mission.statement}</b> is completely correct!`;
-        } else {
-          reportScrollBody.innerHTML = `Genjutsu Shattered!<br/><b>${mission.statement}</b> was false.<br/>True answer: <b>${mission.correctAnswer}</b>!`;
-        }
-      } else {
-        if (mission.type === 'ladder') {
-          reportScrollBody.innerHTML = `Ladder Subtraction Cleared!<br/>15 - 3 = 12 ... until 0.<br/><b>15 ÷ 3 = 5 flowers</b> in the garden!`;
-        } else {
-          reportScrollBody.innerHTML = `Garden Puzzle Solved!<br/>25 butterflies distributed among 5 flowers.<br/><b>25 ÷ 5 = 5 butterflies per flower</b>!`;
-        }
-      }
+      reportScrollBody.innerHTML = `
+        ${mission.dividend} ÷ ${mission.divisor} = <b>${mission.dividend / mission.divisor}</b><br/>
+        Repeatedly subtracted <b>${mission.divisor}</b> exactly <b>${mission.dividend / mission.divisor} times</b>!
+      `;
 
       confettiStorm = [];
       for (let i = 0; i < 40; i++) confettiStorm.push(new TacticalConfetti('leaf'));
@@ -1910,7 +1579,7 @@
     }
 
     function animateSlowCornerGlide(mission) {
-      const dur = 3000;
+      const dur = 3200;
       const w = window.innerWidth;
       const h = window.innerHeight;
 
@@ -1939,7 +1608,9 @@
           slipstreamParticles.push(new SlipstreamTrailParticle(curX + 60, curY + 60, mission.color));
         }
 
-        if (progress < 1 && finaleAnimRunning) requestAnimationFrame(stepGlide);
+        if (progress < 1 && finaleAnimRunning) {
+          requestAnimationFrame(stepGlide);
+        }
       }
       requestAnimationFrame(stepGlide);
     }
@@ -1972,7 +1643,7 @@
       selectMission((currentMissionIdx + 1) % MISSIONS.length);
     }
 
-    /* 8. TOOLBAR HANDLERS & INITIALIZATION */
+    /* 8. TOOLBAR HANDLERS & INIT */
     document.getElementById('toolPen').onclick = (e) => {
       currentTool = 'pen';
       document.querySelectorAll('.tools-icon-row .btn-icon-tool').forEach(b => b.classList.remove('active'));
@@ -2010,11 +1681,11 @@
       resizeFinaleCanvas();
     });
 
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('load', () => {
+      resizeCanvas();
       resizeFxCanvas();
       resizeFinaleCanvas();
       selectMission(0);
-      setTimeout(resizeCanvas, 150);
     });
 
     window.addEventListener('beforeunload', saveInkToStorage);
