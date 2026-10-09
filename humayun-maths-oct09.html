@@ -38,7 +38,7 @@
       flex-direction: column;
     }
 
-    /* 1. FLOATING IMMERSIVE CINEMATIC HUD (LARGER HEADER) */
+    /* 1. FLOATING IMMERSIVE CINEMATIC HUD */
     .top-cinematic-hud {
       position: absolute;
       top: 0;
@@ -104,7 +104,7 @@
       margin-top: 2px;
     }
 
-    /* FILLING HP BAR */
+    /* BOSS HP BAR */
     .boss-status-hud {
       position: absolute;
       top: 105px;
@@ -195,7 +195,7 @@
     }
     .lightning-flash-overlay.flash { opacity: 0.85; }
 
-    /* COMBAT ZONE: 4 CORNER AMBUSH RAIDERS WITH SMOOTH GLIDE */
+    /* COMBAT ZONE: 4 CORNER RAIDERS */
     .combat-ground-zone {
       position: absolute;
       inset: 0;
@@ -222,13 +222,11 @@
       object-fit: contain;
       filter: drop-shadow(0 0 18px rgba(255,165,0,0.8));
     }
-    /* Starting Off-Screen Corners */
     .corner-raider.top-left { top: -220px; left: -220px; }
     .corner-raider.top-right { top: -220px; right: -220px; }
     .corner-raider.bottom-left { bottom: -220px; left: -220px; }
     .corner-raider.bottom-right { bottom: -220px; right: -220px; }
 
-    /* Smooth Glide & Clash to Center Coordinates */
     .corner-raider.clash.top-left { top: 32%; left: 38%; opacity: 1; transform: scale(1.35) rotate(5deg); }
     .corner-raider.clash.top-right { top: 32%; right: 38%; opacity: 1; transform: scale(1.35) rotate(-5deg); }
     .corner-raider.clash.bottom-left { bottom: 28%; left: 38%; opacity: 1; transform: scale(1.35) rotate(-5deg); }
@@ -270,7 +268,7 @@
       transform: scale(1.65);
     }
 
-    /* 3. NOTEPAD DRAWER (Offset cleanly to 95px below header buttons) */
+    /* 3. NOTEPAD DRAWER */
     .ninja-scroll-drawer {
       position: absolute;
       top: 95px;
@@ -302,7 +300,6 @@
       gap: 8px;
     }
 
-    /* Clean borderless icon row */
     .tools-icon-row {
       display: flex;
       align-items: center;
@@ -378,7 +375,6 @@
       gap: 8px;
     }
 
-    /* Sleek Lightning Strike Button */
     .btn-lightning-strike {
       background: linear-gradient(180deg, #ff4757 0%, #c0392b 100%);
       border: 2px solid #ff7979;
@@ -743,9 +739,9 @@
 </head>
 <body>
 
-  <!-- 1. FLOATING IMMERSIVE CINEMATIC HUD (LARGER HEADER) -->
+  <!-- 1. FLOATING IMMERSIVE CINEMATIC HUD -->
   <header class="top-cinematic-hud">
-    <a href="index.html" class="hud-hub-btn">🍃 Hub</a>
+    <button type="button" class="hud-hub-btn" onclick="goToHub()">🍃 Hub</button>
 
     <div class="chapter-title-badge">
       <span class="chapter-main-text" id="hudChapterTitle">Mission A: 18 ÷ 6</span>
@@ -774,7 +770,7 @@
     
     <div class="backdrop-wrapper">
       <video autoplay muted loop playsinline class="backdrop-img">
-        <source src="battlefield-bg.mp4" type="video/mp4">
+        <source src="assets/battlefield-bg.mp4" type="video/mp4">
       </video>
       <div class="backdrop-wash"></div>
     </div>
@@ -782,18 +778,18 @@
     <canvas id="fxCanvas"></canvas>
     <div class="lightning-flash-overlay" id="lightningFlash"></div>
 
-    <!-- COMBAT ZONE: 4 CORNER AMBUSH RAIDERS -->
+    <!-- COMBAT ZONE: 4 CORNER RAIDERS -->
     <div class="combat-ground-zone">
-      <div class="corner-raider top-left" id="raiderTL"><img id="raiderImgTL" src="kakashi.png" alt="Raider TL"></div>
-      <div class="corner-raider top-right" id="raiderTR"><img id="raiderImgTR" src="lee.png" alt="Raider TR"></div>
-      <div class="corner-raider bottom-left" id="raiderBL"><img id="raiderImgBL" src="neji.png" alt="Raider BL"></div>
-      <div class="corner-raider bottom-right" id="raiderBR"><img id="raiderImgBR" src="sasuke.png" alt="Raider BR"></div>
+      <div class="corner-raider top-left" id="raiderTL"><img id="raiderImgTL" src="assets/kakashi.png" alt="Raider TL" onerror="handleImageFallback(this)"></div>
+      <div class="corner-raider top-right" id="raiderTR"><img id="raiderImgTR" src="assets/lee.png" alt="Raider TR" onerror="handleImageFallback(this)"></div>
+      <div class="corner-raider bottom-left" id="raiderBL"><img id="raiderImgBL" src="assets/neji.png" alt="Raider BL" onerror="handleImageFallback(this)"></div>
+      <div class="corner-raider bottom-right" id="raiderBR"><img id="raiderImgBR" src="assets/sasuke.png" alt="Raider BR" onerror="handleImageFallback(this)"></div>
 
-      <img src="lightning.png" class="strike-lightning-layer" id="strikeLightningImg" alt="Lightning Strike" />
-      <img src="smoke-poof.png" alt="Smoke" class="dynamic-smoke-puff" id="strikeSmokePuff" />
+      <img src="assets/lightning.png" class="strike-lightning-layer" id="strikeLightningImg" alt="Lightning Strike" onerror="this.style.display='none'" />
+      <img src="assets/smoke-poof.png" alt="Smoke" class="dynamic-smoke-puff" id="strikeSmokePuff" onerror="this.style.display='none'" />
     </div>
 
-    <!-- 3. NOTEPAD DRAWER (Cleanly offset to 95px) -->
+    <!-- 3. NOTEPAD DRAWER -->
     <aside class="ninja-scroll-drawer" id="ninjaScrollDrawer">
       <div class="notepad-header-controls">
         <div class="tools-icon-row">
@@ -848,7 +844,7 @@
     </div>
 
     <div class="flying-shinobi-rocket" id="flyingShinobiRocket">
-      <img src="naruto.png" id="flyingShinobiImg" alt="Shinobi In Flight">
+      <img src="assets/naruto.png" id="flyingShinobiImg" alt="Shinobi In Flight" onerror="handleImageFallback(this)">
     </div>
 
     <div class="landing-zone-right" id="landingZoneRight">
@@ -861,16 +857,28 @@
       </div>
 
       <div class="shinobi-victory-posture">
-        <img src="naruto.png" id="victoryPoseImg" alt="Victory Shinobi">
-        <img src="smoke-poof.png" class="landing-dust-smoke" id="landingDustImg" alt="Dust Cloud">
+        <img src="assets/naruto.png" id="victoryPoseImg" alt="Victory Shinobi" onerror="handleImageFallback(this)">
+        <img src="assets/smoke-poof.png" class="landing-dust-smoke" id="landingDustImg" alt="Dust Cloud" onerror="this.style.display='none'">
       </div>
     </div>
   </div>
 
   <script>
-    /* ========================================================= */
-    /* 1. MISSIONS CONFIG                                        */
-    /* ========================================================= */
+    function goToHub() {
+      saveInkToStorage();
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage("close-lesson-to-hub", "*");
+      } else {
+        window.location.href = "index.html";
+      }
+    }
+
+    function handleImageFallback(imgEl) {
+      imgEl.onerror = null;
+      imgEl.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><circle cx='70' cy='70' r='65' fill='%232b170c' stroke='%23ff9f43' stroke-width='4'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='42'>🍥</text></svg>";
+    }
+
+    /* 1. MISSIONS CONFIG */
     const MISSIONS = [
       {
         id: 'mission_a',
@@ -878,9 +886,9 @@
         dividend: 18,
         divisor: 6,
         hero: 'Naruto Uzumaki',
-        heroImg: 'naruto.png',
+        heroImg: 'assets/naruto.png',
         rival: 'Sasuke Uchiha',
-        rivalImg: 'sasuke.png',
+        rivalImg: 'assets/sasuke.png',
         color: '#00d2ff',
         slipstreamType: 'rasengan'
       },
@@ -890,9 +898,9 @@
         dividend: 45,
         divisor: 5,
         hero: 'Sasuke Uchiha',
-        heroImg: 'sasuke.png',
+        heroImg: 'assets/sasuke.png',
         rival: 'Kakashi Hatake',
-        rivalImg: 'kakashi.png',
+        rivalImg: 'assets/kakashi.png',
         color: '#a55eea',
         slipstreamType: 'chidori'
       },
@@ -902,9 +910,9 @@
         dividend: 28,
         divisor: 4,
         hero: 'Kakashi Hatake',
-        heroImg: 'kakashi.png',
+        heroImg: 'assets/kakashi.png',
         rival: 'Rock Lee',
-        rivalImg: 'lee.png',
+        rivalImg: 'assets/lee.png',
         color: '#45aaf2',
         slipstreamType: 'raikiri'
       },
@@ -914,9 +922,9 @@
         dividend: 35,
         divisor: 5,
         hero: 'Rock Lee',
-        heroImg: 'lee.png',
+        heroImg: 'assets/lee.png',
         rival: 'Neji Hyuga',
-        rivalImg: 'neji.png',
+        rivalImg: 'assets/neji.png',
         color: '#26de81',
         slipstreamType: 'youth'
       },
@@ -926,9 +934,9 @@
         dividend: 42,
         divisor: 7,
         hero: 'Shikamaru Nara',
-        heroImg: 'shikamaru.png',
+        heroImg: 'assets/shikamaru.png',
         rival: 'Naruto Uzumaki',
-        rivalImg: 'naruto.png',
+        rivalImg: 'assets/naruto.png',
         color: '#4b6584',
         slipstreamType: 'shadow'
       },
@@ -938,24 +946,29 @@
         dividend: 60,
         divisor: 10,
         hero: 'Neji Hyuga',
-        heroImg: 'neji.png',
+        heroImg: 'assets/neji.png',
         rival: 'Kakashi Hatake',
-        rivalImg: 'kakashi.png',
+        rivalImg: 'assets/kakashi.png',
         color: '#70a1ff',
         slipstreamType: 'byakugan'
       }
     ];
 
-    const ALL_CHARACTER_SPRITES = ['naruto.png', 'sasuke.png', 'kakashi.png', 'lee.png', 'neji.png', 'shikamaru.png'];
+    const ALL_CHARACTER_SPRITES = [
+      'assets/naruto.png',
+      'assets/sasuke.png',
+      'assets/kakashi.png',
+      'assets/lee.png',
+      'assets/neji.png',
+      'assets/shikamaru.png'
+    ];
 
     let currentMissionIdx = 0;
     let accumulatedProgressHP = 0;
     let maxHealth = 18;
     let totalRequiredSteps = 3;
 
-    /* ========================================================= */
-    /* 2. OPTIMIZED WARFARE AUDIO ENGINE (WEB AUDIO API)         */
-    /* ========================================================= */
+    /* 2. WARFARE AUDIO ENGINE */
     class NinjaAudioEngine {
       constructor() { this.ctx = null; }
       init() {
@@ -1090,9 +1103,7 @@
     }
     const soundFX = new NinjaAudioEngine();
 
-    /* ========================================================= */
-    /* 3. DYNAMIC HUD & MISSION UPDATER                          */
-    /* ========================================================= */
+    /* 3. DYNAMIC HUD & MISSION UPDATER */
     const hudChapterTitle = document.getElementById('hudChapterTitle');
     const bossNameLabel = document.getElementById('bossNameLabel');
     const bossHpText = document.getElementById('bossHpText');
@@ -1120,9 +1131,7 @@
       bossHpFill.style.width = `${pct}%`;
     }
 
-    /* ========================================================= */
-    /* 4. PERSISTENT INK CANVAS ENGINE (Enlarged Height: 4000px) */
-    /* ========================================================= */
+    /* 4. INK CANVAS ENGINE WITH ROBUST DPR SCALING */
     const inkCanvas = document.getElementById('inkCanvas');
     const inkCtx = inkCanvas.getContext('2d', { alpha: true });
     const scrollContainer = document.getElementById('notepadScrollViewport');
@@ -1136,22 +1145,26 @@
 
     function resizeCanvas() {
       const rect = scrollContainer.getBoundingClientRect();
+      if (rect.width <= 0) return;
       const dpr = window.devicePixelRatio || 1;
 
       let temp = document.createElement('canvas');
       temp.width = inkCanvas.width;
       temp.height = inkCanvas.height;
       let tCtx = temp.getContext('2d');
-      tCtx.drawImage(inkCanvas, 0, 0);
+      if (inkCanvas.width > 0 && inkCanvas.height > 0) {
+        tCtx.drawImage(inkCanvas, 0, 0);
+      }
 
-      inkCanvas.width = rect.width * dpr;
-      inkCanvas.height = VIRTUAL_CANVAS_HEIGHT * dpr;
-      inkCtx.scale(dpr, dpr);
+      inkCanvas.width = Math.floor(rect.width * dpr);
+      inkCanvas.height = Math.floor(VIRTUAL_CANVAS_HEIGHT * dpr);
       inkCanvas.style.width = `${rect.width}px`;
       inkCanvas.style.height = `${VIRTUAL_CANVAS_HEIGHT}px`;
 
-      if (temp.width > 0) {
-        inkCtx.drawImage(temp, 0, 0, temp.width / dpr, temp.height / dpr);
+      inkCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      if (temp.width > 0 && temp.height > 0) {
+        inkCtx.drawImage(temp, 0, 0, rect.width, VIRTUAL_CANVAS_HEIGHT);
       }
     }
 
@@ -1161,17 +1174,17 @@
 
     function saveInkToStorage() {
       const m = MISSIONS[currentMissionIdx];
-      inkCtx.save();
-      inkCtx.globalCompositeOperation = 'source-over';
-      const dataUrl = inkCanvas.toDataURL();
-      localStorage.setItem(getStorageKey(m.id), dataUrl);
-      inkCtx.restore();
+      try {
+        const dataUrl = inkCanvas.toDataURL();
+        localStorage.setItem(getStorageKey(m.id), dataUrl);
+      } catch (e) {}
     }
 
     function loadInkFromStorage() {
       const m = MISSIONS[currentMissionIdx];
+      const dpr = window.devicePixelRatio || 1;
       inkCtx.save();
-      inkCtx.globalCompositeOperation = 'source-over';
+      inkCtx.setTransform(1, 0, 0, 1, 0, 0);
       inkCtx.clearRect(0, 0, inkCanvas.width, inkCanvas.height);
       inkCtx.restore();
       
@@ -1180,10 +1193,9 @@
       if (saved) {
         const img = new Image();
         img.onload = () => {
-          const dpr = window.devicePixelRatio || 1;
           inkCtx.save();
-          inkCtx.globalCompositeOperation = 'source-over';
-          inkCtx.drawImage(img, 0, 0, inkCanvas.width / dpr, inkCanvas.height / dpr);
+          inkCtx.setTransform(1, 0, 0, 1, 0, 0);
+          inkCtx.drawImage(img, 0, 0, inkCanvas.width, inkCanvas.height);
           inkCtx.restore();
           pushUndoState();
         };
@@ -1194,11 +1206,10 @@
     }
 
     function pushUndoState() {
-      inkCtx.save();
-      inkCtx.globalCompositeOperation = 'source-over';
-      undoStack.push(inkCanvas.toDataURL());
-      if (undoStack.length > 20) undoStack.shift();
-      inkCtx.restore();
+      try {
+        undoStack.push(inkCanvas.toDataURL());
+        if (undoStack.length > 15) undoStack.shift();
+      } catch (e) {}
     }
 
     function undoLast() {
@@ -1207,11 +1218,10 @@
         const prevState = undoStack[undoStack.length - 1];
         const img = new Image();
         img.onload = () => {
-          const dpr = window.devicePixelRatio || 1;
           inkCtx.save();
-          inkCtx.globalCompositeOperation = 'source-over';
+          inkCtx.setTransform(1, 0, 0, 1, 0, 0);
           inkCtx.clearRect(0, 0, inkCanvas.width, inkCanvas.height);
-          inkCtx.drawImage(img, 0, 0, inkCanvas.width / dpr, inkCanvas.height / dpr);
+          inkCtx.drawImage(img, 0, 0, inkCanvas.width, inkCanvas.height);
           inkCtx.restore();
           saveInkToStorage();
         };
@@ -1221,29 +1231,28 @@
 
     function getCanvasPos(e) {
       const rect = inkCanvas.getBoundingClientRect();
-      let clientX = e.clientX, clientY = e.clientY;
-      if (e.touches && e.touches.length > 0) {
-        clientX = e.touches[0].clientX;
-        clientY = e.touches[0].clientY;
-      }
-      return { x: clientX - rect.left, y: clientY - rect.top };
+      return { x: e.clientX - rect.left, y: e.clientY - rect.top };
     }
 
     function startDraw(e) {
       isDrawing = true;
+      try { inkCanvas.setPointerCapture(e.pointerId); } catch (_) {}
       const pos = getCanvasPos(e);
       inkCtx.beginPath();
       inkCtx.moveTo(pos.x, pos.y);
       inkCtx.lineCap = 'round';
       inkCtx.lineJoin = 'round';
+
       if (currentTool === 'eraser') {
         inkCtx.globalCompositeOperation = 'destination-out';
-        inkCtx.lineWidth = strokeWidth * 5;
+        inkCtx.lineWidth = strokeWidth * 6;
       } else {
         inkCtx.globalCompositeOperation = 'source-over';
         inkCtx.strokeStyle = strokeColor;
-        inkCtx.lineWidth = strokeWidth;
+        const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
+        inkCtx.lineWidth = strokeWidth * (pressure * 1.5 + 0.35);
       }
+      e.preventDefault();
     }
 
     function moveDraw(e) {
@@ -1251,11 +1260,13 @@
       const pos = getCanvasPos(e);
       inkCtx.lineTo(pos.x, pos.y);
       inkCtx.stroke();
+      e.preventDefault();
     }
 
-    function stopDraw() {
+    function stopDraw(e) {
       if (!isDrawing) return;
       isDrawing = false;
+      try { inkCanvas.releasePointerCapture(e.pointerId); } catch (_) {}
       inkCtx.closePath();
       inkCtx.globalCompositeOperation = 'source-over';
       pushUndoState();
@@ -1265,11 +1276,10 @@
     inkCanvas.addEventListener('pointerdown', startDraw);
     inkCanvas.addEventListener('pointermove', moveDraw);
     inkCanvas.addEventListener('pointerup', stopDraw);
+    inkCanvas.addEventListener('pointercancel', stopDraw);
     inkCanvas.addEventListener('pointerleave', stopDraw);
 
-    /* ========================================================= */
-    /* 5. LIGHTWEIGHT PERFORMANCE-THROTTLED FX CANVAS            */
-    /* ========================================================= */
+    /* 5. ARENA FX CANVAS */
     const fxCanvas = document.getElementById('fxCanvas');
     const fxCtx = fxCanvas.getContext('2d', { alpha: true });
     let arenaParticles = [];
@@ -1323,9 +1333,7 @@
     }
     requestAnimationFrame(renderArenaFX);
 
-    /* ========================================================= */
-    /* 6. GAME CONTROLS & 4-CORNER GLIDE-TO-CLASH STRIKES        */
-    /* ========================================================= */
+    /* 6. GAME CONTROLS & 4-CORNER GLIDE-TO-CLASH STRIKES */
     const ninjaScrollDrawer = document.getElementById('ninjaScrollDrawer');
     const toggleScrollBtn = document.getElementById('toggleScrollBtn');
     const strikeLightningImg = document.getElementById('strikeLightningImg');
@@ -1362,7 +1370,7 @@
         const card = document.createElement('div');
         card.className = `mission-card-option ${idx === currentMissionIdx ? 'active' : ''}`;
         card.innerHTML = `
-          <div class="mission-card-avatar"><img src="${m.heroImg}" alt="${m.hero}" /></div>
+          <div class="mission-card-avatar"><img src="${m.heroImg}" alt="${m.hero}" onerror="handleImageFallback(this)" /></div>
           <div class="mission-card-info">
             <span class="mission-card-title">${m.code}</span>
             <span class="mission-card-sub">Hero: ${m.hero}</span>
@@ -1391,7 +1399,6 @@
       loadInkFromStorage();
     }
 
-    // 4-Corner Glide-to-Clash Strike Action
     btnJutsuStrike.onclick = () => {
       if (accumulatedProgressHP >= maxHealth) return;
       const m = MISSIONS[currentMissionIdx];
@@ -1432,7 +1439,6 @@
       }, 550);
     };
 
-    // Final quotient submit triggers Grand Celebration Finale
     document.getElementById('btnSubmitQuotient').onclick = () => {
       const val = parseInt(inputQuotient.value.trim(), 10);
       const m = MISSIONS[currentMissionIdx];
@@ -1446,13 +1452,11 @@
         soundFX.playJapaneseKotoMelody();
         triggerCelebratoryFinale(m);
       } else {
-        alert(`Almost there! How many times did you subtract ${m.divisor} to reach 0? (Total steps: ${totalRequiredSteps})`);
+        alert(`Almost there! How many times did you subtract ${m.divisor} to reach 0?`);
       }
     };
 
-    /* ========================================================= */
-    /* 7. CELEBRATION FINALE STAGE ENGINE                        */
-    /* ========================================================= */
+    /* 7. CELEBRATION FINALE STAGE ENGINE */
     const finaleStage = document.getElementById('celebrationFinaleStage');
     const finaleCanvas = document.getElementById('finaleCanvas');
     const finaleCtx = finaleCanvas.getContext('2d', { alpha: true });
@@ -1639,9 +1643,7 @@
       selectMission((currentMissionIdx + 1) % MISSIONS.length);
     }
 
-    /* ========================================================= */
-    /* 8. TOOLBAR HANDLERS & INIT                                */
-    /* ========================================================= */
+    /* 8. TOOLBAR HANDLERS & INIT */
     document.getElementById('toolPen').onclick = (e) => {
       currentTool = 'pen';
       document.querySelectorAll('.tools-icon-row .btn-icon-tool').forEach(b => b.classList.remove('active'));
@@ -1654,7 +1656,7 @@
     };
     document.getElementById('toolClear').onclick = () => {
       inkCtx.save();
-      inkCtx.globalCompositeOperation = 'source-over';
+      inkCtx.setTransform(1, 0, 0, 1, 0, 0);
       inkCtx.clearRect(0, 0, inkCanvas.width, inkCanvas.height);
       inkCtx.restore();
       pushUndoState();
@@ -1685,6 +1687,9 @@
       resizeFinaleCanvas();
       selectMission(0);
     });
+
+    window.addEventListener('beforeunload', saveInkToStorage);
+    window.addEventListener('pagehide', saveInkToStorage);
   </script>
 </body>
 </html>
