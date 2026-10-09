@@ -195,7 +195,7 @@
     }
     .lightning-flash-overlay.flash { opacity: 0.85; }
 
-    /* DUEL COMBAT ARENA */
+    /* DUEL COMBAT ARENA - DRAMATIC SLOW ENTRANCE */
     .combat-ground-zone {
       position: absolute;
       inset: 0;
@@ -212,7 +212,8 @@
       align-items: center;
       justify-content: center;
       will-change: transform, opacity, left, right;
-      transition: all 0.75s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+      /* 1.4s deliberate anime slide */
+      transition: all 1.4s cubic-bezier(0.16, 0.9, 0.28, 1);
     }
     .duel-fighter img {
       max-width: 100%;
@@ -1020,7 +1021,6 @@
       { name: 'Shikamaru', img: 'assets/shikamaru.png' }
     ];
 
-    /* MANGA CLASH SHOUT BANNER POOL (JUTSU & RESOLVE QUOTES) */
     const CLASH_SHOUTS = [
       {
         kanji: '千鳥 vs 螺旋丸',
@@ -1086,18 +1086,18 @@
       playChime() {
         this.init();
         const t0 = this.ctx.currentTime;
-        [350, 500, 680].forEach((f, idx) => {
+        [320, 460, 620, 780].forEach((f, idx) => {
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
           osc.type = 'sine';
-          osc.frequency.setValueAtTime(f, t0 + idx * 0.08);
-          gain.gain.setValueAtTime(0.01, t0 + idx * 0.08);
-          gain.gain.linearRampToValueAtTime(0.12, t0 + idx * 0.08 + 0.04);
-          gain.gain.exponentialRampToValueAtTime(0.001, t0 + idx * 0.08 + 0.22);
+          osc.frequency.setValueAtTime(f, t0 + idx * 0.14);
+          gain.gain.setValueAtTime(0.01, t0 + idx * 0.14);
+          gain.gain.linearRampToValueAtTime(0.12, t0 + idx * 0.14 + 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.001, t0 + idx * 0.14 + 0.45);
           osc.connect(gain);
           gain.connect(this.ctx.destination);
-          osc.start(t0 + idx * 0.08);
-          osc.stop(t0 + idx * 0.08 + 0.25);
+          osc.start(t0 + idx * 0.14);
+          osc.stop(t0 + idx * 0.14 + 0.5);
         });
       }
       playImpact() {
@@ -1106,28 +1106,28 @@
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(140, t0);
-        osc.frequency.exponentialRampToValueAtTime(30, t0 + 0.35);
-        gain.gain.setValueAtTime(0.65, t0);
-        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.45);
+        osc.frequency.setValueAtTime(150, t0);
+        osc.frequency.exponentialRampToValueAtTime(28, t0 + 0.55);
+        gain.gain.setValueAtTime(0.7, t0);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.65);
         osc.connect(gain);
         gain.connect(this.ctx.destination);
         osc.start(t0);
-        osc.stop(t0 + 0.48);
+        osc.stop(t0 + 0.7);
       }
       playSmoke() {
         this.init();
-        const buf = this.ctx.createBuffer(1, this.ctx.sampleRate * 0.25, this.ctx.sampleRate);
+        const buf = this.ctx.createBuffer(1, this.ctx.sampleRate * 0.35, this.ctx.sampleRate);
         const data = buf.getChannelData(0);
-        for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (this.ctx.sampleRate * 0.05));
+        for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (this.ctx.sampleRate * 0.07));
         const src = this.ctx.createBufferSource();
         src.buffer = buf;
         const filter = this.ctx.createBiquadFilter();
         filter.type = 'lowpass';
         filter.frequency.setValueAtTime(700, this.ctx.currentTime);
         const gain = this.ctx.createGain();
-        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+        gain.gain.setValueAtTime(0.35, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.35);
         src.connect(filter);
         filter.connect(gain);
         gain.connect(this.ctx.destination);
@@ -1201,7 +1201,7 @@
       document.getElementById('pageIndicatorText').textContent = `Pg ${currentPageIdx} / ${TOTAL_PAGES}`;
     }
 
-    /* 5. HIGH-SPEED NATIVE INK CANVAS ENGINE */
+    /* 5. HIGH-SPEED INK CANVAS ENGINE */
     const inkCanvas = document.getElementById('inkCanvas');
     const inkCtx = inkCanvas.getContext('2d', { alpha: true });
     const scrollContainer = document.getElementById('notepadScrollViewport');
@@ -1350,7 +1350,7 @@
     inkCanvas.addEventListener('pointercancel', stopDraw);
     inkCanvas.addEventListener('pointerleave', stopDraw);
 
-    /* 6. LIGHTNING DRIZZLE BACKGROUND FX ENGINE */
+    /* 6. LIGHTNING DRIZZLE FX ENGINE */
     const fxCanvas = document.getElementById('fxCanvas');
     const fxCtx = fxCanvas.getContext('2d', { alpha: true });
     let rainDrops = [];
@@ -1395,7 +1395,6 @@
       if (!weatherActive) return;
       fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
 
-      // Render Rain Drizzle
       fxCtx.strokeStyle = 'rgba(126, 214, 223, 0.45)';
       fxCtx.lineWidth = 1.4;
       for (let r of rainDrops) {
@@ -1411,7 +1410,6 @@
         }
       }
 
-      // Render Micro Lightning Arcs
       for (let i = microLightningBolts.length - 1; i >= 0; i--) {
         let b = microLightningBolts[i];
         fxCtx.save();
@@ -1434,7 +1432,7 @@
     }
     requestAnimationFrame(renderWeatherFX);
 
-    /* 7. RANDOMIZED CLASH LOGIC & VIRAL SHOUTS */
+    /* 7. SLOW MOTION "ONE-BY-ONE" DUEL SEQUENCE */
     function pressKeypad(key) {
       if (key === 'del') {
         keypadInputValue = keypadInputValue.slice(0, -1);
@@ -1456,12 +1454,12 @@
       clashInProgress = true;
       const m = MISSIONS[currentMissionIdx];
 
-      // RANDOMIZE DUEL PAIRINGS: Keeps combat varied on every attempt
+      // Randomize duel pair
       const shuffledRoster = [...ALL_SHINOBI_ROSTER].sort(() => 0.5 - Math.random());
       duelHeroImg.src = shuffledRoster[0].img;
       duelRivalImg.src = shuffledRoster[1].img;
 
-      // RANDOMIZE MANGA CLASH SHOUT
+      // Randomize manga shout
       const shout = CLASH_SHOUTS[Math.floor(Math.random() * CLASH_SHOUTS.length)];
       const clashBanner = document.getElementById('mangaClashBanner');
       const kanjiEl = document.getElementById('clashKanji');
@@ -1475,22 +1473,21 @@
       romajiEl.style.color = shout.color2;
       romajiEl.style.textShadow = shout.glow;
 
-      // Auto-slide tuck out drawer
+      // Auto-slide drawer out
       const drawer = document.getElementById('ninjaScrollDrawer');
       const wasOpen = drawer.classList.contains('open');
       if (wasOpen) drawer.classList.add('combat-tucked');
 
+      // 0.0s: Hero enters first smoothly
       soundFX.playChime();
-
-      // Duel Stage 1: Hero charges
       duelHero.classList.add('charge');
 
-      // Duel Stage 2: Defender counters
+      // 1.0s: Rival responds and slides into the arena
       setTimeout(() => {
         duelRival.classList.add('charge');
-      }, 250);
+      }, 1000);
 
-      // Duel Stage 3: The Clashing Impact Hold
+      // 2.2s: THE BOOM! Clash impact occurs when both face each other
       setTimeout(() => {
         soundFX.playImpact();
         spawnMicroLightning();
@@ -1498,23 +1495,22 @@
 
         const flash = document.getElementById('lightningFlash');
         flash.classList.add('flash');
-        setTimeout(() => flash.classList.remove('flash'), 90);
+        setTimeout(() => flash.classList.remove('flash'), 100);
 
         const zap = document.getElementById('strikeLightningImg');
         zap.classList.add('zap');
-        setTimeout(() => zap.classList.remove('zap'), 400);
+        setTimeout(() => zap.classList.remove('zap'), 450);
 
         const smoke = document.getElementById('strikeSmokePuff');
         smoke.classList.add('puffff');
         soundFX.playSmoke();
 
-        // Reveal Manga Clash Banner
         clashBanner.classList.add('pop');
 
         accumulatedProgressHP = Math.min(maxHealth, accumulatedProgressHP + m.divisor);
         updateBossHP();
 
-        // Hold clash stance for 1.2s before restoring
+        // 3.7s: 1.5s Hold allows full appreciation of the duel before reset
         setTimeout(() => {
           clashBanner.classList.remove('pop');
           smoke.classList.remove('puffff');
@@ -1523,9 +1519,9 @@
           
           if (wasOpen) drawer.classList.remove('combat-tucked');
           clashInProgress = false;
-        }, 1200);
+        }, 1500);
 
-      }, 750);
+      }, 2200);
     }
 
     function submitInGameQuotient() {
