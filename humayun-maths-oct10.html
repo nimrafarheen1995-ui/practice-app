@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Humayun's Ninja Math Quest: Match the Division Terms (Ex 1.2)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Serif+JP:wght@900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --parchment: #F8F1DC;
+      --parchment-border: #8B5A2B;
+      --ink-dark: #2A170A;
+      --wire-color: #475569;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #090B0E;
+      color: #FFF;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      padding: 8px 12px;
+      position: relative;
+    }
+
+    /* TOP HEADER HUD */
+    .academy-hud-bar {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      z-index: 50;
+      flex-shrink: 0;
+    }
+
+    .hud-btn {
+      background: linear-gradient(180deg, #3A2312 0%, #1E110A 100%);
+      border: 2px solid #D35400;
+      color: #F1C40F;
+      padding: 6px 14px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 900;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.5);
+      transition: all 0.15s;
+    }
+    .hud-btn:active { transform: scale(0.96); }
+
+    .header-kunai-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(22, 13, 8, 0.9);
+      border: 2px solid #D35400;
+      padding: 6px 20px;
+      border-radius: 30px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+    }
+    .badge-konoha-icon { font-size: 1.2rem; }
+    .badge-title-text {
+      font-family: 'Cinzel', serif;
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: #F1C40F;
+      letter-spacing: 1px;
+    }
+
+    /* MAIN BOARD STAGE */
+    .academy-board-wrapper {
+      flex: 1;
+      position: relative;
+      background: radial-gradient(circle at center, #1E3A8A 0%, #0F172A 70%, #060911 100%);
+      border: 4px solid #5A3C22;
+      border-radius: 22px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.85);
+      min-height: 0;
+    }
+
+    /* AGED SCROLL CANVAS CONTAINER */
+    .parchment-scroll-stage {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: #F8F1DC;
+      border: 4px solid #8C5727;
+      border-radius: 18px;
+      box-shadow: inset 0 0 30px rgba(140, 87, 39, 0.3), 0 12px 30px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 14px 20px;
+      overflow: hidden;
+    }
+
+    /* BANNER HEADER IN REFERENCE */
+    .board-header-banner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #EFE2C2 0%, #E3D1A5 100%);
+      border: 2px solid #8B5A2B;
+      border-radius: 14px;
+      padding: 6px 16px;
+      align-self: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      position: relative;
+      z-index: 10;
+    }
+    .board-main-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: #1E3A8A;
+      letter-spacing: 1px;
+    }
+    .board-sub-instruct {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: #4A2910;
+      margin-top: 1px;
+    }
+
+    /* CONNECTION SVG CANVAS OVERLAY */
+    #wireSvgLayer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 15;
+    }
+
+    /* TOP ROW SCROLLS */
+    .scroll-row-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      position: relative;
+      z-index: 20;
+    }
+
+    /* BOTTOM ROW SCROLLS & CENTER HUB */
+    .scroll-row-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      position: relative;
+      z-index: 20;
+    }
+
+    /* SCROLL QUESTION CARD COMPONENT */
+    .scroll-quest-card {
+      flex: 1;
+      height: 70px;
+      background: #FFFDF5;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 12px;
+      font-size: 0.98rem;
+      font-weight: 900;
+      color: #1E293B;
+      position: relative;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+      cursor: grab;
+      touch-action: none;
+      transition: transform 0.2s ease, opacity 0.4s ease, filter 0.4s ease;
+    }
+    .scroll-quest-card:active { cursor: grabbing; }
+
+    /* PARCHMENT ROLLER CAPS */
+    .scroll-cap-left, .scroll-cap-right {
+      position: absolute;
+      top: -4px;
+      bottom: -4px;
+      width: 12px;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    .scroll-cap-left { left: -6px; }
+    .scroll-cap-right { right: -6px; }
+
+    /* 5 THEMATIC COLORWAYS (FROM REFERENCE IMAGE) */
+    .card-red { border: 2.5px solid #DC2626; color: #991B1B; }
+    .card-red .scroll-cap-left, .card-red .scroll-cap-right { background: #DC2626; }
+    
+    .card-green { border: 2.5px solid #16A34A; color: #166534; }
+    .card-green .scroll-cap-left, .card-green .scroll-cap-right { background: #16A34A; }
+
+    .card-blue { border: 2.5px solid #2563EB; color: #1E40AF; }
+    .card-blue .scroll-cap-left, .card-blue .scroll-cap-right { background: #2563EB; }
+
+    .card-purple { border: 2.5px solid #9333EA; color: #6B21A8; }
+    .card-purple .scroll-cap-left, .card-purple .scroll-cap-right { background: #9333EA; }
+
+    .card-orange { border: 2.5px solid #EA580C; color: #9A3412; }
+    .card-orange .scroll-cap-left, .card-orange .scroll-cap-right { background: #EA580C; }
+
+    .scroll-connector-node {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background: #FFFFFF;
+      border: 3px solid #64748B;
+      border-radius: 50%;
+      bottom: -9px;
+      left: 50%;
+      transform: translateX(-50%);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
+    .scroll-row-bottom .scroll-connector-node {
+      bottom: auto;
+      top: -9px;
+    }
+
+    /* DISAPPEARING SEQUENCE EFFECT */
+    .scroll-quest-card.poofed {
+      opacity: 0 !important;
+      transform: scale(0.4) rotate(6deg) !important;
+      filter: blur(8px) brightness(200%) !important;
+      pointer-events: none !important;
+    }
+
+    /* CENTER CHAKRA CLOUD TARGET HUB */
+    .chakra-cloud-hub {
+      position: relative;
+      width: 320px;
+      height: 140px;
+      background: radial-gradient(circle, #FFFBEB 0%, #FEF3C7 70%, #FDE68A 100%);
+      border: 3.5px solid #F59E0B;
+      border-radius: 70px;
+      box-shadow: 0 10px 25px rgba(245, 158, 11, 0.25), inset 0 0 15px rgba(255,255,255,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .cloud-deco-puff-left, .cloud-deco-puff-right {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      background: #FEF3C7;
+      border-radius: 50%;
+      z-index: 1;
+      border: 3.5px solid #F59E0B;
+      pointer-events: none;
+    }
+    .cloud-deco-puff-left { top: -25px; left: 35px; border-bottom: none; border-right: none; }
+    .cloud-deco-puff-right { top: -20px; right: 40px; border-bottom: none; border-left: none; }
+
+    .cloud-targets-grid {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* TARGET NUMBER NODES */
+    .target-bubble-node {
+      position: absolute;
+      width: 44px;
+      height: 44px;
+      background: #FFF;
+      border: 3px solid #D97706;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: #78350F;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      cursor: pointer;
+      touch-action: none;
+      transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+    }
+    .target-bubble-node:hover { transform: scale(1.12); }
+    .target-bubble-node.connected {
+      background: #FEF3C7;
+      border-color: #B45309;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
+    }
+    .target-bubble-node.burst {
+      animation: targetBurstGlow 0.4s ease-out forwards;
+    }
+    @keyframes targetBurstGlow {
+      0% { transform: scale(1); filter: brightness(100%); }
+      50% { transform: scale(1.3); filter: brightness(220%); }
+      100% { transform: scale(1); filter: brightness(100%); }
+    }
+
+    /* SHINOBI AVATAR COMPANIONS BESIDE CLOUD */
+    .shinobi-caller-zone {
+      position: absolute;
+      top: -110px;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 120px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 8;
+    }
+    .challenger-shinobi-img {
+      max-height: 120px;
+      max-width: 110px;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.4));
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* ACTION BOTTOM CONTROLS */
+    .board-footer-dock {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 6px;
+      position: relative;
+      z-index: 20;
+    }
+    .btn-submit-jutsu {
+      background: linear-gradient(180deg, #D35400, #A04000);
+      border: 2px solid #F39C12;
+      color: #FFF;
+      font-size: 1rem;
+      font-weight: 900;
+      padding: 10px 32px;
+      border-radius: 30px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 6px 18px rgba(211, 84, 0, 0.5);
+      transition: all 0.15s;
+    }
+    .btn-submit-jutsu:active { transform: scale(0.96); }
+    .btn-submit-jutsu:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* CELEBRATION FINALE STAGE */
+    #celebrationFinaleStage {
+      position: fixed;
+      inset: 0;
+      z-index: 100000;
+      pointer-events: none;
+      display: none;
+      overflow: hidden;
+      background: radial-gradient(circle at center, rgba(16, 20, 26, 0.4) 0%, rgba(7, 9, 12, 0.92) 100%);
+      backdrop-filter: blur(5px);
+    }
+    #finaleCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+    }
+    .kanji-banner-centerpiece {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 25;
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+    }
+    .kanji-banner-centerpiece.impact {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+    .enso-brush-crescent {
+      position: absolute;
+      width: 440px;
+      height: 440px;
+      border-radius: 50%;
+      border: 32px solid transparent;
+      border-top-color: rgba(255, 215, 0, 0.75);
+      border-right-color: rgba(212, 175, 55, 0.65);
+      border-bottom-color: rgba(184, 134, 11, 0.3);
+      filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.6));
+      transform: rotate(-35deg);
+    }
+    .kanji-top-title {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 72px;
+      font-weight: 900;
+      color: #FFD700;
+      text-shadow: 0 0 20px #FFB700, 0 0 40px #FF9500;
+      letter-spacing: 12px;
+      line-height: 1.1;
+    }
+    .kanji-subtitle-gold {
+      font-family: 'Cinzel', serif;
+      font-size: 24px;
+      font-weight: 900;
+      color: #FFF4D0;
+      letter-spacing: 6px;
+      text-shadow: 0 2px 4px #000;
+    }
+
+    .flying-shinobi-rocket {
+      position: absolute;
+      width: 170px;
+      height: 170px;
+      z-index: 20;
+      pointer-events: none;
+      transform: rotate(38deg);
+      filter: drop-shadow(0 0 20px #00E5FF);
+    }
+    .flying-shinobi-rocket img { width: 100%; height: 100%; object-fit: contain; }
+
+    .landing-zone-right {
+      position: absolute;
+      top: 50%;
+      right: 40px;
+      transform: translateY(-50%) translateX(220px);
+      width: 480px;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      opacity: 0;
+      transition: transform 0.65s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.5s ease;
+      pointer-events: none;
+    }
+    .landing-zone-right.landed {
+      transform: translateY(-50%) translateX(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .unfurled-scroll-report {
+      flex: 1;
+      background: #FCF4DE;
+      border: 4px solid #8C5727;
+      border-radius: 14px;
+      padding: 16px 20px;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.8);
+      color: #3B220E;
+    }
+    .scroll-report-title {
+      font-size: 16px;
+      font-weight: 900;
+      color: #7A3E0C;
+      border-bottom: 2px dashed #B58252;
+      padding-bottom: 4px;
+      margin-bottom: 8px;
+    }
+    .scroll-report-body { font-size: 13px; font-weight: 800; line-height: 1.5; color: #4A2910; margin-bottom: 12px; }
+
+    .btn-finale-close {
+      background: linear-gradient(180deg, #FF9F43 0%, #E67E22 100%);
+      border: 2px solid #FED330;
+      color: #2B1704;
+      font-weight: 900;
+      font-size: 13px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .shinobi-victory-posture {
+      width: 170px;
+      height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+    .shinobi-victory-posture img { max-width: 100%; max-height: 100%; object-fit: contain; }
+  </style>
+</head>
+<body>
+
+  <!-- TOP HUB HUD -->
+  <header class="academy-hud-bar">
+    <button type="button" class="hud-btn" onclick="goToHub()">🍃 Hub</button>
+
+    <div class="header-kunai-badge">
+      <span class="badge-konoha-icon">🍥</span>
+      <span class="badge-title-text">Exercise 1.2: Division Terms</span>
+    </div>
+
+    <button type="button" class="hud-btn" onclick="resetConnections()">🔄 Reset Lines</button>
+  </header>
+
+  <!-- MAIN ACADEMY BOARD -->
+  <main class="academy-board-wrapper">
+    <div class="parchment-scroll-stage" id="parchmentBoard">
+      
+      <!-- SVG CONNECTION WIRE LAYER -->
+      <svg id="wireSvgLayer"></svg>
+
+      <!-- BOARD TITLE BAR -->
+      <div class="board-header-banner">
+        <div class="board-main-title">Naruto Ninja Academy Division Exercise</div>
+        <div class="board-sub-instruct">Match the division statement to the correct term node in the cloud!</div>
+      </div>
+
+      <!-- ROW 1: TOP THREE SCROLLS -->
+      <div class="scroll-row-top">
+        <div class="scroll-quest-card card-red" id="scroll_0" data-index="0" data-answer="3">
+          <div class="scroll-cap-left"></div>
+          <span><b>24 ÷ 8</b>; here the <u>quotient</u> is</span>
+          <div class="scroll-connector-node" id="node_s_0"></div>
+          <div class="scroll-cap-right"></div>
+        </div>
+
+        <div class="scroll-quest-card card-green" id="scroll_1" data-index="1" data-answer="21">
+          <div class="scroll-cap-left"></div>
+          <span><b>21 ÷ 3</b>; here the <u>dividend</u> is</span>
+          <div class="scroll-connector-node" id="node_s_1"></div>
+          <div class="scroll-cap-right"></div>
+        </div>
+
+        <div class="scroll-quest-card card-blue" id="scroll_2" data-index="2" data-answer="0">
+          <div class="scroll-cap-left"></div>
+          <span><b>49 ÷ 7</b>; here the <u>remainder</u> is</span>
+          <div class="scroll-connector-node" id="node_s_2"></div>
+          <div class="scroll-cap-right"></div>
+        </div>
+      </div>
+
+      <!-- ROW 2: BOTTOM TWO SCROLLS & CENTER TARGET CLOUD -->
+      <div class="scroll-row-bottom">
+        <div class="scroll-quest-card card-purple" id="scroll_3" data-index="3" data-answer="9">
+          <div class="scroll-cap-left"></div>
+          <span><b>81 ÷ 9</b>; here the <u>quotient</u> is</span>
+          <div class="scroll-connector-node" id="node_s_3"></div>
+          <div class="scroll-cap-right"></div>
+        </div>
+
+        <!-- CENTER CHAKRA CLOUD TARGET -->
+        <div class="chakra-cloud-hub" id="cloudHub">
+          <div class="cloud-deco-puff-left"></div>
+          <div class="cloud-deco-puff-right"></div>
+
+          <!-- DYNAMIC SHINOBI CALLER IMAGE -->
+          <div class="shinobi-caller-zone">
+            <img src="assets/naruto.png" class="challenger-shinobi-img" id="activeShinobiImg" alt="Shinobi" onerror="handleImageFallback(this)" />
+          </div>
+
+          <div class="cloud-targets-grid" id="cloudTargetsGrid">
+            <!-- Target Nodes with precise positions from reference -->
+            <div class="target-bubble-node" id="target_0" data-value="0" style="top: 22px; left: 32px;">0</div>
+            <div class="target-bubble-node" id="target_4" data-value="4" style="bottom: 18px; left: 88px;">4</div>
+            <div class="target-bubble-node" id="target_9" data-value="9" style="top: 18px; left: 140px;">9</div>
+            <div class="target-bubble-node" id="target_3" data-value="3" style="bottom: 18px; left: 195px;">3</div>
+            <div class="target-bubble-node" id="target_21" data-value="21" style="top: 22px; left: 248px;">21</div>
+          </div>
+        </div>
+
+        <div class="scroll-quest-card card-orange" id="scroll_4" data-index="4" data-answer="4">
+          <div class="scroll-cap-left"></div>
+          <span><b>36 ÷ 4</b>; here the <u>divisor</u> is</span>
+          <div class="scroll-connector-node" id="node_s_4"></div>
+          <div class="scroll-cap-right"></div>
+        </div>
+      </div>
+
+      <!-- BOTTOM ACTION CONTROLS -->
+      <div class="board-footer-dock">
+        <span style="font-size:0.86rem; font-weight:900; color:#78350F;" id="dockStatusNotice">
+          Drag ninja threads from each scroll to its matching node.
+        </span>
+        <button type="button" class="btn-submit-jutsu" id="btnSubmitJutsu" onclick="evaluateAllMatches()">
+          ⚔️ Submit Jutsu!
+        </button>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- GRAND FINALE CELEBRATION STAGE -->
+  <div id="celebrationFinaleStage">
+    <canvas id="finaleCanvas"></canvas>
+
+    <div class="kanji-banner-centerpiece" id="kanjiCenterpiece">
+      <div class="enso-brush-crescent"></div>
+      <div class="kanji-top-title">任務完了</div>
+      <div class="kanji-subtitle-gold">EXERCISE 1.2 MASTERED!</div>
+    </div>
+
+    <div class="flying-shinobi-rocket" id="flyingShinobiRocket">
+      <img src="assets/naruto.png" id="flyingShinobiImg" alt="Shinobi" onerror="handleImageFallback(this)">
+    </div>
+
+    <div class="landing-zone-right" id="landingZoneRight">
+      <div class="unfurled-scroll-report">
+        <div class="scroll-report-title">任務完了 — DIVISION TERMS SOLVED!</div>
+        <div class="scroll-report-body" id="reportScrollBody">
+          All terms matched with complete mastery!
+        </div>
+        <button class="btn-finale-close" onclick="closeCelebrationFinale()">Continue Training ➔</button>
+      </div>
+
+      <div class="shinobi-victory-posture">
+        <img src="assets/naruto.png" id="victoryPoseImg" alt="Victory" onerror="handleImageFallback(this)">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* SHINOBI CONFIGURATION PER SCROLL */
+    const SCROLL_SHINOBI_MAP = [
+      { name: "Naruto Uzumaki", img: "assets/naruto.png", ans: "3" },    // 0: Red (24 / 8) -> Quotient 3[cite: 7, 8]
+      { name: "Rock Lee",       img: "assets/lee.png",    ans: "21" },   // 1: Green (21 / 3) -> Dividend 21[cite: 7, 8]
+      { name: "Kakashi Hatake", img: "assets/kakashi.png",ans: "0" },    // 2: Blue (49 / 7) -> Remainder 0[cite: 7, 8]
+      { name: "Sasuke Uchiha",  img: "assets/sasuke.png", ans: "9" },    // 3: Purple (81 / 9) -> Quotient 9[cite: 7, 8]
+      { name: "Shikamaru Nara", img: "assets/shikamaru.png", ans: "4" }  // 4: Orange (36 / 4) -> Divisor 4[cite: 7, 8]
+    ];
+
+    /* AUDIO ENGINE */
+    class WarfareAudio {
+      constructor() { this.ctx = null; }
+      init() {
+        if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+      }
+      playWireSnap() {
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(420, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(120, this.ctx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.18, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.08);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.09);
+      }
+      playSmokePoof() {
+        this.init();
+        const buf = this.ctx.createBuffer(1, this.ctx.sampleRate * 0.25, this.ctx.sampleRate);
+        const data = buf.getChannelData(0);
+        for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (this.ctx.sampleRate * 0.05));
+        const src = this.ctx.createBufferSource();
+        src.buffer = buf;
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(600, this.ctx.currentTime);
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.35, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+        src.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+        src.start();
+      }
+      playTaikoImpact() {
+        this.init();
+        const t0 = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(95, t0);
+        osc.frequency.exponentialRampToValueAtTime(26, t0 + 0.75);
+        gain.gain.setValueAtTime(0.7, t0);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.85);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(t0);
+        osc.stop(t0 + 0.9);
+      }
+      playWhoosh() {
+        this.init();
+        const t0 = this.ctx.currentTime;
+        const dur = 2.4;
+        const buffer = this.ctx.createBuffer(1, this.ctx.sampleRate * dur, this.ctx.sampleRate);
+        const d = buffer.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+        const src = this.ctx.createBufferSource();
+        src.buffer = buffer;
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.Q.value = 3.0;
+        filter.frequency.setValueAtTime(320, t0);
+        filter.frequency.exponentialRampToValueAtTime(2400, t0 + dur);
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.01, t0);
+        gain.gain.linearRampToValueAtTime(0.28, t0 + dur * 0.35);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+        src.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+        src.start(t0);
+        src.stop(t0 + dur);
+      }
+    }
+    const audio = new WarfareAudio();
+
+    function goToHub() {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage("close-lesson-to-hub", "*");
+      } else {
+        window.location.href = "index.html";
+      }
+    }
+
+    function handleImageFallback(img) {
+      img.onerror = null;
+      img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><circle cx='70' cy='70' r='65' fill='%233E2413' stroke='%23E67E22' stroke-width='4'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='45'>🍥</text></svg>";
+    }
+
+    /* MATCH STATE STORE (Index 0..4 -> Selected target value) */
+    let userLinks = {
+      0: null, // Scroll 0
+      1: null, // Scroll 1
+      2: null, // Scroll 2
+      3: null, // Scroll 3
+      4: null  // Scroll 4
+    };
+
+    let activeDragScrollIdx = null;
+    let livePointerX = 0, livePointerY = 0;
+    const svgLayer = document.getElementById('wireSvgLayer');
+
+    function getNodeCenter(el) {
+      const board = document.getElementById('parchmentBoard').getBoundingClientRect();
+      const r = el.getBoundingClientRect();
+      return {
+        x: r.left + r.width / 2 - board.left,
+        y: r.top + r.height / 2 - board.top
+      };
+    }
+
+    /* DRAG & DROP THREAD HANDLING */
+    document.querySelectorAll('.scroll-quest-card').forEach(card => {
+      card.addEventListener('pointerdown', (e) => {
+        const idx = parseInt(card.getAttribute('data-index'), 10);
+        activeDragScrollIdx = idx;
+        try { card.setPointerCapture(e.pointerId); } catch(_) {}
+
+        // Switch live character display
+        const shinobi = SCROLL_SHINOBI_MAP[idx];
+        document.getElementById('activeShinobiImg').src = shinobi.img;
+        audio.playWireSnap();
+
+        const board = document.getElementById('parchmentBoard').getBoundingClientRect();
+        livePointerX = e.clientX - board.left;
+        livePointerY = e.clientY - board.top;
+
+        renderSvgWires();
+        e.preventDefault();
+      });
+
+      card.addEventListener('pointermove', (e) => {
+        if (activeDragScrollIdx === null) return;
+        const board = document.getElementById('parchmentBoard').getBoundingClientRect();
+        livePointerX = e.clientX - board.left;
+        livePointerY = e.clientY - board.top;
+        renderSvgWires();
+      });
+
+      const finishDrag = (e) => {
+        if (activeDragScrollIdx === null) return;
+        try { card.releasePointerCapture(e.pointerId); } catch(_) {}
+
+        // Check if dropped over any target node
+        const board = document.getElementById('parchmentBoard').getBoundingClientRect();
+        const dropX = e.clientX;
+        const dropY = e.clientY;
+
+        let matchedVal = null;
+        document.querySelectorAll('.target-bubble-node').forEach(node => {
+          const nr = node.getBoundingClientRect();
+          if (dropX >= nr.left && dropX <= nr.right && dropY >= nr.top && dropY <= nr.bottom) {
+            matchedVal = node.getAttribute('data-value');
+          }
+        });
+
+        if (matchedVal !== null) {
+          userLinks[activeDragScrollIdx] = matchedVal;
+          audio.playWireSnap();
+        }
+
+        activeDragScrollIdx = null;
+        renderSvgWires();
+      };
+
+      card.addEventListener('pointerup', finishDrag);
+      card.addEventListener('pointercancel', finishDrag);
+    });
+
+    /* ALLOW DIRECT TAP ON TARGET NODES AS WELL */
+    document.querySelectorAll('.target-bubble-node').forEach(node => {
+      node.addEventListener('pointerdown', () => {
+        if (activeDragScrollIdx !== null) {
+          userLinks[activeDragScrollIdx] = node.getAttribute('data-value');
+          activeDragScrollIdx = null;
+          audio.playWireSnap();
+          renderSvgWires();
+        }
+      });
+    });
+
+    function renderSvgWires() {
+      svgLayer.innerHTML = '';
+
+      // Render connected lines (Neutral Ink Wire)
+      Object.keys(userLinks).forEach(idxStr => {
+        const sIdx = parseInt(idxStr, 10);
+        const targetVal = userLinks[sIdx];
+        if (!targetVal) return;
+
+        const scrollNode = document.getElementById(`node_s_${sIdx}`);
+        const targetEl = document.querySelector(`.target-bubble-node[data-value="${targetVal}"]`);
+
+        if (scrollNode && targetEl) {
+          const p1 = getNodeCenter(scrollNode);
+          const p2 = getNodeCenter(targetEl);
+
+          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          // Smooth bezier curve
+          const cx1 = p1.x;
+          const cy1 = p1.y + (p2.y - p1.y) * 0.5;
+          const cx2 = p2.x;
+          const cy2 = p1.y + (p2.y - p1.y) * 0.5;
+
+          path.setAttribute('d', `M ${p1.x} ${p1.y} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${p2.x} ${p2.y}`);
+          path.setAttribute('stroke', '#475569');
+          path.setAttribute('stroke-width', '4');
+          path.setAttribute('fill', 'none');
+          path.setAttribute('stroke-linecap', 'round');
+          path.setAttribute('stroke-dasharray', '8 4');
+          svgLayer.appendChild(path);
+        }
+      });
+
+      // Render live dragged line
+      if (activeDragScrollIdx !== null) {
+        const scrollNode = document.getElementById(`node_s_${activeDragScrollIdx}`);
+        if (scrollNode) {
+          const p1 = getNodeCenter(scrollNode);
+          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          path.setAttribute('d', `M ${p1.x} ${p1.y} L ${livePointerX} ${livePointerY}`);
+          path.setAttribute('stroke', '#EA580C');
+          path.setAttribute('stroke-width', '3.5');
+          path.setAttribute('fill', 'none');
+          path.setAttribute('stroke-linecap', 'round');
+          svgLayer.appendChild(path);
+        }
+      }
+
+      // Update connected classes on targets
+      document.querySelectorAll('.target-bubble-node').forEach(node => {
+        const v = node.getAttribute('data-value');
+        const isLinked = Object.values(userLinks).includes(v);
+        node.classList.toggle('connected', isLinked);
+      });
+    }
+
+    function resetConnections() {
+      userLinks = { 0: null, 1: null, 2: null, 3: null, 4: null };
+      renderSvgWires();
+      document.querySelectorAll('.scroll-quest-card').forEach(c => c.classList.remove('poofed'));
+    }
+
+    /* SUBMIT & ANTI-CHEAT EVALUATION GATE */
+    async function evaluateAllMatches() {
+      const allLinked = Object.values(userLinks).every(v => v !== null);
+      if (!allLinked) {
+        alert("Connect all 5 division scrolls to the cloud before submitting!");
+        return;
+      }
+
+      // Check correctness:
+      // Red (0) -> 3[cite: 7, 8]
+      // Green (1) -> 21[cite: 7, 8]
+      // Blue (2) -> 0[cite: 7, 8]
+      // Purple (3) -> 9[cite: 7, 8]
+      // Orange (4) -> 4[cite: 7, 8]
+      let allCorrect = true;
+      for (let i = 0; i < 5; i++) {
+        if (userLinks[i] !== SCROLL_SHINOBI_MAP[i].ans) {
+          allCorrect = false;
+          break;
+        }
+      }
+
+      if (allCorrect) {
+        document.getElementById('dockStatusNotice').textContent = "Jutsu Shattered! Scrolls Dispelling...";
+        document.getElementById('btnSubmitJutsu').disabled = true;
+
+        // EXECUTE STAGGERED DISAPPEAR SEQUENCE (One by one)
+        for (let i = 0; i < 5; i++) {
+          const card = document.getElementById(`scroll_${i}`);
+          const shinobi = SCROLL_SHINOBI_MAP[i];
+
+          // Flash character & sound
+          document.getElementById('activeShinobiImg').src = shinobi.img;
+          audio.playSmokePoof();
+
+          // Target node bursts
+          const tNode = document.querySelector(`.target-bubble-node[data-value="${shinobi.ans}"]`);
+          if (tNode) tNode.classList.add('burst');
+
+          // Scroll card poofs into smoke
+          card.classList.add('poofed');
+
+          // Remove its connected wire
+          delete userLinks[i];
+          renderSvgWires();
+
+          // 400ms delay between each scroll disappearing
+          await new Promise(r => setTimeout(r, 480));
+        }
+
+        // TRIGGER GRAND FINALE STAGE AFTER ALL VANISH
+        setTimeout(() => {
+          triggerGrandCelebrationFinale();
+        }, 300);
+
+      } else {
+        audio.playSmokePoof();
+        alert("The chakra links are unstable! Double check dividend, divisor, quotient, and remainder terms!");
+      }
+    }
+
+    /* GRAND FINALE CELEBRATION ENGINE */
+    const finaleStage = document.getElementById('celebrationFinaleStage');
+    const finaleCanvas = document.getElementById('finaleCanvas');
+    const finaleCtx = finaleCanvas.getContext('2d', { alpha: true });
+    const kanjiCenterpiece = document.getElementById('kanjiCenterpiece');
+    const flyingShinobiRocket = document.getElementById('flyingShinobiRocket');
+    const landingZoneRight = document.getElementById('landingZoneRight');
+
+    let finaleAnimRunning = false;
+    let confettiStorm = [];
+    let flyStartTime = 0;
+
+    function resizeFinaleCanvas() {
+      finaleCanvas.width = window.innerWidth;
+      finaleCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeFinaleCanvas);
+
+    class TacticalConfetti {
+      constructor(type = 'leaf') {
+        this.x = Math.random() * window.innerWidth;
+        this.y = -40 - Math.random() * 200;
+        this.type = type;
+        this.size = type === 'leaf' ? (Math.random() * 10 + 8) : (Math.random() * 8 + 6);
+        this.vx = (Math.random() - 0.5) * 1.5;
+        this.vy = Math.random() * 2.2 + 1.8;
+        this.rot = Math.random() * Math.PI * 2;
+        this.rotSpeed = (Math.random() - 0.5) * 0.06;
+        this.color = type === 'leaf' ? '#2ECC71' : '#FFD700';
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.rot += this.rotSpeed;
+        if (this.y > window.innerHeight + 50) {
+          this.y = -30;
+          this.x = Math.random() * window.innerWidth;
+        }
+      }
+      draw(c) {
+        c.save();
+        c.translate(this.x, this.y);
+        c.rotate(this.rot);
+        c.fillStyle = this.color;
+        c.beginPath();
+        c.arc(0, 0, this.size * 0.5, 0, Math.PI * 2);
+        c.fill();
+        c.restore();
+      }
+    }
+
+    function triggerGrandCelebrationFinale() {
+      resizeFinaleCanvas();
+      finaleStage.style.display = 'block';
+      finaleAnimRunning = true;
+
+      audio.playTaikoImpact();
+      kanjiCenterpiece.className = 'kanji-banner-centerpiece impact';
+
+      document.getElementById('reportScrollBody').innerHTML = `
+        Exercise 1.2 Terms Fully Mastered!<br/>
+        • 24 ÷ 8 ➔ Quotient = <b>3</b><br/>
+        • 21 ÷ 3 ➔ Dividend = <b>21</b><br/>
+        • 49 ÷ 7 ➔ Remainder = <b>0</b><br/>
+        • 81 ÷ 9 ➔ Quotient = <b>9</b><br/>
+        • 36 ÷ 4 ➔ Divisor = <b>4</b>
+      `;
+
+      confettiStorm = [];
+      for (let i = 0; i < 45; i++) confettiStorm.push(new TacticalConfetti('leaf'));
+      for (let i = 0; i < 25; i++) confettiStorm.push(new TacticalConfetti('shuriken'));
+
+      setTimeout(() => {
+        audio.playWhoosh();
+        flyStartTime = performance.now();
+        animateSlowGlide();
+      }, 400);
+
+      setTimeout(() => {
+        landingZoneRight.className = 'landing-zone-right landed';
+      }, 2300);
+
+      requestAnimationFrame(renderFinaleScene);
+    }
+
+    function animateSlowGlide() {
+      const dur = 2800;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      function step(now) {
+        const elapsed = now - flyStartTime;
+        const p = Math.min(1, elapsed / dur);
+        const ease = 1 - Math.pow(1 - p, 3);
+
+        const curX = -150 + (w * 0.45 - (-150)) * ease;
+        const curY = -150 + (h * 0.5 - (-150)) * ease;
+
+        flyingShinobiRocket.style.left = `${curX}px`;
+        flyingShinobiRocket.style.top = `${curY}px`;
+
+        if (p < 1 && finaleAnimRunning) {
+          requestAnimationFrame(step);
+        }
+      }
+      requestAnimationFrame(step);
+    }
+
+    function renderFinaleScene() {
+      if (!finaleAnimRunning) return;
+      finaleCtx.clearRect(0, 0, finaleCanvas.width, finaleCanvas.height);
+      for (let c of confettiStorm) {
+        c.update();
+        c.draw(finaleCtx);
+      }
+      requestAnimationFrame(renderFinaleScene);
+    }
+
+    function closeCelebrationFinale() {
+      finaleAnimRunning = false;
+      finaleStage.style.display = 'none';
+      kanjiCenterpiece.className = 'kanji-banner-centerpiece';
+      landingZoneRight.className = 'landing-zone-right';
+      resetConnections();
+      document.getElementById('btnSubmitJutsu').disabled = false;
+      document.getElementById('dockStatusNotice').textContent = "Drag ninja threads from each scroll to its matching node.";
+    }
+
+    window.addEventListener('resize', renderSvgWires);
+    window.onload = () => renderSvgWires();
+  </script>
+</body>
+</html>
