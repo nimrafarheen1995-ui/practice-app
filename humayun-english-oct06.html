@@ -1,1059 +1,1651 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Humayun's Word Quest</title>
-<style>
-  :root {
-    --bg: #F0F6FC;
-    --card: #FFFFFF;
-    --ink: #1F3A4B;
-    --ink-soft: #5A7A8E;
-    --border: #D0E2F0;
-    --primary: #4A9FE0;
-    --primary-dark: #3A7FB8;
-    --reward: #FFC93C;
-    --reward-dark: #D4A020;
-    --green: #4BCA7A;
-    --green-dark: #2E9A5A;
-    --orange: #FF8A5C;
-    --orange-dark: #D46030;
-    --purple: #7C3AED;
-    --purple-dark: #6D28D9;
-    --ruled-blue: #93C5FD;
-    --margin-line: #F87171;
-    --shadow: 0 4px 0 #C0D4E4, 0 8px 24px rgba(100, 140, 180, 0.12);
-    --radius: 20px;
-    --font: 'Nunito', 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="application-name" content="Zaina's English Trail" />
+  <meta name="apple-mobile-web-app-title" content="Zaina's English Trail" />
+  <meta name="theme-color" content="#2563EB" />
+  <title>Zaina Maryam's English Trail</title>
 
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-  html, body { height: 100%; overflow: hidden; }
+  <!-- Inline Web App Manifest Data URI for 1-Tap Home Screen Install -->
+  <link rel="manifest" href='data:application/manifest+json,{"name":"Zaina Maryam English Trail","short_name":"Zaina English","start_url":".","display":"standalone","background_color":"#F0F6FC","theme_color":"#2563EB","orientation":"landscape"}' />
 
-  body {
-    background: var(--bg);
-    color: var(--ink);
-    font-family: var(--font);
-    font-weight: 600;
-    user-select: none; -webkit-user-select: none;
-    display: flex; flex-direction: column;
-    height: 100vh; height: 100dvh;
-    padding: 8px 12px;
-  }
+  <!-- Google Nunito Font (Clean, bold, non-cursive textbook typography) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
 
-  .orientation-warning {
-    display: none; position: fixed; inset: 0; background: var(--bg);
-    z-index: 300; align-items: center; justify-content: center;
-    flex-direction: column; gap: 16px; padding: 40px; text-align: center;
-  }
-  .orientation-warning .icon { font-size: 4rem; animation: rotatePhone 2s infinite ease-in-out; }
-  @keyframes rotatePhone { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(90deg); } }
-  .orientation-warning h2 { font-size: 1.4rem; color: var(--ink); }
-  .orientation-warning p { font-size: 1rem; color: var(--ink-soft); }
-  @media (orientation: portrait) { .orientation-warning { display: flex; } }
+  <style>
+    :root {
+      --bg: #F0F6FC;
+      --card-bg: #FFFFFF;
+      --text: #172B38;
+      --subtext: #4A6375;
+      --border: #CBDDE9;
+      --primary: #2563EB;
+      --primary-hover: #1D4ED8;
+      --purple: #7C3AED;
+      --purple-hover: #6D28D9;
+      --reward: #FFB703;
+      --success: #059669;
+      --hint-bg: #FFF8EB;
+      --hint-border: #F6D896;
+      --ruled-line: #E1EAF2;
+      --ruled-margin: #F8B4B4;
+      --toolbar-bg: #F3F7FA;
+      --shadow: 0 4px 14px rgba(23, 43, 56, 0.07);
+      --font: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
 
-  #screenDimOverlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.45);
-    pointer-events: none;
-    z-index: 99999;
-  }
+    body.dark-mode {
+      --bg: #0B132B;
+      --card-bg: #1C2541;
+      --text: #EDF4F9;
+      --subtext: #A0B2C6;
+      --border: #334460;
+      --primary: #60A5FA;
+      --primary-hover: #3B82F6;
+      --purple: #A78BFA;
+      --purple-hover: #8B5CF6;
+      --reward: #FBBF24;
+      --success: #34D399;
+      --hint-bg: #172A45;
+      --hint-border: #2563EB;
+      --ruled-line: #293D5E;
+      --ruled-margin: #EF4444;
+      --toolbar-bg: #111C38;
+      --shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+    }
 
-  .app {
-    display: flex; flex-direction: column;
-    height: 100vh; height: 100dvh;
-    max-width: 1400px; margin: 0 auto; width: 100%;
-    gap: 8px;
-    padding-bottom: max(6px, env(safe-area-inset-bottom));
-  }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      font-family: var(--font) !important;
+      letter-spacing: 0.2px;
+    }
 
-  /* HEADER */
-  .header { display: flex; justify-content: space-between; align-items: center; padding: 2px 4px; flex-shrink: 0; }
-  .header-title { display: flex; align-items: center; gap: 8px; font-size: 1.25rem; font-weight: 800; color: var(--ink); }
-  .header-title .icon { font-size: 1.5rem; line-height: 1; }
-  .header-actions { display: flex; align-items: center; gap: 8px; }
+    /* Tablet Base Anchor: Enlarge text proportionally across tablet viewports */
+    html {
+      font-size: 17px;
+      height: 100%;
+      overflow: hidden;
+    }
 
-  .header-action-btn {
-    min-width: 44px;
-    height: 38px;
-    padding: 0 14px;
-    border-radius: 16px;
-    border: 2px solid var(--border);
-    background: var(--card);
-    color: var(--ink);
-    font-size: 0.85rem;
-    font-weight: 800;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    box-shadow: 0 2px 0 var(--border);
-    white-space: nowrap;
-    text-decoration: none;
-  }
-  .header-action-btn:active { transform: translateY(2px); box-shadow: none; }
+    @media (min-width: 900px) and (orientation: landscape) {
+      html {
+        font-size: 18px;
+      }
+    }
 
-  /* MODE TABS */
-  .mode-tabs { display: flex; gap: 6px; padding: 0 4px; flex-shrink: 0; }
-  .mode-tab {
-    flex: 1;
-    border: 3px solid var(--border);
-    border-radius: 14px;
-    padding: 8px;
-    font-size: 0.9rem;
-    font-weight: 800;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    min-height: 42px;
-    background: var(--card);
-    color: var(--ink-soft);
-    box-shadow: 0 3px 0 var(--border);
-    white-space: nowrap;
-  }
-  .mode-tab:active { transform: translateY(3px); box-shadow: none; }
-  .mode-tab.active-practice {
-    background: var(--primary); color: #FFF;
-    border-color: var(--primary-dark); box-shadow: 0 3px 0 var(--primary-dark);
-  }
-  .mode-tab.active-write {
-    background: var(--purple); color: #FFF;
-    border-color: var(--purple-dark); box-shadow: 0 3px 0 var(--purple-dark);
-  }
-  .mode-tab.active-parent {
-    background: #0284C7; color: #FFF;
-    border-color: #0369A1; box-shadow: 0 3px 0 #0369A1;
-  }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+      user-select: none;
+      -webkit-user-select: none;
+      padding: 8px 12px;
+    }
 
-  /* SECTION TABS */
-  .section-tabs { display: flex; gap: 6px; padding: 0 4px; flex-shrink: 0; overflow-x: auto; }
-  .section-tab {
-    flex: 1; background: var(--card); border: 3px solid var(--border);
-    border-radius: 14px; padding: 8px 6px; font-size: 0.86rem; font-weight: 800;
-    color: var(--ink-soft); cursor: pointer; text-align: center; white-space: nowrap;
-    box-shadow: 0 3px 0 var(--border);
-    display: flex; align-items: center; justify-content: center; min-height: 40px;
-  }
-  .section-tab:active { transform: translateY(3px); box-shadow: none; }
-  .section-tab.active { background: var(--primary); color: #FFF; border-color: var(--primary-dark); box-shadow: 0 3px 0 var(--primary-dark); }
-  body.write-mode .section-tab.active { background: var(--purple); border-color: var(--purple-dark); box-shadow: 0 3px 0 var(--purple-dark); }
-  body.parent-mode .section-tab.active { background: #0284C7; border-color: #0369A1; box-shadow: 0 3px 0 #0369A1; }
+    #screenDimOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      pointer-events: none;
+      z-index: 99999;
+    }
 
-  /* WORKSPACE */
-  .workspace {
-    flex: 1;
-    display: flex;
-    min-height: 0;
-    gap: 12px;
-  }
+    .app-wrapper {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      max-width: 1450px;
+      margin: 0 auto;
+      width: 100%;
+      gap: 8px;
+      padding-bottom: max(4px, env(safe-area-inset-bottom));
+    }
 
-  /* LAYOUT 1: SPLIT SCREEN (FOR MEANINGS & OPPOSITES) */
-  .split-layout { display: flex; width: 100%; height: 100%; gap: 12px; }
-  .split-left { flex: 0 0 38%; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-  .split-right { flex: 1; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+    /* === HEADER === */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+      height: 44px;
+    }
 
-  .prompt-card {
-    background: var(--card); border: 3px solid var(--border);
-    border-radius: var(--radius); padding: 14px 16px;
-    box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;
-  }
+    .title-banner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
 
-  .card-category-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding-bottom: 6px; border-bottom: 2px dashed var(--border);
-  }
-  .card-category { font-size: 0.95rem; font-weight: 800; color: var(--primary); text-transform: uppercase; }
+    .title-banner h1 {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-  .speakable { cursor: pointer; border-radius: 6px; padding: 2px 4px; transition: background 0.12s; }
-  .speakable:active { background: #FEF08A; color: #000; }
+    .user-tag {
+      background: #FEF3C7;
+      color: #92400E;
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1.5px solid #FCD34D;
+    }
 
-  .prompt-text { font-size: 1.5rem; font-weight: 800; color: var(--ink); line-height: 1.35; min-height: 2.2rem; }
-  .prompt-text u { text-decoration-color: var(--reward); text-decoration-thickness: 4px; text-underline-offset: 5px; }
-  .prompt-text .blank { color: var(--orange); font-size: 1.8rem; }
+    .header-center {
+      display: flex;
+      gap: 6px;
+      background: var(--card-bg);
+      padding: 4px;
+      border-radius: 14px;
+      border: 2px solid var(--border);
+    }
 
-  .hint-box {
-    background: #FFF8E7; border-left: 6px solid var(--reward);
-    padding: 10px 14px; border-radius: 8px 16px 16px 8px;
-    font-size: 0.98rem; font-weight: 600; color: #4A3A1A;
-    border: 2px solid #F0DCA0; border-left-width: 6px; line-height: 1.45;
-  }
-  body.write-mode .hint-box { display: none !important; }
+    .mode-btn {
+      border: none;
+      outline: none;
+      cursor: pointer;
+      font-weight: 800;
+      font-size: 0.88rem;
+      padding: 6px 14px;
+      border-radius: 10px;
+      color: var(--subtext);
+      background: transparent;
+      transition: all 0.12s;
+      white-space: nowrap;
+    }
+    .mode-btn.active-practice {
+      background: var(--primary);
+      color: #FFF;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+    }
+    .mode-btn.active-write {
+      background: var(--purple);
+      color: #FFF;
+      box-shadow: 0 2px 6px rgba(124, 58, 237, 0.25);
+    }
 
-  .test-locked-alert {
-    display: none;
-    background: #F5F3FF; border: 2px solid #DDD6FE; border-left: 6px solid var(--purple);
-    padding: 12px 14px; border-radius: 8px 16px 16px 8px;
-    font-size: 0.95rem; font-weight: 800; color: var(--purple-dark);
-  }
-  body.write-mode .test-locked-alert { display: block; }
+    .header-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
 
-  .map-card {
-    background: var(--card); border: 3px solid var(--border);
-    border-radius: var(--radius); padding: 10px 12px;
-    box-shadow: var(--shadow); flex-shrink: 0;
-  }
-  .map-title {
-    font-size: 0.8rem; font-weight: 800; color: var(--ink-soft);
-    text-transform: uppercase; margin-bottom: 6px;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .map-grid { display: flex; gap: 6px; flex-wrap: wrap; }
+    .action-btn {
+      border: 2px solid var(--border);
+      outline: none;
+      cursor: pointer;
+      font-weight: 800;
+      border-radius: 12px;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--card-bg);
+      color: var(--text);
+      height: 38px;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+    .action-btn:active { transform: translateY(1px); }
 
-  .chest {
-    width: 38px; height: 38px; border-radius: 10px;
-    border: 2px solid var(--border); background: var(--bg);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.15rem; cursor: pointer; transition: all 0.15s;
-    position: relative; flex-shrink: 0;
-  }
-  .chest:active { transform: scale(0.9); }
-  .chest.current { border-color: var(--primary); border-width: 3px; box-shadow: 0 0 0 2px var(--primary); }
-  .chest.done { background: #E8F8F0; border-color: var(--green); }
-  .chest.correct { background: #FFF8E0; border-color: var(--reward-dark); }
-  .chest.retry { background: #FFF0E8; border-color: var(--orange); }
-  .chest .badge { position: absolute; top: -4px; right: -4px; font-size: 0.7rem; line-height: 1; }
+    /* === ROW 2: SECTION BAR & PROGRESS === */
+    .section-bar-wrap {
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
 
-  .canvas-card {
-    background: var(--card); border: 3px solid var(--border);
-    border-radius: var(--radius); box-shadow: var(--shadow);
-    display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden;
-  }
+    .section-nav {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding: 6px 8px;
+      scrollbar-width: none;
+    }
+    .section-nav::-webkit-scrollbar { display: none; }
 
-  .canvas-toolbar {
-    display: flex; align-items: center; justify-content: space-between; gap: 6px;
-    padding: 8px 12px; background: var(--bg); border-bottom: 2px solid var(--border);
-    flex-shrink: 0; flex-wrap: wrap;
-  }
-  .tool-group { display: flex; align-items: center; gap: 6px; }
-  .tool-btn {
-    background: var(--card); border: 2px solid var(--border); border-radius: 10px;
-    padding: 6px 12px; font-size: 0.82rem; font-weight: 800; cursor: pointer;
-    color: var(--ink); box-shadow: 0 2px 0 var(--border); height: 36px;
-  }
-  .tool-btn:active { transform: translateY(2px); box-shadow: none; }
-  .tool-btn.active { background: var(--primary); color: #FFF; border-color: var(--primary-dark); box-shadow: 0 2px 0 var(--primary-dark); }
-  body.write-mode .tool-btn.active { background: var(--purple); border-color: var(--purple-dark); box-shadow: 0 2px 0 var(--purple-dark); }
+    .nav-tab {
+      background: transparent;
+      border: 2px solid transparent;
+      color: var(--subtext);
+      padding: 6px 14px;
+      white-space: nowrap;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+    .nav-tab.active {
+      background: var(--primary);
+      color: #FFFFFF;
+    }
+    body.write-mode .nav-tab.active {
+      background: var(--purple);
+    }
 
-  .canvas-wrap { flex: 1; min-height: 0; position: relative; overflow: hidden; background: #FFFFFF; }
-  canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: crosshair; position: relative; z-index: 2; }
+    .thin-progress-track {
+      height: 5px;
+      background: var(--border);
+      width: 100%;
+    }
+    .thin-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #10B981, #2563EB);
+      transition: width 0.25s ease;
+    }
+    body.write-mode .thin-progress-fill {
+      background: linear-gradient(90deg, #F59E0B, #8B5CF6);
+    }
 
-  /* 2-LINE BLUE RULED TEXTURE */
-  .dual-ruled-lines {
-    position: absolute; inset: 0; z-index: 1; pointer-events: none;
-    background-color: #FFFFFF;
-    background-image: repeating-linear-gradient(
-      #FFFFFF 0px,
-      #FFFFFF 28px,
-      var(--ruled-blue) 29px,
-      #FFFFFF 30px,
-      #FFFFFF 56px,
-      var(--ruled-blue) 57px,
-      #FFFFFF 58px,
-      #FFFFFF 84px
-    );
-    opacity: 0.65;
-  }
-  .dual-ruled-lines::after {
-    content: ''; position: absolute; top: 0; left: 36px;
-    width: 2px; height: 100%; background: var(--margin-line);
-  }
+    /* === WORKSPACE LAYOUTS === */
+    .main-container {
+      display: flex;
+      gap: 10px;
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+    }
 
-  /* LAYOUT 2: FULL-WIDTH NOTEPAD (SENTENCES, SHORT Q&A, LONG Q&A) */
-  .notepad-layout {
-    display: flex; flex-direction: column; width: 100%; height: 100%; gap: 8px; min-height: 0;
-  }
+    /* Clean Card Layout (Reading in Practice Mode) */
+    .main-container.layout-focus {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .main-container.layout-focus .prompt-card-pane {
+      width: 100%;
+      max-width: 960px;
+      height: 100%;
+    }
+    .main-container.layout-focus .canvas-card-pane {
+      display: none !important;
+    }
 
-  .subtabs-bar {
-    display: flex; gap: 6px; flex-shrink: 0; overflow-x: auto;
-  }
-  .subtab-btn {
-    background: var(--card); border: 2px solid var(--border);
-    border-radius: 12px; padding: 6px 14px; font-size: 0.88rem; font-weight: 800;
-    color: var(--ink-soft); cursor: pointer; white-space: nowrap;
-    box-shadow: 0 2px 0 var(--border);
-  }
-  .subtab-btn.active {
-    background: var(--primary); color: #FFF; border-color: var(--primary-dark);
-    box-shadow: 0 2px 0 var(--primary-dark);
-  }
-  body.write-mode .subtab-btn.active {
-    background: var(--purple); border-color: var(--purple-dark);
-    box-shadow: 0 2px 0 var(--purple-dark);
-  }
-  body.parent-mode .subtab-btn.active {
-    background: #0284C7; border-color: #0369A1;
-    box-shadow: 0 2px 0 #0369A1;
-  }
+    /* Split View (MCQs & Verbs in Practice Mode) */
+    .main-container.layout-split {
+      flex-direction: row;
+    }
+    .main-container.layout-split .prompt-card-pane {
+      flex: 0 0 46%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+    .main-container.layout-split .canvas-card-pane {
+      flex: 1;
+      height: 100%;
+      min-width: 0;
+      display: flex;
+    }
 
-  .notepad-prompt-bar {
-    background: var(--card); border: 2px solid var(--border);
-    border-radius: 14px; padding: 10px 14px; font-size: 1.15rem; font-weight: 800;
-    color: var(--ink); flex-shrink: 0; display: flex; flex-direction: column; gap: 4px;
-    box-shadow: 0 2px 0 var(--border);
-  }
-  .notepad-model-ans {
-    font-size: 0.95rem; font-weight: 700; color: #15803D;
-  }
-  body.write-mode .notepad-model-ans { display: none !important; }
+    /* Stacked Full-Width View (Meanings, Past Tense, and All Write Mode Cards) */
+    .main-container.layout-full {
+      flex-direction: column;
+    }
+    .main-container.layout-full .prompt-card-pane {
+      flex: 0 0 auto;
+      width: 100%;
+      min-height: 0;
+    }
+    .main-container.layout-full .canvas-card-pane {
+      flex: 1;
+      width: 100%;
+      min-height: 0;
+      display: flex;
+    }
 
-  /* PARENT REVIEW STRIP */
-  .parent-review-strip {
-    display: none; background: #F0F9FF; border: 2px solid #BAE6FD;
-    border-radius: 14px; padding: 10px 14px;
-    align-items: center; justify-content: space-between; gap: 10px; flex-shrink: 0;
-  }
-  body.parent-mode .parent-review-strip { display: flex; }
-  .parent-ans-text { font-size: 0.95rem; font-weight: 700; color: #0369A1; line-height: 1.4; max-height: 58px; overflow-y: auto; }
-  .grade-row { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-  .grade-btn {
-    border: none; padding: 8px 16px; border-radius: 10px;
-    font-weight: 800; font-size: 0.85rem; cursor: pointer;
-  }
-  .grade-btn.pass { background: var(--green); color: #FFF; }
-  .grade-btn.retry { background: var(--orange); color: #FFF; }
+    /* Prompt Pane Card */
+    .prompt-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      border: 2px solid var(--border);
+      padding: 14px 18px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      min-height: 0;
+      gap: 8px;
+      overflow: hidden;
+    }
+    .main-container.layout-full .prompt-card {
+      height: auto;
+      padding: 12px 18px;
+    }
 
-  /* BOTTOM CONTROLS */
-  .bottom-bar {
-    display: flex; justify-content: space-between; align-items: center; gap: 10px;
-    flex-shrink: 0; padding: 2px 4px;
-  }
-  .bottom-left, .bottom-right { display: flex; gap: 8px; align-items: center; }
+    .prompt-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
 
-  .btn {
-    border: none; border-radius: 14px; padding: 10px 18px;
-    font-size: 0.88rem; font-weight: 800; cursor: pointer;
-    transition: all 0.1s; min-height: 42px;
-    display: flex; align-items: center; gap: 6px;
-    box-shadow: 0 3px 0 rgba(0,0,0,0.15); white-space: nowrap;
-  }
-  .btn:active { transform: translateY(3px); box-shadow: none; }
-  .btn-primary { background: var(--primary); color: #FFF; box-shadow: 0 3px 0 var(--primary-dark); }
-  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-  .btn-green { background: var(--green); color: #FFF; box-shadow: 0 3px 0 var(--green-dark); }
+    /* Large, Crisp Question Title */
+    .word-prompt-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.4;
+      flex: 1;
+    }
+    .word-prompt-title u {
+      text-decoration-color: var(--reward);
+      text-decoration-thickness: 4px;
+      text-underline-offset: 5px;
+    }
 
-  /* PIN MODAL */
-  .modal-overlay {
-    position: fixed; inset: 0; background: rgba(30, 40, 50, 0.5);
-    backdrop-filter: blur(4px); display: none; align-items: center;
-    justify-content: center; z-index: 100000;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal-box {
-    background: var(--card); border-radius: 20px; padding: 22px;
-    max-width: 320px; width: 90%; text-align: center;
-    border: 3px solid var(--border); box-shadow: 0 12px 36px rgba(0,0,0,0.2);
-  }
-  .pin-dots {
-    font-size: 1.8rem; letter-spacing: 6px; background: #F1F5F9;
-    padding: 10px; border-radius: 12px; margin: 14px 0; font-weight: 900;
-  }
-  .keypad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .key-btn {
-    padding: 12px; font-size: 1.25rem; font-weight: 800; border-radius: 12px;
-    border: 2px solid #E2E8F0; background: #F8FAFC; cursor: pointer;
-  }
-</style>
+    .btn-speak {
+      background: #FEF08A;
+      color: #713F12;
+      border: 2px solid #FACC15;
+      padding: 6px 14px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+      height: 38px;
+    }
+    .btn-speak.playing {
+      background: #FACC15;
+      color: #361B03;
+    }
+
+    /* Rule/Clue Box */
+    .hint-bubble {
+      background: var(--hint-bg);
+      border-left: 5px solid var(--reward);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.45;
+      border: 1.5px solid var(--hint-border);
+      border-left-width: 5px;
+      flex-shrink: 0;
+    }
+    .hint-bubble b {
+      font-weight: 800;
+      color: #B45309;
+    }
+
+    /* Secret Peek Parent Interface */
+    .peek-bar-container {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: #F5F3FF;
+      border: 2px solid #DDD6FE;
+      padding: 8px 12px;
+      border-radius: 10px;
+      flex-shrink: 0;
+    }
+    body.write-mode .peek-bar-container {
+      display: flex;
+    }
+
+    .peek-text {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--purple);
+    }
+
+    .btn-peek-lock {
+      background: var(--card-bg);
+      border: 2px solid #C4B5FD;
+      color: var(--purple);
+      font-weight: 800;
+      font-size: 0.88rem;
+      padding: 6px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.12s;
+      white-space: nowrap;
+    }
+    .btn-peek-lock:active { transform: translateY(1px); }
+
+    .unlocked-peek-content {
+      display: none;
+      background: #ECFDF5;
+      border: 2px solid #A7F3D0;
+      border-left: 5px solid var(--success);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 1.05rem;
+      color: #065F46;
+      line-height: 1.4;
+      flex-shrink: 0;
+      font-weight: 700;
+    }
+
+    .options-scroll {
+      flex: 1;
+      overflow-y: auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-top: 6px;
+    }
+
+    /* Large Tap-Target Multiple-Choice Buttons */
+    .opt-choice-btn {
+      text-align: left;
+      background: var(--toolbar-bg);
+      border: 2px solid var(--border);
+      padding: 12px 16px;
+      border-radius: 12px;
+      color: var(--text);
+      font-weight: 700;
+      font-size: 1.1rem;
+      line-height: 1.35;
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+    .opt-choice-btn:active { transform: translateY(1px); }
+    .opt-choice-btn.selected {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: #FFFFFF;
+      box-shadow: 0 3px 0 var(--primary-hover);
+    }
+
+    /* Canvas Card Pane */
+    .canvas-card-pane {
+      background: var(--card-bg);
+      border-radius: 16px;
+      border: 2px solid var(--border);
+      padding: 10px 12px;
+      box-shadow: var(--shadow);
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .pad-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 8px;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+
+    .tool-cluster {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .tool-btn {
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      border-radius: 10px;
+      background: var(--toolbar-bg);
+      color: var(--text);
+      border: 2px solid var(--border);
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 36px;
+    }
+    .tool-btn:active { transform: translateY(1px); }
+    .tool-btn.active {
+      background: var(--primary);
+      color: #FFF;
+      border-color: var(--primary);
+    }
+    body.write-mode .tool-btn.active {
+      background: var(--purple);
+      border-color: var(--purple);
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      min-height: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid var(--border);
+      background-color: var(--card-bg);
+    }
+
+    .ruled-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-color: var(--card-bg);
+      background-image: repeating-linear-gradient(
+        var(--card-bg) 0px,
+        var(--card-bg) 35px,
+        var(--ruled-line) 36px
+      );
+      z-index: 1;
+    }
+
+    .ruled-layer::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 42px;
+      width: 2px;
+      height: 100%;
+      background: var(--ruled-margin);
+    }
+
+    #scratchCanvas {
+      position: absolute;
+      inset: 0;
+      cursor: crosshair;
+      touch-action: none;
+      z-index: 2;
+    }
+
+    /* === BOTTOM BAR === */
+    .bottom-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+      padding: 4px 2px 0 2px;
+    }
+
+    .nav-btn {
+      border: none;
+      border-radius: 12px;
+      padding: 10px 22px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      color: #FFF;
+      background: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 40px;
+      transition: all 0.1s;
+    }
+    .nav-btn:active { transform: translateY(1px); }
+    .nav-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      transform: none;
+    }
+    body.write-mode .nav-btn {
+      background: var(--purple);
+    }
+
+    .card-indicator {
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: var(--subtext);
+    }
+
+    /* PIN Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100000;
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal-box {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: 22px;
+      padding: 20px 24px;
+      width: 90%;
+      max-width: 340px;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.25);
+      text-align: center;
+    }
+    .modal-box h3 {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .modal-box p {
+      font-size: 0.88rem;
+      color: var(--subtext);
+      margin-bottom: 12px;
+    }
+
+    .pin-display {
+      font-size: 1.6rem;
+      letter-spacing: 6px;
+      padding: 10px;
+      background: var(--toolbar-bg);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 14px;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+    }
+
+    .pin-keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .pin-num-btn {
+      background: var(--toolbar-bg);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 0;
+      font-size: 1.25rem;
+      font-weight: 800;
+      cursor: pointer;
+      color: var(--text);
+    }
+    .pin-num-btn:active { transform: translateY(2px); }
+
+    .modal-action-row {
+      display: flex;
+      gap: 8px;
+    }
+    .modal-action-btn {
+      flex: 1;
+      padding: 10px 0;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      border: none;
+      cursor: pointer;
+    }
+    .modal-cancel-btn {
+      background: var(--toolbar-bg);
+      color: var(--text);
+      border: 2px solid var(--border);
+    }
+    .modal-submit-btn {
+      background: var(--purple);
+      color: #FFF;
+    }
+
+    .orientation-warning {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 999999;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 12px;
+      padding: 24px;
+      text-align: center;
+    }
+    .orientation-warning .icon { font-size: 3rem; animation: rotatePhone 2s infinite; }
+    @keyframes rotatePhone { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(90deg); } }
+    @media (orientation: portrait) {
+      .orientation-warning { display: flex; }
+    }
+  </style>
 </head>
 <body>
 
-<div id="screenDimOverlay"></div>
+  <div id="screenDimOverlay"></div>
 
-<div class="orientation-warning">
-  <div class="icon">📱</div>
-  <h2>Please Rotate Tablet to Landscape</h2>
-  <p>Humayun's Word Quest works best in tablet landscape mode.</p>
-</div>
-
-<div class="app">
-
-  <div class="header">
-    <div class="header-title" id="headerTitle">
-      <a href="javascript:void(0)" onclick="goToHub()" class="header-action-btn">🏠 Hub</a>
-      <span class="icon">🗺️</span>
-      <span>Humayun's Word Quest</span>
-    </div>
-    <div class="header-actions">
-      <button type="button" class="header-action-btn" id="btnInputMode" onclick="toggleInputMode()">🖊️ Pen Only</button>
-      <button type="button" class="header-action-btn" id="btnFullscreen" onclick="toggleFullscreen()">⛶ Fullscreen</button>
-      <button type="button" class="header-action-btn" id="dimBtn" onclick="toggleScreenDim()">💡 Dim</button>
-    </div>
+  <div class="orientation-warning">
+    <div class="icon">📱</div>
+    <h2>Please rotate your tablet</h2>
+    <p>Zaina's English Trail is optimized for landscape mode.</p>
   </div>
 
-  <div class="mode-tabs">
-    <button class="mode-tab active-practice" id="mode-practice" onclick="setMode('study')">📖 Practice</button>
-    <button class="mode-tab" id="mode-write" onclick="setMode('write')">✍️ Write (Test)</button>
-    <button class="mode-tab" id="mode-parent" onclick="openPinModal()">🔒 Parent Review</button>
-  </div>
+  <div class="app-wrapper">
+    <!-- ROW 1: HEADER -->
+    <header>
+      <div class="title-banner">
+        <a href="javascript:void(0)" onclick="goToHub()" class="action-btn" style="margin-right: 4px;">🏠 Hub</a>
+        <span style="font-size: 1.4rem;">🏔️</span>
+        <h1>Zaina's English Trail <span class="user-tag">Grade 5</span></h1>
+      </div>
 
-  <div class="section-tabs">
-    <button class="section-tab active" id="tab-meanings" onclick="selectSection('meanings')">📖 Meanings</button>
-    <button class="section-tab" id="tab-opposites" onclick="selectSection('opposites')">🔄 Opposites</button>
-    <button class="section-tab" id="tab-sentences" onclick="selectSection('sentences')">✏️ Sentences</button>
-    <button class="section-tab" id="tab-qa" onclick="selectSection('qa')">❓ Short Q&amp;A</button>
-    <button class="section-tab" id="tab-long_qa" onclick="selectSection('long_qa')">📝 Long Q&amp;A</button>
-  </div>
+      <div class="header-center">
+        <button class="mode-btn active-practice" id="modePracticeBtn" onclick="setAppMode('practice')">📖 Practice (Guided)</button>
+        <button class="mode-btn" id="modeWriteBtn" onclick="setAppMode('write')">✍️ Write (Memory Recall)</button>
+      </div>
 
-  <!-- WORKSPACE -->
-  <main class="workspace" id="mainWorkspace"></main>
+      <div class="header-actions">
+        <button class="action-btn" id="btnFullscreen" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+        <button class="action-btn" id="toggleDimBtn" onclick="toggleScreenDim()">💡 Dim</button>
+        <button class="action-btn" id="toggleThemeBtn" onclick="toggleDarkMode()">🌙 Theme</button>
+      </div>
+    </header>
 
-  <!-- BOTTOM BAR (SHOWN IN SPLIT VIEW) -->
-  <div class="bottom-bar" id="bottomBar">
-    <div class="bottom-left">
-      <button class="btn btn-primary" id="btnPrev" onclick="navigateStep(-1)">◀ Back</button>
-      <button class="btn btn-primary" id="btnNext" onclick="navigateStep(1)">Next ▶</button>
-      <span id="splitPager" style="font-size:0.9rem; font-weight:800; color:var(--ink-soft); margin-left:6px;">1 / 8</span>
+    <!-- ROW 2: SECTIONS + SLIM PROGRESS STRIP -->
+    <div class="section-bar-wrap">
+      <div class="section-nav" id="sectionTabs"></div>
+      <div class="thin-progress-track">
+        <div class="thin-progress-fill" id="thinProgressFill"></div>
+      </div>
     </div>
-    <div class="bottom-right">
-      <button class="btn btn-green" id="btnDoneCard" onclick="markCardDone()">✅ Done &amp; Save</button>
-    </div>
-  </div>
 
-</div>
-
-<!-- PARENT PIN MODAL -->
-<div id="modalPin" class="modal-overlay">
-  <div class="modal-box">
-    <h3 style="font-weight:900; color:var(--ink);">Parent Access</h3>
-    <p style="font-size:0.85rem; color:var(--ink-soft); margin-top:4px;">Enter 4-digit PIN</p>
-    <div class="pin-dots" id="pinDots">----</div>
-    <div class="keypad-grid">
-      <button class="key-btn" onclick="pressPin('1')">1</button>
-      <button class="key-btn" onclick="pressPin('2')">2</button>
-      <button class="key-btn" onclick="pressPin('3')">3</button>
-      <button class="key-btn" onclick="pressPin('4')">4</button>
-      <button class="key-btn" onclick="pressPin('5')">5</button>
-      <button class="key-btn" onclick="pressPin('6')">6</button>
-      <button class="key-btn" onclick="pressPin('7')">7</button>
-      <button class="key-btn" onclick="pressPin('8')">8</button>
-      <button class="key-btn" onclick="pressPin('9')">9</button>
-      <button class="key-btn" onclick="clearPin()">C</button>
-      <button class="key-btn" onclick="pressPin('0')">0</button>
-      <button class="key-btn" onclick="closePinModal()">✕</button>
-    </div>
-  </div>
-</div>
-
-<script>
-const PARENT_PIN = "1995";
-let enteredPin = "";
-let inputRejectionMode = "pen-only"; // 'pen-only' | 'all'
-
-const MASTER_LESSON_CONTENT = {
-  meanings: [
-    { id: "m1", word: "encyclopaedia", answer: "a book with facts on many subjects" },
-    { id: "m2", word: "stack", answer: "arrange one on top of the other" },
-    { id: "m3", word: "topple", answer: "overbalance and fall" },
-    { id: "m4", word: "scatter", answer: "to throw things all over" },
-    { id: "m5", word: "troll", answer: "an ugly giant" },
-    { id: "m6", word: "nibble", answer: "a small quick bite" },
-    { id: "m7", word: "wriggle", answer: "twist and turn with quick movement" },
-    { id: "m8", word: "nervous", answer: "feeling worry" }
-  ],
-  opposites: [
-    { id: "o1", word: "top", answer: "bottom" },
-    { id: "o2", word: "up", answer: "down" },
-    { id: "o3", word: "found", answer: "lost" },
-    { id: "o4", word: "begin", answer: "end" },
-    { id: "o5", word: "loud", answer: "quiet" },
-    { id: "o6", word: "hard", answer: "soft" },
-    { id: "o7", word: "under", answer: "over" }
-  ],
-  sentences: [
-    { id: "s1", tab: "1. rescue", word: "rescue", answer: "the fireman came to rescue the kitten from the tree." },
-    { id: "s2", tab: "2. grab", word: "grab", answer: "the monkey tried to grab the banana from my hand." },
-    { id: "s3", tab: "3. strange", word: "strange", answer: "the dog made a strange noise at night" },
-    { id: "s4", tab: "4. anxious", word: "anxious", answer: "I felt anxious before my test results" }
-  ],
-  qa: [
-    { id: "q1", tab: "Q1: Annoyed", word: "Why was Meena annoyed at the sight of books?", answer: "Meena was annoyed because in her house her parents were always reading and buying more books." },
-    { id: "q2", tab: "Q2: Book Locations", word: "Where were books kept in her house?", answer: "Books were kept in drawers desks, cupboards, chests on the sofa, on the stairs, in the fireplace, and stacked on chairs." },
-    { id: "q3", tab: "Q3: Rescue Max", word: "What did Meena do to rescue Max?", answer: "Meena climbed the tall stack to rescue Max who was stuck on top." },
-    { id: "q4", tab: "Q4: Books Fell Down", word: "What began to happen when the books fell down?", answer: "When the books fell down all the characters from the book came out princes, princesses, fairies, elephants, monkeys, rabbits and many more." }
-  ],
-  long_qa: [
-    { id: "lq1", tab: "Q1: Meena Read", word: "What made Meena read the books and how did it help her?", answer: "All the characters from the books came out and made noise in her room. To make them go back, Meena started enjoying the stories and she began to love reading stories every single day." },
-    { id: "lq2", tab: "Q2: Animal Feelings", word: "How did the animals feel when they were out of their books?", answer: "When the animals were out of their books they felt confused and scared. They did not know where they belonged and wanted to go back to their own stories because they felt safe inside their books." }
-  ]
-};
-
-let activeLessonContent = JSON.parse(JSON.stringify(MASTER_LESSON_CONTENT));
-let currentSectionKey = "meanings";
-let currentIndex = 0;
-let appMode = "study"; // 'study' | 'write' | 'parent'
-
-let activeTool = "pen";
-let activeBaseSize = 4;
-let isDrawing = false;
-let lastX = 0, lastY = 0;
-let activePointerId = null;
-
-let canvas = null;
-let ctx = null;
-
-function speakText(txt) {
-  if (!('speechSynthesis' in window)) return;
-  window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(txt);
-  u.lang = "en-US";
-  u.rate = 0.9;
-  window.speechSynthesis.speak(u);
-}
-
-function goToHub() {
-  if ('speechSynthesis' in window) {
-    try { window.speechSynthesis.cancel(); } catch (e) {}
-  }
-  saveCurrentDrawing();
-  if (window.parent && window.parent !== window) {
-    window.parent.postMessage("close-lesson-to-hub", "*");
-  } else {
-    window.location.href = "index.html";
-  }
-}
-
-function toggleFullscreen() {
-  if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-    const el = document.documentElement;
-    if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
-    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-  } else {
-    if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
-    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-  }
-}
-
-function toggleScreenDim() {
-  const el = document.getElementById("screenDimOverlay");
-  const btn = document.getElementById("dimBtn");
-  const isDim = el.style.display === "block";
-  el.style.display = isDim ? "none" : "block";
-  btn.textContent = isDim ? "💡 Dim" : "☀️ Bright";
-}
-
-function toggleInputMode() {
-  inputRejectionMode = (inputRejectionMode === "pen-only") ? "all" : "pen-only";
-  const btn = document.getElementById("btnInputMode");
-  btn.innerHTML = (inputRejectionMode === "pen-only") ? "🖊️ Pen Only" : "👆 Any Touch";
-}
-
-function isNotepadSection() {
-  return currentSectionKey === "sentences" || currentSectionKey === "qa" || currentSectionKey === "long_qa";
-}
-
-function getCurrentList() { return activeLessonContent[currentSectionKey]; }
-function getCurrentItem() { return getCurrentList()[currentIndex]; }
-
-function shuffleArray(arr) {
-  const a = arr.slice();
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-function applyOrderForMode() {
-  if (appMode === "write") {
-    activeLessonContent = {
-      meanings: shuffleArray(MASTER_LESSON_CONTENT.meanings),
-      opposites: shuffleArray(MASTER_LESSON_CONTENT.opposites),
-      sentences: MASTER_LESSON_CONTENT.sentences,
-      qa: MASTER_LESSON_CONTENT.qa,
-      long_qa: MASTER_LESSON_CONTENT.long_qa
-    };
-  } else {
-    activeLessonContent = JSON.parse(JSON.stringify(MASTER_LESSON_CONTENT));
-  }
-}
-
-/* BULLETPROOF MODE TOGGLE */
-function setMode(mode) {
-  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-  
-  // 1. Save outgoing drawing in the current mode
-  saveCurrentDrawing();
-  
-  // 2. Switch mode cleanly
-  appMode = mode;
-  document.body.className = (mode === "write") ? "write-mode" : (mode === "parent" ? "parent-mode" : "");
-
-  document.getElementById("mode-practice").className = "mode-tab" + (mode === "study" ? " active-practice" : "");
-  document.getElementById("mode-write").className = "mode-tab" + (mode === "write" ? " active-write" : "");
-  document.getElementById("mode-parent").className = "mode-tab" + (mode === "parent" ? " active-parent" : "");
-
-  applyOrderForMode();
-  currentIndex = 0;
-  
-  // 3. Render without saving to prevent cross-contamination
-  renderWorkspace(false);
-}
-
-function selectSection(secKey) {
-  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-  saveCurrentDrawing();
-  currentSectionKey = secKey;
-  currentIndex = 0;
-  updateSectionTabs();
-  renderWorkspace(false);
-}
-
-function updateSectionTabs() {
-  document.querySelectorAll(".section-tab").forEach(t => {
-    t.classList.toggle("active", t.id === "tab-" + currentSectionKey);
-  });
-}
-
-function navigateStep(dir) {
-  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-  saveCurrentDrawing();
-  const list = getCurrentList();
-  const next = currentIndex + dir;
-  if (next >= 0 && next < list.length) {
-    currentIndex = next;
-    renderWorkspace(false);
-  }
-}
-
-function jumpToCard(idx) {
-  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-  saveCurrentDrawing();
-  if (idx >= 0 && idx < getCurrentList().length) {
-    currentIndex = idx;
-    renderWorkspace(false);
-  }
-}
-
-function switchSubTab(idx) {
-  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-  saveCurrentDrawing();
-  currentIndex = idx;
-  renderWorkspace(false);
-}
-
-/* WORKSPACE RENDERER */
-function renderWorkspace(doSave = true) {
-  if (doSave) saveCurrentDrawing();
-
-  const container = document.getElementById("mainWorkspace");
-  const bottomBar = document.getElementById("bottomBar");
-
-  if (isNotepadSection()) {
-    bottomBar.style.display = "none";
-    renderNotepadLayout(container);
-  } else {
-    bottomBar.style.display = "flex";
-    renderSplitLayout(container);
-  }
-}
-
-/* 1. SPLIT VIEW (MEANINGS & OPPOSITES) */
-function renderSplitLayout(container) {
-  const list = getCurrentList();
-  const item = getCurrentItem();
-  if (!item) return;
-
-  document.getElementById("btnPrev").disabled = (currentIndex === 0);
-  document.getElementById("btnNext").disabled = (currentIndex === list.length - 1);
-  document.getElementById("splitPager").innerText = `${currentIndex + 1} / ${list.length}`;
-
-  let promptHtml = "";
-  let hintHtml = "";
-  if (currentSectionKey === "meanings") {
-    promptHtml = `Word: <u>${item.word}</u>`;
-    hintHtml = `<b>Meaning:</b> ${item.answer}`;
-  } else {
-    promptHtml = `Opposite of <u>${item.word}</u> = <span class="blank">?</span>`;
-    hintHtml = `<b>Opposite:</b> ${item.word} &times; <b>${item.answer}</b>`;
-  }
-
-  container.innerHTML = `
-    <div class="split-layout">
-      <div class="split-left">
+    <!-- MAIN ADAPTIVE WORKSPACE -->
+    <main class="main-container layout-full" id="mainContainer">
+      <!-- PROMPT PANE -->
+      <div class="prompt-card-pane">
         <div class="prompt-card">
-          <div class="card-category-row">
-            <div class="card-category">${currentSectionKey === "meanings" ? "📖 Meanings" : "🔄 Opposites"}</div>
-            <span style="font-size:0.85rem; font-weight:800; color:var(--ink-soft);">${currentIndex + 1} / ${list.length}</span>
+          <div class="prompt-top-row">
+            <div class="word-prompt-title" id="promptText">Loading word...</div>
+            <button class="btn-speak" id="btnSpeak" onclick="readAloud()">🔊 Read</button>
           </div>
-          <div class="prompt-text speakable" onclick="speakText('${item.word}')">${promptHtml}</div>
-          <div class="hint-box speakable" onclick="speakText('${item.answer}')">${hintHtml}</div>
-          <div class="test-locked-alert">Write from memory on the dual-line pad.</div>
-        </div>
 
-        <div class="map-card">
-          <div class="map-title">
-            <span>🗺️ Quest Map</span>
-            <span id="mapProgress">0 / ${list.length} ⭐</span>
-          </div>
-          <div class="map-grid" id="mapGrid"></div>
-        </div>
+          <!-- Practice Mode Clue Bubble -->
+          <div class="hint-bubble" id="hintBubble">Hint appears here</div>
 
-        <div class="parent-review-strip" style="${appMode === 'parent' ? 'display:flex;' : 'display:none;'}">
-          <div class="parent-ans-text"><b>Answer:</b> ${item.answer}</div>
-          <div class="grade-row">
-            <button class="grade-btn pass" onclick="saveGrade('correct')">⭐ Correct</button>
-            <button class="grade-btn retry" onclick="saveGrade('retry')">🔄 Try Again</button>
+          <!-- Write Mode: Secret Peek Bar -->
+          <div class="peek-bar-container" id="peekBar">
+            <span class="peek-text">✍️ Write your answer from memory on the ruled sheet below!</span>
+            <button type="button" class="btn-peek-lock" onclick="openPeekPinModal()">🔒 Peek Answer (Parent PIN)</button>
           </div>
+
+          <!-- Unlocked Hint Reveal -->
+          <div class="unlocked-peek-content" id="unlockedPeekBox"></div>
+
+          <!-- Multiple-Choice Selection Container (Practice Only) -->
+          <div class="options-scroll" id="optionsScroll" style="display: none;"></div>
         </div>
       </div>
 
-      <div class="split-right">
-        <div class="canvas-card">
-          <div class="canvas-toolbar">
-            <div class="tool-group">
-              <button class="tool-btn active" id="toolPen" onclick="selectTool('pen')">✏️ Pen</button>
-              <button class="tool-btn" id="toolEraser" onclick="selectTool('eraser')">🧹 Eraser</button>
-              <button class="tool-btn" onclick="clearActiveCanvas()">🗑️ Clear</button>
-            </div>
-            <div class="tool-group">
-              <button class="tool-btn" id="sizeThin" onclick="setStrokeSize(2)">Thin</button>
-              <button class="tool-btn active" id="sizeMed" onclick="setStrokeSize(4)">Med</button>
-              <button class="tool-btn" id="sizeThick" onclick="setStrokeSize(7)">Thick</button>
-            </div>
+      <!-- CANVAS PANE -->
+      <div class="canvas-card-pane" id="canvasCardPane">
+        <div class="pad-toolbar">
+          <div class="tool-cluster">
+            <button class="tool-btn active" id="penTool" onclick="setTool('pen')">✏️ Pen</button>
+            <button class="tool-btn" id="eraserTool" onclick="setTool('eraser')">🧹 Eraser</button>
+            <button class="tool-btn" onclick="undoCanvasStroke()">↩️ Undo</button>
+            <button class="tool-btn" onclick="clearCurrentCanvas()">🗑️ Clear</button>
           </div>
-          <div class="canvas-wrap" id="canvasWrap">
-            <div class="dual-ruled-lines"></div>
-            <canvas id="activeCanvas"></canvas>
+          <div class="tool-cluster">
+            <button class="tool-btn active" id="btnPalmRejection" onclick="toggleInputMode()">🖊️ Pen Only</button>
+            <button class="tool-btn" id="sizeThin" onclick="setStrokeWidth(2)">Thin</button>
+            <button class="tool-btn active" id="sizeMed" onclick="setStrokeWidth(4)">Med</button>
+            <button class="tool-btn" id="sizeThick" onclick="setStrokeWidth(7)">Thick</button>
           </div>
         </div>
+
+        <div class="canvas-wrapper" id="canvasWrapper">
+          <div class="ruled-layer"></div>
+          <canvas id="scratchCanvas"></canvas>
+        </div>
+      </div>
+    </main>
+
+    <!-- ROW 3: BOTTOM DOCKED NAVIGATION -->
+    <div class="bottom-bar">
+      <button class="nav-btn" id="prevBtn" onclick="navigateCard(-1)">◀ Back</button>
+      <span class="card-indicator" id="cardIndicator">Card 1 of 15</span>
+      <button class="nav-btn" id="nextBtn" onclick="navigateCard(1)">Next ▶</button>
+    </div>
+  </div>
+
+  <!-- PIN MODAL -->
+  <div class="modal-overlay" id="pinModal">
+    <div class="modal-box">
+      <h3>Parent Access</h3>
+      <p>Enter 4-digit PIN to peek at the answer:</p>
+      <div class="pin-display" id="pinDisplay">----</div>
+      
+      <div class="pin-keypad">
+        <button class="pin-num-btn" onclick="pressPin('1')">1</button>
+        <button class="pin-num-btn" onclick="pressPin('2')">2</button>
+        <button class="pin-num-btn" onclick="pressPin('3')">3</button>
+        <button class="pin-num-btn" onclick="pressPin('4')">4</button>
+        <button class="pin-num-btn" onclick="pressPin('5')">5</button>
+        <button class="pin-num-btn" onclick="pressPin('6')">6</button>
+        <button class="pin-num-btn" onclick="pressPin('7')">7</button>
+        <button class="pin-num-btn" onclick="pressPin('8')">8</button>
+        <button class="pin-num-btn" onclick="pressPin('9')">9</button>
+        <button class="pin-num-btn" onclick="clearPin()">C</button>
+        <button class="pin-num-btn" onclick="pressPin('0')">0</button>
+        <button class="pin-num-btn" onclick="backspacePin()">⌫</button>
+      </div>
+
+      <div class="modal-action-row">
+        <button class="modal-action-btn modal-cancel-btn" onclick="closePeekPinModal()">Cancel</button>
+        <button class="modal-action-btn modal-submit-btn" onclick="submitPin()">Unlock</button>
       </div>
     </div>
-  `;
+  </div>
 
-  renderMap();
-  setTimeout(() => {
-    initCanvasElement();
-  }, 40);
-}
+  <script>
+    const PARENT_SECRET_PIN = "1995";
+    let enteredPin = "";
+    let peekUnlockedMap = {};
 
-/* 2. FULL-WIDTH NOTEPAD (SENTENCES, SHORT Q&A, LONG Q&A) */
-function renderNotepadLayout(container) {
-  const list = getCurrentList();
-  const item = getCurrentItem();
-  if (!item) return;
-
-  let promptTitle = "";
-  if (currentSectionKey === "sentences") {
-    promptTitle = `Frame a sentence with: <u class="speakable" onclick="speakText('${item.word}')">${item.word}</u>`;
-  } else {
-    promptTitle = `<span class="speakable" onclick="speakText('${item.word}')">${item.word}</span>`;
-  }
-
-  container.innerHTML = `
-    <div class="notepad-layout">
-      <div class="subtabs-bar">
-        ${list.map((it, idx) => `
-          <button class="subtab-btn ${idx === currentIndex ? 'active' : ''}" onclick="switchSubTab(${idx})">
-            ${it.tab || it.word}
-          </button>
-        `).join("")}
-      </div>
-
-      <div class="notepad-prompt-bar">
-        <div>${promptTitle}</div>
-        <div class="notepad-model-ans speakable" onclick="speakText('${item.answer}')">
-          <b>Model Answer:</b> ${item.answer}
-        </div>
-      </div>
-
-      <div class="parent-review-strip" style="${appMode === 'parent' ? 'display:flex;' : 'display:none;'}">
-        <div class="parent-ans-text"><b>Teacher Answer:</b> ${item.answer}</div>
-        <div class="grade-row">
-          <button class="grade-btn pass" onclick="saveGrade('correct')">⭐ Correct</button>
-          <button class="grade-btn retry" onclick="saveGrade('retry')">🔄 Try Again</button>
-        </div>
-      </div>
-
-      <div class="canvas-card" style="flex:1;">
-        <div class="canvas-toolbar">
-          <div class="tool-group">
-            <button class="tool-btn active" id="toolPen" onclick="selectTool('pen')">✏️ Pen</button>
-            <button class="tool-btn" id="toolEraser" onclick="selectTool('eraser')">🧹 Eraser</button>
-            <button class="tool-btn" onclick="clearActiveCanvas()">🗑️ Clear</button>
-          </div>
-          <div class="tool-group">
-            <button class="tool-btn" id="sizeThin" onclick="setStrokeSize(2)">Thin</button>
-            <button class="tool-btn active" id="sizeMed" onclick="setStrokeSize(4)">Med</button>
-            <button class="tool-btn" id="sizeThick" onclick="setStrokeSize(7)">Thick</button>
-          </div>
-        </div>
-        <div class="canvas-wrap" id="canvasWrap">
-          <div class="dual-ruled-lines"></div>
-          <canvas id="activeCanvas"></canvas>
-        </div>
-      </div>
-    </div>
-  `;
-
-  setTimeout(() => {
-    initCanvasElement();
-  }, 40);
-}
-
-/* FRESH NAMESPACE TO PERMANENTLY PREVENT CONTAMINATION */
-function currentStorageKey() {
-  const item = getCurrentItem();
-  if (!item) return null;
-  const targetSlot = (appMode === "parent") ? "write" : appMode;
-  return `v2_isolated_ink::humayun::eng_oct07::${targetSlot}::${item.id}`;
-}
-
-function initCanvasElement() {
-  canvas = document.getElementById("activeCanvas");
-  if (!canvas) return;
-  ctx = canvas.getContext("2d", { willReadFrequently: false });
-  fitCanvas();
-  restoreCurrentDrawing();
-  setupCanvasListeners();
-}
-
-function fitCanvas() {
-  if (!canvas) return;
-  const wrap = document.getElementById("canvasWrap");
-  if (!wrap || wrap.offsetParent === null) return;
-  const rect = wrap.getBoundingClientRect();
-  if (rect.width <= 0 || rect.height <= 0) return;
-
-  const dpr = window.devicePixelRatio || 1;
-  const targetW = Math.floor(rect.width * dpr);
-  const targetH = Math.floor(rect.height * dpr);
-
-  if (canvas.width === targetW && canvas.height === targetH) return;
-
-  canvas.width = targetW;
-  canvas.height = targetH;
-  canvas.style.width = rect.width + "px";
-  canvas.style.height = rect.height + "px";
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-}
-
-function saveCurrentDrawing() {
-  if (appMode === "parent") return; // Read-only in parent review
-  if (!canvas || canvas.width <= 0) return;
-  const key = currentStorageKey();
-  if (!key) return;
-  try {
-    const data = canvas.toDataURL("image/png");
-    localStorage.setItem(key, data);
-  } catch (e) {}
-}
-
-function restoreCurrentDrawing() {
-  if (!canvas || !ctx) return;
-  
-  // MANDATORY: ALWAYS CLEAR TO BLANK BEFORE CHECKING STORAGE
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-  const key = currentStorageKey();
-  if (!key) return;
-  const saved = localStorage.getItem(key);
-  if (!saved) return;
-  const img = new Image();
-  img.onload = function() {
-    ctx.save();
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    ctx.restore();
-  };
-  img.src = saved;
-}
-
-function clearActiveCanvas() {
-  const key = currentStorageKey();
-  if (!key || !canvas || !ctx) return;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  localStorage.removeItem(key);
-}
-
-function selectTool(tool) {
-  activeTool = tool;
-  const p = document.getElementById("toolPen");
-  const e = document.getElementById("toolEraser");
-  if (p) p.classList.toggle("active", tool === "pen");
-  if (e) e.classList.toggle("active", tool === "eraser");
-}
-
-function setStrokeSize(size) {
-  activeBaseSize = size;
-  const t = document.getElementById("sizeThin");
-  const m = document.getElementById("sizeMed");
-  const k = document.getElementById("sizeThick");
-  if (t) t.classList.toggle("active", size === 2);
-  if (m) m.classList.toggle("active", size === 4);
-  if (k) k.classList.toggle("active", size === 7);
-}
-
-function setupCanvasListeners() {
-  if (!canvas) return;
-
-  canvas.onpointerdown = function(e) {
-    if (appMode === "parent") return; // Read-only
-    if (inputRejectionMode === "pen-only") {
-      if (e.pointerType !== "pen" && e.pointerType !== "mouse") {
-        e.preventDefault();
-        return;
+    /* Return to Hub Safe-Exit Handler */
+    function goToHub() {
+      if ('speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+      }
+      if (typeof saveCurrentInk === "function") {
+        try { saveCurrentInk(); } catch (e) {}
+      }
+      if (typeof saveCurrentPosition === "function") {
+        try { saveCurrentPosition(); } catch (e) {}
+      }
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage("close-lesson-to-hub", "*");
+      } else {
+        window.location.href = "index.html";
       }
     }
-    if (isDrawing && activePointerId !== null) return;
-    activePointerId = e.pointerId;
-    isDrawing = true;
-    try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
 
-    const rect = canvas.getBoundingClientRect();
-    lastX = e.clientX - rect.left;
-    lastY = e.clientY - rect.top;
-    e.preventDefault();
-  };
+    /* Complete Structured Curriculum */
+    const MASTER_LESSON_CONTENT = {
+      meanings: [
+        { id: "m1", word: "pasture", rule: "A field covered with grass or other plants that sheep or cows can graze on.", answer: "A field covered with grass or other plants that sheep or cows can graze on." },
+        { id: "m2", word: "keen", rule: "Very interested; eager.", answer: "Very interested; eager." },
+        { id: "m3", word: "homesick", rule: "Missing being at home.", answer: "Missing being at home." },
+        { id: "m4", word: "summits", rule: "The topmost parts of mountains.", answer: "The topmost parts of mountains." },
+        { id: "m5", word: "pitifully", rule: "In a manner that makes people feel sorry.", answer: "In a manner that makes people feel sorry." },
+        { id: "m6", word: "miracles", rule: "Very lucky events that are surprising and unexpected.", answer: "Very lucky events that are surprising and unexpected." },
+        { id: "m7", word: "flushed", rule: "Red in the face.", answer: "Red in the face." },
+        { id: "m8", word: "assured", rule: "Promised.", answer: "Promised." },
+        { id: "m9", word: "Frau", rule: "German for 'Mrs'.", answer: "German for 'Mrs'." },
+        { id: "m10", word: "Fraulein", rule: "German for 'Miss'.", answer: "German for 'Miss'." },
+        { id: "m11", word: "depicted", rule: "Showed.", answer: "Showed." },
+        { id: "m12", word: "flock", rule: "(Here) a group of goats.", answer: "A group of goats." },
+        { id: "m13", word: "sobbing", rule: "Crying noisily, taking in deep breaths.", answer: "Crying noisily, taking in deep breaths." },
+        { id: "m14", word: "sighing", rule: "Breathing out slowly and noisily.", answer: "Breathing out slowly and noisily." },
+        { id: "m15", word: "resignation", rule: "A sad feeling of accepting something that you do not like because you cannot easily change it.", answer: "A sad feeling of accepting something that you do not like." }
+      ],
+      reading: [
+        { id: "c1", q: "Grandmother was surprised that Heidi:", rule: "Recall what Grandmother was astonished to discover about Heidi's skills.", options: ["could not read.", "was unable to learn the alphabet.", "did not want to learn the alphabet.", "had no interest in reading."], answer: "could not read." },
+        { id: "c2", q: "Heidi had decided that she would not be able to read as:", rule: "Think about who influenced Heidi's belief about reading.", options: ["she found it very difficult.", "she knew she was incapable of doing so.", "Peter had told her that it was not easy to learn to read.", "she wanted to defy Grandmother."], answer: "Peter had told her that it was not easy to learn to read." },
+        { id: "c3", q: "Grandmother promised Heidi that once she learnt to read:", rule: "Remember the incentive Grandmother offered to motivate Heidi.", options: ["she could have the large book with pictures.", "she could read from the large book.", "she could read to Clara.", "she would never cry on seeing the pictures."], answer: "she could have the large book with pictures." }
+      ],
+      present: [
+        { id: "g_a1", q: "Is this Simple Present? 'Grandmother likes to read.'", writePrompt: "Read carefully: 'Grandmother likes to read.' Write whether this is Simple Present and explain why:", rule: "Simple present expresses habits, general truths, or regular actions.", type: "tick", answer: "Yes (Simple Present - expresses a habit/preference)" },
+        { id: "g_a2", q: "Is this Simple Present? 'Heidi walks to the fields every day.'", writePrompt: "Read carefully: 'Heidi walks to the fields every day.' Write whether this is Simple Present and explain why:", rule: "Look for daily routines or repeated habits.", type: "tick", answer: "Yes (Simple Present - daily routine)" },
+        { id: "g_a3", q: "Is this Simple Present? 'The train reaches this station at 1 p.m.'", writePrompt: "Read carefully: 'The train reaches this station at 1 p.m.' Write whether this is Simple Present and explain why:", rule: "Scheduled timetable events use the simple present.", type: "tick", answer: "Yes (Simple Present - scheduled timetable event)" },
+        { id: "g_a4", q: "Is this Simple Present? 'The children read the best stories yesterday.'", writePrompt: "Read carefully: 'The children read the best stories yesterday.' Write whether this is Simple Present and explain why:", rule: "Check the timeframe of the action: did it happen in the past?", type: "tick", answer: "No (Simple Past - happened 'yesterday')" },
+        { id: "g_a5", q: "Is this Simple Present? 'The boy is running up the mountain.'", writePrompt: "Read carefully: 'The boy is running up the mountain.' Write whether this is Simple Present and explain why:", rule: "Continuous actions taking place right now use the present continuous (is/are + ing).", type: "tick", answer: "No (Present Continuous - 'is running')" }
+      ],
+      past: [
+        { id: "g_b1", word: "graze", q: "The sheep ______________ (graze) on the meadow yesterday.", writePrompt: "Complete the sentence with the past tense of 'graze': The sheep ______________ on the meadow yesterday.", rule: "Form the past tense of regular verbs by adding -d or -ed.", answer: "grazed" },
+        { id: "g_b2", word: "live", q: "Heidi ______________ (live) in the mountains of Switzerland.", writePrompt: "Complete the sentence with the past tense of 'live': Heidi ______________ in the mountains of Switzerland.", rule: "Convert 'live' to its simple past form.", answer: "lived" },
+        { id: "g_b3", word: "not know", q: "Heidi ______________ (not know) how to read.", writePrompt: "Complete with past negative auxiliary: Heidi ______________ how to read.", rule: "Use 'did not' followed by the base verb.", answer: "did not know" },
+        { id: "g_b4", word: "say", q: "The housekeeper ______________ (say) that Heidi could not read.", writePrompt: "Complete with the past tense of 'say': The housekeeper ______________ that Heidi could not read.", rule: "Recall the irregular past tense of 'say'.", answer: "said" },
+        { id: "g_b5", word: "sleep", q: "The shepherd ______________ (sleep) next to his sheep.", writePrompt: "Complete with the past tense of 'sleep': The shepherd ______________ next to his sheep.", rule: "Recall the irregular past tense of 'sleep'.", answer: "slept" }
+      ],
+      future: [
+        { id: "g_c1", q: "Why is 'will' used? 'That's Katie. I'll go and call her here.'", writePrompt: "'That's Katie. I'll go and call her here.' Write why 'will' is used here:", rule: "Identify whether the speaker is making a sudden decision, a promise, or stating a certainty.", options: ["Quick decision right now", "Certain fact", "Promise", "Guess"], answer: "Quick decision right now" },
+        { id: "g_c2", q: "Why is 'will' used? 'The ship will reach Aden tomorrow evening.'", writePrompt: "'The ship will reach Aden tomorrow evening.' Write why 'will' is used here:", rule: "Determine if this describes a timetable, a certainty, or a promise.", options: ["Certain fact", "Guess", "Promise", "Quick decision right now"], answer: "Certain fact" },
+        { id: "g_c3", q: "Why is 'will' used? 'Study hard. I will give you any book you want to read.'", writePrompt: "'Study hard. I will give you any book you want to read.' Write why 'will' is used here:", rule: "Consider what kind of personal commitment the speaker is making.", options: ["Promise", "Certain fact", "Guess", "Quick decision right now"], answer: "Promise" },
+        { id: "g_c4", q: "Why is 'will' used? 'The spaceship will send pictures of the moon once it reaches its orbit.'", writePrompt: "'The spaceship will send pictures of the moon once it reaches its orbit.' Write why 'will' is used here:", rule: "Evaluate whether this is a planned scientific certainty or sudden choice.", options: ["Certain fact", "Guess", "Promise", "Quick decision right now"], answer: "Certain fact" },
+        { id: "g_c5", q: "Why is 'will' used? 'If you run out of money, I will help you out.'", writePrompt: "'If you run out of money, I will help you out.' Write why 'will' is used here:", rule: "Notice the assurance given to a friend.", options: ["Promise", "Certain fact", "Guess", "Quick decision right now"], answer: "Promise" },
+        { id: "g_c6", q: "Why is 'will' used? 'Oh Lord! There's been a robbery in the shop. I'll call the police.'", writePrompt: "'Oh Lord! There's been a robbery in the shop. I'll call the police.' Write why 'will' is used here:", rule: "Identify the reaction to an unexpected emergency.", options: ["Quick decision right now", "Certain fact", "Guess", "Promise"], answer: "Quick decision right now" }
+      ],
+      verbs: [
+        { id: "g_d1", q: "'They have been working all day.' Which is the MAIN action verb?", writePrompt: "In the sentence 'They have been working all day.', identify and write down the MAIN action verb and HELPING verbs:", rule: "Identify the word showing the primary physical or mental action taking place.", options: ["working", "have", "been", "all day"], answer: "working (main verb); have, been (helping verbs)" },
+        { id: "g_d2", q: "'She does not like to play badminton.' Which is the HELPING verb?", writePrompt: "In the sentence 'She does not like to play badminton.', identify and write down the HELPING verb:", rule: "Identify the auxiliary verb that helps specify the tense/negation.", options: ["does", "like", "play", "not"], answer: "does (helping verb)" },
+        { id: "g_d3", q: "'She is preparing dinner for us.' Which is the MAIN action verb?", writePrompt: "In the sentence 'She is preparing dinner for us.', identify and write down the MAIN action verb:", rule: "Separate the auxiliary verb from the core activity being performed.", options: ["preparing", "is", "dinner", "for"], answer: "preparing (main verb); is (helping verb)" },
+        { id: "g_d4", q: "'They did not meet the minister.' Which is the HELPING verb?", writePrompt: "In the sentence 'They did not meet the minister.', identify and write down the HELPING verb:", rule: "Look for the auxiliary that forms the past negative phrase.", options: ["did", "meet", "minister", "not"], answer: "did (helping verb)" },
+        { id: "g_d5", q: "'Did he finish his dinner?' Which is the HELPING verb?", writePrompt: "In the sentence 'Did he finish his dinner?', identify and write down the HELPING verb:", rule: "Look for the fronted auxiliary verb creating the question form.", options: ["Did", "finish", "dinner", "he"], answer: "Did (helping verb)" },
+        { id: "g_d6", q: "'I have been listening to your speech.' Which is the MAIN action verb?", writePrompt: "In the sentence 'I have been listening to your speech.', identify and write down the MAIN action verb:", rule: "Find the real ongoing action verb, not the auxiliary helping words.", options: ["listening", "have", "been", "speech"], answer: "listening (main verb); have, been (helping verbs)" }
+      ],
+      pairs: [
+        { id: "h1", q: "The hotel has a ____________ of rooms for very important guests.", writePrompt: "Fill in the blank with the correct word from memory: The hotel has a ____________ of rooms for very important guests.", rule: "Choose between connected luxury rooms vs tasting sugary.", options: ["suite", "sweet"], answer: "suite" },
+        { id: "h2", q: "She has a ____________ voice.", writePrompt: "Fill in the blank with the correct word from memory: She has a ____________ voice.", rule: "Choose the word meaning pleasant, delightful, or sugary.", options: ["sweet", "suite"], answer: "sweet" },
+        { id: "h3", q: "They live on a remote ____________ in the West Indies.", writePrompt: "Fill in the blank with the correct word from memory: They live on a remote ____________ in the West Indies.", rule: "Choose between a small island vs a walkway between rows.", options: ["isle", "aisle"], answer: "isle" },
+        { id: "h4", q: "The ____________ sand hurt his bare feet.", writePrompt: "Fill in the blank with the correct word from memory: The ____________ sand hurt his bare feet.", rule: "Choose between rough in texture vs a path/direction.", options: ["coarse", "course"], answer: "coarse" },
+        { id: "h5", q: "Half of these factories now stand ____________.", writePrompt: "Fill in the blank with the correct word from memory: Half of these factories now stand ____________.", rule: "Choose between not active/working vs a worshipped statue.", options: ["idle", "idol"], answer: "idle" },
+        { id: "h6", q: "Strawberries and cream ____________ each other perfectly.", writePrompt: "Fill in the blank with the correct word from memory: Strawberries and cream ____________ each other perfectly.", rule: "Choose between making complete/enhancing vs praising someone.", options: ["complement", "compliment"], answer: "complement" }
+      ]
+    };
 
-  canvas.onpointermove = function(e) {
-    if (!isDrawing || e.pointerId !== activePointerId || appMode === "parent") return;
+    const SECTION_LABELS = {
+      meanings: "📖 Meanings",
+      reading: "📚 Reading",
+      present: "⚡ Present Tense",
+      past: "🕰️ Past Tense",
+      future: "🚀 Future Tense",
+      verbs: "🎯 Verbs",
+      pairs: "🔤 Word Pairs"
+    };
 
-    const rect = canvas.getBoundingClientRect();
-    const currX = e.clientX - rect.left;
-    const currY = e.clientY - rect.top;
+    /* Storage Manager */
+    const StorageMgr = {
+      set(key, value) {
+        try { localStorage.setItem(key, value); }
+        catch (e) {
+          for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (k && k.startsWith("z_ink_")) { localStorage.removeItem(k); break; }
+          }
+          try { localStorage.setItem(key, value); } catch (_) {}
+        }
+      },
+      get(key) {
+        try { return localStorage.getItem(key); } catch (e) { return null; }
+      },
+      remove(key) {
+        try { localStorage.removeItem(key); } catch (e) {}
+      }
+    };
 
-    ctx.beginPath();
-    ctx.moveTo(lastX, lastY);
-    ctx.lineTo(currX, currY);
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
+    /* App State with Position Auto-Recovery */
+    let currentSection = StorageMgr.get("z_last_section") || "meanings";
+    let currentLocalIndex = parseInt(StorageMgr.get("z_last_index") || "0", 10);
+    let appMode = StorageMgr.get("z_app_mode") || "practice";
+    let userAnswers = JSON.parse(StorageMgr.get("z_answers") || "{}");
+    let inputRejectionMode = StorageMgr.get("z_palm_mode") || "pen-only";
+    let strokeUndoHistory = {};
+    let writeShuffleMap = {};
 
-    if (activeTool === "eraser") {
-      ctx.globalCompositeOperation = "destination-out";
-      ctx.lineWidth = activeBaseSize * 6;
-    } else {
-      ctx.globalCompositeOperation = "source-over";
-      ctx.strokeStyle = "#1F3A4B";
-      const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
-      ctx.lineWidth = activeBaseSize * (pressure * 1.5 + 0.35);
+    /* Validate recovered section */
+    if (!MASTER_LESSON_CONTENT[currentSection]) {
+      currentSection = "meanings";
+      currentLocalIndex = 0;
     }
-    ctx.stroke();
 
-    lastX = currX;
-    lastY = currY;
-    e.preventDefault();
-  };
+    /* Canvas Drawing State */
+    const canvas = document.getElementById("scratchCanvas");
+    const ctx = canvas.getContext("2d", { willReadFrequently: false });
+    let isDrawing = false;
+    let currentTool = "pen";
+    let baseLineWidth = 4;
+    let lastX = 0, lastY = 0;
+    let activePointerId = null;
+    let canvasReady = false;
 
-  const stopStroke = function(e) {
-    if (isDrawing && (e.pointerId === activePointerId || activePointerId === null)) {
-      isDrawing = false;
-      activePointerId = null;
-      try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
-      saveCurrentDrawing();
+    function saveCurrentPosition() {
+      StorageMgr.set("z_last_section", currentSection);
+      StorageMgr.set("z_last_index", currentLocalIndex.toString());
     }
-  };
 
-  canvas.onpointerup = stopStroke;
-  canvas.onpointercancel = stopStroke;
-  canvas.onpointerleave = stopStroke;
-}
+    function shuffleArray(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const temp = a[i]; a[i] = a[j]; a[j] = temp;
+      }
+      return a;
+    }
 
-/* QUEST MAP */
-function renderMap() {
-  const grid = document.getElementById("mapGrid");
-  if (!grid) return;
-  const list = getCurrentList();
-  let html = "";
-  let correctCount = 0;
+    function getActiveSectionList() {
+      const original = MASTER_LESSON_CONTENT[currentSection];
+      if (appMode === "write") {
+        if (!writeShuffleMap[currentSection]) {
+          writeShuffleMap[currentSection] = shuffleArray(original);
+        }
+        return writeShuffleMap[currentSection];
+      }
+      return original;
+    }
 
-  for (let i = 0; i < list.length; i++) {
-    const it = list[i];
-    const grade = localStorage.getItem(`grade::humayun::eng::${it.id}`);
-    const done = localStorage.getItem(`v2_isolated_ink::humayun::eng_oct07::study::${it.id}`) || 
-                 localStorage.getItem(`v2_isolated_ink::humayun::eng_oct07::write::${it.id}`);
-    let cls = "chest";
-    if (i === currentIndex) cls += " current";
-    if (grade === "correct") { cls += " correct"; correctCount++; }
-    else if (grade === "retry") cls += " retry";
-    else if (done) cls += " done";
+    function getCurrentItem() {
+      const list = getActiveSectionList();
+      if (currentLocalIndex >= list.length) currentLocalIndex = 0;
+      return list[currentLocalIndex] || list[0];
+    }
 
-    let icon = "📦";
-    let badge = "";
-    if (grade === "correct") badge = "<span class='badge'>⭐</span>";
-    else if (grade === "retry") icon = "🔄";
+    /* Mode Switching - Strict Canvas Isolation */
+    function setAppMode(mode) {
+      window.speechSynthesis.cancel();
+      
+      // Save current ink under the OLD mode first
+      saveCurrentInk();
+      
+      // Clear visual drawing buffer so previous mode ink cannot leak across
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    html += `<div class="${cls}" onclick="jumpToCard(${i})">${icon}${badge}</div>`;
-  }
-  grid.innerHTML = html;
-  const prog = document.getElementById("mapProgress");
-  if (prog) prog.innerText = `${correctCount} / ${list.length} ⭐`;
-}
+      // Set new mode and update state
+      appMode = mode;
+      StorageMgr.set("z_app_mode", mode);
 
-function saveGrade(status) {
-  const item = getCurrentItem();
-  if (!item) return;
-  localStorage.setItem(`grade::humayun::eng::${item.id}`, status);
-  if (!isNotepadSection()) renderMap();
-  alert(status === 'correct' ? "⭐ Marked as Correct!" : "🔄 Marked to Review Later.");
-}
+      if (mode === "write") {
+        writeShuffleMap = {};
+      }
 
-function markCardDone() {
-  saveCurrentDrawing();
-  const item = getCurrentItem();
-  if (item && !localStorage.getItem(`grade::humayun::eng::${item.id}`)) {
-    localStorage.setItem(`grade::humayun::eng::${item.id}`, "done");
-  }
-  renderMap();
-  const list = getCurrentList();
-  if (currentIndex < list.length - 1) {
-    navigateStep(1);
-  }
-}
+      currentLocalIndex = 0;
+      saveCurrentPosition();
+      updateAppModeUI();
+      renderCurrentCard();
+    }
 
-/* PIN MODAL */
-function openPinModal() {
-  enteredPin = "";
-  updatePinDots();
-  document.getElementById("modalPin").classList.add("open");
-}
-function closePinModal() { document.getElementById("modalPin").classList.remove("open"); }
-
-function pressPin(n) {
-  if (enteredPin.length < 4) {
-    enteredPin += n;
-    updatePinDots();
-    if (enteredPin.length === 4) {
-      if (enteredPin === PARENT_PIN) {
-        closePinModal();
-        setMode('parent');
+    function updateAppModeUI() {
+      document.body.classList.toggle("write-mode", appMode === "write");
+      const pracBtn = document.getElementById("modePracticeBtn");
+      const writeBtn = document.getElementById("modeWriteBtn");
+      if (appMode === "write") {
+        pracBtn.className = "mode-btn";
+        writeBtn.className = "mode-btn active-write";
       } else {
-        alert("Incorrect PIN");
+        pracBtn.className = "mode-btn active-practice";
+        writeBtn.className = "mode-btn";
+      }
+    }
+
+    /* Section Switching */
+    function renderSectionTabs() {
+      const container = document.getElementById("sectionTabs");
+      container.innerHTML = Object.keys(SECTION_LABELS).map(key => {
+        const isActive = currentSection === key;
+        return `<button class="nav-tab ${isActive ? 'active' : ''}" onclick="switchSection('${key}')">${SECTION_LABELS[key]}</button>`;
+      }).join("");
+    }
+
+    function switchSection(secKey) {
+      if (currentSection === secKey) return;
+      window.speechSynthesis.cancel();
+      saveCurrentInk();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      currentSection = secKey;
+      currentLocalIndex = 0;
+      saveCurrentPosition();
+      renderSectionTabs();
+      renderCurrentCard();
+    }
+
+    /* Hi-DPI Dynamic Fit */
+    function fitCanvasToContainer(skipRestore) {
+      const wrap = document.getElementById("canvasWrapper");
+      if (!wrap || wrap.offsetParent === null) return;
+      const rect = wrap.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
+
+      const dpr = window.devicePixelRatio || 1;
+      const targetW = Math.floor(rect.width * dpr);
+      const targetH = Math.floor(rect.height * dpr);
+
+      if (canvas.width === targetW && canvas.height === targetH) {
+        canvasReady = true;
+        return;
+      }
+
+      canvas.width = targetW;
+      canvas.height = targetH;
+      canvas.style.width = rect.width + "px";
+      canvas.style.height = rect.height + "px";
+
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      canvasReady = true;
+      if (!skipRestore) {
+        const item = getCurrentItem();
+        if (item) restoreInkForCard(item.id);
+      }
+    }
+
+    function getInkColor() {
+      return document.body.classList.contains("dark-mode") ? "#EDF4F9" : "#172B38";
+    }
+
+    function setTool(tool) {
+      currentTool = tool;
+      document.getElementById("penTool").classList.toggle("active", tool === "pen");
+      document.getElementById("eraserTool").classList.toggle("active", tool === "eraser");
+    }
+
+    function setStrokeWidth(w) {
+      baseLineWidth = w;
+      document.getElementById("sizeThin").classList.toggle("active", w === 2);
+      document.getElementById("sizeMed").classList.toggle("active", w === 4);
+      document.getElementById("sizeThick").classList.toggle("active", w === 7);
+    }
+
+    function toggleInputMode() {
+      inputRejectionMode = (inputRejectionMode === "pen-only") ? "all" : "pen-only";
+      StorageMgr.set("z_palm_mode", inputRejectionMode);
+      updateInputModeBtn();
+    }
+
+    function updateInputModeBtn() {
+      const btn = document.getElementById("btnPalmRejection");
+      if (!btn) return;
+      if (inputRejectionMode === "pen-only") {
+        btn.innerHTML = "🖊️ Pen Only";
+        btn.title = "Hardware palm rejection ON: Only stylus draws.";
+        btn.classList.add("active");
+      } else {
+        btn.innerHTML = "👆 Any Touch";
+        btn.title = "Touch drawing ON: Can write with fingers.";
+        btn.classList.remove("active");
+      }
+    }
+
+    /* Strictly Isolated Ink Storage Key */
+    function inkStorageKey(id) {
+      return `z_ink_${appMode}_${currentSection}_${id}`;
+    }
+
+    function saveCurrentInk() {
+      if (!canvasReady || canvas.width <= 0) return;
+      const item = getCurrentItem();
+      if (!item) return;
+      const key = inkStorageKey(item.id);
+      try {
+        const dataUrl = canvas.toDataURL("image/png");
+        StorageMgr.set(key, dataUrl);
+
+        if (!strokeUndoHistory[key]) strokeUndoHistory[key] = [];
+        const hist = strokeUndoHistory[key];
+        if (hist.length === 0 || hist[hist.length - 1] !== dataUrl) {
+          hist.push(dataUrl);
+        }
+        if (hist.length > 25) hist.shift();
+      } catch (e) {}
+    }
+
+    function restoreInkForCard(id) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const key = inkStorageKey(id);
+      const saved = StorageMgr.get(key);
+      if (!saved) return;
+
+      const img = new Image();
+      img.onload = function() {
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        ctx.restore();
+        if (!strokeUndoHistory[key]) strokeUndoHistory[key] = [saved];
+      };
+      img.src = saved;
+    }
+
+    function clearCurrentCanvas() {
+      const item = getCurrentItem();
+      if (!item) return;
+      const key = inkStorageKey(item.id);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      StorageMgr.remove(key);
+      strokeUndoHistory[key] = [];
+      saveCurrentInk();
+    }
+
+    function undoCanvasStroke() {
+      const item = getCurrentItem();
+      if (!item) return;
+      const key = inkStorageKey(item.id);
+      const hist = strokeUndoHistory[key] || [];
+
+      if (hist.length > 1) {
+        hist.pop();
+        const prev = hist[hist.length - 1];
+        StorageMgr.set(key, prev);
+        const img = new Image();
+        img.onload = function() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.save();
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          ctx.restore();
+        };
+        img.src = prev;
+      } else if (hist.length === 1) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        StorageMgr.remove(key);
+        strokeUndoHistory[key] = [];
+      }
+    }
+
+    /* Canvas Pointer Listeners with Hardware Palm Rejection */
+    function setupCanvasListeners() {
+      canvas.addEventListener("pointerdown", function(e) {
+        if (inputRejectionMode === "pen-only") {
+          if (e.pointerType !== "pen") {
+            e.preventDefault();
+            return;
+          }
+        } else {
+          if (e.pointerType === "touch" && (e.width > 35 || e.height > 35)) {
+            e.preventDefault();
+            return;
+          }
+        }
+
+        if (isDrawing && activePointerId !== null) return;
+
+        activePointerId = e.pointerId;
+        isDrawing = true;
+        try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+
+        const rect = canvas.getBoundingClientRect();
+        lastX = e.clientX - rect.left;
+        lastY = e.clientY - rect.top;
+        e.preventDefault();
+      }, { passive: false });
+
+      canvas.addEventListener("pointermove", function(e) {
+        if (!isDrawing || e.pointerId !== activePointerId) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const currX = e.clientX - rect.left;
+        const currY = e.clientY - rect.top;
+
+        const dx = currX - lastX;
+        const dy = currY - lastY;
+        if ((dx * dx + dy * dy) < 4) return;
+
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(currX, currY);
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+
+        if (currentTool === "eraser") {
+          ctx.globalCompositeOperation = "destination-out";
+          ctx.lineWidth = baseLineWidth * 6;
+        } else {
+          ctx.globalCompositeOperation = "source-over";
+          ctx.strokeStyle = getInkColor();
+          const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
+          ctx.lineWidth = baseLineWidth * (pressure * 1.5 + 0.35);
+        }
+        ctx.stroke();
+
+        lastX = currX;
+        lastY = currY;
+        e.preventDefault();
+      }, { passive: false });
+
+      const stopStroke = function(e) {
+        if (isDrawing && (e.pointerId === activePointerId || activePointerId === null)) {
+          isDrawing = false;
+          activePointerId = null;
+          try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+          saveCurrentInk();
+        }
+      };
+
+      canvas.addEventListener("pointerup", stopStroke);
+      canvas.addEventListener("pointercancel", stopStroke);
+      canvas.addEventListener("pointerleave", stopStroke);
+    }
+
+    /* Native Fullscreen API */
+    function toggleFullscreen() {
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        const el = document.documentElement;
+        if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      }
+    }
+
+    function updateFullscreenBtn() {
+      const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement);
+      const btn = document.getElementById("btnFullscreen");
+      if (btn) btn.innerHTML = isFs ? "↩ Exit" : "⛶ Fullscreen";
+    }
+
+    document.addEventListener("fullscreenchange", () => {
+      updateFullscreenBtn();
+      setTimeout(() => {
+        fitCanvasToContainer();
+      }, 100);
+    });
+
+    /* Eye Comfort Dim & Theme */
+    function toggleScreenDim() {
+      window.speechSynthesis.cancel();
+      const overlay = document.getElementById("screenDimOverlay");
+      const btn = document.getElementById("toggleDimBtn");
+      const isDimmed = window.getComputedStyle(overlay).display === "block";
+
+      if (isDimmed) {
+        overlay.style.display = "none";
+        btn.textContent = "💡 Dim";
+        StorageMgr.set("z_dim", "off");
+      } else {
+        overlay.style.display = "block";
+        btn.textContent = "☀️ Bright";
+        StorageMgr.set("z_dim", "on");
+      }
+    }
+
+    function loadDimPreference() {
+      if (StorageMgr.get("z_dim") === "on") {
+        document.getElementById("screenDimOverlay").style.display = "block";
+        document.getElementById("toggleDimBtn").textContent = "☀️ Bright";
+      }
+    }
+
+    function toggleDarkMode() {
+      window.speechSynthesis.cancel();
+      document.body.classList.toggle("dark-mode");
+      const isDark = document.body.classList.contains("dark-mode");
+      StorageMgr.set("z_theme", isDark ? "dark" : "light");
+      document.getElementById("toggleThemeBtn").textContent = isDark ? "☀ Light" : "🌙 Dark";
+      const item = getCurrentItem();
+      if (item) restoreInkForCard(item.id);
+    }
+
+    function loadTheme() {
+      if (StorageMgr.get("z_theme") === "dark") {
+        document.body.classList.add("dark-mode");
+        document.getElementById("toggleThemeBtn").textContent = "☀️ Light";
+      }
+    }
+
+    /* Audio TTS */
+    function readAloud() {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+
+      const btn = document.getElementById("btnSpeak");
+      const item = getCurrentItem();
+      if (!item) return;
+
+      let textToRead = "";
+      if (currentSection === "meanings") {
+        textToRead = item.word;
+        if (appMode === "practice") textToRead += `. Meaning: ${item.rule}`;
+      } else {
+        textToRead = (appMode === "write" && item.writePrompt) ? item.writePrompt : item.q;
+        if (appMode === "practice") textToRead += `. Clue: ${item.rule}`;
+      }
+
+      const utterance = new SpeechSynthesisUtterance(textToRead);
+      utterance.rate = 0.9;
+      utterance.pitch = 1.0;
+      utterance.onstart = () => btn.classList.add("playing");
+      utterance.onend = () => btn.classList.remove("playing");
+      utterance.onerror = () => btn.classList.remove("playing");
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    /* PIN / PEEK MODAL HANDLERS (Code: 1995) */
+    function openPeekPinModal() {
+      enteredPin = "";
+      updatePinDisplay();
+      document.getElementById("pinModal").classList.add("open");
+    }
+
+    function closePeekPinModal() {
+      document.getElementById("pinModal").classList.remove("open");
+      enteredPin = "";
+    }
+
+    function pressPin(num) {
+      if (enteredPin.length < 4) {
+        enteredPin += num;
+        updatePinDisplay();
+        if (enteredPin.length === 4) {
+          setTimeout(submitPin, 150);
+        }
+      }
+    }
+
+    function clearPin() {
+      enteredPin = "";
+      updatePinDisplay();
+    }
+
+    function backspacePin() {
+      enteredPin = enteredPin.slice(0, -1);
+      updatePinDisplay();
+    }
+
+    function updatePinDisplay() {
+      const disp = document.getElementById("pinDisplay");
+      let str = "";
+      for (let i = 0; i < 4; i++) {
+        str += (i < enteredPin.length) ? "● " : "- ";
+      }
+      disp.textContent = str.trim();
+    }
+
+    function submitPin() {
+      if (enteredPin === PARENT_SECRET_PIN) {
+        const item = getCurrentItem();
+        if (item) {
+          peekUnlockedMap[item.id] = true;
+          renderPeekContent(item);
+        }
+        closePeekPinModal();
+      } else {
+        alert("Incorrect Parent PIN. Please try again.");
         clearPin();
       }
     }
-  }
-}
 
-function clearPin() { enteredPin = ""; updatePinDots(); }
-function updatePinDots() {
-  let str = "";
-  for (let i = 0; i < 4; i++) {
-    str += (i < enteredPin.length) ? "● " : "- ";
-  }
-  document.getElementById("pinDots").textContent = str.trim();
-}
+    function renderPeekContent(item) {
+      const peekBox = document.getElementById("unlockedPeekBox");
+      const peekBar = document.getElementById("peekBar");
 
-window.onload = function() {
-  updateSectionTabs();
-  renderWorkspace(false);
-};
+      if (appMode === "write" && peekUnlockedMap[item.id]) {
+        let answerText = item.answer || item.rule || "No answer provided";
+        peekBox.innerHTML = `🔑 <b>Parent Answer:</b> ${answerText}`;
+        peekBox.style.display = "block";
+        peekBar.style.display = "none";
+      } else {
+        peekBox.style.display = "none";
+        peekBar.style.display = (appMode === "write") ? "flex" : "none";
+      }
+    }
 
-window.addEventListener("resize", () => {
-  saveCurrentDrawing();
-  fitCanvas();
-  restoreCurrentDrawing();
-});
+    /* Core Render Engine */
+    function renderCurrentCard() {
+      const list = getActiveSectionList();
+      const item = list[currentLocalIndex];
+      if (!item) return;
 
-window.addEventListener("beforeunload", saveCurrentDrawing);
-window.addEventListener("pagehide", saveCurrentDrawing);
-</script>
+      const mainContainer = document.getElementById("mainContainer");
+      const promptEl = document.getElementById("promptText");
+      const hintBubble = document.getElementById("hintBubble");
+      const optionsScroll = document.getElementById("optionsScroll");
+
+      // Dynamic Layout Orchestration
+      if (appMode === "practice") {
+        if (currentSection === "reading") {
+          mainContainer.className = "main-container layout-focus";
+        } else if (currentSection === "meanings" || currentSection === "past") {
+          mainContainer.className = "main-container layout-full";
+        } else {
+          mainContainer.className = "main-container layout-split";
+        }
+      } else {
+        mainContainer.className = "main-container layout-full";
+      }
+
+      // Configure Prompt Content Based on Active Mode
+      if (currentSection === "meanings") {
+        promptEl.innerHTML = `Word: <u>${item.word}</u>`;
+        hintBubble.innerHTML = `💡 <b>Meaning:</b> ${item.rule}`;
+        optionsScroll.style.display = "none";
+        optionsScroll.innerHTML = "";
+      } else if (appMode === "practice") {
+        promptEl.innerHTML = item.q;
+        hintBubble.innerHTML = `💡 <b>Rule / Clue:</b> ${item.rule}`;
+        if (item.options || item.type === "tick") {
+          optionsScroll.style.display = "flex";
+          renderInteractiveOptions(item, optionsScroll);
+        } else {
+          optionsScroll.style.display = "none";
+          optionsScroll.innerHTML = "";
+        }
+      } else {
+        promptEl.innerHTML = item.writePrompt || item.q;
+        optionsScroll.style.display = "none";
+        optionsScroll.innerHTML = "";
+      }
+
+      // Peek Bar vs Hint Bubble
+      if (appMode === "write") {
+        hintBubble.style.display = "none";
+        renderPeekContent(item);
+      } else {
+        hintBubble.style.display = "block";
+        document.getElementById("peekBar").style.display = "none";
+        document.getElementById("unlockedPeekBox").style.display = "none";
+      }
+
+      // Progress and Navigation Counters
+      document.getElementById("cardIndicator").textContent = `Card ${currentLocalIndex + 1} of ${list.length}`;
+      const pct = Math.round(((currentLocalIndex + 1) / list.length) * 100);
+      document.getElementById("thinProgressFill").style.width = `${pct}%`;
+
+      document.getElementById("prevBtn").disabled = (currentLocalIndex === 0);
+      document.getElementById("nextBtn").textContent = (currentLocalIndex === list.length - 1) ? "Section Done 🎉" : "Next ▶";
+
+      setTimeout(() => {
+        fitCanvasToContainer(true);
+        restoreInkForCard(item.id);
+      }, 20);
+    }
+
+    function renderInteractiveOptions(item, container) {
+      container.innerHTML = "";
+      const saved = userAnswers[item.id];
+
+      if (item.options) {
+        item.options.forEach((opt, idx) => {
+          const btn = document.createElement("button");
+          btn.className = `opt-choice-btn ${saved === idx ? 'selected' : ''}`;
+          btn.textContent = opt;
+          btn.onclick = () => {
+            window.speechSynthesis.cancel();
+            userAnswers[item.id] = idx;
+            StorageMgr.set("z_answers", JSON.stringify(userAnswers));
+            renderInteractiveOptions(item, container);
+          };
+          container.appendChild(btn);
+        });
+      } else if (item.type === "tick") {
+        const yesBtn = document.createElement("button");
+        yesBtn.className = `opt-choice-btn ${saved === true ? 'selected' : ''}`;
+        yesBtn.innerHTML = `✓ Yes (Simple Present)`;
+        yesBtn.onclick = () => {
+          window.speechSynthesis.cancel();
+          userAnswers[item.id] = true;
+          StorageMgr.set("z_answers", JSON.stringify(userAnswers));
+          renderInteractiveOptions(item, container);
+        };
+
+        const noBtn = document.createElement("button");
+        noBtn.className = `opt-choice-btn ${saved === false ? 'selected' : ''}`;
+        noBtn.innerHTML = `✗ No (Different Tense)`;
+        noBtn.onclick = () => {
+          window.speechSynthesis.cancel();
+          userAnswers[item.id] = false;
+          StorageMgr.set("z_answers", JSON.stringify(userAnswers));
+          renderInteractiveOptions(item, container);
+        };
+
+        container.appendChild(yesBtn);
+        container.appendChild(noBtn);
+      }
+    }
+
+    function navigateCard(dir) {
+      window.speechSynthesis.cancel();
+      saveCurrentInk();
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const list = getActiveSectionList();
+      const nextIdx = currentLocalIndex + dir;
+      if (nextIdx >= 0 && nextIdx < list.length) {
+        currentLocalIndex = nextIdx;
+        saveCurrentPosition();
+        renderCurrentCard();
+      }
+    }
+
+    /* Lifecycle & Position Auto-Flush Listeners */
+    window.addEventListener("beforeunload", () => {
+      window.speechSynthesis.cancel();
+      saveCurrentInk();
+      saveCurrentPosition();
+    });
+    window.addEventListener("pagehide", () => {
+      window.speechSynthesis.cancel();
+      saveCurrentInk();
+      saveCurrentPosition();
+    });
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        window.speechSynthesis.cancel();
+        saveCurrentInk();
+        saveCurrentPosition();
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      saveCurrentInk();
+      fitCanvasToContainer();
+    });
+
+    window.addEventListener("orientationchange", () => {
+      setTimeout(() => {
+        saveCurrentInk();
+        fitCanvasToContainer();
+      }, 300);
+    });
+
+    /* App Boot with Automatic Position Restoration */
+    window.onload = function() {
+      setupCanvasListeners();
+      updateInputModeBtn();
+      updateAppModeUI();
+      renderSectionTabs();
+      loadTheme();
+      loadDimPreference();
+      updateFullscreenBtn();
+      setTimeout(() => {
+        renderCurrentCard();
+      }, 80);
+    };
+  </script>
 </body>
 </html>
