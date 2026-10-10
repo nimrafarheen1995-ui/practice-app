@@ -244,7 +244,7 @@
     .speakable:active { background: #FEF08A; color: #000; }
 
     /* =======================================================
-       MASTER SPEC DUAL BLUE-RULED WRITING CANVAS ARCHITECTURE
+       DUAL-LINE BLUE RULED CANVAS WRAPPER
     ======================================================= */
     .inline-blank-container {
       display: inline-flex;
@@ -297,7 +297,10 @@
 
     .dual-canvas {
       position: absolute;
-      inset: 0;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       cursor: crosshair;
       touch-action: none;
       z-index: 3;
@@ -372,7 +375,7 @@
     }
     body.test-mode .answer-tag { display: none !important; }
 
-    /* SECTION 2: MATCH FOLLOWING (COMPACT PILL & EXPANDED CANVAS) */
+    /* SECTION 2: MATCH FOLLOWING */
     .match-columns-learn {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -511,7 +514,7 @@
     }
     .state-chip.active-chip { background: var(--primary); border-color: var(--primary); color: #FFF; }
 
-    /* SECTION 5: FULL NOTEPAD DEFINITIONS */
+    /* SECTION 5: FULL NOTEPAD */
     .def-subtabs {
       display: flex;
       gap: 6px;
@@ -622,7 +625,7 @@
       z-index: 2;
     }
 
-    /* SECTION 6: CONCEPT MAP STYLES */
+    /* SECTION 6: CONCEPT MAP */
     .cmap-wrapper {
       display: flex;
       flex-direction: column;
@@ -858,6 +861,10 @@
     let currentDefIdx = 0;
     let palmRejectionMode = "pen-only";
 
+    // IN-MEMORY DIRTY TRACKING PREVENTS BLANK OVERWRITES
+    const activeInkCache = {};
+    const hasDrawnMap = {};
+
     function speakText(txt) {
       if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
@@ -867,20 +874,19 @@
       window.speechSynthesis.speak(u);
     }
 
-    /* MASTER SPEC RULE 1: STRICT MODE-ISOLATED NAMESPACE */
+    /* THE PROVEN STORAGE KEY FORMAT */
     function getStorageKey(id) {
       const targetSlot = (appMode === "review" || appMode === "parent") ? "test" : appMode;
-      return `v2_isolated_ink::evs_oct07::${targetSlot}::${id}`;
+      return `v2_isolated_ink::humayun::evs_oct07::${targetSlot}::${id}`;
     }
 
-    /* INLINE WRITING PAD TEMPLATE */
     function inlineDualBlank(id, width = 240, watermark = "") {
       return `
         <span class="inline-blank-container">
           <span class="inline-canvas-wrapper" style="width:${width}px;">
             <span class="dual-lines-texture"></span>
             <span class="watermark-letter" id="wm_${id}">${watermark}</span>
-            <canvas class="dual-canvas" data-canvas-id="${id}" width="${width}" height="68"></canvas>
+            <canvas class="dual-canvas" data-canvas-id="${id}"></canvas>
           </span>
           <button type="button" class="inline-clear-btn" onclick="clearDualCanvas('${id}')" title="Clear">🧹</button>
         </span>
@@ -1308,15 +1314,15 @@
       btn.textContent = isDim ? "💡 Dim" : "☀️ Bright";
     }
 
-    /* MASTER SPEC RULE 2: MODE-SWITCH TRANSITION LIFECYCLE */
+    /* BULLETPROOF MODE TOGGLE ENGINE */
     function setAppMode(newMode) {
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-      
-      // 1. Save outgoing state under current mode
+
+      // 1. Save all active drawings under the outgoing mode
       saveAllDualCanvases();
       saveFullNPCanvas();
 
-      // 2. Switch mode variable and UI styling
+      // 2. Switch mode safely
       appMode = newMode;
       document.body.className = (newMode === 'test') ? "test-mode" : (newMode === 'review' ? "review-mode" : "");
 
@@ -1324,7 +1330,7 @@
       document.getElementById("btnModeTest").className = `mode-btn ${newMode === 'test' ? 'active-test' : ''}`;
       document.getElementById("btnModeReview").className = `mode-btn ${newMode === 'review' ? 'active-review' : ''}`;
 
-      // 3. Switch section with doSave = false to eliminate race conditions
+      // 3. Render the section cleanly with doSave = false
       switchSection(currentSectionIdx, false);
     }
 
@@ -1432,31 +1438,37 @@
       btn.innerHTML = (palmRejectionMode === "pen-only") ? "🖊️ Pen Only" : "👆 Any Touch";
     }
 
-    /* MASTER SPEC RULES 3, 4, 5: SOLID DUAL-CANVAS ENGINE */
+    /* SYNCHRONOUS RESOLUTION & PERSISTENT DUAL-CANVAS ENGINE */
     function setupDualCanvases() {
       const canvasList = document.querySelectorAll(".dual-canvas");
       canvasList.forEach(c => {
         const id = c.getAttribute("data-canvas-id");
-        const ctx = c.getContext("2d", { willReadFrequently: false });
+        const bRect = c.parentElement.getBoundingClientRect();
+        
+        // Exact 1:1 hardware coordinate pixel setup
+        c.width = Math.round(bRect.width);
+        c.height = 68;
 
-        // MASTER SPEC RULE 3: Mandatory Double-Wipe clearRect before restore
+        const ctx = c.getContext("2d", { willReadFrequently: false });
         ctx.clearRect(0, 0, c.width, c.height);
 
-        const savedKey = getStorageKey(id);
-        const saved = localStorage.getItem(savedKey);
-        if (saved) {
+        const storageKey = getStorageKey(id);
+        const cachedData = activeInkCache[storageKey] || localStorage.getItem(storageKey);
+
+        if (cachedData) {
+          activeInkCache[storageKey] = cachedData;
+          hasDrawnMap[id] = true;
           const img = new Image();
           img.onload = () => {
             ctx.clearRect(0, 0, c.width, c.height);
-            ctx.drawImage(img, 0, 0);
+            ctx.drawImage(img, 0, 0, c.width, c.height);
           };
-          img.src = saved;
+          img.src = cachedData;
         }
 
         let isDrawing = false;
         let lastX = 0, lastY = 0;
 
-        // MASTER SPEC RULE 4: Hardware Compatibility (Stylus + Desktop Mouse)
         c.onpointerdown = (e) => {
           if (appMode === "review") return;
           if (palmRejectionMode === "pen-only" && e.pointerType !== "pen" && e.pointerType !== "mouse") {
@@ -1464,18 +1476,19 @@
             return;
           }
           isDrawing = true;
+          hasDrawnMap[id] = true;
           try { c.setPointerCapture(e.pointerId); } catch (_) {}
-          const bRect = c.getBoundingClientRect();
-          lastX = e.clientX - bRect.left;
-          lastY = e.clientY - bRect.top;
+          const rect = c.getBoundingClientRect();
+          lastX = e.clientX - rect.left;
+          lastY = e.clientY - rect.top;
           e.preventDefault();
         };
 
         c.onpointermove = (e) => {
           if (!isDrawing || appMode === "review") return;
-          const bRect = c.getBoundingClientRect();
-          const currX = e.clientX - bRect.left;
-          const currY = e.clientY - bRect.top;
+          const rect = c.getBoundingClientRect();
+          const currX = e.clientX - rect.left;
+          const currY = e.clientY - rect.top;
 
           ctx.beginPath();
           ctx.moveTo(lastX, lastY);
@@ -1492,7 +1505,6 @@
           e.preventDefault();
         };
 
-        // MASTER SPEC RULE 5: Instant Stroke Serialization on pointerup / cancel
         const stopStroke = (e) => {
           if (isDrawing) {
             isDrawing = false;
@@ -1507,10 +1519,12 @@
     }
 
     function saveDualCanvas(c, id) {
-      if (appMode === "review") return;
+      if (appMode === "review" || !hasDrawnMap[id]) return;
       try {
         const data = c.toDataURL("image/png");
-        localStorage.setItem(getStorageKey(id), data);
+        const key = getStorageKey(id);
+        activeInkCache[key] = data;
+        localStorage.setItem(key, data);
       } catch (e) {}
     }
 
@@ -1518,7 +1532,9 @@
       if (appMode === "review") return;
       document.querySelectorAll(".dual-canvas").forEach(c => {
         const id = c.getAttribute("data-canvas-id");
-        saveDualCanvas(c, id);
+        if (hasDrawnMap[id]) {
+          saveDualCanvas(c, id);
+        }
       });
     }
 
@@ -1527,13 +1543,16 @@
       if (c) {
         const ctx = c.getContext("2d");
         ctx.clearRect(0, 0, c.width, c.height);
-        localStorage.removeItem(getStorageKey(id));
+        const key = getStorageKey(id);
+        delete activeInkCache[key];
+        hasDrawnMap[id] = false;
+        localStorage.removeItem(key);
       }
       const wm = document.getElementById(`wm_${id}`);
       if (wm) wm.textContent = "";
     }
 
-    /* FULL NOTEPAD COMPONENT FOR DEFINITIONS (RULE 7) */
+    /* FULL NOTEPAD LOGIC */
     let npCanvas = null;
     let npCtx = null;
     let npIsDrawing = false;
@@ -1573,15 +1592,19 @@
       if (!npCanvas || npCanvas.width <= 0 || appMode === "review") return;
       try {
         const data = npCanvas.toDataURL("image/png");
-        localStorage.setItem(getNPStorageKey(), data);
+        const key = getNPStorageKey();
+        activeInkCache[key] = data;
+        localStorage.setItem(key, data);
       } catch (e) {}
     }
 
     function restoreFullNPCanvas() {
       if (!npCanvas || !npCtx) return;
       npCtx.clearRect(0, 0, npCanvas.width, npCanvas.height);
-      const saved = localStorage.getItem(getNPStorageKey());
+      const key = getNPStorageKey();
+      const saved = activeInkCache[key] || localStorage.getItem(key);
       if (!saved) return;
+      activeInkCache[key] = saved;
       const img = new Image();
       img.onload = function() {
         npCtx.save();
@@ -1595,7 +1618,9 @@
     function clearNPCanvas() {
       if (!npCanvas || !npCtx) return;
       npCtx.clearRect(0, 0, npCanvas.width, npCanvas.height);
-      localStorage.removeItem(getNPStorageKey());
+      const key = getNPStorageKey();
+      delete activeInkCache[key];
+      localStorage.removeItem(key);
     }
 
     function setNPTool(t) {
