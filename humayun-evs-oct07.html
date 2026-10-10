@@ -24,7 +24,8 @@
       --purple: #7C3AED;
       --purple-dark: #6D28D9;
       --accent: #F59E0B;
-      --ruled-line: #93C5FD;
+      --ruled-blue: #93C5FD;
+      --margin-red: #F87171;
       --shadow: 0 4px 14px rgba(20, 83, 45, 0.08);
       --font: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
     }
@@ -54,7 +55,6 @@
       padding: 8px 14px;
     }
 
-    /* FORCED LANDSCAPE OVERLAY */
     .orientation-warning {
       display: none;
       position: fixed;
@@ -95,7 +95,6 @@
       gap: 8px;
     }
 
-    /* HEADER */
     header {
       display: flex;
       justify-content: space-between;
@@ -176,7 +175,6 @@
     }
     .action-btn:active { transform: translateY(1px); }
 
-    /* SECTIONS BAR */
     .sections-bar {
       display: flex;
       gap: 6px;
@@ -206,7 +204,6 @@
     body.test-mode .section-tab-btn.active { background: var(--purple); }
     body.review-mode .section-tab-btn.active { background: #0284C7; }
 
-    /* WORKSPACE */
     .workspace {
       flex: 1;
       background: var(--card-bg);
@@ -246,37 +243,56 @@
     }
     .speakable:active { background: #FEF08A; color: #000; }
 
-    /* INLINE DUAL-LINE CANVAS */
+    /* =======================================================
+       MASTER SPEC DUAL BLUE-RULED WRITING CANVAS ARCHITECTURE
+    ======================================================= */
     .inline-blank-container {
       display: inline-flex;
       align-items: center;
       vertical-align: middle;
-      margin: 4px 6px;
       background: #FFFFFF;
       border: 2px solid #CBD5E1;
       border-radius: 12px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      overflow: hidden;
     }
 
     .inline-canvas-wrapper {
       position: relative;
-      width: 250px;
-      height: 60px;
-      border-radius: 10px 0 0 10px;
-      overflow: hidden;
+      height: 68px;
       background: #FFFFFF;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
     }
 
     .dual-lines-texture {
       position: absolute;
       inset: 0;
       pointer-events: none;
-      background-image: 
-        linear-gradient(to bottom, #2563EB 1.5px, transparent 1.5px),
-        linear-gradient(to bottom, #2563EB 1.5px, transparent 1.5px);
-      background-size: 100% 100%;
-      background-position: 0 18px, 0 42px;
-      opacity: 0.65;
+      z-index: 1;
+      background-color: #FFFFFF;
+      background-image: repeating-linear-gradient(
+        #FFFFFF 0px,
+        #FFFFFF 20px,
+        var(--ruled-blue) 21px,
+        #FFFFFF 22px,
+        #FFFFFF 44px,
+        var(--ruled-blue) 45px,
+        #FFFFFF 46px,
+        #FFFFFF 68px
+      );
+      opacity: 0.9;
+    }
+    .dual-lines-texture::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 14px;
+      width: 1.5px;
+      height: 100%;
+      background: var(--margin-red);
+      opacity: 0.8;
     }
 
     .dual-canvas {
@@ -284,6 +300,20 @@
       inset: 0;
       cursor: crosshair;
       touch-action: none;
+      z-index: 3;
+    }
+
+    .watermark-letter {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: #94A3B8;
+      opacity: 0.28;
+      pointer-events: none;
       z-index: 2;
     }
 
@@ -291,148 +321,21 @@
       background: #F8FAFC;
       border: none;
       border-left: 1.5px solid #CBD5E1;
-      padding: 0 8px;
-      height: 60px;
-      border-radius: 0 10px 10px 0;
+      padding: 0 10px;
+      height: 68px;
       cursor: pointer;
-      font-size: 0.95rem;
+      font-size: 1.05rem;
       color: #64748B;
       font-weight: 800;
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: background 0.1s;
+      z-index: 4;
     }
     .inline-clear-btn:active { background: #E2E8F0; }
 
-    /* FULL NOTEPAD COMPONENT (SECTION 5) */
-    .def-subtabs {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 6px;
-      flex-shrink: 0;
-    }
-
-    .def-subtab-btn {
-      background: #F8FAFC;
-      border: 2px solid var(--border);
-      border-radius: 10px;
-      padding: 6px 14px;
-      font-weight: 800;
-      font-size: 0.9rem;
-      color: var(--subtext);
-      cursor: pointer;
-      transition: all 0.1s;
-    }
-    .def-subtab-btn.active {
-      background: var(--primary);
-      color: #FFF;
-      border-color: var(--primary);
-    }
-    body.test-mode .def-subtab-btn.active {
-      background: var(--purple);
-      border-color: var(--purple);
-    }
-
-    .full-notepad-wrapper {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-      min-height: 0;
-      gap: 8px;
-      height: 100%;
-    }
-
-    .notepad-prompt-box {
-      background: #F8FAFC;
-      border: 2px solid #E2E8F0;
-      border-radius: 12px;
-      padding: 12px 16px;
-      font-size: 1.1rem;
-      line-height: 1.5;
-      flex-shrink: 0;
-    }
-    .notepad-prompt-box b { color: var(--primary-dark); }
-    body.test-mode .notepad-prompt-box .learn-ans-reveal { display: none !important; }
-
-    .notepad-toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 6px;
-      border-bottom: 2px solid var(--border);
-      gap: 6px;
-      flex-wrap: wrap;
-      flex-shrink: 0;
-    }
-
-    .tool-group {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-
-    .pad-btn {
-      background: #F8FAFC;
-      border: 2px solid var(--border);
-      border-radius: 10px;
-      padding: 6px 12px;
-      font-size: 0.85rem;
-      font-weight: 800;
-      cursor: pointer;
-      color: var(--text);
-      height: 36px;
-    }
-    .pad-btn.active { background: var(--primary); color: #FFF; border-color: var(--primary); }
-    body.test-mode .pad-btn.active { background: var(--purple); border-color: var(--purple); }
-
-    .full-notepad-container {
-      position: relative;
-      flex: 1;
-      width: 100%;
-      min-height: 320px;
-      border-radius: 14px;
-      overflow: hidden;
-      border: 2px solid var(--border);
-      background: #FFFFFF;
-    }
-
-    .notepad-dual-lines {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background-color: #FFFFFF;
-      background-image: repeating-linear-gradient(
-        #FFFFFF 0px,
-        #FFFFFF 28px,
-        var(--ruled-line) 29px,
-        #FFFFFF 30px,
-        #FFFFFF 56px,
-        var(--ruled-line) 57px,
-        #FFFFFF 58px,
-        #FFFFFF 84px
-      );
-      opacity: 0.65;
-      z-index: 1;
-    }
-    .notepad-dual-lines::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 36px;
-      width: 2px;
-      height: 100%;
-      background: #F87171;
-    }
-
-    #fullNotepadCanvas {
-      position: absolute;
-      inset: 0;
-      cursor: crosshair;
-      touch-action: none;
-      z-index: 2;
-    }
-
-    /* TABLE */
+    /* SECTION 1: DIFFERENCES TABLE */
     .diff-table {
       width: 100%;
       border-collapse: collapse;
@@ -469,8 +372,8 @@
     }
     body.test-mode .answer-tag { display: none !important; }
 
-    /* MATCH & MCQ */
-    .match-columns {
+    /* SECTION 2: MATCH FOLLOWING (COMPACT PILL & EXPANDED CANVAS) */
+    .match-columns-learn {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 16px;
@@ -491,6 +394,51 @@
     .match-btn.selected { background: #FEF08A; border-color: #EAB308; box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.35); }
     .match-btn.paired { background: #DCFCE7; border-color: var(--primary); color: #166534; pointer-events: none; }
 
+    .match-3col-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+    .match-3col-header {
+      display: grid;
+      grid-template-columns: 180px 230px 1fr;
+      gap: 16px;
+      padding: 6px 12px;
+      font-weight: 900;
+      color: var(--purple-dark);
+      font-size: 0.95rem;
+      border-bottom: 2px solid #E2E8F0;
+    }
+    .match-3col-row {
+      display: grid;
+      grid-template-columns: 180px 230px 1fr;
+      gap: 16px;
+      align-items: center;
+      background: #F8FAFC;
+      border: 2px solid #E2E8F0;
+      border-radius: 14px;
+      padding: 8px 12px;
+    }
+    .match-col-text {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #0F172A;
+    }
+    .match-option-pill {
+      display: inline-block;
+      width: fit-content;
+      background: #FFF;
+      padding: 8px 14px;
+      border-radius: 20px;
+      border: 2px solid #CBD5E1;
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: #1E293B;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+
+    /* SECTION 3: MCQS */
     .mcq-item {
       background: #F8FAFC;
       border: 2px solid #E2E8F0;
@@ -501,8 +449,23 @@
       gap: 8px;
       margin-bottom: 8px;
     }
-    .mcq-q { font-size: 1.05rem; font-weight: 800; color: #0F172A; }
-    .mcq-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .mcq-q-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .mcq-q {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #0F172A;
+      flex: 1;
+    }
+    .mcq-opts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
     .mcq-opt-btn {
       background: #FFF;
       border: 2px solid #CBD5E1;
@@ -517,8 +480,12 @@
     .mcq-opt-btn.wrong { background: #FEE2E2; border-color: #EF4444; color: #991B1B; }
     .mcq-opt-btn.selected-test { background: #DDD6FE; border-color: var(--purple); color: #4C1D95; font-weight: 800; }
 
-    /* PICTURE IDENTIFICATION */
-    .pic-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    /* SECTION 4: PICTURE IDENTIFICATION */
+    .pic-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
     .pic-card {
       background: #F8FAFC;
       border: 2px solid #E2E8F0;
@@ -543,6 +510,203 @@
       cursor: pointer;
     }
     .state-chip.active-chip { background: var(--primary); border-color: var(--primary); color: #FFF; }
+
+    /* SECTION 5: FULL NOTEPAD DEFINITIONS */
+    .def-subtabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 6px;
+      flex-shrink: 0;
+    }
+    .def-subtab-btn {
+      background: #F8FAFC;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 6px 14px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: var(--subtext);
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+    .def-subtab-btn.active { background: var(--primary); color: #FFF; border-color: var(--primary); }
+    body.test-mode .def-subtab-btn.active { background: var(--purple); border-color: var(--purple); }
+
+    .full-notepad-wrapper {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      gap: 8px;
+      height: 100%;
+    }
+    .notepad-prompt-box {
+      background: #F8FAFC;
+      border: 2px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 1.1rem;
+      line-height: 1.5;
+      flex-shrink: 0;
+    }
+    .notepad-prompt-box b { color: var(--primary-dark); }
+    body.test-mode .notepad-prompt-box .learn-ans-reveal { display: none !important; }
+
+    .notepad-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--border);
+      gap: 6px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+    .tool-group { display: flex; gap: 6px; align-items: center; }
+    .pad-btn {
+      background: #F8FAFC;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      cursor: pointer;
+      color: var(--text);
+      height: 36px;
+    }
+    .pad-btn.active { background: var(--primary); color: #FFF; border-color: var(--primary); }
+    body.test-mode .pad-btn.active { background: var(--purple); border-color: var(--purple); }
+
+    .full-notepad-container {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      min-height: 320px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 2px solid var(--border);
+      background: #FFFFFF;
+    }
+    .notepad-dual-lines {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-color: #FFFFFF;
+      background-image: repeating-linear-gradient(
+        #FFFFFF 0px,
+        #FFFFFF 28px,
+        var(--ruled-blue) 29px,
+        #FFFFFF 30px,
+        #FFFFFF 56px,
+        var(--ruled-blue) 57px,
+        #FFFFFF 58px,
+        #FFFFFF 84px
+      );
+      opacity: 0.85;
+      z-index: 1;
+    }
+    .notepad-dual-lines::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 36px;
+      width: 2px;
+      height: 100%;
+      background: var(--margin-red);
+    }
+    #fullNotepadCanvas {
+      position: absolute;
+      inset: 0;
+      cursor: crosshair;
+      touch-action: none;
+      z-index: 2;
+    }
+
+    /* SECTION 6: CONCEPT MAP STYLES */
+    .cmap-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      gap: 12px;
+      padding-bottom: 14px;
+    }
+    .cmap-root-card {
+      background: #DCFCE7;
+      border: 3px solid #16A34A;
+      border-radius: 16px;
+      padding: 12px 32px;
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: #14532D;
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);
+      text-align: center;
+    }
+    .cmap-branch-label {
+      font-weight: 900;
+      color: #166534;
+      font-size: 1.05rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .cmap-branch-label::before { content: '│'; font-size: 1.2rem; line-height: 1; }
+    .cmap-branch-label::after { content: '▼'; font-size: 0.85rem; line-height: 1; }
+
+    .cmap-columns-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      width: 100%;
+    }
+    .cmap-col-card {
+      background: #F8FAFC;
+      border: 2px solid #CBD5E1;
+      border-radius: 18px;
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .cmap-type-badge {
+      background: #FED7AA;
+      border: 2.5px solid #F97316;
+      border-radius: 14px;
+      padding: 10px 18px;
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: #9A3412;
+      text-align: center;
+      width: 100%;
+      letter-spacing: 2px;
+    }
+    .cmap-down-arrow-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      color: #DC2626;
+      font-weight: 900;
+      font-size: 0.95rem;
+    }
+    .cmap-down-arrow-wrap span { font-size: 1.6rem; line-height: 1; }
+
+    .cmap-ex-row {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      gap: 6px;
+      align-items: center;
+    }
+    .cmap-ex-label {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: #64748B;
+      align-self: flex-start;
+      margin-left: 6px;
+    }
 
     /* PARENT REVIEW */
     .parent-review-strip {
@@ -691,7 +855,7 @@
     let enteredPin = "";
     let appMode = "learn";
     let currentSectionIdx = 0;
-    let currentDefIdx = 0; // 0: Matter, 1: Evaporation, 2: Condensation, 3: Freezing
+    let currentDefIdx = 0;
     let palmRejectionMode = "pen-only";
 
     function speakText(txt) {
@@ -703,12 +867,20 @@
       window.speechSynthesis.speak(u);
     }
 
-    function inlineDualBlank(id) {
+    /* MASTER SPEC RULE 1: STRICT MODE-ISOLATED NAMESPACE */
+    function getStorageKey(id) {
+      const targetSlot = (appMode === "review" || appMode === "parent") ? "test" : appMode;
+      return `v2_isolated_ink::evs_oct07::${targetSlot}::${id}`;
+    }
+
+    /* INLINE WRITING PAD TEMPLATE */
+    function inlineDualBlank(id, width = 240, watermark = "") {
       return `
         <span class="inline-blank-container">
-          <span class="inline-canvas-wrapper">
+          <span class="inline-canvas-wrapper" style="width:${width}px;">
             <span class="dual-lines-texture"></span>
-            <canvas class="dual-canvas" data-canvas-id="${id}" width="250" height="60"></canvas>
+            <span class="watermark-letter" id="wm_${id}">${watermark}</span>
+            <canvas class="dual-canvas" data-canvas-id="${id}" width="${width}" height="68"></canvas>
           </span>
           <button type="button" class="inline-clear-btn" onclick="clearDualCanvas('${id}')" title="Clear">🧹</button>
         </span>
@@ -766,28 +938,28 @@
             <tr>
               <td>
                 <span class="speakable" onclick="speakText('Have a fixed shape and volume')">1. Have a fixed</span>
-                ${inlineDualBlank('diff_s_shape')} <span class="answer-tag">shape</span> and
-                ${inlineDualBlank('diff_s_vol')} <span class="answer-tag">volume</span>.
+                ${inlineDualBlank('diff_s_shape', 210)} <span class="answer-tag">shape</span> and
+                ${inlineDualBlank('diff_s_vol', 210)} <span class="answer-tag">volume</span>.
               </td>
               <td>
                 <span class="speakable" onclick="speakText('Do not have any fixed shape but fixed volume')">1. Do not have any fixed</span>
-                ${inlineDualBlank('diff_l_shape')} <span class="answer-tag">shape</span> but
-                ${inlineDualBlank('diff_l_vol')} <span class="answer-tag">fixed volume</span>.
+                ${inlineDualBlank('diff_l_shape', 210)} <span class="answer-tag">shape</span> but
+                ${inlineDualBlank('diff_l_vol', 210)} <span class="answer-tag">fixed volume</span>.
               </td>
               <td>
                 <span class="speakable" onclick="speakText('Do not have any fixed shape and volume')">1. Do not have any fixed</span>
-                ${inlineDualBlank('diff_g_shape')} <span class="answer-tag">shape</span> and
-                ${inlineDualBlank('diff_g_vol')} <span class="answer-tag">volume</span>.
+                ${inlineDualBlank('diff_g_shape', 210)} <span class="answer-tag">shape</span> and
+                ${inlineDualBlank('diff_g_vol', 210)} <span class="answer-tag">volume</span>.
               </td>
             </tr>
             <tr>
               <td><span class="speakable" onclick="speakText('Do not flow')">2. Do not flow.</span></td>
               <td>
-                2. ${inlineDualBlank('diff_l_flow')} <span class="answer-tag">Flow</span>
+                2. ${inlineDualBlank('diff_l_flow', 210)} <span class="answer-tag">Flow</span>
                 <span class="speakable" onclick="speakText('Flow easily')">easily.</span>
               </td>
               <td>
-                2. ${inlineDualBlank('diff_g_flow')} <span class="answer-tag">Flow</span>
+                2. ${inlineDualBlank('diff_g_flow', 210)} <span class="answer-tag">Flow</span>
                 <span class="speakable" onclick="speakText('Flow very easily')">very easily.</span>
               </td>
             </tr>
@@ -795,30 +967,30 @@
               <td><span class="speakable" onclick="speakText('Cannot be poured into containers')">3. Cannot be poured into containers.</span></td>
               <td>
                 <span class="speakable" onclick="speakText('Take up the shape of container')">3. Take up the</span>
-                ${inlineDualBlank('diff_l_cont')} <span class="answer-tag">shape</span>
+                ${inlineDualBlank('diff_l_cont', 210)} <span class="answer-tag">shape</span>
                 <span class="speakable" onclick="speakText('of container')">of container.</span>
               </td>
               <td>
                 <span class="speakable" onclick="speakText('Take up the entire space of container')">3. Take up the entire</span>
-                ${inlineDualBlank('diff_g_cont')} <span class="answer-tag">space</span>
+                ${inlineDualBlank('diff_g_cont', 210)} <span class="answer-tag">space</span>
                 <span class="speakable" onclick="speakText('of container')">of container.</span>
               </td>
             </tr>
             <tr>
               <td>
                 <span class="speakable" onclick="speakText('Examples: Chair and Book')">4. Examples:</span>
-                ${inlineDualBlank('diff_s_ex1')} <span class="answer-tag">Chair</span> and
-                ${inlineDualBlank('diff_s_ex2')} <span class="answer-tag">Book</span>.
+                ${inlineDualBlank('diff_s_ex1', 200)} <span class="answer-tag">Chair</span> and
+                ${inlineDualBlank('diff_s_ex2', 200)} <span class="answer-tag">Book</span>.
               </td>
               <td>
                 <span class="speakable" onclick="speakText('Examples: Water and Milk')">4. Examples:</span>
-                ${inlineDualBlank('diff_l_ex1')} <span class="answer-tag">Water</span> and
-                ${inlineDualBlank('diff_l_ex2')} <span class="answer-tag">Milk</span>.
+                ${inlineDualBlank('diff_l_ex1', 200)} <span class="answer-tag">Water</span> and
+                ${inlineDualBlank('diff_l_ex2', 200)} <span class="answer-tag">Milk</span>.
               </td>
               <td>
                 <span class="speakable" onclick="speakText('Examples: Oxygen and Steam')">4. Examples:</span>
-                ${inlineDualBlank('diff_g_ex1')} <span class="answer-tag">Oxygen</span> and
-                ${inlineDualBlank('diff_g_ex2')} <span class="answer-tag">Steam</span>.
+                ${inlineDualBlank('diff_g_ex1', 200)} <span class="answer-tag">Oxygen</span> and
+                ${inlineDualBlank('diff_g_ex2', 200)} <span class="answer-tag">Steam</span>.
               </td>
             </tr>
           </table>
@@ -832,17 +1004,7 @@
         render: () => {
           if (appMode === "learn") {
             return `
-              <div style="display:flex; flex-direction:column; gap:8px;">
-                <div class="speakable" onclick="speakText('Solid does not change shape')" style="background:#F0FDF4; border:2px solid #BBF7D0; padding:10px 14px; border-radius:12px; font-weight:800;">1. Solid ➔ <b>Does not change shape</b></div>
-                <div class="speakable" onclick="speakText('Water vapour gaseous state')" style="background:#F0FDF4; border:2px solid #BBF7D0; padding:10px 14px; border-radius:12px; font-weight:800;">2. Water vapour ➔ <b>Gaseous state</b></div>
-                <div class="speakable" onclick="speakText('Liquid can flow')" style="background:#F0FDF4; border:2px solid #BBF7D0; padding:10px 14px; border-radius:12px; font-weight:800;">3. Liquid ➔ <b>Can flow</b></div>
-                <div class="speakable" onclick="speakText('Matter has mass and occupies space')" style="background:#F0FDF4; border:2px solid #BBF7D0; padding:10px 14px; border-radius:12px; font-weight:800;">4. Matter ➔ <b>Has mass and occupies space</b></div>
-                <div class="speakable" onclick="speakText('Ice frozen water')" style="background:#F0FDF4; border:2px solid #BBF7D0; padding:10px 14px; border-radius:12px; font-weight:800;">5. Ice ➔ <b>Frozen water</b></div>
-              </div>
-            `;
-          } else {
-            return `
-              <div class="match-columns">
+              <div class="match-columns-learn">
                 <div style="display:flex; flex-direction:column; gap:8px;">
                   <button class="match-btn" data-pair="1" onclick="handleMatch(this, 'left')">1. Solid</button>
                   <button class="match-btn" data-pair="2" onclick="handleMatch(this, 'left')">2. Water vapour</button>
@@ -859,6 +1021,33 @@
                 </div>
               </div>
             `;
+          } else {
+            const questions = [
+              { id: "m_row1", q: "1. Solid", opt: "a. Can flow" },
+              { id: "m_row2", q: "2. Water vapour", opt: "b. Does not change shape" },
+              { id: "m_row3", q: "3. Liquid", opt: "c. Gaseous state" },
+              { id: "m_row4", q: "4. Matter", opt: "d. Frozen water" },
+              { id: "m_row5", q: "5. Ice", opt: "e. Has mass and occupies space" }
+            ];
+
+            return `
+              <div class="match-3col-container">
+                <div class="match-3col-header">
+                  <span>Questions</span>
+                  <span>Options</span>
+                  <span>Write Answer</span>
+                </div>
+                ${questions.map(row => `
+                  <div class="match-3col-row">
+                    <div class="match-col-text speakable" onclick="speakText('${row.q}')">${row.q}</div>
+                    <div>
+                      <span class="match-option-pill speakable" onclick="speakText('${row.opt}')">${row.opt}</span>
+                    </div>
+                    <div>${inlineDualBlank(row.id, 320)}</div>
+                  </div>
+                `).join("")}
+              </div>
+            `;
           }
         }
       },
@@ -867,53 +1056,36 @@
         tabTitle: "🎯 3. Objective MCQs",
         title: "Tick (✓) the Correct Answer",
         answerHint: "1. c (matter) | 2. c (Shadow) | 3. d (evaporation) | 4. b (condensation) | 5. d (All of these)",
-        render: () => `
-          <div class="mcq-item">
-            <div class="mcq-q speakable" onclick="speakText('Anything that has mass and takes up space is known as')">1. Anything that has mass and takes up space is known as:</div>
-            <div class="mcq-opts">
-              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'a. liquid')">a. liquid</button>
-              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'b. solid')">b. solid</button>
-              <button class="mcq-opt-btn ${appMode === 'learn' ? 'correct' : ''}" onclick="checkMcq(this, true, 'c. matter')">c. matter ${appMode === 'learn' ? '✓' : ''}</button>
-              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'd. both a and b')">d. both a and b</button>
+        render: () => {
+          const mcqData = [
+            { id: "mcq1", q: "1. Anything that has mass and takes up space is known as:", opts: ["a. liquid", "b. solid", "c. matter", "d. both a and b"], correctIdx: 2 },
+            { id: "mcq2", q: "2. Which of the following is not a state of matter?", opts: ["a. Solid", "b. Liquid", "c. Shadow", "d. Gas"], correctIdx: 2 },
+            { id: "mcq3", q: "3. Deepa heated water for a very long time. She saw gas rising up. This process is:", opts: ["a. freezing", "b. condensation", "c. melting", "d. evaporation"], correctIdx: 3 },
+            { id: "mcq4", q: "4. Tiny droplets of water are formed through the process of:", opts: ["a. melting", "b. condensation", "c. evaporation", "d. freezing"], correctIdx: 1 },
+            { id: "mcq5", q: "5. Which of the following is a state of matter?", opts: ["a. Water", "b. Chapatti", "c. Car", "d. All of these"], correctIdx: 3 }
+          ];
+
+          return mcqData.map(item => `
+            <div class="mcq-item">
+              <div class="mcq-q-row">
+                <div class="mcq-q speakable" onclick="speakText('${item.q}')">${item.q}</div>
+                ${appMode !== 'learn' ? `<div>${inlineDualBlank(item.id, 220)}</div>` : ''}
+              </div>
+              <div class="mcq-opts">
+                ${item.opts.map((optText, oIdx) => {
+                  const isCorrect = (oIdx === item.correctIdx);
+                  const optLetter = optText.charAt(0);
+                  const learnClass = (appMode === 'learn' && isCorrect) ? 'correct' : '';
+                  return `
+                    <button class="mcq-opt-btn ${learnClass}" onclick="checkMcq(this, ${isCorrect}, '${optText}', '${item.id}', '${optLetter}')">
+                      ${optText}${(appMode === 'learn' && isCorrect) ? '✓' : ''}
+                    </button>
+                  `;
+                }).join("")}
+              </div>
             </div>
-          </div>
-          <div class="mcq-item">
-            <div class="mcq-q speakable" onclick="speakText('Which of the following is not a state of matter')">2. Which of the following is not a state of matter?</div>
-            <div class="mcq-opts">
-              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'a. Solid')">a. Solid</button>
-              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'b. Liquid')">b. Liquid</button>
-              <button class="mcq-opt-btn ${appMode === 'learn' ? 'correct' : ''}" onclick="checkMcq(this, true, 'c. Shadow')">c. Shadow ${appMode === 'learn' ? '✓' : ''}</button>
-              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'd. Gas')">d. Gas</button>
-            </div>
-          </div>
-          <div class="mcq-item">
-            <div class="mcq-q speakable" onclick="speakText('Deepa heated water for a very long time. She saw gas rising up. This process is')">3. Deepa heated water for a very long time. She saw gas rising up. This process is:</div>
-            <div class="mcq-opts">
-              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'a. freezing')">a. freezing</button>
-              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'b. condensation')">b. condensation</button>
-              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'c. melting')">c. melting</button>
-              <button class="mcq-opt-btn ${appMode === 'learn' ? 'correct' : ''}" onclick="checkMcq(this, true, 'd. evaporation')">d. evaporation ${appMode === 'learn' ? '✓' : ''}</button>
-            </div>
-          </div>
-          <div class="mcq-item">
-            <div class="mcq-q speakable" onclick="speakText('Tiny droplets of water are formed through the process of')">4. Tiny droplets of water are formed through the process of:</div>
-            <div class="mcq-opts">
-              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'a. melting')">a. melting</button>
-              <button class="mcq-opt-btn ${appMode === 'learn' ? 'correct' : ''}" onclick="checkMcq(this, true, 'b. condensation')">b. condensation ${appMode === 'learn' ? '✓' : ''}</button>
-              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'c. evaporation')">c. evaporation</button>
-              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'd. freezing')">d. freezing</button>
-            </div>
-          </div>
-          <div class="mcq-item">
-            <div class="mcq-q speakable" onclick="speakText('Which of the following is a state of matter')">5. Which of the following is a state of matter?</div>
-            <div class="mcq-opts">
-              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'a. Water')">a. Water</button>
-              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'b. Chapatti')">b. Chapatti</button>
-              <button class="mcq-opt-btn" onclick="checkMcq(this, false, 'c. Car')">c. Car</button>
-              <button class="mcq-opt-btn ${appMode === 'learn' ? 'correct' : ''}" onclick="checkMcq(this, true, 'd. All of these')">d. All of these ${appMode === 'learn' ? '✓' : ''}</button>
-            </div>
-          </div>
-        `
+          `).join("");
+        }
       },
       {
         id: "pictures",
@@ -936,18 +1108,30 @@
           return `
             <div class="pic-grid">
               ${items.map(it => {
-                const saved = localStorage.getItem(`chip::humayun::evs::${it.id}`) || (appMode === 'learn' ? it.correct : '');
-                return `
-                  <div class="pic-card">
-                    <span class="pic-icon speakable" onclick="speakText('${it.name}')">${it.icon}</span>
-                    <span class="pic-name speakable" onclick="speakText('${it.name}')">${it.name}</span>
-                    <div class="chip-row">
-                      <button class="state-chip ${saved === 'Solid' ? 'active-chip' : ''}" onclick="selectChip('${it.id}', 'Solid')">Solid</button>
-                      <button class="state-chip ${saved === 'Liquid' ? 'active-chip' : ''}" onclick="selectChip('${it.id}', 'Liquid')">Liquid</button>
-                      <button class="state-chip ${saved === 'Gas' ? 'active-chip' : ''}" onclick="selectChip('${it.id}', 'Gas')">Gas</button>
+                if (appMode === 'learn') {
+                  const saved = localStorage.getItem(`chip::humayun::evs::${it.id}`) || it.correct;
+                  return `
+                    <div class="pic-card">
+                      <span class="pic-icon speakable" onclick="speakText('${it.name}')">${it.icon}</span>
+                      <span class="pic-name speakable" onclick="speakText('${it.name}')">${it.name}</span>
+                      <div class="chip-row">
+                        <button class="state-chip ${saved === 'Solid' ? 'active-chip' : ''}" onclick="selectChip('${it.id}', 'Solid')">Solid</button>
+                        <button class="state-chip ${saved === 'Liquid' ? 'active-chip' : ''}" onclick="selectChip('${it.id}', 'Liquid')">Liquid</button>
+                        <button class="state-chip ${saved === 'Gas' ? 'active-chip' : ''}" onclick="selectChip('${it.id}', 'Gas')">Gas</button>
+                      </div>
                     </div>
-                  </div>
-                `;
+                  `;
+                } else {
+                  return `
+                    <div class="pic-card">
+                      <span class="pic-icon speakable" onclick="speakText('${it.name}')">${it.icon}</span>
+                      <span class="pic-name speakable" onclick="speakText('${it.name}')">${it.name}</span>
+                      <div style="margin-top:4px;">
+                        ${inlineDualBlank('pic_ink_' + it.id, 220)}
+                      </div>
+                    </div>
+                  `;
+                }
               }).join("")}
             </div>
           `;
@@ -994,6 +1178,101 @@
             </div>
           `;
         }
+      },
+      {
+        id: "conceptmap",
+        tabTitle: "🗺️ 6. Concept Map",
+        title: "B. Complete the Concept Map",
+        answerHint: "Types: Solid (Chair, Book), Liquid (Water, Milk), Gas (Oxygen, Steam)",
+        render: () => {
+          const mapData = [
+            {
+              id: "solid",
+              prompt: "S _ L _ D",
+              fullWord: "SOLID",
+              ex1_id: "cmap_s_ex1",
+              ex2_id: "cmap_s_ex2",
+              learnEx1: "Chair",
+              learnEx2: "Book"
+            },
+            {
+              id: "liquid",
+              prompt: "L _ _ _ I D",
+              fullWord: "LIQUID",
+              ex1_id: "cmap_l_ex1",
+              ex2_id: "cmap_l_ex2",
+              learnEx1: "Water",
+              learnEx2: "Milk"
+            },
+            {
+              id: "gas",
+              prompt: "G _ _",
+              fullWord: "GAS",
+              ex1_id: "cmap_g_ex1",
+              ex2_id: "cmap_g_ex2",
+              learnEx1: "Oxygen",
+              learnEx2: "Steam"
+            }
+          ];
+
+          return `
+            <div class="cmap-wrapper">
+              <div class="cmap-root-card speakable" onclick="speakText('States of Matter')">
+                States of Matter
+              </div>
+              <div class="cmap-branch-label speakable" onclick="speakText('Types of States of Matter')">
+                Types
+              </div>
+
+              <div class="cmap-columns-grid">
+                ${mapData.map(col => `
+                  <div class="cmap-col-card">
+                    <div class="cmap-type-badge speakable" onclick="speakText('${col.fullWord}')">
+                      ${col.prompt}
+                    </div>
+
+                    ${appMode !== 'learn' ? `
+                      <div style="margin-top:2px; width:100%; display:flex; justify-content:center;">
+                        ${inlineDualBlank('cmap_type_' + col.id, 240)}
+                      </div>
+                    ` : `
+                      <div style="font-weight:900; color:#15803D; font-size:1.1rem; margin:4px 0;">
+                        ➔ ${col.fullWord}
+                      </div>
+                    `}
+
+                    <div class="cmap-down-arrow-wrap">
+                      <span>⬇</span>
+                      Examples
+                    </div>
+
+                    <div class="cmap-ex-row">
+                      <span class="cmap-ex-label">Example 1:</span>
+                      ${appMode !== 'learn' ? `
+                        ${inlineDualBlank(col.ex1_id, 240)}
+                      ` : `
+                        <div class="answer-tag" style="width:100%; text-align:center; padding:8px; font-size:1rem;">
+                          ${col.learnEx1}
+                        </div>
+                      `}
+                    </div>
+
+                    <div class="cmap-ex-row">
+                      <span class="cmap-ex-label">Example 2:</span>
+                      ${appMode !== 'learn' ? `
+                        ${inlineDualBlank(col.ex2_id, 240)}
+                      ` : `
+                        <div class="answer-tag" style="width:100%; text-align:center; padding:8px; font-size:1rem;">
+                          ${col.learnEx2}
+                        </div>
+                      `}
+                    </div>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          `;
+        }
       }
     ];
 
@@ -1029,23 +1308,23 @@
       btn.textContent = isDim ? "💡 Dim" : "☀️ Bright";
     }
 
-    /* BULLETPROOF MODE TOGGLE */
-    function setAppMode(m) {
+    /* MASTER SPEC RULE 2: MODE-SWITCH TRANSITION LIFECYCLE */
+    function setAppMode(newMode) {
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
       
-      // 1. Save whatever was written in the CURRENT mode first
+      // 1. Save outgoing state under current mode
       saveAllDualCanvases();
       saveFullNPCanvas();
 
-      // 2. Switch mode cleanly
-      appMode = m;
-      document.body.className = (m === 'test') ? "test-mode" : (m === 'review' ? "review-mode" : "");
+      // 2. Switch mode variable and UI styling
+      appMode = newMode;
+      document.body.className = (newMode === 'test') ? "test-mode" : (newMode === 'review' ? "review-mode" : "");
 
-      document.getElementById("btnModeLearn").className = `mode-btn ${m === 'learn' ? 'active-learn' : ''}`;
-      document.getElementById("btnModeTest").className = `mode-btn ${m === 'test' ? 'active-test' : ''}`;
-      document.getElementById("btnModeReview").className = `mode-btn ${m === 'review' ? 'active-review' : ''}`;
+      document.getElementById("btnModeLearn").className = `mode-btn ${newMode === 'learn' ? 'active-learn' : ''}`;
+      document.getElementById("btnModeTest").className = `mode-btn ${newMode === 'test' ? 'active-test' : ''}`;
+      document.getElementById("btnModeReview").className = `mode-btn ${newMode === 'review' ? 'active-review' : ''}`;
 
-      // 3. Render and load the canvas for the NEW mode without re-saving
+      // 3. Switch section with doSave = false to eliminate race conditions
       switchSection(currentSectionIdx, false);
     }
 
@@ -1121,14 +1400,19 @@
       }
     }
 
-    function checkMcq(btn, isCorrect, speakVal) {
+    function checkMcq(btn, isCorrect, speakVal, canvasId = null, letter = "") {
       speakText(speakVal);
       const parent = btn.parentElement;
       parent.querySelectorAll(".mcq-opt-btn").forEach(b => b.className = "mcq-opt-btn");
+      
       if (appMode === 'learn') {
         btn.className = isCorrect ? "mcq-opt-btn correct" : "mcq-opt-btn wrong";
       } else {
         btn.className = "mcq-opt-btn selected-test";
+        if (canvasId && letter) {
+          const wm = document.getElementById(`wm_${canvasId}`);
+          if (wm) wm.textContent = letter;
+        }
       }
     }
 
@@ -1148,22 +1432,18 @@
       btn.innerHTML = (palmRejectionMode === "pen-only") ? "🖊️ Pen Only" : "👆 Any Touch";
     }
 
-    /* FRESH NAMESPACE TO PERMANENTLY PREVENT CONTAMINATION */
-    function storageKeyForDual(id) {
-      const targetSlot = (appMode === "review") ? "test" : appMode;
-      return `v2_isolated_ink::humayun::evs_oct07::${targetSlot}::${id}`;
-    }
-
+    /* MASTER SPEC RULES 3, 4, 5: SOLID DUAL-CANVAS ENGINE */
     function setupDualCanvases() {
       const canvasList = document.querySelectorAll(".dual-canvas");
       canvasList.forEach(c => {
         const id = c.getAttribute("data-canvas-id");
         const ctx = c.getContext("2d", { willReadFrequently: false });
 
-        // MANDATORY: ALWAYS CLEAR TO BLANK BEFORE CHECKING FOR SAVED IMAGE
+        // MASTER SPEC RULE 3: Mandatory Double-Wipe clearRect before restore
         ctx.clearRect(0, 0, c.width, c.height);
 
-        const saved = localStorage.getItem(storageKeyForDual(id));
+        const savedKey = getStorageKey(id);
+        const saved = localStorage.getItem(savedKey);
         if (saved) {
           const img = new Image();
           img.onload = () => {
@@ -1176,6 +1456,7 @@
         let isDrawing = false;
         let lastX = 0, lastY = 0;
 
+        // MASTER SPEC RULE 4: Hardware Compatibility (Stylus + Desktop Mouse)
         c.onpointerdown = (e) => {
           if (appMode === "review") return;
           if (palmRejectionMode === "pen-only" && e.pointerType !== "pen" && e.pointerType !== "mouse") {
@@ -1184,17 +1465,17 @@
           }
           isDrawing = true;
           try { c.setPointerCapture(e.pointerId); } catch (_) {}
-          const rect = c.getBoundingClientRect();
-          lastX = e.clientX - rect.left;
-          lastY = e.clientY - rect.top;
+          const bRect = c.getBoundingClientRect();
+          lastX = e.clientX - bRect.left;
+          lastY = e.clientY - bRect.top;
           e.preventDefault();
         };
 
         c.onpointermove = (e) => {
           if (!isDrawing || appMode === "review") return;
-          const rect = c.getBoundingClientRect();
-          const currX = e.clientX - rect.left;
-          const currY = e.clientY - rect.top;
+          const bRect = c.getBoundingClientRect();
+          const currX = e.clientX - bRect.left;
+          const currY = e.clientY - bRect.top;
 
           ctx.beginPath();
           ctx.moveTo(lastX, lastY);
@@ -1211,6 +1492,7 @@
           e.preventDefault();
         };
 
+        // MASTER SPEC RULE 5: Instant Stroke Serialization on pointerup / cancel
         const stopStroke = (e) => {
           if (isDrawing) {
             isDrawing = false;
@@ -1221,7 +1503,6 @@
 
         c.onpointerup = stopStroke;
         c.onpointercancel = stopStroke;
-        c.onpointerleave = stopStroke;
       });
     }
 
@@ -1229,7 +1510,7 @@
       if (appMode === "review") return;
       try {
         const data = c.toDataURL("image/png");
-        localStorage.setItem(storageKeyForDual(id), data);
+        localStorage.setItem(getStorageKey(id), data);
       } catch (e) {}
     }
 
@@ -1246,11 +1527,13 @@
       if (c) {
         const ctx = c.getContext("2d");
         ctx.clearRect(0, 0, c.width, c.height);
-        localStorage.removeItem(storageKeyForDual(id));
+        localStorage.removeItem(getStorageKey(id));
       }
+      const wm = document.getElementById(`wm_${id}`);
+      if (wm) wm.textContent = "";
     }
 
-    /* FULL NOTEPAD COMPONENT FOR EACH DEFINITION */
+    /* FULL NOTEPAD COMPONENT FOR DEFINITIONS (RULE 7) */
     let npCanvas = null;
     let npCtx = null;
     let npIsDrawing = false;
@@ -1259,10 +1542,9 @@
     let npLastX = 0, npLastY = 0;
     let npPointerId = null;
 
-    function npStorageKey() {
+    function getNPStorageKey() {
       const curDef = DEFINITIONS_DATA[currentDefIdx];
-      const targetSlot = (appMode === "review") ? "test" : appMode;
-      return `v2_isolated_ink::humayun::evs_oct07::${targetSlot}::def_${curDef.id}`;
+      return getStorageKey(`def_${curDef.id}`);
     }
 
     function fitFullNPCanvas() {
@@ -1291,15 +1573,14 @@
       if (!npCanvas || npCanvas.width <= 0 || appMode === "review") return;
       try {
         const data = npCanvas.toDataURL("image/png");
-        localStorage.setItem(npStorageKey(), data);
+        localStorage.setItem(getNPStorageKey(), data);
       } catch (e) {}
     }
 
     function restoreFullNPCanvas() {
       if (!npCanvas || !npCtx) return;
-      // MANDATORY: ALWAYS CLEAR TO BLANK BEFORE CHECKING STORAGE
       npCtx.clearRect(0, 0, npCanvas.width, npCanvas.height);
-      const saved = localStorage.getItem(npStorageKey());
+      const saved = localStorage.getItem(getNPStorageKey());
       if (!saved) return;
       const img = new Image();
       img.onload = function() {
@@ -1314,7 +1595,7 @@
     function clearNPCanvas() {
       if (!npCanvas || !npCtx) return;
       npCtx.clearRect(0, 0, npCanvas.width, npCanvas.height);
-      localStorage.removeItem(npStorageKey());
+      localStorage.removeItem(getNPStorageKey());
     }
 
     function setNPTool(t) {
@@ -1392,7 +1673,6 @@
 
       npCanvas.onpointerup = stopNPStroke;
       npCanvas.onpointercancel = stopNPStroke;
-      npCanvas.onpointerleave = stopNPStroke;
     }
 
     /* PARENT PIN LOGIC */
