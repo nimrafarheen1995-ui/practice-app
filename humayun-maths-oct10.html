@@ -3,17 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Humayun's Ninja Math Quest: Match the Division Terms (Ex 1.2)</title>
+  <title>Humayun's Ninja Academy: Division Terms (Ex 1.2)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Serif+JP:wght@900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Serif+JP:wght@800;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
   
   <style>
     :root {
-      --parchment: #F8F1DC;
-      --parchment-border: #8B5A2B;
-      --ink-dark: #2A170A;
-      --wire-color: #475569;
+      --parchment: #F6EBD0;
+      --parchment-border: #8C5827;
+      --ninja-blue: #142850;
+      --ninja-sky: #1E3A8A;
+      --wire-neutral: #334155;
     }
 
     * {
@@ -31,23 +32,23 @@
       height: 100%;
       overflow: hidden;
       background: #090B0E;
-      color: #FFF;
+      color: #2D3436;
     }
 
     body {
       display: flex;
       flex-direction: column;
-      padding: 8px 12px;
+      padding: 6px 12px;
       position: relative;
     }
 
-    /* TOP HEADER HUD */
+    /* TOP HUD */
     .academy-hud-bar {
-      height: 48px;
+      height: 44px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 10px;
+      padding: 0 8px;
       z-index: 50;
       flex-shrink: 0;
     }
@@ -75,81 +76,141 @@
       gap: 10px;
       background: rgba(22, 13, 8, 0.9);
       border: 2px solid #D35400;
-      padding: 6px 20px;
+      padding: 5px 20px;
       border-radius: 30px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.6);
     }
-    .badge-konoha-icon { font-size: 1.2rem; }
     .badge-title-text {
       font-family: 'Cinzel', serif;
-      font-size: 1.05rem;
+      font-size: 1rem;
       font-weight: 900;
       color: #F1C40F;
       letter-spacing: 1px;
     }
 
-    /* MAIN BOARD STAGE */
+    /* MAIN STAGE WITH CLOUD SKY & CORNER KUNAI */
     .academy-board-wrapper {
       flex: 1;
       position: relative;
-      background: radial-gradient(circle at center, #1E3A8A 0%, #0F172A 70%, #060911 100%);
+      background: radial-gradient(circle at 50% 40%, #1e3c72 0%, #152544 65%, #0b1324 100%);
       border: 4px solid #5A3C22;
       border-radius: 22px;
       overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 10px;
+      padding: 18px 24px;
       box-shadow: 0 16px 40px rgba(0,0,0,0.85);
       min-height: 0;
     }
 
-    /* AGED SCROLL CANVAS CONTAINER */
+    /* CORNER KUNAI EMBLEMS (VECTOR) */
+    .corner-kunai {
+      position: absolute;
+      width: 48px;
+      height: 48px;
+      pointer-events: none;
+      z-index: 5;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.7));
+    }
+    .kunai-tl { top: 6px; left: 6px; transform: rotate(-45deg); }
+    .kunai-tr { top: 6px; right: 6px; transform: rotate(45deg); }
+    .kunai-bl { bottom: 6px; left: 6px; transform: rotate(-135deg); }
+    .kunai-br { bottom: 6px; right: 6px; transform: rotate(135deg); }
+
+    /* PARCHMENT ACTIVITY PAPER (EXACT SHAPE FROM REFERENCE) */
     .parchment-scroll-stage {
       position: relative;
       width: 100%;
       height: 100%;
-      background: #F8F1DC;
-      border: 4px solid #8C5727;
-      border-radius: 18px;
-      box-shadow: inset 0 0 30px rgba(140, 87, 39, 0.3), 0 12px 30px rgba(0,0,0,0.6);
+      background: #F6EBD0;
+      border: 3.5px solid #8C5827;
+      border-radius: 20px;
+      box-shadow: inset 0 0 45px rgba(140, 88, 39, 0.35), 0 14px 35px rgba(0,0,0,0.6);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 14px 20px;
+      padding: 12px 18px;
       overflow: hidden;
     }
 
-    /* BANNER HEADER IN REFERENCE */
+    /* HOKAGE WATERMARK */
+    .parchment-scroll-stage::before {
+      content: '木ノ葉';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Noto Serif JP', serif;
+      font-size: 140px;
+      color: rgba(140, 88, 39, 0.06);
+      pointer-events: none;
+      z-index: 1;
+      font-weight: 900;
+    }
+
+    /* ENGRAVED BANNER HEADER (FROM REFERENCE) */
     .board-header-banner {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(180deg, #EFE2C2 0%, #E3D1A5 100%);
-      border: 2px solid #8B5A2B;
-      border-radius: 14px;
-      padding: 6px 16px;
-      align-self: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
       position: relative;
+      align-self: center;
       z-index: 10;
+      width: 90%;
+      max-width: 580px;
     }
-    .board-main-title {
+    .plaque-wood-top {
+      background: linear-gradient(180deg, #EAD7AF 0%, #D8BE88 100%);
+      border: 2.5px solid #7C481A;
+      border-radius: 24px;
+      padding: 3px 28px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .plaque-shuriken {
+      font-size: 1.1rem;
+      color: #334155;
+      text-shadow: 0 1px 2px #fff;
+    }
+    .plaque-main-text {
       font-family: 'Cinzel', serif;
       font-size: 1.15rem;
       font-weight: 900;
-      color: #1E3A8A;
-      letter-spacing: 1px;
+      color: #1E293B;
+      letter-spacing: 0.5px;
     }
-    .board-sub-instruct {
-      font-size: 0.82rem;
-      font-weight: 800;
-      color: #4A2910;
-      margin-top: 1px;
+    .plaque-arch-bottom {
+      background: linear-gradient(180deg, #1E3A8A 0%, #0F275A 100%);
+      border: 2px solid #7C481A;
+      border-radius: 0 0 18px 18px;
+      border-top: none;
+      padding: 2px 28px;
+      margin-top: -3px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+    }
+    .plaque-arch-text {
+      font-family: 'Cinzel', serif;
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #FEF08A;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.6);
     }
 
-    /* CONNECTION SVG CANVAS OVERLAY */
+    .board-instruction-label {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: #3B220E;
+      margin-top: 4px;
+      text-align: center;
+      z-index: 10;
+    }
+
+    /* WIRE SVG OVERLAY */
     #wireSvgLayer {
       position: absolute;
       inset: 0;
@@ -159,7 +220,7 @@
       z-index: 15;
     }
 
-    /* TOP ROW SCROLLS */
+    /* SCROLL ROWS */
     .scroll-row-top {
       display: flex;
       justify-content: space-between;
@@ -168,8 +229,6 @@
       position: relative;
       z-index: 20;
     }
-
-    /* BOTTOM ROW SCROLLS & CENTER HUB */
     .scroll-row-bottom {
       display: flex;
       justify-content: space-between;
@@ -180,54 +239,64 @@
       z-index: 20;
     }
 
-    /* SCROLL QUESTION CARD COMPONENT */
+    /* ROLLED CYLINDER SCROLL QUESTION CARD */
     .scroll-quest-card {
       flex: 1;
-      height: 70px;
-      background: #FFFDF5;
-      border-radius: 12px;
+      height: 64px;
+      background: #FFFDF9;
+      border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 6px 12px;
-      font-size: 0.98rem;
-      font-weight: 900;
-      color: #1E293B;
+      padding: 4px 14px;
+      font-family: 'Cinzel', serif;
+      font-size: 0.95rem;
+      font-weight: 800;
       position: relative;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.14), inset 0 0 10px rgba(0,0,0,0.03);
       cursor: grab;
       touch-action: none;
-      transition: transform 0.2s ease, opacity 0.4s ease, filter 0.4s ease;
+      transition: transform 0.25s ease, opacity 0.4s ease, filter 0.4s ease;
     }
     .scroll-quest-card:active { cursor: grabbing; }
 
-    /* PARCHMENT ROLLER CAPS */
+    /* WOODEN CYLINDER CAPS */
     .scroll-cap-left, .scroll-cap-right {
       position: absolute;
-      top: -4px;
-      bottom: -4px;
-      width: 12px;
-      border-radius: 4px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      top: -5px;
+      bottom: -5px;
+      width: 14px;
+      border-radius: 5px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.35);
     }
-    .scroll-cap-left { left: -6px; }
-    .scroll-cap-right { right: -6px; }
+    .scroll-cap-left { left: -7px; }
+    .scroll-cap-right { right: -7px; }
 
-    /* 5 THEMATIC COLORWAYS (FROM REFERENCE IMAGE) */
-    .card-red { border: 2.5px solid #DC2626; color: #991B1B; }
-    .card-red .scroll-cap-left, .card-red .scroll-cap-right { background: #DC2626; }
-    
-    .card-green { border: 2.5px solid #16A34A; color: #166534; }
-    .card-green .scroll-cap-left, .card-green .scroll-cap-right { background: #16A34A; }
+    /* EXACT 5 COLORWAYS FROM REFERENCE */
+    .card-red { border: 2.5px solid #C0392B; color: #962D22; }
+    .card-red .scroll-cap-left, .card-red .scroll-cap-right {
+      background: linear-gradient(90deg, #78281F, #C0392B, #962D22);
+    }
 
-    .card-blue { border: 2.5px solid #2563EB; color: #1E40AF; }
-    .card-blue .scroll-cap-left, .card-blue .scroll-cap-right { background: #2563EB; }
+    .card-green { border: 2.5px solid #27AE60; color: #1E8449; }
+    .card-green .scroll-cap-left, .card-green .scroll-cap-right {
+      background: linear-gradient(90deg, #196F3D, #27AE60, #1E8449);
+    }
 
-    .card-purple { border: 2.5px solid #9333EA; color: #6B21A8; }
-    .card-purple .scroll-cap-left, .card-purple .scroll-cap-right { background: #9333EA; }
+    .card-blue { border: 2.5px solid #2980B9; color: #1F618D; }
+    .card-blue .scroll-cap-left, .card-blue .scroll-cap-right {
+      background: linear-gradient(90deg, #1A5276, #2980B9, #2471A3);
+    }
 
-    .card-orange { border: 2.5px solid #EA580C; color: #9A3412; }
-    .card-orange .scroll-cap-left, .card-orange .scroll-cap-right { background: #EA580C; }
+    .card-purple { border: 2.5px solid #8E44AD; color: #6C3483; }
+    .card-purple .scroll-cap-left, .card-purple .scroll-cap-right {
+      background: linear-gradient(90deg, #512E5F, #8E44AD, #6C3483);
+    }
+
+    .card-orange { border: 2.5px solid #D35400; color: #A04000; }
+    .card-orange .scroll-cap-left, .card-orange .scroll-cap-right {
+      background: linear-gradient(90deg, #6E2C00, #D35400, #A04000);
+    }
 
     .scroll-connector-node {
       position: absolute;
@@ -246,56 +315,59 @@
       top: -9px;
     }
 
-    /* DISAPPEARING SEQUENCE EFFECT */
     .scroll-quest-card.poofed {
       opacity: 0 !important;
-      transform: scale(0.4) rotate(6deg) !important;
-      filter: blur(8px) brightness(200%) !important;
+      transform: scale(0.3) rotate(8deg) !important;
+      filter: blur(10px) brightness(220%) !important;
       pointer-events: none !important;
     }
 
-    /* CENTER CHAKRA CLOUD TARGET HUB */
+    /* CENTER CHAKRA CLOUD TARGET */
     .chakra-cloud-hub {
       position: relative;
       width: 320px;
       height: 140px;
-      background: radial-gradient(circle, #FFFBEB 0%, #FEF3C7 70%, #FDE68A 100%);
-      border: 3.5px solid #F59E0B;
+      background: radial-gradient(circle, #FFFDF0 0%, #FEF3C7 65%, #FDE68A 100%);
+      border: 3px solid #D97706;
       border-radius: 70px;
-      box-shadow: 0 10px 25px rgba(245, 158, 11, 0.25), inset 0 0 15px rgba(255,255,255,0.8);
+      box-shadow: 0 10px 25px rgba(217, 119, 6, 0.25), inset 0 0 15px rgba(255,255,255,0.8);
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
     }
-
-    .cloud-deco-puff-left, .cloud-deco-puff-right {
+    .cloud-puff-left, .cloud-puff-right {
       position: absolute;
-      width: 80px;
-      height: 80px;
+      width: 85px;
+      height: 85px;
       background: #FEF3C7;
       border-radius: 50%;
       z-index: 1;
-      border: 3.5px solid #F59E0B;
+      border: 3px solid #D97706;
       pointer-events: none;
     }
-    .cloud-deco-puff-left { top: -25px; left: 35px; border-bottom: none; border-right: none; }
-    .cloud-deco-puff-right { top: -20px; right: 40px; border-bottom: none; border-left: none; }
+    .cloud-puff-left { top: -25px; left: 35px; border-bottom: none; border-right: none; }
+    .cloud-puff-right { top: -22px; right: 40px; border-bottom: none; border-left: none; }
 
-    .cloud-targets-grid {
-      position: relative;
-      z-index: 10;
-      width: 100%;
-      height: 100%;
+    /* POINTING CHIBIS (FROM REFERENCE) */
+    .chibi-ninja-flank {
+      position: absolute;
+      bottom: -10px;
+      height: 70px;
+      pointer-events: none;
+      z-index: 25;
+      filter: drop-shadow(0 6px 12px rgba(0,0,0,0.3));
     }
+    .chibi-naruto { left: -36px; }
+    .chibi-sasuke { right: -36px; }
 
-    /* TARGET NUMBER NODES */
-    .target-bubble-node {
+    /* WOODEN CHAKRA COIN TARGETS */
+    .target-coin-node {
       position: absolute;
       width: 44px;
       height: 44px;
-      background: #FFF;
-      border: 3px solid #D97706;
+      background: radial-gradient(circle, #FFFFFF 0%, #FDF6E2 70%, #E8D3A2 100%);
+      border: 3px solid #B45309;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -303,48 +375,28 @@
       font-size: 1.25rem;
       font-weight: 900;
       color: #78350F;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.18), inset 0 0 5px rgba(255,255,255,0.8);
       cursor: pointer;
       touch-action: none;
-      transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+      z-index: 20;
+      transition: transform 0.15s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
-    .target-bubble-node:hover { transform: scale(1.12); }
-    .target-bubble-node.connected {
+    .target-coin-node:hover { transform: scale(1.15); }
+    .target-coin-node.connected {
+      border-color: #D97706;
+      box-shadow: 0 0 14px rgba(217, 119, 6, 0.7);
       background: #FEF3C7;
-      border-color: #B45309;
-      box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
     }
-    .target-bubble-node.burst {
+    .target-coin-node.burst {
       animation: targetBurstGlow 0.4s ease-out forwards;
     }
     @keyframes targetBurstGlow {
       0% { transform: scale(1); filter: brightness(100%); }
-      50% { transform: scale(1.3); filter: brightness(220%); }
+      50% { transform: scale(1.35); filter: brightness(220%); }
       100% { transform: scale(1); filter: brightness(100%); }
     }
 
-    /* SHINOBI AVATAR COMPANIONS BESIDE CLOUD */
-    .shinobi-caller-zone {
-      position: absolute;
-      top: -110px;
-      left: 50%;
-      transform: translateX(-50%);
-      height: 120px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      pointer-events: none;
-      z-index: 8;
-    }
-    .challenger-shinobi-img {
-      max-height: 120px;
-      max-width: 110px;
-      object-fit: contain;
-      filter: drop-shadow(0 8px 16px rgba(0,0,0,0.4));
-      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    /* ACTION BOTTOM CONTROLS */
+    /* FOOTER BAR */
     .board-footer-dock {
       display: flex;
       align-items: center;
@@ -376,139 +428,127 @@
       box-shadow: none;
     }
 
-    /* CELEBRATION FINALE STAGE */
-    #celebrationFinaleStage {
+    /* =========================================================
+       MULTI-SHINOBI DROP VICTORY CELEBRATION STAGE
+    ========================================================= */
+    #celebrationVictoryStage {
       position: fixed;
       inset: 0;
       z-index: 100000;
-      pointer-events: none;
       display: none;
       overflow: hidden;
-      background: radial-gradient(circle at center, rgba(16, 20, 26, 0.4) 0%, rgba(7, 9, 12, 0.92) 100%);
+      background: radial-gradient(circle at center, rgba(16, 20, 26, 0.4) 0%, rgba(7, 9, 12, 0.94) 100%);
       backdrop-filter: blur(5px);
     }
-    #finaleCanvas {
+    #victoryCanvas {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       z-index: 10;
+      pointer-events: none;
     }
-    .kanji-banner-centerpiece {
+
+    /* HEADER KANJI BANNER */
+    .victory-title-banner {
       position: absolute;
-      top: 50%;
+      top: 18px;
       left: 50%;
-      transform: translate(-50%, -50%) scale(0.2);
+      transform: translateX(-50%) scale(0.3);
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
       z-index: 25;
       opacity: 0;
       pointer-events: none;
       transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
     }
-    .kanji-banner-centerpiece.impact {
-      transform: translate(-50%, -50%) scale(1);
+    .victory-title-banner.impact {
+      transform: translateX(-50%) scale(1);
       opacity: 1;
     }
-    .enso-brush-crescent {
-      position: absolute;
-      width: 440px;
-      height: 440px;
-      border-radius: 50%;
-      border: 32px solid transparent;
-      border-top-color: rgba(255, 215, 0, 0.75);
-      border-right-color: rgba(212, 175, 55, 0.65);
-      border-bottom-color: rgba(184, 134, 11, 0.3);
-      filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.6));
-      transform: rotate(-35deg);
-    }
-    .kanji-top-title {
+    .victory-kanji-text {
       font-family: 'Noto Serif JP', serif;
-      font-size: 72px;
+      font-size: 52px;
       font-weight: 900;
       color: #FFD700;
       text-shadow: 0 0 20px #FFB700, 0 0 40px #FF9500;
-      letter-spacing: 12px;
-      line-height: 1.1;
+      letter-spacing: 10px;
+      line-height: 1;
     }
-    .kanji-subtitle-gold {
+    .victory-sub-text {
       font-family: 'Cinzel', serif;
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 900;
       color: #FFF4D0;
-      letter-spacing: 6px;
+      letter-spacing: 4px;
       text-shadow: 0 2px 4px #000;
+      margin-top: 4px;
     }
 
-    .flying-shinobi-rocket {
+    /* 5 HEROES DROP GRID */
+    .shinobi-squad-row {
       position: absolute;
-      width: 170px;
-      height: 170px;
-      z-index: 20;
-      pointer-events: none;
-      transform: rotate(38deg);
-      filter: drop-shadow(0 0 20px #00E5FF);
-    }
-    .flying-shinobi-rocket img { width: 100%; height: 100%; object-fit: contain; }
-
-    .landing-zone-right {
-      position: absolute;
-      top: 50%;
-      right: 40px;
-      transform: translateY(-50%) translateX(220px);
-      width: 480px;
-      z-index: 30;
+      inset: 0;
       display: flex;
       align-items: center;
-      gap: 16px;
-      opacity: 0;
-      transition: transform 0.65s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.5s ease;
+      justify-content: space-evenly;
+      padding: 0 30px;
+      z-index: 20;
       pointer-events: none;
     }
-    .landing-zone-right.landed {
-      transform: translateY(-50%) translateX(0);
-      opacity: 1;
-      pointer-events: auto;
+    .shinobi-drop-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      transform: translateY(-120vh);
+      transition: transform 0.85s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-    .unfurled-scroll-report {
-      flex: 1;
-      background: #FCF4DE;
-      border: 4px solid #8C5727;
-      border-radius: 14px;
-      padding: 16px 20px;
-      box-shadow: 0 16px 36px rgba(0,0,0,0.8);
-      color: #3B220E;
+    .shinobi-drop-card.landed {
+      transform: translateY(0);
     }
-    .scroll-report-title {
-      font-size: 16px;
+    .shinobi-avatar-hero {
+      width: 140px;
+      height: 190px;
+      object-fit: contain;
+      filter: drop-shadow(0 15px 25px rgba(0,0,0,0.85));
+    }
+    .solved-scroll-scroll {
+      background: #FFFDF0;
+      border: 3px solid #D97706;
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-family: 'Cinzel', serif;
+      font-size: 0.88rem;
       font-weight: 900;
-      color: #7A3E0C;
-      border-bottom: 2px dashed #B58252;
-      padding-bottom: 4px;
-      margin-bottom: 8px;
+      color: #78350F;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.6);
+      text-align: center;
+      white-space: nowrap;
     }
-    .scroll-report-body { font-size: 13px; font-weight: 800; line-height: 1.5; color: #4A2910; margin-bottom: 12px; }
 
-    .btn-finale-close {
+    /* BOTTOM RIGHT DOCKED CONTINUE BUTTON */
+    .btn-finish-quest {
+      position: absolute;
+      bottom: 24px;
+      right: 28px;
       background: linear-gradient(180deg, #FF9F43 0%, #E67E22 100%);
       border: 2px solid #FED330;
       color: #2B1704;
       font-weight: 900;
-      font-size: 13px;
-      padding: 8px 16px;
-      border-radius: 8px;
+      font-size: 1rem;
+      padding: 12px 28px;
+      border-radius: 14px;
       cursor: pointer;
-    }
-    .shinobi-victory-posture {
-      width: 170px;
-      height: 250px;
-      display: flex;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.7);
+      display: inline-flex;
       align-items: center;
-      justify-content: flex-end;
+      gap: 8px;
+      z-index: 35;
+      transition: all 0.15s;
     }
-    .shinobi-victory-posture img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .btn-finish-quest:active { transform: scale(0.96); }
   </style>
 </head>
 <body>
@@ -518,7 +558,6 @@
     <button type="button" class="hud-btn" onclick="goToHub()">🍃 Hub</button>
 
     <div class="header-kunai-badge">
-      <span class="badge-konoha-icon">🍥</span>
       <span class="badge-title-text">Exercise 1.2: Division Terms</span>
     </div>
 
@@ -527,16 +566,48 @@
 
   <!-- MAIN ACADEMY BOARD -->
   <main class="academy-board-wrapper">
+
+    <!-- 4 VECTOR KUNAI BLADES IN CORNERS -->
+    <svg class="corner-kunai kunai-tl" viewBox="0 0 100 100">
+      <polygon points="50,5 65,40 50,75 35,40" fill="#CBD5E1" stroke="#334155" stroke-width="3"/>
+      <rect x="47" y="75" width="6" height="20" fill="#713F12"/>
+      <circle cx="50" cy="95" r="4" fill="none" stroke="#713F12" stroke-width="2"/>
+    </svg>
+    <svg class="corner-kunai kunai-tr" viewBox="0 0 100 100">
+      <polygon points="50,5 65,40 50,75 35,40" fill="#CBD5E1" stroke="#334155" stroke-width="3"/>
+      <rect x="47" y="75" width="6" height="20" fill="#713F12"/>
+      <circle cx="50" cy="95" r="4" fill="none" stroke="#713F12" stroke-width="2"/>
+    </svg>
+    <svg class="corner-kunai kunai-bl" viewBox="0 0 100 100">
+      <polygon points="50,5 65,40 50,75 35,40" fill="#CBD5E1" stroke="#334155" stroke-width="3"/>
+      <rect x="47" y="75" width="6" height="20" fill="#713F12"/>
+      <circle cx="50" cy="95" r="4" fill="none" stroke="#713F12" stroke-width="2"/>
+    </svg>
+    <svg class="corner-kunai kunai-br" viewBox="0 0 100 100">
+      <polygon points="50,5 65,40 50,75 35,40" fill="#CBD5E1" stroke="#334155" stroke-width="3"/>
+      <rect x="47" y="75" width="6" height="20" fill="#713F12"/>
+      <circle cx="50" cy="95" r="4" fill="none" stroke="#713F12" stroke-width="2"/>
+    </svg>
+
+    <!-- AGED PARCHMENT ACTIVITY PAPER -->
     <div class="parchment-scroll-stage" id="parchmentBoard">
       
       <!-- SVG CONNECTION WIRE LAYER -->
       <svg id="wireSvgLayer"></svg>
 
-      <!-- BOARD TITLE BAR -->
+      <!-- ENGRAVED ACADEMY PLAQUE (FROM REFERENCE IMAGE) -->
       <div class="board-header-banner">
-        <div class="board-main-title">Naruto Ninja Academy Division Exercise</div>
-        <div class="board-sub-instruct">Match the division statement to the correct term node in the cloud!</div>
+        <div class="plaque-wood-top">
+          <span class="plaque-shuriken">🍃</span>
+          <span class="plaque-main-text">Naruto Ninja Academy Division Exercise</span>
+          <span class="plaque-shuriken">✦</span>
+        </div>
+        <div class="plaque-arch-bottom">
+          <span class="plaque-arch-text">Exercise 1.2</span>
+        </div>
       </div>
+
+      <div class="board-instruction-label">Match the following with the correct term.</div>
 
       <!-- ROW 1: TOP THREE SCROLLS -->
       <div class="scroll-row-top">
@@ -562,7 +633,7 @@
         </div>
       </div>
 
-      <!-- ROW 2: BOTTOM TWO SCROLLS & CENTER TARGET CLOUD -->
+      <!-- ROW 2: BOTTOM TWO SCROLLS & CENTER CHAKRA CLOUD -->
       <div class="scroll-row-bottom">
         <div class="scroll-quest-card card-purple" id="scroll_3" data-index="3" data-answer="9">
           <div class="scroll-cap-left"></div>
@@ -573,22 +644,19 @@
 
         <!-- CENTER CHAKRA CLOUD TARGET -->
         <div class="chakra-cloud-hub" id="cloudHub">
-          <div class="cloud-deco-puff-left"></div>
-          <div class="cloud-deco-puff-right"></div>
+          <div class="cloud-puff-left"></div>
+          <div class="cloud-puff-right"></div>
 
-          <!-- DYNAMIC SHINOBI CALLER IMAGE -->
-          <div class="shinobi-caller-zone">
-            <img src="assets/naruto.png" class="challenger-shinobi-img" id="activeShinobiImg" alt="Shinobi" onerror="handleImageFallback(this)" />
-          </div>
+          <!-- MINI POINTING CHIBIS (FROM REFERENCE) -->
+          <img src="assets/naruto.png" class="chibi-ninja-flank chibi-naruto" alt="Naruto" onerror="this.style.display='none'">
+          <img src="assets/sasuke.png" class="chibi-ninja-flank chibi-sasuke" alt="Sasuke" onerror="this.style.display='none'">
 
-          <div class="cloud-targets-grid" id="cloudTargetsGrid">
-            <!-- Target Nodes with precise positions from reference -->
-            <div class="target-bubble-node" id="target_0" data-value="0" style="top: 22px; left: 32px;">0</div>
-            <div class="target-bubble-node" id="target_4" data-value="4" style="bottom: 18px; left: 88px;">4</div>
-            <div class="target-bubble-node" id="target_9" data-value="9" style="top: 18px; left: 140px;">9</div>
-            <div class="target-bubble-node" id="target_3" data-value="3" style="bottom: 18px; left: 195px;">3</div>
-            <div class="target-bubble-node" id="target_21" data-value="21" style="top: 22px; left: 248px;">21</div>
-          </div>
+          <!-- TARGET CHAKRA COINS (PRECISELY MATCHING REFERENCE) -->
+          <div class="target-coin-node" id="target_0" data-value="0" style="top: 24px; left: 34px;">0</div>
+          <div class="target-coin-node" id="target_4" data-value="4" style="bottom: 18px; left: 90px;">4</div>
+          <div class="target-coin-node" id="target_9" data-value="9" style="top: 18px; left: 138px;">9</div>
+          <div class="target-coin-node" id="target_3" data-value="3" style="bottom: 18px; left: 192px;">3</div>
+          <div class="target-coin-node" id="target_21" data-value="21" style="top: 24px; left: 244px;">21</div>
         </div>
 
         <div class="scroll-quest-card card-orange" id="scroll_4" data-index="4" data-answer="4">
@@ -599,9 +667,9 @@
         </div>
       </div>
 
-      <!-- BOTTOM ACTION CONTROLS -->
+      <!-- FOOTER DOCK -->
       <div class="board-footer-dock">
-        <span style="font-size:0.86rem; font-weight:900; color:#78350F;" id="dockStatusNotice">
+        <span style="font-size:0.86rem; font-weight:800; color:#78350F;" id="dockStatusNotice">
           Drag ninja threads from each scroll to its matching node.
         </span>
         <button type="button" class="btn-submit-jutsu" id="btnSubmitJutsu" onclick="evaluateAllMatches()">
@@ -612,44 +680,64 @@
     </div>
   </main>
 
-  <!-- GRAND FINALE CELEBRATION STAGE -->
-  <div id="celebrationFinaleStage">
-    <canvas id="finaleCanvas"></canvas>
+  <!-- MULTI-SHINOBI DROP VICTORY CELEBRATION STAGE -->
+  <div id="celebrationVictoryStage">
+    <canvas id="victoryCanvas"></canvas>
 
-    <div class="kanji-banner-centerpiece" id="kanjiCenterpiece">
-      <div class="enso-brush-crescent"></div>
-      <div class="kanji-top-title">任務完了</div>
-      <div class="kanji-subtitle-gold">EXERCISE 1.2 MASTERED!</div>
+    <div class="victory-title-banner" id="victoryBanner">
+      <div class="victory-kanji-text">任務完了</div>
+      <div class="victory-sub-text">EXERCISE 1.2 MASTERED!</div>
     </div>
 
-    <div class="flying-shinobi-rocket" id="flyingShinobiRocket">
-      <img src="assets/naruto.png" id="flyingShinobiImg" alt="Shinobi" onerror="handleImageFallback(this)">
-    </div>
-
-    <div class="landing-zone-right" id="landingZoneRight">
-      <div class="unfurled-scroll-report">
-        <div class="scroll-report-title">任務完了 — DIVISION TERMS SOLVED!</div>
-        <div class="scroll-report-body" id="reportScrollBody">
-          All terms matched with complete mastery!
-        </div>
-        <button class="btn-finale-close" onclick="closeCelebrationFinale()">Continue Training ➔</button>
+    <!-- 5 HEROES DROP CONTAINER -->
+    <div class="shinobi-squad-row">
+      
+      <!-- HERO 1: NARUTO (RED) -->
+      <div class="shinobi-drop-card" id="dropCard_0">
+        <img src="assets/naruto.png" class="shinobi-avatar-hero" alt="Naruto" onerror="handleImageFallback(this)">
+        <div class="solved-scroll-scroll">24 ÷ 8 ➔ Quotient = <b>3</b></div>
       </div>
 
-      <div class="shinobi-victory-posture">
-        <img src="assets/naruto.png" id="victoryPoseImg" alt="Victory" onerror="handleImageFallback(this)">
+      <!-- HERO 2: ROCK LEE (GREEN) -->
+      <div class="shinobi-drop-card" id="dropCard_1">
+        <img src="assets/lee.png" class="shinobi-avatar-hero" alt="Rock Lee" onerror="handleImageFallback(this)">
+        <div class="solved-scroll-scroll">21 ÷ 3 ➔ Dividend = <b>21</b></div>
       </div>
+
+      <!-- HERO 3: KAKASHI (BLUE) -->
+      <div class="shinobi-drop-card" id="dropCard_2">
+        <img src="assets/kakashi.png" class="shinobi-avatar-hero" alt="Kakashi" onerror="handleImageFallback(this)">
+        <div class="solved-scroll-scroll">49 ÷ 7 ➔ Remainder = <b>0</b></div>
+      </div>
+
+      <!-- HERO 4: SASUKE (PURPLE) -->
+      <div class="shinobi-drop-card" id="dropCard_3">
+        <img src="assets/sasuke.png" class="shinobi-avatar-hero" alt="Sasuke" onerror="handleImageFallback(this)">
+        <div class="solved-scroll-scroll">81 ÷ 9 ➔ Quotient = <b>9</b></div>
+      </div>
+
+      <!-- HERO 5: SHIKAMARU (ORANGE) -->
+      <div class="shinobi-drop-card" id="dropCard_4">
+        <img src="assets/shikamaru.png" class="shinobi-avatar-hero" alt="Shikamaru" onerror="handleImageFallback(this)">
+        <div class="solved-scroll-scroll">36 ÷ 4 ➔ Divisor = <b>4</b></div>
+      </div>
+
     </div>
+
+    <!-- DOCKED BOTTOM-RIGHT ACTION BUTTON -->
+    <button type="button" class="btn-finish-quest" onclick="closeVictoryStage()">
+      Continue Training ➔
+    </button>
   </div>
 
   <script>
-    /* SHINOBI CONFIGURATION PER SCROLL */
-    const SCROLL_SHINOBI_MAP = [
-      { name: "Naruto Uzumaki", img: "assets/naruto.png", ans: "3" },    // 0: Red (24 / 8) -> Quotient 3[cite: 7, 8]
-      { name: "Rock Lee",       img: "assets/lee.png",    ans: "21" },   // 1: Green (21 / 3) -> Dividend 21[cite: 7, 8]
-      { name: "Kakashi Hatake", img: "assets/kakashi.png",ans: "0" },    // 2: Blue (49 / 7) -> Remainder 0[cite: 7, 8]
-      { name: "Sasuke Uchiha",  img: "assets/sasuke.png", ans: "9" },    // 3: Purple (81 / 9) -> Quotient 9[cite: 7, 8]
-      { name: "Shikamaru Nara", img: "assets/shikamaru.png", ans: "4" }  // 4: Orange (36 / 4) -> Divisor 4[cite: 7, 8]
-    ];
+    const EXPECTED_ANSWERS = {
+      0: "3",   // 24 / 8 -> Quotient 3[cite: 7, 8]
+      1: "21",  // 21 / 3 -> Dividend 21[cite: 7, 8]
+      2: "0",   // 49 / 7 -> Remainder 0[cite: 7, 8]
+      3: "9",   // 81 / 9 -> Quotient 9[cite: 7, 8]
+      4: "4"    // 36 / 4 -> Divisor 4[cite: 7, 8]
+    };
 
     /* AUDIO ENGINE */
     class WarfareAudio {
@@ -690,6 +778,21 @@
         gain.connect(this.ctx.destination);
         src.start();
       }
+      playHeroThud() {
+        this.init();
+        const t0 = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(140, t0);
+        osc.frequency.exponentialRampToValueAtTime(32, t0 + 0.25);
+        gain.gain.setValueAtTime(0.5, t0);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.3);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(t0);
+        osc.stop(t0 + 0.35);
+      }
       playTaikoImpact() {
         this.init();
         const t0 = this.ctx.currentTime;
@@ -704,30 +807,6 @@
         gain.connect(this.ctx.destination);
         osc.start(t0);
         osc.stop(t0 + 0.9);
-      }
-      playWhoosh() {
-        this.init();
-        const t0 = this.ctx.currentTime;
-        const dur = 2.4;
-        const buffer = this.ctx.createBuffer(1, this.ctx.sampleRate * dur, this.ctx.sampleRate);
-        const d = buffer.getChannelData(0);
-        for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
-        const src = this.ctx.createBufferSource();
-        src.buffer = buffer;
-        const filter = this.ctx.createBiquadFilter();
-        filter.type = 'bandpass';
-        filter.Q.value = 3.0;
-        filter.frequency.setValueAtTime(320, t0);
-        filter.frequency.exponentialRampToValueAtTime(2400, t0 + dur);
-        const gain = this.ctx.createGain();
-        gain.gain.setValueAtTime(0.01, t0);
-        gain.gain.linearRampToValueAtTime(0.28, t0 + dur * 0.35);
-        gain.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
-        src.connect(filter);
-        filter.connect(gain);
-        gain.connect(this.ctx.destination);
-        src.start(t0);
-        src.stop(t0 + dur);
       }
     }
     const audio = new WarfareAudio();
@@ -745,15 +824,8 @@
       img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><circle cx='70' cy='70' r='65' fill='%233E2413' stroke='%23E67E22' stroke-width='4'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='45'>🍥</text></svg>";
     }
 
-    /* MATCH STATE STORE (Index 0..4 -> Selected target value) */
-    let userLinks = {
-      0: null, // Scroll 0
-      1: null, // Scroll 1
-      2: null, // Scroll 2
-      3: null, // Scroll 3
-      4: null  // Scroll 4
-    };
-
+    /* MATCH STATE: Neutral connections */
+    let userLinks = { 0: null, 1: null, 2: null, 3: null, 4: null };
     let activeDragScrollIdx = null;
     let livePointerX = 0, livePointerY = 0;
     const svgLayer = document.getElementById('wireSvgLayer');
@@ -774,11 +846,7 @@
         activeDragScrollIdx = idx;
         try { card.setPointerCapture(e.pointerId); } catch(_) {}
 
-        // Switch live character display
-        const shinobi = SCROLL_SHINOBI_MAP[idx];
-        document.getElementById('activeShinobiImg').src = shinobi.img;
         audio.playWireSnap();
-
         const board = document.getElementById('parchmentBoard').getBoundingClientRect();
         livePointerX = e.clientX - board.left;
         livePointerY = e.clientY - board.top;
@@ -799,13 +867,11 @@
         if (activeDragScrollIdx === null) return;
         try { card.releasePointerCapture(e.pointerId); } catch(_) {}
 
-        // Check if dropped over any target node
-        const board = document.getElementById('parchmentBoard').getBoundingClientRect();
         const dropX = e.clientX;
         const dropY = e.clientY;
 
         let matchedVal = null;
-        document.querySelectorAll('.target-bubble-node').forEach(node => {
+        document.querySelectorAll('.target-coin-node').forEach(node => {
           const nr = node.getBoundingClientRect();
           if (dropX >= nr.left && dropX <= nr.right && dropY >= nr.top && dropY <= nr.bottom) {
             matchedVal = node.getAttribute('data-value');
@@ -825,8 +891,8 @@
       card.addEventListener('pointercancel', finishDrag);
     });
 
-    /* ALLOW DIRECT TAP ON TARGET NODES AS WELL */
-    document.querySelectorAll('.target-bubble-node').forEach(node => {
+    /* ALLOW DIRECT TAP ON TARGET NODES */
+    document.querySelectorAll('.target-coin-node').forEach(node => {
       node.addEventListener('pointerdown', () => {
         if (activeDragScrollIdx !== null) {
           userLinks[activeDragScrollIdx] = node.getAttribute('data-value');
@@ -847,21 +913,20 @@
         if (!targetVal) return;
 
         const scrollNode = document.getElementById(`node_s_${sIdx}`);
-        const targetEl = document.querySelector(`.target-bubble-node[data-value="${targetVal}"]`);
+        const targetEl = document.querySelector(`.target-coin-node[data-value="${targetVal}"]`);
 
         if (scrollNode && targetEl) {
           const p1 = getNodeCenter(scrollNode);
           const p2 = getNodeCenter(targetEl);
 
           const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-          // Smooth bezier curve
           const cx1 = p1.x;
           const cy1 = p1.y + (p2.y - p1.y) * 0.5;
           const cx2 = p2.x;
           const cy2 = p1.y + (p2.y - p1.y) * 0.5;
 
           path.setAttribute('d', `M ${p1.x} ${p1.y} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${p2.x} ${p2.y}`);
-          path.setAttribute('stroke', '#475569');
+          path.setAttribute('stroke', '#334155');
           path.setAttribute('stroke-width', '4');
           path.setAttribute('fill', 'none');
           path.setAttribute('stroke-linecap', 'round');
@@ -877,7 +942,7 @@
           const p1 = getNodeCenter(scrollNode);
           const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
           path.setAttribute('d', `M ${p1.x} ${p1.y} L ${livePointerX} ${livePointerY}`);
-          path.setAttribute('stroke', '#EA580C');
+          path.setAttribute('stroke', '#D35400');
           path.setAttribute('stroke-width', '3.5');
           path.setAttribute('fill', 'none');
           path.setAttribute('stroke-linecap', 'round');
@@ -886,7 +951,7 @@
       }
 
       // Update connected classes on targets
-      document.querySelectorAll('.target-bubble-node').forEach(node => {
+      document.querySelectorAll('.target-coin-node').forEach(node => {
         const v = node.getAttribute('data-value');
         const isLinked = Object.values(userLinks).includes(v);
         node.classList.toggle('connected', isLinked);
@@ -899,7 +964,7 @@
       document.querySelectorAll('.scroll-quest-card').forEach(c => c.classList.remove('poofed'));
     }
 
-    /* SUBMIT & ANTI-CHEAT EVALUATION GATE */
+    /* EVALUATE & STAGGERED DISAPPEAR */
     async function evaluateAllMatches() {
       const allLinked = Object.values(userLinks).every(v => v !== null);
       if (!allLinked) {
@@ -907,15 +972,9 @@
         return;
       }
 
-      // Check correctness:
-      // Red (0) -> 3[cite: 7, 8]
-      // Green (1) -> 21[cite: 7, 8]
-      // Blue (2) -> 0[cite: 7, 8]
-      // Purple (3) -> 9[cite: 7, 8]
-      // Orange (4) -> 4[cite: 7, 8]
       let allCorrect = true;
       for (let i = 0; i < 5; i++) {
-        if (userLinks[i] !== SCROLL_SHINOBI_MAP[i].ans) {
+        if (userLinks[i] !== EXPECTED_ANSWERS[i]) {
           allCorrect = false;
           break;
         }
@@ -925,58 +984,43 @@
         document.getElementById('dockStatusNotice').textContent = "Jutsu Shattered! Scrolls Dispelling...";
         document.getElementById('btnSubmitJutsu').disabled = true;
 
-        // EXECUTE STAGGERED DISAPPEAR SEQUENCE (One by one)
+        // FADE OUT SCROLLS ONE BY ONE
         for (let i = 0; i < 5; i++) {
           const card = document.getElementById(`scroll_${i}`);
-          const shinobi = SCROLL_SHINOBI_MAP[i];
-
-          // Flash character & sound
-          document.getElementById('activeShinobiImg').src = shinobi.img;
           audio.playSmokePoof();
 
-          // Target node bursts
-          const tNode = document.querySelector(`.target-bubble-node[data-value="${shinobi.ans}"]`);
+          const tNode = document.querySelector(`.target-coin-node[data-value="${EXPECTED_ANSWERS[i]}"]`);
           if (tNode) tNode.classList.add('burst');
 
-          // Scroll card poofs into smoke
           card.classList.add('poofed');
-
-          // Remove its connected wire
           delete userLinks[i];
           renderSvgWires();
 
-          // 400ms delay between each scroll disappearing
-          await new Promise(r => setTimeout(r, 480));
+          await new Promise(r => setTimeout(r, 450));
         }
 
-        // TRIGGER GRAND FINALE STAGE AFTER ALL VANISH
-        setTimeout(() => {
-          triggerGrandCelebrationFinale();
-        }, 300);
+        setTimeout(triggerMultiShinobiDropCelebration, 300);
 
       } else {
         audio.playSmokePoof();
-        alert("The chakra links are unstable! Double check dividend, divisor, quotient, and remainder terms!");
+        alert("Chakra links unstable! Double check dividend, divisor, quotient, and remainder terms!");
       }
     }
 
-    /* GRAND FINALE CELEBRATION ENGINE */
-    const finaleStage = document.getElementById('celebrationFinaleStage');
-    const finaleCanvas = document.getElementById('finaleCanvas');
-    const finaleCtx = finaleCanvas.getContext('2d', { alpha: true });
-    const kanjiCenterpiece = document.getElementById('kanjiCenterpiece');
-    const flyingShinobiRocket = document.getElementById('flyingShinobiRocket');
-    const landingZoneRight = document.getElementById('landingZoneRight');
-
-    let finaleAnimRunning = false;
+    /* =========================================================
+       MULTI-SHINOBI DROP VICTORY ENGINE
+    ========================================================= */
+    const victoryStage = document.getElementById('celebrationVictoryStage');
+    const victoryCanvas = document.getElementById('victoryCanvas');
+    const victoryCtx = victoryCanvas.getContext('2d', { alpha: true });
+    let victoryAnimRunning = false;
     let confettiStorm = [];
-    let flyStartTime = 0;
 
-    function resizeFinaleCanvas() {
-      finaleCanvas.width = window.innerWidth;
-      finaleCanvas.height = window.innerHeight;
+    function resizeVictoryCanvas() {
+      victoryCanvas.width = window.innerWidth;
+      victoryCanvas.height = window.innerHeight;
     }
-    window.addEventListener('resize', resizeFinaleCanvas);
+    window.addEventListener('resize', resizeVictoryCanvas);
 
     class TacticalConfetti {
       constructor(type = 'leaf') {
@@ -1011,78 +1055,46 @@
       }
     }
 
-    function triggerGrandCelebrationFinale() {
-      resizeFinaleCanvas();
-      finaleStage.style.display = 'block';
-      finaleAnimRunning = true;
+    async function triggerMultiShinobiDropCelebration() {
+      resizeVictoryCanvas();
+      victoryStage.style.display = 'block';
+      victoryAnimRunning = true;
 
       audio.playTaikoImpact();
-      kanjiCenterpiece.className = 'kanji-banner-centerpiece impact';
-
-      document.getElementById('reportScrollBody').innerHTML = `
-        Exercise 1.2 Terms Fully Mastered!<br/>
-        • 24 ÷ 8 ➔ Quotient = <b>3</b><br/>
-        • 21 ÷ 3 ➔ Dividend = <b>21</b><br/>
-        • 49 ÷ 7 ➔ Remainder = <b>0</b><br/>
-        • 81 ÷ 9 ➔ Quotient = <b>9</b><br/>
-        • 36 ÷ 4 ➔ Divisor = <b>4</b>
-      `;
+      document.getElementById('victoryBanner').classList.add('impact');
 
       confettiStorm = [];
       for (let i = 0; i < 45; i++) confettiStorm.push(new TacticalConfetti('leaf'));
-      for (let i = 0; i < 25; i++) confettiStorm.push(new TacticalConfetti('shuriken'));
+      for (let i = 0; i < 30; i++) confettiStorm.push(new TacticalConfetti('shuriken'));
 
-      setTimeout(() => {
-        audio.playWhoosh();
-        flyStartTime = performance.now();
-        animateSlowGlide();
-      }, 400);
+      requestAnimationFrame(renderVictoryLoop);
 
-      setTimeout(() => {
-        landingZoneRight.className = 'landing-zone-right landed';
-      }, 2300);
-
-      requestAnimationFrame(renderFinaleScene);
-    }
-
-    function animateSlowGlide() {
-      const dur = 2800;
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-
-      function step(now) {
-        const elapsed = now - flyStartTime;
-        const p = Math.min(1, elapsed / dur);
-        const ease = 1 - Math.pow(1 - p, 3);
-
-        const curX = -150 + (w * 0.45 - (-150)) * ease;
-        const curY = -150 + (h * 0.5 - (-150)) * ease;
-
-        flyingShinobiRocket.style.left = `${curX}px`;
-        flyingShinobiRocket.style.top = `${curY}px`;
-
-        if (p < 1 && finaleAnimRunning) {
-          requestAnimationFrame(step);
-        }
+      // STAGGERED HERO DROP FROM TOP (ONE BY ONE)
+      for (let i = 0; i < 5; i++) {
+        await new Promise(r => setTimeout(r, 380));
+        const dropCard = document.getElementById(`dropCard_${i}`);
+        dropCard.classList.add('landed');
+        audio.playHeroThud();
       }
-      requestAnimationFrame(step);
     }
 
-    function renderFinaleScene() {
-      if (!finaleAnimRunning) return;
-      finaleCtx.clearRect(0, 0, finaleCanvas.width, finaleCanvas.height);
+    function renderVictoryLoop() {
+      if (!victoryAnimRunning) return;
+      victoryCtx.clearRect(0, 0, victoryCanvas.width, victoryCanvas.height);
       for (let c of confettiStorm) {
         c.update();
-        c.draw(finaleCtx);
+        c.draw(victoryCtx);
       }
-      requestAnimationFrame(renderFinaleScene);
+      requestAnimationFrame(renderVictoryLoop);
     }
 
-    function closeCelebrationFinale() {
-      finaleAnimRunning = false;
-      finaleStage.style.display = 'none';
-      kanjiCenterpiece.className = 'kanji-banner-centerpiece';
-      landingZoneRight.className = 'landing-zone-right';
+    function closeVictoryStage() {
+      victoryAnimRunning = false;
+      victoryStage.style.display = 'none';
+      document.getElementById('victoryBanner').classList.remove('impact');
+      for (let i = 0; i < 5; i++) {
+        document.getElementById(`dropCard_${i}`).classList.remove('landed');
+      }
       resetConnections();
       document.getElementById('btnSubmitJutsu').disabled = false;
       document.getElementById('dockStatusNotice').textContent = "Drag ninja threads from each scroll to its matching node.";
