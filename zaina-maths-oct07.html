@@ -927,22 +927,28 @@ header {
 }
 .quest-finish-btn:active { transform: scale(0.96); }
 
+/* ==========================================================
+   UPGRADED TACTICAL ROUGH PAD (WITH NOTEPAD TOOLBAR)
+========================================================== */
 .floating-rough-pad {
   position: fixed;
   top: 70px;
   left: 20px;
-  width: 320px;
-  height: 380px;
-  background: #FFFFFF;
-  border: 3px solid #F59E0B;
+  width: 360px;
+  height: 440px;
+  background: #FFFDF0;
+  border: 3.5px solid #F59E0B;
   border-radius: 18px;
-  box-shadow: 0 14px 40px rgba(0,0,0,0.25);
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.4);
   display: none;
   flex-direction: column;
-  z-index: 9999;
+  z-index: 99999;
   overflow: hidden;
   resize: both;
+  min-width: 300px;
+  min-height: 320px;
 }
+
 .rough-header {
   height: 38px;
   background: #FEF3C7;
@@ -953,20 +959,134 @@ header {
   padding: 0 10px;
   cursor: move;
   flex-shrink: 0;
+  user-select: none;
+  -webkit-user-select: none;
 }
-.rough-title { font-size: 0.88rem; font-weight: 800; color: #92400E; }
-.canvas-tool-btn-rough {
-  background: #FFF;
-  border: 1.5px solid #FCD34D;
+.rough-title {
+  font-family: var(--font-display, 'Fredoka', sans-serif);
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #92400E;
+}
+.rough-close-btn {
+  background: #FEE2E2;
+  border: 1.5px solid #FCA5A5;
+  color: #DC2626;
   border-radius: 8px;
-  padding: 3px 8px;
-  font-size: 0.82rem;
+  width: 26px;
+  height: 26px;
+  font-size: 0.85rem;
   font-weight: 800;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.canvas-tool-btn-rough.active { background: #F59E0B; color: #FFF; }
-.rough-body { position: relative; flex: 1; width: 100%; height: 100%; overflow: hidden; background: #FFFFFF; }
-.graph-canvas { width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair; }
+.rough-close-btn:active { transform: scale(0.9); }
+
+.notepad-header-controls {
+  background: #251D18;
+  border-bottom: 2px solid #5A3C22;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  user-select: none;
+  -webkit-user-select: none;
+  flex-shrink: 0;
+}
+
+.tools-icon-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-icon-tool {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 5px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+.btn-icon-tool:hover { transform: scale(1.15); }
+.btn-icon-tool.active {
+  background: rgba(255, 119, 0, 0.25);
+  box-shadow: 0 0 8px rgba(255, 119, 0, 0.7);
+  transform: scale(1.1);
+}
+
+.palm-mode-btn {
+  background: #3A2312;
+  border: 1.5px solid #D35400;
+  color: #F1C40F;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 900;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.palm-mode-btn.active {
+  background: #27AE60;
+  border-color: #2ECC71;
+  color: #FFF;
+}
+
+.color-swatch-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.color-swatch {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #FFF;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  transition: transform 0.15s ease;
+}
+.color-swatch.active {
+  transform: scale(1.3);
+  border-color: #FCD34D;
+  box-shadow: 0 0 6px #F59E0B;
+}
+
+.notepad-scroll-viewport {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  touch-action: none;
+  background-color: #FFFDF0;
+  background-image: 
+    linear-gradient(rgba(150, 187, 207, 0.5) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(150, 187, 207, 0.5) 1px, transparent 1px),
+    linear-gradient(rgba(205, 224, 236, 0.35) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(205, 224, 236, 0.35) 1px, transparent 1px);
+  background-size: 90px 90px, 90px 90px, 18px 18px, 18px 18px;
+  background-position: -1px -1px;
+}
+
+#roughCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+  touch-action: none;
+}
 </style>
 </head>
 <body>
@@ -1172,18 +1292,34 @@ header {
   </div>
 </div>
 
+<!-- UPGRADED FLOATING ROUGH PAD -->
 <div class="floating-rough-pad" id="floatingRoughPad">
   <div class="rough-header" id="roughHeader">
     <div class="rough-title">📝 Rough Pad</div>
-    <div style="display:flex; gap:6px;">
-      <button class="canvas-tool-btn-rough active" id="roughPenBtn" onclick="setRoughTool('pen')">✏️</button>
-      <button class="canvas-tool-btn-rough" id="roughEraserBtn" onclick="setRoughTool('eraser')">🧹</button>
-      <button class="canvas-tool-btn-rough" onclick="clearRoughCanvas()">Clear</button>
-      <button class="canvas-tool-btn-rough" style="background:#FEE2E2; color:#DC2626;" onclick="toggleRoughPad()">✕</button>
+    <button type="button" class="rough-close-btn" onclick="toggleRoughPad()" title="Close">✕</button>
+  </div>
+
+  <div class="notepad-header-controls">
+    <div class="tools-icon-row">
+      <button type="button" class="btn-icon-tool active" id="toolPen" title="Pen (Draw)">✏️</button>
+      <button type="button" class="btn-icon-tool" id="toolEraser" title="Eraser">🧹</button>
+      <button type="button" class="btn-icon-tool" id="toolClear" title="Clear Canvas">🗑️</button>
+      <button type="button" class="btn-icon-tool" id="toolUndo" title="Undo Stroke">↩️</button>
+    </div>
+
+    <button type="button" class="palm-mode-btn" id="btnPalmMode" onclick="togglePalmRejectionMode()">
+      👆 Touch
+    </button>
+
+    <div class="color-swatch-row">
+      <span class="color-swatch active" data-color="#1E272E" style="background: #1E272E;" title="Charcoal Black"></span>
+      <span class="color-swatch" data-color="#0984E3" style="background: #0984E3;" title="Magic Blue"></span>
+      <span class="color-swatch" data-color="#D63031" style="background: #D63031;" title="Berry Red"></span>
     </div>
   </div>
-  <div class="rough-body" id="roughBody">
-    <canvas class="graph-canvas" id="roughCanvas"></canvas>
+
+  <div class="notepad-scroll-viewport" id="roughCanvasViewport">
+    <canvas id="roughCanvas"></canvas>
   </div>
 </div>
 
@@ -1226,7 +1362,6 @@ function playGrandFanfareSound() {
   try {
     const ctx = getAudioContext();
     const t0 = ctx.currentTime;
-    // Majestic Chord Bells
     const chord = [392.00, 523.25, 659.25, 783.99, 1046.50, 1318.51];
     chord.forEach((freq, idx) => {
       const osc = ctx.createOscillator();
@@ -1416,7 +1551,7 @@ function updateSnow() {
 }
 
 /* ==========================================================
-   GRAND CELEBRATION FINALE STAGE (HUMAYUN STYLE)
+   GRAND CELEBRATION FINALE STAGE
 ========================================================== */
 const grandStage = document.getElementById("grandCelebrationStage");
 const grandCanvas = document.getElementById("grandFinaleCanvas");
@@ -1766,7 +1901,6 @@ function completeCurrentExerciseQuest() {
     return;
   }
 
-  // TRIGGER GRAND CELEBRATION!
   triggerGrandCelebration(SECTIONS_DATA[selectedSectionIdx]);
 }
 
@@ -2164,62 +2298,183 @@ function switchSection(idx, doSave = true) {
   document.getElementById("exerciseScrollBody").innerHTML = sec.render();
 }
 
-let roughCanvas = null, roughCtx = null, roughIsDrawing = false, roughTool = "pen";
+/* ==========================================================
+   UPGRADED ROUGH PAD ENGINE WITH TOOLBAR & PALM REJECTION
+========================================================== */
+let roughCanvas = null;
+let roughCtx = null;
+let roughIsDrawing = false;
+let roughCurrentTool = 'pen';
+let roughActiveColor = '#1E272E';
+let isPenOnlyMode = false;
+let roughUndoStack = [];
+
+function roughStorageKey() {
+  return "v6_zaina_maths_rough_pad_canvas";
+}
 
 function toggleRoughPad() {
   playBubbleTap();
   const pad = document.getElementById("floatingRoughPad");
   const isShown = pad.style.display === "flex";
   pad.style.display = isShown ? "none" : "flex";
-  if (!isShown) setTimeout(initRoughCanvas, 60);
-}
-
-function setRoughTool(tool) {
-  roughTool = tool;
-  document.getElementById("roughPenBtn").classList.toggle("active", tool === "pen");
-  document.getElementById("roughEraserBtn").classList.toggle("active", tool === "eraser");
-}
-
-function roughStorageKey() {
-  return "v5_zaina_rough_pad_canvas";
+  if (!isShown) {
+    setTimeout(initRoughCanvas, 50);
+  } else {
+    saveRoughCanvas();
+  }
 }
 
 function initRoughCanvas() {
   roughCanvas = document.getElementById("roughCanvas");
   if (!roughCanvas) return;
-  roughCtx = roughCanvas.getContext("2d");
+  roughCtx = roughCanvas.getContext("2d", { alpha: true });
 
-  const r = roughCanvas.parentElement.getBoundingClientRect();
+  const viewport = document.getElementById("roughCanvasViewport");
+  const r = viewport.getBoundingClientRect();
   if (r.width <= 0 || r.height <= 0) return;
   const dpr = window.devicePixelRatio || 1;
+
+  let temp = document.createElement("canvas");
+  temp.width = roughCanvas.width;
+  temp.height = roughCanvas.height;
+  let tCtx = temp.getContext("2d");
+  if (roughCanvas.width > 0 && roughCanvas.height > 0) {
+    tCtx.drawImage(roughCanvas, 0, 0);
+  }
+
   roughCanvas.width = Math.floor(r.width * dpr);
   roughCanvas.height = Math.floor(r.height * dpr);
   roughCanvas.style.width = r.width + "px";
   roughCanvas.style.height = r.height + "px";
   roughCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  roughCtx.fillStyle = "#FFFFFF";
-  roughCtx.fillRect(0, 0, r.width, r.height);
+  if (temp.width > 0 && temp.height > 0) {
+    roughCtx.drawImage(temp, 0, 0, r.width, r.height);
+  } else {
+    loadRoughCanvas();
+  }
 
+  setupRoughPointerEvents();
+}
+
+function saveRoughCanvas() {
+  if (!roughCanvas || roughCanvas.width <= 0) return;
+  try {
+    localStorage.setItem(roughStorageKey(), roughCanvas.toDataURL());
+  } catch (e) {}
+}
+
+function loadRoughCanvas() {
   const saved = localStorage.getItem(roughStorageKey());
   if (saved) {
     const img = new Image();
     img.onload = () => {
       roughCtx.save();
       roughCtx.setTransform(1, 0, 0, 1, 0, 0);
+      roughCtx.clearRect(0, 0, roughCanvas.width, roughCanvas.height);
       roughCtx.drawImage(img, 0, 0, roughCanvas.width, roughCanvas.height);
       roughCtx.restore();
+      pushRoughUndo();
     };
     img.src = saved;
+  } else {
+    pushRoughUndo();
   }
+}
 
-  let lastX = 0, lastY = 0;
+function pushRoughUndo() {
+  if (!roughCanvas) return;
+  try {
+    roughUndoStack.push(roughCanvas.toDataURL());
+    if (roughUndoStack.length > 20) roughUndoStack.shift();
+  } catch (e) {}
+}
+
+function undoRoughStroke() {
+  if (roughUndoStack.length > 1) {
+    roughUndoStack.pop();
+    const previous = roughUndoStack[roughUndoStack.length - 1];
+    const img = new Image();
+    img.onload = () => {
+      roughCtx.save();
+      roughCtx.setTransform(1, 0, 0, 1, 0, 0);
+      roughCtx.clearRect(0, 0, roughCanvas.width, roughCanvas.height);
+      roughCtx.drawImage(img, 0, 0, roughCanvas.width, roughCanvas.height);
+      roughCtx.restore();
+      saveRoughCanvas();
+    };
+    img.src = previous;
+  }
+}
+
+document.getElementById('toolPen').onclick = () => {
+  roughCurrentTool = 'pen';
+  document.getElementById('toolPen').classList.add('active');
+  document.getElementById('toolEraser').classList.remove('active');
+};
+
+document.getElementById('toolEraser').onclick = () => {
+  roughCurrentTool = 'eraser';
+  document.getElementById('toolEraser').classList.add('active');
+  document.getElementById('toolPen').classList.remove('active');
+};
+
+document.getElementById('toolClear').onclick = () => {
+  roughCtx.save();
+  roughCtx.setTransform(1, 0, 0, 1, 0, 0);
+  roughCtx.clearRect(0, 0, roughCanvas.width, roughCanvas.height);
+  roughCtx.restore();
+  pushRoughUndo();
+  saveRoughCanvas();
+};
+
+document.getElementById('toolUndo').onclick = undoRoughStroke;
+
+function togglePalmRejectionMode() {
+  isPenOnlyMode = !isPenOnlyMode;
+  const btn = document.getElementById('btnPalmMode');
+  btn.textContent = isPenOnlyMode ? "✍️ S-Pen" : "👆 Touch";
+  btn.classList.toggle('active', isPenOnlyMode);
+}
+
+document.querySelectorAll('.floating-rough-pad .color-swatch').forEach(swatch => {
+  swatch.onclick = () => {
+    document.querySelectorAll('.floating-rough-pad .color-swatch').forEach(s => s.classList.remove('active'));
+    swatch.classList.add('active');
+    roughActiveColor = swatch.getAttribute('data-color');
+    roughCurrentTool = 'pen';
+    document.getElementById('toolPen').classList.add('active');
+    document.getElementById('toolEraser').classList.remove('active');
+  };
+});
+
+let lastX = 0, lastY = 0;
+
+function setupRoughPointerEvents() {
   roughCanvas.onpointerdown = (e) => {
+    if (isPenOnlyMode && e.pointerType !== 'pen') return;
     roughIsDrawing = true;
-    try { roughCanvas.setPointerCapture(e.pointerId); } catch(_) {}
+    try { roughCanvas.setPointerCapture(e.pointerId); } catch (_) {}
+
     const rect = roughCanvas.getBoundingClientRect();
     lastX = e.clientX - rect.left;
     lastY = e.clientY - rect.top;
+
+    roughCtx.beginPath();
+    roughCtx.moveTo(lastX, lastY);
+    roughCtx.lineCap = 'round';
+    roughCtx.lineJoin = 'round';
+
+    if (roughCurrentTool === 'eraser') {
+      roughCtx.globalCompositeOperation = 'destination-out';
+      roughCtx.lineWidth = 26;
+    } else {
+      roughCtx.globalCompositeOperation = 'source-over';
+      roughCtx.strokeStyle = roughActiveColor;
+      const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
+      roughCtx.lineWidth = 3.6 * (pressure * 1.5 + 0.35);
+    }
     e.preventDefault();
   };
 
@@ -2228,87 +2483,64 @@ function initRoughCanvas() {
     const rect = roughCanvas.getBoundingClientRect();
     const currX = e.clientX - rect.left;
     const currY = e.clientY - rect.top;
-    roughCtx.beginPath();
-    roughCtx.moveTo(lastX, lastY);
-    roughCtx.lineTo(currX, currY);
-    roughCtx.lineCap = "round";
-    roughCtx.lineJoin = "round";
 
-    if (roughTool === "eraser") {
-      roughCtx.strokeStyle = "#FFFFFF";
-      roughCtx.lineWidth = 26;
-    } else {
-      roughCtx.strokeStyle = "#B45309";
-      roughCtx.lineWidth = 3.6;
-    }
+    roughCtx.lineTo(currX, currY);
     roughCtx.stroke();
     lastX = currX;
     lastY = currY;
     e.preventDefault();
   };
 
-  const stopRough = (e) => {
+  const stopDrawing = (e) => {
     if (roughIsDrawing) {
       roughIsDrawing = false;
-      try { roughCanvas.releasePointerCapture(e.pointerId); } catch(_) {}
+      try { roughCanvas.releasePointerCapture(e.pointerId); } catch (_) {}
+      roughCtx.closePath();
+      roughCtx.globalCompositeOperation = 'source-over';
+      pushRoughUndo();
       saveRoughCanvas();
     }
   };
-  roughCanvas.onpointerup = stopRough;
-  roughCanvas.onpointercancel = stopRough;
-  roughCanvas.onpointerleave = stopRough;
+
+  roughCanvas.onpointerup = stopDrawing;
+  roughCanvas.onpointercancel = stopDrawing;
+  roughCanvas.onpointerleave = stopDrawing;
 }
 
-function saveRoughCanvas() {
-  if (!roughCanvas || roughCanvas.width <= 0) return;
-  try {
-    const data = roughCanvas.toDataURL("image/png");
-    localStorage.setItem(roughStorageKey(), data);
-  } catch(e) {}
-}
-
-function clearRoughCanvas() {
-  if (!roughCanvas || !roughCtx) return;
-  const r = roughCanvas.parentElement.getBoundingClientRect();
-  roughCtx.fillStyle = "#FFFFFF";
-  roughCtx.fillRect(0, 0, r.width, r.height);
-  localStorage.removeItem(roughStorageKey());
-}
-
-function makeDraggable(boxEl, handleEl) {
+(function makeDraggablePad() {
+  const box = document.getElementById("floatingRoughPad");
+  const handle = document.getElementById("roughHeader");
   let isDragging = false;
   let startX = 0, startY = 0, initLeft = 0, initTop = 0;
 
-  handleEl.addEventListener("pointerdown", (e) => {
+  handle.addEventListener("pointerdown", (e) => {
     if (e.target.tagName === 'BUTTON') return;
     isDragging = true;
     startX = e.clientX;
     startY = e.clientY;
-    const rect = boxEl.getBoundingClientRect();
+    const rect = box.getBoundingClientRect();
     initLeft = rect.left;
     initTop = rect.top;
-    handleEl.setPointerCapture(e.pointerId);
+    handle.setPointerCapture(e.pointerId);
   });
 
-  handleEl.addEventListener("pointermove", (e) => {
+  handle.addEventListener("pointermove", (e) => {
     if (!isDragging) return;
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;
-    boxEl.style.left = (initLeft + dx) + "px";
-    boxEl.style.top = (initTop + dy) + "px";
-    boxEl.style.right = "auto";
-    boxEl.style.bottom = "auto";
+    box.style.left = Math.max(10, initLeft + dx) + "px";
+    box.style.top = Math.max(10, initTop + dy) + "px";
+    box.style.right = "auto";
+    box.style.bottom = "auto";
   });
 
   const stopDrag = (e) => {
     isDragging = false;
-    try { handleEl.releasePointerCapture(e.pointerId); } catch(_) {}
+    try { handle.releasePointerCapture(e.pointerId); } catch (_) {}
   };
-  handleEl.addEventListener("pointerup", stopDrag);
-  handleEl.addEventListener("pointercancel", stopDrag);
-}
-
-makeDraggable(document.getElementById("floatingRoughPad"), document.getElementById("roughHeader"));
+  handle.addEventListener("pointerup", stopDrag);
+  handle.addEventListener("pointercancel", stopDrag);
+})();
 
 function toggleFullscreen() {
   if (!document.fullscreenElement && !document.webkitFullscreenElement) {
@@ -2328,12 +2560,8 @@ window.addEventListener("resize", () => {
     setTimeout(initRoughCanvas, 100);
   }
 });
-window.addEventListener("beforeunload", () => {
-  saveRoughCanvas();
-});
-window.addEventListener("pagehide", () => {
-  saveRoughCanvas();
-});
+window.addEventListener("beforeunload", saveRoughCanvas);
+window.addEventListener("pagehide", saveRoughCanvas);
 </script>
 </body>
 </html>
