@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Zaina's Tamil Quest: Thirukkural Expedition (Oct 10)</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800&family=Noto+Sans+Tamil:wght@700;800;900&family=Cinzel:wght@700;900&family=Quicksand:wght@700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --teak-dark: #2B180A;
+      --teak-med: #4A2E18;
+      --bronze-gold: #D4AF37;
+      --brass-bright: #F59E0B;
+      --parchment-cream: #FBF8EE;
+      --font-tamil: 'Noto Sans Tamil', 'Quicksand', sans-serif;
+      --font-display: 'Fredoka', cursive, sans-serif;
+      --font-cinzel: 'Cinzel', serif;
+      --ruled-line: #CBD5E1;
+      --ruled-margin: #F87171;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      -webkit-user-select: none;
+      font-family: var(--font-tamil);
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #110B05;
+      color: #FFF;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      padding: 6px 10px;
+      position: relative;
+    }
+
+    /* =========================================================
+       TOP CARVED TEAKWOOD HUD
+    ========================================================= */
+    .teakwood-hud-bar {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 8px;
+      background: linear-gradient(180deg, #3E2412 0%, #201107 100%);
+      border: 2.5px solid #8B5A2B;
+      border-radius: 14px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.2);
+      z-index: 50;
+      flex-shrink: 0;
+      margin-bottom: 6px;
+    }
+
+    .hud-carved-btn {
+      background: linear-gradient(180deg, #5C381E 0%, #2E1B0E 100%);
+      border: 2px solid #D4AF37;
+      color: #FEF08A;
+      padding: 6px 14px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+      transition: all 0.12s;
+    }
+    .hud-carved-btn:active { transform: translateY(2px); box-shadow: none; }
+    .hud-carved-btn.btn-hub { background: #FEF3C7; border-color: #F59E0B; color: #78350F; }
+
+    .brand-title-plaque {
+      font-family: var(--font-cinzel);
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: #FEF08A;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ACT ROADMAP SELECTOR */
+    .act-selector-strip {
+      display: flex;
+      gap: 6px;
+      background: rgba(28, 15, 6, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 4px 6px;
+      border-radius: 14px;
+      border: 2px solid rgba(212, 175, 55, 0.4);
+      margin-bottom: 6px;
+      flex-shrink: 0;
+    }
+
+    .act-nav-tab {
+      flex: 1;
+      padding: 7px 10px;
+      border: 2px solid transparent;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: #CBD5E1;
+      background: transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+    .act-nav-tab.active {
+      background: linear-gradient(180deg, #D97706 0%, #92400E 100%);
+      color: #FFFDF0;
+      border-color: #FCD34D;
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.5);
+    }
+
+    /* =========================================================
+       MAIN SCENIC STAGE (TEMPLE TRACKS FULLSCREEN)
+    ========================================================= */
+    .scenic-viewport-arena {
+      flex: 1;
+      position: relative;
+      background-image: url('assets/temple-tracks.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-color: #381E0D;
+      border: 4px solid #8B5A2B;
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.85);
+      min-height: 0;
+      padding: 10px 14px;
+    }
+
+    /* ACT LAYERS */
+    #act1ExpeditionView, #act2RailwayView, #act3ManuscriptView {
+      width: 100%;
+      height: 100%;
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 0;
+      position: relative;
+    }
+    #act1ExpeditionView.active-act, #act2RailwayView.active-act, #act3ManuscriptView.active-act {
+      display: flex;
+    }
+
+    /* =========================================================
+       ACT 1: EXPEDITION START (MOCKUP 1)
+    ========================================================= */
+    .act1-top-zone {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    /* CHIBI VALLUVAR WITH COMIC SPEECH BUBBLE */
+    .valluvar-speech-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      max-width: 52%;
+    }
+    .chibi-guide-avatar {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 14px rgba(0,0,0,0.6));
+      flex-shrink: 0;
+    }
+    .parchment-speech-bubble {
+      background: #FFFDF0;
+      border: 3px solid #8B5A2B;
+      border-radius: 18px;
+      padding: 10px 16px;
+      color: #3E2413;
+      font-size: 1.15rem;
+      font-weight: 900;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+      position: relative;
+    }
+    .parchment-speech-bubble::before {
+      content: '';
+      position: absolute;
+      left: -12px;
+      top: 50%;
+      transform: translateY(-50%);
+      border-width: 8px 12px 8px 0;
+      border-style: solid;
+      border-color: transparent #8B5A2B transparent transparent;
+    }
+
+    /* NUMBER VAULT EMBOSSED BRONZE PANEL */
+    .number-vault-plaque {
+      background: linear-gradient(180deg, #3E2412 0%, #1E1107 100%);
+      border: 3px solid #D4AF37;
+      border-radius: 16px;
+      padding: 8px 14px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 280px;
+    }
+    .vault-title-text {
+      font-family: var(--font-cinzel);
+      font-size: 0.9rem;
+      font-weight: 900;
+      color: #FEF08A;
+      text-align: center;
+      letter-spacing: 2px;
+    }
+    .vault-tumblers-row {
+      display: flex;
+      gap: 8px;
+      justify-content: space-around;
+      align-items: center;
+    }
+    .tumbler-dial-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .tumbler-roller-box {
+      background: #FFFDF0;
+      border: 2px solid #8B5A2B;
+      border-radius: 8px;
+      padding: 3px 10px;
+      font-family: var(--font-cinzel);
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: #3E2413;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.25);
+    }
+    .tumbler-sub-tag {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #FCD34D;
+    }
+
+    /* FLOATING SCATTERED CARRIAGES IN THE SANDY COURTYARD */
+    .sandy-yard-station {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      margin: auto 0;
+    }
+    .floating-wagons-cluster {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* 3 GLOWING TREASURE CHESTS DOCK */
+    .treasure-chests-strip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      background: rgba(30, 15, 6, 0.75);
+      border: 2.5px solid #8B5A2B;
+      border-radius: 16px;
+      padding: 6px 16px;
+      align-self: center;
+    }
+    .chest-clickable-token {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      background: rgba(255,255,255,0.08);
+      border: 2px solid #8B5A2B;
+      border-radius: 12px;
+      padding: 4px 12px;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .chest-clickable-token:hover {
+      transform: scale(1.06);
+      border-color: #F59E0B;
+    }
+    .token-coin-disk {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid #FFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      font-weight: 900;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+    }
+    .coin-gold { background: radial-gradient(circle, #FDE047 0%, #D97706 100%); color: #78350F; }
+    .coin-emerald { background: radial-gradient(circle, #6EE7B7 0%, #059669 100%); color: #064E3B; }
+    .coin-diamond { background: radial-gradient(circle, #93C5FD 0%, #2563EB 100%); color: #1E3A8A; }
+
+    /* REAL SKELETAL WOODEN FREIGHT WAGONS */
+    .wooden-wagon-chassis {
+      width: 90px;
+      height: 64px;
+      background: linear-gradient(180deg, #5C381E 0%, #3E2412 85%, #1F1005 100%);
+      border: 3px solid #8B5A2B;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+      cursor: grab;
+      touch-action: none;
+      transition: transform 0.15s, opacity 0.2s;
+    }
+    .wooden-wagon-chassis:active { cursor: grabbing; }
+    .wooden-wagon-chassis.used { opacity: 0.35; pointer-events: none; }
+    .wagon-carved-letter {
+      font-size: 1.45rem;
+      font-weight: 900;
+      color: #FEF08A;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8), 0 0 10px rgba(245, 158, 11, 0.4);
+      z-index: 2;
+    }
+    /* SPOKED CAST-IRON WHEELS */
+    .wagon-wheel-left, .wagon-wheel-right {
+      position: absolute;
+      bottom: -10px;
+      width: 20px;
+      height: 20px;
+      background: #111;
+      border: 3px solid #64748B;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.7);
+    }
+    .wagon-wheel-left { left: 8px; }
+    .wagon-wheel-right { right: 8px; }
+
+    /* DOCKED FOREGROUND TRACK RUNNING ACROSS BOTTOM RAILS */
+    .bottom-rail-bed-dock {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 12px;
+      min-height: 80px;
+      position: relative;
+      overflow-x: auto;
+    }
+    .steam-locomotive-head {
+      width: 120px;
+      height: 70px;
+      background: linear-gradient(180deg, #422510 0%, #201107 100%);
+      border: 3px solid #D4AF37;
+      border-radius: 14px 10px 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-cinzel);
+      font-size: 1rem;
+      font-weight: 900;
+      color: #FEF08A;
+      position: relative;
+      flex-shrink: 0;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.7);
+    }
+    .steam-chimney-puff {
+      position: absolute;
+      top: -14px;
+      left: 18px;
+      width: 16px;
+      height: 18px;
+      background: #1F1005;
+      border: 2px solid #D4AF37;
+      border-radius: 4px;
+    }
+
+    .track-coupling-target {
+      width: 90px;
+      height: 64px;
+      background: rgba(43, 24, 10, 0.65);
+      border: 2.5px dashed #F59E0B;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: #FCD34D;
+      position: relative;
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .track-coupling-target.filled {
+      background: linear-gradient(180deg, #5C381E 0%, #3E2412 100%);
+      border-style: solid;
+      border-color: #8B5A2B;
+      color: #FEF08A;
+    }
+    .track-coupling-target.matched {
+      border-color: #10B981 !important;
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.8) !important;
+    }
+
+    /* =========================================================
+       ACT 2: SANGAM RHYTHM RAILWAY (MOCKUP 2)
+    ========================================================= */
+    .act2-railway-board {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .kural-plaque-banner {
+      align-self: center;
+      background: linear-gradient(180deg, #4A2E1B 0%, #2A170C 100%);
+      border: 2.5px solid #D4AF37;
+      border-radius: 14px;
+      padding: 6px 24px;
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: #FEF08A;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.6);
+      text-align: center;
+    }
+
+    /* DUAL TRACKS (MATCHING THE 2 TRACKS IN TEMPLE-TRACKS.JPG) */
+    .kural-dual-tracks-cluster {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin: auto 0;
+    }
+    .kural-track-lane {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(30, 15, 6, 0.75);
+      border: 2px solid #8B5A2B;
+      border-radius: 14px;
+      padding: 8px 12px;
+      overflow-x: auto;
+    }
+    .track-lane-title {
+      font-family: var(--font-cinzel);
+      font-size: 0.82rem;
+      font-weight: 900;
+      color: #FEF08A;
+      background: #5C381E;
+      padding: 4px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+
+    .kural-word-wagon-slot {
+      flex: 1;
+      min-width: 140px;
+      height: 52px;
+      background: #FFFDF0;
+      border: 2.5px solid #8B5A2B;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: #3E2413;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.15s;
+    }
+    .kural-word-wagon-slot.rhyme-twin {
+      border-color: #10B981 !important;
+      box-shadow: 0 0 18px rgba(16, 185, 129, 0.8) !important;
+      background: #ECFDF5 !important;
+      color: #065F46 !important;
+    }
+    .kural-word-wagon-slot.matched {
+      background: #DCFCE7 !important;
+      border-color: #22C55E !important;
+      color: #15803D !important;
+    }
+
+    /* =========================================================
+       ACT 3: ANCIENT MANUSCRIPT WRITING ACADEMY (MOCKUP 3)
+    ========================================================= */
+    .act3-manuscript-container {
+      flex: 1;
+      position: relative;
+      background-image: url('assets/manuscript-scroll.jpg');
+      background-size: cover;
+      background-position: center;
+      background-color: var(--parchment-cream);
+      border: 4px solid #8B5A2B;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      padding: 10px 18px;
+      box-shadow: inset 0 0 50px rgba(139, 90, 43, 0.4), 0 12px 30px rgba(0,0,0,0.8);
+      min-height: 0;
+      gap: 6px;
+    }
+
+    .manuscript-prompt-card {
+      background: rgba(255, 253, 245, 0.95);
+      border: 2px solid #8B5A2B;
+      border-radius: 12px;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .manuscript-prompt-text {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: #3E2413;
+    }
+
+    .manuscript-tool-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 253, 245, 0.88);
+      border: 1.5px solid #8B5A2B;
+      border-radius: 12px;
+      padding: 4px 12px;
+      flex-shrink: 0;
+    }
+    .pad-action-icon-btn {
+      background: #FFF;
+      border: 1.5px solid #8B5A2B;
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 1.05rem;
+      cursor: pointer;
+    }
+    .pad-action-icon-btn.active { background: #8B5A2B; color: #FFF; }
+
+    .color-picker-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid #FFF;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+      cursor: pointer;
+    }
+    .color-picker-dot.active { transform: scale(1.25); box-shadow: 0 0 0 2px #8B5A2B; }
+
+    /* 44PX RULED SINGLE-LINE NOTEBOOK CANVAS */
+    .notebook-viewport-canvas-box {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      min-height: 0;
+      border: 2px solid #8B5A2B;
+      border-radius: 12px;
+      overflow: hidden;
+      background-color: transparent;
+      touch-action: none;
+    }
+    .ruled-horizontal-texture {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-image: repeating-linear-gradient(
+        transparent 0px,
+        transparent 43px,
+        var(--ruled-line) 44px
+      );
+      z-index: 1;
+    }
+    .ruled-horizontal-texture::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 42px;
+      width: 2px;
+      height: 100%;
+      background: var(--ruled-margin);
+    }
+    .ghost-tracing-font-overlay {
+      position: absolute;
+      inset: 0;
+      padding: 10px 14px 10px 58px;
+      pointer-events: none;
+      z-index: 2;
+      font-family: var(--font-tamil);
+      font-size: 2.15rem;
+      font-weight: 800;
+      letter-spacing: 5px;
+      color: rgba(62, 36, 19, 0.32);
+      line-height: 44px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      transition: opacity 0.2s ease;
+    }
+    #manuscriptInkCanvas {
+      position: absolute;
+      inset: 0;
+      cursor: crosshair;
+      touch-action: none;
+      z-index: 3;
+    }
+
+    /* FOOTER NAV */
+    .act-footer-dock {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 6px;
+      flex-shrink: 0;
+    }
+
+    /* =========================================================
+       ACT 4: ROYAL CELESTIA FINALE (MOCKUP 4)
+    ========================================================= */
+    #act4FinaleStage {
+      position: fixed;
+      inset: 0;
+      z-index: 100000;
+      pointer-events: none;
+      display: none;
+      overflow: hidden;
+      background: radial-gradient(circle at center, rgba(30, 20, 10, 0.5) 0%, rgba(13, 6, 2, 0.94) 100%);
+      backdrop-filter: blur(6px);
+    }
+    #finaleCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+    }
+    .finale-dialog-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.2);
+      width: 90%;
+      max-width: 580px;
+      background: #FFFDF0;
+      border: 4px solid #D4AF37;
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 12px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.85);
+      z-index: 25;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .finale-dialog-center.pop {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .finale-title {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #92400E;
+    }
+    .btn-finale-continue {
+      background: linear-gradient(180deg, #FF9F43 0%, #E67E22 100%);
+      border: 2px solid #FED330;
+      color: #2B1704;
+      font-weight: 900;
+      font-size: 1.1rem;
+      padding: 12px 34px;
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP TEAKWOOD HUD -->
+  <header class="teakwood-hud-bar">
+    <div style="display:flex; align-items:center; gap:8px;">
+      <button type="button" class="hud-carved-btn btn-hub" onclick="goToHub()">🏠 Hub</button>
+      <div class="brand-title-plaque">
+        <span>📜</span> திருக்குறள் EXPEDITION
+      </div>
+    </div>
+
+    <button type="button" class="hud-carved-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+  </header>
+
+  <!-- 3-STAGE STRIP -->
+  <nav class="act-selector-strip">
+    <button type="button" class="act-nav-tab active" id="tabAct1" onclick="switchAct('act1')">
+      <span>🚂</span> Act 1: Expedition Start
+    </button>
+    <button type="button" class="act-nav-tab" id="tabAct2" onclick="switchAct('act2')">
+      <span>🚃</span> Act 2: Sangam Rhythm Railway
+    </button>
+    <button type="button" class="act-nav-tab" id="tabAct3" onclick="switchAct('act3')">
+      <span>✍️</span> Act 3: Manuscript Writing Pad
+    </button>
+  </nav>
+
+  <!-- MAIN SCENIC STAGE -->
+  <main class="scenic-viewport-arena">
+
+    <!-- =========================================================
+         ACT 1: EXPEDITION START (MOCKUP 1)
+    ========================================================= -->
+    <section id="act1ExpeditionView" class="active-act">
+      
+      <!-- TOP: CHIBI VALLUVAR & NUMBER VAULT -->
+      <div class="act1-top-zone">
+        <div class="valluvar-speech-group">
+          <img src="assets/valluvar-chibi.png" class="chibi-guide-avatar" alt="Chibi Valluvar" onerror="handleImageFallback(this)">
+          <div class="parchment-speech-bubble" id="speechBubblePrompt">
+            Can you find "Thi" (தி)?
+          </div>
+          <button type="button" class="hud-carved-btn" onclick="speakCurrentSpeech()">🔊 Read</button>
+        </div>
+
+        <!-- NUMBER VAULT -->
+        <div class="number-vault-plaque">
+          <div class="vault-title-text">NUMBER VAULT</div>
+          <div class="vault-tumblers-row">
+            <div class="tumbler-dial-col">
+              <div class="tumbler-roller-box">133</div>
+              <span class="tumbler-sub-tag">அதிகாரங்கள்</span>
+            </div>
+            <div class="tumbler-dial-col">
+              <div class="tumbler-roller-box">10</div>
+              <span class="tumbler-sub-tag">குறள்கள்</span>
+            </div>
+            <div class="tumbler-dial-col">
+              <div class="tumbler-roller-box">1330</div>
+              <span class="tumbler-sub-tag">மொத்தம்</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SANDY YARD: FLOATING SCATTERED WAGONS -->
+      <div class="sandy-yard-station">
+        <div style="font-size:0.86rem; font-weight:800; color:#FEF08A; text-shadow:0 2px 4px #000;">
+          Drag or tap the wagons to couple them onto the track!
+        </div>
+        <div class="floating-wagons-cluster" id="floatingWagonsBank"></div>
+      </div>
+
+      <!-- 3 GLOWING CHESTS TOKENS (IMAGE 1) -->
+      <div class="treasure-chests-strip">
+        <div class="chest-clickable-token" onclick="playGemSound('அறம்')">
+          <div class="token-coin-disk coin-gold">அறம்</div>
+          <span style="font-size:0.85rem; font-weight:900; color:#FEF08A;">Gold Token</span>
+        </div>
+        <div class="chest-clickable-token" onclick="playGemSound('பொருள்')">
+          <div class="token-coin-disk coin-emerald">பொருள்</div>
+          <span style="font-size:0.85rem; font-weight:900; color:#6EE7B7;">Emerald Token</span>
+        </div>
+        <div class="chest-clickable-token" onclick="playGemSound('இன்பம்')">
+          <div class="token-coin-disk coin-diamond">இன்பம்</div>
+          <span style="font-size:0.85rem; font-weight:900; color:#93C5FD;">Diamond Token</span>
+        </div>
+      </div>
+
+      <!-- FOREGROUND RAIL BED -->
+      <div class="bottom-rail-bed-dock" id="railBedTrack">
+        <div class="steam-locomotive-head">
+          <div class="steam-chimney-puff"></div>
+          LOCO 1
+        </div>
+        <!-- Couplers populated dynamically -->
+      </div>
+
+      <!-- FOOTER FLOW -->
+      <div class="act-footer-dock">
+        <button type="button" class="hud-carved-btn" id="btnPrevAct1" onclick="navigateAct1(-1)">◀ Previous</button>
+        <span style="font-weight:900; color:#FEF08A;" id="act1CounterLabel">1 / 3</span>
+        <button type="button" class="hud-carved-btn" id="btnNextAct1" onclick="navigateAct1(1)">Next ▶</button>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         ACT 2: SANGAM RHYTHM RAILWAY (MOCKUP 2)
+    ========================================================= -->
+    <section id="act2RailwayView">
+      <div class="act2-railway-board">
+        
+        <div class="kural-plaque-banner" id="kuralBannerPlaque">
+          நகையுள்ளும் இன்னாது... பகையுள்ளும் பாடறிவார் மாட்டு.
+        </div>
+
+        <!-- DUAL TRACKS (4 ON TOP, 3 ON BOTTOM) -->
+        <div class="kural-dual-tracks-cluster">
+          <!-- TRACK 1: 4 WAGONS -->
+          <div class="kural-track-lane">
+            <span class="track-lane-title">Track 1</span>
+            <div class="kural-word-wagon-slot rhyme-twin" id="rwSlot_0" onclick="clearKuralWagon(0)">[ 1 ]</div>
+            <div class="kural-word-wagon-slot" id="rwSlot_1" onclick="clearKuralWagon(1)">[ 2 ]</div>
+            <div class="kural-word-wagon-slot" id="rwSlot_2" onclick="clearKuralWagon(2)">[ 3 ]</div>
+            <div class="kural-word-wagon-slot rhyme-twin" id="rwSlot_3" onclick="clearKuralWagon(3)">[ 4 ]</div>
+          </div>
+          <!-- TRACK 2: 3 WAGONS -->
+          <div class="kural-track-lane">
+            <span class="track-lane-title">Track 2</span>
+            <div class="kural-word-wagon-slot" id="rwSlot_4" onclick="clearKuralWagon(4)">[ 5 ]</div>
+            <div class="kural-word-wagon-slot" id="rwSlot_5" onclick="clearKuralWagon(5)">[ 6 ]</div>
+            <div class="kural-word-wagon-slot" id="rwSlot_6" onclick="clearKuralWagon(6)">[ 7 ]</div>
+          </div>
+        </div>
+
+        <!-- SCATTERED WORD WAGONS -->
+        <div class="sandy-yard-station">
+          <div style="font-size:0.86rem; font-weight:800; color:#FEF08A; text-shadow:0 2px 4px #000;">
+            Tap word wagons in rhythm to couple the couplet!
+          </div>
+          <div class="floating-wagons-cluster" id="kuralWagonsBank"></div>
+        </div>
+
+        <div class="act-footer-dock">
+          <button type="button" class="hud-carved-btn" id="btnPrevKural" onclick="navigateKural(-1)">◀ Prev Kural</button>
+          <span style="font-weight:900; color:#FEF08A;" id="kuralCounterLabel">1 / 3</span>
+          <button type="button" class="hud-carved-btn" id="btnNextKural" onclick="navigateKural(1)">Next Kural ▶</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================
+         ACT 3: ANCIENT MANUSCRIPT WRITING ACADEMY (MOCKUP 3)
+    ========================================================= -->
+    <section id="act3ManuscriptView">
+      <div class="act3-manuscript-container">
+        
+        <!-- PROMPT CARD -->
+        <div class="manuscript-prompt-card">
+          <div class="manuscript-prompt-text" id="manuscriptPromptText">
+            1. திருக்குறளை எழுதியவர் ______________
+          </div>
+          <button type="button" class="hud-carved-btn" onclick="speakCurrentPrompt()">🔊 Read</button>
+        </div>
+
+        <!-- CLEAN ICON TOOLBAR -->
+        <div class="manuscript-tool-bar">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <button type="button" class="pad-action-icon-btn active" id="btnPen" onclick="setPadTool('pen')">✏️</button>
+            <button type="button" class="pad-action-icon-btn" id="btnEraser" onclick="setPadTool('eraser')">🧹</button>
+            <button type="button" class="pad-action-icon-btn" onclick="undoPadStroke()">↩️</button>
+            <button type="button" class="pad-action-icon-btn" onclick="clearPadCanvas()">🗑️</button>
+            <button type="button" class="pad-action-icon-btn" id="btnEyeToggle" onclick="toggleGhostText()">👁️ EYE</button>
+          </div>
+
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div class="color-picker-dot active" style="background:#1D4ED8;" onclick="setPadColor('#1D4ED8', this)"></div>
+            <div class="color-picker-dot" style="background:#1E1B4B;" onclick="setPadColor('#1E1B4B', this)"></div>
+            <div class="color-picker-dot" style="background:#7C3AED;" onclick="setPadColor('#7C3AED', this)"></div>
+          </div>
+        </div>
+
+        <!-- 44PX RULED SINGLE-LINE NOTEBOOK CANVAS -->
+        <div class="notebook-viewport-canvas-box" id="notebookCanvasBox">
+          <div class="ruled-horizontal-texture"></div>
+          <div class="ghost-tracing-font-overlay" id="ghostTracingOverlay">திருவள்ளுவர்</div>
+          <canvas id="manuscriptInkCanvas"></canvas>
+        </div>
+
+      </div>
+
+      <div class="act-footer-dock">
+        <button type="button" class="hud-carved-btn" id="btnPrevPad" onclick="navigatePad(-1)">◀ Previous</button>
+        <span style="font-weight:900; color:#FEF08A;" id="padCounterLabel">1 / 9</span>
+        <button type="button" class="hud-carved-btn" id="btnNextPad" onclick="navigatePad(1)">Next ▶</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ACT 4: ROYAL CELESTIA FINALE (MOCKUP 4) -->
+  <div id="act4FinaleStage">
+    <canvas id="finaleCanvas"></canvas>
+    <div class="finale-dialog-center" id="finaleDialog">
+      <div class="finale-title">🌟 Academy Completed! 🌟</div>
+      <div style="font-size:1.15rem; font-weight:800; color:#3E2413; line-height:1.6;">
+        ✔ Academy Completion<br/>
+        ✔ Perfect Trace<br/>
+        ✔ Kural Mastery<br/>
+        ✔ Treasure Hunter
+      </div>
+      <button type="button" class="btn-finale-continue" onclick="closeFinale()">Continue Quest ➔</button>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================
+       DATA DEFINITIONS
+    ========================================================= */
+    const ACT1_QUESTS = [
+      {
+        id: "thiruvalluvar",
+        speech: 'Can you find "Thi" (தி)?',
+        syllables: ["தி", "ரு", "வள்", "ளு", "வர்"],
+        correctWord: "திருவள்ளுவர்"
+      },
+      {
+        id: "ulagappodhumarai",
+        speech: 'Can you find "U" (உ)?',
+        syllables: ["உ", "ல", "கப்", "பொ", "து", "ம", "றை"],
+        correctWord: "உலகப்பொதுமறை"
+      },
+      {
+        id: "numbers",
+        speech: 'Can you find "133"?',
+        syllables: ["133", "10", "1330"],
+        correctWord: "133 10 1330"
+      }
+    ];
+
+    const ACT2_KURALS = [
+      {
+        id: "kural_1",
+        title: "குறள் 1: நகையுள்ளும் இன்னாது... பகையுள்ளும் பாடறிவார் மாட்டு.",
+        line1: ["நகையுள்ளும்", "இன்னாது", "இகழ்ச்சி", "பகையுள்ளும்"],
+        line2: ["பண்புள", "பாடறிவார்", "மாட்டு"],
+        audio: "நகையுள்ளும் இன்னாது இகழ்ச்சி பகையுள்ளும் பண்புள பாடறிவார் மாட்டு"
+      },
+      {
+        id: "kural_2",
+        title: "குறள் 2: நயனொடு நன்றி... பண்பு பாராட்டும் உலகு.",
+        line1: ["நயனொடு", "நன்றி", "புரிந்த", "பயனுடையார்"],
+        line2: ["பண்பு", "பாராட்டும்", "உலகு"],
+        audio: "நயனொடு நன்றி புரிந்த பயனுடையார் பண்பு பாராட்டும் உலகு"
+      },
+      {
+        id: "kural_3",
+        title: "குறள் 3: பண்புடையார்ப் பட்டுண்டு... மண்புக்கு மாய்வது மன்.",
+        line1: ["பண்புடையார்ப்", "பட்டுண்டு", "உலகம்", "அதுவின்றேல்"],
+        line2: ["மண்புக்கு", "மாய்வது", "மன்"],
+        audio: "பண்புடையார்ப் பட்டுண்டு உலகம் அதுவின்றேல் மண்புக்கு மாய்வது மன்"
+      }
+    ];
+
+    const ACT3_PROMPTS = [
+      { id: "q1", prompt: "1. திருக்குறளை எழுதியவர் ______________", target: "திருவள்ளுவர்" },
+      { id: "q2", prompt: "2. மூன்று பிரிவுகள்: ____________, ____________, ____________", target: "அறம்  பொருள்  இன்பம்" },
+      { id: "q3", prompt: "3. திருக்குறளில் உள்ள அதிகாரங்கள் ____________", target: "133" },
+      { id: "q4", prompt: "4. அதிகாரத்தில் உள்ள குறள்கள் ____________", target: "10" },
+      { id: "q5", prompt: "5. மொத்த குறள்களின் எண்ணிக்கை ____________", target: "1330" },
+      { id: "q6", prompt: "6. திருக்குறள் மக்களால் ____________ எனப் போற்றப்படுகிறது", target: "உலகப்பொதுமறை" },
+      { id: "q7", prompt: "குறள் 1: நகையுள்ளும் இன்னாது...", target: "நகையுள்ளும் இன்னாது இகழ்ச்சி பகையுள்ளும்\nபண்புள பாடறிவார் மாட்டு" },
+      { id: "q8", prompt: "குறள் 2: நயனொடு நன்றி புரிந்த...", target: "நயனொடு நன்றி புரிந்த பயனுடையார்\nபண்பு பாராட்டும் உலகு" },
+      { id: "q9", prompt: "குறள் 3: பண்புடையார்ப் பட்டுண்டு...", target: "பண்புடையார்ப் பட்டுண்டு உலகம் அதுவின்றேல்\nமண்புக்கு மாய்வது மன்" }
+    ];
+
+    /* AUDIO ENGINE (SAFE NON-BLOCKING) */
+    let audioCtx = null;
+    function getAudioCtx() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+
+    function playLocomotiveChime() {
+      try {
+        const c = getAudioCtx();
+        const osc = c.createOscillator();
+        const gain = c.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(587.33, c.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, c.currentTime + 0.12);
+        gain.gain.setValueAtTime(0.2, c.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, c.currentTime + 0.2);
+        osc.connect(gain);
+        gain.connect(c.destination);
+        osc.start();
+        osc.stop(c.currentTime + 0.22);
+      } catch (e) {}
+    }
+
+    function speakTamil(txt) {
+      if ('speechSynthesis' in window) {
+        try {
+          window.speechSynthesis.cancel();
+          const utter = new SpeechSynthesisUtterance(txt);
+          utter.lang = 'ta-IN';
+          utter.rate = 0.82;
+          window.speechSynthesis.speak(utter);
+        } catch (e) {}
+      }
+    }
+
+    function handleImageFallback(img) {
+      img.onerror = null;
+      img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='90' height='90'><circle cx='45' cy='45' r='42' fill='%23FDE047' stroke='%23D97706' stroke-width='4'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='38'>📜</text></svg>";
+    }
+
+    /* GLOBAL APP STATE */
+    let currentAct = 'act1';
+    let act1Idx = 0;
+    let act2Idx = 0;
+    let act3Idx = 0;
+
+    function switchAct(act) {
+      saveInkToStorage();
+      currentAct = act;
+
+      document.querySelectorAll('.act-nav-tab').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('#act1ExpeditionView, #act2RailwayView, #act3ManuscriptView').forEach(v => v.classList.remove('active-act'));
+
+      if (act === 'act1') {
+        document.getElementById('tabAct1').classList.add('active');
+        document.getElementById('act1ExpeditionView').classList.add('active-act');
+        renderAct1();
+      } else if (act === 'act2') {
+        document.getElementById('tabAct2').classList.add('active');
+        document.getElementById('act2RailwayView').classList.add('active-act');
+        renderAct2();
+      } else if (act === 'act3') {
+        document.getElementById('tabAct3').classList.add('active');
+        document.getElementById('act3ManuscriptView').classList.add('active-act');
+        setTimeout(() => {
+          fitInkCanvas();
+          renderAct3();
+        }, 50);
+      }
+    }
+
+    /* =========================================================
+       ACT 1 LOGIC & DUAL TAP/DRAG ENGINE
+    ========================================================= */
+    let act1Slots = [];
+
+    function renderAct1() {
+      const q = ACT1_QUESTS[act1Idx];
+      document.getElementById('speechBubblePrompt').textContent = q.speech;
+      document.getElementById('act1CounterLabel').textContent = `${act1Idx + 1} / ${ACT1_QUESTS.length}`;
+      document.getElementById('btnPrevAct1').disabled = (act1Idx === 0);
+
+      const track = document.getElementById('railBedTrack');
+      const bank = document.getElementById('floatingWagonsBank');
+
+      const saved = JSON.parse(localStorage.getItem(`v4_zaina::act1::${q.id}`) || "[]");
+      act1Slots = saved.length === q.syllables.length ? saved : new Array(q.syllables.length).fill(null);
+
+      track.innerHTML = `<div class="steam-locomotive-head"><div class="steam-chimney-puff"></div>LOCO 1</div>`;
+      act1Slots.forEach((val, i) => {
+        const slot = document.createElement('div');
+        slot.className = `track-coupling-target ${val ? 'filled' : ''} ${val === q.syllables[i] ? 'matched' : ''}`;
+        slot.textContent = val || `[${i+1}]`;
+        slot.onclick = () => clearAct1Slot(i);
+        track.appendChild(slot);
+      });
+
+      bank.innerHTML = "";
+      const scrambled = [...q.syllables].sort((a,b) => a.localeCompare(b));
+      scrambled.forEach((syl) => {
+        const countTarget = q.syllables.filter(x => x === syl).length;
+        const countUsed = act1Slots.filter(x => x === syl).length;
+        const isUsed = countUsed >= countTarget;
+
+        const wagon = document.createElement('div');
+        wagon.className = `wooden-wagon-chassis ${isUsed ? 'used' : ''}`;
+        wagon.innerHTML = `
+          <div class="wagon-carved-letter">${syl}</div>
+          <div class="wagon-wheel-left"></div>
+          <div class="wagon-wheel-right"></div>
+        `;
+
+        /* TAP SNAP DOCKING */
+        wagon.onclick = () => {
+          playLocomotiveChime();
+          speakTamil(syl);
+          const firstEmpty = act1Slots.findIndex(x => x === null);
+          if (firstEmpty !== -1) {
+            act1Slots[firstEmpty] = syl;
+            localStorage.setItem(`v4_zaina::act1::${q.id}`, JSON.stringify(act1Slots));
+            renderAct1();
+          }
+        };
+
+        bank.appendChild(wagon);
+      });
+    }
+
+    function clearAct1Slot(idx) {
+      const q = ACT1_QUESTS[act1Idx];
+      act1Slots[idx] = null;
+      localStorage.setItem(`v4_zaina::act1::${q.id}`, JSON.stringify(act1Slots));
+      renderAct1();
+    }
+
+    function speakCurrentSpeech() {
+      const q = ACT1_QUESTS[act1Idx];
+      speakTamil(q.correctWord);
+    }
+
+    function playGemSound(name) {
+      playLocomotiveChime();
+      speakTamil(name);
+    }
+
+    function navigateAct1(delta) {
+      const n = act1Idx + delta;
+      if (n >= 0 && n < ACT1_QUESTS.length) {
+        act1Idx = n;
+        renderAct1();
+      } else if (n >= ACT1_QUESTS.length) {
+        switchAct('act2');
+      }
+    }
+
+    /* =========================================================
+       ACT 2 LOGIC
+    ========================================================= */
+    let kuralWagons = new Array(7).fill(null);
+
+    function renderAct2() {
+      const k = ACT2_KURALS[act2Idx];
+      document.getElementById('kuralBannerPlaque').textContent = k.title;
+      document.getElementById('kuralCounterLabel').textContent = `${act2Idx + 1} / ${ACT2_KURALS.length}`;
+      document.getElementById('btnPrevKural').disabled = (act2Idx === 0);
+
+      const saved = JSON.parse(localStorage.getItem(`v4_zaina::kural::${k.id}`) || "[null,null,null,null,null,null,null]");
+      kuralWagons = saved;
+
+      const fullCouplet = [...k.line1, ...k.line2];
+
+      for (let i = 0; i < 7; i++) {
+        const slotEl = document.getElementById(`rwSlot_${i}`);
+        const val = kuralWagons[i];
+        slotEl.textContent = val || `[ ${i+1} ]`;
+        slotEl.classList.toggle('matched', val === fullCouplet[i]);
+      }
+
+      const bank = document.getElementById('kuralWagonsBank');
+      bank.innerHTML = "";
+      const scrambled = [...fullCouplet].sort((a,b) => a.localeCompare(b));
+
+      scrambled.forEach((w) => {
+        const countTarget = fullCouplet.filter(x => x === w).length;
+        const countUsed = kuralWagons.filter(x => x === w).length;
+        const isUsed = countUsed >= countTarget;
+
+        const wagon = document.createElement('div');
+        wagon.className = `wooden-wagon-chassis ${isUsed ? 'used' : ''}`;
+        wagon.style.width = '140px';
+        wagon.innerHTML = `
+          <div class="wagon-carved-letter" style="font-size:1.15rem;">${w}</div>
+          <div class="wagon-wheel-left"></div>
+          <div class="wagon-wheel-right"></div>
+        `;
+
+        wagon.onclick = () => {
+          playLocomotiveChime();
+          speakTamil(w);
+          const firstEmpty = kuralWagons.findIndex(x => x === null);
+          if (firstEmpty !== -1) {
+            kuralWagons[firstEmpty] = w;
+            localStorage.setItem(`v4_zaina::kural::${k.id}`, JSON.stringify(kuralWagons));
+            renderAct2();
+          }
+        };
+
+        bank.appendChild(wagon);
+      });
+    }
+
+    function clearKuralWagon(idx) {
+      const k = ACT2_KURALS[act2Idx];
+      kuralWagons[idx] = null;
+      localStorage.setItem(`v4_zaina::kural::${k.id}`, JSON.stringify(kuralWagons));
+      renderAct2();
+    }
+
+    function navigateKural(delta) {
+      const n = act2Idx + delta;
+      if (n >= 0 && n < ACT2_KURALS.length) {
+        act2Idx = n;
+        renderAct2();
+      } else if (n >= ACT2_KURALS.length) {
+        switchAct('act3');
+      }
+    }
+
+    /* =========================================================
+       ACT 3 LOGIC (MANUSCRIPT CANVAS & INK PERSISTENCE)
+    ========================================================= */
+    const canvas = document.getElementById("manuscriptInkCanvas");
+    const ctx = canvas.getContext("2d");
+    let isDrawing = false;
+    let padTool = "pen";
+    let padColor = "#1D4ED8";
+    let strokeWidth = 5;
+    let lastX = 0, lastY = 0;
+    let undoHistory = [];
+    let ghostVisible = true;
+
+    function getStorageKey(id) {
+      return `v4_zaina::pad_ink::${id}`;
+    }
+
+    function fitInkCanvas() {
+      const viewport = document.getElementById("notebookCanvasBox");
+      if (!viewport || viewport.clientWidth <= 0) {
+        requestAnimationFrame(fitInkCanvas);
+        return;
+      }
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.floor(viewport.clientWidth * dpr);
+      canvas.height = Math.floor(viewport.clientHeight * dpr);
+      canvas.style.width = viewport.clientWidth + "px";
+      canvas.style.height = viewport.clientHeight + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      loadInkFromStorage();
+    }
+
+    function saveInkToStorage() {
+      if (!canvas || canvas.width <= 0) return;
+      const q = ACT3_PROMPTS[act3Idx];
+      try {
+        const dataUrl = canvas.toDataURL("image/png");
+        localStorage.setItem(getStorageKey(q.id), dataUrl);
+      } catch (e) {}
+    }
+
+    function loadInkFromStorage() {
+      const q = ACT3_PROMPTS[act3Idx];
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      undoHistory = [];
+      const saved = localStorage.getItem(getStorageKey(q.id));
+      if (saved) {
+        const img = new Image();
+        img.onload = () => {
+          ctx.save();
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          ctx.restore();
+          pushUndoState();
+        };
+        img.src = saved;
+      } else {
+        pushUndoState();
+      }
+    }
+
+    function pushUndoState() {
+      try {
+        undoHistory.push(canvas.toDataURL());
+        if (undoHistory.length > 20) undoHistory.shift();
+      } catch (e) {}
+    }
+
+    function undoPadStroke() {
+      if (undoHistory.length > 1) {
+        undoHistory.pop();
+        const prev = undoHistory[undoHistory.length - 1];
+        const img = new Image();
+        img.onload = () => {
+          ctx.save();
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          ctx.restore();
+          saveInkToStorage();
+        };
+        img.src = prev;
+      }
+    }
+
+    function clearPadCanvas() {
+      const q = ACT3_PROMPTS[act3Idx];
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      localStorage.removeItem(getStorageKey(q.id));
+      undoHistory = [];
+      saveInkToStorage();
+    }
+
+    function renderAct3() {
+      const q = ACT3_PROMPTS[act3Idx];
+      document.getElementById('manuscriptPromptText').textContent = q.prompt;
+      document.getElementById('ghostTracingOverlay').textContent = q.target;
+      document.getElementById('padCounterLabel').textContent = `${act3Idx + 1} / ${ACT3_PROMPTS.length}`;
+      document.getElementById('btnPrevPad').disabled = (act3Idx === 0);
+
+      loadInkFromStorage();
+    }
+
+    function navigatePad(delta) {
+      saveInkToStorage();
+      const n = act3Idx + delta;
+      if (n >= 0 && n < ACT3_PROMPTS.length) {
+        act3Idx = n;
+        renderAct3();
+      } else if (n >= ACT3_PROMPTS.length) {
+        triggerAct4Finale();
+      }
+    }
+
+    function speakCurrentPrompt() {
+      const q = ACT3_PROMPTS[act3Idx];
+      speakTamil(q.target);
+    }
+
+    function toggleGhostText() {
+      ghostVisible = !ghostVisible;
+      const overlay = document.getElementById('ghostTracingOverlay');
+      overlay.style.opacity = ghostVisible ? "1" : "0";
+      document.getElementById('btnEyeToggle').classList.toggle('active', ghostVisible);
+    }
+
+    function setPadTool(tool) {
+      padTool = tool;
+      document.getElementById('btnPen').classList.toggle('active', tool === 'pen');
+      document.getElementById('btnEraser').classList.toggle('active', tool === 'eraser');
+    }
+
+    function setPadColor(color, el) {
+      padColor = color;
+      document.querySelectorAll('.color-picker-dot').forEach(d => d.classList.remove('active'));
+      el.classList.add('active');
+      setPadTool('pen');
+    }
+
+    /* LIVE POINTER INK ENGINE */
+    canvas.addEventListener('pointerdown', (e) => {
+      isDrawing = true;
+      try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+      const rect = canvas.getBoundingClientRect();
+      lastX = e.clientX - rect.left;
+      lastY = e.clientY - rect.top;
+      e.preventDefault();
+    });
+
+    canvas.addEventListener('pointermove', (e) => {
+      if (!isDrawing) return;
+      const rect = canvas.getBoundingClientRect();
+      const currX = e.clientX - rect.left;
+      const currY = e.clientY - rect.top;
+
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(currX, currY);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      if (padTool === 'eraser') {
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.lineWidth = 26;
+      } else {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.strokeStyle = padColor;
+        const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
+        ctx.lineWidth = strokeWidth * (pressure * 1.4 + 0.3);
+      }
+      ctx.stroke();
+
+      lastX = currX;
+      lastY = currY;
+      e.preventDefault();
+    });
+
+    const stopStroke = (e) => {
+      if (isDrawing) {
+        isDrawing = false;
+        try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+        pushUndoState();
+        saveInkToStorage();
+      }
+    };
+    canvas.addEventListener('pointerup', stopStroke);
+    canvas.addEventListener('pointercancel', stopStroke);
+    canvas.addEventListener('pointerleave', stopStroke);
+
+    /* LIFECYCLE & HUB ROUTING */
+    function goToHub() {
+      saveInkToStorage();
+      if ('speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+      }
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage("close-lesson-to-hub", "*");
+      } else {
+        window.location.href = "index.html";
+      }
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    /* FINALE STAGE */
+    const finaleStage = document.getElementById("act4FinaleStage");
+    const finaleCanvas = document.getElementById("finaleCanvas");
+    const finaleCtx = finaleCanvas.getContext("2d", { alpha: true });
+    let finaleStars = [];
+    let finaleRunning = false;
+
+    function triggerAct4Finale() {
+      finaleCanvas.width = window.innerWidth;
+      finaleCanvas.height = window.innerHeight;
+      finaleStage.style.display = "block";
+      finaleRunning = true;
+      document.getElementById("finaleDialog").classList.add("pop");
+
+      finaleStars = [];
+      const colors = ['#FDE047', '#EC4899', '#A855F7', '#38BDF8', '#4ADE80'];
+      for (let i = 0; i < 80; i++) {
+        finaleStars.push({
+          x: Math.random() * finaleCanvas.width,
+          y: -20 - Math.random() * 200,
+          vx: (Math.random() - 0.5) * 2,
+          vy: Math.random() * 2.5 + 1.8,
+          size: Math.random() * 8 + 5,
+          color: colors[Math.floor(Math.random() * colors.length)]
+        });
+      }
+      requestAnimationFrame(renderFinaleLoop);
+    }
+
+    function renderFinaleLoop() {
+      if (!finaleRunning) return;
+      finaleCtx.clearRect(0, 0, finaleCanvas.width, finaleCanvas.height);
+      for (let s of finaleStars) {
+        s.x += s.vx;
+        s.y += s.vy;
+        if (s.y > finaleCanvas.height + 20) {
+          s.y = -10;
+          s.x = Math.random() * finaleCanvas.width;
+        }
+        finaleCtx.save();
+        finaleCtx.fillStyle = s.color;
+        finaleCtx.beginPath();
+        finaleCtx.arc(s.x, s.y, s.size * 0.5, 0, Math.PI * 2);
+        finaleCtx.fill();
+        finaleCtx.restore();
+      }
+      requestAnimationFrame(renderFinaleLoop);
+    }
+
+    function closeFinale() {
+      finaleRunning = false;
+      finaleStage.style.display = "none";
+      document.getElementById("finaleDialog").classList.remove("pop");
+      switchAct('act1');
+    }
+
+    window.addEventListener("beforeunload", saveInkToStorage);
+    window.addEventListener("pagehide", saveInkToStorage);
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) saveInkToStorage();
+    });
+    window.addEventListener("resize", () => {
+      saveInkToStorage();
+      fitInkCanvas();
+    });
+
+    window.onload = () => {
+      renderAct1();
+    };
+  </script>
+</body>
+</html>
