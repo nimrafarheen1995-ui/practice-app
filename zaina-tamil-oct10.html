@@ -153,7 +153,7 @@
       grid-template-columns: 78px 1fr;
     }
 
-    /* LEFT DECK (TRANSPARENT) */
+    /* LEFT DECK (TRANSPARENT FLOATING) */
     .mentor-side-deck {
       background: transparent !important;
       border: none !important;
@@ -240,7 +240,7 @@
       display: none;
     }
 
-    /* RIGHT WORKSPACE (TRANSPARENT) */
+    /* RIGHT WORKSPACE (TRANSPARENT FLOATING) */
     .workspace-floating-plaque {
       background: transparent !important;
       border: none !important;
@@ -255,13 +255,12 @@
       overflow: hidden;
     }
 
-    /* PALM SCROLL BANNER HEADER */
+    /* PALM SCROLL BANNER HEADER (ALPHA PNG) */
     .palm-scroll-banner-box {
       width: 100%;
       height: 74px;
-      background: url('assets/palm-scroll-banner.jpg') no-repeat center center;
+      background: url('assets/palm-scroll-banner.png') no-repeat center center;
       background-size: 100% 100%;
-      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -319,12 +318,13 @@
       background: rgba(255, 255, 255, 0.94);
       border: 2.5px dashed var(--gold-primary);
       border-radius: 24px;
-      padding: 10px 20px;
-      min-height: 96px;
+      padding: 16px 20px 10px 20px;
+      min-height: 98px;
       width: 95%;
       max-width: 820px;
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
       backdrop-filter: blur(8px);
+      overflow: visible;
     }
     .rack-target-slot {
       width: 72px;
@@ -347,6 +347,7 @@
       height: 32px;
       object-fit: contain;
       filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+      z-index: 5;
     }
 
     /* TOKENS DOCK */
@@ -420,7 +421,7 @@
       line-height: 1;
     }
 
-    /* INLINE CANVAS PAD (RETINA COMPLIANT) */
+    /* INLINE CANVAS PAD (RETINA SCALED) */
     .inline-blank-container {
       display: inline-flex;
       align-items: center;
@@ -491,10 +492,20 @@
     }
     .inline-clear-btn:active { background: #E2E8F0; }
 
-    /* SECTION 2 RELIC WRITING ROW */
+    /* SECTION 2 RELIC WRITING ROW (BALANCED ALIGNMENT) */
+    .section2-write-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+      max-width: 440px;
+      align-items: stretch;
+      margin-top: 6px;
+    }
     .section2-write-row {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 12px;
       background: rgba(255, 255, 255, 0.94);
       padding: 6px 14px;
@@ -503,8 +514,8 @@
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
     }
     .relic-row-icon {
-      width: 48px;
-      height: 48px;
+      width: 44px;
+      height: 44px;
       object-fit: contain;
       filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
     }
@@ -603,7 +614,7 @@
     }
     .btn-verify-seal:active { transform: scale(0.96); }
 
-    /* COMPLETION PROGRESSION DIALOGUE MODAL */
+    /* COMPLETION PROGRESSION MODAL */
     #progressDialogStage {
       position: fixed;
       inset: 0;
@@ -626,9 +637,21 @@
       width: 90%;
       max-width: 440px;
       box-shadow: 0 16px 45px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+    .dialog-close-x {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      background: transparent;
+      border: none;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: #78350F;
+      font-weight: 900;
     }
 
-    /* ASANA-STYLE CELEBRATION FINALE STAGE */
+    /* ASANA FINALE */
     #celebrationFinaleStage {
       position: fixed;
       inset: 0;
@@ -725,7 +748,7 @@
     <!-- RIGHT DECK: WORKSPACE (TRANSPARENT) -->
     <section class="workspace-floating-plaque">
 
-      <!-- PALM SCROLL BANNER (AUTHENTIC ஓலைச்சுவடி) -->
+      <!-- PALM SCROLL BANNER (ALPHA PNG) -->
       <div class="palm-scroll-banner-box">
         <div class="banner-quest-title" id="bannerHeaderTamil">திருக்குறளை எழுதியவர் யார்?</div>
         <button type="button" class="freely-floating-parrot-btn" onclick="speakCurrentTarget()" title="ஒலி">
@@ -751,16 +774,18 @@
   <!-- COMPLETION PROGRESSION DIALOGUE MODAL -->
   <div id="progressDialogStage">
     <div class="progress-dialog-card">
+      <button type="button" class="dialog-close-x" onclick="dismissProgressDialog()">✕</button>
       <div style="font-size:2.8rem;">✨</div>
       <div style="font-family:var(--font-tamil); font-size:1.45rem; font-weight:900; color:#92400E;">
         அற்புதம் ஜைனா! சரிபார்ப்பு முடிந்தது!
       </div>
-      <div style="font-family:var(--font-tamil); font-size:1.05rem; font-weight:700; color:#451A03;">
+      <div style="font-family:var(--font-tamil); font-size:1.05rem; font-weight:700; color:#451A03;" id="dialogPromptText">
         அடுத்த பயிற்சிக்குச் செல்லவா?
       </div>
-      <div style="display:flex; justify-content:center; gap:12px; margin-top:6px;">
+      <div style="display:flex; justify-content:center; gap:10px; margin-top:6px; flex-wrap:wrap;">
         <button type="button" class="hud-btn" onclick="stepQuestProgression(-1)">⬅️ முந்தையது</button>
-        <button type="button" class="btn-verify-seal" style="padding:6px 20px; font-size:1.05rem;" onclick="stepQuestProgression(1)">அடுத்தது ➔</button>
+        <button type="button" class="hud-btn" style="background:#FEF3C7;" onclick="dismissProgressDialog()">இங்கேயே இரு</button>
+        <button type="button" class="btn-verify-seal" style="padding:6px 20px; font-size:1.05rem;" id="btnDialogNext" onclick="stepQuestProgression(1)">அடுத்தது ➔</button>
       </div>
     </div>
   </div>
@@ -863,16 +888,15 @@
       }
     }
 
+    /* SAFE SIDEBAR TOGGLE WITHOUT RESIZE INK WIPES */
     function toggleSidebarCollapse(forceState = null) {
+      saveAllCanvases();
       const stage = document.getElementById('masterStageContainer');
       const isCurrentlyCollapsed = stage.classList.contains('collapsed-sidebar');
       const targetState = forceState !== null ? forceState : !isCurrentlyCollapsed;
       stage.classList.toggle('collapsed-sidebar', targetState);
       const btn = document.querySelector('.sidebar-collapse-toggle');
       if (btn) btn.textContent = targetState ? "▶" : "◀";
-
-      // Recompute dual canvases after CSS grid transition finishes
-      setTimeout(setupDualCanvases, 320);
     }
 
     function goToHub() {
@@ -889,7 +913,7 @@
       img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><circle cx='60' cy='60' r='55' fill='%23FEF3C7' stroke='%23D97706' stroke-width='4'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='42'>🪷</text></svg>";
     }
 
-    /* MASTER SPEC INK ENGINE: RETINA-AWARE, CALIBRATED 1.8PX/2.2PX, PALM REJECTION */
+    /* MASTER SPEC INK ENGINE: RETINA DPR SHARPNESS & PALM REJECTION */
     const activeInkCache = {};
     const hasDrawnMap = {};
 
@@ -916,15 +940,14 @@
 
       canvasList.forEach(c => {
         const id = c.getAttribute("data-canvas-id");
-        const bRect = c.parentElement.getBoundingClientRect();
-        const logicalW = Math.round(bRect.width) || parseInt(c.getAttribute("data-logical-width"), 10) || 320;
+        const logicalW = parseInt(c.getAttribute("data-logical-width"), 10) || 320;
         const logicalH = 72;
 
         c.width = Math.round(logicalW * dpr);
         c.height = Math.round(logicalH * dpr);
 
         const ctx = c.getContext("2d", { willReadFrequently: false });
-        ctx.scale(dpr, dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.clearRect(0, 0, logicalW, logicalH);
 
         const storageKey = getStorageKey(id);
@@ -935,6 +958,7 @@
           hasDrawnMap[id] = true;
           const img = new Image();
           img.onload = () => {
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
             ctx.clearRect(0, 0, logicalW, logicalH);
             ctx.drawImage(img, 0, 0, logicalW, logicalH);
           };
@@ -971,6 +995,7 @@
           const currX = e.clientX - rect.left;
           const currY = e.clientY - rect.top;
 
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
           ctx.beginPath();
           ctx.moveTo(lastX, lastY);
           ctx.lineTo(currX, currY);
@@ -1022,6 +1047,7 @@
       if (c) {
         const ctx = c.getContext("2d");
         const dpr = window.devicePixelRatio || 1;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.clearRect(0, 0, c.width / dpr, c.height / dpr);
         const key = getStorageKey(id);
         delete activeInkCache[key];
@@ -1099,7 +1125,7 @@
       renderPracticePlayground(idx);
     }
 
-    /* PRACTICE PLAYGROUND (OPTION A RELICS INTEGRATED) */
+    /* PRACTICE WORKSPACE (OPTION A RELICS INTEGRATED) */
     function renderPracticePlayground(idx) {
       const container = document.getElementById('stageContentBody');
       container.innerHTML = '';
@@ -1152,7 +1178,6 @@
         });
         container.appendChild(dock);
 
-        // 400px handwriting pad
         const writeBox = document.createElement('div');
         writeBox.style.marginTop = '8px';
         writeBox.innerHTML = inlineDualBlank('pq0', 400);
@@ -1210,13 +1235,9 @@
         });
         container.appendChild(dock);
 
-        // Three 250px handwriting rows with Relic Artwork Icons (Option A)
+        // Three 250px handwriting rows with Relics (Centered Stack Layout)
         const writeGrid = document.createElement('div');
-        writeGrid.style.display = 'flex';
-        writeGrid.style.gap = '10px';
-        writeGrid.style.flexWrap = 'wrap';
-        writeGrid.style.justifyContent = 'center';
-        writeGrid.style.marginTop = '6px';
+        writeGrid.className = 'section2-write-grid';
 
         ['aram', 'porul', 'inbam'].forEach((key, i) => {
           const row = document.createElement('div');
@@ -1358,7 +1379,6 @@
         });
         container.appendChild(dock);
 
-        // 450px writing canvas
         const writeBox = document.createElement('div');
         writeBox.style.marginTop = '8px';
         writeBox.innerHTML = inlineDualBlank('pq5', 450);
@@ -1473,7 +1493,7 @@
       }
     }
 
-    /* VERIFY CHECK WITH COMPLETION PROGRESSION DIALOGUE */
+    /* VERIFY CHECK WITH PROGRESSION DIALOGUE */
     function verifyActiveTask() {
       if (currentAppMode === 'write') {
         const required = ['w1', 'w2_a', 'w2_b', 'w2_c', 'w3', 'w4', 'w5', 'w6'];
@@ -1510,6 +1530,11 @@
           triggerAsanaCelebration();
         } else {
           speakText("அற்புதம் ஜைனா!");
+          const isLastQuest = activeQuestIdx === 5;
+          document.getElementById('dialogPromptText').textContent = isLastQuest 
+            ? "அனைத்து வினாக்களையும் சரிபார்க்க முந்தைய பயிற்சிகளுக்குச் செல்லவா?" 
+            : "அடுத்த பயிற்சிக்குச் செல்லவா?";
+          document.getElementById('btnDialogNext').style.display = isLastQuest ? 'none' : 'inline-flex';
           document.getElementById('progressDialogStage').style.display = 'flex';
         }
       } else {
@@ -1519,8 +1544,12 @@
       }
     }
 
-    function stepQuestProgression(direction) {
+    function dismissProgressDialog() {
       document.getElementById('progressDialogStage').style.display = 'none';
+    }
+
+    function stepQuestProgression(direction) {
+      dismissProgressDialog();
       let nextIdx = (activeQuestIdx + direction + 6) % 6;
       switchQuest(nextIdx);
     }
