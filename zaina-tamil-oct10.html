@@ -11,7 +11,7 @@
   <style>
     :root {
       --bg-cream: #FFFBEB;
-      --card-parchment: #FFFFFF;
+      --card-parchment: rgba(255, 255, 255, 0.94);
       --text-main: #451A03;
       --gold-primary: #D97706;
       --gold-deep: #B45309;
@@ -40,7 +40,8 @@
       height: 100vh;
       height: 100dvh;
       overflow: hidden;
-      background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 40%, #FED7AA 100%);
+      background: #FEF3C7 url('assets/village-bg.png') no-repeat center center;
+      background-size: cover;
       color: var(--text-main);
     }
 
@@ -50,6 +51,17 @@
       padding: 8px 14px;
       gap: 8px;
       position: relative;
+    }
+
+    /* SUBTLE WARM SUNRISE OVERLAY */
+    .village-scrim-overlay {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, rgba(254, 243, 199, 0.45) 0%, rgba(253, 230, 138, 0.8) 100%);
+      pointer-events: none;
+      z-index: 1;
     }
 
     /* TOP NAVIGATION HUD */
@@ -101,7 +113,7 @@
       padding: 6px 18px;
       border-radius: 16px;
       font-family: var(--font-tamil);
-      font-size: 0.95rem;
+      font-size: 1rem;
       font-weight: 800;
       cursor: pointer;
       transition: all 0.15s;
@@ -142,9 +154,11 @@
       z-index: 10;
     }
 
-    /* LEFT MENTOR DECK */
+    /* LEFT MENTOR PANEL */
     .mentor-panel {
       background: var(--card-parchment);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       border: 2.5px solid var(--border-warm);
       border-radius: 20px;
       display: flex;
@@ -211,6 +225,8 @@
     /* RIGHT WORKSPACE CARD */
     .workspace-card {
       background: var(--card-parchment);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       border: 2.5px solid var(--border-warm);
       border-radius: 20px;
       display: flex;
@@ -223,7 +239,7 @@
       overflow: hidden;
     }
 
-    /* BANNER HEADER */
+    /* BANNER HEADER WITH PARROT ICON */
     .stage-header-banner {
       width: 100%;
       background: var(--gold-light);
@@ -232,35 +248,35 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 18px;
+      padding: 8px 16px;
       flex-shrink: 0;
     }
     .banner-title-tamil {
       font-family: var(--font-tamil);
-      font-size: 1.4rem;
+      font-size: 1.45rem;
       font-weight: 800;
       color: var(--text-main);
       line-height: 1.2;
     }
 
-    .audio-listen-btn {
-      display: flex;
-      align-items: center;
-      gap: 6px;
+    .parrot-speaker-btn {
+      width: 48px;
+      height: 48px;
       background: #FFFFFF;
       border: 2px solid var(--border-strong);
-      border-radius: 20px;
-      padding: 6px 14px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      box-shadow: 0 2px 8px rgba(180, 83, 9, 0.15);
       transition: transform 0.12s;
     }
-    .audio-listen-btn:active { transform: scale(0.96); }
-    .audio-listen-txt {
-      font-family: var(--font-tamil);
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: var(--gold-deep);
+    .parrot-speaker-btn:active { transform: scale(0.92); }
+    .parrot-speaker-img {
+      width: 38px;
+      height: 38px;
+      object-fit: contain;
     }
 
     /* PLAYGROUND BODY */
@@ -282,16 +298,16 @@
       justify-content: center;
       gap: 10px;
       background: var(--gold-light);
-      border: 2px dashed var(--gold-primary);
-      border-radius: 16px;
+      border: 2.5px dashed var(--gold-primary);
+      border-radius: 18px;
       padding: 10px 16px;
-      min-height: 80px;
+      min-height: 86px;
       width: 95%;
       max-width: 680px;
     }
     .assembly-slot {
-      width: 64px;
-      height: 64px;
+      width: 68px;
+      height: 68px;
       border: 2px dashed rgba(217, 119, 6, 0.45);
       border-radius: 50%;
       display: flex;
@@ -299,7 +315,7 @@
       justify-content: center;
       background: #FFFFFF;
       color: #92400E;
-      font-size: 0.95rem;
+      font-size: 1.05rem;
       font-weight: 800;
     }
 
@@ -311,29 +327,43 @@
       gap: 12px;
       width: 100%;
     }
+
     .syllable-coin {
-      width: 68px;
-      height: 68px;
-      background: linear-gradient(135deg, #FFFBEB 0%, #FDE68A 100%);
-      border: 2.5px solid var(--gold-primary);
+      position: relative;
+      width: 72px;
+      height: 72px;
+      background: url('assets/temple-coin.png') no-repeat center center, linear-gradient(135deg, #FFFBEB 0%, #FDE68A 100%);
+      background-size: cover;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(180, 83, 9, 0.15);
+      box-shadow: 0 4px 12px rgba(180, 83, 9, 0.18);
       transition: transform 0.12s;
     }
     .syllable-coin:hover { transform: scale(1.05); }
     .syllable-coin:active { transform: scale(0.95); }
+
+    /* TRANSLITERATION FLIP BADGE ON PLACEMENT */
     .syllable-coin.placed {
-      opacity: 0.25;
+      background: #F1F5F9;
+      border: 2px solid #CBD5E1;
+      box-shadow: none;
+      cursor: default;
       pointer-events: none;
-      filter: grayscale(80%);
     }
+    .syllable-coin.placed .coin-translit {
+      font-family: var(--font-ui);
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #64748B;
+      letter-spacing: 0.5px;
+    }
+
     .coin-tamil {
       font-family: var(--font-tamil);
-      font-size: 1.8rem;
+      font-size: 1.85rem;
       font-weight: 800;
       color: var(--text-main);
       line-height: 1;
@@ -439,6 +469,11 @@
       border-color: #22C55E;
       pointer-events: none;
     }
+    .match-relic-img {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+    }
 
     /* COUNTER & BEADS */
     .counter-display {
@@ -510,9 +545,9 @@
       border: 2px solid #86EFAC;
       color: #FFFFFF;
       font-family: var(--font-tamil);
-      font-size: 1.1rem;
+      font-size: 1.15rem;
       font-weight: 800;
-      padding: 8px 26px;
+      padding: 8px 28px;
       border-radius: 18px;
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
@@ -529,13 +564,6 @@
       overflow: hidden;
       background: rgba(254, 243, 199, 0.95);
       backdrop-filter: blur(4px);
-    }
-    #confettiCanvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
     }
     .victory-scroll {
       position: absolute;
@@ -558,22 +586,25 @@
 </head>
 <body>
 
+  <!-- AMBIENT WARM SCRIM OVER VILLAGE BG -->
+  <div class="village-scrim-overlay"></div>
+
   <!-- TOP HUD -->
   <header class="top-hud-bar">
     <div class="hud-group-left">
-      <button type="button" class="hud-btn" onclick="goToHub()">🪷 Hub</button>
-      <button type="button" class="hud-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
-      <button type="button" class="pen-toggle-btn" id="btnPenMode" onclick="togglePenMode()">👆 Touch Mode</button>
+      <button type="button" class="hud-btn" onclick="goToHub()">🪷 முகப்பு</button>
+      <button type="button" class="hud-btn" onclick="toggleFullscreen()">⛶ முழுத்திரை</button>
+      <button type="button" class="pen-toggle-btn" id="btnPenMode" onclick="togglePenMode()">👆 தொடுதிரை</button>
     </div>
 
     <!-- MODE SWITCHER -->
     <div class="mode-switch-wrap">
-      <button type="button" class="mode-btn active" id="tabPractice" onclick="setAppMode('practice')">பயிற்சி (Practice)</button>
-      <button type="button" class="mode-btn" id="tabWrite" onclick="setAppMode('write')">எழுதுக (Write)</button>
+      <button type="button" class="mode-btn active" id="tabPractice" onclick="setAppMode('practice')">பயிற்சி</button>
+      <button type="button" class="mode-btn" id="tabWrite" onclick="setAppMode('write')">எழுதுதல்</button>
     </div>
 
     <div class="hud-group-right">
-      <button type="button" class="hud-btn" onclick="resetCurrentView()">🔄 Reset</button>
+      <button type="button" class="hud-btn" onclick="resetCurrentView()">🔄 தொடக்கம்</button>
     </div>
   </header>
 
@@ -583,10 +614,10 @@
     <!-- LEFT MENTOR PANEL -->
     <aside class="mentor-panel">
       <div class="mentor-portrait-box">
-        <img src="thiruvalluvar.png" class="mentor-portrait-img" alt="திருவள்ளுவர்" onerror="handleImageFallback(this)" />
+        <img src="assets/thiruvalluvar.png" class="mentor-portrait-img" alt="திருவள்ளுவர்" onerror="handleImageFallback(this)" />
       </div>
 
-      <div style="font-family:var(--font-tamil); font-size:1.05rem; font-weight:800; color:var(--text-main); text-align:center;">
+      <div style="font-family:var(--font-tamil); font-size:1.1rem; font-weight:800; color:var(--text-main); text-align:center;">
         திருக்குறள்
       </div>
 
@@ -598,20 +629,20 @@
 
       <div class="stage-header-banner">
         <div class="banner-title-tamil" id="bannerHeaderTamil">திருக்குறளை எழுதியவர் யார்?</div>
-        <button type="button" class="audio-listen-btn" onclick="speakCurrentTarget()">
-          <span>🔊</span>
-          <span class="audio-listen-txt">ஒலி (Listen)</span>
+        <!-- PARROT AVATAR SPEAKER -->
+        <button type="button" class="parrot-speaker-btn" onclick="speakCurrentTarget()" title="ஒலி">
+          <img src="assets/mentor-parrot.png" class="parrot-speaker-img" alt="கிளி" onerror="handleImageFallback(this)" />
         </button>
       </div>
 
       <div class="stage-content-body" id="stageContentBody"></div>
 
       <div class="workspace-footer">
-        <span style="font-family:var(--font-tamil); font-size:0.95rem; font-weight:800; color:var(--text-main);" id="statusNoticeText">
+        <span style="font-family:var(--font-tamil); font-size:1rem; font-weight:800; color:var(--text-main);" id="statusNoticeText">
           சரியான எழுத்துகளை வரிசைப்படுத்தி கீழே எழுதுக!
         </span>
         <button type="button" class="btn-verify" onclick="verifyActiveTask()">
-          சரிபார் (Verify) ✨
+          சரிபார் ✨
         </button>
       </div>
 
@@ -621,17 +652,16 @@
 
   <!-- CELEBRATION STAGE -->
   <div id="celebrationStage">
-    <canvas id="confettiCanvas"></canvas>
     <div class="victory-scroll">
       <div style="font-size:3rem;">🪷</div>
       <div style="font-family:var(--font-tamil); font-size:1.8rem; font-weight:800; color:#92400E;">
         அற்புதம் ஜைனா! வெற்றி!
       </div>
-      <div style="font-family:var(--font-tamil); font-size:1.05rem; font-weight:700; color:#451A03; line-height:1.6;">
+      <div style="font-family:var(--font-tamil); font-size:1.1rem; font-weight:700; color:#451A03; line-height:1.6;">
         திருக்குறள் பற்றிய அனைத்து வினாக்களையும் முழுமையாக முடித்துவிட்டீர்கள்!
       </div>
-      <button type="button" class="hud-btn" style="background:var(--gold-primary); color:#FFF; justify-content:center;" onclick="closeCelebration()">
-        தொடர்க (Continue) ➔
+      <button type="button" class="hud-btn" style="background:var(--gold-primary); color:#FFF; justify-content:center; font-family:var(--font-tamil); font-size:1.1rem;" onclick="closeCelebration()">
+        தொடர்க ➔
       </button>
     </div>
   </div>
@@ -666,10 +696,10 @@
       penOnlyMode = !penOnlyMode;
       const btn = document.getElementById('btnPenMode');
       if (penOnlyMode) {
-        btn.textContent = "🖊️ Pen Only";
+        btn.textContent = "🖊️ எழுதுகோல்";
         btn.classList.add('pen-active');
       } else {
-        btn.textContent = "👆 Touch Mode";
+        btn.textContent = "👆 தொடுதிரை";
         btn.classList.remove('pen-active');
       }
     }
@@ -704,7 +734,7 @@
             <span class="dual-lines-texture"></span>
             <canvas class="dual-canvas" data-canvas-id="${id}" width="${width}" height="68"></canvas>
           </span>
-          <button type="button" class="inline-clear-btn" onclick="clearDualCanvas('${id}')" title="Clear">🧹</button>
+          <button type="button" class="inline-clear-btn" onclick="clearDualCanvas('${id}')" title="அழி">🧹</button>
         </span>
       `;
     }
@@ -814,7 +844,7 @@
       }
     }
 
-    /* QUEST DATA */
+    /* QUEST CONFIGURATION */
     const QUESTS = [
       { id: 0, title: "1. ஆசிரியர்", stem: "திருக்குறளை எழுதியவர் யார்?", word: "திருவள்ளுவர்" },
       { id: 1, title: "2. முப்பால்", stem: "திருக்குறளின் மூன்று பிரிவுகள் யாவை?", word: "அறம் பொருள் இன்பம்" },
@@ -828,7 +858,6 @@
     let activeQuestIdx = 0;
     let solvedQuests = [false, false, false, false, false, false];
 
-    // Interactive practice states
     let q0Placed = [];
     let q1Step = 'write';
     let q1Pairs = { aram: false, porul: false, inbam: false };
@@ -883,20 +912,27 @@
       renderPracticePlayground(idx);
     }
 
-    /* SECTION 1, 2, 6 CANVAS EXPANSIONS APPLIED HERE */
+    /* PRACTICE WORKSPACE WITH ENGLISH TRANSLITERATION FLIP */
     function renderPracticePlayground(idx) {
       const container = document.getElementById('stageContentBody');
       container.innerHTML = '';
 
       if (idx === 0) {
         // Section 1: திருவள்ளுவர் (400px width)
-        const syllables = ["தி", "ரு", "வள்", "ளு", "வர்"];
+        const targetTokens = [
+          { s: "தி", t: "Thi" },
+          { s: "ரு", t: "Ru" },
+          { s: "வள்", t: "Val" },
+          { s: "ளு", t: "Lu" },
+          { s: "வர்", t: "Var" }
+        ];
+
         const rack = document.createElement('div');
         rack.className = 'assembly-rack';
         for (let i = 0; i < 5; i++) {
           const placed = q0Placed[i];
           if (placed) {
-            rack.innerHTML += `<div class="syllable-coin"><span class="coin-tamil">${placed}</span></div>`;
+            rack.innerHTML += `<div class="syllable-coin"><span class="coin-tamil">${placed.s}</span></div>`;
           } else {
             rack.innerHTML += `<div class="assembly-slot">#${i+1}</div>`;
           }
@@ -905,22 +941,31 @@
 
         const dock = document.createElement('div');
         dock.className = 'syllable-dock';
-        ["வள்", "தி", "வர்", "ரு", "ளு"].forEach(s => {
-          const isPlaced = q0Placed.includes(s);
+        const scrambled = [targetTokens[2], targetTokens[0], targetTokens[4], targetTokens[1], targetTokens[3]];
+
+        scrambled.forEach(item => {
+          const isPlaced = q0Placed.some(p => p.s === item.s);
           const coin = document.createElement('div');
           coin.className = `syllable-coin ${isPlaced ? 'placed' : ''}`;
-          coin.innerHTML = `<span class="coin-tamil">${s}</span>`;
+          
+          if (isPlaced) {
+            // Once placed, shows English transliteration
+            coin.innerHTML = `<span class="coin-translit">${item.t}</span>`;
+          } else {
+            coin.innerHTML = `<span class="coin-tamil">${item.s}</span>`;
+          }
+
           coin.onclick = () => {
             if (isPlaced) return;
-            speakText(s);
-            q0Placed.push(s);
+            speakText(item.s);
+            q0Placed.push(item);
             renderPracticePlayground(0);
           };
           dock.appendChild(coin);
         });
         container.appendChild(dock);
 
-        // Requested 400px width
+        // Section 1 writing box expanded to 400px
         const writeBox = document.createElement('div');
         writeBox.style.marginTop = '8px';
         writeBox.innerHTML = inlineDualBlank('pq0', 400);
@@ -933,16 +978,16 @@
         subNav.style.display = 'flex';
         subNav.style.gap = '8px';
         subNav.innerHTML = `
-          <button class="hud-btn" style="${q1Step==='write'?'background:var(--gold-primary); color:#FFF;':''}" onclick="setQ1Step('write')">எழுதுக (Write)</button>
-          <button class="hud-btn" style="${q1Step==='match'?'background:var(--gold-primary); color:#FFF;':''}" onclick="setQ1Step('match')">பொருத்துக (Match)</button>
+          <button class="hud-btn" style="${q1Step==='write'?'background:var(--gold-primary); color:#FFF;':''}" onclick="setQ1Step('write')">எழுதுதல்</button>
+          <button class="hud-btn" style="${q1Step==='match'?'background:var(--gold-primary); color:#FFF;':''}" onclick="setQ1Step('match')">பொருத்துதல்</button>
         `;
         container.appendChild(subNav);
 
         if (q1Step === 'write') {
           const rows = [
-            { key: 'aram', name: 'அறம்' },
-            { key: 'porul', name: 'பொருள்' },
-            { key: 'inbam', name: 'இன்பம்' }
+            { key: 'aram', name: '1. அறம்' },
+            { key: 'porul', name: '2. பொருள்' },
+            { key: 'inbam', name: '3. இன்பம்' }
           ];
           const writeGrid = document.createElement('div');
           writeGrid.style.display = 'flex';
@@ -951,13 +996,13 @@
           writeGrid.style.width = '100%';
           writeGrid.style.alignItems = 'center';
 
-          rows.forEach((r, i) => {
+          rows.forEach(r => {
             const row = document.createElement('div');
             row.style.display = 'flex';
             row.style.alignItems = 'center';
-            row.style.gap = '12px';
+            row.style.gap = '14px';
             row.innerHTML = `
-              <span style="font-family:var(--font-tamil); font-size:1.15rem; font-weight:800; width:80px;">${i+1}. ${r.name}</span>
+              <span style="font-family:var(--font-tamil); font-size:1.2rem; font-weight:800; width:90px;">${r.name}</span>
               ${inlineDualBlank('pq1_' + r.key, 250)}
             `;
             writeGrid.appendChild(row);
@@ -965,13 +1010,13 @@
           container.appendChild(writeGrid);
           setTimeout(setupDualCanvases, 40);
         } else {
-          // Relic match step
+          // Relic match step with restored PNG images
           const grid = document.createElement('div');
           grid.className = 'relic-match-grid';
           const left = [
-            { key: 'aram', name: 'அறம் (Virtue)' },
-            { key: 'porul', name: 'பொருள் (Wealth)' },
-            { key: 'inbam', name: 'இன்பம் (Joy)' }
+            { key: 'aram', name: 'அறம்', img: 'assets/aram-virtue.png' },
+            { key: 'porul', name: 'பொருள்', img: 'assets/porul-wealth.png' },
+            { key: 'inbam', name: 'இன்பம்', img: 'assets/inbam-joy.png' }
           ];
           const right = [
             { key: 'porul', label: 'பொருள்' },
@@ -986,7 +1031,10 @@
           left.forEach(item => {
             const card = document.createElement('div');
             card.className = `match-relic-card ${q1SelectedRelic === item.key ? 'selected' : ''} ${q1Pairs[item.key] ? 'paired' : ''}`;
-            card.innerHTML = `<span style="font-family:var(--font-tamil); font-weight:800;">${item.name}</span>`;
+            card.innerHTML = `
+              <img src="${item.img}" class="match-relic-img" alt="${item.name}" onerror="handleImageFallback(this)" />
+              <span style="font-family:var(--font-tamil); font-weight:800; font-size:1.1rem;">${item.name}</span>
+            `;
             card.onclick = () => {
               if (q1Pairs[item.key]) return;
               q1SelectedRelic = item.key;
@@ -1002,7 +1050,7 @@
           right.forEach(item => {
             const card = document.createElement('div');
             card.className = `match-word-card ${q1Pairs[item.key] ? 'paired' : ''}`;
-            card.innerHTML = `<span style="font-family:var(--font-tamil); font-weight:800;">${item.label}</span>`;
+            card.innerHTML = `<span style="font-family:var(--font-tamil); font-weight:800; font-size:1.15rem;">${item.label}</span>`;
             card.onclick = () => {
               if (!q1SelectedRelic || q1Pairs[item.key]) return;
               if (q1SelectedRelic === item.key) {
@@ -1028,11 +1076,11 @@
         stage.style.alignItems = 'center';
         stage.style.gap = '10px';
         stage.innerHTML = `
-          <div style="font-family:var(--font-tamil); font-size:1.3rem; font-weight:800;">நூற்று முப்பத்து மூன்று (133)</div>
+          <div style="font-family:var(--font-tamil); font-size:1.35rem; font-weight:800;">நூற்று முப்பத்து மூன்று (133)</div>
           <div class="counter-display">${q2DialVal}</div>
           <div style="display:flex; gap:12px;">
-            <button class="hud-btn" style="font-size:1.4rem; padding:8px 20px;" onclick="stepDial(-1)">-</button>
-            <button class="hud-btn" style="font-size:1.4rem; padding:8px 20px;" onclick="stepDial(1)">+</button>
+            <button class="hud-btn" style="font-size:1.4rem; padding:8px 22px;" onclick="stepDial(-1)">-</button>
+            <button class="hud-btn" style="font-size:1.4rem; padding:8px 22px;" onclick="stepDial(1)">+</button>
           </div>
         `;
         container.appendChild(stage);
@@ -1045,7 +1093,7 @@
         stage.style.alignItems = 'center';
         stage.style.gap = '12px';
         stage.innerHTML = `
-          <div style="font-family:var(--font-tamil); font-size:1.3rem; font-weight:800;">
+          <div style="font-family:var(--font-tamil); font-size:1.35rem; font-weight:800;">
             1 அதிகாரத்தில் உள்ள குறள்கள் = ${q3BeadsCount} / 10
           </div>
         `;
@@ -1072,7 +1120,7 @@
         stage.style.alignItems = 'center';
         stage.style.gap = '14px';
         stage.innerHTML = `
-          <div style="font-family:var(--font-tamil); font-size:1.35rem; font-weight:800;">
+          <div style="font-family:var(--font-tamil); font-size:1.4rem; font-weight:800;">
             133 அதிகாரங்கள் × 10 குறள்கள் = ?
           </div>
           <div style="display:flex; gap:16px;">
@@ -1080,7 +1128,7 @@
             <button class="hud-btn" style="font-size:1.3rem; padding:12px 24px;" onclick="pickTotalVal(1330)">1330</button>
             <button class="hud-btn" style="font-size:1.3rem; padding:12px 24px;" onclick="pickTotalVal(1350)">1350</button>
           </div>
-          <div style="font-family:var(--font-tamil); font-size:1.2rem; font-weight:800; color:var(--gold-deep);">
+          <div style="font-family:var(--font-tamil); font-size:1.25rem; font-weight:800; color:var(--gold-deep);">
             ${q4PickedVal ? `தேர்வு: ${q4PickedVal}` : "சரியான எண்ணைத் தொடுங்கள்!"}
           </div>
         `;
@@ -1088,13 +1136,32 @@
 
       } else if (idx === 5) {
         // Section 6: உலகப்பொதுமறை (450px width)
-        const sList = ["உ", "ல", "கப்", "பொ", "து", "ம", "றை"];
+        const sList = [
+          { s: "உ", t: "U" },
+          { s: "ல", t: "La" },
+          { s: "கப்", t: "Gap" },
+          { s: "பொ", t: "Po" },
+          { s: "து", t: "Thu" },
+          { s: "ம", t: "Ma" },
+          { s: "றை", t: "Rai" }
+        ];
+
+        const globeRow = document.createElement('div');
+        globeRow.style.display = 'flex';
+        globeRow.style.alignItems = 'center';
+        globeRow.style.gap = '8px';
+        globeRow.innerHTML = `
+          <img src="assets/ulagam-globe.png" style="width:52px; height:52px; object-fit:contain;" alt="உலகம்" onerror="handleImageFallback(this)" />
+          <span style="font-family:var(--font-tamil); font-size:1.2rem; font-weight:800;">உலக மக்களுக்கான பொதுவான நூல்</span>
+        `;
+        container.appendChild(globeRow);
+
         const rack = document.createElement('div');
         rack.className = 'assembly-rack';
         for (let i = 0; i < 7; i++) {
           const placed = q5Placed[i];
           if (placed) {
-            rack.innerHTML += `<div class="syllable-coin"><span class="coin-tamil">${placed}</span></div>`;
+            rack.innerHTML += `<div class="syllable-coin"><span class="coin-tamil">${placed.s}</span></div>`;
           } else {
             rack.innerHTML += `<div class="assembly-slot">#${i+1}</div>`;
           }
@@ -1103,22 +1170,30 @@
 
         const dock = document.createElement('div');
         dock.className = 'syllable-dock';
-        ["பொ", "உ", "ம", "ல", "றை", "கப்", "து"].forEach(s => {
-          const isPlaced = q5Placed.includes(s);
+        const scrambled = [sList[3], sList[0], sList[5], sList[1], sList[6], sList[2], sList[4]];
+
+        scrambled.forEach(item => {
+          const isPlaced = q5Placed.some(p => p.s === item.s);
           const coin = document.createElement('div');
           coin.className = `syllable-coin ${isPlaced ? 'placed' : ''}`;
-          coin.innerHTML = `<span class="coin-tamil">${s}</span>`;
+          
+          if (isPlaced) {
+            coin.innerHTML = `<span class="coin-translit">${item.t}</span>`;
+          } else {
+            coin.innerHTML = `<span class="coin-tamil">${item.s}</span>`;
+          }
+
           coin.onclick = () => {
             if (isPlaced) return;
-            speakText(s);
-            q5Placed.push(s);
+            speakText(item.s);
+            q5Placed.push(item);
             renderPracticePlayground(5);
           };
           dock.appendChild(coin);
         });
         container.appendChild(dock);
 
-        // Requested 450px width
+        // Section 6 writing box expanded to 450px
         const writeBox = document.createElement('div');
         writeBox.style.marginTop = '8px';
         writeBox.innerHTML = inlineDualBlank('pq5', 450);
@@ -1143,9 +1218,9 @@
       renderPracticePlayground(4);
     }
 
-    /* WRITE MODE WITH REQUESTED EXPANDED SIZES */
+    /* WRITE MODE WITH REQUESTED EXPANDED WIDTHS */
     function renderWriteMode() {
-      document.getElementById('bannerHeaderTamil').textContent = "கோடிட்ட இடங்களை நிரப்புக (Fill in the blanks)";
+      document.getElementById('bannerHeaderTamil').textContent = "கோடிட்ட இடங்களை நிரப்புக";
       document.getElementById('statusNoticeText').textContent = "விடைகளை அழகாகப் பெட்டிகளில் எழுதுக!";
 
       const container = document.getElementById('stageContentBody');
@@ -1230,7 +1305,6 @@
     /* VERIFY CHECK WITH INK EXISTENCE ENFORCEMENT */
     function verifyActiveTask() {
       if (currentAppMode === 'write') {
-        // Enforce that student has actually written in the boxes
         const required = ['w1', 'w2_a', 'w2_b', 'w2_c', 'w3', 'w4', 'w5', 'w6'];
         const hasWrittenAny = required.some(id => hasDrawnMap[id]);
         if (!hasWrittenAny) {
@@ -1243,7 +1317,7 @@
 
       let isSuccess = false;
       if (activeQuestIdx === 0) {
-        if (q0Placed.join('') === "திருவள்ளுவர்") isSuccess = true;
+        if (q0Placed.map(p => p.s).join('') === "திருவள்ளுவர்") isSuccess = true;
       } else if (activeQuestIdx === 1) {
         if (q1Pairs.aram && q1Pairs.porul && q1Pairs.inbam) isSuccess = true;
       } else if (activeQuestIdx === 2) {
@@ -1253,7 +1327,7 @@
       } else if (activeQuestIdx === 4) {
         if (q4PickedVal === "1330") isSuccess = true;
       } else if (activeQuestIdx === 5) {
-        if (q5Placed.join('') === "உலகப்பொதுமறை") isSuccess = true;
+        if (q5Placed.map(p => p.s).join('') === "உலகப்பொதுமறை") isSuccess = true;
       }
 
       if (isSuccess) {
