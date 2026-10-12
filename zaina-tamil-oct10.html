@@ -6,19 +6,18 @@
   <title>Zaina's Tamil Quest: திருக்குறள்</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@600;700;800&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@600;700;800;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg-cream: #FFFBEB;
-      --card-parchment: rgba(255, 255, 255, 0.94);
-      --text-main: #451A03;
       --gold-primary: #D97706;
       --gold-deep: #B45309;
-      --gold-light: #FEF3C7;
+      --gold-glow: #F59E0B;
+      --text-temple: #3C1904;
       --tamil-ink: #1E3A8A;
-      --border-warm: #FDE68A;
-      --border-strong: #F59E0B;
+      --parchment-glow: rgba(255, 253, 245, 0.88);
+      --border-ornament: #FBBF24;
+      --border-warm: rgba(217, 119, 6, 0.45);
       --ruled-guide: #93C5FD;
       --ruled-base: #EF4444;
       --font-tamil: 'Mukta Malar', sans-serif;
@@ -40,97 +39,111 @@
       height: 100vh;
       height: 100dvh;
       overflow: hidden;
-      background: #1A0D05 url('assets/village-bg.png') no-repeat center center;
-      background-size: cover;
-      color: var(--text-main);
+      background: #190B04;
+      color: var(--text-temple);
     }
 
     body {
       display: flex;
       flex-direction: column;
-      padding: 8px 14px;
-      gap: 8px;
+      padding: clamp(6px, 1.2vw, 12px) clamp(10px, 1.8vw, 18px);
+      gap: clamp(6px, 1.2vh, 10px);
       position: relative;
     }
 
-    /* 2-LAYER COMPOSITE FADED TINT WASH */
-    .village-tint-wash {
-      position: absolute;
+    /* =======================================================
+       HUMAYUN-STYLE 2-LAYER FADED VILLAGE ART STAGE
+    ======================================================= */
+    .temple-stage-backdrop {
+      position: fixed;
       inset: 0;
-      background: radial-gradient(circle at center, rgba(254, 243, 199, 0.58) 0%, rgba(253, 230, 138, 0.88) 100%);
+      width: 100%;
+      height: 100%;
+      background: #110702 url('assets/village-bg.png') no-repeat center center;
+      background-size: cover;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .temple-tint-veil {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at center, rgba(254, 243, 199, 0.52) 0%, rgba(253, 230, 138, 0.78) 55%, rgba(217, 119, 6, 0.85) 100%);
       pointer-events: none;
       z-index: 2;
     }
 
-    /* TOP NAVIGATION HUD */
-    .top-hud-bar {
-      height: 48px;
+    /* TOP HUD */
+    .top-hud-dock {
+      height: 52px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      position: relative;
       z-index: 50;
       flex-shrink: 0;
-      position: relative;
     }
 
-    .hud-group-left, .hud-group-right {
+    .hud-controls-left, .hud-controls-right {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
     .hud-btn {
-      background: #FFFFFF;
-      border: 2px solid var(--border-strong);
-      color: var(--text-main);
-      padding: 6px 14px;
-      border-radius: 12px;
-      font-size: 0.88rem;
+      background: rgba(255, 255, 255, 0.94);
+      border: 2px solid var(--border-ornament);
+      color: var(--text-temple);
+      padding: 7px 16px;
+      border-radius: 14px;
+      font-size: 0.92rem;
       font-weight: 800;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      box-shadow: 0 2px 6px rgba(180, 83, 9, 0.12);
+      box-shadow: 0 4px 12px rgba(180, 83, 9, 0.16);
       transition: all 0.15s;
     }
-    .hud-btn:active { transform: translateY(1px); }
+    .hud-btn:active { transform: translateY(1px) scale(0.98); }
 
-    .mode-switch-wrap {
+    .mode-switch-segmented {
       display: flex;
-      background: #FFFFFF;
-      border: 2px solid var(--border-strong);
-      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.94);
+      border: 2.5px solid var(--border-ornament);
+      border-radius: 25px;
       padding: 3px;
       gap: 4px;
-      box-shadow: 0 2px 6px rgba(180, 83, 9, 0.12);
+      box-shadow: 0 4px 14px rgba(180, 83, 9, 0.16);
     }
-    .mode-btn {
+    .mode-tab-pill {
       background: transparent;
       border: none;
-      color: var(--text-main);
-      padding: 6px 18px;
-      border-radius: 16px;
+      color: var(--text-temple);
+      padding: 7px 22px;
+      border-radius: 20px;
       font-family: var(--font-tamil);
-      font-size: 1rem;
+      font-size: 1.05rem;
       font-weight: 800;
       cursor: pointer;
-      transition: all 0.15s;
+      transition: all 0.18s ease;
     }
-    .mode-btn.active {
-      background: var(--gold-primary);
+    .mode-tab-pill.active {
+      background: linear-gradient(180deg, #F59E0B 0%, #D97706 100%);
       color: #FFFFFF;
-      box-shadow: 0 2px 6px rgba(217, 119, 6, 0.35);
+      box-shadow: 0 3px 10px rgba(217, 119, 6, 0.4);
     }
 
     .pen-toggle-btn {
-      background: #FFFFFF;
-      border: 2px solid var(--border-strong);
-      color: var(--text-main);
-      font-size: 0.85rem;
+      background: rgba(255, 255, 255, 0.94);
+      border: 2px solid var(--border-ornament);
+      color: var(--text-temple);
+      font-size: 0.9rem;
       font-weight: 800;
-      padding: 6px 12px;
-      border-radius: 12px;
+      padding: 7px 14px;
+      border-radius: 14px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -142,195 +155,201 @@
       color: #15803D;
     }
 
-    /* MAIN STAGE WORKSPACE */
-    .stage-wrapper {
+    /* EXPANSIVE FLOWING MAIN STAGE */
+    .master-quest-stage {
       flex: 1;
       display: grid;
-      grid-template-columns: 240px 1fr;
-      gap: 12px;
+      grid-template-columns: clamp(260px, 22vw, 320px) 1fr;
+      gap: clamp(10px, 1.5vw, 18px);
       min-height: 0;
       position: relative;
       z-index: 10;
     }
 
-    /* LEFT MENTOR PANEL */
-    .mentor-panel {
-      background: var(--card-parchment);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 2.5px solid var(--border-warm);
-      border-radius: 20px;
+    /* FLOATING SCROLL DECK: MENTOR & SELECTOR */
+    .mentor-floating-card {
+      background: var(--parchment-glow);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 3px solid var(--border-warm);
+      border-radius: 26px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 12px 10px;
-      gap: 10px;
-      box-shadow: 0 8px 24px rgba(180, 83, 9, 0.12);
+      padding: 14px 12px;
+      gap: 12px;
+      box-shadow: 0 14px 34px rgba(60, 25, 4, 0.16);
       overflow-y: auto;
     }
 
-    .mentor-portrait-box {
+    .thiruvalluvar-stage-box {
       width: 100%;
-      height: 150px;
+      height: clamp(160px, 22vh, 210px);
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      background: var(--gold-light);
-      border-radius: 16px;
-      border: 2px solid var(--border-warm);
+      background: radial-gradient(circle, #FEF3C7 0%, rgba(254, 243, 199, 0.4) 75%);
+      border-radius: 20px;
+      border: 2px solid var(--border-ornament);
     }
-    .mentor-portrait-img {
-      max-height: 90%;
-      max-width: 90%;
+    .thiruvalluvar-stage-img {
+      max-height: 94%;
+      max-width: 94%;
       object-fit: contain;
+      filter: drop-shadow(0 6px 14px rgba(60, 25, 4, 0.22));
     }
 
-    .quest-tab-grid {
+    .quest-menu-grid {
       display: grid;
       grid-template-columns: 1fr;
       gap: 8px;
       width: 100%;
     }
-    .quest-tab-btn {
-      background: var(--gold-light);
+    .quest-menu-btn {
+      background: #FFFFFF;
       border: 2px solid var(--border-warm);
-      border-radius: 12px;
-      padding: 8px 10px;
+      border-radius: 14px;
+      padding: 10px 14px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       cursor: pointer;
-      transition: all 0.15s;
+      transition: all 0.15s ease;
       text-align: left;
+      box-shadow: 0 2px 6px rgba(180, 83, 9, 0.06);
     }
-    .quest-tab-btn.active {
+    .quest-menu-btn.active {
       background: #FEF08A;
       border-color: var(--gold-primary);
-      box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.45);
+      transform: translateX(4px);
     }
-    .quest-tab-btn.solved {
+    .quest-menu-btn.solved {
       background: #DCFCE7;
       border-color: #22C55E;
     }
-    .quest-tab-title {
+    .quest-menu-text {
       font-family: var(--font-tamil);
-      font-size: 0.95rem;
+      font-size: clamp(0.95rem, 1.2vw, 1.1rem);
       font-weight: 800;
-      color: var(--text-main);
+      color: var(--text-temple);
       line-height: 1.2;
     }
 
-    /* RIGHT WORKSPACE CARD */
-    .workspace-card {
-      background: var(--card-parchment);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 2.5px solid var(--border-warm);
-      border-radius: 20px;
+    /* FLOATING SCROLL DECK: WORKSPACE */
+    .workspace-floating-scroll {
+      background: var(--parchment-glow);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 3px solid var(--border-warm);
+      border-radius: 26px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 14px 20px;
-      gap: 10px;
-      box-shadow: 0 8px 24px rgba(180, 83, 9, 0.12);
+      padding: clamp(14px, 1.8vh, 20px) clamp(16px, 2vw, 26px);
+      gap: 12px;
+      box-shadow: 0 14px 34px rgba(60, 25, 4, 0.16);
       position: relative;
       overflow: hidden;
     }
 
-    /* BANNER HEADER WITH PARROT ICON */
-    .stage-header-banner {
+    /* TEMPLE GOLDEN SCROLL BANNER HEADER */
+    .golden-banner-arch {
       width: 100%;
-      background: var(--gold-light);
-      border: 2px solid var(--border-strong);
-      border-radius: 14px;
+      background: linear-gradient(90deg, #FEF3C7 0%, #FFFBEB 50%, #FEF3C7 100%);
+      border: 2.5px solid var(--gold-primary);
+      border-radius: 18px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 16px;
+      padding: 8px 18px;
       flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(180, 83, 9, 0.1);
     }
-    .banner-title-tamil {
+    .banner-quest-title {
       font-family: var(--font-tamil);
-      font-size: 1.45rem;
-      font-weight: 800;
-      color: var(--text-main);
-      line-height: 1.2;
+      font-size: clamp(1.3rem, 2vw, 1.7rem);
+      font-weight: 900;
+      color: var(--text-temple);
+      letter-spacing: 0.5px;
     }
 
-    .parrot-speaker-btn {
-      width: 48px;
-      height: 48px;
+    /* ENLARGED FLOATING PARROT MEDALLION AVATAR (66PX) */
+    .floating-parrot-medallion {
+      width: clamp(56px, 5.5vw, 66px);
+      height: clamp(56px, 5.5vw, 66px);
       background: #FFFFFF;
-      border: 2px solid var(--border-strong);
+      border: 2.5px solid var(--gold-glow);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 2px 8px rgba(180, 83, 9, 0.15);
-      transition: transform 0.12s;
+      box-shadow: 0 6px 16px rgba(180, 83, 9, 0.22);
+      transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .parrot-speaker-btn:active { transform: scale(0.92); }
-    .parrot-speaker-img {
-      width: 38px;
-      height: 38px;
+    .floating-parrot-medallion:active { transform: scale(0.92); }
+    .parrot-avatar-img {
+      width: 82%;
+      height: 82%;
       object-fit: contain;
     }
 
-    /* PLAYGROUND BODY */
-    .stage-content-body {
+    /* WORKSPACE PLAYGROUND INTERACTIVE BODY */
+    .quest-stage-body {
       flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 12px;
+      gap: 14px;
       min-height: 0;
       position: relative;
     }
 
-    /* PRACTICE ASSEMBLY TOKENS */
-    .assembly-rack {
+    /* SACRED WORD RACK */
+    .sacred-word-rack {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      background: var(--gold-light);
+      gap: clamp(8px, 1.2vw, 14px);
+      background: #FFFDF7;
       border: 2.5px dashed var(--gold-primary);
-      border-radius: 18px;
-      padding: 10px 16px;
-      min-height: 86px;
+      border-radius: 22px;
+      padding: 10px 18px;
+      min-height: clamp(80px, 12vh, 100px);
       width: 95%;
-      max-width: 680px;
+      max-width: 720px;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.04);
     }
-    .assembly-slot {
-      width: 68px;
-      height: 68px;
-      border: 2px dashed rgba(217, 119, 6, 0.45);
+    .rack-target-slot {
+      width: clamp(64px, 6.5vw, 76px);
+      height: clamp(64px, 6.5vw, 76px);
+      border: 2px dashed rgba(217, 119, 6, 0.5);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #FFFFFF;
+      background: rgba(254, 243, 199, 0.5);
       color: #92400E;
-      font-size: 1.05rem;
+      font-size: 1.15rem;
       font-weight: 800;
     }
 
-    .syllable-dock {
+    /* SYLLABLE COIN TOKENS ENLARGED (84PX) */
+    .syllable-token-dock {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
-      gap: 12px;
+      gap: clamp(10px, 1.4vw, 16px);
       width: 100%;
     }
-
-    .syllable-coin {
+    .temple-syllable-coin {
       position: relative;
-      width: 72px;
-      height: 72px;
+      width: clamp(72px, 7vw, 84px);
+      height: clamp(72px, 7vw, 84px);
       background: url('assets/temple-coin.png') no-repeat center center, linear-gradient(135deg, #FFFBEB 0%, #FDE68A 100%);
       background-size: cover;
       border-radius: 50%;
@@ -338,50 +357,49 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(180, 83, 9, 0.18);
-      transition: transform 0.12s;
+      box-shadow: 0 6px 16px rgba(180, 83, 9, 0.22);
+      transition: transform 0.15s ease;
     }
-    .syllable-coin:hover { transform: scale(1.05); }
-    .syllable-coin:active { transform: scale(0.95); }
+    .temple-syllable-coin:hover { transform: scale(1.06); }
+    .temple-syllable-coin:active { transform: scale(0.94); }
 
-    /* TRANSLITERATION BADGE ON PLACEMENT */
-    .syllable-coin.placed {
+    /* TRANSLITERATION FLIP STATE ON ONCE-PLACED COINS */
+    .temple-syllable-coin.placed {
       background: #F1F5F9;
       border: 2.5px solid #CBD5E1;
       box-shadow: none;
       cursor: default;
       pointer-events: none;
     }
-    .syllable-coin.placed .coin-translit {
+    .temple-syllable-coin.placed .coin-translit-text {
       font-family: var(--font-ui);
-      font-size: 1.15rem;
+      font-size: clamp(1.1rem, 1.4vw, 1.3rem);
       font-weight: 900;
       color: #475569;
       letter-spacing: 0.5px;
     }
-
-    .coin-tamil {
+    .coin-tamil-glyph {
       font-family: var(--font-tamil);
-      font-size: 1.85rem;
-      font-weight: 800;
-      color: var(--text-main);
+      font-size: clamp(1.8rem, 2.2vw, 2.2rem);
+      font-weight: 900;
+      color: var(--text-temple);
       line-height: 1;
     }
 
-    /* AUTHENTIC 2-LINE RULED INLINE CANVAS */
+    /* MASTER DUAL-LINE RULED INLINE CANVAS COMPONENT */
     .inline-blank-container {
       display: inline-flex;
       align-items: center;
       vertical-align: middle;
       background: #FFFFFF;
-      border: 2px solid var(--border-strong);
-      border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      border: 2.5px solid var(--gold-primary);
+      border-radius: 14px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
       overflow: hidden;
     }
     .inline-canvas-wrapper {
       position: relative;
-      height: 68px;
+      height: 72px;
       background: #FFFFFF;
       overflow: hidden;
       display: flex;
@@ -395,13 +413,13 @@
       background-color: #FFFFFF;
       background-image: repeating-linear-gradient(
         #FFFFFF 0px,
-        #FFFFFF 20px,
-        var(--ruled-guide) 21px,
-        #FFFFFF 22px,
-        #FFFFFF 44px,
-        var(--ruled-guide) 45px,
+        #FFFFFF 21px,
+        var(--ruled-guide) 22px,
+        #FFFFFF 23px,
         #FFFFFF 46px,
-        #FFFFFF 68px
+        var(--ruled-guide) 47px,
+        #FFFFFF 48px,
+        #FFFFFF 72px
       );
       opacity: 0.9;
     }
@@ -409,8 +427,8 @@
       content: '';
       position: absolute;
       top: 0;
-      left: 14px;
-      width: 1.5px;
+      left: 16px;
+      width: 2px;
       height: 100%;
       background: var(--ruled-base);
       opacity: 0.8;
@@ -425,11 +443,11 @@
     .inline-clear-btn {
       background: #F8FAFC;
       border: none;
-      border-left: 1.5px solid #CBD5E1;
-      padding: 0 10px;
-      height: 68px;
+      border-left: 2px solid #CBD5E1;
+      padding: 0 12px;
+      height: 72px;
       cursor: pointer;
-      font-size: 1.05rem;
+      font-size: 1.15rem;
       color: #64748B;
       font-weight: 800;
       display: flex;
@@ -439,29 +457,30 @@
     }
     .inline-clear-btn:active { background: #E2E8F0; }
 
-    /* RELIC MATCHING GRID */
+    /* MATCHING CARDS WITH UPSCALED RELICS (68PX) */
     .relic-match-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      width: 90%;
-      max-width: 580px;
+      gap: clamp(12px, 1.8vw, 20px);
+      width: 95%;
+      max-width: 680px;
     }
     .match-relic-card, .match-word-card {
-      background: var(--gold-light);
-      border: 2px solid var(--border-strong);
-      border-radius: 14px;
-      padding: 10px 14px;
+      background: #FFFFFF;
+      border: 2.5px solid var(--border-ornament);
+      border-radius: 16px;
+      padding: 10px 16px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
       cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-      transition: all 0.15s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      transition: all 0.15s ease;
     }
     .match-relic-card.selected, .match-word-card.selected {
       background: #FEF08A;
-      box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.55);
+      transform: scale(1.02);
     }
     .match-relic-card.paired, .match-word-card.paired {
       background: #DCFCE7;
@@ -469,178 +488,180 @@
       pointer-events: none;
     }
     .match-relic-img {
-      width: 44px;
-      height: 44px;
+      width: clamp(52px, 5.5vw, 68px);
+      height: clamp(52px, 5.5vw, 68px);
       object-fit: contain;
     }
 
-    /* COUNTER & BEADS */
-    .counter-display {
-      font-size: 3.5rem;
+    /* ROTARY COUNTER & SACRED BEADS */
+    .counter-display-dial {
+      font-size: clamp(3rem, 5vw, 4.5rem);
       font-weight: 900;
       color: var(--gold-deep);
-      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      text-shadow: 0 2px 6px rgba(0,0,0,0.12);
     }
-    .bead-mala {
+    .sacred-bead-mala {
       display: flex;
-      gap: 8px;
-      background: var(--gold-light);
-      padding: 12px 18px;
-      border-radius: 30px;
-      border: 2px solid var(--border-strong);
+      gap: 10px;
+      background: #FFFFFF;
+      padding: 14px 22px;
+      border-radius: 36px;
+      border: 2.5px solid var(--border-ornament);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
-    .bead-item {
-      width: 36px;
-      height: 36px;
+    .bead-item-unit {
+      width: clamp(34px, 3.8vw, 44px);
+      height: clamp(34px, 3.8vw, 44px);
       border-radius: 50%;
       background: #E2E8F0;
       border: 2px solid #CBD5E1;
       cursor: pointer;
-      transition: all 0.15s;
+      transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .bead-item.active {
+    .bead-item-unit.active {
       background: radial-gradient(circle at 35% 35%, #FBBF24, #D97706);
       border-color: #B45309;
-      box-shadow: 0 2px 6px rgba(217, 119, 6, 0.35);
+      box-shadow: 0 3px 8px rgba(217, 119, 6, 0.45);
+      transform: scale(1.08);
     }
 
-    /* WRITE MODE SCROLL CONTAINER */
-    .write-scroll-wrap {
+    /* WRITE MODE EXPANSIVE SCROLL CONTAINER */
+    .write-mode-scrollbox {
       width: 100%;
       height: 100%;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      padding-right: 6px;
+      gap: 14px;
+      padding-right: 8px;
     }
     .write-question-card {
-      background: var(--gold-light);
-      border: 2px solid var(--border-warm);
-      border-radius: 14px;
-      padding: 12px 16px;
+      background: #FFFFFF;
+      border: 2.5px solid var(--border-ornament);
+      border-radius: 18px;
+      padding: 14px 18px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
     }
     .write-stem-tamil {
       font-family: var(--font-tamil);
-      font-size: 1.25rem;
+      font-size: clamp(1.2rem, 1.6vw, 1.45rem);
       font-weight: 800;
-      color: var(--text-main);
+      color: var(--text-temple);
     }
 
     /* FOOTER DOCK */
-    .workspace-footer {
+    .workspace-footer-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-top: 2px dashed var(--border-warm);
-      padding-top: 8px;
+      border-top: 2.5px dashed var(--border-warm);
+      padding-top: 10px;
       flex-shrink: 0;
     }
-    .btn-verify {
+    .btn-verify-seal {
       background: linear-gradient(180deg, #16A34A 0%, #15803D 100%);
-      border: 2px solid #86EFAC;
+      border: 2.5px solid #86EFAC;
       color: #FFFFFF;
       font-family: var(--font-tamil);
-      font-size: 1.15rem;
+      font-size: 1.25rem;
       font-weight: 800;
-      padding: 8px 28px;
-      border-radius: 18px;
+      padding: 9px 34px;
+      border-radius: 20px;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
-      transition: all 0.15s;
+      box-shadow: 0 6px 16px rgba(22, 163, 74, 0.3);
+      transition: all 0.15s ease;
     }
-    .btn-verify:active { transform: scale(0.96); }
+    .btn-verify-seal:active { transform: scale(0.96); }
 
-    /* CELEBRATION OVERLAY */
+    /* CELEBRATION MODAL STAGE */
     #celebrationStage {
       position: fixed;
       inset: 0;
       z-index: 100000;
       display: none;
-      overflow: hidden;
-      background: rgba(254, 243, 199, 0.95);
-      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+      background: rgba(45, 23, 10, 0.6);
+      backdrop-filter: blur(8px);
     }
-    .victory-scroll {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+    .victory-scroll-card {
       background: #FFFFFF;
       border: 4px solid var(--gold-primary);
-      border-radius: 24px;
-      padding: 24px;
+      border-radius: 28px;
+      padding: 28px;
       text-align: center;
-      box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      max-width: 480px;
+      align-items: center;
+      gap: 14px;
+      max-width: 500px;
       width: 90%;
     }
   </style>
 </head>
 <body>
 
-  <!-- 2-LAYER COMPOSITE FADED TINT WASH -->
-  <div class="village-tint-wash"></div>
+  <!-- HUMAYUN-STYLE 2-LAYER FADED VILLAGE ART -->
+  <div class="temple-stage-backdrop"></div>
+  <div class="temple-tint-veil"></div>
 
   <!-- TOP HUD -->
-  <header class="top-hud-bar">
-    <div class="hud-group-left">
+  <header class="top-hud-dock">
+    <div class="hud-controls-left">
       <button type="button" class="hud-btn" onclick="goToHub()">🪷 முகப்பு</button>
       <button type="button" class="hud-btn" onclick="toggleFullscreen()">⛶ முழுத்திரை</button>
       <button type="button" class="pen-toggle-btn" id="btnPenMode" onclick="togglePenMode()">👆 தொடுதிரை</button>
     </div>
 
-    <!-- MODE SWITCHER -->
-    <div class="mode-switch-wrap">
-      <button type="button" class="mode-btn active" id="tabPractice" onclick="setAppMode('practice')">பயிற்சி</button>
-      <button type="button" class="mode-btn" id="tabWrite" onclick="setAppMode('write')">எழுதுதல்</button>
+    <!-- PURE TAMIL MODE SWITCHER -->
+    <div class="mode-switch-segmented">
+      <button type="button" class="mode-tab-pill active" id="tabPractice" onclick="setAppMode('practice')">பயிற்சி</button>
+      <button type="button" class="mode-tab-pill" id="tabWrite" onclick="setAppMode('write')">எழுதுதல்</button>
     </div>
 
-    <div class="hud-group-right">
+    <div class="hud-controls-right">
       <button type="button" class="hud-btn" onclick="resetCurrentView()">🔄 தொடக்கம்</button>
     </div>
   </header>
 
-  <!-- MAIN STAGE -->
-  <main class="stage-wrapper">
+  <!-- MASTER EXPANSIVE STAGE -->
+  <main class="master-quest-stage">
 
-    <!-- LEFT MENTOR PANEL -->
-    <aside class="mentor-panel">
-      <div class="mentor-portrait-box">
-        <img src="assets/thiruvalluvar.png" class="mentor-portrait-img" alt="திருவள்ளுவர்" onerror="handleImageFallback(this)" />
+    <!-- LEFT MENTOR & SELECTOR -->
+    <aside class="mentor-floating-card">
+      <div class="thiruvalluvar-stage-box">
+        <img src="assets/thiruvalluvar.png" class="thiruvalluvar-stage-img" alt="திருவள்ளுவர்" onerror="handleImageFallback(this)" />
       </div>
 
-      <div style="font-family:var(--font-tamil); font-size:1.1rem; font-weight:800; color:var(--text-main); text-align:center;">
+      <div style="font-family:var(--font-tamil); font-size:1.2rem; font-weight:900; color:var(--text-temple); text-align:center;">
         திருக்குறள்
       </div>
 
-      <div class="quest-tab-grid" id="questTabsContainer"></div>
+      <div class="quest-menu-grid" id="questTabsContainer"></div>
     </aside>
 
-    <!-- RIGHT WORKSPACE -->
-    <section class="workspace-card">
+    <!-- RIGHT WORKSPACE FLOATING SCROLL -->
+    <section class="workspace-floating-scroll">
 
-      <div class="stage-header-banner">
-        <div class="banner-title-tamil" id="bannerHeaderTamil">திருக்குறளை எழுதியவர் யார்?</div>
-        <!-- PARROT AVATAR SPEAKER (NO BILINGUAL TEXT) -->
-        <button type="button" class="parrot-speaker-btn" onclick="speakCurrentTarget()" title="ஒலி">
-          <img src="assets/mentor-parrot.png" class="parrot-speaker-img" alt="கிளி" onerror="handleImageFallback(this)" />
+      <div class="golden-banner-arch">
+        <div class="banner-quest-title" id="bannerHeaderTamil">திருக்குறளை எழுதியவர் யார்?</div>
+        <!-- FLOATING PARROT MEDALLION AVATAR (AUDIO TRIGGER) -->
+        <button type="button" class="floating-parrot-medallion" onclick="speakCurrentTarget()" title="ஒலி">
+          <img src="assets/mentor-parrot.png" class="parrot-avatar-img" alt="கிளி" onerror="handleImageFallback(this)" />
         </button>
       </div>
 
-      <div class="stage-content-body" id="stageContentBody"></div>
+      <div class="quest-stage-body" id="stageContentBody"></div>
 
-      <div class="workspace-footer">
-        <span style="font-family:var(--font-tamil); font-size:1rem; font-weight:800; color:var(--text-main);" id="statusNoticeText">
+      <div class="workspace-footer-bar">
+        <span style="font-family:var(--font-tamil); font-size:1.05rem; font-weight:800; color:var(--text-temple);" id="statusNoticeText">
           சரியான எழுத்துகளை வரிசைப்படுத்தி கீழே எழுதுக!
         </span>
-        <button type="button" class="btn-verify" onclick="verifyActiveTask()">
+        <button type="button" class="btn-verify-seal" onclick="verifyActiveTask()">
           சரிபார் ✨
         </button>
       </div>
@@ -651,22 +672,22 @@
 
   <!-- CELEBRATION STAGE -->
   <div id="celebrationStage">
-    <div class="victory-scroll">
-      <div style="font-size:3rem;">🪷</div>
-      <div style="font-family:var(--font-tamil); font-size:1.8rem; font-weight:800; color:#92400E;">
+    <div class="victory-scroll-card">
+      <div style="font-size:3.5rem;">🪷</div>
+      <div style="font-family:var(--font-tamil); font-size:2rem; font-weight:900; color:#92400E;">
         அற்புதம் ஜைனா! வெற்றி!
       </div>
-      <div style="font-family:var(--font-tamil); font-size:1.1rem; font-weight:700; color:#451A03; line-height:1.6;">
+      <div style="font-family:var(--font-tamil); font-size:1.15rem; font-weight:700; color:#451A03; line-height:1.6;">
         திருக்குறள் பற்றிய அனைத்து வினாக்களையும் முழுமையாக முடித்துவிட்டீர்கள்!
       </div>
-      <button type="button" class="hud-btn" style="background:var(--gold-primary); color:#FFF; justify-content:center; font-family:var(--font-tamil); font-size:1.1rem;" onclick="closeCelebration()">
+      <button type="button" class="btn-verify-seal" onclick="closeCelebration()">
         தொடர்க ➔
       </button>
     </div>
   </div>
 
   <script>
-    /* AUDIO SYNTHESIS ENGINE */
+    /* PURE TAMIL VOICE SYNTHESIS */
     function speakText(tamilText) {
       if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
@@ -717,7 +738,7 @@
       img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><circle cx='60' cy='60' r='55' fill='%23FEF3C7' stroke='%23D97706' stroke-width='4'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='42'>🪷</text></svg>";
     }
 
-    /* MASTER SPEC INK PERSISTENCE ENGINE */
+    /* MASTER SPEC INK ENGINE */
     const activeInkCache = {};
     const hasDrawnMap = {};
 
@@ -731,7 +752,7 @@
         <span class="inline-blank-container">
           <span class="inline-canvas-wrapper" style="width:${width}px;">
             <span class="dual-lines-texture"></span>
-            <canvas class="dual-canvas" data-canvas-id="${id}" width="${width}" height="68"></canvas>
+            <canvas class="dual-canvas" data-canvas-id="${id}" width="${width}" height="72"></canvas>
           </span>
           <button type="button" class="inline-clear-btn" onclick="clearDualCanvas('${id}')" title="அழி">🧹</button>
         </span>
@@ -744,7 +765,7 @@
         const id = c.getAttribute("data-canvas-id");
         const bRect = c.parentElement.getBoundingClientRect();
         c.width = Math.round(bRect.width);
-        c.height = 68;
+        c.height = 72;
 
         const ctx = c.getContext("2d", { willReadFrequently: false });
         ctx.clearRect(0, 0, c.width, c.height);
@@ -793,7 +814,7 @@
           ctx.lineJoin = "round";
           ctx.strokeStyle = "#1E3A8A";
           const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
-          ctx.lineWidth = 3.6 * (pressure * 1.5 + 0.35);
+          ctx.lineWidth = 3.8 * (pressure * 1.5 + 0.35);
           ctx.stroke();
 
           lastX = currX;
@@ -872,9 +893,9 @@
       QUESTS.forEach((q, idx) => {
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = `quest-tab-btn ${idx === activeQuestIdx ? 'active' : ''} ${solvedQuests[idx] ? 'solved' : ''}`;
+        btn.className = `quest-menu-btn ${idx === activeQuestIdx ? 'active' : ''} ${solvedQuests[idx] ? 'solved' : ''}`;
         btn.onclick = () => switchQuest(idx);
-        btn.innerHTML = `<span>🪷</span><span class="quest-tab-title">${q.title}</span>`;
+        btn.innerHTML = `<span style="font-size:1.15rem;">🪷</span><span class="quest-menu-text">${q.title}</span>`;
         container.appendChild(btn);
       });
     }
@@ -911,7 +932,7 @@
       renderPracticePlayground(idx);
     }
 
-    /* PRACTICE WORKSPACE WITH ENGLISH TRANSLITERATION FLIP */
+    /* EXPANDED SIZES & ENGLISH TRANSLITERATION FLIP */
     function renderPracticePlayground(idx) {
       const container = document.getElementById('stageContentBody');
       container.innerHTML = '';
@@ -927,31 +948,30 @@
         ];
 
         const rack = document.createElement('div');
-        rack.className = 'assembly-rack';
+        rack.className = 'sacred-word-rack';
         for (let i = 0; i < 5; i++) {
           const placed = q0Placed[i];
           if (placed) {
-            rack.innerHTML += `<div class="syllable-coin"><span class="coin-tamil">${placed.s}</span></div>`;
+            rack.innerHTML += `<div class="temple-syllable-coin"><span class="coin-tamil-glyph">${placed.s}</span></div>`;
           } else {
-            rack.innerHTML += `<div class="assembly-slot">#${i+1}</div>`;
+            rack.innerHTML += `<div class="rack-target-slot">#${i+1}</div>`;
           }
         }
         container.appendChild(rack);
 
         const dock = document.createElement('div');
-        dock.className = 'syllable-dock';
+        dock.className = 'syllable-token-dock';
         const scrambled = [targetTokens[2], targetTokens[0], targetTokens[4], targetTokens[1], targetTokens[3]];
 
         scrambled.forEach(item => {
           const isPlaced = q0Placed.some(p => p.s === item.s);
           const coin = document.createElement('div');
-          coin.className = `syllable-coin ${isPlaced ? 'placed' : ''}`;
+          coin.className = `temple-syllable-coin ${isPlaced ? 'placed' : ''}`;
           
           if (isPlaced) {
-            // Once placed, shows English transliteration
-            coin.innerHTML = `<span class="coin-translit">${item.t}</span>`;
+            coin.innerHTML = `<span class="coin-translit-text">${item.t}</span>`;
           } else {
-            coin.innerHTML = `<span class="coin-tamil">${item.s}</span>`;
+            coin.innerHTML = `<span class="coin-tamil-glyph">${item.s}</span>`;
           }
 
           coin.onclick = () => {
@@ -964,9 +984,9 @@
         });
         container.appendChild(dock);
 
-        // Section 1 writing box expanded to 400px
+        // Section 1 canvas set to 400px
         const writeBox = document.createElement('div');
-        writeBox.style.marginTop = '8px';
+        writeBox.style.marginTop = '10px';
         writeBox.innerHTML = inlineDualBlank('pq0', 400);
         container.appendChild(writeBox);
         setTimeout(setupDualCanvases, 40);
@@ -975,7 +995,7 @@
         // Section 2: 3 பிரிவுகள் (250px each box)
         const subNav = document.createElement('div');
         subNav.style.display = 'flex';
-        subNav.style.gap = '8px';
+        subNav.style.gap = '10px';
         subNav.innerHTML = `
           <button class="hud-btn" style="${q1Step==='write'?'background:var(--gold-primary); color:#FFF;':''}" onclick="setQ1Step('write')">எழுதுதல்</button>
           <button class="hud-btn" style="${q1Step==='match'?'background:var(--gold-primary); color:#FFF;':''}" onclick="setQ1Step('match')">பொருத்துதல்</button>
@@ -991,7 +1011,7 @@
           const writeGrid = document.createElement('div');
           writeGrid.style.display = 'flex';
           writeGrid.style.flexDirection = 'column';
-          writeGrid.style.gap = '8px';
+          writeGrid.style.gap = '10px';
           writeGrid.style.width = '100%';
           writeGrid.style.alignItems = 'center';
 
@@ -999,9 +1019,9 @@
             const row = document.createElement('div');
             row.style.display = 'flex';
             row.style.alignItems = 'center';
-            row.style.gap = '14px';
+            row.style.gap = '16px';
             row.innerHTML = `
-              <span style="font-family:var(--font-tamil); font-size:1.2rem; font-weight:800; width:90px;">${r.name}</span>
+              <span style="font-family:var(--font-tamil); font-size:1.3rem; font-weight:800; width:100px;">${r.name}</span>
               ${inlineDualBlank('pq1_' + r.key, 250)}
             `;
             writeGrid.appendChild(row);
@@ -1009,7 +1029,7 @@
           container.appendChild(writeGrid);
           setTimeout(setupDualCanvases, 40);
         } else {
-          // Relic match step with restored PNG images
+          // Relic match step with 68px tactile relic icons
           const grid = document.createElement('div');
           grid.className = 'relic-match-grid';
           const left = [
@@ -1026,13 +1046,13 @@
           const leftCol = document.createElement('div');
           leftCol.style.display = 'flex';
           leftCol.style.flexDirection = 'column';
-          leftCol.style.gap = '8px';
+          leftCol.style.gap = '10px';
           left.forEach(item => {
             const card = document.createElement('div');
             card.className = `match-relic-card ${q1SelectedRelic === item.key ? 'selected' : ''} ${q1Pairs[item.key] ? 'paired' : ''}`;
             card.innerHTML = `
               <img src="${item.img}" class="match-relic-img" alt="${item.name}" onerror="handleImageFallback(this)" />
-              <span style="font-family:var(--font-tamil); font-weight:800; font-size:1.1rem;">${item.name}</span>
+              <span style="font-family:var(--font-tamil); font-weight:800; font-size:1.25rem;">${item.name}</span>
             `;
             card.onclick = () => {
               if (q1Pairs[item.key]) return;
@@ -1045,11 +1065,11 @@
           const rightCol = document.createElement('div');
           rightCol.style.display = 'flex';
           rightCol.style.flexDirection = 'column';
-          rightCol.style.gap = '8px';
+          rightCol.style.gap = '10px';
           right.forEach(item => {
             const card = document.createElement('div');
             card.className = `match-word-card ${q1Pairs[item.key] ? 'paired' : ''}`;
-            card.innerHTML = `<span style="font-family:var(--font-tamil); font-weight:800; font-size:1.15rem;">${item.label}</span>`;
+            card.innerHTML = `<span style="font-family:var(--font-tamil); font-weight:800; font-size:1.25rem;">${item.label}</span>`;
             card.onclick = () => {
               if (!q1SelectedRelic || q1Pairs[item.key]) return;
               if (q1SelectedRelic === item.key) {
@@ -1073,13 +1093,13 @@
         stage.style.display = 'flex';
         stage.style.flexDirection = 'column';
         stage.style.alignItems = 'center';
-        stage.style.gap = '10px';
+        stage.style.gap = '12px';
         stage.innerHTML = `
-          <div style="font-family:var(--font-tamil); font-size:1.35rem; font-weight:800;">நூற்று முப்பத்து மூன்று (133)</div>
-          <div class="counter-display">${q2DialVal}</div>
-          <div style="display:flex; gap:12px;">
-            <button class="hud-btn" style="font-size:1.4rem; padding:8px 22px;" onclick="stepDial(-1)">-</button>
-            <button class="hud-btn" style="font-size:1.4rem; padding:8px 22px;" onclick="stepDial(1)">+</button>
+          <div style="font-family:var(--font-tamil); font-size:1.45rem; font-weight:900;">நூற்று முப்பத்து மூன்று (133)</div>
+          <div class="counter-display-dial">${q2DialVal}</div>
+          <div style="display:flex; gap:16px;">
+            <button class="hud-btn" style="font-size:1.5rem; padding:10px 28px;" onclick="stepDial(-1)">-</button>
+            <button class="hud-btn" style="font-size:1.5rem; padding:10px 28px;" onclick="stepDial(1)">+</button>
           </div>
         `;
         container.appendChild(stage);
@@ -1090,17 +1110,17 @@
         stage.style.display = 'flex';
         stage.style.flexDirection = 'column';
         stage.style.alignItems = 'center';
-        stage.style.gap = '12px';
+        stage.style.gap = '14px';
         stage.innerHTML = `
-          <div style="font-family:var(--font-tamil); font-size:1.35rem; font-weight:800;">
+          <div style="font-family:var(--font-tamil); font-size:1.45rem; font-weight:900;">
             1 அதிகாரத்தில் உள்ள குறள்கள் = ${q3BeadsCount} / 10
           </div>
         `;
         const mala = document.createElement('div');
-        mala.className = 'bead-mala';
+        mala.className = 'sacred-bead-mala';
         for (let b = 1; b <= 10; b++) {
           const bead = document.createElement('div');
-          bead.className = `bead-item ${b <= q3BeadsCount ? 'active' : ''}`;
+          bead.className = `bead-item-unit ${b <= q3BeadsCount ? 'active' : ''}`;
           bead.onclick = () => {
             q3BeadsCount = b;
             speakText(`${b}`);
@@ -1117,17 +1137,17 @@
         stage.style.display = 'flex';
         stage.style.flexDirection = 'column';
         stage.style.alignItems = 'center';
-        stage.style.gap = '14px';
+        stage.style.gap = '16px';
         stage.innerHTML = `
-          <div style="font-family:var(--font-tamil); font-size:1.4rem; font-weight:800;">
+          <div style="font-family:var(--font-tamil); font-size:1.5rem; font-weight:900;">
             133 அதிகாரங்கள் × 10 குறள்கள் = ?
           </div>
-          <div style="display:flex; gap:16px;">
-            <button class="hud-btn" style="font-size:1.3rem; padding:12px 24px;" onclick="pickTotalVal(1300)">1300</button>
-            <button class="hud-btn" style="font-size:1.3rem; padding:12px 24px;" onclick="pickTotalVal(1330)">1330</button>
-            <button class="hud-btn" style="font-size:1.3rem; padding:12px 24px;" onclick="pickTotalVal(1350)">1350</button>
+          <div style="display:flex; gap:18px;">
+            <button class="hud-btn" style="font-size:1.4rem; padding:14px 28px;" onclick="pickTotalVal(1300)">1300</button>
+            <button class="hud-btn" style="font-size:1.4rem; padding:14px 28px;" onclick="pickTotalVal(1330)">1330</button>
+            <button class="hud-btn" style="font-size:1.4rem; padding:14px 28px;" onclick="pickTotalVal(1350)">1350</button>
           </div>
-          <div style="font-family:var(--font-tamil); font-size:1.25rem; font-weight:800; color:var(--gold-deep);">
+          <div style="font-family:var(--font-tamil); font-size:1.35rem; font-weight:900; color:var(--gold-deep);">
             ${q4PickedVal ? `தேர்வு: ${q4PickedVal}` : "சரியான எண்ணைத் தொடுங்கள்!"}
           </div>
         `;
@@ -1148,38 +1168,38 @@
         const globeRow = document.createElement('div');
         globeRow.style.display = 'flex';
         globeRow.style.alignItems = 'center';
-        globeRow.style.gap = '8px';
+        globeRow.style.gap = '12px';
         globeRow.innerHTML = `
-          <img src="assets/ulagam-globe.png" style="width:52px; height:52px; object-fit:contain;" alt="உலகம்" onerror="handleImageFallback(this)" />
-          <span style="font-family:var(--font-tamil); font-size:1.2rem; font-weight:800;">உலக மக்களுக்கான பொதுவான நூல்</span>
+          <img src="assets/ulagam-globe.png" style="width:64px; height:64px; object-fit:contain;" alt="உலகம்" onerror="handleImageFallback(this)" />
+          <span style="font-family:var(--font-tamil); font-size:1.35rem; font-weight:900;">உலக மக்களுக்கான பொதுவான நூல்</span>
         `;
         container.appendChild(globeRow);
 
         const rack = document.createElement('div');
-        rack.className = 'assembly-rack';
+        rack.className = 'sacred-word-rack';
         for (let i = 0; i < 7; i++) {
           const placed = q5Placed[i];
           if (placed) {
-            rack.innerHTML += `<div class="syllable-coin"><span class="coin-tamil">${placed.s}</span></div>`;
+            rack.innerHTML += `<div class="temple-syllable-coin"><span class="coin-tamil-glyph">${placed.s}</span></div>`;
           } else {
-            rack.innerHTML += `<div class="assembly-slot">#${i+1}</div>`;
+            rack.innerHTML += `<div class="rack-target-slot">#${i+1}</div>`;
           }
         }
         container.appendChild(rack);
 
         const dock = document.createElement('div');
-        dock.className = 'syllable-dock';
+        dock.className = 'syllable-token-dock';
         const scrambled = [sList[3], sList[0], sList[5], sList[1], sList[6], sList[2], sList[4]];
 
         scrambled.forEach(item => {
           const isPlaced = q5Placed.some(p => p.s === item.s);
           const coin = document.createElement('div');
-          coin.className = `syllable-coin ${isPlaced ? 'placed' : ''}`;
+          coin.className = `temple-syllable-coin ${isPlaced ? 'placed' : ''}`;
           
           if (isPlaced) {
-            coin.innerHTML = `<span class="coin-translit">${item.t}</span>`;
+            coin.innerHTML = `<span class="coin-translit-text">${item.t}</span>`;
           } else {
-            coin.innerHTML = `<span class="coin-tamil">${item.s}</span>`;
+            coin.innerHTML = `<span class="coin-tamil-glyph">${item.s}</span>`;
           }
 
           coin.onclick = () => {
@@ -1192,9 +1212,9 @@
         });
         container.appendChild(dock);
 
-        // Section 6 writing box expanded to 450px
+        // Section 6 canvas set to 450px
         const writeBox = document.createElement('div');
-        writeBox.style.marginTop = '8px';
+        writeBox.style.marginTop = '10px';
         writeBox.innerHTML = inlineDualBlank('pq5', 450);
         container.appendChild(writeBox);
         setTimeout(setupDualCanvases, 40);
@@ -1217,7 +1237,7 @@
       renderPracticePlayground(4);
     }
 
-    /* WRITE MODE WITH REQUESTED EXPANDED WIDTHS */
+    /* WRITE MODE WITH EXPANDED REAL ESTATE */
     function renderWriteMode() {
       document.getElementById('bannerHeaderTamil').textContent = "கோடிட்ட இடங்களை நிரப்புக";
       document.getElementById('statusNoticeText').textContent = "விடைகளை அழகாகப் பெட்டிகளில் எழுதுக!";
@@ -1226,7 +1246,7 @@
       container.innerHTML = '';
 
       const scrollBox = document.createElement('div');
-      scrollBox.className = 'write-scroll-wrap';
+      scrollBox.className = 'write-mode-scrollbox';
 
       // Q1 (400px)
       scrollBox.innerHTML += `
@@ -1240,7 +1260,7 @@
       scrollBox.innerHTML += `
         <div class="write-question-card">
           <div class="write-stem-tamil">2. திருக்குறளின் மூன்று பிரிவுகள்:</div>
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
             <div>${inlineDualBlank('w2_a', 250)}</div>
             <div>${inlineDualBlank('w2_b', 250)}</div>
             <div>${inlineDualBlank('w2_c', 250)}</div>
@@ -1301,7 +1321,7 @@
       }
     }
 
-    /* VERIFY CHECK WITH INK EXISTENCE ENFORCEMENT */
+    /* VERIFY CHECK WITH INK EXISTENCE GUARD */
     function verifyActiveTask() {
       if (currentAppMode === 'write') {
         const required = ['w1', 'w2_a', 'w2_b', 'w2_c', 'w3', 'w4', 'w5', 'w6'];
@@ -1346,7 +1366,7 @@
 
     function triggerCelebration() {
       const stage = document.getElementById('celebrationStage');
-      stage.style.display = 'block';
+      stage.style.display = 'flex';
       speakText("அற்புதம் ஜைனா! வெற்றி!");
     }
 
