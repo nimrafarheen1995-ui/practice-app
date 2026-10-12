@@ -264,37 +264,46 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 8px 14px;
+      padding: 6px 12px;
       gap: 8px;
       position: relative;
       z-index: 15;
       overflow: hidden;
     }
 
-    /* OPTION 2: PALM-SCROLL BANNER PNG (RESTRICTED TO FIXED HEADER) */
-    .quest-header-banner {
+    /* PALM SCROLL BANNER (OCT10 STYLE WITH 90PX PADDING & BREAKOUT PARROT) */
+    .palm-scroll-banner-box {
       width: 100%;
-      height: 68px;
+      height: 74px;
       background: url('assets/palm-scroll-banner.png') no-repeat center center;
       background-size: 100% 100%;
-      filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.32));
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 0 54px; /* Protected inset past wooden dowels */
+      justify-content: center;
+      padding: 0 90px; /* Safe inset protecting wooden dowels */
+      filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
       flex-shrink: 0;
+      position: relative;
+      overflow: visible;
     }
-    .banner-question-title {
+    .banner-quest-title {
       font-family: var(--font-tamil);
-      font-size: clamp(1.15rem, 1.8vw, 1.45rem);
+      font-size: clamp(1.2rem, 1.8vw, 1.55rem);
       font-weight: 900;
-      color: #3C1904;
-      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.65);
+      color: #351804;
+      line-height: 1.2;
+      text-align: center;
+      flex: 1;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
     }
 
     .freely-floating-parrot-btn {
-      width: 54px;
-      height: 54px;
+      width: 84px;
+      height: 84px;
+      position: absolute;
+      right: 6px;
+      top: 50%;
+      transform: translateY(-50%);
       background: transparent;
       border: none;
       cursor: pointer;
@@ -302,9 +311,13 @@
       align-items: center;
       justify-content: center;
       transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
-      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
+      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.45));
+      flex-shrink: 0;
+      z-index: 10;
     }
-    .freely-floating-parrot-btn:active { transform: scale(0.9); }
+    .freely-floating-parrot-btn:active { 
+      transform: translateY(-50%) scale(0.92); 
+    }
     .parrot-sprite-img {
       width: 100%;
       height: 100%;
@@ -453,7 +466,7 @@
       line-height: 1.1;
     }
 
-    /* INLINE DUAL-LINE WRITING PAD */
+    /* INLINE DUAL-LINE WRITING PAD (RETINA SCALED) */
     .inline-blank-container {
       display: inline-flex;
       align-items: center;
@@ -614,7 +627,7 @@
     }
     .btn-verify-seal:active { transform: scale(0.96); }
 
-    /* OPTION 2: PALM-SCROLL BANNER PNG (RESTRICTED TO SELF-CHECK MODAL BOX) */
+    /* SELF-CHECK MODAL FOR WRITE EXAM */
     #selfCheckDialogStage {
       position: fixed;
       inset: 0;
@@ -659,7 +672,7 @@
       filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.25));
     }
 
-    /* COMPLETION PROGRESSION MODAL */
+    /* COMPLETION PROGRESSION MODAL (WITH TOP DISMISS BUTTON) */
     #progressDialogStage {
       position: fixed;
       inset: 0;
@@ -681,7 +694,19 @@
       gap: 14px;
       width: 90%;
       max-width: 440px;
-      box-shadow: 0 16px 45px rgba(0,0,0,0.5);
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+    .dialog-close-x {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      background: transparent;
+      border: none;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: #78350F;
+      font-weight: 900;
     }
 
     /* ASANA CELEBRATION FINALE */
@@ -782,9 +807,9 @@
     <!-- RIGHT DECK: WORKSPACE (TRANSPARENT, FLOATING) -->
     <section class="workspace-floating-plaque">
 
-      <!-- PALM-SCROLL BANNER PNG (RESTRICTED TO FIXED HEADER) -->
-      <div class="quest-header-banner">
-        <div class="banner-question-title" id="bannerHeaderTamil">குறள் 1</div>
+      <!-- PALM-SCROLL BANNER (OCT10 STYLE: CENTERED TEXT + BREAKOUT PARROT) -->
+      <div class="palm-scroll-banner-box">
+        <div class="banner-quest-title" id="bannerHeaderTamil">குறள் 1</div>
         <button type="button" class="freely-floating-parrot-btn" onclick="reciteKaraokeKural()" title="ஒலி">
           <img src="assets/mentor-parrot.png" class="parrot-sprite-img" alt="கிளி" onerror="handleImageFallback(this)" />
         </button>
@@ -822,19 +847,21 @@
     </div>
   </div>
 
-  <!-- PROGRESSION MODAL -->
+  <!-- PROGRESSION MODAL (WITH TOP DISMISS BUTTON) -->
   <div id="progressDialogStage">
     <div class="progress-dialog-card">
+      <button type="button" class="dialog-close-x" onclick="dismissProgressDialog()">✕</button>
       <div style="font-size:2.8rem;">✨</div>
       <div style="font-family:var(--font-tamil); font-size:1.45rem; font-weight:900; color:#92400E;">
         அற்புதம் ஜைனா! சரிபார்ப்பு முடிந்தது!
       </div>
-      <div style="font-family:var(--font-tamil); font-size:1.05rem; font-weight:700; color:#451A03;">
+      <div style="font-family:var(--font-tamil); font-size:1.05rem; font-weight:700; color:#451A03;" id="dialogPromptText">
         அடுத்த குறளுக்குச் செல்லவா?
       </div>
-      <div style="display:flex; justify-content:center; gap:12px; margin-top:6px;">
+      <div style="display:flex; justify-content:center; gap:10px; margin-top:6px; flex-wrap:wrap;">
         <button type="button" class="hud-btn" onclick="stepKuralProgression(-1)">⬅️ முந்தையது</button>
-        <button type="button" class="btn-verify-seal" style="padding:6px 20px; font-size:1.05rem;" onclick="stepKuralProgression(1)">அடுத்தது ➔</button>
+        <button type="button" class="hud-btn" style="background:#FEF3C7;" onclick="dismissProgressDialog()">இங்கேயே இரு</button>
+        <button type="button" class="btn-verify-seal" style="padding:6px 20px; font-size:1.05rem;" id="btnDialogNext" onclick="stepKuralProgression(1)">அடுத்தது ➔</button>
       </div>
     </div>
   </div>
@@ -937,7 +964,9 @@
       }
     }
 
+    /* SAFE SIDEBAR TOGGLE WITHOUT RESIZE INK WIPES */
     function toggleSidebarCollapse(forceState = null) {
+      saveAllCanvases();
       const stage = document.getElementById('masterStageContainer');
       const isCurrentlyCollapsed = stage.classList.contains('collapsed-sidebar');
       const targetState = forceState !== null ? forceState : !isCurrentlyCollapsed;
@@ -960,7 +989,7 @@
       img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><circle cx='60' cy='60' r='55' fill='%23FEF3C7' stroke='%23D97706' stroke-width='4'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='42'>🪷</text></svg>";
     }
 
-    /* MASTER INK ENGINE: CALIBRATED 1.8PX / 2.2PX TIP & PALM REJECTION */
+    /* RETINA DPR INK ENGINE WITH HARDWARE PALM REJECTION */
     const activeInkCache = {};
     const hasDrawnMap = {};
 
@@ -974,7 +1003,7 @@
         <span class="inline-blank-container">
           <span class="inline-canvas-wrapper" style="width:${width}px;">
             <span class="dual-lines-texture"></span>
-            <canvas class="dual-canvas" data-canvas-id="${id}" width="${width}" height="85"></canvas>
+            <canvas class="dual-canvas" data-canvas-id="${id}" data-logical-width="${width}" style="width:${width}px; height:85px;"></canvas>
           </span>
           <button type="button" class="inline-clear-btn" onclick="clearDualCanvas('${id}')" title="அழி">🧹</button>
         </span>
@@ -982,15 +1011,20 @@
     }
 
     function setupDualCanvases() {
+      const dpr = window.devicePixelRatio || 1;
       const canvasList = document.querySelectorAll(".dual-canvas");
+
       canvasList.forEach(c => {
         const id = c.getAttribute("data-canvas-id");
-        const bRect = c.parentElement.getBoundingClientRect();
-        c.width = Math.round(bRect.width) || 380;
-        c.height = 85;
+        const logicalW = parseInt(c.getAttribute("data-logical-width"), 10) || 380;
+        const logicalH = 85;
+
+        c.width = Math.round(logicalW * dpr);
+        c.height = Math.round(logicalH * dpr);
 
         const ctx = c.getContext("2d", { willReadFrequently: false });
-        ctx.clearRect(0, 0, c.width, c.height);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, logicalW, logicalH);
 
         const storageKey = getStorageKey(id);
         const cached = activeInkCache[storageKey] || localStorage.getItem(storageKey);
@@ -1000,8 +1034,9 @@
           hasDrawnMap[id] = true;
           const img = new Image();
           img.onload = () => {
-            ctx.clearRect(0, 0, c.width, c.height);
-            ctx.drawImage(img, 0, 0, c.width, c.height);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.clearRect(0, 0, logicalW, logicalH);
+            ctx.drawImage(img, 0, 0, logicalW, logicalH);
           };
           img.src = cached;
         }
@@ -1032,6 +1067,7 @@
           const currX = e.clientX - rect.left;
           const currY = e.clientY - rect.top;
 
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
           ctx.beginPath();
           ctx.moveTo(lastX, lastY);
           ctx.lineTo(currX, currY);
@@ -1086,7 +1122,9 @@
       const c = document.querySelector(`[data-canvas-id="${id}"]`);
       if (c) {
         const ctx = c.getContext("2d");
-        ctx.clearRect(0, 0, c.width, c.height);
+        const dpr = window.devicePixelRatio || 1;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, c.width / dpr, c.height / dpr);
         const key = getStorageKey(id);
         delete activeInkCache[key];
         hasDrawnMap[id] = false;
@@ -1436,7 +1474,7 @@
       renderTestPlayground(idx);
     }
 
-    /* WRITE EXAM: TWO-TIER 4+3 RULED SLATES */
+    /* WRITE EXAM: TWO-TIER 4+3 RULED SLATES (RETINA DPR SCALED) */
     function renderWriteExamPlayground(idx) {
       const k = KURALS_DATA[idx];
       const container = document.getElementById('stageContentBody');
@@ -1458,16 +1496,14 @@
           </div>
           <div class="exam-notebook-scroll-frame" id="notebookFrame_l1_${idx}">
             <svg class="notebook-double-rules" viewBox="0 0 1050 110" preserveAspectRatio="none">
-              <!-- Horizontal Guidelines -->
               <line x1="0" y1="26" x2="1050" y2="26" stroke="rgba(217, 119, 6, 0.45)" stroke-dasharray="4 4" stroke-width="1.5"/>
               <line x1="0" y1="58" x2="1050" y2="58" stroke="rgba(148, 163, 184, 0.6)" stroke-dasharray="4 4" stroke-width="1"/>
               <line x1="0" y1="92" x2="1050" y2="92" stroke="rgba(180, 83, 9, 0.85)" stroke-width="2.5"/>
-              <!-- Faint Foot Spacing Notches (4 Feet) -->
               <line x1="262" y1="0" x2="262" y2="110" stroke="rgba(217, 119, 6, 0.25)" stroke-dasharray="4 4" stroke-width="1"/>
               <line x1="525" y1="0" x2="525" y2="110" stroke="rgba(217, 119, 6, 0.25)" stroke-dasharray="4 4" stroke-width="1"/>
               <line x1="787" y1="0" x2="787" y2="110" stroke="rgba(217, 119, 6, 0.25)" stroke-dasharray="4 4" stroke-width="1"/>
             </svg>
-            <canvas class="notebook-exam-canvas" data-canvas-id="exam_l1_${idx}"></canvas>
+            <canvas class="notebook-exam-canvas" data-canvas-id="exam_l1_${idx}" data-logical-width="1050"></canvas>
           </div>
         </div>
 
@@ -1479,15 +1515,13 @@
           </div>
           <div class="exam-notebook-scroll-frame" id="notebookFrame_l2_${idx}">
             <svg class="notebook-double-rules" viewBox="0 0 1050 110" preserveAspectRatio="none">
-              <!-- Horizontal Guidelines -->
               <line x1="0" y1="26" x2="1050" y2="26" stroke="rgba(217, 119, 6, 0.45)" stroke-dasharray="4 4" stroke-width="1.5"/>
               <line x1="0" y1="58" x2="1050" y2="58" stroke="rgba(148, 163, 184, 0.6)" stroke-dasharray="4 4" stroke-width="1"/>
               <line x1="0" y1="92" x2="1050" y2="92" stroke="rgba(180, 83, 9, 0.85)" stroke-width="2.5"/>
-              <!-- Faint Foot Spacing Notches (3 Feet) -->
               <line x1="350" y1="0" x2="350" y2="110" stroke="rgba(217, 119, 6, 0.25)" stroke-dasharray="4 4" stroke-width="1"/>
               <line x1="700" y1="0" x2="700" y2="110" stroke="rgba(217, 119, 6, 0.25)" stroke-dasharray="4 4" stroke-width="1"/>
             </svg>
-            <canvas class="notebook-exam-canvas" data-canvas-id="exam_l2_${idx}"></canvas>
+            <canvas class="notebook-exam-canvas" data-canvas-id="exam_l2_${idx}" data-logical-width="1050"></canvas>
           </div>
         </div>
       `;
@@ -1497,15 +1531,21 @@
     }
 
     function setupNotebookCanvases() {
+      const dpr = window.devicePixelRatio || 1;
       const canvasList = document.querySelectorAll(".notebook-exam-canvas");
+
       canvasList.forEach(c => {
         const id = c.getAttribute("data-canvas-id");
         const bRect = c.parentElement.getBoundingClientRect();
-        c.width = Math.round(bRect.width) || 1050;
-        c.height = 110;
+        const logicalW = Math.round(bRect.width) || 1050;
+        const logicalH = 110;
+
+        c.width = Math.round(logicalW * dpr);
+        c.height = Math.round(logicalH * dpr);
 
         const ctx = c.getContext("2d", { willReadFrequently: false });
-        ctx.clearRect(0, 0, c.width, c.height);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, logicalW, logicalH);
 
         const storageKey = getStorageKey(id);
         const cached = activeInkCache[storageKey] || localStorage.getItem(storageKey);
@@ -1515,8 +1555,9 @@
           hasDrawnMap[id] = true;
           const img = new Image();
           img.onload = () => {
-            ctx.clearRect(0, 0, c.width, c.height);
-            ctx.drawImage(img, 0, 0, c.width, c.height);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.clearRect(0, 0, logicalW, logicalH);
+            ctx.drawImage(img, 0, 0, logicalW, logicalH);
           };
           img.src = cached;
         }
@@ -1547,6 +1588,7 @@
           const currX = e.clientX - rect.left;
           const currY = e.clientY - rect.top;
 
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
           ctx.beginPath();
           ctx.moveTo(lastX, lastY);
           ctx.lineTo(currX, currY);
@@ -1637,6 +1679,11 @@
             triggerAsanaCelebration();
           } else {
             speakText("அற்புதம் ஜைனா!");
+            const isLastKural = activeKuralIdx === 2;
+            document.getElementById('dialogPromptText').textContent = isLastKural 
+              ? "அனைத்து குறள்களையும் சரிபார்க்க முந்தைய பயிற்சிகளுக்குச் செல்லவா?" 
+              : "அடுத்த குறளுக்குச் செல்லவா?";
+            document.getElementById('btnDialogNext').style.display = isLastKural ? 'none' : 'inline-flex';
             document.getElementById('progressDialogStage').style.display = 'flex';
           }
           return;
@@ -1659,6 +1706,11 @@
           triggerAsanaCelebration();
         } else {
           speakText("அற்புதம் ஜைனா!");
+          const isLastKural = activeKuralIdx === 2;
+          document.getElementById('dialogPromptText').textContent = isLastKural 
+            ? "அனைத்து குறள்களையும் சரிபார்க்க முந்தைய பயிற்சிகளுக்குச் செல்லவா?" 
+            : "அடுத்த குறளுக்குச் செல்லவா?";
+          document.getElementById('btnDialogNext').style.display = isLastKural ? 'none' : 'inline-flex';
           document.getElementById('progressDialogStage').style.display = 'flex';
         }
       } else {
@@ -1666,8 +1718,12 @@
       }
     }
 
-    function stepKuralProgression(direction) {
+    function dismissProgressDialog() {
       document.getElementById('progressDialogStage').style.display = 'none';
+    }
+
+    function stepKuralProgression(direction) {
+      dismissProgressDialog();
       let nextIdx = (activeKuralIdx + direction + 3) % 3;
       switchKural(nextIdx);
     }
