@@ -825,7 +825,7 @@
       height: 76px;
       border-radius: 50%;
       background: #FFFFFF;
-      border: 2.5px solid var(--gold-primary);
+      border: 2px solid var(--gold-primary);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1324,6 +1324,14 @@
         lines: 3,
         height: 340
       }
+    ];
+
+    /* GLOBAL MCQ QUESTIONS CONFIGURATION */
+    const MCQ_QUESTIONS = [
+      { id: 'mcq1', stem1: '1. ', pink: 'வேட்டை+ ஆட', stem2: ' இச்சொற்களைச் சேர்த்து எழுதக் கிடைப்பது:', opts: ['வேட்டையட', 'வேட்டையாட', 'வேட்டைஆடு', 'வெட்டையாட'], ans: 'வேட்டையாட' },
+      { id: 'mcq2', stem1: '2. ', pink: 'உயர்வு', stem2: ' இச்சொல்லின் எதிர்ச்சொல்:', opts: ['பணிவு', 'கனிவு', 'தாழ்வு', 'துணிவு'], ans: 'தாழ்வு' },
+      { id: 'mcq3', stem1: '3. ', pink: 'ஏற்றுக்கொள்கிறோம்', stem2: ' என்று கூறியது யார்?', opts: ['மரங்கள்', 'விலங்குகள்', 'பறவைகள்', 'மனிதர்கள்'], ans: 'பறவைகள்' },
+      { id: 'mcq4', stem1: '4. ', pink: "'எந்த உணவும் கிடைக்கவில்லை'", stem2: ' என்று கூறியது:', opts: ['சிங்கம்', 'புலி', 'முயல்', 'மான்'], ans: 'சிங்கம்' }
     ];
 
     let activeModuleIdx = 0;
@@ -1907,17 +1915,15 @@
         container.appendChild(card);
 
       } else if (activeModuleIdx === 3) {
+        // MODULE 4: சரியான விடை (MCQ)
         const statusEl = document.getElementById('statusNoticeText');
-        if (statusEl) statusEl.textContent = "சரியான விடையைத் தொட்டு கீழே எழுதுக!";
+        if (statusEl) {
+          statusEl.textContent = (appMode === 'practice')
+            ? "சரியான விடையைத் தொட்டு கீழே எழுதுக!"
+            : "சுயமாக சரியான விடையைத் தேர்ந்தெடுத்து பெட்டியில் எழுதுக!";
+        }
 
-        const mcqQuestions = [
-          { id: 'mcq1', stem1: '1. ', pink: 'வேட்டை+ ஆட', stem2: ' இச்சொற்களைச் சேர்த்து எழுதக் கிடைப்பது:', opts: ['வேட்டையட', 'வேட்டையாட', 'வேட்டைஆடு', 'வெட்டையாட'], ans: 'வேட்டையாட' },
-          { id: 'mcq2', stem1: '2. ', pink: 'உயர்வு', stem2: ' இச்சொல்லின் எதிர்ச்சொல்:', opts: ['பணிவு', 'கனிவு', 'தாழ்வு', 'துணிவு'], ans: 'தாழ்வு' },
-          { id: 'mcq3', stem1: '3. ', pink: 'ஏற்றுக்கொள்கிறோம்', stem2: ' என்று கூறியது யார்?', opts: ['மரங்கள்', 'விலங்குகள்', 'பறவைகள்', 'மனிதர்கள்'], ans: 'பறவைகள்' },
-          { id: 'mcq4', stem1: '4. ', pink: "'எந்த உணவும் கிடைக்கவில்லை'", stem2: ' என்று கூறியது:', opts: ['சிங்கம்', 'புலி', 'முயல்', 'மான்'], ans: 'சிங்கம்' }
-        ];
-
-        mcqQuestions.forEach(q => {
+        MCQ_QUESTIONS.forEach(q => {
           const card = document.createElement('div');
           card.className = 'mcq-exercise-card';
           const selected = mcqChoices[q.id];
@@ -2139,7 +2145,7 @@
       renderCurrentExercise();
     }
 
-    /* ACCURATE GRADING */
+    /* ACCURATE GRADING WITH STRICT ANSWER & HANDWRITING VALIDATION */
     function verifyActiveTask() {
       saveAllCanvases();
       let isComplete = false;
@@ -2161,9 +2167,34 @@
         isComplete = (correctTicksCount === 6);
         scoreMessage = `6 / 6 எழுத்து வழக்குச் சொற்கள் சரி!`;
       } else if (activeModuleIdx === 3) {
-        const mcqDone = Object.keys(mcqChoices).length === 4;
-        isComplete = mcqDone;
-        scoreMessage = "4 / 4 வினாக்களுக்கும் சரியான தெரிவு!";
+        // MODULE 4: STRICT MCQ ANSWER & WRITING VALIDATION
+        const allAnswered = Object.keys(mcqChoices).length === MCQ_QUESTIONS.length;
+        const allCorrect = MCQ_QUESTIONS.every(q => mcqChoices[q.id] === q.ans);
+        const writingDone = MCQ_QUESTIONS.every(q => (loadVectorStrokes(q.id) || []).length > 0);
+
+        if (!allAnswered) {
+          audioFX.playVeena(240);
+          speakTamil("அனைத்து வினாக்களுக்கும் விடையளிக்கவும்!");
+          alert("⚠️ அனைத்து வினாக்களுக்கும் விடையளிக்கவும்!");
+          return;
+        }
+
+        if (!allCorrect) {
+          audioFX.playVeena(240);
+          speakTamil("சில விடைகள் தவறாக உள்ளன. சரிபார்த்து மீண்டும் தேர்ந்தெடுக்கவும்!");
+          alert("❌ சில விடைகள் தவறாக உள்ளன. சரிபார்த்து மீண்டும் தேர்ந்தெடுக்கவும்!");
+          return;
+        }
+
+        if (appMode === 'write' && !writingDone) {
+          audioFX.playVeena(240);
+          speakTamil("பெட்டிகளில் விடைகளை எழுதிய பின் சரிபார்க்கவும்!");
+          alert("⚠️ பெட்டிகளில் விடைகளை எழுதிய பின் சரிபார்க்கவும்!");
+          return;
+        }
+
+        isComplete = (appMode === 'practice') ? allCorrect : (allCorrect && writingDone);
+        scoreMessage = "4 / 4 வினாக்களுக்கும் மிகச் சரியான தெரிவு!";
       } else if (activeModuleIdx === 4) {
         isComplete = ['rid1', 'rid2', 'rid3'].every(id => (loadVectorStrokes(id) || []).length > 0);
         scoreMessage = "3 / 3 சொல் சேர்க்கைகளும் நிறைவு!";
