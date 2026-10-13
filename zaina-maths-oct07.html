@@ -4,8 +4,18 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
 <title>Zaina's Magical Maths Adventure: Decimals</title>
+
+<!-- Hardware & Video Acceleration Preloads -->
+<link rel="preload" href="assets/twilight.mp4" as="video" type="video/mp4">
+<link rel="preload" href="assets/twilight.png" as="image">
+<link rel="preload" href="assets/rarity.png" as="image">
+<link rel="preload" href="assets/pinkie.png" as="image">
+<link rel="preload" href="assets/rainbow.png" as="image">
+<link rel="preload" href="assets/fluttershy.png" as="image">
+<link rel="preload" href="assets/applejack.png" as="image">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800&family=Quicksand:wght@600;700;800&family=Kalam:wght@700&family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
 
 <style>
@@ -19,11 +29,15 @@
   --flutter: #EAB308;
   --rarity: #9333EA;
   --applejack: #F97316;
-  --luna: #1E1B4B;
-  --celestia: #F59E0B;
   --font-main: 'Quicksand', sans-serif;
   --font-display: 'Fredoka', cursive, sans-serif;
   --font-hand: 'Kalam', cursive, sans-serif;
+
+  /* Samsung Edge Cutout & Safe-Area Insets */
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --sal: env(safe-area-inset-left, 0px);
+  --sar: env(safe-area-inset-right, 0px);
 }
 
 * {
@@ -40,6 +54,10 @@ html, body {
   overflow: hidden;
   background: #0B0F19;
   color: #1E1B4B;
+  /* 120Hz Hardware Acceleration for Samsung Dynamic AMOLED */
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 body {
@@ -60,6 +78,7 @@ body {
   position: fixed;
   inset: 0;
   pointer-events: none;
+  will-change: transform;
 }
 #milkyWayCanvas { z-index: 1; }
 #confettiSnowCanvas { z-index: 99999; }
@@ -235,7 +254,10 @@ body {
   max-width: 1440px;
   margin: 0 auto;
   width: 100%;
-  padding: 8px 14px;
+  padding-top: max(8px, var(--sat));
+  padding-bottom: max(8px, var(--sab));
+  padding-left: max(14px, var(--sal));
+  padding-right: max(14px, var(--sar));
   gap: 6px;
 }
 
@@ -308,6 +330,7 @@ header {
   position: relative;
   align-items: center;
   justify-content: center;
+  will-change: transform;
 }
 
 /* RIGHT-DOCKED TRAY LAYOUT */
@@ -337,6 +360,7 @@ header {
   overflow: hidden;
   pointer-events: none;
   z-index: 1;
+  background: #0F172A;
 }
 .menu-video-backdrop {
   width: 100%;
@@ -344,6 +368,7 @@ header {
   object-fit: cover;
   object-position: center center;
   filter: brightness(0.9) contrast(1.05);
+  will-change: transform;
 }
 .menu-video-tint {
   position: absolute;
@@ -377,7 +402,7 @@ header {
   max-width: 430px;
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 8px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
   max-height: calc(100vh - 110px);
   overflow-y: auto;
@@ -387,12 +412,12 @@ header {
 
 /* TRANSLUCENT GLASS BUTTONS */
 .hub-item-row {
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   border: 1.5px solid rgba(255, 255, 255, 0.85);
   border-radius: 15px;
-  padding: 8px 12px;
+  padding: 9px 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -483,14 +508,6 @@ header {
   background: radial-gradient(circle at 80% 20%, rgba(253, 186, 116, 0.4) 0%, transparent 45%),
               linear-gradient(135deg, #7C2D12 0%, #9A3412 50%, #431407 100%) !important;
 }
-.scene-luna {
-  background: radial-gradient(circle at 85% 15%, rgba(129, 140, 248, 0.35) 0%, transparent 45%),
-              linear-gradient(135deg, #030712 0%, #0F172A 50%, #1E1B4B 100%) !important;
-}
-.scene-celestia {
-  background: radial-gradient(circle at 85% 15%, rgba(253, 230, 138, 0.45) 0%, transparent 45%),
-              linear-gradient(135deg, #78350F 0%, #92400E 50%, #F59E0B 100%) !important;
-}
 
 .exercise-backdrop-watermark {
   position: absolute;
@@ -517,7 +534,7 @@ header {
   filter: drop-shadow(0 0 25px rgba(255,255,255,0.5));
 }
 
-/* 9 HOPPING CHARACTERS ACROSS HEADER */
+/* 6 CORE HOPPING CHARACTERS ACROSS HEADER */
 .header-mascot-container {
   flex: 1;
   display: flex;
@@ -542,51 +559,36 @@ header {
   padding: 0;
   filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 20px rgba(250, 204, 21, 0.8));
 }
-.header-mascot-wrapper:nth-child(1) { animation: hop9_1 3.2s infinite ease-in-out; }
-.header-mascot-wrapper:nth-child(2) { animation: hop9_2 3.6s infinite ease-in-out; animation-delay: 0.4s; }
-.header-mascot-wrapper:nth-child(3) { animation: hop9_3 3.4s infinite ease-in-out; animation-delay: 0.8s; }
-.header-mascot-wrapper:nth-child(4) { animation: hop9_4 3.8s infinite ease-in-out; animation-delay: 1.2s; }
-.header-mascot-wrapper:nth-child(5) { animation: hop9_5 3.3s infinite ease-in-out; animation-delay: 1.6s; }
-.header-mascot-wrapper:nth-child(6) { animation: hop9_6 3.7s infinite ease-in-out; animation-delay: 2.0s; }
-.header-mascot-wrapper:nth-child(7) { animation: hop9_7 3.5s infinite ease-in-out; animation-delay: 2.4s; }
-.header-mascot-wrapper:nth-child(8) { animation: hop9_8 3.9s infinite ease-in-out; animation-delay: 2.8s; }
-.header-mascot-wrapper:nth-child(9) { animation: hop9_9 3.4s infinite ease-in-out; animation-delay: 3.2s; }
+.header-mascot-wrapper:nth-child(1) { animation: hop6_1 3.2s infinite ease-in-out; }
+.header-mascot-wrapper:nth-child(2) { animation: hop6_2 3.6s infinite ease-in-out; animation-delay: 0.4s; }
+.header-mascot-wrapper:nth-child(3) { animation: hop6_3 3.4s infinite ease-in-out; animation-delay: 0.8s; }
+.header-mascot-wrapper:nth-child(4) { animation: hop6_4 3.8s infinite ease-in-out; animation-delay: 1.2s; }
+.header-mascot-wrapper:nth-child(5) { animation: hop6_5 3.3s infinite ease-in-out; animation-delay: 1.6s; }
+.header-mascot-wrapper:nth-child(6) { animation: hop6_6 3.7s infinite ease-in-out; animation-delay: 2.0s; }
 
-@keyframes hop9_1 {
-  0%, 100% { transform: translateY(0) scale(1) translateX(-180px) rotate(0deg); }
-  50% { transform: translateY(-20px) scale(1.1) translateX(-160px) rotate(-6deg); }
+@keyframes hop6_1 {
+  0%, 100% { transform: translateY(0) scale(1) translateX(-150px) rotate(0deg); }
+  50% { transform: translateY(-20px) scale(1.1) translateX(-130px) rotate(-6deg); }
 }
-@keyframes hop9_2 {
-  0%, 100% { transform: translateY(0) scale(1) translateX(-135px) rotate(0deg); }
-  50% { transform: translateY(-24px) scale(1.12) translateX(-115px) rotate(6deg); }
-}
-@keyframes hop9_3 {
+@keyframes hop6_2 {
   0%, 100% { transform: translateY(0) scale(1) translateX(-90px) rotate(0deg); }
-  50% { transform: translateY(-18px) scale(1.08) translateX(-70px) rotate(-5deg); }
+  50% { transform: translateY(-24px) scale(1.12) translateX(-70px) rotate(6deg); }
 }
-@keyframes hop9_4 {
-  0%, 100% { transform: translateY(0) scale(1) translateX(-45px) rotate(0deg); }
-  50% { transform: translateY(-22px) scale(1.1) translateX(-25px) rotate(5deg); }
+@keyframes hop6_3 {
+  0%, 100% { transform: translateY(0) scale(1) translateX(-30px) rotate(0deg); }
+  50% { transform: translateY(-18px) scale(1.08) translateX(-10px) rotate(-5deg); }
 }
-@keyframes hop9_5 {
-  0%, 100% { transform: translateY(0) scale(1) translateX(0px) rotate(0deg); }
-  50% { transform: translateY(-25px) scale(1.13) translateX(15px) rotate(-6deg); }
+@keyframes hop6_4 {
+  0%, 100% { transform: translateY(0) scale(1) translateX(30px) rotate(0deg); }
+  50% { transform: translateY(-22px) scale(1.1) translateX(50px) rotate(5deg); }
 }
-@keyframes hop9_6 {
-  0%, 100% { transform: translateY(0) scale(1) translateX(45px) rotate(0deg); }
-  50% { transform: translateY(-20px) scale(1.09) translateX(65px) rotate(6deg); }
-}
-@keyframes hop9_7 {
+@keyframes hop6_5 {
   0%, 100% { transform: translateY(0) scale(1) translateX(90px) rotate(0deg); }
-  50% { transform: translateY(-24px) scale(1.12) translateX(110px) rotate(-5deg); }
+  50% { transform: translateY(-25px) scale(1.13) translateX(110px) rotate(-6deg); }
 }
-@keyframes hop9_8 {
-  0%, 100% { transform: translateY(0) scale(1) translateX(135px) rotate(0deg); }
-  50% { transform: translateY(-19px) scale(1.08) translateX(150px) rotate(6deg); }
-}
-@keyframes hop9_9 {
-  0%, 100% { transform: translateY(0) scale(1) translateX(180px) rotate(0deg); }
-  50% { transform: translateY(-23px) scale(1.11) translateX(200px) rotate(-5deg); }
+@keyframes hop6_6 {
+  0%, 100% { transform: translateY(0) scale(1) translateX(150px) rotate(0deg); }
+  50% { transform: translateY(-20px) scale(1.09) translateX(170px) rotate(6deg); }
 }
 
 .header-mascot-img {
@@ -725,11 +727,6 @@ header {
   height: 32px;
   font-size: 0.98rem;
 }
-.pony-input-blank.inline-whole {
-  min-width: 50px;
-  max-width: 65px;
-  margin-right: 4px;
-}
 .pony-input-blank.standard-blank {
   min-width: 120px;
   max-width: 210px;
@@ -851,54 +848,6 @@ header {
   filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
 }
 
-.strip-table-wrapper {
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  background: #FFFFFF;
-  border-radius: 16px;
-  padding: 12px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-  border: 3px solid #38BDF8;
-}
-.strip-table {
-  width: 100%;
-  min-width: 540px;
-  border-collapse: collapse;
-}
-.strip-table th {
-  background: #F0F9FF;
-  padding: 10px;
-  font-size: 0.95rem;
-  font-weight: 800;
-  color: #0369A1;
-  border: 2px solid #0EA5E9;
-}
-.strip-table td {
-  padding: 10px;
-  border: 2px solid #0EA5E9;
-  vertical-align: middle;
-  text-align: center;
-  background: #FFFFFF;
-}
-.strip-bar-visual {
-  display: inline-flex;
-  border: 3px solid #1E293B;
-  border-radius: 6px;
-  overflow: hidden;
-  height: 26px;
-  width: 180px;
-  max-width: 100%;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-.strip-cell {
-  flex: 1;
-  border-right: 2px solid #1E293B;
-  background: #FFFFFF;
-}
-.strip-cell:last-child { border-right: none; }
-.strip-cell.shaded { background: #C084FC; }
-
 .quest-finish-bar {
   display: flex;
   justify-content: space-between;
@@ -927,9 +876,7 @@ header {
 }
 .quest-finish-btn:active { transform: scale(0.96); }
 
-/* ==========================================================
-   UPGRADED TACTICAL ROUGH PAD (WITH NOTEPAD TOOLBAR)
-========================================================== */
+/* FLOATING ROUGH PAD WITH S-PEN PALM REJECTION */
 .floating-rough-pad {
   position: fixed;
   top: 70px;
@@ -1095,7 +1042,7 @@ header {
 <canvas id="milkyWayCanvas"></canvas>
 <canvas id="confettiSnowCanvas"></canvas>
 
-<!-- GRAND CELEBRATION STAGE (HUMAYUN STYLE) -->
+<!-- GRAND CELEBRATION STAGE -->
 <div id="grandCelebrationStage">
   <canvas id="grandFinaleCanvas"></canvas>
 
@@ -1154,7 +1101,7 @@ header {
   <div class="views-container">
     <section id="chapterMenuView">
       <div class="menu-video-backdrop-wrap">
-        <video id="menuBackdropVideo" class="menu-video-backdrop" autoplay loop muted playsinline preload="auto" onerror="this.parentElement.style.display='none'">
+        <video id="menuBackdropVideo" class="menu-video-backdrop" autoplay loop muted playsinline webkit-playsinline disableremoteplayback disablepictureinpicture preload="auto" onerror="this.parentElement.style.display='none'">
           <source src="assets/twilight.mp4" type="video/mp4"/>
         </video>
         <div class="menu-video-tint"></div>
@@ -1227,28 +1174,6 @@ header {
           </div>
           <img src="assets/applejack.png" class="hub-pony-avatar" alt="Applejack" onerror="handleImageFallback(this)"/>
         </div>
-
-        <div class="hub-item-row" onclick="startQuestDirectly(6)">
-          <div class="hub-item-left">
-            <span class="hub-cutie-icon">🌙</span>
-            <div class="hub-item-text">
-              <span class="hub-item-title">Ex 5.2 — 1. 10-Block Strip Models</span>
-              <span class="hub-item-sub">Princess Luna</span>
-            </div>
-          </div>
-          <img src="assets/luna.png" class="hub-pony-avatar" alt="Princess Luna" onerror="handleImageFallback(this)"/>
-        </div>
-
-        <div class="hub-item-row" onclick="startQuestDirectly(7)">
-          <div class="hub-item-left">
-            <span class="hub-cutie-icon">☀️</span>
-            <div class="hub-item-text">
-              <span class="hub-item-title">Ex 5.2 — 2. Convert Decimals to Fractions</span>
-              <span class="hub-item-sub">Princess Celestia</span>
-            </div>
-          </div>
-          <img src="assets/celestia.png" class="hub-pony-avatar" alt="Princess Celestia" onerror="handleImageFallback(this)"/>
-        </div>
       </div>
     </section>
 
@@ -1262,7 +1187,7 @@ header {
           <div class="window-sub" id="bannerSub">Hosted by Twilight Sparkle</div>
         </div>
 
-        <!-- 9 MASCOTS HOPPING ACROSS HEADER -->
+        <!-- HOPPING MASCOTS ACROSS HEADER -->
         <div class="header-mascot-container">
           <div class="header-mascot-wrapper" onclick="triggerPixieDustBurst(event)"><img src="assets/twilight.png" class="header-mascot-img" alt="Twilight" onerror="handleImageFallback(this)"/></div>
           <div class="header-mascot-wrapper" onclick="triggerPixieDustBurst(event)"><img src="assets/rarity.png" class="header-mascot-img" alt="Rarity" onerror="handleImageFallback(this)"/></div>
@@ -1270,8 +1195,6 @@ header {
           <div class="header-mascot-wrapper" onclick="triggerPixieDustBurst(event)"><img src="assets/rainbow.png" class="header-mascot-img" alt="Rainbow" onerror="handleImageFallback(this)"/></div>
           <div class="header-mascot-wrapper" onclick="triggerPixieDustBurst(event)"><img src="assets/fluttershy.png" class="header-mascot-img" alt="Fluttershy" onerror="handleImageFallback(this)"/></div>
           <div class="header-mascot-wrapper" onclick="triggerPixieDustBurst(event)"><img src="assets/applejack.png" class="header-mascot-img" alt="Applejack" onerror="handleImageFallback(this)"/></div>
-          <div class="header-mascot-wrapper" onclick="triggerPixieDustBurst(event)"><img src="assets/luna.png" class="header-mascot-img" alt="Luna" onerror="handleImageFallback(this)"/></div>
-          <div class="header-mascot-wrapper" onclick="triggerPixieDustBurst(event)"><img src="assets/celestia.png" class="header-mascot-img" alt="Celestia" onerror="handleImageFallback(this)"/></div>
         </div>
 
         <div style="display:flex; align-items:center; gap:12px; z-index:5;">
@@ -1292,7 +1215,7 @@ header {
   </div>
 </div>
 
-<!-- UPGRADED FLOATING ROUGH PAD -->
+<!-- FLOATING ROUGH PAD -->
 <div class="floating-rough-pad" id="floatingRoughPad">
   <div class="rough-header" id="roughHeader">
     <div class="rough-title">📝 Rough Pad</div>
@@ -1324,6 +1247,28 @@ header {
 </div>
 
 <script>
+/* INSTANT ASSET CACHE INJECTION */
+const PONY_ASSET_CACHE = ['assets/twilight.png', 'assets/rarity.png', 'assets/pinkie.png', 'assets/rainbow.png', 'assets/fluttershy.png', 'assets/applejack.png'];
+PONY_ASSET_CACHE.forEach(src => {
+  const img = new Image();
+  img.src = src;
+});
+
+// Immediate low-latency trigger for background video
+window.addEventListener('DOMContentLoaded', () => {
+  const video = document.getElementById("menuBackdropVideo");
+  if (video) {
+    video.load();
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        // Autoplay policy fallback (start on first user interaction)
+        window.addEventListener('pointerdown', () => video.play(), { once: true });
+      });
+    }
+  }
+});
+
 let selectedSectionIdx = 0;
 
 function handleImageFallback(imgEl) {
@@ -1331,7 +1276,7 @@ function handleImageFallback(imgEl) {
   imgEl.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><circle cx='60' cy='60' r='56' fill='%23EDE9FE' stroke='%23C4B5FD' stroke-width='4'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='56'>🦄</text></svg>";
 }
 
-/* CELEBRATORY PROCEDURAL SOUND EFFECTS */
+/* SOUND EFFECTS */
 let audioCtx = null;
 function getAudioContext() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1550,9 +1495,7 @@ function updateSnow() {
   }
 }
 
-/* ==========================================================
-   GRAND CELEBRATION FINALE STAGE
-========================================================== */
+/* CELEBRATION FINALE STAGE */
 const grandStage = document.getElementById("grandCelebrationStage");
 const grandCanvas = document.getElementById("grandFinaleCanvas");
 const grandCtx = grandCanvas.getContext("2d", { alpha: true });
@@ -1734,9 +1677,7 @@ function closeGrandCelebration() {
   returnToChapterMenu();
 }
 
-/* ==========================================================
-   MATH CHECKING ENGINE
-========================================================== */
+/* MATH CHECKING ENGINE */
 function checkMathAnswersMatch(entered, targetAllowedStr, formatRule = "any") {
   if (!entered || !targetAllowedStr) return false;
   const cleanEntered = entered.trim().toLowerCase().replace(/\s+/g, ' ');
@@ -1807,21 +1748,15 @@ function handleDirectInput(inputEl) {
 }
 
 function validateCompositeSlot(slotEl) {
-  const wholeInp = slotEl.querySelector('.inline-whole');
   const numInp = slotEl.querySelector('.frac-num');
   const denInp = slotEl.querySelector('.frac-den');
 
-  const wholeVal = wholeInp ? wholeInp.value.trim() : "";
   const numVal = numInp ? numInp.value.trim() : "";
   const denVal = denInp ? denInp.value.trim() : "";
 
   let combined = "";
-  if (wholeVal && numVal && denVal) {
-    combined = `${wholeVal} ${numVal}/${denVal}`;
-  } else if (numVal && denVal) {
+  if (numVal && denVal) {
     combined = `${numVal}/${denVal}`;
-  } else if (wholeVal && !numVal && !denVal) {
-    combined = wholeVal;
   }
 
   const correct = slotEl.getAttribute('data-correct') || "";
@@ -1861,21 +1796,15 @@ function completeCurrentExerciseQuest() {
   });
 
   document.querySelectorAll('#exerciseScrollBody .bracket-frac-slot').forEach(slotEl => {
-    const wholeInp = slotEl.querySelector('.inline-whole');
     const numInp = slotEl.querySelector('.frac-num');
     const denInp = slotEl.querySelector('.frac-den');
 
-    const wholeVal = wholeInp ? wholeInp.value.trim() : "";
     const numVal = numInp ? numInp.value.trim() : "";
     const denVal = denInp ? denInp.value.trim() : "";
 
     let combined = "";
-    if (wholeVal && numVal && denVal) {
-      combined = `${wholeVal} ${numVal}/${denVal}`;
-    } else if (numVal && denVal) {
+    if (numVal && denVal) {
       combined = `${numVal}/${denVal}`;
-    } else if (wholeVal && !numVal && !denVal) {
-      combined = wholeVal;
     }
 
     const correct = slotEl.getAttribute('data-correct') || "";
@@ -1912,14 +1841,12 @@ function toggleScreenDim() {
   btn.textContent = isDim ? "💡 Dim" : "☀️ Bright";
 }
 
-function stackedFractionSlotHtml(idBase, correctVal, formatRule = "any", withWhole = false) {
-  const savedWhole = withWhole ? (localStorage.getItem(storageKeyForId(idBase + '_w')) || "") : "";
+function stackedFractionSlotHtml(idBase, correctVal, formatRule = "any") {
   const savedNum = localStorage.getItem(storageKeyForId(idBase + '_n')) || "";
   const savedDen = localStorage.getItem(storageKeyForId(idBase + '_d')) || "";
 
   return `
     <span class="bracket-frac-slot" data-id="${idBase}" data-correct="${correctVal}" data-format="${formatRule}">
-      ${withWhole ? `<input type="text" inputmode="text" class="pony-input-blank inline-whole" id="input_${idBase}_w" data-id="${idBase}_w" value="${savedWhole}" placeholder="W" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="handleDirectInput(this)">` : ''}
       <span class="bracket-bracket">[</span>
       <span class="stacked-inputs-column">
         <input type="text" inputmode="text" class="pony-input-blank frac-num" id="input_${idBase}_n" data-id="${idBase}_n" value="${savedNum}" placeholder="Num" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="handleDirectInput(this)">
@@ -1962,10 +1889,7 @@ const CLASSWORK_NOTEBOOK_STEPS = {
   "note_q7_a": `7. a. 400 + 50 + 8 + ${frac(2, 10)} + ${frac(1, 100)} + ${frac(8, 1000)}<br/>Solution:<br/>&nbsp;&nbsp;&nbsp;&nbsp;458.218`,
   "note_q7_b": `7. b. 6000 + 20 + 1 + ${frac(358, 1000)}<br/>Solution:<br/>&nbsp;&nbsp;&nbsp;&nbsp;6021.358`,
   "note_q7_c": `7. c. 100 + 4 + ${frac(9, 10)} + ${frac(5, 100)}<br/>Solution:<br/>&nbsp;&nbsp;&nbsp;&nbsp;104.95`,
-  "note_q7_d": `7. d. ${frac(8, 100)} + ${frac(1, 1000)}<br/>Solution:<br/>&nbsp;&nbsp;&nbsp;&nbsp;0.081`,
-  "note_52_d": `Ex 5.2 — 2. d. 98.089<br/>Solution:<br/>= 98 ${frac(89, 1000)} (or) = ${frac(98089, 1000)}`,
-  "note_52_e": `Ex 5.2 — 2. e. 3.777<br/>Solution:<br/>= 3 ${frac(777, 1000)} (or) = ${frac(3777, 1000)}`,
-  "note_52_f": `Ex 5.2 — 2. f. 4.19<br/>Solution:<br/>= 4 ${frac(19, 100)} (or) = ${frac(419, 100)}`
+  "note_q7_d": `7. d. ${frac(8, 100)} + ${frac(1, 1000)}<br/>Solution:<br/>&nbsp;&nbsp;&nbsp;&nbsp;0.081`
 };
 
 function openNotebookPopup(key, headerTitle) {
@@ -2135,7 +2059,7 @@ const SECTIONS_DATA = [
     `
   },
 
-  /* 5: Ex 5.1 Q7 — APPLEJACK */
+  /* 5: Ex 5.1 Q7 */
   {
     title: "Exercise 5.1 — 7. Write in Decimal Form",
     ponyName: "Applejack",
@@ -2164,98 +2088,6 @@ const SECTIONS_DATA = [
         <div class="problem-q-text">
           <b>d.</b> ${frac(8, 100)} + ${frac(1, 1000)} = ${inputBlankHtml('e51_q7_d', '0.081|.081')}
           <button class="notebook-peek-btn" onclick="openNotebookPopup('note_q7_d', 'Ex 5.1 — Q7. d')" title="Teacher Reference Note">📓</button>
-        </div>
-      </div>
-    `
-  },
-
-  /* 6: Ex 5.2 Q1 — PRINCESS LUNA */
-  {
-    title: "Exercise 5.2 — 1. 10-Block Strip Models",
-    ponyName: "Princess Luna",
-    avatar: "assets/luna.png",
-    sceneClass: "scene-luna",
-    render: () => {
-      const strips = [
-        { row: 1, shaded: 4, f: '4/10|2/5', d: '0.4|.4' },
-        { row: 2, shaded: 1, f: '1/10', d: '0.1|.1' },
-        { row: 3, shaded: 3, f: '3/10', d: '0.3|.3' },
-        { row: 4, shaded: 4, f: '4/10|2/5', d: '0.4|.4' },
-        { row: 5, shaded: 0, f: '0/10|0', d: '0.0|0|.0' },
-        { row: 6, shaded: 2, f: '2/10|1/5', d: '0.2|.2' },
-        { row: 7, shaded: 8, f: '8/10|4/5', d: '0.8|.8' },
-        { row: 8, shaded: 4, f: '4/10|2/5', d: '0.4|.4' },
-        { row: 9, shaded: 9, f: '9/10', d: '0.9|.9' },
-        { row: 10, shaded: 6, f: '6/10|3/5', d: '0.6|.6' }
-      ];
-
-      return `
-        <div class="strip-table-wrapper">
-          <table class="strip-table">
-            <thead>
-              <tr>
-                <th style="width:40px;">Row</th>
-                <th>10-Block Strip Model</th>
-                <th>Fraction Slot</th>
-                <th>Decimal</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${strips.map(s => {
-                let cells = "";
-                for (let i = 0; i < 10; i++) {
-                  cells += `<div class="strip-cell ${i < s.shaded ? 'shaded' : ''}"></div>`;
-                }
-                return `
-                  <tr>
-                    <td><b>${s.row}</b></td>
-                    <td><div class="strip-bar-visual">${cells}</div></td>
-                    <td>${stackedFractionSlotHtml('strip_f_' + s.row, s.f)}</td>
-                    <td>${inputBlankHtml('strip_d_' + s.row, s.d)}</td>
-                  </tr>
-                `;
-              }).join("")}
-            </tbody>
-          </table>
-        </div>
-      `;
-    }
-  },
-
-  /* 7: Ex 5.2 Q2 — PRINCESS CELESTIA */
-  {
-    title: "Exercise 5.2 — 2. Convert Decimals to Fractions",
-    ponyName: "Princess Celestia",
-    avatar: "assets/celestia.png",
-    sceneClass: "scene-celestia",
-    render: () => `
-      <div style="display:flex; flex-direction:column; gap:10px;">
-        <div class="problem-card">
-          <div class="problem-q-text"><b>a. 3.89</b> &nbsp;→&nbsp; Mixed: ${stackedFractionSlotHtml('e52_q2_a_mix', '3 89/100', 'mixed', true)} &nbsp;or&nbsp; Imp: ${stackedFractionSlotHtml('e52_q2_a_imp', '389/100', 'improper', false)}</div>
-        </div>
-        <div class="problem-card">
-          <div class="problem-q-text"><b>b. 5.907</b> &nbsp;→&nbsp; Mixed: ${stackedFractionSlotHtml('e52_q2_b_mix', '5 907/1000', 'mixed', true)} &nbsp;or&nbsp; Imp: ${stackedFractionSlotHtml('e52_q2_b_imp', '5907/1000', 'improper', false)}</div>
-        </div>
-        <div class="problem-card">
-          <div class="problem-q-text"><b>c. 4.006</b> &nbsp;→&nbsp; Mixed: ${stackedFractionSlotHtml('e52_q2_c_mix', '4 6/1000|4 3/500', 'mixed', true)} &nbsp;or&nbsp; Imp: ${stackedFractionSlotHtml('e52_q2_c_imp', '4006/1000|2003/500', 'improper', false)}</div>
-        </div>
-        <div class="problem-card">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div class="problem-q-text"><b>d. 98.089</b> &nbsp;→&nbsp; Mixed: ${stackedFractionSlotHtml('e52_q2_d_mix', '98 89/1000', 'mixed', true)} &nbsp;or&nbsp; Imp: ${stackedFractionSlotHtml('e52_q2_d_imp', '98089/1000', 'improper', false)}</div>
-            <button class="notebook-peek-btn" onclick="openNotebookPopup('note_52_d', 'Ex 5.2 — Q2. d. 98.089')" title="Teacher Reference Note">📓</button>
-          </div>
-        </div>
-        <div class="problem-card">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div class="problem-q-text"><b>e. 3.777</b> &nbsp;→&nbsp; Mixed: ${stackedFractionSlotHtml('e52_q2_e_mix', '3 777/1000', 'mixed', true)} &nbsp;or&nbsp; Imp: ${stackedFractionSlotHtml('e52_q2_e_imp', '3777/1000', 'improper', false)}</div>
-            <button class="notebook-peek-btn" onclick="openNotebookPopup('note_52_e', 'Ex 5.2 — Q2. e. 3.777')" title="Teacher Reference Note">📓</button>
-          </div>
-        </div>
-        <div class="problem-card">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div class="problem-q-text"><b>f. 4.19</b> &nbsp;→&nbsp; Mixed: ${stackedFractionSlotHtml('e52_q2_f_mix', '4 19/100', 'mixed', true)} &nbsp;or&nbsp; Imp: ${stackedFractionSlotHtml('e52_q2_f_imp', '419/100', 'improper', false)}</div>
-            <button class="notebook-peek-btn" onclick="openNotebookPopup('note_52_f', 'Ex 5.2 — Q2. f. 4.19')" title="Teacher Reference Note">📓</button>
-          </div>
         </div>
       </div>
     `
@@ -2298,9 +2130,7 @@ function switchSection(idx, doSave = true) {
   document.getElementById("exerciseScrollBody").innerHTML = sec.render();
 }
 
-/* ==========================================================
-   UPGRADED ROUGH PAD ENGINE WITH TOOLBAR & PALM REJECTION
-========================================================== */
+/* ROUGH PAD WITH S-PEN PALM REJECTION */
 let roughCanvas = null;
 let roughCtx = null;
 let roughIsDrawing = false;
