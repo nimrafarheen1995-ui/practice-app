@@ -5,11 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>ஹுமாயூன் - தமிழ் வகுப்பேடு: பாடம் 1 ஒன்றுபட்டால் உண்டு வாழ்வு</title>
 
-  <!-- HIGH-PRIORITY HARDWARE ASSET PRELOADS -->
-  <link rel="preload" as="image" href="assets/forest-bg.png" fetchpriority="high" />
-  <link rel="preload" as="image" href="assets/mentor-parrot.png" fetchpriority="high" />
-  <link rel="preload" as="image" href="assets/palm-scroll-banner.png" fetchpriority="high" />
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Arima:wght@600;700;800&family=Mukta+Malar:wght@600;700;800;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
@@ -152,17 +147,14 @@
       color: #15803D;
     }
 
-    /* MASTER FRAMED STAGE WITH INSTANT DECOMPRESSION */
+    /* MASTER FRAMED STAGE */
     .master-forest-stage {
       flex: 1;
       position: relative;
       border: 4px solid #5A3C22;
       border-radius: 22px;
       overflow: hidden;
-      background-color: #110B07;
-      background-image: url('assets/forest-bg.png');
-      background-repeat: no-repeat;
-      background-position: center center;
+      background: #110B07 url('assets/forest-bg.png') no-repeat center center;
       background-size: cover;
       box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85);
       display: grid;
@@ -283,7 +275,7 @@
       text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
     }
 
-    /* 210PX FLOATING PARROT BUTTON */
+    /* 210PX FLOATING PARROT */
     .freely-floating-parrot-btn {
       width: 120px;
       height: 210px;
@@ -525,7 +517,7 @@
       line-height: 1.2;
     }
 
-    /* INK WRITING ROW */
+    /* INK WRITING ROW (SECTIONS 1, 4, 5, 6) */
     .ink-writing-row {
       display: flex;
       align-items: center;
@@ -816,7 +808,7 @@
       height: 76px;
       border-radius: 50%;
       background: #FFFFFF;
-      border: 2.5px solid var(--gold-primary);
+      border: 2px solid var(--gold-primary);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1063,6 +1055,23 @@
   </div>
 
   <script>
+    /* CRASH-PROOF STORAGE SHIELD (HANDLES SANDBOXED HUB IFRAMES) */
+    const memoryStorageFallback = {};
+    function safeStorageGet(key) {
+      try {
+        return localStorage.getItem(key);
+      } catch (e) {
+        return memoryStorageFallback[key] || null;
+      }
+    }
+    function safeStorageSet(key, val) {
+      try {
+        localStorage.setItem(key, val);
+      } catch (e) {
+        memoryStorageFallback[key] = val;
+      }
+    }
+
     /* PURE TAMIL VOICE SYNTHESIS */
     function speakTamil(txt) {
       if (!('speechSynthesis' in window)) return;
@@ -1092,6 +1101,16 @@
         }
       }
       setTimeout(next, 700);
+    }
+
+    function playItemAudio(itemId) {
+      const item = DICTATION_ITEMS.find(d => d.id === itemId);
+      if (!item) return;
+      if (appMode === 'practice') {
+        playSyllableChant(item.word, item.syllables);
+      } else {
+        speakTamil(item.word);
+      }
     }
 
     /* SYNTHESIZED VEENA & BELL AUDIO ENGINE */
@@ -1136,16 +1155,16 @@
     const audioFX = new TempleAudioEngine();
 
     /* SCREEN DIMMER */
-    let isDimmed = localStorage.getItem('humayun_dim_state') === 'true';
+    let isDimmed = safeStorageGet('humayun_dim_state') === 'true';
     function applyDimmerState() {
       const el = document.getElementById('screenDimOverlay');
       const btn = document.getElementById('btnDimmer');
-      el.style.display = isDimmed ? 'block' : 'none';
-      btn.textContent = isDimmed ? '☀️ வெளிச்சம்' : '💡 மங்கலாக்கு';
+      if (el) el.style.display = isDimmed ? 'block' : 'none';
+      if (btn) btn.textContent = isDimmed ? '☀️ வெளிச்சம்' : '💡 மங்கலாக்கு';
     }
     function toggleDimmer() {
       isDimmed = !isDimmed;
-      localStorage.setItem('humayun_dim_state', isDimmed);
+      safeStorageSet('humayun_dim_state', isDimmed);
       applyDimmerState();
     }
 
@@ -1154,8 +1173,10 @@
     function togglePenMode() {
       penOnlyMode = !penOnlyMode;
       const btn = document.getElementById('btnPenMode');
-      btn.className = `pen-toggle-btn ${penOnlyMode ? 'pen-active' : ''}`;
-      btn.textContent = penOnlyMode ? '🖊️ Pen Only' : '👆 Any Touch';
+      if (btn) {
+        btn.className = `pen-toggle-btn ${penOnlyMode ? 'pen-active' : ''}`;
+        btn.textContent = penOnlyMode ? '🖊️ Pen Only' : '👆 Any Touch';
+      }
     }
 
     function toggleFullscreen() {
@@ -1171,9 +1192,11 @@
       saveAllCanvases();
       const stage = document.getElementById('masterStage');
       const btn = document.querySelector('.sidebar-collapse-toggle');
-      const isCollapsed = stage.classList.toggle('collapsed-sidebar');
-      btn.textContent = isCollapsed ? '▶' : '◀';
-      setTimeout(setupDualCanvases, 320);
+      if (stage && btn) {
+        const isCollapsed = stage.classList.toggle('collapsed-sidebar');
+        btn.textContent = isCollapsed ? '▶' : '◀';
+        setTimeout(setupDualCanvases, 320);
+      }
     }
 
     function goToHub() {
@@ -1190,7 +1213,7 @@
       img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><circle cx='60' cy='60' r='55' fill='%23FEF3C7' stroke='%23D97706' stroke-width='4'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='42'>🪷</text></svg>";
     }
 
-    /* GROUND TRUTH NOTEBOOK CURRICULUM */
+    /* CURRICULUM DATA */
     const MODULES = [
       { id: 0, title: "1. சொல்வதை எழுதுக" },
       { id: 1, title: "2. வினா விடை" },
@@ -1200,7 +1223,6 @@
       { id: 5, title: "6. ஒலி வேறுபாடு" }
     ];
 
-    // Page 2: சொல்வதை எழுதுக
     const DICTATION_ITEMS = [
       { id: 'd1', word: 'விலங்குகள்', syllables: [{uid:1, s:'வி', t:'Vi'}, {uid:2, s:'லங்', t:'Lang'}, {uid:3, s:'கு', t:'Ku'}, {uid:4, s:'கள்', t:'Kal'}] },
       { id: 'd2', word: 'ஒற்றுமை', syllables: [{uid:1, s:'ஒற்', t:'Otr'}, {uid:2, s:'று', t:'Ru'}, {uid:3, s:'மை', t:'Mai'}] },
@@ -1211,7 +1233,6 @@
       { id: 'd7', word: 'பாலைவனம்', syllables: [{uid:1, s:'பா', t:'Paa'}, {uid:2, s:'லை', t:'Lai'}, {uid:3, s:'வ', t:'Va'}, {uid:4, s:'னம்', t:'Nam'}] }
     ];
 
-    // Pages 3 & 4: All 4 Classwork Notebook Q&As
     const QA_ITEMS = [
       {
         id: 'qa_q1',
@@ -1315,7 +1336,7 @@
     function loadVectorStrokes(id) {
       const sKey = getStoreKey(id);
       if (vectorStrokeStore[sKey]) return vectorStrokeStore[sKey];
-      const saved = localStorage.getItem(getStorageKey(id));
+      const saved = safeStorageGet(getStorageKey(id));
       if (saved) {
         try {
           vectorStrokeStore[sKey] = JSON.parse(saved);
@@ -1329,9 +1350,7 @@
     function saveVectorStrokes(id) {
       const sKey = getStoreKey(id);
       const strokes = vectorStrokeStore[sKey] || [];
-      try {
-        localStorage.setItem(getStorageKey(id), JSON.stringify(strokes));
-      } catch(e) {}
+      safeStorageSet(getStorageKey(id), JSON.stringify(strokes));
     }
 
     function replayCanvasStrokes(c, id) {
@@ -1392,7 +1411,9 @@
 
     function saveAllCanvases() {
       Object.keys(vectorStrokeStore).forEach(sKey => {
-        const [mode, id] = sKey.split('::');
+        const parts = sKey.split('::');
+        const mode = parts[0];
+        const id = parts[1];
         if (mode === appMode) saveVectorStrokes(id);
       });
     }
@@ -1452,116 +1473,115 @@
       `;
     }
 
-    /* BATCHED HARDWARE CANVAS MOUNTING (ZERO STARTUP THRASHING) */
     function setupDualCanvases() {
-      requestAnimationFrame(() => {
-        const dpr = window.devicePixelRatio || 1;
-        const canvasList = document.querySelectorAll('.dual-canvas');
+      const dpr = window.devicePixelRatio || 1;
+      const canvasList = document.querySelectorAll('.dual-canvas');
 
-        canvasList.forEach(c => {
-          const id = c.getAttribute('data-canvas-id');
-          const logicalW = parseInt(c.getAttribute('data-logical-width'), 10) || 760;
-          const logicalH = parseInt(c.getAttribute('data-logical-height'), 10) || 96;
+      canvasList.forEach(c => {
+        const id = c.getAttribute('data-canvas-id');
+        const bRect = c.parentElement ? c.parentElement.getBoundingClientRect() : { width: 0 };
+        const logicalW = Math.round(bRect.width) || (parseInt(c.getAttribute('data-logical-width'), 10) || 760);
+        const logicalH = parseInt(c.getAttribute('data-logical-height'), 10) || 96;
 
-          c.width = Math.round(logicalW * dpr);
-          c.height = Math.round(logicalH * dpr);
+        c.width = Math.round(logicalW * dpr);
+        c.height = Math.round(logicalH * dpr);
 
-          const ctx = c.getContext('2d', { desynchronized: true });
+        const ctx = c.getContext('2d', { desynchronized: true });
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+        replayCanvasStrokes(c, id);
+
+        let isDrawing = false;
+        let activeStroke = null;
+        let lastPt = { x: 0, y: 0 };
+
+        c.onpointerdown = (e) => {
+          if (penOnlyMode && e.pointerType !== 'pen' && e.pointerType !== 'mouse') return;
+          isDrawing = true;
+          try { c.setPointerCapture(e.pointerId); } catch (_) {}
+          const rect = c.getBoundingClientRect();
+          const startX = e.clientX - rect.left;
+          const startY = e.clientY - rect.top;
+
+          const isSec2 = (activeModuleIdx === 1);
+          const tool = isSec2 ? currentTool : 'pen';
+          const color = isSec2 ? currentColor : '#1E3A8A';
+          const baseWidth = isSec2 ? currentWidthScale : 2.2;
+
+          const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
+          const strokeWidth = baseWidth * (pressure * 1.35 + 0.35);
+
+          activeStroke = {
+            tool: tool,
+            color: color,
+            width: strokeWidth,
+            points: [{ x: startX, y: startY }]
+          };
+          lastPt = { x: startX, y: startY };
+
+          const strokes = loadVectorStrokes(id);
+          strokes.push(activeStroke);
+
+          e.preventDefault();
+        };
+
+        c.onpointermove = (e) => {
+          if (!isDrawing || !activeStroke) return;
+          if (penOnlyMode && e.pointerType !== 'pen' && e.pointerType !== 'mouse') return;
+
+          const rect = c.getBoundingClientRect();
+          const events = (e.getCoalescedEvents && e.getCoalescedEvents().length > 0)
+            ? e.getCoalescedEvents()
+            : [e];
+
+          ctx.save();
           ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
 
-          replayCanvasStrokes(c, id);
+          if (activeStroke.tool === 'eraser') {
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.lineWidth = activeStroke.width * 6.0;
+          } else {
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.strokeStyle = activeStroke.color;
+            ctx.lineWidth = activeStroke.width;
+          }
 
-          let isDrawing = false;
-          let activeStroke = null;
-          let lastPt = { x: 0, y: 0 };
+          for (let ev of events) {
+            const currX = ev.clientX - rect.left;
+            const currY = ev.clientY - rect.top;
 
-          c.onpointerdown = (e) => {
-            if (penOnlyMode && e.pointerType !== 'pen' && e.pointerType !== 'mouse') return;
-            isDrawing = true;
-            try { c.setPointerCapture(e.pointerId); } catch (_) {}
-            const rect = c.getBoundingClientRect();
-            const startX = e.clientX - rect.left;
-            const startY = e.clientY - rect.top;
+            ctx.beginPath();
+            ctx.moveTo(lastPt.x, lastPt.y);
+            ctx.lineTo(currX, currY);
+            ctx.stroke();
 
-            const isSec2 = (activeModuleIdx === 1);
-            const tool = isSec2 ? currentTool : 'pen';
-            const color = isSec2 ? currentColor : '#1E3A8A';
-            const baseWidth = isSec2 ? currentWidthScale : 2.2;
+            activeStroke.points.push({ x: currX, y: currY });
+            lastPt = { x: currX, y: currY };
+          }
+          ctx.restore();
+          e.preventDefault();
+        };
 
-            const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
-            const strokeWidth = baseWidth * (pressure * 1.35 + 0.35);
+        const stopStroke = (e) => {
+          if (isDrawing) {
+            isDrawing = false;
+            activeStroke = null;
+            try { c.releasePointerCapture(e.pointerId); } catch (_) {}
+            saveVectorStrokes(id);
+          }
+        };
 
-            activeStroke = {
-              tool: tool,
-              color: color,
-              width: strokeWidth,
-              points: [{ x: startX, y: startY }]
-            };
-            lastPt = { x: startX, y: startY };
-
-            const strokes = loadVectorStrokes(id);
-            strokes.push(activeStroke);
-
-            e.preventDefault();
-          };
-
-          c.onpointermove = (e) => {
-            if (!isDrawing || !activeStroke) return;
-            if (penOnlyMode && e.pointerType !== 'pen' && e.pointerType !== 'mouse') return;
-
-            const rect = c.getBoundingClientRect();
-            const events = (e.getCoalescedEvents && e.getCoalescedEvents().length > 0)
-              ? e.getCoalescedEvents()
-              : [e];
-
-            ctx.save();
-            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-
-            if (activeStroke.tool === 'eraser') {
-              ctx.globalCompositeOperation = 'destination-out';
-              ctx.lineWidth = activeStroke.width * 6.0;
-            } else {
-              ctx.globalCompositeOperation = 'source-over';
-              ctx.strokeStyle = activeStroke.color;
-              ctx.lineWidth = activeStroke.width;
-            }
-
-            for (let ev of events) {
-              const currX = ev.clientX - rect.left;
-              const currY = ev.clientY - rect.top;
-
-              ctx.beginPath();
-              ctx.moveTo(lastPt.x, lastPt.y);
-              ctx.lineTo(currX, currY);
-              ctx.stroke();
-
-              activeStroke.points.push({ x: currX, y: currY });
-              lastPt = { x: currX, y: currY };
-            }
-            ctx.restore();
-            e.preventDefault();
-          };
-
-          const stopStroke = (e) => {
-            if (isDrawing) {
-              isDrawing = false;
-              activeStroke = null;
-              try { c.releasePointerCapture(e.pointerId); } catch (_) {}
-              saveVectorStrokes(id);
-            }
-          };
-
-          c.onpointerup = stopStroke;
-          c.onpointercancel = stopStroke;
-        });
+        c.onpointerup = stopStroke;
+        c.onpointercancel = stopStroke;
       });
     }
 
     /* NAVIGATION */
     function renderModuleTabs() {
       const list = document.getElementById('moduleTabsList');
+      if (!list) return;
       list.innerHTML = '';
       MODULES.forEach((m, idx) => {
         const btn = document.createElement('button');
@@ -1580,8 +1600,10 @@
       saveAllCanvases();
       appMode = m;
       document.body.className = (m === 'write') ? 'write-mode' : '';
-      document.getElementById('tabPractice').classList.toggle('active', m === 'practice');
-      document.getElementById('tabWrite').classList.toggle('active', m === 'write');
+      const tabP = document.getElementById('tabPractice');
+      const tabW = document.getElementById('tabWrite');
+      if (tabP) tabP.classList.toggle('active', m === 'practice');
+      if (tabW) tabW.classList.toggle('active', m === 'write');
       switchModule(activeModuleIdx);
     }
 
@@ -1589,7 +1611,8 @@
       saveAllCanvases();
       activeModuleIdx = idx;
       renderModuleTabs();
-      document.getElementById('bannerHeaderTamil').textContent = MODULES[idx].title;
+      const headerEl = document.getElementById('bannerHeaderTamil');
+      if (headerEl) headerEl.textContent = MODULES[idx].title;
       renderCurrentExercise();
     }
 
@@ -1602,7 +1625,6 @@
       else if (activeModuleIdx === 5) speakTamil("உரிய சொல்லைத் தேர்ந்தெடுத்து நிரப்புக");
     }
 
-    /* STABLE DOCK GENERATOR */
     function getStableDockList(itemId, tokenList) {
       if (!shuffledDockCache[itemId]) {
         shuffledDockCache[itemId] = [...tokenList].sort(() => Math.random() - 0.5);
@@ -1613,13 +1635,17 @@
     /* EXERCISE RENDERING */
     function renderCurrentExercise() {
       const container = document.getElementById('stageContentBody');
+      if (!container) return;
       container.innerHTML = '';
 
       if (activeModuleIdx === 0) {
         // MODULE 1: சொல்வதை எழுதுக
-        document.getElementById('statusNoticeText').textContent = (appMode === 'practice')
-          ? "ஒலியைக்கேட்டு, எழுத்துகளை அடுக்கி, அழகாக எழுதுக!"
-          : "ஒலியை மட்டும் கேட்டு சுயமாக நோட்டுப் பெட்டியில் எழுதுக!";
+        const statusEl = document.getElementById('statusNoticeText');
+        if (statusEl) {
+          statusEl.textContent = (appMode === 'practice')
+            ? "ஒலியைக்கேட்டு, எழுத்துகளை அடுக்கி, அழகாக எழுதுக!"
+            : "ஒலியை மட்டும் கேட்டு சுயமாக நோட்டுப் பெட்டியில் எழுதுக!";
+        }
 
         DICTATION_ITEMS.forEach((item, idx) => {
           const card = document.createElement('div');
@@ -1630,7 +1656,7 @@
           card.innerHTML = `
             <div class="card-header-line">
               <span class="card-title-text cue-hidden" onclick="speakTamil('${item.word}')">${idx + 1}. ${item.word}</span>
-              <button type="button" class="audio-pill-btn" onclick="${appMode === 'practice' ? `playSyllableChant('${item.word}',${JSON.stringify(item.syllables)})` : `speakTamil('${item.word}')`}">
+              <button type="button" class="audio-pill-btn" onclick="playItemAudio('${item.id}')">
                 🔊 ${idx + 1}. கேள்
               </button>
             </div>
@@ -1664,12 +1690,14 @@
         });
 
       } else if (activeModuleIdx === 1) {
-        // MODULE 2: வினா விடை (SOLE TOP NAVIGATION + 3-LINE RULINGS)
-        document.getElementById('statusNoticeText').textContent = (appMode === 'practice')
-          ? "மேலே உள்ள வினாக்களைத் தொட்டு படிக்க; விடையை நினைவுகூர்ந்து எழுதுக!"
-          : "வினாவைப் பார்த்து முழு விடையையும் சுயமாக நோட்டுப் பக்கத்தில் எழுதுக!";
+        // MODULE 2: வினா விடை (SECTION 2 - TOP NAVIGATION ONLY + 3-LINE RULINGS)
+        const statusEl = document.getElementById('statusNoticeText');
+        if (statusEl) {
+          statusEl.textContent = (appMode === 'practice')
+            ? "மேலே உள்ள வினாக்களைத் தொட்டு படிக்க; விடையை நினைவுகூர்ந்து எழுதுக!"
+            : "வினாவைப் பார்த்து முழு விடையையும் சுயமாக நோட்டுப் பக்கத்தில் எழுதுக!";
+        }
 
-        // TOP NAVIGATION PILLS ONLY (ZERO BOTTOM BUTTONS)
         const pagStrip = document.createElement('div');
         pagStrip.className = 'qa-pagination-strip';
         QA_ITEMS.forEach((q, qIndex) => {
@@ -1703,7 +1731,6 @@
               <button type="button" class="audio-pill-btn" onclick="speakTamil('${curQa.q}')">🔊 வினா</button>
             </div>
 
-            <!-- MEMORY CUE SCAFFOLDING -->
             <div class="memory-scaffold-banner">
               <div>💡 <b>வினாவில் உள்ளவை (பார்த்து எழுதலாம்):</b> <span style="color:#1E40AF;">${curQa.copiedStem}</span></div>
               <div>★ <b>${curQa.memorizeRule}</b></div>
@@ -1736,7 +1763,6 @@
               <span style="font-size:1.15rem; font-weight:800; color:#15803D; cursor:pointer;" onclick="speakTamil('${curQa.a}')">முழு விடை: ${curQa.a}</span>
             </div>
 
-            <!-- EXPANDED 3-LINE RULING SLATE -->
             <div class="section2-notebook-slate" style="height:${curQa.height}px;">
               <svg class="notebook-rules-svg" viewBox="0 0 960 ${curQa.height}" preserveAspectRatio="none">
                 ${generateSvgLines(curQa.lines, curQa.height)}
@@ -1747,7 +1773,6 @@
             </div>
           `;
         } else {
-          // WRITE MODE (ZERO HINTS)
           card.innerHTML = `
             <div class="card-header-line">
               <span class="card-title-text" onclick="speakTamil('${curQa.q}')">வினா ${curQa.num}: ${curQa.q}</span>
@@ -1768,7 +1793,8 @@
 
       } else if (activeModuleIdx === 2) {
         // MODULE 3: பேச்சு வழக்கு ➔ எழுத்து வழக்கு
-        document.getElementById('statusNoticeText').textContent = "எழுத்து வழக்கு சொற்களைத் தொட்டு தேர்ந்தெடுக்க!";
+        const statusEl = document.getElementById('statusNoticeText');
+        if (statusEl) statusEl.textContent = "எழுத்து வழக்கு சொற்களைத் தொட்டு தேர்ந்தெடுக்க!";
 
         const card = document.createElement('div');
         card.className = 'lesson-study-card';
@@ -1821,7 +1847,8 @@
 
       } else if (activeModuleIdx === 3) {
         // MODULE 4: சரியான விடை (MCQ)
-        document.getElementById('statusNoticeText').textContent = "சரியான விடையைத் தொட்டு கீழே எழுதுக!";
+        const statusEl = document.getElementById('statusNoticeText');
+        if (statusEl) statusEl.textContent = "சரியான விடையைத் தொட்டு கீழே எழுதுக!";
 
         const mcqQuestions = [
           { id: 'mcq1', stem1: '1. ', pink: 'வேட்டை+ ஆட', stem2: ' இச்சொற்களைச் சேர்த்து எழுதக் கிடைப்பது:', opts: ['வேட்டையட', 'வேட்டையாட', 'வேட்டைஆடு', 'வெட்டையாட'], ans: 'வேட்டையாட' },
@@ -1854,7 +1881,8 @@
 
       } else if (activeModuleIdx === 4) {
         // MODULE 5: வண்ணத்தில் வேறுபட்ட எழுத்துக்கள்
-        document.getElementById('statusNoticeText').textContent = "வண்ண எழுத்துக்களை இணைத்து நோட்டுப் பெட்டியில் எழுதுக!";
+        const statusEl = document.getElementById('statusNoticeText');
+        if (statusEl) statusEl.textContent = "வண்ண எழுத்துக்களை இணைத்து நோட்டுப் பெட்டியில் எழுதுக!";
 
         const riddles = [
           {
@@ -1896,7 +1924,8 @@
 
       } else if (activeModuleIdx === 5) {
         // MODULE 6: ஒலி வேறுபாடு
-        document.getElementById('statusNoticeText').textContent = "படத்தைப் பார்த்து சரியான சொல்லை எழுதுக!";
+        const statusEl = document.getElementById('statusNoticeText');
+        if (statusEl) statusEl.textContent = "படத்தைப் பார்த்து சரியான சொல்லை எழுதுக!";
 
         const homoDeck = [
           {
@@ -1958,7 +1987,7 @@
       setTimeout(setupDualCanvases, 40);
     }
 
-    /* 3-LINE (OR 4-LINE) RULING SVG GENERATOR */
+    /* 3-LINE RULING SVG GENERATOR */
     function generateSvgLines(count, totalH) {
       let str = '';
       const spacing = Math.floor((totalH - 30) / count);
@@ -2052,7 +2081,7 @@
       renderCurrentExercise();
     }
 
-    /* VERIFICATION AND ACCURATE GRADING */
+    /* ACCURATE GRADING */
     function verifyActiveTask() {
       saveAllCanvases();
       let isComplete = false;
@@ -2092,15 +2121,16 @@
         return;
       }
 
-      // Validated complete: launch celebration
       resizeFinaleCanvas();
-      finaleStage.style.display = 'block';
+      const stage = document.getElementById('celebrationFinaleStage');
+      if (stage) stage.style.display = 'block';
       finaleRunning = true;
 
       audioFX.playBell();
       speakTamil("அற்புதம் ஹுமாயூன்! மிகச் சரியாக முடித்துவிட்டீர்கள்!");
 
-      document.getElementById('victoryMessageText').textContent = scoreMessage;
+      const scoreEl = document.getElementById('victoryMessageText');
+      if (scoreEl) scoreEl.textContent = scoreMessage;
 
       petals = [];
       for (let i = 0; i < 65; i++) petals.push(new DriftingPetal());
@@ -2109,7 +2139,8 @@
       animateSoaringFlight();
 
       setTimeout(() => {
-        victoryAwardScroll.classList.add('impact');
+        const scrollEl = document.getElementById('victoryAwardScroll');
+        if (scrollEl) scrollEl.classList.add('impact');
       }, 1600);
 
       requestAnimationFrame(renderPetalLoop);
@@ -2118,7 +2149,7 @@
     /* ASANA FINALE PARTICLES */
     const finaleStage = document.getElementById('celebrationFinaleStage');
     const finaleCanvas = document.getElementById('finaleCanvas');
-    const finaleCtx = finaleCanvas.getContext('2d', { alpha: true });
+    const finaleCtx = finaleCanvas ? finaleCanvas.getContext('2d', { alpha: true }) : null;
     const soaringParrot = document.getElementById('soaringParrot');
     const victoryAwardScroll = document.getElementById('victoryAwardScroll');
 
@@ -2127,8 +2158,10 @@
     let flightStartTime = 0;
 
     function resizeFinaleCanvas() {
-      finaleCanvas.width = window.innerWidth;
-      finaleCanvas.height = window.innerHeight;
+      if (finaleCanvas) {
+        finaleCanvas.width = window.innerWidth;
+        finaleCanvas.height = window.innerHeight;
+      }
     }
     window.addEventListener('resize', resizeFinaleCanvas);
 
@@ -2178,8 +2211,10 @@
         const curX = -120 + (w + 240) * ease;
         const curY = h * 0.75 - Math.sin(ease * Math.PI) * (h * 0.55);
 
-        soaringParrot.style.left = `${curX}px`;
-        soaringParrot.style.top = `${curY}px`;
+        if (soaringParrot) {
+          soaringParrot.style.left = `${curX}px`;
+          soaringParrot.style.top = `${curY}px`;
+        }
 
         if (p < 1 && finaleRunning) {
           requestAnimationFrame(step);
@@ -2189,7 +2224,7 @@
     }
 
     function renderPetalLoop() {
-      if (!finaleRunning) return;
+      if (!finaleRunning || !finaleCtx) return;
       finaleCtx.clearRect(0, 0, finaleCanvas.width, finaleCanvas.height);
       for (let p of petals) {
         p.update();
@@ -2200,56 +2235,73 @@
 
     function closeCelebrationStage() {
       finaleRunning = false;
-      finaleStage.style.display = 'none';
-      victoryAwardScroll.classList.remove('impact');
+      if (finaleStage) finaleStage.style.display = 'none';
+      if (victoryAwardScroll) victoryAwardScroll.classList.remove('impact');
       let nextIdx = (activeModuleIdx + 1) % MODULES.length;
       switchModule(nextIdx);
     }
 
-    /* LAZY-LOADED ALPHABET DRAWER */
-    let drawerInitialized = false;
+    /* ALPHABET DRAWER */
     function initAlphabetDrawer() {
       const vowels = ['அ', 'ஆ', 'இ', 'ஈ', 'உ', 'ஊ', 'எ', 'ஏ', 'ஐ', 'ஒ', 'ஓ', 'ஔ'];
       const consonants = ['க்', 'ங்', 'ச்', 'ஞ்', 'ட்', 'ண்', 'த்', 'ந்', 'ப்', 'ம்', 'ய்', 'ர்', 'ல்', 'வ்', 'ழ்', 'ள்', 'ற்', 'ன்'];
 
       const vGrid = document.getElementById('vowelsGrid');
-      vGrid.innerHTML = '';
-      vowels.forEach(v => {
-        const d = document.createElement('div');
-        d.className = 'letter-chip-box';
-        d.textContent = v;
-        d.onclick = () => speakTamil(v);
-        vGrid.appendChild(d);
-      });
+      if (vGrid) {
+        vGrid.innerHTML = '';
+        vowels.forEach(v => {
+          const d = document.createElement('div');
+          d.className = 'letter-chip-box';
+          d.textContent = v;
+          d.onclick = () => speakTamil(v);
+          vGrid.appendChild(d);
+        });
+      }
 
       const cGrid = document.getElementById('consonantsGrid');
-      cGrid.innerHTML = '';
-      consonants.forEach(c => {
-        const d = document.createElement('div');
-        d.className = 'letter-chip-box';
-        d.textContent = c;
-        d.onclick = () => speakTamil(c);
-        cGrid.appendChild(d);
-      });
+      if (cGrid) {
+        cGrid.innerHTML = '';
+        consonants.forEach(c => {
+          const d = document.createElement('div');
+          d.className = 'letter-chip-box';
+          d.textContent = c;
+          d.onclick = () => speakTamil(c);
+          cGrid.appendChild(d);
+        });
+      }
     }
 
     function openAlphabetDrawer() {
-      if (!drawerInitialized) {
-        initAlphabetDrawer();
-        drawerInitialized = true;
-      }
-      document.getElementById('alphabetDrawerModal').style.display = 'flex';
+      const modal = document.getElementById('alphabetDrawerModal');
+      if (modal) modal.style.display = 'flex';
     }
     function closeAlphabetDrawer() {
-      document.getElementById('alphabetDrawerModal').style.display = 'none';
+      const modal = document.getElementById('alphabetDrawerModal');
+      if (modal) modal.style.display = 'none';
     }
 
-    /* SMOOTH FLUID OPENING */
-    window.onload = () => {
+    /* INSTANT ZERO-LATENCY APP INITIALIZATION */
+    function initApp() {
       applyDimmerState();
+      initAlphabetDrawer();
       renderModuleTabs();
       switchModule(0);
-    };
+    }
+
+    // Runs immediately without waiting for hanging external images/fonts
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initApp);
+    } else {
+      initApp();
+    }
+
+    // Hub handshake listener (for iframe container messages)
+    window.addEventListener('message', (e) => {
+      if (e.data === 'hub-open' || e.data === 'resume') {
+        saveAllCanvases();
+        setTimeout(setupDualCanvases, 50);
+      }
+    });
 
     window.addEventListener('beforeunload', saveAllCanvases);
     window.addEventListener('pagehide', saveAllCanvases);
