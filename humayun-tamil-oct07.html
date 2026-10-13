@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>ஹுமாயூன் - தமிழ் பயிற்சி (பாடம் 1)</title>
+  <title>ஹுமாயூன் - தமிழ் வகுப்பேடு: பாடம் 1 ஒன்றுபட்டால் உண்டு வாழ்வு</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,21 +11,15 @@
 
   <style>
     :root {
-      --bg: #FFF7ED;
-      --card-bg: #FFFFFF;
-      --text: #7C2D12;
-      --subtext: #9A3412;
-      --border: #FED7AA;
-      --gold-primary: #EA580C;
-      --gold-deep: #C2410C;
-      --purple: #7C3AED;
-      --purple-dark: #6D28D9;
-      --accent: #F59E0B;
-      --success: #16A34A;
-      --wrong: #DC2626;
+      --gold-primary: #D97706;
+      --gold-deep: #B45309;
+      --gold-glow: #F59E0B;
+      --text-temple: #3C1904;
+      --tamil-ink: #1E3A8A;
+      --border-ornament: #FBBF24;
+      --border-warm: rgba(217, 119, 6, 0.55);
       --ruled-guide: #93C5FD;
       --ruled-base: #EF4444;
-      --shadow: 0 6px 18px rgba(124, 45, 18, 0.08);
       --font-tamil: 'Mukta Malar', 'Arima', sans-serif;
       --font-ui: 'Nunito', sans-serif;
     }
@@ -34,9 +28,9 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      -webkit-tap-highlight-color: transparent;
       user-select: none;
       -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
       font-family: var(--font-tamil);
     }
 
@@ -46,14 +40,13 @@
       height: 100dvh;
       overflow: hidden;
       background: #0C0603;
-      color: var(--text);
+      color: var(--text-temple);
     }
 
     body {
-      background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 50%, #FEF3C7 100%);
       display: flex;
       flex-direction: column;
-      padding: 6px 12px;
+      padding: clamp(6px, 1vw, 10px) clamp(10px, 1.4vw, 16px);
       gap: 6px;
       position: relative;
     }
@@ -62,7 +55,7 @@
     #screenDimOverlay {
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.45);
+      background: rgba(0, 0, 0, 0.48);
       pointer-events: none;
       z-index: 999999;
       display: none;
@@ -75,8 +68,9 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      flex-shrink: 0;
+      position: relative;
       z-index: 50;
+      flex-shrink: 0;
     }
 
     .hud-group-left, .hud-group-right {
@@ -87,8 +81,8 @@
 
     .hud-btn {
       background: rgba(255, 255, 255, 0.94);
-      border: 2px solid var(--border);
-      color: var(--text);
+      border: 2px solid var(--border-ornament);
+      color: var(--text-temple);
       padding: 6px 14px;
       border-radius: 12px;
       font-size: 0.9rem;
@@ -97,46 +91,46 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+      transition: all 0.15s;
       font-family: var(--font-ui);
     }
-    .hud-btn:active { transform: translateY(1px); }
+    .hud-btn:active { transform: translateY(1px) scale(0.98); }
 
     .mode-switch-segmented {
       display: flex;
-      background: rgba(255, 255, 255, 0.95);
-      border: 2px solid var(--border);
+      background: rgba(255, 255, 255, 0.94);
+      border: 2.5px solid var(--border-ornament);
       border-radius: 25px;
       padding: 3px;
       gap: 4px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
     }
-
     .mode-tab-pill {
       background: transparent;
       border: none;
-      color: var(--subtext);
-      padding: 6px 18px;
+      color: var(--text-temple);
+      padding: 6px 20px;
       border-radius: 20px;
-      font-size: 0.95rem;
+      font-size: 1rem;
       font-weight: 800;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: all 0.18s ease;
     }
     .mode-tab-pill.active {
-      background: linear-gradient(180deg, #EA580C 0%, #C2410C 100%);
+      background: linear-gradient(180deg, #F59E0B 0%, #D97706 100%);
       color: #FFFFFF;
-      box-shadow: 0 2px 6px rgba(194, 65, 12, 0.4);
+      box-shadow: 0 2px 8px rgba(217, 119, 6, 0.4);
     }
-    body.test-mode .mode-tab-pill.active {
+    body.write-mode .mode-tab-pill.active {
       background: linear-gradient(180deg, #7C3AED 0%, #6D28D9 100%);
-      box-shadow: 0 2px 6px rgba(109, 40, 217, 0.4);
+      box-shadow: 0 2px 8px rgba(109, 40, 217, 0.4);
     }
 
     .pen-toggle-btn {
       background: rgba(255, 255, 255, 0.94);
-      border: 2px solid var(--border);
-      color: var(--text);
+      border: 2px solid var(--border-ornament);
+      color: var(--text-temple);
       font-size: 0.88rem;
       font-weight: 800;
       padding: 6px 12px;
@@ -153,108 +147,209 @@
       color: #15803D;
     }
 
-    /* MAIN STAGE */
-    .master-stage-wrapper {
+    /* MASTER FRAMED STAGE WITH DIRECT FOREST BACKDROP */
+    .master-forest-stage {
       flex: 1;
+      position: relative;
+      border: 4px solid #5A3C22;
+      border-radius: 22px;
+      overflow: hidden;
+      background: #110B07 url('assets/forest-bg.png') no-repeat center center;
+      background-size: cover;
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85);
       display: grid;
-      grid-template-columns: 240px 1fr;
-      gap: 12px;
+      grid-template-columns: 280px 1fr;
+      gap: 14px;
+      padding: 10px 16px;
       min-height: 0;
-      transition: grid-template-columns 0.25s ease;
+      z-index: 10;
+      transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .master-stage-wrapper.collapsed {
-      grid-template-columns: 68px 1fr;
+    .master-forest-stage.collapsed-sidebar {
+      grid-template-columns: 78px 1fr;
     }
 
-    /* SIDEBAR */
-    .sections-sidebar {
-      background: rgba(255, 255, 255, 0.92);
-      border: 2px solid var(--border);
-      border-radius: 18px;
-      padding: 8px;
+    /* LEFT DECK (FULLY TRANSPARENT, FLOATING IN FOREST) */
+    .mentor-side-deck {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      z-index: 15;
       overflow-y: auto;
-      box-shadow: var(--shadow);
+      overflow-x: hidden;
     }
 
-    .sidebar-collapse-btn {
+    .sidebar-collapse-toggle {
       align-self: flex-end;
-      background: #FFF7ED;
-      border: 1.5px solid var(--border);
+      background: rgba(255, 255, 255, 0.92);
+      border: 1.5px solid var(--gold-primary);
       border-radius: 8px;
       padding: 2px 8px;
       font-size: 0.8rem;
       font-weight: 900;
       cursor: pointer;
-      color: var(--text);
+      color: var(--text-temple);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
     }
 
-    .section-tab-item {
-      background: #FFF7ED;
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      padding: 8px 10px;
+    .thiruvalluvar-terrace-hero {
+      width: 100%;
+      height: clamp(140px, 20vh, 190px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      flex-shrink: 0;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .thiruvalluvar-terrace-hero:active { transform: scale(0.97); }
+    .thiruvalluvar-hero-img {
+      max-height: 100%;
+      max-width: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.55));
+    }
+
+    .module-menu-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .module-menu-item {
+      background: rgba(255, 253, 246, 0.94);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 2px solid var(--border-warm);
+      border-radius: 14px;
+      padding: 8px 12px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       cursor: pointer;
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: var(--text);
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
       white-space: nowrap;
-      transition: all 0.12s;
     }
-    .section-tab-item.active {
+    .module-menu-item.active {
       background: #FEF08A;
-      border-color: #EAB308;
-      box-shadow: 0 0 10px rgba(234, 179, 8, 0.5);
-      transform: translateX(2px);
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.6);
+      transform: translateX(3px);
     }
-    .master-stage-wrapper.collapsed .section-tab-title {
+    .module-menu-text {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text-temple);
+    }
+    .master-forest-stage.collapsed-sidebar .module-menu-text {
       display: none;
     }
 
-    /* WORKSPACE */
-    .workspace-pane {
-      background: rgba(255, 255, 255, 0.95);
-      border: 2.5px solid var(--border);
-      border-radius: 20px;
-      padding: 12px 18px;
+    /* RIGHT WORKSPACE (FULLY TRANSPARENT DECK, BLENDS WITH ARTWORK) */
+    .workspace-floating-plaque {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 10px;
-      min-height: 0;
-      box-shadow: var(--shadow);
+      padding: 4px 8px;
+      gap: 8px;
       position: relative;
+      z-index: 15;
+      overflow: visible !important;
+      min-height: 0;
     }
 
-    .exercise-scroll-box {
+    /* PALM SCROLL BANNER HEADER */
+    .palm-scroll-banner-box {
+      width: 100%;
+      height: 74px;
+      margin-top: 36px;
+      background: url('assets/palm-scroll-banner.png') no-repeat center center;
+      background-size: 100% 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 120px 0 80px;
+      filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
+      flex-shrink: 0;
+      position: relative;
+      overflow: visible;
+    }
+    .banner-quest-title {
+      font-size: clamp(1.15rem, 1.8vw, 1.55rem);
+      font-weight: 900;
+      color: #351804;
+      line-height: 1.2;
+      text-align: center;
       flex: 1;
-      overflow-y: auto;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
+    }
+
+    /* 210PX LARGE PROMINENT FLOATING PARROT */
+    .freely-floating-parrot-btn {
+      width: 120px;
+      height: 210px;
+      position: absolute;
+      right: -10px;
+      top: -45px;
+      transform: none;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.45));
+      flex-shrink: 0;
+      z-index: 25;
+    }
+    .freely-floating-parrot-btn:active { transform: scale(0.92); }
+    .parrot-sprite-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    /* PLAYGROUND BODY */
+    .quest-interactive-body {
+      flex: 1;
       display: flex;
       flex-direction: column;
+      align-items: stretch;
+      justify-content: flex-start;
       gap: 12px;
-      padding-right: 6px;
       min-height: 0;
+      width: 100%;
+      position: relative;
+      overflow-y: auto !important;
+      padding-right: 6px;
+      padding-bottom: 24px;
       -webkit-overflow-scrolling: touch;
     }
 
-    /* SCAFFOLDED MEMORIZATION CARDS */
-    .memorize-card {
-      background: #FFF7ED;
-      border: 2px solid var(--border);
-      border-radius: 16px;
-      padding: 12px 16px;
+    /* MEMORIZATION CARDS */
+    .lesson-study-card {
+      background: rgba(255, 253, 246, 0.95);
+      border: 2.5px solid var(--border-ornament);
+      border-radius: 20px;
+      padding: 14px 18px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      gap: 12px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+      position: relative;
     }
 
-    .card-top-row {
+    .card-meta-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -262,361 +357,668 @@
       gap: 8px;
     }
 
-    .word-cue-text {
-      font-size: 1.35rem;
+    .word-cue-stem {
+      font-size: 1.4rem;
       font-weight: 900;
-      color: var(--text);
+      color: var(--text-temple);
     }
-    body.test-mode .word-cue-text {
-      display: none;
-    }
+    body.write-mode .word-cue-stem { display: none !important; }
 
     .audio-play-pill {
       background: #FEF3C7;
-      border: 2px solid #FCD34D;
+      border: 2px solid #F59E0B;
       color: #92400E;
-      font-size: 0.95rem;
+      font-size: 1rem;
       font-weight: 800;
-      padding: 4px 14px;
+      padding: 6px 16px;
       border-radius: 20px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-    .audio-play-pill:active { transform: scale(0.96); }
+    .audio-play-pill:active { transform: scale(0.95); }
 
-    /* SYLLABLE MEDALLIONS RACK */
-    .syllable-rack-container {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .target-slots-row {
+    /* TOKEN SLOTS & DOCK */
+    .syllable-assembly-rack {
       display: flex;
       align-items: center;
       gap: 8px;
+      background: rgba(255, 255, 255, 0.9);
+      border: 2px dashed var(--gold-primary);
+      border-radius: 16px;
+      padding: 8px 14px;
+      min-height: 64px;
       flex-wrap: wrap;
-      min-height: 48px;
-      background: #FFFFFF;
-      padding: 6px 12px;
-      border-radius: 12px;
-      border: 1.5px dashed var(--gold-primary);
+    }
+    body.write-mode .syllable-assembly-rack,
+    body.write-mode .syllable-coins-dock {
+      display: none !important;
     }
 
-    .slot-cell {
-      min-width: 48px;
-      height: 44px;
-      border: 1.5px dashed #CBD5E1;
-      border-radius: 10px;
+    .rack-target-slot {
+      min-width: 58px;
+      height: 52px;
+      border: 2px dashed #CBD5E1;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
       background: #F8FAFC;
-      font-size: 1.25rem;
+      color: #92400E;
+      font-size: 1.3rem;
       font-weight: 900;
-      color: var(--gold-deep);
     }
 
-    .syllable-dock {
+    .syllable-coins-dock {
       display: flex;
-      gap: 8px;
+      align-items: center;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
-    .syllable-token-btn {
-      min-width: 48px;
-      height: 44px;
-      padding: 0 10px;
-      border-radius: 12px;
+    .tactile-syllable-coin {
+      min-width: 60px;
+      height: 54px;
+      padding: 0 14px;
       background: linear-gradient(135deg, #FFFBEB 0%, #FDE68A 100%);
       border: 2px solid var(--gold-primary);
-      color: var(--text);
-      font-size: 1.25rem;
-      font-weight: 900;
-      cursor: pointer;
+      border-radius: 27px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-      transition: transform 0.1s;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(180, 83, 9, 0.25);
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: var(--text-temple);
+      transition: transform 0.12s ease;
     }
-    .syllable-token-btn:active { transform: scale(0.92); }
-    .syllable-token-btn.placed {
+    .tactile-syllable-coin:active { transform: scale(0.94); }
+    .tactile-syllable-coin.placed {
       background: #E2E8F0;
       border-color: #CBD5E1;
       color: #94A3B8;
       pointer-events: none;
       box-shadow: none;
     }
-
-    /* HARDWARE-ACCELERATED DUAL-LINE INK CANVAS */
-    .ink-blank-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .tactile-syllable-coin.shake-error {
+      animation: coinShake 0.3s ease;
+      border-color: #EF4444;
+      background: #FEE2E2;
+    }
+    @keyframes coinShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-6px); }
+      75% { transform: translateX(6px); }
     }
 
-    .ink-canvas-frame {
+    /* 96PX DUAL-LINE INK CANVAS WITH RED MARGIN */
+    .ink-writing-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .dual-line-canvas-box {
       position: relative;
-      height: 72px;
+      height: 96px;
       background: #FFFFFF;
-      border: 2px solid #CBD5E1;
-      border-radius: 12px;
+      border: 2.5px solid var(--gold-primary);
+      border-radius: 14px;
       overflow: hidden;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
       flex-shrink: 0;
     }
 
-    .dual-lines-bg {
+    .dual-lines-canvas-bg {
       position: absolute;
       inset: 0;
       pointer-events: none;
       background-color: #FFFFFF;
       background-image: repeating-linear-gradient(
         #FFFFFF 0px,
-        #FFFFFF 21px,
-        var(--ruled-guide) 22px,
-        #FFFFFF 23px,
-        #FFFFFF 46px,
-        var(--ruled-guide) 47px,
-        #FFFFFF 48px,
-        #FFFFFF 72px
+        #FFFFFF 28px,
+        var(--ruled-guide) 29px,
+        #FFFFFF 30px,
+        #FFFFFF 64px,
+        var(--ruled-guide) 65px,
+        #FFFFFF 66px,
+        #FFFFFF 96px
       );
-      opacity: 0.85;
+      opacity: 0.9;
       z-index: 1;
     }
-    .dual-lines-bg::after {
+    .dual-lines-canvas-bg::after {
       content: '';
       position: absolute;
       top: 0;
-      left: 18px;
+      left: 22px;
       width: 2px;
       height: 100%;
       background: var(--ruled-base);
-      opacity: 0.75;
+      opacity: 0.8;
     }
 
     .ghost-trace-overlay {
       position: absolute;
-      left: 28px;
+      left: 32px;
       top: 50%;
       transform: translateY(-50%);
-      font-size: 1.8rem;
+      font-size: 2rem;
       font-weight: 900;
-      color: rgba(148, 163, 184, 0.45);
+      color: rgba(148, 163, 184, 0.28);
       pointer-events: none;
       z-index: 2;
       letter-spacing: 2px;
     }
-    body.test-mode .ghost-trace-overlay {
-      display: none !important;
-    }
+    body.write-mode .ghost-trace-overlay { display: none !important; }
 
-    .paint-canvas {
+    .dual-canvas {
       position: absolute;
       inset: 0;
       cursor: crosshair;
       touch-action: none;
-      z-index: 5;
+      z-index: 4;
     }
 
-    .canvas-clear-icon {
+    .inline-clear-btn {
       background: #F8FAFC;
       border: 2px solid #CBD5E1;
-      height: 72px;
-      padding: 0 12px;
-      border-radius: 12px;
+      height: 96px;
+      padding: 0 14px;
+      border-radius: 14px;
       cursor: pointer;
-      font-size: 1.1rem;
+      font-size: 1.25rem;
+      color: #64748B;
+      font-weight: 800;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #64748B;
     }
-    .canvas-clear-icon:active { background: #E2E8F0; }
+    .inline-clear-btn:active { background: #E2E8F0; }
 
-    /* FOOTER BAR */
-    .workspace-footer {
+    /* Q&A SENTENCE CARDS WITH QUESTION-COPYING SCAFFOLD */
+    .qa-breakdown-card {
+      background: #FFF;
+      border: 2px solid var(--border-ornament);
+      border-radius: 16px;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .qa-chips-flow {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 1.15rem;
+      font-weight: 800;
+    }
+    .chip-copy-free {
+      background: #DBEAFE;
+      border: 1.5px solid #3B82F6;
+      color: #1E40AF;
+      padding: 3px 10px;
+      border-radius: 10px;
+    }
+    .chip-target-answer {
+      background: #FEF3C7;
+      border: 2px solid #D97706;
+      color: #92400E;
+      padding: 3px 12px;
+      border-radius: 10px;
+      font-weight: 900;
+    }
+
+    /* FULL CONTINUOUS NOTEBOOK VIEW (Q&A IN WRITE MODE) */
+    .continuous-notebook-slate {
+      position: relative;
+      width: 100%;
+      max-width: 840px;
+      height: 180px;
+      background: #FFFFFF;
+      border: 3px solid #8B5A2B;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+    }
+    .notebook-rules-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* SECTION 3: DIALECT SHELF & TICKS */
+    .dialect-reference-shelf {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 8px;
+    }
+    .dialect-study-pill {
+      background: #FFF;
+      border: 1.5px solid var(--border-ornament);
+      border-radius: 12px;
+      padding: 8px 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-top: 2px dashed var(--border);
-      padding-top: 8px;
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+
+    .tick-selection-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 10px;
+      margin-top: 6px;
+    }
+    .tick-sentence-card {
+      background: #FFF;
+      border: 2px solid #CBD5E1;
+      border-radius: 14px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      font-size: 1.15rem;
+      font-weight: 800;
+      transition: all 0.15s ease;
+    }
+    .tick-sentence-card.checked-correct {
+      border-color: #16A34A;
+      background: #F0FDF4;
+      color: #166534;
+    }
+    .tick-circle-indicator {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid #CBD5E1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.2rem;
+      background: #FFF;
+    }
+    .tick-sentence-card.checked-correct .tick-circle-indicator {
+      background: #16A34A;
+      border-color: #16A34A;
+      color: #FFF;
+    }
+
+    /* SECTION 4: MCQ BUTTONS WITH PINK STEM HIGHLIGHTS */
+    .mcq-exercise-card {
+      background: #FFF;
+      border: 2px solid var(--border-ornament);
+      border-radius: 16px;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .mcq-pink-stem {
+      color: #D946EF;
+      font-weight: 900;
+    }
+    .mcq-options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .mcq-choice-btn {
+      background: #FFF7ED;
+      border: 2px solid var(--border-warm);
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-size: 1.1rem;
+      font-weight: 800;
+      cursor: pointer;
+      text-align: left;
+    }
+    .mcq-choice-btn.selected {
+      background: #FEF08A;
+      border-color: #EAB308;
+      box-shadow: 0 0 10px rgba(234, 179, 8, 0.4);
+    }
+
+    /* SECTION 5: MAGENTA LETTER RIDDLES */
+    .riddle-words-chain {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 1.35rem;
+      font-weight: 900;
+      flex-wrap: wrap;
+    }
+    .magenta-riddle-glyph {
+      color: #D946EF;
+      text-decoration: underline;
+      font-size: 1.6rem;
+    }
+
+    /* SECTION 6: HOMOPHONE PICTURE CARDS */
+    .homophone-deck-wrapper {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 12px;
+    }
+    .homophone-study-box {
+      background: #FFF;
+      border: 2.5px solid var(--border-ornament);
+      border-radius: 18px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .homophone-icons-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      background: #FEF3C7;
+      padding: 8px;
+      border-radius: 14px;
+    }
+    .homophone-badge-circle {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      border: 2px solid var(--gold-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+    .homophone-badge-circle img {
+      width: 84%;
+      height: 84%;
+      object-fit: contain;
+    }
+
+    /* FOOTER DOCK */
+    .workspace-footer-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 2px dashed rgba(245, 158, 11, 0.6);
+      padding-top: 6px;
       flex-shrink: 0;
     }
-
-    .btn-verify-main {
+    .status-text-pill {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text-temple);
+      background: rgba(255, 253, 246, 0.94);
+      padding: 6px 14px;
+      border-radius: 14px;
+      border: 1.5px solid var(--border-ornament);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    .btn-verify-seal {
       background: linear-gradient(180deg, #16A34A 0%, #15803D 100%);
-      border: 2px solid #86EFAC;
+      border: 2.5px solid #86EFAC;
       color: #FFFFFF;
-      font-size: 1.15rem;
-      font-weight: 900;
-      padding: 6px 28px;
-      border-radius: 16px;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.35);
-    }
-    .btn-verify-main:active { transform: scale(0.96); }
-
-    /* SUCCESS TOAST */
-    .toast-popup {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: #15803D;
-      color: #FFFFFF;
-      font-size: 1.15rem;
-      font-weight: 900;
-      padding: 10px 24px;
+      font-size: 1.25rem;
+      font-weight: 800;
+      padding: 8px 32px;
       border-radius: 20px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-      z-index: 99999;
-      opacity: 0;
-      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(22, 163, 74, 0.4);
+      transition: all 0.15s ease;
     }
-    .toast-popup.visible {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
+    .btn-verify-seal:active { transform: scale(0.96); }
+
+    /* LETTER DRAWER MODAL (PAGE 1 NOTEBOOK PREFACE) */
+    #alphabetDrawerModal {
+      position: fixed;
+      inset: 0;
+      background: rgba(12, 6, 3, 0.65);
+      backdrop-filter: blur(5px);
+      z-index: 100000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .alphabet-drawer-card {
+      background: #FFFDF9;
+      border: 3.5px solid var(--gold-primary);
+      border-radius: 24px;
+      padding: 20px 24px;
+      width: 92%;
+      max-width: 740px;
+      max-height: 85vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 16px 45px rgba(0,0,0,0.5);
+      position: relative;
+    }
+    .drawer-letters-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .letter-chip-box {
+      width: 46px;
+      height: 46px;
+      background: #FEF3C7;
+      border: 2px solid var(--gold-primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--text-temple);
+      cursor: pointer;
+    }
+    .letter-chip-box:active { transform: scale(0.92); }
+
+    /* CELEBRATION MODAL */
+    #celebrationModal {
+      position: fixed;
+      inset: 0;
+      z-index: 110000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(12, 6, 3, 0.65);
+      backdrop-filter: blur(5px);
+    }
+    .celebration-card {
+      background: #FFFDF9;
+      border: 3.5px solid var(--gold-primary);
+      border-radius: 24px;
+      padding: 24px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      width: 90%;
+      max-width: 440px;
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.5);
     }
   </style>
 </head>
 <body>
 
   <div id="screenDimOverlay"></div>
-  <div class="toast-popup" id="toastNotice">✨ அற்புதம் ஹுமாயூன்! மிகச் சரியாக முடித்தாய்!</div>
 
   <!-- TOP HUD -->
   <header class="top-hud-bar">
     <div class="hud-group-left">
-      <button type="button" class="hud-btn" onclick="goToHub()">🪷 Hub</button>
-      <button type="button" class="hud-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
-      <button type="button" class="pen-toggle-btn pen-active" id="btnPenOnly" onclick="togglePenOnly()">🖊️ Pen Only</button>
+      <button type="button" class="hud-btn" onclick="goToHub()">🪷 முகப்பு</button>
+      <button type="button" class="hud-btn" onclick="toggleFullscreen()">⛶ முழுத்திரை</button>
+      <button type="button" class="pen-toggle-btn pen-active" id="btnPenMode" onclick="togglePenMode()">🖊️ Pen Only</button>
     </div>
 
     <div class="mode-switch-segmented">
-      <button type="button" class="mode-tab-pill active" id="tabLearn" onclick="switchAppMode('learn')">📖 படி &amp; மனனம்</button>
-      <button type="button" class="mode-tab-pill" id="tabTest" onclick="switchAppMode('test')">🔒 பயிற்சித் தேர்வு</button>
+      <button type="button" class="mode-tab-pill active" id="tabPractice" onclick="setAppMode('practice')">📖 பயிற்சி</button>
+      <button type="button" class="mode-tab-pill" id="tabWrite" onclick="setAppMode('write')">✍️ எழுதுதல் (தேர்வு)</button>
     </div>
 
     <div class="hud-group-right">
-      <button type="button" class="hud-btn" id="btnDimmer" onclick="toggleDimmer()">💡 Dim Screen</button>
-      <button type="button" class="hud-btn" onclick="resetActiveTab()">🔄 Reset</button>
+      <button type="button" class="hud-btn" onclick="openAlphabetDrawer()">🪔 எழுத்துப் பலகை</button>
+      <button type="button" class="hud-btn" id="btnDimmer" onclick="toggleDimmer()">💡 மங்கலாக்கு</button>
+      <button type="button" class="hud-btn" onclick="resetActiveSection()">🔄 தொடக்கம்</button>
     </div>
   </header>
 
-  <!-- MASTER VIEW -->
-  <div class="master-stage-wrapper" id="masterStage">
-    
-    <!-- RETRACTABLE SECTIONS SIDEBAR -->
-    <aside class="sections-sidebar">
-      <button type="button" class="sidebar-collapse-btn" onclick="toggleSidebar()">◀</button>
-      <button type="button" class="section-tab-item active" onclick="selectSection(0)">
-        <span>📝</span><span class="section-tab-title">1. சொல்வதை எழுதுக</span>
-      </button>
-      <button type="button" class="section-tab-item" onclick="selectSection(1)">
-        <span>❓</span><span class="section-tab-title">2. வினா விடை</span>
-      </button>
-      <button type="button" class="section-tab-item" onclick="selectSection(2)">
-        <span>🧩</span><span class="section-tab-title">3. பொருத்துக</span>
-      </button>
-      <button type="button" class="section-tab-item" onclick="selectSection(3)">
-        <span>🎯</span><span class="section-tab-title">4. சரியான விடை</span>
-      </button>
-      <button type="button" class="section-tab-item" onclick="selectSection(4)">
-        <span>🎨</span><span class="section-tab-title">5. எழுத்துச் சேர்க்கை</span>
-      </button>
-      <button type="button" class="section-tab-item" onclick="selectSection(5)">
-        <span>🔍</span><span class="section-tab-title">6. ஒலி வேறுபாடு</span>
-      </button>
+  <!-- MASTER FOREST STAGE -->
+  <main class="master-forest-stage" id="masterStage">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="mentor-side-deck">
+      <button type="button" class="sidebar-collapse-toggle" onclick="toggleSidebar()" title="சுருக்கு / விரி">◀</button>
+      <div class="thiruvalluvar-terrace-hero" onclick="toggleSidebar()">
+        <img src="assets/thiruvalluvar.png" class="thiruvalluvar-hero-img" alt="ஆசான்" onerror="handleImageFallback(this)" />
+      </div>
+
+      <div class="module-menu-container" id="moduleTabsList"></div>
     </aside>
 
-    <!-- WORKSPACE -->
-    <main class="workspace-pane">
+    <!-- RIGHT WORKSPACE (FULLY TRANSPARENT) -->
+    <section class="workspace-floating-plaque">
+
+      <!-- PALM SCROLL BANNER -->
+      <div class="palm-scroll-banner-box">
+        <div class="banner-quest-title" id="bannerHeaderTamil">1. சொல்வதை எழுதுக</div>
+        <button type="button" class="freely-floating-parrot-btn" onclick="speakCurrentContext()" title="ஒலி">
+          <img src="assets/mentor-parrot.png" class="parrot-sprite-img" alt="கிளி" onerror="handleImageFallback(this)" />
+        </button>
+      </div>
+
+      <div class="quest-interactive-body" id="stageContentBody"></div>
+
+      <div class="workspace-footer-bar">
+        <span class="status-text-pill" id="statusNoticeText">எழுத்துகளை வரிசைப்படுத்தி எழுதுக!</span>
+        <button type="button" class="btn-verify-seal" onclick="verifyActiveTask()">சரிபார் ✨</button>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ALPHABET DRAWER MODAL (PAGE 1 NOTEBOOK PREFACE) -->
+  <div id="alphabetDrawerModal">
+    <div class="alphabet-drawer-card">
       <div style="display:flex; justify-content:space-between; align-items:center;">
-        <h2 id="sectionHeading" style="font-size:1.3rem; font-weight:900; color:var(--text);">சொல்வதை எழுதுக</h2>
-        <span id="instructionBadge" style="font-size:0.95rem; font-weight:800; color:var(--subtext);">எழுத்துகளை வரிசைப்படுத்தி எழுதுக!</span>
+        <h3 style="font-size:1.35rem; font-weight:900; color:var(--text-temple);">தமிழ் வகுப்பேடு: எழுத்துப் பலகை</h3>
+        <button type="button" class="hud-btn" onclick="closeAlphabetDrawer()">✕ மூடு</button>
       </div>
 
-      <div class="exercise-scroll-box" id="exerciseContainer"></div>
-
-      <div class="workspace-footer">
-        <span style="font-size:0.95rem; font-weight:800; color:var(--subtext);" id="footerCounter">7 சொற்கள்</span>
-        <button type="button" class="btn-verify-main" onclick="verifyCurrentSection()">சரிபார் ✨</button>
+      <div>
+        <div style="font-weight:800; color:#92400E; margin-bottom:4px;">உயிர் எழுத்துகள் (12)</div>
+        <div class="drawer-letters-grid" id="vowelsGrid"></div>
       </div>
-    </main>
+
+      <div>
+        <div style="font-weight:800; color:#92400E; margin-bottom:4px;">ஆய்த எழுத்து (1)</div>
+        <div class="drawer-letters-grid">
+          <div class="letter-chip-box" onclick="speakTamil('அக்கு')">ஃ</div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-weight:800; color:#92400E; margin-bottom:4px;">மெய் எழுத்துகள் (18)</div>
+        <div class="drawer-letters-grid" id="consonantsGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CELEBRATION MODAL -->
+  <div id="celebrationModal">
+    <div class="celebration-card">
+      <div style="font-size:3rem;">🪷</div>
+      <div style="font-size:1.6rem; font-weight:900; color:#92400E;">அற்புதம் ஹுமாயூன்!</div>
+      <div style="font-size:1.1rem; font-weight:800; color:var(--text-temple);" id="celebrationMsg">
+        அனைத்துப் பயிற்சிகளையும் மிகச் சரியாக முடித்துவிட்டீர்கள்!
+      </div>
+      <button type="button" class="btn-verify-seal" onclick="closeCelebration()">தொடர்க ➔</button>
+    </div>
   </div>
 
   <script>
-    /* 1. AUDIO ENGINE */
+    /* PURE TAMIL VOICE SYNTHESIS */
     function speakTamil(txt) {
       if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(txt);
       u.lang = 'ta-IN';
-      u.rate = 0.80;
+      u.rate = 0.82;
       window.speechSynthesis.speak(u);
     }
 
     function playSyllableChant(word, syllables) {
       speakTamil(word);
       let step = 0;
-      function nextSyllable() {
+      function next() {
         if (step < syllables.length) {
           setTimeout(() => {
             speakTamil(syllables[step]);
             step++;
-            nextSyllable();
+            next();
           }, 650);
         }
       }
-      setTimeout(nextSyllable, 700);
+      setTimeout(next, 700);
     }
 
-    /* 2. SCREEN DIMMER (SAVED IN LOCALSTORAGE) */
+    /* SCREEN DIMMER (PERSISTENT IN LOCALSTORAGE) */
     let isDimmed = localStorage.getItem('humayun_dim_state') === 'true';
-    function applyDimState() {
+    function applyDimmerState() {
       const el = document.getElementById('screenDimOverlay');
       const btn = document.getElementById('btnDimmer');
       el.style.display = isDimmed ? 'block' : 'none';
-      btn.textContent = isDimmed ? '☀️ Bright' : '💡 Dim Screen';
+      btn.textContent = isDimmed ? '☀️ வெளிச்சம்' : '💡 மங்கலாக்கு';
     }
     function toggleDimmer() {
       isDimmed = !isDimmed;
       localStorage.setItem('humayun_dim_state', isDimmed);
-      applyDimState();
+      applyDimmerState();
     }
 
-    /* 3. HARDWARE PALM REJECTION & FULLSCREEN */
+    /* HARDWARE PALM REJECTION */
     let penOnlyMode = true;
-    function togglePenOnly() {
+    function togglePenMode() {
       penOnlyMode = !penOnlyMode;
-      const btn = document.getElementById('btnPenOnly');
+      const btn = document.getElementById('btnPenMode');
       btn.className = `pen-toggle-btn ${penOnlyMode ? 'pen-active' : ''}`;
       btn.textContent = penOnlyMode ? '🖊️ Pen Only' : '👆 Any Touch';
     }
 
     function toggleFullscreen() {
       const el = document.documentElement;
-      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+      if (!document.fullscreenElement) {
         if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
-        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
       } else {
         if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
       }
     }
 
     function toggleSidebar() {
+      saveAllCanvases();
       const stage = document.getElementById('masterStage');
-      const btn = document.querySelector('.sidebar-collapse-btn');
-      const isCollapsed = stage.classList.toggle('collapsed');
+      const btn = document.querySelector('.sidebar-collapse-toggle');
+      const isCollapsed = stage.classList.toggle('collapsed-sidebar');
       btn.textContent = isCollapsed ? '▶' : '◀';
     }
 
     function goToHub() {
-      saveAllInk();
+      saveAllCanvases();
       if (window.parent && window.parent !== window) {
         window.parent.postMessage("close-lesson-to-hub", "*");
       } else {
@@ -624,46 +1026,110 @@
       }
     }
 
-    /* 4. EXACT CURRICULUM DATA (NOTEBOOK-ALIGNED) */
-    const DICTATION_WORDS = [
+    function handleImageFallback(img) {
+      img.onerror = null;
+      img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><circle cx='60' cy='60' r='55' fill='%23FEF3C7' stroke='%23D97706' stroke-width='4'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='42'>🪷</text></svg>";
+    }
+
+    /* GROUND TRUTH NOTEBOOK CURRICULUM (4-PAGE PDF AUDITED) */
+    const MODULES = [
+      { id: 0, title: "1. சொல்வதை எழுதுக" },
+      { id: 1, title: "2. வினா விடை (4 வினாக்கள்)" },
+      { id: 2, title: "3. பேச்சு ➔ எழுத்து வழக்கு" },
+      { id: 3, title: "4. சரியான விடை" },
+      { id: 4, title: "5. எழுத்துச் சேர்க்கை" },
+      { id: 5, title: "6. ஒலி வேறுபாடு" }
+    ];
+
+    // Page 2: சொல்வதை எழுதுக (Exact Classwork Words)
+    const DICTATION_ITEMS = [
       { id: 'd1', word: 'விலங்குகள்', syllables: ['வி', 'லங்', 'கு', 'கள்'] },
       { id: 'd2', word: 'ஒற்றுமை', syllables: ['ஒற்', 'று', 'மை'] },
-      { id: 'd3', word: 'மரம்', syllables: ['ம', 'ரம்'] }, // Corrected from மாதம்
+      { id: 'd3', word: 'மாதம்', syllables: ['மா', 'தம்'] },
       { id: 'd4', word: 'உயர்ந்தவர்', syllables: ['உ', 'யர்ந்', 'த', 'வர்'] },
-      { id: 'd5', word: 'வளர்ச்சி', syllables: ['வ', 'ளர்ச்', 'சி'] }, // Corrected from வலிமை[cite: 6, 8]
+      { id: 'd5', word: 'வலிமை', syllables: ['வ', 'லி', 'மை'] },
       { id: 'd6', word: 'ஒப்பந்தம்', syllables: ['ஒப்', 'பந்', 'தம்'] },
       { id: 'd7', word: 'பாலைவனம்', syllables: ['பா', 'லை', 'வ', 'னம்'] }
     ];
 
-    const QA_SENTENCE = {
-      q: "மரங்கள் எவற்றுடன் சண்டையிட்டன?",
-      a: "மரங்கள் விலங்குகளுடன் சண்டையிட்டன.",
-      words: [
-        { id: 'qa1', word: 'மரங்கள்', syllables: ['ம', 'ரங்', 'கள்'] },
-        { id: 'qa2', word: 'விலங்குகளுடன்', syllables: ['வி', 'லங்', 'கு', 'க', 'ளு', 'டன்'] },
-        { id: 'qa3', word: 'சண்டையிட்டன.', syllables: ['சண்', 'டை', 'யிட்', 'ட', 'ன.'] }
-      ]
-    };
+    // Pages 3 & 4: All 4 Classwork Notebook Q&As
+    const QA_ITEMS = [
+      {
+        id: 'qa_q1',
+        q: 'மரங்கள் எவற்றுடன் சண்டையிட்டன?',
+        a: 'மரங்கள் விலங்குகளுடன் சண்டையிட்டன.',
+        copyPre: 'மரங்கள்',
+        targetWord: 'விலங்குகளுடன்',
+        targetSyllables: ['வி', 'லங்', 'கு', 'க', 'ளு', 'டன்'],
+        copyPost: 'சண்டையிட்டன.',
+        secretLink: '💡 சொல் 1: விலங்குகள் + உடன் ➔ விலங்குகளுடன்'
+      },
+      {
+        id: 'qa_q2',
+        q: 'காட்டை விட்டு வெளியேறியவை எவை?',
+        a: 'காட்டைவிட்டு வெளியேறியவை விலங்குகள் ஆகும்.',
+        copyPre: 'காட்டைவிட்டு வெளியேறியவை',
+        targetWord: 'விலங்குகள் ஆகும்.',
+        targetSyllables: ['வி', 'லங்', 'கு', 'கள்', 'ஆ', 'கும்.'],
+        copyPost: '',
+        secretLink: '💡 சொல் 1: விலங்குகள்'
+      },
+      {
+        id: 'qa_q3',
+        q: 'மரங்களும் விலங்குகளும் செய்துகொண்ட ஒப்பந்தம் என்ன?',
+        a: 'ஒரு மாதம் விலங்குகள் காட்டுக்கு வெளியே வாழ வேண்டும் இதுவே மரங்களும் விலங்குகளும் செய்துகொண்ட ஒப்பந்தம் ஆகும்.',
+        copyPre: 'ஒரு மாதம் விலங்குகள் காட்டுக்கு வெளியே வாழ வேண்டும் இதுவே',
+        targetWord: 'மரங்களும் விலங்குகளும் செய்துகொண்ட ஒப்பந்தம் ஆகும்.',
+        targetSyllables: ['ஒப்', 'பந்', 'தம்'],
+        copyPost: '',
+        secretLink: '💡 சொல் 3 (மாதம்), சொல் 1 (விலங்குகள்), சொல் 6 (ஒப்பந்தம்)'
+      },
+      {
+        id: 'qa_q4',
+        q: 'கதையின் மூலம் நீ என்ன தெரிந்து கொண்டாய்?',
+        a: 'கதையின் மூலம் நான் ஒற்றுமையே வலிமை என்பதை தெரிந்து கொண்டேன்.',
+        copyPre: 'கதையின் மூலம் நான்',
+        targetWord: 'ஒற்றுமையே வலிமை',
+        targetSyllables: ['ஒற்', 'று', 'மை', 'யே', 'வ', 'லி', 'மை'],
+        copyPost: 'என்பதை தெரிந்து கொண்டேன்.',
+        secretLink: '💡 சொல் 2 (ஒற்றுமை) + சொல் 5 (வலிமை)'
+      }
+    ];
 
-    let activeSectionIdx = 0;
-    let appMode = 'learn';
-    let assembledState = {};
+    let activeModuleIdx = 0;
+    let appMode = 'practice'; // 'practice' | 'write'
+    let assembledTokens = {};
+    let matchedTicks = {};
+    let mcqChoices = {};
 
-    /* 5. FAST INK PERSISTENCE ENGINE (DEFERRED BASE64, RETINA-AWARE) */
+    /* ZERO-LAG INK ENGINE (SAMSUNG TAB S9 SPEC) */
     const inkMemoryCache = {};
 
-    function getInkKey(id) {
+    function getStorageKey(id) {
       return `v3_humayun_ink::${appMode}::${id}`;
     }
 
-    function setupCanvases() {
+    function inlineDualLineBlank(id, width = 380, ghostWord = "") {
+      return `
+        <div class="ink-writing-row">
+          <div class="dual-line-canvas-box" style="width:${width}px;">
+            <div class="dual-lines-canvas-bg"></div>
+            ${ghostWord ? `<div class="ghost-trace-overlay">${ghostWord}</div>` : ''}
+            <canvas class="dual-canvas" data-canvas-id="${id}" data-logical-width="${width}" style="width:${width}px; height:96px;"></canvas>
+          </div>
+          <button type="button" class="inline-clear-btn" onclick="clearDualCanvas('${id}')" title="அழி">🧹</button>
+        </div>
+      `;
+    }
+
+    function setupDualCanvases() {
       const dpr = window.devicePixelRatio || 1;
-      const canvasList = document.querySelectorAll('.paint-canvas');
+      const canvasList = document.querySelectorAll('.dual-canvas');
 
       canvasList.forEach(c => {
         const id = c.getAttribute('data-canvas-id');
-        const logicalW = parseInt(c.getAttribute('data-w'), 10) || 340;
-        const logicalH = 72;
+        const logicalW = parseInt(c.getAttribute('data-logical-width'), 10) || 380;
+        const logicalH = parseInt(c.style.height, 10) || 96;
 
         c.width = Math.round(logicalW * dpr);
         c.height = Math.round(logicalH * dpr);
@@ -672,7 +1138,7 @@
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.clearRect(0, 0, logicalW, logicalH);
 
-        const storageKey = getInkKey(id);
+        const storageKey = getStorageKey(id);
         const cached = inkMemoryCache[storageKey] || localStorage.getItem(storageKey);
 
         if (cached) {
@@ -690,7 +1156,7 @@
         let lastX = 0, lastY = 0;
 
         c.onpointerdown = (e) => {
-          if (penOnlyMode && e.pointerType !== 'pen') return;
+          if (penOnlyMode && e.pointerType !== 'pen' && e.pointerType !== 'mouse') return;
           isDrawing = true;
           try { c.setPointerCapture(e.pointerId); } catch (_) {}
           const rect = c.getBoundingClientRect();
@@ -701,7 +1167,7 @@
 
         c.onpointermove = (e) => {
           if (!isDrawing) return;
-          if (penOnlyMode && e.pointerType !== 'pen') return;
+          if (penOnlyMode && e.pointerType !== 'pen' && e.pointerType !== 'mouse') return;
 
           const rect = c.getBoundingClientRect();
           const currX = e.clientX - rect.left;
@@ -716,7 +1182,7 @@
           ctx.strokeStyle = '#1E3A8A';
 
           const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
-          ctx.lineWidth = 2.0 * (pressure * 1.4 + 0.35); // 2.0px fountain calibrated
+          ctx.lineWidth = 2.0 * (pressure * 1.35 + 0.35); // 2.0px fountain feel
           ctx.stroke();
 
           lastX = currX;
@@ -724,250 +1190,523 @@
           e.preventDefault();
         };
 
-        const endStroke = () => {
+        const stopStroke = (e) => {
           if (isDrawing) {
             isDrawing = false;
-            // Defer Base64 compression to prevent UI micro-stutters
-            requestIdleCallback ? requestIdleCallback(() => saveSingleCanvas(c, id)) : setTimeout(() => saveSingleCanvas(c, id), 20);
+            try { c.releasePointerCapture(e.pointerId); } catch (_) {}
+            // Defer Base64 compression to background task to eliminate S-Pen stutter
+            if (window.requestIdleCallback) {
+              requestIdleCallback(() => saveSingleCanvas(c, id));
+            } else {
+              setTimeout(() => saveSingleCanvas(c, id), 20);
+            }
           }
         };
 
-        c.onpointerup = endStroke;
-        c.onpointercancel = endStroke;
+        c.onpointerup = stopStroke;
+        c.onpointercancel = stopStroke;
       });
     }
 
     function saveSingleCanvas(c, id) {
       try {
         const data = c.toDataURL('image/png');
-        const key = getInkKey(id);
+        const key = getStorageKey(id);
         inkMemoryCache[key] = data;
         localStorage.setItem(key, data);
       } catch (e) {}
     }
 
-    function saveAllInk() {
-      document.querySelectorAll('.paint-canvas').forEach(c => {
+    function saveAllCanvases() {
+      document.querySelectorAll('.dual-canvas').forEach(c => {
         const id = c.getAttribute('data-canvas-id');
         saveSingleCanvas(c, id);
       });
     }
 
-    function clearCanvas(id) {
-      const c = document.querySelector(`.paint-canvas[data-canvas-id="${id}"]`);
+    function clearDualCanvas(id) {
+      const c = document.querySelector(`.dual-canvas[data-canvas-id="${id}"]`);
       if (c) {
         const ctx = c.getContext('2d');
         const dpr = window.devicePixelRatio || 1;
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.clearRect(0, 0, c.width / dpr, c.height / dpr);
-        const key = getInkKey(id);
+        const key = getStorageKey(id);
         delete inkMemoryCache[key];
         localStorage.removeItem(key);
       }
     }
 
-    /* 6. SECTION RENDERERS */
-    function selectSection(idx) {
-      saveAllInk();
-      activeSectionIdx = idx;
-      document.querySelectorAll('.section-tab-item').forEach((b, i) => b.classList.toggle('active', i === idx));
-      renderCurrentSection();
+    /* NAVIGATION & MODE MANAGEMENT */
+    function renderModuleTabs() {
+      const list = document.getElementById('moduleTabsList');
+      list.innerHTML = '';
+      MODULES.forEach((m, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `module-menu-item ${idx === activeModuleIdx ? 'active' : ''}`;
+        btn.onclick = () => {
+          switchModule(idx);
+          toggleSidebar();
+        };
+        btn.innerHTML = `<span>🪷</span><span class="module-menu-text">${m.title}</span>`;
+        list.appendChild(btn);
+      });
     }
 
-    function switchAppMode(m) {
-      saveAllInk();
+    function setAppMode(m) {
+      saveAllCanvases();
       appMode = m;
-      document.body.className = (m === 'test') ? 'test-mode' : '';
-      document.getElementById('tabLearn').classList.toggle('active', m === 'learn');
-      document.getElementById('tabTest').classList.toggle('active', m === 'test');
-      renderCurrentSection();
+      document.body.className = (m === 'write') ? 'write-mode' : '';
+      document.getElementById('tabPractice').classList.toggle('active', m === 'practice');
+      document.getElementById('tabWrite').classList.toggle('active', m === 'write');
+      switchModule(activeModuleIdx);
     }
 
-    function renderCurrentSection() {
-      const container = document.getElementById('exerciseContainer');
+    function switchModule(idx) {
+      saveAllCanvases();
+      activeModuleIdx = idx;
+      renderModuleTabs();
+      document.getElementById('bannerHeaderTamil').textContent = MODULES[idx].title;
+      renderCurrentExercise();
+    }
+
+    function speakCurrentContext() {
+      if (activeModuleIdx === 0) speakTamil("சொல்வதை கேட்டு அழகாக எழுதுக");
+      else if (activeModuleIdx === 1) speakTamil("வினாவைப் பார்த்து விடையை எழுதுக");
+      else if (activeModuleIdx === 2) speakTamil("பேச்சு வழக்கை எழுத்து வழக்கிற்கு மாற்றுக");
+      else if (activeModuleIdx === 3) speakTamil("சரியான விடையைத் தேர்ந்தெடுக்க");
+      else if (activeModuleIdx === 4) speakTamil("வண்ண எழுத்துக்களை இணைத்து சொல் உருவாக்குக");
+      else if (activeModuleIdx === 5) speakTamil("உரிய சொல்லைத் தேர்ந்தெடுத்து நிரப்புக");
+    }
+
+    /* EXERCISE RENDERING */
+    function renderCurrentExercise() {
+      const container = document.getElementById('stageContentBody');
       container.innerHTML = '';
 
-      if (activeSectionIdx === 0) {
-        document.getElementById('sectionHeading').textContent = "1. சொல்வதை எழுதுக (Classwork)";
-        document.getElementById('instructionBadge').textContent = "ஒலியைக்கேட்டு, எழுத்துகளை அடுக்கி, அழகாக எழுதுக!";
-        document.getElementById('footerCounter').textContent = "7 சொற்கள்";
+      if (activeModuleIdx === 0) {
+        // MODULE 1: சொல்வதை எழுதுக (7 WORDS)
+        document.getElementById('statusNoticeText').textContent = (appMode === 'practice')
+          ? "ஒலியைக்கேட்டு, எழுத்துகளை அடுக்கி, அழகாக எழுதுக!"
+          : "ஒலியை மட்டும் கேட்டு சுயமாக நோட்டுப் பெட்டியில் எழுதுக!";
 
-        DICTATION_WORDS.forEach((item, idx) => {
-          const placed = assembledState[item.id] || [];
+        DICTATION_ITEMS.forEach((item, idx) => {
           const card = document.createElement('div');
-          card.className = 'memorize-card';
+          card.className = 'lesson-study-card';
+          const placed = assembledTokens[item.id] || [];
 
           card.innerHTML = `
-            <div class="card-top-row">
-              <span class="word-cue-text">${idx + 1}. ${item.word}</span>
+            <div class="card-meta-row">
+              <span class="word-cue-stem">${idx + 1}. ${item.word}</span>
               <button type="button" class="audio-play-pill" onclick="playSyllableChant('${item.word}', ${JSON.stringify(item.syllables)})">
-                🔊 சொல் &amp; எழுத்துகள்
+                🔊 ${idx + 1}. கேள்
               </button>
             </div>
 
-            <div class="syllable-rack-container">
-              <div class="target-slots-row" id="rack_${item.id}">
-                ${item.syllables.map((_, sIdx) => `<div class="slot-cell">${placed[sIdx] || '#'}</div>`).join('')}
-              </div>
-              <div class="syllable-dock">
-                ${[...item.syllables].sort().map(syl => {
-                  const isPlaced = placed.includes(syl);
-                  return `<button type="button" class="syllable-token-btn ${isPlaced ? 'placed' : ''}" onclick="placeSyllable('${item.id}', '${syl}')">${syl}</button>`;
-                }).join('')}
-                <button type="button" class="hud-btn" style="padding:4px 10px; font-size:0.8rem;" onclick="resetSyllables('${item.id}')">⌫ Reset</button>
-              </div>
+            <div class="syllable-assembly-rack">
+              ${item.syllables.map((_, sIdx) => `<div class="rack-target-slot">${placed[sIdx] || (sIdx + 1)}</div>`).join('')}
             </div>
 
-            <div class="ink-blank-row">
-              <div class="ink-canvas-frame" style="width:380px;">
-                <div class="dual-lines-bg"></div>
-                <div class="ghost-trace-overlay">${item.word}</div>
-                <canvas class="paint-canvas" data-canvas-id="${item.id}" data-w="380"></canvas>
-              </div>
-              <button type="button" class="canvas-clear-icon" onclick="clearCanvas('${item.id}')">🧹</button>
+            <div class="syllable-coins-dock">
+              ${[...item.syllables].sort().map(syl => {
+                const isPlaced = placed.includes(syl);
+                return `
+                  <button type="button" class="tactile-syllable-coin ${isPlaced ? 'placed' : ''}" 
+                    onclick="handleTokenClick(this, '${item.id}', '${syl}')">${syl}</button>
+                `;
+              }).join('')}
+              <button type="button" class="hud-btn" style="padding:4px 10px; font-size:0.85rem;" onclick="resetItemTokens('${item.id}')">⌫ அழி</button>
             </div>
+
+            ${inlineDualLineBlank(item.id, 420, (appMode === 'practice' ? item.word : ''))}
           `;
           container.appendChild(card);
         });
 
-      } else if (activeSectionIdx === 1) {
-        document.getElementById('sectionHeading').textContent = "2. வினா - விடை (Notebook Sentence)";
-        document.getElementById('instructionBadge').textContent = "முழு வாக்கியத்தை நினைவுகூர்ந்து எழுதுக!";
-        document.getElementById('footerCounter').textContent = "1 வினா விடை";
+      } else if (activeModuleIdx === 1) {
+        // MODULE 2: வினா விடை (ALL 4 NOTEBOOK QUESTIONS WITH QUESTION-COPYING METHOD)
+        document.getElementById('statusNoticeText').textContent = (appMode === 'practice')
+          ? "நீல சொற்களை வினாவைப் பார்த்து எழுது; தங்கச் சொல்லை நினைவுகூர்ந்து எழுது!"
+          : "வினாவைப் பார்த்து முழு விடையையும் சுயமாக நோட்டுப் பக்கத்தில் எழுதுக!";
+
+        QA_ITEMS.forEach((qa, idx) => {
+          const card = document.createElement('div');
+          card.className = 'lesson-study-card';
+
+          if (appMode === 'practice') {
+            card.innerHTML = `
+              <div class="card-meta-row">
+                <span style="font-size:1.35rem; font-weight:900; color:var(--text-temple);">${idx + 1}. வினா: ${qa.q}</span>
+                <button type="button" class="audio-play-pill" onclick="speakTamil('${qa.q}')">🔊 வினா</button>
+              </div>
+
+              <div class="qa-breakdown-card">
+                <div class="qa-chips-flow">
+                  <span>விடை வடிவம்:</span>
+                  ${qa.copyPre ? `<span class="chip-copy-free">பார்த்து எழுது: ${qa.copyPre}</span>` : ''}
+                  <span class="chip-target-answer">★ விடைச் சொல்: ${qa.targetWord}</span>
+                  ${qa.copyPost ? `<span class="chip-copy-free">பார்த்து எழுது: ${qa.copyPost}</span>` : ''}
+                </div>
+                <div style="font-size:0.95rem; font-weight:800; color:#92400E;">${qa.secretLink}</div>
+              </div>
+
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <span style="font-size:1.15rem; font-weight:800; color:#15803D;">முழு விடை: ${qa.a}</span>
+                  <button type="button" class="audio-play-pill" onclick="speakTamil('${qa.a}')">🔊 முழு விடை</button>
+                </div>
+                ${inlineDualLineBlank(qa.id, 720, qa.a)}
+              </div>
+            `;
+          } else {
+            // WRITE MODE: Continuous wide 2-line notebook slate (Zero hints)
+            card.innerHTML = `
+              <div class="card-meta-row">
+                <span style="font-size:1.35rem; font-weight:900; color:var(--text-temple);">${idx + 1}. வினா: ${qa.q}</span>
+                <button type="button" class="audio-play-pill" onclick="speakTamil('${qa.q}')">🔊 வினா</button>
+              </div>
+              <div style="font-size:1.15rem; font-weight:800; color:var(--gold-deep); margin-bottom:4px;">
+                முழு விடையை நோட்டுப் பக்கத்தில் எழுதுக:
+              </div>
+              <div class="continuous-notebook-slate">
+                <svg class="notebook-rules-svg" viewBox="0 0 840 180" preserveAspectRatio="none">
+                  <line x1="0" y1="36" x2="840" y2="36" stroke="#93C5FD" stroke-width="1.5" stroke-dasharray="4 4"/>
+                  <line x1="0" y1="76" x2="840" y2="76" stroke="#93C5FD" stroke-width="2"/>
+                  <line x1="0" y1="116" x2="840" y2="116" stroke="#93C5FD" stroke-width="1.5" stroke-dasharray="4 4"/>
+                  <line x1="0" y1="156" x2="840" y2="156" stroke="#93C5FD" stroke-width="2"/>
+                  <line x1="28" y1="0" x2="28" y2="180" stroke="#EF4444" stroke-width="2"/>
+                </svg>
+                <canvas class="dual-canvas" data-canvas-id="${qa.id}_write" data-logical-width="840" style="width:100%; height:180px;"></canvas>
+              </div>
+              <div style="align-self:flex-end;">
+                <button type="button" class="hud-btn" onclick="clearDualCanvas('${qa.id}_write')">🧹 அழி</button>
+              </div>
+            `;
+          }
+          container.appendChild(card);
+        });
+
+      } else if (activeModuleIdx === 2) {
+        // MODULE 3: பேச்சு வழக்கு ➔ எழுத்து வழக்கு (SCREENSHOT 174133)
+        document.getElementById('statusNoticeText').textContent = "எழுத்து வழக்கு சொற்களைத் தொட்டு தேர்ந்தெடுக்க!";
 
         const card = document.createElement('div');
-        card.className = 'memorize-card';
+        card.className = 'lesson-study-card';
+
+        const studyPairs = [
+          ['வேகல', 'வேகவில்லை'], ['பெய்ஞ்சுது', 'பெய்தது'],
+          ['எரியல', 'எரியவில்லை'], ['புல்லு', 'புல்'],
+          ['பாலு', 'பால்'], ['புத்து', 'புற்று'],
+          ['தின்னேன்', 'தின்றேன்'], ['கடிச்சது', 'கடித்தது']
+        ];
+
+        const tickItems = [
+          { q1: 'பாம்புப்புத்து', q2: 'பாம்புப்புற்று', correct: 2 },
+          { q1: 'பட்டம் பறக்கிறது', q2: 'பட்டம் பறக்குது', correct: 1 },
+          { q1: 'பூனை ஓடியது', q2: 'பூனை ஓடுச்சு', correct: 1 },
+          { q1: 'தண்ணீர் குடிச்சான்', q2: 'தண்ணீர் குடித்தான்', correct: 2 },
+          { q1: 'அப்பளம் உடைஞ்சது', q2: 'அப்பளம் உடைந்தது', correct: 2 },
+          { q1: 'கை வலித்தது', q2: 'கை வலிச்சது', correct: 1 }
+        ];
+
         card.innerHTML = `
-          <div style="font-size:1.25rem; font-weight:900; color:var(--text); display:flex; justify-content:space-between; align-items:center;">
-            <span>வினா: ${QA_SENTENCE.q}</span>
-            <button type="button" class="audio-play-pill" onclick="speakTamil('${QA_SENTENCE.q}')">🔊 வினா</button>
-          </div>
-          <div style="font-size:1.15rem; font-weight:800; color:var(--success); margin:4px 0;">
-            <span class="word-cue-text">விடை: ${QA_SENTENCE.a}</span>
+          <div style="font-weight:900; color:var(--text-temple); font-size:1.15rem;">அறிவோம்: பேச்சு வழக்கு ➔ எழுத்து வழக்கு</div>
+          <div class="dialect-reference-shelf">
+            ${studyPairs.map(([c1, c2]) => `
+              <div class="dialect-study-pill">
+                <span onclick="speakTamil('${c1}')">${c1}</span>
+                <span>➔</span>
+                <span style="color:#16A34A; cursor:pointer;" onclick="speakTamil('${c2}')"><b>${c2}</b></span>
+              </div>
+            `).join('')}
           </div>
 
-          <div style="display:flex; flex-direction:column; gap:10px; margin-top:8px;">
-            ${QA_SENTENCE.words.map(w => `
-              <div style="display:flex; align-items:center; justify-content:space-between; background:#FFF; padding:8px 12px; border-radius:12px; border:1.5px solid var(--border);">
-                <span style="font-size:1.2rem; font-weight:900; color:var(--text);">${w.word}</span>
-                <button type="button" class="audio-play-pill" onclick="playSyllableChant('${w.word}',${JSON.stringify(w.syllables)})">🔊 ஒலி</button>
-                <div class="ink-canvas-frame" style="width:340px;">
-                  <div class="dual-lines-bg"></div>
-                  <div class="ghost-trace-overlay">${w.word}</div>
-                  <canvas class="paint-canvas" data-canvas-id="${w.id}" data-w="340"></canvas>
+          <div style="font-weight:900; color:var(--text-temple); font-size:1.15rem; margin-top:8px;">பயிற்சி: எழுத்து வழக்குச் சொற்களுக்கு ✓ குறியிடுக</div>
+          <div class="tick-selection-grid">
+            ${tickItems.map((item, i) => `
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <div class="tick-sentence-card ${matchedTicks[`t_${i}_1`] ? 'checked-correct' : ''}" onclick="handleTickCheck('t_${i}_1', ${item.correct === 1}, '${item.q1}')">
+                  <span>${item.q1}</span>
+                  <div class="tick-circle-indicator">${matchedTicks[`t_${i}_1`] ? '✓' : ''}</div>
                 </div>
-                <button type="button" class="canvas-clear-icon" onclick="clearCanvas('${w.id}')">🧹</button>
+                <div class="tick-sentence-card ${matchedTicks[`t_${i}_2`] ? 'checked-correct' : ''}" onclick="handleTickCheck('t_${i}_2', ${item.correct === 2}, '${item.q2}')">
+                  <span>${item.q2}</span>
+                  <div class="tick-circle-indicator">${matchedTicks[`t_${i}_2`] ? '✓' : ''}</div>
+                </div>
               </div>
             `).join('')}
           </div>
         `;
         container.appendChild(card);
 
-      } else {
-        // Simple view for matching, mcq, letters, contrast
-        renderQuickExercise(activeSectionIdx, container);
-      }
+      } else if (activeModuleIdx === 3) {
+        // MODULE 4: சரியான விடை (SCREENSHOT 174218)
+        document.getElementById('statusNoticeText').textContent = "சரியான விடையைத் தொட்டு கீழே எழுதுக!";
 
-      setTimeout(setupCanvases, 40);
-    }
-
-    function placeSyllable(wordId, syl) {
-      if (!assembledState[wordId]) assembledState[wordId] = [];
-      const item = DICTATION_WORDS.find(d => d.id === wordId);
-      if (assembledState[wordId].length < item.syllables.length) {
-        speakTamil(syl);
-        assembledState[wordId].push(syl);
-        renderCurrentSection();
-      }
-    }
-
-    function resetSyllables(wordId) {
-      assembledState[wordId] = [];
-      renderCurrentSection();
-    }
-
-    function renderQuickExercise(idx, container) {
-      const card = document.createElement('div');
-      card.className = 'memorize-card';
-
-      if (idx === 2) {
-        document.getElementById('sectionHeading').textContent = "3. பேச்சு வழக்கு ➔ எழுத்து வழக்கு";
-        const pairs = [
-          ['வேகல', 'வேகவில்லை'], ['பெய்ஞ்சுது', 'பெய்தது'],
-          ['எரியல', 'எரியவில்லை'], ['புல்லு', 'புல்'],
-          ['பாலு', 'பால்'], ['புத்து', 'புற்று'],
-          ['தின்னேன்', 'தின்றேன்'], ['கடிச்சது', 'கடித்தது']
+        const mcqQuestions = [
+          { id: 'mcq1', stem1: '1. ', pink: 'வேட்டை+ ஆட', stem2: ' இச்சொற்களைச் சேர்த்து எழுதக் கிடைப்பது:', opts: ['வேட்டையட', 'வேட்டையாட', 'வேட்டைஆடு', 'வெட்டையாட'], ans: 'வேட்டையாட' },
+          { id: 'mcq2', stem1: '2. ', pink: 'உயர்வு', stem2: ' இச்சொல்லின் எதிர்ச்சொல்:', opts: ['பணிவு', 'கனிவு', 'தாழ்வு', 'துணிவு'], ans: 'தாழ்வு' },
+          { id: 'mcq3', stem1: '3. ', pink: 'ஏற்றுக்கொள்கிறோம்', stem2: ' என்று கூறியது யார்?', opts: ['மரங்கள்', 'விலங்குகள்', 'பறவைகள்', 'மனிதர்கள்'], ans: 'பறவைகள்' },
+          { id: 'mcq4', stem1: '4. ', pink: "'எந்த உணவும் கிடைக்கவில்லை'", stem2: ' என்று கூறியது:', opts: ['சிங்கம்', 'புலி', 'முயல்', 'மான்'], ans: 'சிங்கம்' }
         ];
-        card.innerHTML = `
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-            ${pairs.map(([col1, col2]) => `
-              <div style="background:#FFF; padding:10px 14px; border-radius:12px; border:1.5px solid var(--border); display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size:1.15rem; font-weight:800; cursor:pointer;" onclick="speakTamil('${col1}')">${col1}</span>
-                <span>➔</span>
-                <span style="font-size:1.15rem; font-weight:900; color:var(--success); cursor:pointer;" onclick="speakTamil('${col2}')">${col2}</span>
-              </div>
-            `).join('')}
-          </div>
-        `;
-      } else if (idx === 3) {
-        document.getElementById('sectionHeading').textContent = "4. சரியான விடையைத் தெரிவு செய்வேன்";
-        card.innerHTML = `
-          <div style="display:flex; flex-direction:column; gap:12px;">
-            <div style="font-size:1.15rem; font-weight:800;">1. வேட்டை + ஆட = <b>வேட்டையாட</b></div>
-            <div style="font-size:1.15rem; font-weight:800;">2. உயர்வு எதிர்ச்சொல் = <b>தாழ்வு</b></div>
-            <div style="font-size:1.15rem; font-weight:800;">3. 'ஏற்றுக்கொள்கிறோம்' என்றது = <b>பறவைகள்</b></div>
-            <div style="font-size:1.15rem; font-weight:800;">4. 'எந்த உணவும் கிடைக்கவில்லை' என்றது = <b>சிங்கம்</b></div>
-          </div>
-        `;
-      } else if (idx === 4) {
-        document.getElementById('sectionHeading').textContent = "5. எழுத்துக்களைச் சேர்ப்போம்";
-        card.innerHTML = `
-          <div style="display:flex; flex-direction:column; gap:12px;">
-            <div style="font-size:1.2rem; font-weight:800;">• பள்ளம் + அரும்பு + பார்த்திபன் ➔ <b>பருத்தி</b></div>
-            <div style="font-size:1.2rem; font-weight:800;">• பருந்து + வட்டம் + வண்டு ➔ <b>பட்டு</b></div>
-            <div style="font-size:1.2rem; font-weight:800;">• கம்பு + பம்பரம் + தக்காளி ➔ <b>கம்பளி</b></div>
-          </div>
-        `;
-      } else if (idx === 5) {
-        document.getElementById('sectionHeading').textContent = "6. ஒலி வேறுபாடு (உரிய சொல்)";
-        card.innerHTML = `
-          <div style="display:flex; flex-direction:column; gap:12px;">
-            <div style="font-size:1.15rem; font-weight:800;">• <b>மழை</b> பெய்தது | <b>மலை</b> உயரமானது</div>
-            <div style="font-size:1.15rem; font-weight:800;">• மரத்தை அறுப்பது <b>வாள்</b> | மாட்டுக்கு இருப்பது <b>வால்</b></div>
-            <div style="font-size:1.15rem; font-weight:800;">• மரத்தில் காய்ப்பது <b>புளி</b> | காட்டில் வாழ்வது <b>புலி</b></div>
-          </div>
-        `;
-      }
-      container.appendChild(card);
-    }
 
-    function verifyCurrentSection() {
-      saveAllInk();
-      speakTamil("அற்புதம் ஹுமாயூன்!");
-      const toast = document.getElementById('toastNotice');
-      toast.classList.add('visible');
-      setTimeout(() => toast.classList.remove('visible'), 2400);
-    }
+        mcqQuestions.forEach((q, qIdx) => {
+          const card = document.createElement('div');
+          card.className = 'mcq-exercise-card';
+          const selected = mcqChoices[q.id];
 
-    function resetActiveTab() {
-      if (activeSectionIdx === 0) {
-        DICTATION_WORDS.forEach(d => {
-          assembledState[d.id] = [];
-          clearCanvas(d.id);
+          card.innerHTML = `
+            <div style="font-size:1.25rem; font-weight:800; color:var(--text-temple);">
+              ${q.stem1}<span class="mcq-pink-stem">${q.pink}</span>${q.stem2}
+            </div>
+            <div class="mcq-options-grid">
+              ${q.opts.map(opt => `
+                <button type="button" class="mcq-choice-btn ${selected === opt ? 'selected' : ''}" 
+                  onclick="handleMcqChoice('${q.id}', '${opt}', '${q.ans}')">
+                  ${opt}
+                </button>
+              `).join('')}
+            </div>
+            ${inlineDualLineBlank(q.id, 380, (appMode === 'practice' && selected === q.ans ? q.ans : ''))}
+          `;
+          container.appendChild(card);
         });
-      } else if (activeSectionIdx === 1) {
-        QA_SENTENCE.words.forEach(w => clearCanvas(w.id));
+
+      } else if (activeModuleIdx === 4) {
+        // MODULE 5: வண்ணத்தில் வேறுபட்ட எழுத்துக்கள் (SCREENSHOT 174228)
+        document.getElementById('statusNoticeText').textContent = "வண்ண எழுத்துக்களை இணைத்து நோட்டுப் பெட்டியில் எழுதுக!";
+
+        const riddles = [
+          {
+            id: 'rid1',
+            w1: ['ப', 'ள்ளம்'], w2: ['அ', 'ரு', 'ம்பு'], w3: ['பார்', 'த்தி', 'பன்'],
+            coloredIndices: [0, 1, 1], // ப, ரு, த்தி
+            answer: 'பருத்தி'
+          },
+          {
+            id: 'rid2',
+            w1: ['ப', 'ருந்து'], w2: ['வ', 'ட்', 'டம்'], w3: ['வண்', 'டு', ''],
+            coloredIndices: [0, 1, 1], // ப, ட், டு
+            answer: 'பட்டு'
+          },
+          {
+            id: 'rid3',
+            w1: ['க', 'ம்பு'], w2: ['ப', 'ம்ப', 'ரம்'], w3: ['தக்கா', 'ளி', ''],
+            coloredIndices: [0, 1, 1], // க, ம்ப, ளி
+            answer: 'கம்பளி'
+          }
+        ];
+
+        riddles.forEach((r, rIdx) => {
+          const card = document.createElement('div');
+          card.className = 'lesson-study-card';
+
+          card.innerHTML = `
+            <div class="riddle-words-chain">
+              <div>
+                <span class="magenta-riddle-glyph">${r.w1[r.coloredIndices[0]]}</span>${r.w1[1 - r.coloredIndices[0]] || ''}
+              </div>
+              <span>+</span>
+              <div>
+                ${r.w2[0]}<span class="magenta-riddle-glyph">${r.w2[1]}</span>${r.w2[2] || ''}
+              </div>
+              <span>+</span>
+              <div>
+                ${r.w3[0]}<span class="magenta-riddle-glyph">${r.w3[1]}</span>${r.w3[2] || ''}
+              </div>
+              <span>➔</span>
+              <span style="font-weight:900; color:#16A34A;">${appMode === 'practice' ? r.answer : '...'}</span>
+            </div>
+
+            ${inlineDualLineBlank(r.id, 400, (appMode === 'practice' ? r.answer : ''))}
+          `;
+          container.appendChild(card);
+        });
+
+      } else if (activeModuleIdx === 5) {
+        // MODULE 6: ஒலி வேறுபாடு (HOMOPHONE CARDS - SCREENSHOT 174242)
+        document.getElementById('statusNoticeText').textContent = "படத்தைப் பார்த்து சரியான சொல்லை எழுதுக!";
+
+        const homoDeck = [
+          {
+            idA: 'homo1a', idB: 'homo1b',
+            title: 'மலை / மழை',
+            img1: 'assets/mountain.png', img2: 'assets/rain-cloud.png',
+            stem1: 'பெய்தது.', ans1: 'மழை',
+            stem2: 'உயரமானது.', ans2: 'மலை'
+          },
+          {
+            idA: 'homo2a', idB: 'homo2b',
+            title: 'வாள் / வால்',
+            img1: 'assets/sword.png', img2: 'assets/tiger-tail.png',
+            stem1: 'மரத்தை அறுப்பது', ans1: 'வாள்',
+            stem2: 'மாட்டுக்கு இருப்பது', ans2: 'வால்'
+          },
+          {
+            idA: 'homo3a', idB: 'homo3b',
+            title: 'புலி / புளி',
+            img1: 'assets/tiger.png', img2: 'assets/tamarind.png',
+            stem1: 'மரத்தில் காய்ப்பது', ans1: 'புளி',
+            stem2: 'காட்டில் வாழ்வது', ans2: 'புலி'
+          }
+        ];
+
+        const deckWrap = document.createElement('div');
+        deckWrap.className = 'homophone-deck-wrapper';
+
+        homoDeck.forEach(hd => {
+          const box = document.createElement('div');
+          box.className = 'homophone-study-box';
+
+          box.innerHTML = `
+            <div class="homophone-icons-banner">
+              <div class="homophone-badge-circle"><img src="${hd.img1}" alt="" onerror="handleImageFallback(this)" /></div>
+              <div style="font-size:1.35rem; font-weight:900; color:var(--text-temple);">${hd.title}</div>
+              <div class="homophone-badge-circle"><img src="${hd.img2}" alt="" onerror="handleImageFallback(this)" /></div>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <div style="font-size:1.15rem; font-weight:800; color:var(--text-temple); display:flex; align-items:center; gap:6px;">
+                <button type="button" class="audio-play-pill" style="padding:2px 8px; font-size:0.8rem;" onclick="speakTamil('${hd.ans1} ${hd.stem1}')">🔊</button>
+                <span>${hd.stem1}</span>
+              </div>
+              ${inlineDualLineBlank(hd.idA, 300, (appMode === 'practice' ? hd.ans1 : ''))}
+
+              <div style="font-size:1.15rem; font-weight:800; color:var(--text-temple); display:flex; align-items:center; gap:6px; margin-top:4px;">
+                <button type="button" class="audio-play-pill" style="padding:2px 8px; font-size:0.8rem;" onclick="speakTamil('${hd.ans2} ${hd.stem2}')">🔊</button>
+                <span>${hd.stem2}</span>
+              </div>
+              ${inlineDualLineBlank(hd.idB, 300, (appMode === 'practice' ? hd.ans2 : ''))}
+            </div>
+          `;
+          deckWrap.appendChild(box);
+        });
+        container.appendChild(deckWrap);
       }
-      renderCurrentSection();
+
+      setTimeout(setupDualCanvases, 40);
+    }
+
+    /* PRACTICE INTERACTION LOGIC */
+    function handleTokenClick(btn, itemId, syl) {
+      if (!assembledTokens[itemId]) assembledTokens[itemId] = [];
+      const placed = assembledTokens[itemId];
+      const item = DICTATION_ITEMS.find(d => d.id === itemId);
+      const nextExpected = item.syllables[placed.length];
+
+      if (syl === nextExpected) {
+        speakTamil(syl);
+        placed.push(syl);
+        renderCurrentExercise();
+      } else {
+        // Wrong token: gentle wobble & speak required letter
+        speakTamil(nextExpected);
+        btn.classList.add('shake-error');
+        setTimeout(() => btn.classList.remove('shake-error'), 350);
+      }
+    }
+
+    function resetItemTokens(itemId) {
+      assembledTokens[itemId] = [];
+      renderCurrentExercise();
+    }
+
+    function handleTickCheck(key, isCorrect, text) {
+      speakTamil(text);
+      if (isCorrect) {
+        matchedTicks[key] = true;
+      } else {
+        delete matchedTicks[key];
+        speakTamil("தவறு, மீண்டும் பார்");
+      }
+      renderCurrentExercise();
+    }
+
+    function handleMcqChoice(qId, choice, correctAns) {
+      mcqChoices[qId] = choice;
+      speakTamil(choice);
+      renderCurrentExercise();
+    }
+
+    function resetActiveSection() {
+      if (activeModuleIdx === 0) {
+        DICTATION_ITEMS.forEach(d => {
+          assembledTokens[d.id] = [];
+          clearDualCanvas(d.id);
+        });
+      } else if (activeModuleIdx === 1) {
+        QA_ITEMS.forEach(qa => {
+          clearDualCanvas(qa.id);
+          clearDualCanvas(`${qa.id}_write`);
+        });
+      } else if (activeModuleIdx === 2) {
+        matchedTicks = {};
+      } else if (activeModuleIdx === 3) {
+        mcqChoices = {};
+        ['mcq1', 'mcq2', 'mcq3', 'mcq4'].forEach(clearDualCanvas);
+      } else if (activeModuleIdx === 4) {
+        ['rid1', 'rid2', 'rid3'].forEach(clearDualCanvas);
+      } else if (activeModuleIdx === 5) {
+        ['homo1a', 'homo1b', 'homo2a', 'homo2b', 'homo3a', 'homo3b'].forEach(clearDualCanvas);
+      }
+      renderCurrentExercise();
+    }
+
+    function verifyActiveTask() {
+      saveAllCanvases();
+      speakTamil("அற்புதம் ஹுமாயூன்! வெற்றி!");
+      document.getElementById('celebrationModal').style.display = 'flex';
+    }
+
+    function closeCelebration() {
+      document.getElementById('celebrationModal').style.display = 'none';
+      let nextIdx = (activeModuleIdx + 1) % MODULES.length;
+      switchModule(nextIdx);
+    }
+
+    /* ALPHABET DRAWER BUILDER (PAGE 1 NOTEBOOK PREFACE) */
+    function initAlphabetDrawer() {
+      const vowels = ['அ', 'ஆ', 'இ', 'ஈ', 'உ', 'ஊ', 'எ', 'ஏ', 'ஐ', 'ஒ', 'ஓ', 'ஔ'];
+      const consonants = ['க்', 'ங்', 'ச்', 'ஞ்', 'ட்', 'ண்', 'த்', 'ந்', 'ப்', 'ம்', 'ய்', 'ர்', 'ல்', 'வ்', 'ழ்', 'ள்', 'ற்', 'ன்'];
+
+      const vGrid = document.getElementById('vowelsGrid');
+      vGrid.innerHTML = '';
+      vowels.forEach(v => {
+        const d = document.createElement('div');
+        d.className = 'letter-chip-box';
+        d.textContent = v;
+        d.onclick = () => speakTamil(v);
+        vGrid.appendChild(d);
+      });
+
+      const cGrid = document.getElementById('consonantsGrid');
+      cGrid.innerHTML = '';
+      consonants.forEach(c => {
+        const d = document.createElement('div');
+        d.className = 'letter-chip-box';
+        d.textContent = c;
+        d.onclick = () => speakTamil(c);
+        cGrid.appendChild(d);
+      });
+    }
+
+    function openAlphabetDrawer() {
+      document.getElementById('alphabetDrawerModal').style.display = 'flex';
+    }
+    function closeAlphabetDrawer() {
+      document.getElementById('alphabetDrawerModal').style.display = 'none';
     }
 
     window.onload = () => {
-      applyDimState();
-      selectSection(0);
+      applyDimmerState();
+      initAlphabetDrawer();
+      renderModuleTabs();
+      switchModule(0);
     };
 
-    window.addEventListener('beforeunload', saveAllInk);
-    window.addEventListener('pagehide', saveAllInk);
+    window.addEventListener('beforeunload', saveAllCanvases);
+    window.addEventListener('pagehide', saveAllCanvases);
   </script>
 </body>
 </html>
