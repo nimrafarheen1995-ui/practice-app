@@ -1055,7 +1055,7 @@
   </div>
 
   <script>
-    /* CRASH-PROOF STORAGE SHIELD (HANDLES SANDBOXED HUB IFRAMES) */
+    /* CRASH-PROOF STORAGE SHIELD (SAFE IN EMBEDDED IFRAMES) */
     const memoryStorageFallback = {};
     function safeStorageGet(key) {
       try {
@@ -1578,6 +1578,14 @@
       });
     }
 
+    /* DIRECT QUESTION SELECTION */
+    function selectQaPage(qIdx) {
+      saveAllCanvases();
+      activeQaSubIdx = qIdx;
+      renderCurrentExercise();
+    }
+    window.selectQaPage = selectQaPage;
+
     /* NAVIGATION */
     function renderModuleTabs() {
       const list = document.getElementById('moduleTabsList');
@@ -1606,6 +1614,7 @@
       if (tabW) tabW.classList.toggle('active', m === 'write');
       switchModule(activeModuleIdx);
     }
+    window.setAppMode = setAppMode;
 
     function switchModule(idx) {
       saveAllCanvases();
@@ -1690,7 +1699,7 @@
         });
 
       } else if (activeModuleIdx === 1) {
-        // MODULE 2: வினா விடை (SECTION 2 - TOP NAVIGATION ONLY + 3-LINE RULINGS)
+        // MODULE 2: வினா விடை (ATOMIC SINGLE-PASS INJECTION TO PREVENT EVENT WIPES)
         const statusEl = document.getElementById('statusNoticeText');
         if (statusEl) {
           statusEl.textContent = (appMode === 'practice')
@@ -1698,34 +1707,28 @@
             : "வினாவைப் பார்த்து முழு விடையையும் சுயமாக நோட்டுப் பக்கத்தில் எழுதுக!";
         }
 
-        const pagStrip = document.createElement('div');
-        pagStrip.className = 'qa-pagination-strip';
-        QA_ITEMS.forEach((q, qIndex) => {
-          const pBtn = document.createElement('button');
-          pBtn.type = 'button';
-          pBtn.className = `qa-page-pill ${qIndex === activeQaSubIdx ? 'active' : ''}`;
-          pBtn.textContent = `வினா ${q.num}`;
-          pBtn.onclick = () => {
-            saveAllCanvases();
-            activeQaSubIdx = qIndex;
-            renderCurrentExercise();
-          };
-          pagStrip.appendChild(pBtn);
-        });
-        container.appendChild(pagStrip);
-
         const curQa = QA_ITEMS[activeQaSubIdx];
         const slateId = `${curQa.id}_slate`;
         const placedUids = assembledTokens[curQa.id] || [];
         const dockList = getStableDockList(curQa.id, curQa.targetTokens);
 
-        container.innerHTML += renderSection2Toolbar(slateId);
+        const pagStripHtml = `
+          <div class="qa-pagination-strip">
+            ${QA_ITEMS.map((q, qIndex) => `
+              <button type="button" 
+                      class="qa-page-pill ${qIndex === activeQaSubIdx ? 'active' : ''}" 
+                      onclick="selectQaPage(${qIndex})">
+                வினா ${q.num}
+              </button>
+            `).join('')}
+          </div>
+        `;
 
-        const card = document.createElement('div');
-        card.className = 'lesson-study-card';
+        const toolbarHtml = renderSection2Toolbar(slateId);
 
+        let cardInnerHtml = '';
         if (appMode === 'practice') {
-          card.innerHTML = `
+          cardInnerHtml = `
             <div class="card-header-line">
               <span class="card-title-text" onclick="speakTamil('${curQa.q}')">வினா ${curQa.num}: ${curQa.q}</span>
               <button type="button" class="audio-pill-btn" onclick="speakTamil('${curQa.q}')">🔊 வினா</button>
@@ -1773,7 +1776,7 @@
             </div>
           `;
         } else {
-          card.innerHTML = `
+          cardInnerHtml = `
             <div class="card-header-line">
               <span class="card-title-text" onclick="speakTamil('${curQa.q}')">வினா ${curQa.num}: ${curQa.q}</span>
               <button type="button" class="audio-pill-btn" onclick="speakTamil('${curQa.q}')">🔊 வினா</button>
@@ -1789,7 +1792,10 @@
           `;
         }
 
-        container.appendChild(card);
+        const cardHtml = `<div class="lesson-study-card">${cardInnerHtml}</div>`;
+
+        // Single atomic injection to preserve all event handlers
+        container.innerHTML = pagStripHtml + toolbarHtml + cardHtml;
 
       } else if (activeModuleIdx === 2) {
         // MODULE 3: பேச்சு வழக்கு ➔ எழுத்து வழக்கு
@@ -2288,14 +2294,12 @@
       switchModule(0);
     }
 
-    // Runs immediately without waiting for hanging external images/fonts
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', initApp);
     } else {
       initApp();
     }
 
-    // Hub handshake listener (for iframe container messages)
     window.addEventListener('message', (e) => {
       if (e.data === 'hub-open' || e.data === 'resume') {
         saveAllCanvases();
