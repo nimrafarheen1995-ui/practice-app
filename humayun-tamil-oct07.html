@@ -9,9 +9,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Arima:wght@600;700;800&family=Mukta+Malar:wght@600;700;800;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
 
-  <link rel="preload" as="image" href="assets/forest-bg.webp">
-  <link rel="preload" as="image" href="assets/palm-scroll-banner.webp">
-  <link rel="preload" as="image" href="assets/mentor-parrot.webp">
+  <!-- FIX 5: preload images for faster first paint -->
+  <link rel="preload" as="image" href="assets/forest-bg.webp" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/palm-scroll-banner.webp" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/mentor-parrot.webp" fetchpriority="high">
+
   <style>
     :root {
       --gold-primary: #D97706;
@@ -54,7 +56,6 @@
       position: relative;
     }
 
-    /* SCREEN DIMMER */
     #screenDimOverlay {
       position: fixed;
       inset: 0;
@@ -65,7 +66,6 @@
       transition: opacity 0.2s ease;
     }
 
-    /* TOP HUD */
     .top-hud-bar {
       height: 46px;
       display: flex;
@@ -150,7 +150,7 @@
       color: #15803D;
     }
 
-    /* MASTER FRAMED STAGE */
+    /* FIX 5: bg layer with <img> instead of CSS background */
     .master-forest-stage {
       flex: 1;
       position: relative;
@@ -167,22 +167,24 @@
       z-index: 10;
       transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .master-forest-stage::before {
-      content: '';
+    .bg-layer {
       position: absolute;
       inset: 0;
       z-index: -1;
+      overflow: hidden;
       border-radius: 18px;
-      background: #110B07 url('assets/forest-bg.webp') no-repeat center center;
-      background-size: cover;
-      transform: translateZ(0);
       pointer-events: none;
+    }
+    .bg-layer img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
     .master-forest-stage.collapsed-sidebar {
       grid-template-columns: 78px 1fr;
     }
 
-    /* LEFT DECK */
     .mentor-side-deck {
       background: transparent !important;
       border: none !important;
@@ -244,7 +246,6 @@
       display: none;
     }
 
-    /* RIGHT WORKSPACE */
     .workspace-floating-plaque {
       background: transparent !important;
       border: none !important;
@@ -260,7 +261,6 @@
       min-height: 0;
     }
 
-    /* PALM BANNER */
     .palm-scroll-banner-box {
       width: 100%;
       height: 74px;
@@ -285,7 +285,6 @@
       text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
     }
 
-    /* 210PX FLOATING PARROT */
     .freely-floating-parrot-btn {
       width: 120px;
       height: 210px;
@@ -309,7 +308,15 @@
       object-fit: contain;
     }
 
-    /* PLAYGROUND BODY */
+    /* FIX 1: Global Section 2 toolbar sits ABOVE the scroll container */
+    #section2GlobalToolbar {
+      display: none;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 60;
+      margin-bottom: 2px;
+    }
+
     .quest-interactive-body {
       flex: 1;
       display: flex;
@@ -324,9 +331,9 @@
       padding-right: 6px;
       padding-bottom: 24px;
       -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
     }
 
-    /* STUDY CARD */
     .lesson-study-card {
       background: rgba(255, 253, 246, 0.95);
       border: 2.5px solid var(--border-ornament);
@@ -370,7 +377,6 @@
     }
     .audio-pill-btn:active { transform: scale(0.95); }
 
-    /* SECTION 2 ICON-ONLY TOOLBAR */
     .section2-exclusive-toolbar {
       display: flex;
       align-items: center;
@@ -382,11 +388,6 @@
       gap: 8px;
       flex-wrap: wrap;
       box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-      margin-bottom: 2px;
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      flex-shrink: 0;
     }
     .toolbox-cluster {
       display: flex;
@@ -441,7 +442,6 @@
       border-color: var(--gold-deep);
     }
 
-    /* TOKEN SLOTS & TRANSLITERATED COINS */
     .syllable-assembly-rack {
       display: flex;
       align-items: center;
@@ -530,7 +530,6 @@
       line-height: 1.2;
     }
 
-    /* INK WRITING ROW (SECTIONS 1, 4, 5, 6) */
     .ink-writing-row {
       display: flex;
       align-items: center;
@@ -593,12 +592,15 @@
     }
     body.write-mode .ghost-trace-overlay { display: none !important; }
 
+    /* FIX 2 + 7: GPU layer + no per-move transform */
     .dual-canvas {
       position: absolute;
       inset: 0;
       cursor: crosshair;
       touch-action: none;
       z-index: 4;
+      will-change: transform;
+      transform: translateZ(0);
     }
     .dual-canvas, .dual-lines-canvas-bg, .notebook-rules-svg { border-radius: 11px; }
 
@@ -619,7 +621,6 @@
     }
     .clean-clear-btn:active { background: #E2E8F0; }
 
-    /* EXPANDED 3-LINE NOTEBOOK SLATES (SECTION 2) */
     .section2-notebook-slate {
       position: relative;
       width: 100%;
@@ -639,7 +640,6 @@
       z-index: 1;
     }
 
-    /* Q&A SOLE TOP NAVIGATION PILLS */
     .qa-pagination-strip {
       display: flex;
       align-items: center;
@@ -667,7 +667,6 @@
       transform: translateY(-2px);
     }
 
-    /* MEMORY CUE BANNER BOXES */
     .memory-scaffold-banner {
       background: #FEF3C7;
       border: 2px solid var(--gold-primary);
@@ -681,7 +680,6 @@
       color: #92400E;
     }
 
-    /* SECTION 3: DIALECT SHELF & TICKS */
     .dialect-reference-shelf {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -741,7 +739,6 @@
       color: #FFF;
     }
 
-    /* SECTION 4: MCQ BUTTONS WITH PINK STEM HIGHLIGHTS */
     .mcq-exercise-card {
       background: #FFF;
       border: 2px solid var(--border-ornament);
@@ -776,7 +773,6 @@
       box-shadow: 0 0 10px rgba(234, 179, 8, 0.4);
     }
 
-    /* SECTION 5: MAGENTA LETTER RIDDLES */
     .riddle-words-chain {
       display: flex;
       align-items: center;
@@ -791,7 +787,6 @@
       font-size: 1.7rem;
     }
 
-    /* SECTION 6: HOMOPHONE PICTURE CARDS */
     .homophone-deck-wrapper {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -833,7 +828,6 @@
       object-fit: contain;
     }
 
-    /* FOOTER DOCK */
     .workspace-footer-bar {
       display: flex;
       align-items: center;
@@ -866,7 +860,6 @@
     }
     .btn-verify-seal:active { transform: scale(0.96); }
 
-    /* LETTER DRAWER MODAL */
     #alphabetDrawerModal {
       position: fixed;
       inset: 0;
@@ -913,7 +906,6 @@
     }
     .letter-chip-box:active { transform: scale(0.92); }
 
-    /* ASANA CELEBRATION OVERLAY */
     #celebrationFinaleStage {
       position: fixed;
       inset: 0;
@@ -972,7 +964,6 @@
 
   <div id="screenDimOverlay"></div>
 
-  <!-- TOP HUD -->
   <header class="top-hud-bar">
     <div class="hud-group-left">
       <button type="button" class="hud-btn" onclick="goToHub()">🪷 முகப்பு</button>
@@ -992,19 +983,18 @@
     </div>
   </header>
 
-  <!-- MASTER FOREST STAGE -->
   <main class="master-forest-stage" id="masterStage">
+    <!-- FIX 5: bg as <img> -->
+    <div class="bg-layer" aria-hidden="true">
+      <img id="forestBgImg" src="assets/forest-bg.webp" decoding="async" fetchpriority="high" alt="" />
+    </div>
 
-    <!-- LEFT SIDEBAR -->
     <aside class="mentor-side-deck">
       <button type="button" class="sidebar-collapse-toggle" onclick="toggleSidebar()" title="சுருக்கு / விரி">◀</button>
       <div class="module-menu-container" id="moduleTabsList"></div>
     </aside>
 
-    <!-- RIGHT WORKSPACE -->
     <section class="workspace-floating-plaque">
-
-      <!-- PALM SCROLL BANNER -->
       <div class="palm-scroll-banner-box">
         <div class="banner-quest-title" id="bannerHeaderTamil">1. சொல்வதை எழுதுக</div>
         <button type="button" class="freely-floating-parrot-btn" onclick="speakCurrentContext()" title="ஒலி">
@@ -1012,18 +1002,18 @@
         </button>
       </div>
 
+      <!-- FIX 1: global sticky toolbar above scroll container -->
+      <div id="section2GlobalToolbar"></div>
+
       <div class="quest-interactive-body" id="stageContentBody"></div>
 
       <div class="workspace-footer-bar">
         <span class="status-text-pill" id="statusNoticeText">எழுத்துகளை வரிசைப்படுத்தி எழுதுக!</span>
         <button type="button" class="btn-verify-seal" onclick="verifyActiveTask()">சரிபார் ✨</button>
       </div>
-
     </section>
-
   </main>
 
-  <!-- ALPHABET DRAWER MODAL -->
   <div id="alphabetDrawerModal">
     <div class="alphabet-drawer-card">
       <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -1050,7 +1040,6 @@
     </div>
   </div>
 
-  <!-- ASANA CELEBRATION FINALE STAGE -->
   <div id="celebrationFinaleStage">
     <canvas id="finaleCanvas"></canvas>
     <div class="soaring-parrot-rocket" id="soaringParrot">
@@ -1067,24 +1056,22 @@
   </div>
 
   <script>
-    /* CRASH-PROOF STORAGE SHIELD (SAFE IN EMBEDDED IFRAMES) */
+    /* ============================================================
+       STORAGE SHIELD
+       ============================================================ */
     const memoryStorageFallback = {};
     function safeStorageGet(key) {
-      try {
-        return localStorage.getItem(key);
-      } catch (e) {
-        return memoryStorageFallback[key] || null;
-      }
+      try { return localStorage.getItem(key); }
+      catch (e) { return memoryStorageFallback[key] || null; }
     }
     function safeStorageSet(key, val) {
-      try {
-        localStorage.setItem(key, val);
-      } catch (e) {
-        memoryStorageFallback[key] = val;
-      }
+      try { localStorage.setItem(key, val); }
+      catch (e) { memoryStorageFallback[key] = val; }
     }
 
-    /* PURE TAMIL VOICE SYNTHESIS */
+    /* ============================================================
+       TAMIL VOICE
+       ============================================================ */
     function speakTamil(txt) {
       if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
@@ -1105,11 +1092,7 @@
       let step = 0;
       function next() {
         if (step < syllables.length) {
-          setTimeout(() => {
-            speakTamil(syllables[step].s);
-            step++;
-            next();
-          }, 650);
+          setTimeout(() => { speakTamil(syllables[step].s); step++; next(); }, 650);
         }
       }
       setTimeout(next, 700);
@@ -1118,14 +1101,13 @@
     function playItemAudio(itemId) {
       const item = DICTATION_ITEMS.find(d => d.id === itemId);
       if (!item) return;
-      if (appMode === 'practice') {
-        playSyllableChant(item.word, item.syllables);
-      } else {
-        speakTamil(item.word);
-      }
+      if (appMode === 'practice') playSyllableChant(item.word, item.syllables);
+      else speakTamil(item.word);
     }
 
-    /* SYNTHESIZED VEENA & BELL AUDIO ENGINE */
+    /* ============================================================
+       AUDIO ENGINE
+       ============================================================ */
     class TempleAudioEngine {
       constructor() { this.ctx = null; }
       init() {
@@ -1166,7 +1148,9 @@
     }
     const audioFX = new TempleAudioEngine();
 
-    /* SCREEN DIMMER */
+    /* ============================================================
+       DIMMER
+       ============================================================ */
     let isDimmed = safeStorageGet('humayun_dim_state') === 'true';
     function applyDimmerState() {
       const el = document.getElementById('screenDimOverlay');
@@ -1180,7 +1164,9 @@
       applyDimmerState();
     }
 
-    /* HARDWARE PALM REJECTION */
+    /* ============================================================
+       PEN MODE
+       ============================================================ */
     let penOnlyMode = true;
     function togglePenMode() {
       penOnlyMode = !penOnlyMode;
@@ -1225,7 +1211,9 @@
       img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><circle cx='60' cy='60' r='55' fill='%23FEF3C7' stroke='%23D97706' stroke-width='4'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='42'>🪷</text></svg>";
     }
 
-    /* CURRICULUM DATA */
+    /* ============================================================
+       CURRICULUM DATA
+       ============================================================ */
     const MODULES = [
       { id: 0, title: "1. சொல்வதை எழுதுக" },
       { id: 1, title: "2. வினா விடை" },
@@ -1247,77 +1235,53 @@
 
     const QA_ITEMS = [
       {
-        id: 'qa_q1',
-        num: 1,
+        id: 'qa_q1', num: 1,
         q: 'மரங்கள் எவற்றுடன் சண்டையிட்டன?',
         a: 'மரங்கள் விலங்குகளுடன் சண்டையிட்டன.',
         copiedStem: 'மரங்கள் ... சண்டையிட்டன.',
         memorizeRule: 'எவற்றுடன் ➔ விலங்குகளுடன்',
         targetTokens: [
-          {uid:1, s:'வி', t:'Vi'},
-          {uid:2, s:'லங்', t:'Lang'},
-          {uid:3, s:'கு', t:'Ku'},
-          {uid:4, s:'க', t:'Ka'},
-          {uid:5, s:'ளு', t:'Lu'},
-          {uid:6, s:'டன்', t:'Dan'}
+          {uid:1, s:'வி', t:'Vi'}, {uid:2, s:'லங்', t:'Lang'}, {uid:3, s:'கு', t:'Ku'},
+          {uid:4, s:'க', t:'Ka'}, {uid:5, s:'ளு', t:'Lu'}, {uid:6, s:'டன்', t:'Dan'}
         ],
-        lines: 3,
-        height: 340
+        lines: 3, height: 340
       },
       {
-        id: 'qa_q2',
-        num: 2,
+        id: 'qa_q2', num: 2,
         q: 'காட்டை விட்டு வெளியேறியவை எவை?',
         a: 'காட்டைவிட்டு வெளியேறியவை விலங்குகள் ஆகும்.',
         copiedStem: 'காட்டைவிட்டு வெளியேறியவை ...',
         memorizeRule: 'எவை ➔ விலங்குகள் ஆகும்.',
         targetTokens: [
-          {uid:1, s:'வி', t:'Vi'},
-          {uid:2, s:'லங்', t:'Lang'},
-          {uid:3, s:'கு', t:'Ku'},
-          {uid:4, s:'கள்', t:'Kal'},
-          {uid:5, s:'ஆ', t:'Aa'},
-          {uid:6, s:'கும்.', t:'Gum.'}
+          {uid:1, s:'வி', t:'Vi'}, {uid:2, s:'லங்', t:'Lang'}, {uid:3, s:'கு', t:'Ku'},
+          {uid:4, s:'கள்', t:'Kal'}, {uid:5, s:'ஆ', t:'Aa'}, {uid:6, s:'கும்.', t:'Gum.'}
         ],
-        lines: 3,
-        height: 340
+        lines: 3, height: 340
       },
       {
-        id: 'qa_q3',
-        num: 3,
+        id: 'qa_q3', num: 3,
         q: 'மரங்களும் விலங்குகளும் செய்துகொண்ட ஒப்பந்தம் என்ன?',
         a: 'ஒரு மாதம் விலங்குகள் காட்டுக்கு வெளியே வாழ வேண்டும் இதுவே மரங்களும் விலங்குகளும் செய்துகொண்ட ஒப்பந்தம் ஆகும்.',
         copiedStem: 'மரங்களும் விலங்குகளும் செய்துகொண்ட ஒப்பந்தம் (கேள்வியில் உள்ளது!)',
         memorizeRule: 'மனனம் செய்ய வேண்டிய புதிய ஒப்பந்த விதி:',
         targetTokens: [
-          {uid:1, s:'ஒரு', t:'Oru'},
-          {uid:2, s:'மாதம்', t:'Maadham'},
-          {uid:3, s:'விலங்குகள்', t:'Vilangugal'},
-          {uid:4, s:'காட்டுக்கு', t:'Kaattukku'},
-          {uid:5, s:'வெளியே', t:'Veliyee'},
-          {uid:6, s:'வாழ வேண்டும்', t:'Vaazha Vendum'},
-          {uid:7, s:'இதுவே', t:'Idhuvee'},
-          {uid:8, s:'ஆகும்.', t:'Aagum.'}
+          {uid:1, s:'ஒரு', t:'Oru'}, {uid:2, s:'மாதம்', t:'Maadham'}, {uid:3, s:'விலங்குகள்', t:'Vilangugal'},
+          {uid:4, s:'காட்டுக்கு', t:'Kaattukku'}, {uid:5, s:'வெளியே', t:'Veliyee'}, {uid:6, s:'வாழ வேண்டும்', t:'Vaazha Vendum'},
+          {uid:7, s:'இதுவே', t:'Idhuvee'}, {uid:8, s:'ஆகும்.', t:'Aagum.'}
         ],
-        lines: 4,
-        height: 410
+        lines: 4, height: 410
       },
       {
-        id: 'qa_q4',
-        num: 4,
+        id: 'qa_q4', num: 4,
         q: 'கதையின் மூலம் நீ என்ன தெரிந்து கொண்டாய்?',
         a: 'கதையின் மூலம் நான் ஒற்றுமையே வலிமை என்பதை தெரிந்து கொண்டேன்.',
         copiedStem: 'கதையின் மூலம் ... தெரிந்து (கேள்வியில் உள்ளது!)',
         memorizeRule: 'இடப்பெயர் & விடை மாற்றம் (நீ ➔ நான், கொண்டாய் ➔ கொண்டேன்):',
         targetTokens: [
-          {uid:1, s:'நான்', t:'Naan'},
-          {uid:2, s:'ஒற்றுமையே', t:'Ottrumaiye'},
-          {uid:3, s:'வலிமை', t:'Valimai'},
-          {uid:4, s:'என்பதை', t:'Enbadhai'},
-          {uid:5, s:'கொண்டேன்.', t:'Kondeen.'}
+          {uid:1, s:'நான்', t:'Naan'}, {uid:2, s:'ஒற்றுமையே', t:'Ottrumaiye'}, {uid:3, s:'வலிமை', t:'Valimai'},
+          {uid:4, s:'என்பதை', t:'Enbadhai'}, {uid:5, s:'கொண்டேன்.', t:'Kondeen.'}
         ],
-        lines: 3,
-        height: 340
+        lines: 3, height: 340
       }
     ];
 
@@ -1329,21 +1293,18 @@
     let matchedTicks = {};
     let mcqChoices = {};
 
-    /* SECTION 2 TOOLBAR STATE */
     let currentTool = 'pen';
     let currentColor = '#1E3A8A';
     let currentWidthScale = 2.2;
 
-    /* VECTOR STROKE ENGINE (STRICT INK ISOLATION PER MODE) */
+    /* ============================================================
+       VECTOR STROKE ENGINE
+       ============================================================ */
     const vectorStrokeStore = {};
+    const _saveTimers = {};
 
-    function getStoreKey(id) {
-      return `${appMode}::${id}`;
-    }
-
-    function getStorageKey(id) {
-      return `v5_ink::${appMode}::${id}`;
-    }
+    function getStoreKey(id) { return `${appMode}::${id}`; }
+    function getStorageKey(id) { return `v5_ink::${appMode}::${id}`; }
 
     function loadVectorStrokes(id) {
       const sKey = getStoreKey(id);
@@ -1359,50 +1320,60 @@
       return vectorStrokeStore[sKey];
     }
 
-    const _saveTimers = {};
     function saveVectorStrokesNow(id) {
       const sKey = getStoreKey(id);
       const strokes = vectorStrokeStore[sKey] || [];
       safeStorageSet(getStorageKey(id), JSON.stringify(strokes));
     }
+
     function saveVectorStrokes(id) {
-      // debounce: never block the pen on a big JSON write
       const k = getStoreKey(id);
       clearTimeout(_saveTimers[k]);
       _saveTimers[k] = setTimeout(() => saveVectorStrokesNow(id), 600);
     }
 
+    /* FIX 3: Path2D grouping */
     function replayCanvasStrokes(c, id) {
       const ctx = c.getContext('2d');
       const dpr = window.devicePixelRatio || 1;
       const strokes = loadVectorStrokes(id);
 
-      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, c.width, c.height);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, c.width / dpr, c.height / dpr);
 
-      strokes.forEach(s => {
-        if (!s.points || s.points.length < 2) return;
-        ctx.beginPath();
+      const groups = new Map();
+      for (let i = 0; i < strokes.length; i++) {
+        const s = strokes[i];
+        if (!s.points || s.points.length < 2) continue;
+        const key = s.tool + '|' + s.color + '|' + s.width;
+        let g = groups.get(key);
+        if (!g) {
+          g = { tool: s.tool, color: s.color, width: s.width, paths: [] };
+          groups.set(key, g);
+        }
+        g.paths.push(s.points);
+      }
+
+      for (const g of groups.values()) {
+        const path = new Path2D();
+        for (let p = 0; p < g.paths.length; p++) {
+          const pts = g.paths[p];
+          path.moveTo(pts[0].x, pts[0].y);
+          for (let i = 1; i < pts.length; i++) path.lineTo(pts[i].x, pts[i].y);
+        }
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
-
-        if (s.tool === 'eraser') {
+        if (g.tool === 'eraser') {
           ctx.globalCompositeOperation = 'destination-out';
-          ctx.lineWidth = s.width * 6.0;
+          ctx.lineWidth = g.width * 6.0;
         } else {
           ctx.globalCompositeOperation = 'source-over';
-          ctx.strokeStyle = s.color;
-          ctx.lineWidth = s.width;
+          ctx.strokeStyle = g.color;
+          ctx.lineWidth = g.width;
         }
-
-        ctx.moveTo(s.points[0].x, s.points[0].y);
-        for (let i = 1; i < s.points.length; i++) {
-          ctx.lineTo(s.points[i].x, s.points[i].y);
-        }
-        ctx.stroke();
-      });
-      ctx.restore();
+        ctx.stroke(path);
+      }
     }
 
     function undoLastStroke(id) {
@@ -1422,22 +1393,21 @@
       const c = document.querySelector(`.dual-canvas[data-canvas-id="${id}"]`);
       if (c) {
         const ctx = c.getContext('2d');
-        const dpr = window.devicePixelRatio || 1;
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        ctx.clearRect(0, 0, c.width / dpr, c.height / dpr);
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, c.width, c.height);
       }
     }
 
     function saveAllCanvases() {
       Object.keys(vectorStrokeStore).forEach(sKey => {
         const parts = sKey.split('::');
-        const mode = parts[0];
-        const id = parts[1];
-        if (mode === appMode) saveVectorStrokesNow(id);
+        if (parts[0] === appMode) saveVectorStrokesNow(parts[1]);
       });
     }
 
-    /* SECTION 2 EXCLUSIVE ICON-ONLY TOOLBAR */
+    /* ============================================================
+       SECTION 2 TOOLBAR
+       ============================================================ */
     function renderSection2Toolbar(activeTargetId) {
       return `
         <div class="section2-exclusive-toolbar">
@@ -1464,21 +1434,22 @@
       `;
     }
 
-    function setSec2Tool(tool) {
-      currentTool = tool;
-      renderCurrentExercise();
-    }
-    function setSec2Color(col) {
-      currentColor = col;
-      currentTool = 'pen';
-      renderCurrentExercise();
-    }
-    function setSec2Width(w) {
-      currentWidthScale = w;
-      renderCurrentExercise();
+    /* FIX 4: only rebuild the toolbar, don't re-render the whole exercise */
+    function refreshSection2Toolbar() {
+      const bar = document.getElementById('section2GlobalToolbar');
+      if (!bar || bar.style.display === 'none') return;
+      const canvas = bar.parentElement.querySelector('.dual-canvas');
+      const activeTargetId = canvas ? canvas.getAttribute('data-canvas-id') : (QA_ITEMS[activeQaSubIdx].id + '_slate');
+      bar.innerHTML = renderSection2Toolbar(activeTargetId);
     }
 
-    /* CLEAN INK SLATE FOR SECTIONS 1, 4, 5, 6 */
+    function setSec2Tool(tool) { currentTool = tool; refreshSection2Toolbar(); }
+    function setSec2Color(col) { currentColor = col; currentTool = 'pen'; refreshSection2Toolbar(); }
+    function setSec2Width(w) { currentWidthScale = w; refreshSection2Toolbar(); }
+
+    /* ============================================================
+       INK BLANK
+       ============================================================ */
     function inlineDualLineBlank(id, width = 760, ghostWord = "") {
       return `
         <div class="ink-writing-row">
@@ -1492,11 +1463,18 @@
       `;
     }
 
+    /* ============================================================
+       FIX 2 + 6 + 7: FAST CANVAS SETUP
+       ============================================================ */
     function setupDualCanvases() {
-      const dpr = window.devicePixelRatio || 1;
+      // FIX 6: cap DPR at 1.5
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       const canvasList = document.querySelectorAll('.dual-canvas');
 
       canvasList.forEach(c => {
+        if (c._ready) return;   // avoid double-binding
+        c._ready = true;
+
         const id = c.getAttribute('data-canvas-id');
         const bRect = c.parentElement ? c.parentElement.getBoundingClientRect() : { width: 0 };
         const logicalW = Math.round(bRect.width) || (parseInt(c.getAttribute('data-logical-width'), 10) || 760);
@@ -1505,109 +1483,127 @@
         c.width = Math.round(logicalW * dpr);
         c.height = Math.round(logicalH * dpr);
 
-        const ctx = c.getContext('2d', { desynchronized: true });
+        const ctx = c.getContext('2d', { desynchronized: true, alpha: true });
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
 
         replayCanvasStrokes(c, id);
 
         let isDrawing = false;
         let activeStroke = null;
-        let lastPt = { x: 0, y: 0 };
-        let rect = null; // cached once per stroke (no layout reads while drawing)
+        let rect = null;
+        let lastX = 0, lastY = 0;
+        let isSec2 = false;
+        let strokeTool = 'pen', strokeColor = '#1E3A8A', strokeWidth = 2.2;
+        let dirty = false;
+        let rafId = null;
 
-        const applyStyle = (st) => {
-          ctx.lineCap = 'round';
-          ctx.lineJoin = 'round';
-          if (st.tool === 'eraser') {
+        function finishStroke(e) {
+          if (!isDrawing) return;
+          isDrawing = false;
+          if (activeStroke && activeStroke.points.length > 0) {
+            saveVectorStrokes(id);
+          }
+          activeStroke = null;
+          try { if (e && e.pointerId != null) c.releasePointerCapture(e.pointerId); } catch (_) {}
+          if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+        }
+
+        function drawSegment(x, y) {
+          const dx = x - lastX, dy = y - lastY;
+          if (dx * dx + dy * dy < 0.09) return;
+
+          if (strokeTool === 'eraser') {
             ctx.globalCompositeOperation = 'destination-out';
-            ctx.lineWidth = st.width * 6.0;
+            ctx.strokeStyle = 'rgba(0,0,0,1)';
+            ctx.lineWidth = strokeWidth * 6.0;
           } else {
             ctx.globalCompositeOperation = 'source-over';
-            ctx.strokeStyle = st.color;
-            ctx.lineWidth = st.width;
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = strokeWidth;
           }
-        };
-        const r1 = (n) => Math.round(n * 10) / 10;
-
-        c.onpointerdown = (e) => {
-          if (penOnlyMode && e.pointerType !== 'pen' && e.pointerType !== 'mouse') return;
-          isDrawing = true;
-          try { c.setPointerCapture(e.pointerId); } catch (_) {}
-          rect = c.getBoundingClientRect();
-          const startX = r1(e.clientX - rect.left);
-          const startY = r1(e.clientY - rect.top);
-
-          const isSec2 = (activeModuleIdx === 1);
-          const tool = isSec2 ? currentTool : 'pen';
-          const color = isSec2 ? currentColor : '#1E3A8A';
-          const baseWidth = isSec2 ? currentWidthScale : 2.2;
-
-          const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
-          const strokeWidth = baseWidth * (pressure * 1.35 + 0.35);
-
-          activeStroke = { tool, color, width: strokeWidth, points: [{ x: startX, y: startY }] };
-          lastPt = { x: startX, y: startY };
-
-          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-          applyStyle(activeStroke);
-          // dot for a tap
           ctx.beginPath();
-          ctx.moveTo(startX, startY);
-          ctx.lineTo(startX + 0.01, startY);
+          ctx.moveTo(lastX, lastY);
+          ctx.lineTo(x, y);
           ctx.stroke();
 
-          loadVectorStrokes(id).push(activeStroke);
-          e.preventDefault();
-        };
+          activeStroke.points.push({ x, y });
+          lastX = x; lastY = y;
+        }
 
-        c.onpointermove = (e) => {
+        // FIX 2: pointerdown sets transform ONCE
+        c.addEventListener('pointerdown', (e) => {
+          if (penOnlyMode && e.pointerType !== 'pen' && e.pointerType !== 'mouse') return;
+          if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+          isDrawing = true;
+          try { c.setPointerCapture(e.pointerId); } catch (_) {}
+
+          rect = c.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+
+          isSec2 = (activeModuleIdx === 1);
+          strokeTool = isSec2 ? currentTool : 'pen';
+          strokeColor = isSec2 ? currentColor : '#1E3A8A';
+          const base = isSec2 ? currentWidthScale : 2.2;
+          const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
+          strokeWidth = base * (pressure * 1.35 + 0.35);
+
+          // FIX 7: transform set once per stroke, not per move
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+
+          lastX = x; lastY = y;
+          activeStroke = { tool: strokeTool, color: strokeColor, width: strokeWidth, points: [{ x, y }] };
+          loadVectorStrokes(id).push(activeStroke);
+
+          // dot for tap
+          ctx.globalCompositeOperation = strokeTool === 'eraser' ? 'destination-out' : 'source-over';
+          ctx.fillStyle = strokeTool === 'eraser' ? 'rgba(0,0,0,1)' : strokeColor;
+          ctx.beginPath();
+          ctx.arc(x, y, strokeTool === 'eraser' ? strokeWidth * 3 : strokeWidth * 0.5, 0, Math.PI * 2);
+          ctx.fill();
+
+          e.preventDefault();
+        }, { passive: false });
+
+        // FIX 2: pointerrawupdate for lowest latency on S-Pen
+        c.addEventListener('pointerrawupdate', (e) => {
           if (!isDrawing || !activeStroke) return;
+          if (penOnlyMode && e.pointerType !== 'pen' && e.pointerType !== 'mouse') return;
+          drawSegment(e.clientX - rect.left, e.clientY - rect.top);
+          e.preventDefault();
+        }, { passive: false });
+
+        // Fallback for browsers without pointerrawupdate (mostly mouse/touch)
+        c.addEventListener('pointermove', (e) => {
+          if (!isDrawing || !activeStroke) return;
+          if ('onpointerrawupdate' in window) return; // already handled by raw
           if (penOnlyMode && e.pointerType !== 'pen' && e.pointerType !== 'mouse') return;
 
           const co = e.getCoalescedEvents ? e.getCoalescedEvents() : null;
-          const events = (co && co.length > 0) ? co : [e];
-
-          // one path + one stroke() call per move event
-          ctx.beginPath();
-          ctx.moveTo(lastPt.x, lastPt.y);
-          let drew = false;
-          for (let i = 0; i < events.length; i++) {
-            const x = r1(events[i].clientX - rect.left);
-            const y = r1(events[i].clientY - rect.top);
-            const dx = x - lastPt.x, dy = y - lastPt.y;
-            if (dx * dx + dy * dy < 0.36) continue; // skip sub-pixel jitter
-            ctx.lineTo(x, y);
-            activeStroke.points.push({ x, y });
-            lastPt = { x, y };
-            drew = true;
+          if (co && co.length > 0) {
+            for (let i = 0; i < co.length; i++) {
+              drawSegment(co[i].clientX - rect.left, co[i].clientY - rect.top);
+            }
+          } else {
+            drawSegment(e.clientX - rect.left, e.clientY - rect.top);
           }
-          if (drew) ctx.stroke();
           e.preventDefault();
-        };
+        }, { passive: false });
 
-        const stopStroke = (e) => {
-          if (isDrawing) {
-            isDrawing = false;
-            activeStroke = null;
-            try { c.releasePointerCapture(e.pointerId); } catch (_) {}
-            saveVectorStrokes(id);
-          }
-        };
-
-        c.onpointerup = stopStroke;
-        c.onpointercancel = stopStroke;
+        c.addEventListener('pointerup', finishStroke);
+        c.addEventListener('pointercancel', finishStroke);
+        c.addEventListener('pointerleave', finishStroke);
       });
     }
 
-    /* DIRECT QUESTION SELECTION */
-    function selectQaPage(qIdx) {
-      saveAllCanvases();
-      activeQaSubIdx = qIdx;
-      renderCurrentExercise();
-    }
-    window.selectQaPage = selectQaPage;
-
-    /* NAVIGATION */
+    /* ============================================================
+       NAVIGATION
+       ============================================================ */
     function renderModuleTabs() {
       const list = document.getElementById('moduleTabsList');
       if (!list) return;
@@ -1616,10 +1612,7 @@
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = `module-menu-item ${idx === activeModuleIdx ? 'active' : ''}`;
-        btn.onclick = () => {
-          switchModule(idx);
-          toggleSidebar();
-        };
+        btn.onclick = () => { switchModule(idx); toggleSidebar(); };
         btn.innerHTML = `<span>🪷</span><span class="module-menu-text">${m.title}</span>`;
         list.appendChild(btn);
       });
@@ -1635,7 +1628,6 @@
       if (tabW) tabW.classList.toggle('active', m === 'write');
       switchModule(activeModuleIdx);
     }
-    window.setAppMode = setAppMode;
 
     function switchModule(idx) {
       saveAllCanvases();
@@ -1662,14 +1654,22 @@
       return shuffledDockCache[itemId];
     }
 
-    /* EXERCISE RENDERING */
+    /* ============================================================
+       EXERCISE RENDERING
+       ============================================================ */
     function renderCurrentExercise() {
       const container = document.getElementById('stageContentBody');
+      const globalBar = document.getElementById('section2GlobalToolbar');
       if (!container) return;
       container.innerHTML = '';
 
+      // Hide Section 2 toolbar for non-QA modules
+      if (activeModuleIdx !== 1 && globalBar) {
+        globalBar.style.display = 'none';
+        globalBar.innerHTML = '';
+      }
+
       if (activeModuleIdx === 0) {
-        // MODULE 1: சொல்வதை எழுதுக
         const statusEl = document.getElementById('statusNoticeText');
         if (statusEl) {
           statusEl.textContent = (appMode === 'practice')
@@ -1680,6 +1680,7 @@
         DICTATION_ITEMS.forEach((item, idx) => {
           const card = document.createElement('div');
           card.className = 'lesson-study-card';
+          card.setAttribute('data-item-card', item.id);
           const placedUids = assembledTokens[item.id] || [];
           const dockList = getStableDockList(item.id, item.syllables);
 
@@ -1720,7 +1721,6 @@
         });
 
       } else if (activeModuleIdx === 1) {
-        // MODULE 2: வினா விடை (ATOMIC SINGLE-PASS INJECTION TO PREVENT EVENT WIPES)
         const statusEl = document.getElementById('statusNoticeText');
         if (statusEl) {
           statusEl.textContent = (appMode === 'practice')
@@ -1733,23 +1733,34 @@
         const placedUids = assembledTokens[curQa.id] || [];
         const dockList = getStableDockList(curQa.id, curQa.targetTokens);
 
-        const pagStripHtml = `
-          <div class="qa-pagination-strip">
-            ${QA_ITEMS.map((q, qIndex) => `
-              <button type="button" 
-                      class="qa-page-pill ${qIndex === activeQaSubIdx ? 'active' : ''}" 
-                      onclick="selectQaPage(${qIndex})">
-                வினா ${q.num}
-              </button>
-            `).join('')}
-          </div>
-        `;
+        // FIX 1: Section 2 toolbar in its own slot above the scroll area
+        if (globalBar) {
+          globalBar.style.display = 'block';
+          globalBar.innerHTML = renderSection2Toolbar(slateId);
+        }
 
-        const toolbarHtml = renderSection2Toolbar(slateId);
+        const card = document.createElement('div');
+        card.className = 'lesson-study-card';
+        card.setAttribute('data-item-card', curQa.id);
 
-        let cardInnerHtml = '';
+        const pagStrip = document.createElement('div');
+        pagStrip.className = 'qa-pagination-strip';
+        QA_ITEMS.forEach((q, qIndex) => {
+          const pBtn = document.createElement('button');
+          pBtn.type = 'button';
+          pBtn.className = `qa-page-pill ${qIndex === activeQaSubIdx ? 'active' : ''}`;
+          pBtn.textContent = `வினா ${q.num}`;
+          pBtn.onclick = () => {
+            saveAllCanvases();
+            activeQaSubIdx = qIndex;
+            renderCurrentExercise();
+          };
+          pagStrip.appendChild(pBtn);
+        });
+        container.appendChild(pagStrip);
+
         if (appMode === 'practice') {
-          cardInnerHtml = `
+          card.innerHTML = `
             <div class="card-header-line">
               <span class="card-title-text" onclick="speakTamil('${curQa.q}')">வினா ${curQa.num}: ${curQa.q}</span>
               <button type="button" class="audio-pill-btn" onclick="speakTamil('${curQa.q}')">🔊 வினா</button>
@@ -1797,7 +1808,7 @@
             </div>
           `;
         } else {
-          cardInnerHtml = `
+          card.innerHTML = `
             <div class="card-header-line">
               <span class="card-title-text" onclick="speakTamil('${curQa.q}')">வினா ${curQa.num}: ${curQa.q}</span>
               <button type="button" class="audio-pill-btn" onclick="speakTamil('${curQa.q}')">🔊 வினா</button>
@@ -1812,14 +1823,9 @@
             </div>
           `;
         }
-
-        const cardHtml = `<div class="lesson-study-card">${cardInnerHtml}</div>`;
-
-        // Single atomic injection to preserve all event handlers
-        container.innerHTML = pagStripHtml + toolbarHtml + cardHtml;
+        container.appendChild(card);
 
       } else if (activeModuleIdx === 2) {
-        // MODULE 3: பேச்சு வழக்கு ➔ எழுத்து வழக்கு
         const statusEl = document.getElementById('statusNoticeText');
         if (statusEl) statusEl.textContent = "எழுத்து வழக்கு சொற்களைத் தொட்டு தேர்ந்தெடுக்க!";
 
@@ -1873,7 +1879,6 @@
         container.appendChild(card);
 
       } else if (activeModuleIdx === 3) {
-        // MODULE 4: சரியான விடை (MCQ)
         const statusEl = document.getElementById('statusNoticeText');
         if (statusEl) statusEl.textContent = "சரியான விடையைத் தொட்டு கீழே எழுதுக!";
 
@@ -1887,6 +1892,7 @@
         mcqQuestions.forEach(q => {
           const card = document.createElement('div');
           card.className = 'mcq-exercise-card';
+          card.setAttribute('data-mcq-card', q.id);
           const selected = mcqChoices[q.id];
 
           card.innerHTML = `
@@ -1896,6 +1902,7 @@
             <div class="mcq-options-grid">
               ${q.opts.map(opt => `
                 <button type="button" class="mcq-choice-btn ${selected === opt ? 'selected' : ''}" 
+                  data-mcq="${q.id}" data-opt="${opt}"
                   onclick="handleMcqChoice('${q.id}', '${opt}')">
                   ${opt}
                 </button>
@@ -1907,26 +1914,13 @@
         });
 
       } else if (activeModuleIdx === 4) {
-        // MODULE 5: வண்ணத்தில் வேறுபட்ட எழுத்துக்கள்
         const statusEl = document.getElementById('statusNoticeText');
         if (statusEl) statusEl.textContent = "வண்ண எழுத்துக்களை இணைத்து நோட்டுப் பெட்டியில் எழுதுக!";
 
         const riddles = [
-          {
-            id: 'rid1',
-            w1: ['ப', 'ள்ளம்'], w2: ['அ', 'ரு', 'ம்பு'], w3: ['பார்', 'த்தி', 'பன்'],
-            answer: 'பருத்தி'
-          },
-          {
-            id: 'rid2',
-            w1: ['ப', 'ருந்து'], w2: ['வ', 'ட்', 'டம்'], w3: ['வண்', 'டு'],
-            answer: 'பட்டு'
-          },
-          {
-            id: 'rid3',
-            w1: ['க', 'ம்பு'], w2: ['ப', 'ம்ப', 'ரம்'], w3: ['தக்கா', 'ளி'],
-            answer: 'கம்பளி'
-          }
+          { id: 'rid1', w1: ['ப', 'ள்ளம்'], w2: ['அ', 'ரு', 'ம்பு'], w3: ['பார்', 'த்தி', 'பன்'], answer: 'பருத்தி' },
+          { id: 'rid2', w1: ['ப', 'ருந்து'], w2: ['வ', 'ட்', 'டம்'], w3: ['வண்', 'டு'], answer: 'பட்டு' },
+          { id: 'rid3', w1: ['க', 'ம்பு'], w2: ['ப', 'ம்ப', 'ரம்'], w3: ['தக்கா', 'ளி'], answer: 'கம்பளி' }
         ];
 
         riddles.forEach(r => {
@@ -1950,32 +1944,19 @@
         });
 
       } else if (activeModuleIdx === 5) {
-        // MODULE 6: ஒலி வேறுபாடு
         const statusEl = document.getElementById('statusNoticeText');
         if (statusEl) statusEl.textContent = "படத்தைப் பார்த்து சரியான சொல்லை எழுதுக!";
 
         const homoDeck = [
-          {
-            idA: 'homo1a', idB: 'homo1b',
-            title: 'மலை / மழை',
+          { idA: 'homo1a', idB: 'homo1b', title: 'மலை / மழை',
             img1: 'assets/mountain.webp', img2: 'assets/rain-cloud.webp',
-            stem1: 'பெய்தது.', ans1: 'மழை',
-            stem2: 'உயரமானது.', ans2: 'மலை'
-          },
-          {
-            idA: 'homo2a', idB: 'homo2b',
-            title: 'வாள் / வால்',
+            stem1: 'பெய்தது.', ans1: 'மழை', stem2: 'உயரமானது.', ans2: 'மலை' },
+          { idA: 'homo2a', idB: 'homo2b', title: 'வாள் / வால்',
             img1: 'assets/sword.webp', img2: 'assets/tiger-tail.webp',
-            stem1: 'மரத்தை அறுப்பது', ans1: 'வாள்',
-            stem2: 'மாட்டுக்கு இருப்பது', ans2: 'வால்'
-          },
-          {
-            idA: 'homo3a', idB: 'homo3b',
-            title: 'புலி / புளி',
+            stem1: 'மரத்தை அறுப்பது', ans1: 'வாள்', stem2: 'மாட்டுக்கு இருப்பது', ans2: 'வால்' },
+          { idA: 'homo3a', idB: 'homo3b', title: 'புலி / புளி',
             img1: 'assets/tiger.webp', img2: 'assets/tamarind.webp',
-            stem1: 'மரத்தில் காய்ப்பது', ans1: 'புளி',
-            stem2: 'காட்டில் வாழ்வது', ans2: 'புலி'
-          }
+            stem1: 'மரத்தில் காய்ப்பது', ans1: 'புளி', stem2: 'காட்டில் வாழ்வது', ans2: 'புலி' }
         ];
 
         const deckWrap = document.createElement('div');
@@ -2011,16 +1992,15 @@
         container.appendChild(deckWrap);
       }
 
-      setTimeout(setupDualCanvases, 40);
+      requestAnimationFrame(() => setupDualCanvases());
     }
 
-    /* 3-LINE RULING SVG GENERATOR */
     function generateSvgLines(count, totalH) {
       let str = '';
       const spacing = Math.floor((totalH - 30) / count);
       for (let i = 0; i < count; i++) {
-        let yGuide = 36 + i * spacing;
-        let yBase = 76 + i * spacing;
+        const yGuide = 36 + i * spacing;
+        const yBase = 76 + i * spacing;
         str += `
           <line x1="0" y1="${yGuide}" x2="960" y2="${yGuide}" stroke="#93C5FD" stroke-width="1.6" stroke-dasharray="4 4"/>
           <line x1="0" y1="${yBase}" x2="960" y2="${yBase}" stroke="#93C5FD" stroke-width="2.2"/>
@@ -2029,9 +2009,12 @@
       return str;
     }
 
-    /* DUPLICATE-SAFE TOKEN ASSEMBLY ENGINE */
+    /* ============================================================
+       FIX 4: PARTIAL UPDATE HANDLERS
+       ============================================================ */
     function handleTokenClick(itemId, clickedUid, isQa = false) {
       const item = isQa ? QA_ITEMS.find(q => q.id === itemId) : DICTATION_ITEMS.find(d => d.id === itemId);
+      if (!item) return;
       const tokenList = isQa ? item.targetTokens : item.syllables;
 
       if (!assembledTokens[itemId]) assembledTokens[itemId] = [];
@@ -2047,7 +2030,7 @@
         audioFX.playVeena(440 + placedUids.length * 35);
         speakTamil(clickedToken.s);
         placedUids.push(clickedUid);
-        renderCurrentExercise();
+        updateRackAndDock(itemId, isQa);
       } else {
         audioFX.playVeena(240);
         speakTamil(expectedToken.s);
@@ -2059,9 +2042,45 @@
       }
     }
 
+    function updateRackAndDock(itemId, isQa = false) {
+      const item = isQa ? QA_ITEMS.find(q => q.id === itemId) : DICTATION_ITEMS.find(d => d.id === itemId);
+      if (!item) return;
+      const tokenList = isQa ? item.targetTokens : item.syllables;
+      const placedUids = assembledTokens[itemId] || [];
+      const dockList = getStableDockList(itemId, tokenList);
+
+      const card = document.querySelector(`[data-item-card="${itemId}"]`);
+      if (!card) return;
+
+      const rack = card.querySelector('.syllable-assembly-rack');
+      if (rack) {
+        rack.innerHTML = tokenList.map((_, sIdx) => {
+          const filledUid = placedUids[sIdx];
+          const matched = tokenList.find(x => x.uid === filledUid);
+          return `<div class="rack-target-slot">${matched ? matched.s : (sIdx + 1)}</div>`;
+        }).join('');
+      }
+
+      const dock = card.querySelector('.syllable-coins-dock');
+      if (dock) {
+        dock.innerHTML = dockList.map(tok => {
+          const isPlaced = placedUids.includes(tok.uid);
+          return `
+            <button type="button" class="tactile-syllable-coin ${isPlaced ? 'placed' : ''}" 
+              data-item="${itemId}" data-uid="${tok.uid}"
+              onclick="handleTokenClick('${itemId}',${tok.uid}, ${isQa})">
+              <span class="coin-tamil-text">${tok.s}</span>
+              <span class="coin-translit-text">${tok.t}</span>
+            </button>
+          `;
+        }).join('') + `<button type="button" class="hud-btn" style="padding:6px 12px; font-size:0.85rem;" onclick="resetItemTokens('${itemId}')">⌫ அழி</button>`;
+      }
+    }
+
     function resetItemTokens(itemId) {
       assembledTokens[itemId] = [];
-      renderCurrentExercise();
+      const isQa = QA_ITEMS.some(q => q.id === itemId);
+      updateRackAndDock(itemId, isQa);
     }
 
     function handleTickCheck(key, isCorrect, text) {
@@ -2074,14 +2093,29 @@
         delete matchedTicks[key];
         speakTamil("தவறு, மீண்டும் பார்");
       }
-      renderCurrentExercise();
+      // FIX 4: partial update — only the tick card
+      const card = document.querySelector(`[onclick*="${key}"]`);
+      if (card) {
+        if (matchedTicks[key]) card.classList.add('checked-correct');
+        else card.classList.remove('checked-correct');
+        const ind = card.querySelector('.tick-circle-indicator');
+        if (ind) ind.textContent = matchedTicks[key] ? '✓' : '';
+      }
     }
 
     function handleMcqChoice(qId, choice) {
       mcqChoices[qId] = choice;
       audioFX.playVeena(480);
       speakTamil(choice);
-      renderCurrentExercise();
+
+      // FIX 4: partial update — toggle button classes only
+      const card = document.querySelector(`[data-mcq-card="${qId}"]`);
+      if (card) {
+        card.querySelectorAll('.mcq-choice-btn').forEach(btn => {
+          if (btn.getAttribute('data-opt') === choice) btn.classList.add('selected');
+          else btn.classList.remove('selected');
+        });
+      }
     }
 
     function resetActiveSection() {
@@ -2108,7 +2142,9 @@
       renderCurrentExercise();
     }
 
-    /* ACCURATE GRADING */
+    /* ============================================================
+       GRADING
+       ============================================================ */
     function verifyActiveTask() {
       saveAllCanvases();
       let isComplete = false;
@@ -2173,7 +2209,9 @@
       requestAnimationFrame(renderPetalLoop);
     }
 
-    /* ASANA FINALE PARTICLES */
+    /* ============================================================
+       FINALE
+       ============================================================ */
     const finaleStage = document.getElementById('celebrationFinaleStage');
     const finaleCanvas = document.getElementById('finaleCanvas');
     const finaleCtx = finaleCanvas ? finaleCanvas.getContext('2d', { alpha: true }) : null;
@@ -2234,18 +2272,13 @@
         const elapsed = now - flightStartTime;
         const p = Math.min(1, elapsed / dur);
         const ease = 1 - Math.pow(1 - p, 3);
-
         const curX = -120 + (w + 240) * ease;
         const curY = h * 0.75 - Math.sin(ease * Math.PI) * (h * 0.55);
-
         if (soaringParrot) {
           soaringParrot.style.left = `${curX}px`;
           soaringParrot.style.top = `${curY}px`;
         }
-
-        if (p < 1 && finaleRunning) {
-          requestAnimationFrame(step);
-        }
+        if (p < 1 && finaleRunning) requestAnimationFrame(step);
       }
       requestAnimationFrame(step);
     }
@@ -2253,7 +2286,7 @@
     function renderPetalLoop() {
       if (!finaleRunning || !finaleCtx) return;
       finaleCtx.clearRect(0, 0, finaleCanvas.width, finaleCanvas.height);
-      for (let p of petals) {
+      for (const p of petals) {
         p.update();
         p.draw(finaleCtx);
       }
@@ -2264,11 +2297,13 @@
       finaleRunning = false;
       if (finaleStage) finaleStage.style.display = 'none';
       if (victoryAwardScroll) victoryAwardScroll.classList.remove('impact');
-      let nextIdx = (activeModuleIdx + 1) % MODULES.length;
+      const nextIdx = (activeModuleIdx + 1) % MODULES.length;
       switchModule(nextIdx);
     }
 
-    /* ALPHABET DRAWER */
+    /* ============================================================
+       ALPHABET DRAWER
+       ============================================================ */
     function initAlphabetDrawer() {
       const vowels = ['அ', 'ஆ', 'இ', 'ஈ', 'உ', 'ஊ', 'எ', 'ஏ', 'ஐ', 'ஒ', 'ஓ', 'ஔ'];
       const consonants = ['க்', 'ங்', 'ச்', 'ஞ்', 'ட்', 'ண்', 'த்', 'ந்', 'ப்', 'ம்', 'ய்', 'ர்', 'ல்', 'வ்', 'ழ்', 'ள்', 'ற்', 'ன்'];
@@ -2307,12 +2342,21 @@
       if (modal) modal.style.display = 'none';
     }
 
-    /* INSTANT ZERO-LATENCY APP INITIALIZATION */
+    /* ============================================================
+       INIT
+       ============================================================ */
     function initApp() {
       applyDimmerState();
       initAlphabetDrawer();
       renderModuleTabs();
       switchModule(0);
+
+      // FIX 5: force-decode images for instant first paint
+      requestAnimationFrame(() => {
+        document.querySelectorAll('.bg-layer img, .parrot-sprite-img, .homophone-badge-circle img').forEach(img => {
+          if (img.decode) img.decode().catch(() => {});
+        });
+      });
     }
 
     if (document.readyState === 'loading') {
