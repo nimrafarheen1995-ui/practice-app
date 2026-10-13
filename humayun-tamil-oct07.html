@@ -808,7 +808,7 @@
       height: 76px;
       border-radius: 50%;
       background: #FFFFFF;
-      border: 2px solid var(--gold-primary);
+      border: 2.5px solid var(--gold-primary);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1203,7 +1203,7 @@
       { id: 'd7', word: 'பாலைவனம்', syllables: [{uid:1, s:'பா', t:'Paa'}, {uid:2, s:'லை', t:'Lai'}, {uid:3, s:'வ', t:'Va'}, {uid:4, s:'னம்', t:'Nam'}] }
     ];
 
-    // Pages 3 & 4: All 4 Classwork Notebook Q&As (Accurately Scaffolded)
+    // Pages 3 & 4: All 4 Classwork Notebook Q&As
     const QA_ITEMS = [
       {
         id: 'qa_q1',
@@ -1389,6 +1389,13 @@
       });
     }
 
+    /* DIRECT SECTION 2 NAVIGATION CONTROLLER */
+    function switchQaPage(targetIndex) {
+      saveAllCanvases();
+      activeQaSubIdx = targetIndex;
+      renderCurrentExercise();
+    }
+
     /* SECTION 2 EXCLUSIVE ICON-ONLY TOOLBAR */
     function renderSection2Toolbar(activeTargetId) {
       return `
@@ -1401,16 +1408,16 @@
           </div>
 
           <div class="toolbox-cluster">
-            <button type="button" class="color-dot-btn ${currentColor === '#1E3A8A' ? 'active' : ''}" style="background:#1E3A8A;" onclick="setSec2Color('#1E3A8A')"></button>
-            <button type="button" class="color-dot-btn ${currentColor === '#1E293B' ? 'active' : ''}" style="background:#1E293B;" onclick="setSec2Color('#1E293B')"></button>
-            <button type="button" class="color-dot-btn ${currentColor === '#7C2D12' ? 'active' : ''}" style="background:#7C2D12;" onclick="setSec2Color('#7C2D12')"></button>
-            <button type="button" class="color-dot-btn ${currentColor === '#15803D' ? 'active' : ''}" style="background:#15803D;" onclick="setSec2Color('#15803D')"></button>
+            <button type="button" class="color-dot-btn ${currentColor === '#1E3A8A' ? 'active' : ''}" data-color="#1E3A8A" style="background:#1E3A8A;" onclick="setSec2Color('#1E3A8A')"></button>
+            <button type="button" class="color-dot-btn ${currentColor === '#1E293B' ? 'active' : ''}" data-color="#1E293B" style="background:#1E293B;" onclick="setSec2Color('#1E293B')"></button>
+            <button type="button" class="color-dot-btn ${currentColor === '#7C2D12' ? 'active' : ''}" data-color="#7C2D12" style="background:#7C2D12;" onclick="setSec2Color('#7C2D12')"></button>
+            <button type="button" class="color-dot-btn ${currentColor === '#15803D' ? 'active' : ''}" data-color="#15803D" style="background:#15803D;" onclick="setSec2Color('#15803D')"></button>
           </div>
 
           <div class="toolbox-cluster">
-            <button type="button" class="icon-tip-btn ${currentWidthScale === 1.2 ? 'active' : ''}" onclick="setSec2Width(1.2)" title="மெல்லிய">•</button>
-            <button type="button" class="icon-tip-btn ${currentWidthScale === 2.2 ? 'active' : ''}" onclick="setSec2Width(2.2)" title="நடுத்தர">●</button>
-            <button type="button" class="icon-tip-btn ${currentWidthScale === 4.0 ? 'active' : ''}" onclick="setSec2Width(4.0)" title="தடிமன்">⬤</button>
+            <button type="button" class="icon-tip-btn ${currentWidthScale === 1.2 ? 'active' : ''}" data-width="1.2" onclick="setSec2Width(1.2)" title="மெல்லிய">•</button>
+            <button type="button" class="icon-tip-btn ${currentWidthScale === 2.2 ? 'active' : ''}" data-width="2.2" onclick="setSec2Width(2.2)" title="நடுத்தர">●</button>
+            <button type="button" class="icon-tip-btn ${currentWidthScale === 4.0 ? 'active' : ''}" data-width="4.0" onclick="setSec2Width(4.0)" title="தடிமன்">⬤</button>
           </div>
         </div>
       `;
@@ -1418,19 +1425,32 @@
 
     function setSec2Tool(tool) {
       currentTool = tool;
-      renderCurrentExercise();
+      document.querySelectorAll('.section2-exclusive-toolbar .tool-icon-btn').forEach(btn => {
+        if (btn.title === 'எழுதுகோல்') btn.classList.toggle('active', tool === 'pen');
+        if (btn.title === 'அழிப்பான்') btn.classList.toggle('active', tool === 'eraser');
+      });
     }
+
     function setSec2Color(col) {
       currentColor = col;
       currentTool = 'pen';
-      renderCurrentExercise();
-    }
-    function setSec2Width(w) {
-      currentWidthScale = w;
-      renderCurrentExercise();
+      document.querySelectorAll('.section2-exclusive-toolbar .color-dot-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-color') === col);
+      });
+      document.querySelectorAll('.section2-exclusive-toolbar .tool-icon-btn').forEach(btn => {
+        if (btn.title === 'எழுதுகோல்') btn.classList.add('active');
+        if (btn.title === 'அழிப்பான்') btn.classList.remove('active');
+      });
     }
 
-    /* CLEAN INK SLATE FOR SECTIONS 1, 4, 5, 6 */
+    function setSec2Width(w) {
+      currentWidthScale = w;
+      document.querySelectorAll('.section2-exclusive-toolbar .icon-tip-btn').forEach(btn => {
+        btn.classList.toggle('active', parseFloat(btn.getAttribute('data-width')) === w);
+      });
+    }
+
+    /* INK SLATE FOR SECTIONS 1, 4, 5, 6 */
     function inlineDualLineBlank(id, width = 760, ghostWord = "") {
       return `
         <div class="ink-writing-row">
@@ -1654,35 +1674,36 @@
         });
 
       } else if (activeModuleIdx === 1) {
-        // MODULE 2: வினா விடை (SECTION 2 - TOP NAVIGATION ONLY + 3-LINE RULINGS)
+        // MODULE 2: வினா விடை (SECTION 2 - SOLE TOP NAVIGATION + 3-LINE RULINGS)
         document.getElementById('statusNoticeText').textContent = (appMode === 'practice')
           ? "மேலே உள்ள வினாக்களைத் தொட்டு படிக்க; விடையை நினைவுகூர்ந்து எழுதுக!"
           : "வினாவைப் பார்த்து முழு விடையையும் சுயமாக நோட்டுப் பக்கத்தில் எழுதுக!";
-
-        // TOP NAVIGATION ONLY (NO BOTTOM NAVIGATION BUTTONS)
-        const pagStrip = document.createElement('div');
-        pagStrip.className = 'qa-pagination-strip';
-        QA_ITEMS.forEach((q, qIndex) => {
-          const pBtn = document.createElement('button');
-          pBtn.type = 'button';
-          pBtn.className = `qa-page-pill ${qIndex === activeQaSubIdx ? 'active' : ''}`;
-          pBtn.textContent = `வினா ${q.num}`;
-          pBtn.onclick = () => {
-            saveAllCanvases();
-            activeQaSubIdx = qIndex;
-            renderCurrentExercise();
-          };
-          pagStrip.appendChild(pBtn);
-        });
-        container.appendChild(pagStrip);
 
         const curQa = QA_ITEMS[activeQaSubIdx];
         const slateId = `${curQa.id}_slate`;
         const placedUids = assembledTokens[curQa.id] || [];
         const dockList = getStableDockList(curQa.id, curQa.targetTokens);
 
-        container.innerHTML += renderSection2Toolbar(slateId);
+        // 1. TOP NAVIGATION ONLY (NO BOTTOM STEPPER BUTTONS)
+        const pagStripHtml = `
+          <div class="qa-pagination-strip">
+            ${QA_ITEMS.map((q, qIndex) => `
+              <button type="button" 
+                      class="qa-page-pill ${qIndex === activeQaSubIdx ? 'active' : ''}" 
+                      onclick="switchQaPage(${qIndex})">
+                வினா ${q.num}
+              </button>
+            `).join('')}
+          </div>
+        `;
 
+        // 2. Toolbar HTML
+        const toolbarHtml = renderSection2Toolbar(slateId);
+
+        // Render Top Controls in a Single Assignment
+        container.innerHTML = pagStripHtml + toolbarHtml;
+
+        // 3. Exercise Card
         const card = document.createElement('div');
         card.className = 'lesson-study-card';
 
@@ -1948,7 +1969,7 @@
       setTimeout(setupDualCanvases, 40);
     }
 
-    /* 3-LINE (OR 4-LINE) RULING SVG GENERATOR */
+    /* 3-LINE RULING SVG GENERATOR */
     function generateSvgLines(count, totalH) {
       let str = '';
       const spacing = Math.floor((totalH - 30) / count);
@@ -1977,7 +1998,6 @@
       const expectedToken = tokenList[currentStep];
       const clickedToken = tokenList.find(s => s.uid === clickedUid);
 
-      // Match text and verify instance ID is unused
       if (clickedToken && clickedToken.s === expectedToken.s && !placedUids.includes(clickedUid)) {
         audioFX.playVeena(440 + placedUids.length * 35);
         speakTamil(clickedToken.s);
@@ -2083,7 +2103,6 @@
         return;
       }
 
-      // Validated complete: launch celebration
       resizeFinaleCanvas();
       finaleStage.style.display = 'block';
       finaleRunning = true;
@@ -2146,99 +2165,3 @@
       }
       draw(c) {
         c.save();
-        c.translate(this.x, this.y);
-        c.rotate(this.rot);
-        c.fillStyle = this.color;
-        c.beginPath();
-        c.ellipse(0, 0, this.size, this.size * 0.6, 0, 0, Math.PI * 2);
-        c.fill();
-        c.restore();
-      }
-    }
-
-    function animateSoaringFlight() {
-      const dur = 2600;
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-
-      function step(now) {
-        const elapsed = now - flightStartTime;
-        const p = Math.min(1, elapsed / dur);
-        const ease = 1 - Math.pow(1 - p, 3);
-
-        const curX = -120 + (w + 240) * ease;
-        const curY = h * 0.75 - Math.sin(ease * Math.PI) * (h * 0.55);
-
-        soaringParrot.style.left = `${curX}px`;
-        soaringParrot.style.top = `${curY}px`;
-
-        if (p < 1 && finaleRunning) {
-          requestAnimationFrame(step);
-        }
-      }
-      requestAnimationFrame(step);
-    }
-
-    function renderPetalLoop() {
-      if (!finaleRunning) return;
-      finaleCtx.clearRect(0, 0, finaleCanvas.width, finaleCanvas.height);
-      for (let p of petals) {
-        p.update();
-        p.draw(finaleCtx);
-      }
-      requestAnimationFrame(renderPetalLoop);
-    }
-
-    function closeCelebrationStage() {
-      finaleRunning = false;
-      finaleStage.style.display = 'none';
-      victoryAwardScroll.classList.remove('impact');
-      let nextIdx = (activeModuleIdx + 1) % MODULES.length;
-      switchModule(nextIdx);
-    }
-
-    /* ALPHABET DRAWER */
-    function initAlphabetDrawer() {
-      const vowels = ['அ', 'ஆ', 'இ', 'ஈ', 'உ', 'ஊ', 'எ', 'ஏ', 'ஐ', 'ஒ', 'ஓ', 'ஔ'];
-      const consonants = ['க்', 'ங்', 'ச்', 'ஞ்', 'ட்', 'ண்', 'த்', 'ந்', 'ப்', 'ம்', 'ய்', 'ர்', 'ல்', 'வ்', 'ழ்', 'ள்', 'ற்', 'ன்'];
-
-      const vGrid = document.getElementById('vowelsGrid');
-      vGrid.innerHTML = '';
-      vowels.forEach(v => {
-        const d = document.createElement('div');
-        d.className = 'letter-chip-box';
-        d.textContent = v;
-        d.onclick = () => speakTamil(v);
-        vGrid.appendChild(d);
-      });
-
-      const cGrid = document.getElementById('consonantsGrid');
-      cGrid.innerHTML = '';
-      consonants.forEach(c => {
-        const d = document.createElement('div');
-        d.className = 'letter-chip-box';
-        d.textContent = c;
-        d.onclick = () => speakTamil(c);
-        cGrid.appendChild(d);
-      });
-    }
-
-    function openAlphabetDrawer() {
-      document.getElementById('alphabetDrawerModal').style.display = 'flex';
-    }
-    function closeAlphabetDrawer() {
-      document.getElementById('alphabetDrawerModal').style.display = 'none';
-    }
-
-    window.onload = () => {
-      applyDimmerState();
-      initAlphabetDrawer();
-      renderModuleTabs();
-      switchModule(0);
-    };
-
-    window.addEventListener('beforeunload', saveAllCanvases);
-    window.addEventListener('pagehide', saveAllCanvases);
-  </script>
-</body>
-</html>
