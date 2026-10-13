@@ -448,6 +448,7 @@
     .rack-target-slot {
       min-width: 62px;
       height: 54px;
+      padding: 0 10px;
       border: 2px dashed #CBD5E1;
       border-radius: 12px;
       display: flex;
@@ -455,8 +456,9 @@
       justify-content: center;
       background: #F8FAFC;
       color: #92400E;
-      font-size: 1.35rem;
+      font-size: 1.25rem;
       font-weight: 900;
+      white-space: nowrap;
     }
 
     .syllable-coins-dock {
@@ -500,14 +502,15 @@
       75% { transform: translateX(6px); }
     }
     .coin-tamil-text {
-      font-size: 1.3rem;
+      font-size: 1.25rem;
       font-weight: 900;
       color: var(--text-temple);
-      line-height: 1;
+      line-height: 1.1;
+      white-space: nowrap;
     }
     .coin-translit-text {
       font-family: var(--font-ui);
-      font-size: 0.76rem;
+      font-size: 0.74rem;
       font-weight: 900;
       color: #78350F;
       letter-spacing: 0.4px;
@@ -624,28 +627,46 @@
       z-index: 1;
     }
 
-    /* Q&A PAGINATION STRIP */
+    /* Q&A SOLE TOP NAVIGATION PILLS */
     .qa-pagination-strip {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       justify-content: center;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
     .qa-page-pill {
-      background: rgba(255, 255, 255, 0.92);
-      border: 2px solid var(--border-ornament);
-      border-radius: 12px;
-      padding: 8px 20px;
-      font-size: 1.1rem;
+      background: rgba(255, 255, 255, 0.95);
+      border: 2.5px solid var(--border-ornament);
+      border-radius: 14px;
+      padding: 10px 24px;
+      font-size: 1.25rem;
       font-weight: 900;
       color: var(--text-temple);
       cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+      transition: all 0.15s ease;
     }
+    .qa-page-pill:active { transform: scale(0.96); }
     .qa-page-pill.active {
       background: #FEF08A;
       border-color: var(--gold-primary);
-      box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.65);
+      transform: translateY(-2px);
+    }
+
+    /* MEMORY CUE BANNER BOXES */
+    .memory-scaffold-banner {
+      background: #FEF3C7;
+      border: 2px solid var(--gold-primary);
+      border-radius: 14px;
+      padding: 10px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #92400E;
     }
 
     /* SECTION 3: DIALECT SHELF & TICKS */
@@ -1034,7 +1055,7 @@
   </div>
 
   <script>
-    /* AUDIO SYNTHESIS */
+    /* PURE TAMIL VOICE SYNTHESIS */
     function speakTamil(txt) {
       if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
@@ -1065,7 +1086,7 @@
       setTimeout(next, 700);
     }
 
-    /* SYNTHESIZED AUDIO FX */
+    /* SYNTHESIZED VEENA & BELL AUDIO ENGINE */
     class TempleAudioEngine {
       constructor() { this.ctx = null; }
       init() {
@@ -1161,7 +1182,7 @@
       img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><circle cx='60' cy='60' r='55' fill='%23FEF3C7' stroke='%23D97706' stroke-width='4'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='42'>🪷</text></svg>";
     }
 
-    /* CURRICULUM DATA */
+    /* GROUND TRUTH NOTEBOOK CURRICULUM */
     const MODULES = [
       { id: 0, title: "1. சொல்வதை எழுதுக" },
       { id: 1, title: "2. வினா விடை" },
@@ -1182,15 +1203,23 @@
       { id: 'd7', word: 'பாலைவனம்', syllables: [{uid:1, s:'பா', t:'Paa'}, {uid:2, s:'லை', t:'Lai'}, {uid:3, s:'வ', t:'Va'}, {uid:4, s:'னம்', t:'Nam'}] }
     ];
 
-    // Pages 3 & 4: All 4 Classwork Notebook Q&As
+    // Pages 3 & 4: All 4 Classwork Notebook Q&As (Accurately Scaffolded)
     const QA_ITEMS = [
       {
         id: 'qa_q1',
         num: 1,
         q: 'மரங்கள் எவற்றுடன் சண்டையிட்டன?',
         a: 'மரங்கள் விலங்குகளுடன் சண்டையிட்டன.',
-        targetWord: 'விலங்குகளுடன்',
-        targetSyllables: [{uid:1, s:'வி', t:'Vi'}, {uid:2, s:'லங்', t:'Lang'}, {uid:3, s:'கு', t:'Ku'}, {uid:4, s:'க', t:'Ka'}, {uid:5, s:'ளு', t:'Lu'}, {uid:6, s:'டன்', t:'Dan'}],
+        copiedStem: 'மரங்கள் ... சண்டையிட்டன.',
+        memorizeRule: 'எவற்றுடன் ➔ விலங்குகளுடன்',
+        targetTokens: [
+          {uid:1, s:'வி', t:'Vi'},
+          {uid:2, s:'லங்', t:'Lang'},
+          {uid:3, s:'கு', t:'Ku'},
+          {uid:4, s:'க', t:'Ka'},
+          {uid:5, s:'ளு', t:'Lu'},
+          {uid:6, s:'டன்', t:'Dan'}
+        ],
         lines: 3,
         height: 340
       },
@@ -1199,8 +1228,16 @@
         num: 2,
         q: 'காட்டை விட்டு வெளியேறியவை எவை?',
         a: 'காட்டைவிட்டு வெளியேறியவை விலங்குகள் ஆகும்.',
-        targetWord: 'விலங்குகள் ஆகும்.',
-        targetSyllables: [{uid:1, s:'வி', t:'Vi'}, {uid:2, s:'லங்', t:'Lang'}, {uid:3, s:'கு', t:'Ku'}, {uid:4, s:'கள்', t:'Kal'}, {uid:5, s:'ஆ', t:'Aa'}, {uid:6, s:'கும்.', t:'Gum.'}],
+        copiedStem: 'காட்டைவிட்டு வெளியேறியவை ...',
+        memorizeRule: 'எவை ➔ விலங்குகள் ஆகும்.',
+        targetTokens: [
+          {uid:1, s:'வி', t:'Vi'},
+          {uid:2, s:'லங்', t:'Lang'},
+          {uid:3, s:'கு', t:'Ku'},
+          {uid:4, s:'கள்', t:'Kal'},
+          {uid:5, s:'ஆ', t:'Aa'},
+          {uid:6, s:'கும்.', t:'Gum.'}
+        ],
         lines: 3,
         height: 340
       },
@@ -1209,8 +1246,18 @@
         num: 3,
         q: 'மரங்களும் விலங்குகளும் செய்துகொண்ட ஒப்பந்தம் என்ன?',
         a: 'ஒரு மாதம் விலங்குகள் காட்டுக்கு வெளியே வாழ வேண்டும் இதுவே மரங்களும் விலங்குகளும் செய்துகொண்ட ஒப்பந்தம் ஆகும்.',
-        targetWord: 'ஒப்பந்தம்',
-        targetSyllables: [{uid:1, s:'ஒப்', t:'Op'}, {uid:2, s:'பந்', t:'Bandh'}, {uid:3, s:'தம்', t:'Dham'}],
+        copiedStem: 'மரங்களும் விலங்குகளும் செய்துகொண்ட ஒப்பந்தம் (கேள்வியில் உள்ளது!)',
+        memorizeRule: 'மனனம் செய்ய வேண்டிய புதிய ஒப்பந்த விதி:',
+        targetTokens: [
+          {uid:1, s:'ஒரு', t:'Oru'},
+          {uid:2, s:'மாதம்', t:'Maadham'},
+          {uid:3, s:'விலங்குகள்', t:'Vilangugal'},
+          {uid:4, s:'காட்டுக்கு', t:'Kaattukku'},
+          {uid:5, s:'வெளியே', t:'Veliyee'},
+          {uid:6, s:'வாழ வேண்டும்', t:'Vaazha Vendum'},
+          {uid:7, s:'இதுவே', t:'Idhuvee'},
+          {uid:8, s:'ஆகும்.', t:'Aagum.'}
+        ],
         lines: 4,
         height: 410
       },
@@ -1219,8 +1266,15 @@
         num: 4,
         q: 'கதையின் மூலம் நீ என்ன தெரிந்து கொண்டாய்?',
         a: 'கதையின் மூலம் நான் ஒற்றுமையே வலிமை என்பதை தெரிந்து கொண்டேன்.',
-        targetWord: 'ஒற்றுமை வலிமை',
-        targetSyllables: [{uid:1, s:'ஒற்', t:'Otr'}, {uid:2, s:'று', t:'Ru'}, {uid:3, s:'மை', t:'Mai-1'}, {uid:4, s:'வ', t:'Va'}, {uid:5, s:'லி', t:'Li'}, {uid:6, s:'மை', t:'Mai-2'}],
+        copiedStem: 'கதையின் மூலம் ... தெரிந்து (கேள்வியில் உள்ளது!)',
+        memorizeRule: 'இடப்பெயர் & விடை மாற்றம் (நீ ➔ நான், கொண்டாய் ➔ கொண்டேன்):',
+        targetTokens: [
+          {uid:1, s:'நான்', t:'Naan'},
+          {uid:2, s:'ஒற்றுமையே', t:'Ottrumaiye'},
+          {uid:3, s:'வலிமை', t:'Valimai'},
+          {uid:4, s:'என்பதை', t:'Enbadhai'},
+          {uid:5, s:'கொண்டேன்.', t:'Kondeen.'}
+        ],
         lines: 3,
         height: 340
       }
@@ -1539,9 +1593,9 @@
     }
 
     /* STABLE DOCK GENERATOR */
-    function getStableDockList(itemId, syllables) {
+    function getStableDockList(itemId, tokenList) {
       if (!shuffledDockCache[itemId]) {
-        shuffledDockCache[itemId] = [...syllables].sort(() => Math.random() - 0.5);
+        shuffledDockCache[itemId] = [...tokenList].sort(() => Math.random() - 0.5);
       }
       return shuffledDockCache[itemId];
     }
@@ -1600,11 +1654,12 @@
         });
 
       } else if (activeModuleIdx === 1) {
-        // MODULE 2: வினா விடை (SECTION 2 WITH 3-LINE RULINGS & EXCLUSIVE TOOLBAR)
+        // MODULE 2: வினா விடை (SECTION 2 - TOP NAVIGATION ONLY + 3-LINE RULINGS)
         document.getElementById('statusNoticeText').textContent = (appMode === 'practice')
-          ? "வினாவைப் பார்த்து விடைச் சொல்லை நினைவுகூர்ந்து எழுதுக!"
-          : "முழு விடையையும் சுயமாக நோட்டுப் பக்கத்தில் எழுதுக!";
+          ? "மேலே உள்ள வினாக்களைத் தொட்டு படிக்க; விடையை நினைவுகூர்ந்து எழுதுக!"
+          : "வினாவைப் பார்த்து முழு விடையையும் சுயமாக நோட்டுப் பக்கத்தில் எழுதுக!";
 
+        // TOP NAVIGATION ONLY (NO BOTTOM NAVIGATION BUTTONS)
         const pagStrip = document.createElement('div');
         pagStrip.className = 'qa-pagination-strip';
         QA_ITEMS.forEach((q, qIndex) => {
@@ -1624,7 +1679,7 @@
         const curQa = QA_ITEMS[activeQaSubIdx];
         const slateId = `${curQa.id}_slate`;
         const placedUids = assembledTokens[curQa.id] || [];
-        const dockList = getStableDockList(curQa.id, curQa.targetSyllables);
+        const dockList = getStableDockList(curQa.id, curQa.targetTokens);
 
         container.innerHTML += renderSection2Toolbar(slateId);
 
@@ -1638,27 +1693,29 @@
               <button type="button" class="audio-pill-btn" onclick="speakTamil('${curQa.q}')">🔊 வினா</button>
             </div>
 
-            <div style="font-weight:900; color:var(--gold-deep); font-size:1.15rem;">
-              விடைச் சொல்: <span style="color:#15803D;">${curQa.targetWord}</span>
+            <!-- MEMORY CUE SCAFFOLDING -->
+            <div class="memory-scaffold-banner">
+              <div>💡 <b>வினாவில் உள்ளவை (பார்த்து எழுதலாம்):</b> <span style="color:#1E40AF;">${curQa.copiedStem}</span></div>
+              <div>★ <b>${curQa.memorizeRule}</b></div>
             </div>
 
             <div class="syllable-assembly-rack">
-              ${curQa.targetSyllables.map((_, sIdx) => {
+              ${curQa.targetTokens.map((_, sIdx) => {
                 const filledUid = placedUids[sIdx];
-                const matchedSyl = curQa.targetSyllables.find(x => x.uid === filledUid);
-                return `<div class="rack-target-slot">${matchedSyl ? matchedSyl.s : (sIdx + 1)}</div>`;
+                const matchedToken = curQa.targetTokens.find(x => x.uid === filledUid);
+                return `<div class="rack-target-slot">${matchedToken ? matchedToken.s : (sIdx + 1)}</div>`;
               }).join('')}
             </div>
 
             <div class="syllable-coins-dock">
-              ${dockList.map(syl => {
-                const isPlaced = placedUids.includes(syl.uid);
+              ${dockList.map(tok => {
+                const isPlaced = placedUids.includes(tok.uid);
                 return `
                   <button type="button" class="tactile-syllable-coin ${isPlaced ? 'placed' : ''}" 
-                    data-item="${curQa.id}" data-uid="${syl.uid}"
-                    onclick="handleTokenClick('${curQa.id}',${syl.uid}, true)">
-                    <span class="coin-tamil-text">${syl.s}</span>
-                    <span class="coin-translit-text">${syl.t}</span>
+                    data-item="${curQa.id}" data-uid="${tok.uid}"
+                    onclick="handleTokenClick('${curQa.id}',${tok.uid}, true)">
+                    <span class="coin-tamil-text">${tok.s}</span>
+                    <span class="coin-translit-text">${tok.t}</span>
                   </button>
                 `;
               }).join('')}
@@ -1680,7 +1737,7 @@
             </div>
           `;
         } else {
-          // WRITE MODE
+          // WRITE MODE (ZERO HINTS)
           card.innerHTML = `
             <div class="card-header-line">
               <span class="card-title-text" onclick="speakTamil('${curQa.q}')">வினா ${curQa.num}: ${curQa.q}</span>
@@ -1697,15 +1754,6 @@
           `;
         }
 
-        const stepRow = document.createElement('div');
-        stepRow.style.display = 'flex';
-        stepRow.style.justifyContent = 'space-between';
-        stepRow.style.marginTop = '6px';
-        stepRow.innerHTML = `
-          <button type="button" class="hud-btn" ${activeQaSubIdx === 0 ? 'style="opacity:0.4; pointer-events:none;"' : ''} onclick="stepQaPage(-1)">⬅️ முந்தைய வினா</button>
-          <button type="button" class="hud-btn" ${activeQaSubIdx === 3 ? 'style="opacity:0.4; pointer-events:none;"' : ''} onclick="stepQaPage(1)">அடுத்த வினா ➔</button>
-        `;
-        card.appendChild(stepRow);
         container.appendChild(card);
 
       } else if (activeModuleIdx === 2) {
@@ -1900,7 +1948,7 @@
       setTimeout(setupDualCanvases, 40);
     }
 
-    /* 3-LINE RULING SVG GENERATOR */
+    /* 3-LINE (OR 4-LINE) RULING SVG GENERATOR */
     function generateSvgLines(count, totalH) {
       let str = '';
       const spacing = Math.floor((totalH - 30) / count);
@@ -1915,35 +1963,29 @@
       return str;
     }
 
-    function stepQaPage(dir) {
-      saveAllCanvases();
-      activeQaSubIdx = Math.max(0, Math.min(3, activeQaSubIdx + dir));
-      renderCurrentExercise();
-    }
-
     /* DUPLICATE-SAFE TOKEN ASSEMBLY ENGINE */
     function handleTokenClick(itemId, clickedUid, isQa = false) {
       const item = isQa ? QA_ITEMS.find(q => q.id === itemId) : DICTATION_ITEMS.find(d => d.id === itemId);
-      const syllables = isQa ? item.targetSyllables : item.syllables;
+      const tokenList = isQa ? item.targetTokens : item.syllables;
 
       if (!assembledTokens[itemId]) assembledTokens[itemId] = [];
       const placedUids = assembledTokens[itemId];
 
       const currentStep = placedUids.length;
-      if (currentStep >= syllables.length) return;
+      if (currentStep >= tokenList.length) return;
 
-      const expectedSyl = syllables[currentStep];
-      const clickedSyl = syllables.find(s => s.uid === clickedUid);
+      const expectedToken = tokenList[currentStep];
+      const clickedToken = tokenList.find(s => s.uid === clickedUid);
 
-      // Match sound and ensure token instance is unused
-      if (clickedSyl && clickedSyl.s.split('-')[0] === expectedSyl.s.split('-')[0] && !placedUids.includes(clickedUid)) {
+      // Match text and verify instance ID is unused
+      if (clickedToken && clickedToken.s === expectedToken.s && !placedUids.includes(clickedUid)) {
         audioFX.playVeena(440 + placedUids.length * 35);
-        speakTamil(clickedSyl.s.split('-')[0]);
+        speakTamil(clickedToken.s);
         placedUids.push(clickedUid);
         renderCurrentExercise();
       } else {
         audioFX.playVeena(240);
-        speakTamil(expectedSyl.s.split('-')[0]);
+        speakTamil(expectedToken.s);
         const btn = document.querySelector(`.tactile-syllable-coin[data-item="${itemId}"][data-uid="${clickedUid}"]`);
         if (btn) {
           btn.classList.add('shake-error');
@@ -2008,34 +2050,28 @@
       let scoreMessage = "";
 
       if (activeModuleIdx === 0) {
-        // Check if all 7 dictation words are completed
         const tokensDone = DICTATION_ITEMS.every(d => (assembledTokens[d.id] || []).length === d.syllables.length);
         const writingDone = DICTATION_ITEMS.every(d => (loadVectorStrokes(d.id) || []).length > 0);
         isComplete = (appMode === 'practice') ? (tokensDone || writingDone) : writingDone;
         scoreMessage = "7 / 7 சொற்கள் முழுமையாக நிறைவு பெற்றன!";
       } else if (activeModuleIdx === 1) {
-        // Check Q&A completion
         const curQa = QA_ITEMS[activeQaSubIdx];
-        const tokensDone = (assembledTokens[curQa.id] || []).length === curQa.targetSyllables.length;
+        const tokensDone = (assembledTokens[curQa.id] || []).length === curQa.targetTokens.length;
         const writingDone = (loadVectorStrokes(`${curQa.id}_slate`) || []).length > 0;
         isComplete = (appMode === 'practice') ? (tokensDone || writingDone) : writingDone;
         scoreMessage = `வினா ${curQa.num} மிகச் சரியாக நிறைவு பெற்றது!`;
       } else if (activeModuleIdx === 2) {
-        // Check dialect ticks: 6 correct
         const correctTicksCount = Object.keys(matchedTicks).length;
         isComplete = (correctTicksCount === 6);
         scoreMessage = `6 / 6 எழுத்து வழக்குச் சொற்கள் சரி!`;
       } else if (activeModuleIdx === 3) {
-        // Check 4 MCQs
         const mcqDone = Object.keys(mcqChoices).length === 4;
         isComplete = mcqDone;
         scoreMessage = "4 / 4 வினாக்களுக்கும் சரியான தெரிவு!";
       } else if (activeModuleIdx === 4) {
-        // Check riddles writing
         isComplete = ['rid1', 'rid2', 'rid3'].every(id => (loadVectorStrokes(id) || []).length > 0);
         scoreMessage = "3 / 3 சொல் சேர்க்கைகளும் நிறைவு!";
       } else if (activeModuleIdx === 5) {
-        // Check homophones writing
         isComplete = ['homo1a', 'homo1b', 'homo2a', 'homo2b', 'homo3a', 'homo3b'].every(id => (loadVectorStrokes(id) || []).length > 0);
         scoreMessage = "6 / 6 வாக்கியங்களும் சரியாக எழுதப்பட்டன!";
       }
