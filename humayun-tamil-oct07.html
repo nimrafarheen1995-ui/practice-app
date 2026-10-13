@@ -594,14 +594,13 @@
 
     /* FIX 2 + 7: GPU layer + no per-move transform */
     .dual-canvas {
-      position: absolute;
-      inset: 0;
-      cursor: crosshair;
-      touch-action: none;
-      z-index: 4;
-      will-change: transform;
-      transform: translateZ(0);
-    }
+  position: absolute;
+  inset: 0;
+  cursor: crosshair;
+  touch-action: none;
+  z-index: 4;
+  /* no will-change, no translateZ — those can force opaque layers on Android */
+}
     .dual-canvas, .dual-lines-canvas-bg, .notebook-rules-svg { border-radius: 11px; }
 
     .clean-clear-btn {
@@ -1334,13 +1333,19 @@
 
     /* FIX 3: Path2D grouping */
     function replayCanvasStrokes(c, id) {
-      const ctx = c.getContext('2d');
-      const dpr = window.devicePixelRatio || 1;
-      const strokes = loadVectorStrokes(id);
+  const ctx = c.getContext('2d');
+  const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+  const strokes = loadVectorStrokes(id);
 
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.clearRect(0, 0, c.width, c.height);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  // Force composite mode back to source-over BEFORE clearing,
+  // otherwise a previous eraser stroke leaves destination-out active.
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.clearRect(0, 0, c.width, c.height);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  // ... rest unchanged
+}
 
       const groups = new Map();
       for (let i = 0; i < strokes.length; i++) {
@@ -1483,7 +1488,7 @@
         c.width = Math.round(logicalW * dpr);
         c.height = Math.round(logicalH * dpr);
 
-        const ctx = c.getContext('2d', { desynchronized: true, alpha: true });
+        // Some Android/Adreno drivers silently force alpha:false when desynchronized:true. // We need alpha:true so the ruled lines beneath show through. const ctx = c.getContext('2d', { alpha: true });
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
@@ -1561,11 +1566,13 @@
           loadVectorStrokes(id).push(activeStroke);
 
           // dot for tap
-          ctx.globalCompositeOperation = strokeTool === 'eraser' ? 'destination-out' : 'source-over';
-          ctx.fillStyle = strokeTool === 'eraser' ? 'rgba(0,0,0,1)' : strokeColor;
-          ctx.beginPath();
-          ctx.arc(x, y, strokeTool === 'eraser' ? strokeWidth * 3 : strokeWidth * 0.5, 0, Math.PI * 2);
-          ctx.fill();
+          ctx.save();
+ctx.globalCompositeOperation = strokeTool === 'eraser' ? 'destination-out' : 'source-over';
+ctx.fillStyle = strokeTool === 'eraser' ? '#000' : strokeColor;
+ctx.beginPath();
+ctx.arc(x, y, strokeTool === 'eraser' ? strokeWidth * 3 : strokeWidth * 0.5, 0, Math.PI * 2);
+ctx.fill();
+ctx.restore();
 
           e.preventDefault();
         }, { passive: false });
