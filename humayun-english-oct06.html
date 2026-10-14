@@ -3,13 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>LA-1: The Girl Who Hated Books - Classwork Mastery</title>
+  <title>LA-1: The Girl Who Hated Books</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700;800&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
 
-  <!-- Instant Hardware Cache Preloads -->
   <link rel="preload" as="image" href="assets/meena-room-bg.webp" type="image/webp">
   <link rel="preload" as="image" href="assets/max-cat.webp" type="image/webp">
   <link rel="preload" as="image" href="assets/meena-character.webp" type="image/webp">
@@ -19,9 +18,7 @@
       --gold-primary: #D97706;
       --gold-deep: #B45309;
       --gold-glow: #F59E0B;
-      --teal-magic: #0D9488;
-      --teal-deep: #115E59;
-      --paper-cream: #FFFDF9;
+      --wood-dark: #3C1904;
       --ink-blue: #1E3A8A;
       --ruled-guide: #93C5FD;
       --ruled-base: #EF4444;
@@ -45,20 +42,20 @@
       height: 100dvh;
       overflow: hidden;
       background: #0B0704;
-      color: #3C1904;
+      color: var(--wood-dark);
     }
 
     body {
       display: flex;
       flex-direction: column;
-      padding: clamp(6px, 1vw, 10px) clamp(10px, 1.4vw, 16px);
-      gap: 6px;
+      padding: clamp(4px, 0.8vw, 8px) clamp(8px, 1.2vw, 14px);
+      gap: 5px;
       position: relative;
     }
 
     /* TOP HUD */
     .top-hud-bar {
-      height: 48px;
+      height: 44px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -67,69 +64,71 @@
       flex-shrink: 0;
     }
 
-    .hud-left, .hud-right {
+    .hud-group {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
 
-    .hud-btn {
+    .icon-btn {
       background: rgba(255, 255, 255, 0.94);
       border: 2px solid var(--gold-primary);
-      color: #3C1904;
-      padding: 6px 14px;
-      border-radius: 14px;
-      font-size: 0.92rem;
+      color: var(--wood-dark);
+      padding: 5px 12px;
+      border-radius: 12px;
+      font-size: 1.1rem;
       font-weight: 800;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      gap: 4px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
       transition: all 0.15s ease;
     }
-    .hud-btn:active { transform: translateY(2px) scale(0.97); }
+    .icon-btn:active { transform: translateY(1px) scale(0.96); }
 
-    .story-title-banner {
-      background: rgba(255, 253, 246, 0.95);
-      border: 2.5px solid var(--gold-primary);
-      border-radius: 20px;
-      padding: 6px 20px;
-      font-family: var(--font-story);
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: #78350F;
+    .mode-pill-toggle {
       display: flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.2);
-    }
-
-    .pen-toggle-btn {
       background: rgba(255, 255, 255, 0.94);
       border: 2px solid var(--gold-primary);
-      color: #3C1904;
-      font-size: 0.9rem;
+      border-radius: 20px;
+      padding: 2px;
+      gap: 3px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+    .mode-btn {
+      background: transparent;
+      border: none;
+      padding: 4px 14px;
+      border-radius: 16px;
+      font-family: var(--font-story);
+      font-size: 0.95rem;
       font-weight: 800;
-      padding: 6px 14px;
-      border-radius: 14px;
+      color: var(--wood-dark);
       cursor: pointer;
+      transition: all 0.15s ease;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
     }
-    .pen-toggle-btn.pen-active {
+    .mode-btn.active {
+      background: linear-gradient(180deg, #F59E0B 0%, #D97706 100%);
+      color: #FFFFFF;
+      box-shadow: 0 2px 6px rgba(217, 119, 6, 0.4);
+    }
+
+    .pen-indicator-btn.pen-active {
       background: #DCFCE7;
       border-color: #16A34A;
       color: #15803D;
     }
 
-    /* MASTER WORKSPACE CONTAINER */
-    .master-stage-frame {
+    /* MASTER FRAMED STAGE */
+    .master-scenic-stage {
       flex: 1;
       position: relative;
-      border: 4px solid #5A3C22;
-      border-radius: 24px;
+      border: 3.5px solid #5A3C22;
+      border-radius: 20px;
       overflow: hidden;
       background: #0B0704 url('assets/meena-room-bg.webp') no-repeat center center;
       background-size: cover;
@@ -139,127 +138,114 @@
       z-index: 10;
     }
 
-    /* THE DIM SCENIC OVERLAY */
-    .scenic-dim-veil {
+    .scenic-ambient-dimmer {
       position: absolute;
       inset: 0;
       background: radial-gradient(circle at 50% 45%, rgba(15, 9, 5, 0.35) 0%, rgba(10, 5, 2, 0.65) 100%);
       pointer-events: none;
       z-index: 1;
-      transition: opacity 0.4s ease;
+      transition: opacity 0.35s ease;
     }
-    .master-stage-frame.slide-active .scenic-dim-veil {
-      opacity: 0.92;
-      background: rgba(12, 6, 3, 0.68);
+    .master-scenic-stage.stage-darkened .scenic-ambient-dimmer {
+      opacity: 0.95;
+      background: rgba(12, 6, 3, 0.75);
     }
 
-    /* STAGE 0: CENTRAL DIM HUB */
-    .central-hub-stage {
+    /* CENTRAL HUB (STAGE 0) */
+    .central-hub-view {
       position: absolute;
       inset: 0;
       z-index: 10;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 16px 24px;
-      transition: opacity 0.35s ease, transform 0.35s ease;
+      padding: 12px 18px;
+      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .central-hub-stage.hidden {
+    .central-hub-view.hidden-hub {
       opacity: 0;
       pointer-events: none;
-      transform: scale(0.96);
+      transform: scale(0.95);
     }
 
-    .hub-header-prompt {
+    .hub-title-capsule {
       align-self: center;
       background: rgba(255, 253, 246, 0.95);
       border: 2px solid var(--gold-primary);
-      border-radius: 20px;
-      padding: 8px 24px;
+      border-radius: 18px;
+      padding: 6px 22px;
       font-family: var(--font-story);
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       font-weight: 800;
       color: #92400E;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
     }
 
     .hub-portals-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
       width: 100%;
-      max-width: 1080px;
+      max-width: 1100px;
       margin: 0 auto;
+      z-index: 12;
     }
 
-    .hub-portal-card {
+    .portal-launch-card {
       background: rgba(255, 255, 255, 0.94);
-      border: 3px solid var(--gold-primary);
-      border-radius: 24px;
-      padding: 16px 12px;
+      border: 2.5px solid var(--gold-primary);
+      border-radius: 20px;
+      padding: 14px 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      gap: 8px;
+      gap: 6px;
       cursor: pointer;
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
       transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s;
     }
-    .hub-portal-card:hover {
-      transform: translateY(-6px) scale(1.03);
+    .portal-launch-card:hover {
+      transform: translateY(-5px) scale(1.04);
       border-color: #F59E0B;
-      box-shadow: 0 16px 30px rgba(245, 158, 11, 0.45);
+      box-shadow: 0 14px 28px rgba(245, 158, 11, 0.45);
     }
-    .hub-portal-card:active { transform: scale(0.96); }
-    .portal-icon { font-size: 2.4rem; }
-    .portal-title {
-      font-family: var(--font-story);
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: #3C1904;
-    }
-    .portal-sub {
-      font-size: 0.8rem;
-      font-weight: 800;
-      color: #78350F;
-    }
+    .portal-launch-card:active { transform: scale(0.96); }
 
-    /* LIVING ROOM CHARACTERS IN HUB */
-    .hub-characters-row {
+    .hub-mascots-dock {
       display: flex;
       align-items: flex-end;
       justify-content: space-between;
       width: 100%;
       pointer-events: none;
     }
-    .hub-meena-anchor {
-      height: clamp(170px, 26vh, 230px);
-      filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.6));
+    .mascot-meena {
+      height: clamp(160px, 25vh, 220px);
+      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.6));
     }
-    .hub-max-anchor {
-      height: clamp(150px, 22vh, 190px);
-      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+    .mascot-max {
+      height: clamp(140px, 22vh, 185px);
+      filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.5));
       cursor: pointer;
       pointer-events: auto;
-      transition: transform 0.2s ease;
+      transition: transform 0.18s ease;
     }
-    .hub-max-anchor:active { transform: scale(0.94); }
+    .mascot-max:active { transform: scale(0.92); }
 
-    /* SLIDE DECK WORKSTATION SECTION */
-    .slide-deck-stage {
+    /* WORKSTATION SLIDE DECK (GPU ANIMATED) */
+    .slide-deck-viewport {
       position: absolute;
       inset: 0;
       z-index: 20;
       display: none;
       flex-direction: column;
       justify-content: space-between;
-      padding: 8px 16px;
+      padding: 6px 12px;
       opacity: 0;
-      transform: translate3d(0, 30px, 0) scale(0.98);
+      transform: translate3d(50px, 0, 0) scale(0.98);
       transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .slide-deck-stage.active-slide {
+    .slide-deck-viewport.active-slide {
       display: flex;
       opacity: 1;
       transform: translate3d(0, 0, 0) scale(1);
@@ -268,21 +254,20 @@
     /* PALM BANNER HEADER */
     .palm-scroll-banner-box {
       width: 100%;
-      height: 70px;
+      height: 64px;
       background: url('assets/palm-scroll-banner.png') no-repeat center center;
       background-size: 100% 100%;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0 150px 0 90px;
-      filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
+      padding: 0 130px 0 80px;
+      filter: drop-shadow(0 5px 12px rgba(0, 0, 0, 0.4));
       flex-shrink: 0;
       position: relative;
-      overflow: visible;
     }
-    .banner-quest-title {
+    .banner-text-heading {
       font-family: var(--font-story);
-      font-size: clamp(1.15rem, 1.8vw, 1.5rem);
+      font-size: clamp(1.1rem, 1.6vw, 1.35rem);
       font-weight: 800;
       color: #351804;
       text-align: center;
@@ -290,12 +275,11 @@
       text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
     }
 
-    /* 210PX BREAKOUT MAX MASCOT */
     .freely-floating-max-btn {
-      width: 180px;
-      height: 180px;
+      width: 160px;
+      height: 160px;
       position: absolute;
-      right: -25px;
+      right: -20px;
       top: 50%;
       transform: translateY(-50%);
       background: transparent;
@@ -305,253 +289,285 @@
       align-items: center;
       justify-content: center;
       transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
-      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+      filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.45));
       z-index: 30;
     }
     .freely-floating-max-btn:active { transform: translateY(-50%) scale(0.92); }
-    .max-sprite-img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
+    .max-sprite-img { width: 100%; height: 100%; object-fit: contain; }
 
-    /* PLAYGROUND BODY */
-    .slide-body-viewport {
+    /* WORKSPACE BODY */
+    .work-body-frame {
       flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 0;
-      position: relative;
-      padding: 4px 0;
-    }
-
-    /* 2-PANE SPLIT VIEW FOR ZONE 1 & 2 */
-    .two-pane-split-card {
-      width: 100%;
-      max-width: 1040px;
-      height: 100%;
-      display: grid;
-      grid-template-columns: 360px 1fr;
-      gap: 16px;
-      align-items: center;
-    }
-
-    .left-prompt-box {
-      background: rgba(255, 253, 246, 0.94);
-      border: 3px solid var(--gold-primary);
-      border-radius: 24px;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      gap: 10px;
-      height: 100%;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-    }
-    .prompt-character-badge {
-      width: 90px;
-      height: 90px;
-      object-fit: contain;
-      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
-    }
-    .prompt-main-word {
-      font-family: var(--font-story);
-      font-size: 2.1rem;
-      font-weight: 800;
-      color: #92400E;
-      line-height: 1.1;
-    }
-
-    .right-answer-box {
-      background: rgba(255, 253, 246, 0.95);
-      border: 3px solid var(--gold-primary);
-      border-radius: 24px;
-      padding: 14px 18px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      height: 100%;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-      gap: 8px;
-    }
-
-    /* SYLLABLE SNAP RACK */
-    .syllable-snap-rack {
       display: flex;
       flex-direction: column;
       gap: 6px;
-      align-items: center;
-      width: 100%;
-    }
-    .snap-label {
-      font-size: 0.85rem;
-      font-weight: 800;
-      color: #78350F;
-      align-self: flex-start;
-    }
-    .snap-tokens-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-      justify-content: center;
-    }
-    .syllable-tile {
-      background: linear-gradient(135deg, #FFFBEB 0%, #FED7AA 100%);
-      border: 2px solid var(--gold-primary);
-      padding: 8px 16px;
-      border-radius: 14px;
-      font-family: var(--font-story);
-      font-size: 1.25rem;
-      font-weight: 800;
-      color: #3C1904;
-      cursor: pointer;
-      box-shadow: 0 4px 10px rgba(180, 83, 9, 0.25);
-      transition: transform 0.15s ease;
-    }
-    .syllable-tile:hover { transform: scale(1.05); }
-    .syllable-tile:active { transform: scale(0.95); }
-    .syllable-tile.placed {
-      background: #E2E8F0;
-      border-color: #CBD5E1;
-      color: #94A3B8;
-      cursor: default;
-      box-shadow: none;
-      pointer-events: none;
+      min-height: 0;
+      justify-content: space-between;
+      padding: 4px 0;
     }
 
-    /* RETINA DPR INK ENGINE CANVAS */
-    .ruled-canvas-container {
+    /* INTERACTIVE TOP CARD (PROMPT + ANY-WORD SYLLABLE SNAPPER) */
+    .interactive-card-pane {
+      background: rgba(255, 253, 246, 0.95);
+      border: 2.5px solid var(--gold-primary);
+      border-radius: 18px;
+      padding: 10px 16px;
       display: flex;
       align-items: center;
-      background: #FFFFFF;
-      border: 2px solid var(--gold-primary);
-      border-radius: 16px;
-      box-shadow: inset 0 2px 6px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.12);
-      overflow: hidden;
-      width: 100%;
+      justify-content: space-between;
+      gap: 14px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+      flex-shrink: 0;
     }
-    .ruled-canvas-wrap {
+
+    .prompt-label-block {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .character-relic-badge {
+      width: 58px;
+      height: 58px;
+      object-fit: contain;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.25));
+    }
+    .prompt-text-bold {
+      font-family: var(--font-story);
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: #92400E;
+    }
+
+    /* ANSWER WRAPPER WITH TAP-AND-HOLD DISSECTABLE WORDS */
+    .answer-stream-box {
+      flex: 1;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #3C1904;
+      line-height: 1.5;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dissect-word-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 10px;
+      cursor: pointer;
+      background: rgba(254, 243, 199, 0.55);
+      border: 1px dashed rgba(217, 119, 6, 0.45);
+      transition: all 0.18s ease;
+      position: relative;
+    }
+    .dissect-word-chip:hover {
+      background: #FEF08A;
+      border-color: #D97706;
+      transform: scale(1.04);
+    }
+    .dissect-word-chip.split-active {
+      background: #DCFCE7;
+      border: 1.5px solid #16A34A;
+      padding: 2px 6px;
+      gap: 4px;
+    }
+    .syllable-badge-part {
+      background: #FFFFFF;
+      border: 1px solid #15803D;
+      border-radius: 6px;
+      padding: 2px 6px;
+      font-family: var(--font-story);
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #166534;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    /* 4-LINE DUAL MARGIN CANVAS NOTEBOOK SLATE */
+    .canvas-desk-unit {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-height: 0;
+      background: #FFFFFF;
+      border: 2.5px solid var(--gold-primary);
+      border-radius: 16px;
+      padding: 4px 8px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+      position: relative;
+    }
+
+    .canvas-tools-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1.5px solid #E2E8F0;
+      padding-bottom: 4px;
+      flex-shrink: 0;
+    }
+    .tools-left, .tools-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .tool-icon-btn {
+      background: #F8FAFC;
+      border: 1.5px solid #CBD5E1;
+      border-radius: 10px;
+      padding: 4px 10px;
+      font-size: 1.05rem;
+      cursor: pointer;
+      font-weight: 800;
+      color: #475569;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .tool-icon-btn.active-tool {
+      background: #FEF08A;
+      border-color: #D97706;
+      color: #92400E;
+    }
+
+    .notebook-sheet-viewport {
+      flex: 1;
       position: relative;
       width: 100%;
-      height: 95px;
-      background: #FFFFFF;
+      min-height: 110px;
       overflow: hidden;
+      background: #FFFFFF;
     }
-    .four-line-guidelines {
+
+    /* DOUBLE RED LEFT MARGIN & 4-LINE BLUE/RED GUIDES */
+    .notebook-double-margin {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 32px;
+      width: 5px;
+      border-left: 2px solid var(--ruled-base);
+      border-right: 2px solid var(--ruled-base);
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0.85;
+    }
+
+    .notebook-four-lines-bg {
       position: absolute;
       inset: 0;
-      width: 100%;
-      height: 100%;
       pointer-events: none;
+      z-index: 1;
       background-image: repeating-linear-gradient(
         #FFFFFF 0px,
-        #FFFFFF 23px,
-        var(--ruled-guide) 24px,
-        #FFFFFF 25px,
-        #FFFFFF 53px,
-        var(--ruled-guide) 54px,
-        #FFFFFF 55px,
+        #FFFFFF 24px,
+        var(--ruled-guide) 25px,
+        #FFFFFF 26px,
+        #FFFFFF 54px,
+        var(--ruled-guide) 55px,
+        #FFFFFF 56px,
         #FFFFFF 84px,
         var(--ruled-base) 85px,
         #FFFFFF 86px,
-        #FFFFFF 95px
+        #FFFFFF 114px,
+        var(--ruled-guide) 115px,
+        #FFFFFF 116px,
+        #FFFFFF 120px
       );
     }
+
     .retina-ink-canvas {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
-      cursor: crosshair;
       touch-action: none;
+      cursor: crosshair;
       z-index: 5;
     }
-    .canvas-clear-btn {
-      background: #F8FAFC;
-      border: none;
-      border-left: 2px solid #CBD5E1;
-      padding: 0 14px;
-      height: 95px;
-      cursor: pointer;
-      font-size: 1.1rem;
-      color: #64748B;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 10;
-    }
-    .canvas-clear-btn:active { background: #E2E8F0; }
 
-    /* FOOTER BAR */
+    /* FOOTER DOCK */
     .workspace-footer-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
       border-top: 2px dashed rgba(245, 158, 11, 0.6);
-      padding-top: 6px;
+      padding-top: 4px;
       flex-shrink: 0;
     }
-    .status-notice-pill {
-      background: rgba(255, 255, 255, 0.94);
-      border: 1.5px solid var(--gold-primary);
+
+    /* TEXTBOOK MODULE GRID */
+    .textbook-grid-card {
+      background: rgba(255, 253, 246, 0.96);
+      border: 3px solid var(--gold-primary);
       border-radius: 20px;
-      padding: 4px 16px;
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: #3C1904;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      padding: 16px;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      overflow-y: auto;
     }
-    .btn-verify-seal {
-      background: linear-gradient(180deg, #16A34A 0%, #15803D 100%);
-      border: 2.5px solid #86EFAC;
-      color: #FFFFFF;
-      font-family: var(--font-story);
+    .textbook-exercise-row {
+      background: #FFFFFF;
+      border: 2px solid #E2E8F0;
+      border-radius: 14px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       font-size: 1.15rem;
       font-weight: 800;
-      padding: 8px 30px;
-      border-radius: 20px;
+    }
+    .textbook-opt-pill {
+      background: #F1F5F9;
+      border: 2px solid #CBD5E1;
+      padding: 6px 14px;
+      border-radius: 12px;
       cursor: pointer;
-      box-shadow: 0 6px 16px rgba(22, 163, 74, 0.4);
+      font-family: var(--font-story);
       transition: all 0.15s ease;
     }
-    .btn-verify-seal:active { transform: scale(0.96); }
+    .textbook-opt-pill.selected {
+      background: #DCFCE7;
+      border-color: #16A34A;
+      color: #15803D;
+    }
 
-    /* SELF-CHECK CURTAIN OVERLAY */
-    #selfCheckDrawer {
+    /* PARENT GRADING DRAWER */
+    #parentAuditDrawer {
       position: fixed;
       inset: 0;
-      z-index: 95000;
+      z-index: 90000;
       display: none;
       align-items: center;
       justify-content: center;
-      background: rgba(12, 6, 3, 0.65);
+      background: rgba(12, 6, 3, 0.7);
       backdrop-filter: blur(5px);
     }
-    .self-check-card {
+    .parent-audit-box {
       background: #FFFDF9;
       border: 3.5px solid var(--gold-primary);
       border-radius: 24px;
       padding: 22px;
-      text-align: center;
+      width: 90%;
+      max-width: 640px;
+      box-shadow: 0 16px 45px rgba(0,0,0,0.5);
       display: flex;
       flex-direction: column;
-      align-items: center;
       gap: 12px;
-      width: 90%;
-      max-width: 620px;
-      box-shadow: 0 16px 45px rgba(0,0,0,0.5);
+      text-align: center;
     }
-    .self-check-answer-key {
-      width: 100%;
+    .audit-key-display {
       background: #FEF3C7;
       border: 2px solid var(--gold-primary);
       border-radius: 16px;
-      padding: 14px 18px;
+      padding: 14px;
       font-size: 1.25rem;
       font-weight: 800;
       color: #78350F;
@@ -569,16 +585,16 @@
       backdrop-filter: blur(6px);
     }
     #finaleCanvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-    .victory-scroll-box {
+    .victory-scroll-card {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%) scale(0.3);
       width: 90%;
-      max-width: 540px;
+      max-width: 520px;
       background: #FFFDF9;
       border: 4px solid var(--gold-primary);
-      border-radius: 28px;
+      border-radius: 26px;
       padding: 26px;
       display: flex;
       flex-direction: column;
@@ -590,7 +606,7 @@
       transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
       z-index: 20;
     }
-    .victory-scroll-box.impact {
+    .victory-scroll-card.impact {
       transform: translate(-50%, -50%) scale(1);
       opacity: 1;
     }
@@ -600,120 +616,127 @@
 
   <!-- TOP HUD -->
   <header class="top-hud-bar">
-    <div class="hud-left">
-      <button type="button" class="hud-btn" onclick="goToHub()">🪷 Hub</button>
-      <button type="button" class="hud-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
-      <button type="button" class="pen-toggle-btn" id="btnPenMode" onclick="togglePenMode()">👆 Touch Mode</button>
+    <div class="hud-group">
+      <button type="button" class="icon-btn" onclick="goToHub()" title="Hub">🪷</button>
+      <button type="button" class="icon-btn" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
+      <button type="button" class="icon-btn pen-indicator-btn" id="btnPenToggle" onclick="togglePenMode()" title="Stylus">🖊️</button>
     </div>
 
-    <div class="story-title-banner">
-      <span>📚</span>
-      <span>LA-1: The Girl Who Hated Books</span>
+    <!-- JARGON-FREE MODE SWITCHER -->
+    <div class="mode-pill-toggle">
+      <button type="button" class="mode-btn active" id="tabPractice" onclick="setAppMode('practice')">📘 Practice</button>
+      <button type="button" class="mode-btn" id="tabWrite" onclick="setAppMode('write')">✍️ Write Exam</button>
     </div>
 
-    <div class="hud-right">
-      <button type="button" class="hud-btn" onclick="returnToPortalMenu()">🏰 Portals</button>
+    <div class="hud-group">
+      <button type="button" class="icon-btn" onclick="returnToHubMenu()" title="Portals">🏰</button>
     </div>
   </header>
 
-  <!-- MASTER STAGE -->
-  <main class="master-stage-frame" id="masterStageContainer">
-    <div class="scenic-dim-veil"></div>
+  <!-- MASTER SCENIC STAGE -->
+  <main class="master-scenic-stage" id="masterStageContainer">
+    <div class="scenic-ambient-dimmer"></div>
 
-    <!-- STAGE 0: CENTRAL DIMMED HUB -->
-    <section class="central-hub-stage" id="centralHubStage">
-      <div class="hub-header-prompt">
-        Choose a magical storybook portal to master:
+    <!-- STAGE 0: CENTRAL DIM HUB -->
+    <section class="central-hub-view" id="centralHubStage">
+      <div class="hub-title-capsule">
+        LA-1: The Girl Who Hated Books
       </div>
 
       <div class="hub-portals-grid">
-        <div class="hub-portal-card" onclick="enterZone('meanings')">
-          <div class="portal-icon">📖</div>
-          <div class="portal-title">Word Vault</div>
-          <div class="portal-sub">Meanings & Phonics</div>
+        <div class="portal-launch-card" onclick="openSection('meanings')">
+          <div style="font-size:2.4rem;">📖</div>
+          <div style="font-family:var(--font-story); font-size:1.15rem; font-weight:800;">Meanings</div>
         </div>
 
-        <div class="hub-portal-card" onclick="enterZone('opposites')">
-          <div class="portal-icon">🔄</div>
-          <div class="portal-title">Opposites</div>
-          <div class="portal-sub">Antonym Flippers</div>
+        <div class="portal-launch-card" onclick="openSection('opposites')">
+          <div style="font-size:2.4rem;">🔄</div>
+          <div style="font-family:var(--font-story); font-size:1.15rem; font-weight:800;">Opposites</div>
         </div>
 
-        <div class="hub-portal-card" onclick="enterZone('sentences')">
-          <div class="portal-icon">✍️</div>
-          <div class="portal-title">Sentence Forge</div>
-          <div class="portal-sub">Frame Sentences</div>
+        <div class="portal-launch-card" onclick="openSection('sentences')">
+          <div style="font-size:2.4rem;">✍️</div>
+          <div style="font-family:var(--font-story); font-size:1.15rem; font-weight:800;">Sentences</div>
         </div>
 
-        <div class="hub-portal-card" onclick="enterZone('questions')">
-          <div class="portal-icon">🏰</div>
-          <div class="portal-title">Story Quests</div>
-          <div class="portal-sub">Short & Long Q&A</div>
+        <div class="portal-launch-card" onclick="openSection('questions')">
+          <div style="font-size:2.4rem;">🏰</div>
+          <div style="font-family:var(--font-story); font-size:1.15rem; font-weight:800;">Q & A</div>
+        </div>
+
+        <div class="portal-launch-card" onclick="openSection('textbook')">
+          <div style="font-size:2.4rem;">📚</div>
+          <div style="font-family:var(--font-story); font-size:1.15rem; font-weight:800;">Textbook</div>
         </div>
       </div>
 
-      <div class="hub-characters-row">
-        <img src="assets/meena-character.webp" class="hub-meena-anchor" alt="Meena" onerror="handleImageFallback(this)" />
-        <img src="assets/max-cat.webp" class="hub-max-anchor" alt="Max the Cat" onclick="playCatMeow()" onerror="handleImageFallback(this)" />
+      <div class="hub-mascots-dock">
+        <img src="assets/meena-character.webp" class="mascot-meena" alt="Meena" onerror="handleImageFallback(this)" />
+        <img src="assets/max-cat.webp" class="mascot-max" alt="Max" onclick="playCatMeow()" onerror="handleImageFallback(this)" />
       </div>
     </section>
 
-    <!-- SLIDE DECK WORKSTATION (ACTIVE ZONE SLIDES) -->
-    <section class="slide-deck-stage" id="slideDeckStage">
+    <!-- WORKSTATION SLIDE VIEWPORT (GPU ACCELERATED) -->
+    <section class="slide-deck-viewport" id="slideDeckStage">
       <div class="palm-scroll-banner-box">
-        <div class="banner-quest-title" id="bannerHeaderTitle">Word Vault: Meanings</div>
-        <button type="button" class="freely-floating-max-btn" onclick="speakCurrentTarget()" title="Speak">
+        <div class="banner-text-heading" id="bannerHeadingText">Meanings</div>
+        <button type="button" class="freely-floating-max-btn" onclick="speakCurrentTarget()" title="Listen">
           <img src="assets/max-cat.webp" class="max-sprite-img" alt="Max" onerror="handleImageFallback(this)" />
         </button>
       </div>
 
-      <div class="slide-body-viewport" id="slideBodyViewport"></div>
+      <div class="work-body-frame" id="workBodyFrame"></div>
 
       <div class="workspace-footer-bar">
-        <span class="status-notice-pill" id="statusNoticeText">Snap the syllables, then write on the slate!</span>
-        <div style="display:flex; gap:10px;">
-          <button type="button" class="hud-btn" onclick="stepItem(-1)">◀ Prev</button>
-          <button type="button" class="btn-verify-seal" onclick="verifyCurrentWork()">Verify ✨</button>
-          <button type="button" class="hud-btn" onclick="stepItem(1)">Next ▶</button>
+        <div class="hud-group">
+          <button type="button" class="icon-btn" onclick="stepItem(-1)" title="Prev">◀</button>
+          <span style="font-family:var(--font-story); font-size:1.1rem; font-weight:800; color:#FFF; text-shadow:0 1px 3px #000;" id="deckPagination">1 / 8</span>
+          <button type="button" class="icon-btn" onclick="stepItem(1)" title="Next">▶</button>
+        </div>
+
+        <div class="hud-group" id="parentReviewArea">
+          <button type="button" class="icon-btn" id="btnParentCheck" onclick="openParentAudit()" title="Check Answer" style="background:#FEF3C7; border-color:#D97706;">
+            🔐 Check
+          </button>
         </div>
       </div>
     </section>
   </main>
 
-  <!-- SELF-CHECK CURTAIN -->
-  <div id="selfCheckDrawer">
-    <div class="self-check-card">
+  <!-- PARENT AUDIT MODAL -->
+  <div id="parentAuditDrawer">
+    <div class="parent-audit-box">
       <div style="font-family:var(--font-story); font-size:1.4rem; font-weight:800; color:#92400E;">
-        ✨ Teacher's Exact Answer Key
+        Teacher's Exact Notebook Key
       </div>
-      <div class="self-check-answer-key" id="selfCheckAnswerKey"></div>
-      <div style="font-size:1rem; font-weight:800; color:#3C1904;">
-        Did you write your answer correctly on the slate?
+      <div class="audit-key-display" id="auditAnswerKeyDisplay"></div>
+      <div style="font-size:1.05rem; font-weight:800; color:#3C1904;">
+        Did Humayun spell and write this answer correctly?
       </div>
-      <div style="display:flex; gap:16px; margin-top:8px;">
-        <button type="button" class="hud-btn" onclick="closeSelfCheck(false)">🔄 Rewrite / Practice</button>
-        <button type="button" class="btn-verify-seal" onclick="closeSelfCheck(true)">⭐ Matches Teacher Note!</button>
+      <div style="display:flex; justify-content:center; gap:20px; margin-top:6px;">
+        <button type="button" class="icon-btn" style="background:#FEE2E2; border-color:#DC2626; padding:8px 24px; font-size:1.4rem;" onclick="markParentAudit(false)" title="Needs Practice">✗</button>
+        <button type="button" class="icon-btn" style="background:#DCFCE7; border-color:#16A34A; padding:8px 28px; font-size:1.4rem;" onclick="markParentAudit(true)" title="Correct">✓</button>
       </div>
     </div>
   </div>
 
-  <!-- ASANA FINALE -->
+  <!-- CELEBRATION FINALE STAGE -->
   <div id="celebrationFinaleStage">
     <canvas id="finaleCanvas"></canvas>
-    <div class="victory-scroll-box" id="victoryScrollBox">
+    <div class="victory-scroll-card" id="victoryScrollCard">
       <div style="font-size:3.5rem;">🎉</div>
       <div style="font-family:var(--font-story); font-size:2rem; font-weight:800; color:#92400E;">
-        Awesome Job, Humayun!
+        Superb Work, Humayun!
       </div>
-      <div style="font-size:1.15rem; font-weight:800; color:#3C1904; line-height:1.6;">
-        You have mastered all the classwork meanings, opposites, frame sentences, and questions for "The Girl Who Hated Books"!
+      <div style="font-size:1.15rem; font-weight:800; color:#3C1904; line-height:1.6;" id="celebrationMessage">
+        You wrote every single question correctly with zero errors!
       </div>
-      <button type="button" class="btn-verify-seal" onclick="closeCelebrationStage()">Continue to Hub ➔</button>
+      <button type="button" class="icon-btn" style="padding:10px 30px; font-size:1.2rem; background:#DCFCE7; border-color:#16A34A;" onclick="closeCelebrationStage()">Continue ➔</button>
     </div>
   </div>
 
   <script>
-    /* PURE ENGLISH VOICE SYNTHESIS */
+    /* PURE WEB-SPEECH SYNTHESIZER */
     function speakText(text) {
       if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
@@ -723,8 +746,8 @@
       window.speechSynthesis.speak(u);
     }
 
-    /* WEBAUDIO SOUND ENGINE */
-    class ProceduralAudio {
+    /* SYNTHESIZED SOUND FX */
+    class SoundFX {
       constructor() { this.ctx = null; }
       init() {
         if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -736,7 +759,7 @@
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(320, t0);
+        osc.frequency.setValueAtTime(340, t0);
         osc.frequency.exponentialRampToValueAtTime(140, t0 + 0.08);
         gain.gain.setValueAtTime(0.4, t0);
         gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.09);
@@ -767,9 +790,9 @@
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(400, t0);
-        osc.frequency.exponentialRampToValueAtTime(620, t0 + 0.15);
-        osc.frequency.exponentialRampToValueAtTime(380, t0 + 0.35);
+        osc.frequency.setValueAtTime(420, t0);
+        osc.frequency.exponentialRampToValueAtTime(640, t0 + 0.15);
+        osc.frequency.exponentialRampToValueAtTime(360, t0 + 0.35);
         gain.gain.setValueAtTime(0.25, t0);
         gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.38);
         osc.connect(gain);
@@ -778,7 +801,7 @@
         osc.stop(t0 + 0.4);
       }
     }
-    const audioFX = new ProceduralAudio();
+    const audioFX = new SoundFX();
     function playCatMeow() { audioFX.playMeow(); speakText("Meow! Let's read!"); }
 
     function toggleFullscreen() {
@@ -795,8 +818,7 @@
     let penOnlyMode = false;
     function togglePenMode() {
       penOnlyMode = !penOnlyMode;
-      const btn = document.getElementById('btnPenMode');
-      btn.textContent = penOnlyMode ? "🖊️ S-Pen Active" : "👆 Touch Mode";
+      const btn = document.getElementById('btnPenToggle');
       btn.classList.toggle('pen-active', penOnlyMode);
     }
 
@@ -814,101 +836,318 @@
       img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><circle cx='70' cy='70' r='65' fill='%23FEF3C7' stroke='%23D97706' stroke-width='4'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='50'>📚</text></svg>";
     }
 
-    /* MASTER CLASSWORK DATASETS (EXACT TEACHER WORDING) */
+    /* MASTER CLASSWORK & TEXTBOOK DATASETS WITH SYLLABLE LOOKUPS */
+    const SYLLABLE_DICT = {
+      "feeling": ["feel", "ing"], "worried": ["wor", "ried"], "facts": ["facts"], "subjects": ["sub", "jects"],
+      "arrange": ["ar", "range"], "other": ["oth", "er"], "overbalance": ["o", "ver", "bal", "ance"],
+      "scatter": ["scat", "ter"], "things": ["things"], "giant": ["gi", "ant"], "ugly": ["ug", "ly"],
+      "nibble": ["nib", "ble"], "quick": ["quick"], "twist": ["twist"], "movement": ["move", "ment"],
+      "bottom": ["bot", "tom"], "quiet": ["qui", "et"], "under": ["un", "der"], "over": ["o", "ver"],
+      "fireman": ["fire", "man"], "rescue": ["res", "cue"], "kitten": ["kit", "ten"],
+      "monkey": ["mon", "key"], "banana": ["ba", "na", "na"], "strange": ["strange"], "noise": ["noise"],
+      "anxious": ["anx", "ious"], "before": ["be", "fore"], "results": ["re", "sults"],
+      "annoyed": ["an", "noyed"], "because": ["be", "cause"], "everywhere": ["eve", "ry", "where"],
+      "parents": ["par", "ents"], "reading": ["read", "ing"], "buying": ["buy", "ing"],
+      "drawers": ["draw", "ers"], "cupboards": ["cup", "boards"], "fireplace": ["fire", "place"],
+      "stacked": ["stacked"], "chairs": ["chairs"], "climbed": ["climbed"], "stuck": ["stuck"],
+      "characters": ["char", "ac", "ters"], "princes": ["prin", "ces"], "princesses": ["prin", "cess", "es"],
+      "fairies": ["fair", "ies"], "elephants": ["el", "e", "phants"], "monkeys": ["mon", "keys"],
+      "rabbits": ["rab", "bits"], "enjoying": ["en", "joy", "ing"], "stories": ["sto", "ries"],
+      "started": ["start", "ed"], "animals": ["an", "i", "mals"], "confused": ["con", "fused"],
+      "scared": ["scared"], "belonged": ["be", "longed"]
+    };
+
     const MEANINGS_DATA = [
-      { prompt: "nervous", answer: "feeling worried", targetSnaps: ["wor", "ried"], sprite: "assets/troll.webp" },
-      { prompt: "encyclopaedia", answer: "a book with facts on many subjects", targetSnaps: ["sub", "jects"], sprite: "assets/rabbit.webp" },
-      { prompt: "stack", answer: "arrange one on top of the other", targetSnaps: ["ar", "range"], sprite: "assets/knight.webp" },
-      { prompt: "topple", answer: "overbalance and fall", targetSnaps: ["o", "ver", "bal", "ance"], sprite: "assets/fairy.webp" },
-      { prompt: "scatter", answer: "to throw things all over", targetSnaps: ["scat", "ter"], sprite: "assets/troll.webp" },
-      { prompt: "troll", answer: "an ugly giant", targetSnaps: ["gi", "ant"], sprite: "assets/troll.webp" },
-      { prompt: "nibble", answer: "a small quick bite", targetSnaps: ["nib", "ble"], sprite: "assets/rabbit.webp" },
-      { prompt: "wriggle", answer: "twist and turn with quick movement", targetSnaps: ["move", "ment"], sprite: "assets/fairy.webp" }
+      { q: "nervous", a: "feeling worried", sprite: "assets/troll.webp" },
+      { q: "encyclopaedia", a: "a book with facts on many subjects", sprite: "assets/rabbit.webp" },
+      { q: "stack", a: "arrange one on top of the other", sprite: "assets/knight.webp" },
+      { q: "topple", a: "overbalance and fall", sprite: "assets/fairy.webp" },
+      { q: "scatter", a: "to throw things all over", sprite: "assets/troll.webp" },
+      { q: "troll", a: "an ugly giant", sprite: "assets/troll.webp" },
+      { q: "nibble", a: "a small quick bite", sprite: "assets/rabbit.webp" },
+      { q: "wriggle", a: "twist and turn with quick movement", sprite: "assets/fairy.webp" }
     ];
 
     const OPPOSITES_DATA = [
-      { prompt: "top", answer: "bottom", targetSnaps: ["bot", "tom"], sprite: "assets/knight.webp" },
-      { prompt: "up", answer: "down", targetSnaps: ["down"], sprite: "assets/rabbit.webp" },
-      { prompt: "found", answer: "lost", targetSnaps: ["lost"], sprite: "assets/troll.webp" },
-      { prompt: "begin", answer: "end", targetSnaps: ["end"], sprite: "assets/fairy.webp" },
-      { prompt: "loud", answer: "quiet", targetSnaps: ["qui", "et"], sprite: "assets/troll.webp" },
-      { prompt: "hard", answer: "soft", targetSnaps: ["soft"], sprite: "assets/rabbit.webp" },
-      { prompt: "under", answer: "over", targetSnaps: ["o", "ver"], sprite: "assets/knight.webp" }
+      { q: "top", a: "bottom", sprite: "assets/knight.webp" },
+      { q: "up", a: "down", sprite: "assets/rabbit.webp" },
+      { q: "found", a: "lost", sprite: "assets/troll.webp" },
+      { q: "begin", a: "end", sprite: "assets/fairy.webp" },
+      { q: "loud", a: "quiet", sprite: "assets/troll.webp" },
+      { q: "hard", a: "soft", sprite: "assets/rabbit.webp" },
+      { q: "under", a: "over", sprite: "assets/knight.webp" }
     ];
 
     const SENTENCES_DATA = [
-      { prompt: "rescue", answer: "The fireman came to rescue the kitten from the tree.", targetSnaps: ["fire", "man", "kit", "ten"], sprite: "assets/knight.webp" },
-      { prompt: "grab", answer: "The monkey tried to grab the banana from my hand.", targetSnaps: ["mon", "key", "ba", "na", "na"], sprite: "assets/rabbit.webp" },
-      { prompt: "strange", answer: "The dog made a strange noise at night.", targetSnaps: ["strange", "noise"], sprite: "assets/troll.webp" },
-      { prompt: "anxious", answer: "I felt anxious before my test results.", targetSnaps: ["anx", "ious", "re", "sults"], sprite: "assets/fairy.webp" }
+      { q: "rescue", a: "The fireman came to rescue the kitten from the tree.", sprite: "assets/knight.webp" },
+      { q: "grab", a: "The monkey tried to grab the banana from my hand.", sprite: "assets/rabbit.webp" },
+      { q: "strange", a: "The dog made a strange noise at night.", sprite: "assets/troll.webp" },
+      { q: "anxious", a: "I felt anxious before my test results.", sprite: "assets/fairy.webp" }
     ];
 
-    const QUESTIONS_DATA = [
+    const QA_DATA = [
       {
-        type: "short",
-        prompt: "Why was Meena annoyed at the sight of books?",
-        answer: "Meena was annoyed because there were books everywhere in her house. Her parents were always reading and buying more books.",
-        borrowed: "Meena was annoyed because there were books",
-        targetSnaps: ["eve", "ry", "where", "par", "ents"],
+        q: "Why was Meena annoyed at the sight of books?",
+        a: "Meena was annoyed because there were books everywhere in her house. Her parents were always reading and buying more books.",
         sprite: "assets/meena-character.webp"
       },
       {
-        type: "short",
-        prompt: "Where were books kept in her house?",
-        answer: "Books were kept in drawers, cupboards, chests, on desks, the sofa, on the stairs, in the fireplace and stacked on chairs.",
-        borrowed: "Books were kept in",
-        targetSnaps: ["draw", "ers", "cup", "boards", "fire", "place"],
+        q: "Where were books kept in her house?",
+        a: "Books were kept in drawers, cupboards, chests, on desks, the sofa, on the stairs, in the fireplace and stacked on chairs.",
         sprite: "assets/rabbit.webp"
       },
       {
-        type: "short",
-        prompt: "What did Meena do to rescue Max?",
-        answer: "Meena climbed the tall stack of books to rescue Max who was stuck on top.",
-        borrowed: "Meena climbed the tall stack of books to rescue Max who was",
-        targetSnaps: ["climbed", "stuck"],
+        q: "What did Meena do to rescue Max?",
+        a: "Meena climbed the tall stack of books to rescue Max who was stuck on top.",
         sprite: "assets/knight.webp"
       },
       {
-        type: "short",
-        prompt: "What began to happen when the books fell down?",
-        answer: "When the books fell down all the characters from the book came out - princes, princesses, fairies, elephants, monkeys, rabbits and many more.",
-        borrowed: "When the books fell down all the characters from the book came out -",
-        targetSnaps: ["char", "ac", "ters", "prin", "cess", "es", "el", "e", "phants"],
+        q: "What began to happen when the books fell down?",
+        a: "When the books fell down all the characters from the book came out - princes, princesses, fairies, elephants, monkeys, rabbits and many more.",
         sprite: "assets/fairy.webp"
       },
       {
-        type: "long",
-        prompt: "What made Meena read the books and how did it help her? (30-50 words)",
-        answer: "All the characters from the books came out and made noise in her room. To make them go back, she had to read the books. Meena started enjoying the stories and she began to love reading stories every single day.",
-        borrowed: "All the characters from the books came out...",
-        targetSnaps: ["char", "ac", "ters", "en", "joy", "ing", "sto", "ries"],
+        q: "What made Meena read the books and how did it help her? (30-50 words)",
+        a: "All the characters from the books came out and made noise in her room. To make them go back, she had to read the books. Meena started enjoying the stories and she began to love reading stories every single day.",
         sprite: "assets/meena-character.webp"
       },
       {
-        type: "long",
-        prompt: "How did the animals feel when they were out of their books? (30-50 words)",
-        answer: "When the animals were out of their books, they felt confused and scared. They did not know where they belonged and wanted to go back to their own stories because they felt safe inside their books.",
-        borrowed: "When the animals were out of their books, they felt...",
-        targetSnaps: ["con", "fused", "be", "longed"],
+        q: "How did the animals feel when they were out of their books? (30-50 words)",
+        a: "When the animals were out of their books, they felt confused and scared. They did not know where they belonged and wanted to go back to their own stories because they felt safe inside their books.",
         sprite: "assets/rabbit.webp"
       }
     ];
 
-    /* RETINA DPR INK ENGINE */
-    const activeInkCache = {};
-    const hasDrawnMap = {};
+    /* APP CONTROLLER STATE */
+    let currentMode = 'practice'; // 'practice' or 'write'
+    let activeSection = null;
+    let activeDeck = [];
+    let currentItemIdx = 0;
+    let activePageNum = 1; // 1 or 2
+    let strokeUndoStack = {};
+    let currentDrawingTool = 'pen'; // 'pen' or 'eraser'
+    let writeModeAuditStatus = {}; // itemIndex -> boolean
 
-    function getStorageKey(id) {
-      return `v1_meena_cw::ink::${activeZone}::${id}`;
+    function setAppMode(mode) {
+      saveAllCanvases();
+      currentMode = mode;
+      document.getElementById('tabPractice').classList.toggle('active', mode === 'practice');
+      document.getElementById('tabWrite').classList.toggle('active', mode === 'write');
+
+      if (activeSection) {
+        openSection(activeSection);
+      }
     }
 
-    function setupDualCanvases() {
+    function returnToHubMenu() {
+      saveAllCanvases();
+      document.getElementById('slideDeckStage').classList.remove('active-slide');
+      document.getElementById('masterStageContainer').classList.remove('stage-darkened');
+      document.getElementById('centralHubStage').classList.remove('hidden-hub');
+      activeSection = null;
+    }
+
+    function openSection(secKey) {
+      saveAllCanvases();
+      activeSection = secKey;
+      currentItemIdx = 0;
+      activePageNum = 1;
+      writeModeAuditStatus = {};
+
+      document.getElementById('centralHubStage').classList.add('hidden-hub');
+      document.getElementById('masterStageContainer').classList.add('stage-darkened');
+      document.getElementById('slideDeckStage').classList.add('active-slide');
+
+      // Populate Deck
+      if (secKey === 'meanings') activeDeck = [...MEANINGS_DATA];
+      else if (secKey === 'opposites') activeDeck = [...OPPOSITES_DATA];
+      else if (secKey === 'sentences') activeDeck = [...SENTENCES_DATA];
+      else if (secKey === 'questions') activeDeck = [...QA_DATA];
+      else if (secKey === 'textbook') activeDeck = ['textbook_full'];
+
+      if (currentMode === 'write' && secKey !== 'textbook') {
+        // Shuffled order for Write Mode (Roadmap requirement)
+        activeDeck.sort(() => Math.random() - 0.5);
+      }
+
+      renderCurrentDeckItem();
+    }
+
+    /* RENDER ACTIVE DECK ITEM */
+    function renderCurrentDeckItem() {
+      saveAllCanvases();
+      const viewport = document.getElementById('workBodyFrame');
+      viewport.innerHTML = '';
+
+      if (activeSection === 'textbook') {
+        renderTextbookModule();
+        return;
+      }
+
+      const item = activeDeck[currentItemIdx];
+      document.getElementById('deckPagination').textContent = `${currentItemIdx + 1} / ${activeDeck.length}`;
+
+      // Set Banner Title
+      const titles = { meanings: 'Meanings', opposites: 'Opposites', sentences: 'Frame Sentences', questions: 'Q & A Mastery' };
+      document.getElementById('bannerHeadingText').textContent = titles[activeSection];
+
+      // Top Interactive Card
+      const topCard = document.createElement('div');
+      topCard.className = 'interactive-card-pane';
+
+      // Build Answer String with Any-Word Syllable Chips (Practice Mode Only)
+      let answerHTML = '';
+      if (currentMode === 'practice') {
+        const words = item.a.split(' ');
+        const wrappedWords = words.map((w, idx) => {
+          const clean = w.toLowerCase().replace(/[^a-z]/g, '');
+          const syllables = SYLLABLE_DICT[clean];
+          const hasSyllables = syllables && syllables.length > 1;
+          const wordId = `word_chip_${currentItemIdx}_${idx}`;
+          return `<span class="dissect-word-chip ${hasSyllables ? 'has-syllables' : ''}" id="${wordId}" 
+                        onpointerdown="handleWordPointerDown('${clean}', '${wordId}')" 
+                        onpointerup="handleWordPointerUp('${clean}', '${wordId}')" 
+                        ondblclick="toggleSyllableSplit('${clean}', '${wordId}')">${w}</span>`;
+        });
+        answerHTML = `<div class="answer-stream-box">${wrappedWords.join(' ')}</div>`;
+      } else {
+        answerHTML = `<div class="answer-stream-box" style="color:#94A3B8; font-style:italic;">[Answer hidden in Write Exam Mode. Write on the slate below!]</div>`;
+      }
+
+      topCard.innerHTML = `
+        <div class="prompt-label-block">
+          <img src="${item.sprite}" class="character-relic-badge" alt="" onerror="handleImageFallback(this)" />
+          <div class="prompt-text-bold">${item.q}</div>
+        </div>
+        ${answerHTML}
+      `;
+      viewport.appendChild(topCard);
+
+      // Bottom 4-Line Notebook Canvas Unit
+      const canvasUnit = document.createElement('div');
+      canvasUnit.className = 'canvas-desk-unit';
+
+      const canvasStorageId = `slate_${activeSection}_${currentItemIdx}_p${activePageNum}`;
+      canvasUnit.innerHTML = `
+        <div class="canvas-tools-strip">
+          <div class="tools-left">
+            <button type="button" class="tool-icon-btn active-tool" id="btnPen" onclick="selectTool('pen')" title="Pen">🖊️</button>
+            <button type="button" class="tool-icon-btn" id="btnEraser" onclick="selectTool('eraser')" title="Eraser">🧹</button>
+            <button type="button" class="tool-icon-btn" onclick="undoCanvasStroke('${canvasStorageId}')" title="Undo">↶</button>
+            <button type="button" class="tool-icon-btn" onclick="clearSlateCanvas('${canvasStorageId}')" title="Clear">🗑️</button>
+          </div>
+          <div class="tools-right">
+            <span style="font-family:var(--font-story); font-size:0.95rem; font-weight:800; color:#78350F;">Page ${activePageNum}/2</span>
+            <button type="button" class="tool-icon-btn" onclick="toggleCanvasPage()" title="Next Page">➕</button>
+          </div>
+        </div>
+        <div class="notebook-sheet-viewport">
+          <div class="notebook-double-margin"></div>
+          <div class="notebook-four-lines-bg"></div>
+          <canvas class="retina-ink-canvas" data-canvas-id="${canvasStorageId}"></canvas>
+        </div>
+      `;
+      viewport.appendChild(canvasUnit);
+
+      setTimeout(setupInkCanvases, 40);
+    }
+
+    /* ANY-WORD TAP-AND-HOLD / DOUBLE-TAP SYLLABLE DISSECTOR */
+    let wordPressTimer = null;
+    let wordLongPressed = false;
+
+    function handleWordPointerDown(cleanWord, elemId) {
+      if (currentMode !== 'practice') return;
+      wordLongPressed = false;
+      wordPressTimer = setTimeout(() => {
+        wordLongPressed = true;
+        toggleSyllableSplit(cleanWord, elemId);
+      }, 400); // 400ms long-press standard
+    }
+
+    function handleWordPointerUp(cleanWord, elemId) {
+      if (wordPressTimer) clearTimeout(wordPressTimer);
+    }
+
+    function toggleSyllableSplit(cleanWord, elemId) {
+      const el = document.getElementById(elemId);
+      if (!el) return;
+
+      const syllables = SYLLABLE_DICT[cleanWord];
+      if (!syllables || syllables.length <= 1) {
+        audioFX.playSnap();
+        speakText(cleanWord);
+        return;
+      }
+
+      if (el.classList.contains('split-active')) {
+        // Snap back into solid word
+        audioFX.playSnap();
+        el.classList.remove('split-active');
+        el.innerHTML = cleanWord;
+      } else {
+        // Dissect into colored tactile syllable pills
+        audioFX.playSnap();
+        el.classList.add('split-active');
+        el.innerHTML = syllables.map(s => `<span class="syllable-badge-part">${s}</span>`).join(' • ');
+
+        // Synthesize phonetic sequence, then pronounce whole word
+        let chantDelay = 0;
+        syllables.forEach((syl, i) => {
+          setTimeout(() => speakText(syl), chantDelay);
+          chantDelay += 550;
+        });
+        setTimeout(() => speakText(cleanWord), chantDelay + 100);
+      }
+    }
+
+    function speakCurrentTarget() {
+      if (activeSection === 'textbook') {
+        speakText("Textbook exercises. Complete each question carefully.");
+        return;
+      }
+      const item = activeDeck[currentItemIdx];
+      if (currentMode === 'practice') {
+        speakText(`${item.q}. ${item.a}`);
+      } else {
+        speakText(item.q);
+      }
+    }
+
+    function stepItem(dir) {
+      saveAllCanvases();
+      activePageNum = 1;
+      currentItemIdx = (currentItemIdx + dir + activeDeck.length) % activeDeck.length;
+      renderCurrentDeckItem();
+    }
+
+    function toggleCanvasPage() {
+      saveAllCanvases();
+      activePageNum = (activePageNum === 1) ? 2 : 1;
+      renderCurrentDeckItem();
+    }
+
+    /* RETINA INK ENGINE WITH S-PEN PALM REJECTION & UNDO STACKS */
+    const inkMemoryCache = {};
+    const hasDrawnRegistry = {};
+
+    function getStorageKey(canvasId) {
+      return `v2_meena::ink::${currentMode}::${canvasId}`;
+    }
+
+    function selectTool(tool) {
+      currentDrawingTool = tool;
+      document.getElementById('btnPen').classList.toggle('active-tool', tool === 'pen');
+      document.getElementById('btnEraser').classList.toggle('active-tool', tool === 'eraser');
+    }
+
+    function setupInkCanvases() {
       const dpr = window.devicePixelRatio || 1;
       document.querySelectorAll(".retina-ink-canvas").forEach(c => {
         const id = c.getAttribute("data-canvas-id");
         const bRect = c.parentElement.getBoundingClientRect();
-        const logicalW = Math.round(bRect.width) || 540;
-        const logicalH = Math.round(bRect.height) || 95;
+        const logicalW = Math.round(bRect.width) || 880;
+        const logicalH = Math.round(bRect.height) || 110;
 
         c.width = Math.round(logicalW * dpr);
         c.height = Math.round(logicalH * dpr);
@@ -917,12 +1156,14 @@
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.clearRect(0, 0, logicalW, logicalH);
 
+        if (!strokeUndoStack[id]) strokeUndoStack[id] = [];
+
         const storageKey = getStorageKey(id);
-        const cached = activeInkCache[storageKey] || localStorage.getItem(storageKey);
+        const cached = inkMemoryCache[storageKey] || localStorage.getItem(storageKey);
 
         if (cached) {
-          activeInkCache[storageKey] = cached;
-          hasDrawnMap[id] = true;
+          inkMemoryCache[storageKey] = cached;
+          hasDrawnRegistry[id] = true;
           const img = new Image();
           img.onload = () => {
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -933,7 +1174,6 @@
 
         let isDrawing = false;
         let lastX = 0, lastY = 0;
-        const baseTip = 1.8;
 
         c.onpointerdown = (e) => {
           if (penOnlyMode && e.pointerType !== "pen" && e.pointerType !== "mouse") {
@@ -941,7 +1181,7 @@
             return;
           }
           isDrawing = true;
-          hasDrawnMap[id] = true;
+          hasDrawnRegistry[id] = true;
           try { c.setPointerCapture(e.pointerId); } catch (_) {}
           const rect = c.getBoundingClientRect();
           lastX = e.clientX - rect.left;
@@ -958,16 +1198,25 @@
           const currY = e.clientY - rect.top;
 
           ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-          ctx.beginPath();
-          ctx.moveTo(lastX, lastY);
-          ctx.lineTo(currX, currY);
-          ctx.lineCap = "round";
-          ctx.lineJoin = "round";
-          ctx.strokeStyle = "#1E3A8A";
 
-          const rawP = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
-          ctx.lineWidth = baseTip * (rawP * 1.35 + 0.35);
-          ctx.stroke();
+          if (currentDrawingTool === 'pen') {
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(currX, currY);
+            ctx.lineCap = "round";
+            ctx.lineJoin = "round";
+            ctx.strokeStyle = "#1E3A8A";
+            const rawP = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
+            ctx.lineWidth = 1.8 * (rawP * 1.35 + 0.35);
+            ctx.stroke();
+          } else {
+            // Precision Path Eraser
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.beginPath();
+            ctx.arc(currX, currY, 14, 0, Math.PI * 2);
+            ctx.fill();
+          }
 
           lastX = currX;
           lastY = currY;
@@ -978,7 +1227,12 @@
           if (isDrawing) {
             isDrawing = false;
             try { c.releasePointerCapture(e.pointerId); } catch (_) {}
-            saveDualCanvas(c, id);
+            // Push stroke to undo stack
+            try {
+              strokeUndoStack[id].push(c.toDataURL("image/png"));
+              if (strokeUndoStack[id].length > 15) strokeUndoStack[id].shift();
+            } catch (_) {}
+            saveCanvasBuffer(c, id);
           }
         };
 
@@ -987,194 +1241,188 @@
       });
     }
 
-    function saveDualCanvas(c, id) {
-      if (!hasDrawnMap[id]) return;
+    function saveCanvasBuffer(c, id) {
+      if (!hasDrawnRegistry[id]) return;
       try {
         const data = c.toDataURL("image/png");
         const key = getStorageKey(id);
-        activeInkCache[key] = data;
+        inkMemoryCache[key] = data;
         localStorage.setItem(key, data);
-      } catch (e) {}
+      } catch (_) {}
     }
 
     function saveAllCanvases() {
       document.querySelectorAll(".retina-ink-canvas").forEach(c => {
         const id = c.getAttribute("data-canvas-id");
-        if (hasDrawnMap[id]) saveDualCanvas(c, id);
+        if (hasDrawnRegistry[id]) saveCanvasBuffer(c, id);
       });
     }
 
-    function clearDualCanvas(id) {
+    function undoCanvasStroke(id) {
+      const c = document.querySelector(`[data-canvas-id="${id}"]`);
+      if (!c || !strokeUndoStack[id] || strokeUndoStack[id].length === 0) return;
+
+      audioFX.playSnap();
+      strokeUndoStack[id].pop(); // remove current state
+      const prevData = strokeUndoStack[id][strokeUndoStack[id].length - 1];
+
+      const ctx = c.getContext("2d");
+      const dpr = window.devicePixelRatio || 1;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, c.width / dpr, c.height / dpr);
+
+      const key = getStorageKey(id);
+      if (prevData) {
+        const img = new Image();
+        img.onload = () => {
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          ctx.drawImage(img, 0, 0, c.width / dpr, c.height / dpr);
+        };
+        img.src = prevData;
+        inkMemoryCache[key] = prevData;
+        localStorage.setItem(key, prevData);
+      } else {
+        delete inkMemoryCache[key];
+        hasDrawnRegistry[id] = false;
+        localStorage.removeItem(key);
+      }
+    }
+
+    function clearSlateCanvas(id) {
       const c = document.querySelector(`[data-canvas-id="${id}"]`);
       if (c) {
+        audioFX.playSnap();
         const ctx = c.getContext("2d");
         const dpr = window.devicePixelRatio || 1;
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.clearRect(0, 0, c.width / dpr, c.height / dpr);
         const key = getStorageKey(id);
-        delete activeInkCache[key];
-        hasDrawnMap[id] = false;
+        delete inkMemoryCache[key];
+        hasDrawnRegistry[id] = false;
+        strokeUndoStack[id] = [];
         localStorage.removeItem(key);
       }
     }
 
-    /* WORKSTATION CONTROLLER */
-    let activeZone = null;
-    let activeItemIdx = 0;
-    let placedSnaps = [];
+    /* PARENT AUDIT & RETRY LOOP (NO FALSE PRAISE) */
+    function openParentAudit() {
+      const item = activeDeck[currentItemIdx];
+      const canvasId = `slate_${activeSection}_${currentItemIdx}_p${activePageNum}`;
 
-    function returnToPortalMenu() {
-      saveAllCanvases();
-      document.getElementById('slideDeckStage').classList.remove('active-slide');
-      document.getElementById('masterStageContainer').classList.remove('slide-active');
-      document.getElementById('centralHubStage').classList.remove('hidden');
-    }
-
-    function enterZone(zoneKey) {
-      saveAllCanvases();
-      activeZone = zoneKey;
-      activeItemIdx = 0;
-      placedSnaps = [];
-
-      document.getElementById('centralHubStage').classList.add('hidden');
-      document.getElementById('masterStageContainer').classList.add('slide-active');
-      const stage = document.getElementById('slideDeckStage');
-      stage.classList.add('active-slide');
-
-      renderActiveItem();
-    }
-
-    function getDataset() {
-      if (activeZone === 'meanings') return MEANINGS_DATA;
-      if (activeZone === 'opposites') return OPPOSITES_DATA;
-      if (activeZone === 'sentences') return SENTENCES_DATA;
-      return QUESTIONS_DATA;
-    }
-
-    function renderActiveItem() {
-      saveAllCanvases();
-      placedSnaps = [];
-      const data = getDataset();
-      const item = data[activeItemIdx];
-
-      const viewport = document.getElementById('slideBodyViewport');
-      viewport.innerHTML = '';
-
-      // Set Banner Title
-      const titles = {
-        meanings: `Word Vault: Meanings (${activeItemIdx + 1}/${data.length})`,
-        opposites: `Opposites: Antonyms (${activeItemIdx + 1}/${data.length})`,
-        sentences: `Sentence Forge (${activeItemIdx + 1}/${data.length})`,
-        questions: item.type === "long" ? `Long Answer Mastery (${activeItemIdx + 1}/${data.length})` : `Story Quest (${activeItemIdx + 1}/${data.length})`
-      };
-      document.getElementById('bannerHeaderTitle').textContent = titles[activeZone];
-
-      const splitCard = document.createElement('div');
-      splitCard.className = 'two-pane-split-card';
-
-      // Left Prompt Pane
-      splitCard.innerHTML = `
-        <div class="left-prompt-box">
-          <img src="${item.sprite}" class="prompt-character-badge" alt="" onerror="handleImageFallback(this)" />
-          <div style="font-size:0.9rem; font-weight:800; color:#78350F;">${activeZone === 'questions' ? 'QUESTION:' : 'PROMPT WORD:'}</div>
-          <div class="prompt-main-word" style="${activeZone === 'questions' ? 'font-size:1.3rem;' : ''}">${item.prompt}</div>
-          <button type="button" class="hud-btn" onclick="speakText('${item.prompt.replace(/'/g, "\\'")}')">🔊 Read Aloud</button>
-        </div>
-      `;
-
-      // Right Answer & Writing Pane
-      const rightPane = document.createElement('div');
-      rightPane.className = 'right-answer-box';
-
-      // Syllable Snap Target Section
-      const scrambled = [...item.targetSnaps].sort(() => Math.random() - 0.5);
-      let snapHTML = `
-        <div class="syllable-snap-rack">
-          <div class="snap-label">🎯 Break down & spell the long answer words:</div>
-          <div class="snap-tokens-row" id="tokensRow">
-      `;
-      scrambled.forEach((syl, i) => {
-        snapHTML += `<div class="syllable-tile" id="snap_tile_${i}" onclick="placeSyllable('${syl}', 'snap_tile_${i}')">${syl}</div>`;
-      });
-      snapHTML += `
-          </div>
-          <div style="font-family:var(--font-story); font-size:1.1rem; font-weight:800; color:#15803D; min-height:24px;" id="assembledSnapWord"></div>
-        </div>
-      `;
-
-      rightPane.innerHTML = snapHTML;
-
-      // Handwriting Slate
-      const slateId = `slate_${activeZone}_${activeItemIdx}`;
-      rightPane.innerHTML += `
-        <div style="width:100%;">
-          <div style="font-size:0.85rem; font-weight:800; color:#78350F; margin-bottom:4px;">✍️ S-Pen Ruled Slate: Write the answer:</div>
-          <div class="ruled-canvas-container">
-            <div class="ruled-canvas-wrap">
-              <div class="four-line-guidelines"></div>
-              <canvas class="retina-ink-canvas" data-canvas-id="${slateId}"></canvas>
-            </div>
-            <button type="button" class="canvas-clear-btn" onclick="clearDualCanvas('${slateId}')" title="Clear">🧹</button>
-          </div>
-        </div>
-      `;
-
-      splitCard.appendChild(rightPane);
-      viewport.appendChild(splitCard);
-
-      setTimeout(setupDualCanvases, 40);
-    }
-
-    function placeSyllable(syl, tileId) {
-      audioFX.playSnap();
-      speakText(syl);
-      placedSnaps.push(syl);
-      document.getElementById(tileId).classList.add('placed');
-      document.getElementById('assembledSnapWord').textContent = `Assembled: ${placedSnaps.join(' • ')}`;
-    }
-
-    function speakCurrentTarget() {
-      const data = getDataset();
-      const item = data[activeItemIdx];
-      speakText(`${item.prompt}. ${item.answer}`);
-    }
-
-    function stepItem(dir) {
-      saveAllCanvases();
-      const data = getDataset();
-      activeItemIdx = (activeItemIdx + dir + data.length) % data.length;
-      renderActiveItem();
-    }
-
-    function verifyCurrentWork() {
-      const data = getDataset();
-      const item = data[activeItemIdx];
-      const slateId = `slate_${activeZone}_${activeItemIdx}`;
-
-      if (!hasDrawnMap[slateId]) {
-        document.getElementById('statusNoticeText').textContent = "Please write your answer on the slate before verifying!";
+      if (!hasDrawnRegistry[canvasId]) {
+        speakText("Please write your answer on the notebook first!");
         return;
       }
 
       audioFX.playBell();
-      document.getElementById('selfCheckAnswerKey').textContent = item.answer;
-      document.getElementById('selfCheckDrawer').style.display = 'flex';
+      document.getElementById('auditAnswerKeyDisplay').textContent = item.a;
+      document.getElementById('parentAuditDrawer').style.display = 'flex';
     }
 
-    function closeSelfCheck(isMatched) {
-      document.getElementById('selfCheckDrawer').style.display = 'none';
-      if (isMatched) {
+    function markParentAudit(isCorrect) {
+      document.getElementById('parentAuditDrawer').style.display = 'none';
+      writeModeAuditStatus[currentItemIdx] = isCorrect;
+
+      if (isCorrect) {
         audioFX.playBell();
-        const data = getDataset();
-        if (activeItemIdx === data.length - 1) {
-          triggerFinaleCelebration();
+        // Check if all items in section are complete and verified
+        const allAnswered = activeDeck.every((_, idx) => writeModeAuditStatus[idx] === true);
+        if (allAnswered) {
+          triggerGrandCelebration();
         } else {
           stepItem(1);
         }
+      } else {
+        // Explicit Non-Praise Retry Loop
+        audioFX.playSnap();
+        speakText(`Spelling error on Question ${currentItemIdx + 1}! Practice this question again.`);
+        clearSlateCanvas(`slate_${activeSection}_${currentItemIdx}_p1`);
+        clearSlateCanvas(`slate_${activeSection}_${currentItemIdx}_p2`);
+        renderCurrentDeckItem();
       }
     }
 
-    /* ASANA FINALE */
+    /* TEXTBOOK EXERCISES (SINGLE STANDALONE MODULE) */
+    function renderTextbookModule() {
+      document.getElementById('bannerHeadingText').textContent = "Textbook Exercises";
+      document.getElementById('deckPagination').textContent = "Textbook Mastery";
+      document.getElementById('parentReviewArea').style.display = 'none';
+
+      const viewport = document.getElementById('workBodyFrame');
+      viewport.innerHTML = `
+        <div class="textbook-grid-card">
+          <div style="font-family:var(--font-story); font-size:1.3rem; font-weight:800; color:#92400E;">
+            A. Tick (✓) the right options to complete these sentences:
+          </div>
+          <div class="textbook-exercise-row">
+            <span>1. Meena did not know the meaning of her name because:</span>
+            <div style="display:flex; gap:8px;">
+              <span class="textbook-opt-pill" onclick="pickOption(this, true)">a. she did not read and find out</span>
+              <span class="textbook-opt-pill" onclick="pickOption(this, false)">b. she disliked her name</span>
+            </div>
+          </div>
+          <div class="textbook-exercise-row">
+            <span>2. When Meena's parents tried to read out to her:</span>
+            <div style="display:flex; gap:8px;">
+              <span class="textbook-opt-pill" onclick="pickOption(this, true)">c. cover ears & hated books</span>
+              <span class="textbook-opt-pill" onclick="pickOption(this, false)">a. listen carefully</span>
+            </div>
+          </div>
+          <div class="textbook-exercise-row">
+            <span>3. Max always stayed on top of books rather than below:</span>
+            <div style="display:flex; gap:8px;">
+              <span class="textbook-opt-pill" onclick="pickOption(this, true)">d. scared of books falling</span>
+              <span class="textbook-opt-pill" onclick="pickOption(this, false)">a. comfortable</span>
+            </div>
+          </div>
+
+          <div style="font-family:var(--font-story); font-size:1.3rem; font-weight:800; color:#92400E; margin-top:8px;">
+            C. Fill in the blanks with shall or will:
+          </div>
+          <div class="textbook-exercise-row">
+            <span>1. My uncle ________ give me a watch next year.</span>
+            <div style="display:flex; gap:8px;">
+              <span class="textbook-opt-pill" onclick="pickOption(this, true)">will</span>
+              <span class="textbook-opt-pill" onclick="pickOption(this, false)">shall</span>
+            </div>
+          </div>
+          <div class="textbook-exercise-row">
+            <span>3. I ________ get up early tomorrow.</span>
+            <div style="display:flex; gap:8px;">
+              <span class="textbook-opt-pill" onclick="pickOption(this, true)">shall</span>
+              <span class="textbook-opt-pill" onclick="pickOption(this, false)">will</span>
+            </div>
+          </div>
+
+          <div style="font-family:var(--font-story); font-size:1.3rem; font-weight:800; color:#92400E; margin-top:8px;">
+            D. Prefix Opposites (un-, im-, dis-, in-):
+          </div>
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <span class="textbook-opt-pill" onclick="speakText('unclear')">clear ➔ unclear</span>
+            <span class="textbook-opt-pill" onclick="speakText('untidy')">tidy ➔ untidy</span>
+            <span class="textbook-opt-pill" onclick="speakText('impatient')">patient ➔ impatient</span>
+            <span class="textbook-opt-pill" onclick="speakText('incorrect')">correct ➔ incorrect</span>
+            <span class="textbook-opt-pill" onclick="speakText('impossible')">possible ➔ impossible</span>
+            <span class="textbook-opt-pill" onclick="speakText('disobey')">obey ➔ disobey</span>
+            <span class="textbook-opt-pill" onclick="speakText('invisible')">visible ➔ invisible</span>
+            <span class="textbook-opt-pill" onclick="speakText('unsure')">sure ➔ unsure</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function pickOption(btn, isCorrect) {
+      if (isCorrect) {
+        audioFX.playBell();
+        btn.classList.add('selected');
+        speakText("Correct!");
+      } else {
+        audioFX.playSnap();
+        speakText("Try again!");
+      }
+    }
+
+    /* GRAND ASANA CELEBRATION */
     const finaleStage = document.getElementById('celebrationFinaleStage');
     const finaleCanvas = document.getElementById('finaleCanvas');
     const finaleCtx = finaleCanvas.getContext('2d', { alpha: true });
@@ -1187,13 +1435,13 @@
     }
     window.addEventListener('resize', resizeFinaleCanvas);
 
-    class ConfettiPetal {
+    class FlyingPetal {
       constructor() {
         this.x = Math.random() * window.innerWidth;
-        this.y = -20 - Math.random() * 100;
+        this.y = -20 - Math.random() * 120;
         this.size = Math.random() * 12 + 6;
         this.vx = (Math.random() - 0.5) * 2;
-        this.vy = Math.random() * 2.5 + 2;
+        this.vy = Math.random() * 2.5 + 2.2;
         this.rot = Math.random() * Math.PI * 2;
         const colors = ['#F59E0B', '#38BDF8', '#34D399', '#F472B6', '#C084FC'];
         this.color = colors[Math.floor(Math.random() * colors.length)];
@@ -1216,36 +1464,41 @@
       }
     }
 
-    function triggerFinaleCelebration() {
+    function triggerGrandCelebration() {
       resizeFinaleCanvas();
       finaleStage.style.display = 'block';
       finaleRunning = true;
       audioFX.playBell();
-      speakText("Congratulations Humayun! You completed this mastery chapter!");
+      speakText("Awesome work Humayun! You completed the section with full marks!");
 
       petals = [];
-      for (let i = 0; i < 75; i++) petals.push(new ConfettiPetal());
+      for (let i = 0; i < 80; i++) petals.push(new FlyingPetal());
 
       setTimeout(() => {
-        document.getElementById('victoryScrollBox').classList.add('impact');
+        document.getElementById('victoryScrollCard').classList.add('impact');
       }, 400);
 
-      requestAnimationFrame(renderPetals);
+      requestAnimationFrame(renderPetalLoop);
     }
 
-    function renderPetals() {
+    function renderPetalLoop() {
       if (!finaleRunning) return;
       finaleCtx.clearRect(0, 0, finaleCanvas.width, finaleCanvas.height);
       petals.forEach(p => { p.update(); p.draw(finaleCtx); });
-      requestAnimationFrame(renderPetals);
+      requestAnimationFrame(renderPetalLoop);
     }
 
     function closeCelebrationStage() {
       finaleRunning = false;
       finaleStage.style.display = 'none';
-      document.getElementById('victoryScrollBox').classList.remove('impact');
-      goToHub();
+      document.getElementById('victoryScrollCard').classList.remove('impact');
+      returnToHubMenu();
     }
+
+    window.onload = () => {
+      // Auto-load in Practice Mode
+      setAppMode('practice');
+    };
 
     window.addEventListener("beforeunload", saveAllCanvases);
     window.addEventListener("pagehide", saveAllCanvases);
