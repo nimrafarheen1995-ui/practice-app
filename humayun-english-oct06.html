@@ -13,6 +13,10 @@
   <link rel="preload" as="image" href="assets/meena-room-bg.webp" type="image/webp">
   <link rel="preload" as="image" href="assets/max-cat.webp" type="image/webp">
   <link rel="preload" as="image" href="assets/meena-character.webp" type="image/webp">
+  <link rel="preload" as="image" href="assets/troll.webp" type="image/webp">
+  <link rel="preload" as="image" href="assets/rabbit.webp" type="image/webp">
+  <link rel="preload" as="image" href="assets/fairy.webp" type="image/webp">
+  <link rel="preload" as="image" href="assets/knight.webp" type="image/webp">
 
   <style>
     :root {
@@ -84,9 +88,9 @@
       align-items: center;
       gap: 4px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
-      transition: all 0.15s ease;
+      transition: transform 0.15s ease, background 0.15s ease;
     }
-    .icon-btn:active { transform: translateY(1px) scale(0.96); }
+    .icon-btn:active { transform: translateY(1px) scale(0.95); }
 
     .mode-pill-toggle {
       display: flex;
@@ -96,6 +100,12 @@
       padding: 2px;
       gap: 3px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    .mode-pill-toggle.hidden-toggle {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.9);
     }
     .mode-btn {
       background: transparent;
@@ -124,32 +134,54 @@
       color: #15803D;
     }
 
-    /* MASTER FRAMED SCENIC STAGE */
+    /* MASTER FRAMED SCENIC STAGE WITH CAMERA PUSH-IN */
     .master-scenic-stage {
       flex: 1;
       position: relative;
       border: 3.5px solid #5A3C22;
       border-radius: 20px;
       overflow: hidden;
-      background: #0B0704 url('assets/meena-room-bg.webp') no-repeat center center;
-      background-size: cover;
+      background: #0B0704;
       box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85);
       display: flex;
       min-height: 0;
       z-index: 10;
     }
 
+    /* DEDICATED GPU BACKGROUND LAYER FOR SMOOTH CAMERA MORPH */
+    .scenic-bg-layer {
+      position: absolute;
+      inset: 0;
+      background: url('assets/meena-room-bg.webp') no-repeat center center;
+      background-size: cover;
+      transform: scale(1);
+      transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform;
+      z-index: 0;
+    }
+    .master-scenic-stage.stage-darkened .scenic-bg-layer {
+      transform: scale(1.08);
+    }
+
+    /* WARM FIREPLACE FLICKER & DIMMING VEIL */
     .scenic-ambient-dimmer {
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at 50% 45%, rgba(15, 9, 5, 0.3) 0%, rgba(10, 5, 2, 0.65) 100%);
+      background: radial-gradient(circle at 12% 68%, rgba(251, 146, 60, 0.22) 0%, rgba(15, 9, 5, 0.38) 45%, rgba(10, 5, 2, 0.68) 100%);
       pointer-events: none;
       z-index: 1;
-      transition: opacity 0.35s ease;
+      animation: hearthFlicker 4s infinite alternate ease-in-out;
+      transition: background 0.4s ease, opacity 0.4s ease;
+    }
+    @keyframes hearthFlicker {
+      0% { opacity: 0.88; }
+      50% { opacity: 0.96; }
+      100% { opacity: 0.9; }
     }
     .master-scenic-stage.stage-darkened .scenic-ambient-dimmer {
+      background: rgba(12, 6, 3, 0.74);
+      animation: none;
       opacity: 0.95;
-      background: rgba(12, 6, 3, 0.72);
     }
 
     .ambient-sparkle {
@@ -157,11 +189,11 @@
       pointer-events: none;
       z-index: 2;
       opacity: 0.6;
-      animation: floatSparkle 12s infinite ease-in-out;
+      animation: floatSparkle 10s infinite ease-in-out;
     }
     @keyframes floatSparkle {
-      0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
-      50% { transform: translateY(-30px) rotate(180deg); opacity: 0.8; }
+      0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0.25; }
+      50% { transform: translate3d(8px, -28px, 0) rotate(180deg); opacity: 0.85; }
     }
 
     /* CENTRAL HUB (STAGE 0) */
@@ -173,31 +205,34 @@
       flex-direction: column;
       justify-content: space-between;
       padding: 12px 20px;
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1);
       transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform, opacity;
     }
     .central-hub-view.hidden-hub {
       opacity: 0;
       pointer-events: none;
-      transform: scale(0.95);
+      transform: translate3d(0, -20px, 0) scale(0.94);
     }
 
     .hub-title-capsule {
       align-self: center;
-      background: rgba(255, 253, 246, 0.95);
-      border: 2px solid var(--gold-primary);
-      border-radius: 18px;
-      padding: 6px 24px;
+      background: linear-gradient(180deg, #FFFDF9 0%, #FEF3C7 100%);
+      border: 2.5px solid var(--gold-primary);
+      border-radius: 20px;
+      padding: 6px 26px;
       font-family: var(--font-story);
-      font-size: 1.25rem;
+      font-size: 1.28rem;
       font-weight: 800;
       color: #92400E;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.35);
     }
 
     .hub-portals-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
+      gap: 14px;
       width: 100%;
       max-width: 1100px;
       margin: 0 auto;
@@ -205,25 +240,26 @@
     }
 
     .portal-launch-card {
-      background: rgba(255, 255, 255, 0.94);
-      border: 2.5px solid var(--gold-primary);
-      border-radius: 20px;
-      padding: 14px 10px;
+      background: rgba(255, 253, 246, 0.95);
+      border: 3px solid var(--gold-primary);
+      border-radius: 22px;
+      padding: 16px 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
       gap: 6px;
       cursor: pointer;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
-      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s, box-shadow 0.2s;
+      will-change: transform;
     }
     .portal-launch-card:hover {
-      transform: translateY(-5px) scale(1.04);
+      transform: translate3d(0, -7px, 0) scale(1.04);
       border-color: #F59E0B;
-      box-shadow: 0 14px 28px rgba(245, 158, 11, 0.45);
+      box-shadow: 0 16px 32px rgba(245, 158, 11, 0.5);
     }
-    .portal-launch-card:active { transform: scale(0.96); }
+    .portal-launch-card:active { transform: scale(0.95); }
 
     .hub-mascots-dock {
       display: flex;
@@ -234,25 +270,25 @@
     }
     .mascot-meena {
       height: clamp(170px, 26vh, 230px);
-      filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.6));
+      filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.65));
       animation: meenaBreathe 4s infinite ease-in-out;
     }
     @keyframes meenaBreathe {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-4px); }
+      0%, 100% { transform: translate3d(0, 0, 0); }
+      50% { transform: translate3d(0, -5px, 0); }
     }
 
     .mascot-max {
       height: clamp(150px, 22vh, 190px);
-      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.55));
       cursor: pointer;
       pointer-events: auto;
       transition: transform 0.18s ease;
       animation: maxFloat 5s infinite ease-in-out;
     }
     @keyframes maxFloat {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-5px) rotate(1deg); }
+      0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+      50% { transform: translate3d(0, -6px, 0) rotate(1.5deg); }
     }
     .mascot-max:active { transform: scale(0.92); }
 
@@ -266,8 +302,9 @@
       justify-content: space-between;
       padding: 6px 14px;
       opacity: 0;
-      transform: translate3d(50px, 0, 0) scale(0.98);
+      transform: translate3d(0, 28px, 0) scale(0.97);
       transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform, opacity;
     }
     .slide-deck-viewport.active-slide {
       display: flex;
@@ -275,35 +312,36 @@
       transform: translate3d(0, 0, 0) scale(1);
     }
 
-    /* PALM BANNER HEADER */
+    /* PALM BANNER HEADER WITH BUILT-IN GOLDEN SCROLL STYLING */
     .palm-scroll-banner-box {
       width: 100%;
-      height: 62px;
-      background: url('assets/palm-scroll-banner.png') no-repeat center center;
-      background-size: 100% 100%;
+      height: 58px;
+      background: linear-gradient(180deg, #FDE68A 0%, #F59E0B 100%);
+      border: 3px solid #92400E;
+      border-radius: 18px;
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 0 140px 0 80px;
-      filter: drop-shadow(0 5px 12px rgba(0, 0, 0, 0.4));
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45), inset 0 2px 4px rgba(255, 255, 255, 0.6);
       flex-shrink: 0;
       position: relative;
       overflow: visible !important;
-      margin-top: 14px;
+      margin-top: 12px;
     }
     .banner-text-heading {
       font-family: var(--font-story);
-      font-size: clamp(1.1rem, 1.6vw, 1.35rem);
+      font-size: clamp(1.15rem, 1.7vw, 1.4rem);
       font-weight: 800;
       color: #351804;
       text-align: center;
       flex: 1;
-      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
     }
 
     .freely-floating-max-btn {
-      width: 140px;
-      height: 140px;
+      width: 132px;
+      height: 132px;
       position: absolute;
       right: 12px;
       top: 50%;
@@ -318,7 +356,7 @@
       z-index: 40;
       overflow: visible;
     }
-    .freely-floating-max-btn:active { transform: translateY(-50%) scale(0.92); }
+    .freely-floating-max-btn:active { transform: translateY(-50%) scale(0.9); }
     .max-sprite-img {
       width: 100%;
       height: 100%;
@@ -326,7 +364,7 @@
       filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.45));
     }
 
-    /* WORKSPACE BODY */
+    /* WORKSPACE BODY WITH DIRECTIONAL SLIDE DECK ANIMATIONS */
     .work-body-frame {
       flex: 1;
       display: flex;
@@ -335,11 +373,56 @@
       min-height: 0;
       padding: 4px 0;
       position: relative;
+      will-change: transform, opacity;
+    }
+
+    /* POWERPOINT SLIDE-IN DIRECTIONAL KEYFRAMES */
+    .slide-enter-next {
+      animation: slideInFromRight 0.34s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .slide-enter-prev {
+      animation: slideInFromLeft 0.34s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes slideInFromRight {
+      0% { opacity: 0; transform: translate3d(55px, 0, 0) scale(0.97); }
+      100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+    }
+    @keyframes slideInFromLeft {
+      0% { opacity: 0; transform: translate3d(-55px, 0, 0) scale(0.97); }
+      100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+    }
+
+    /* STAGGERED CHILD POP-INS (POWERPOINT FLY-IN FEEL) */
+    .stagger-pop-1 {
+      opacity: 0;
+      animation: popUpIn 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) 0.04s forwards;
+    }
+    .stagger-pop-2 {
+      opacity: 0;
+      animation: popUpIn 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s forwards;
+    }
+    .stagger-pop-3 {
+      opacity: 0;
+      animation: popUpIn 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) 0.16s forwards;
+    }
+    @keyframes popUpIn {
+      0% { opacity: 0; transform: translate3d(0, 18px, 0) scale(0.95); }
+      100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+    }
+
+    /* 3D PAGE-FLIP ANIMATION ON CANVAS SHEET */
+    .page-flip-anim {
+      transform-origin: left center;
+      animation: notebookPageTurn 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes notebookPageTurn {
+      0% { transform: perspective(900px) rotateY(-22deg) scaleX(0.94); opacity: 0.5; }
+      100% { transform: perspective(900px) rotateY(0deg) scaleX(1); opacity: 1; }
     }
 
     /* LEFT SIDE: TALL CHARACTER SPRITE */
     .stage-character-col {
-      width: 220px;
+      width: 215px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -348,21 +431,29 @@
       flex-shrink: 0;
     }
     .tall-character-sprite {
-      max-height: 230px;
+      max-height: 225px;
       max-width: 100%;
       object-fit: contain;
       filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.65));
-      animation: spriteGentleHover 4.5s infinite ease-in-out;
+      animation: spriteGentleHover 4.2s infinite ease-in-out;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     @keyframes spriteGentleHover {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-6px); }
+      0%, 100% { transform: translate3d(0, 0, 0); }
+      50% { transform: translate3d(0, -7px, 0); }
+    }
+    .tall-character-sprite.cheer-bounce {
+      animation: characterCheerHop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes characterCheerHop {
+      0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+      45% { transform: translate3d(0, -18px, 0) scale(1.08) rotate(-3deg); }
     }
 
     /* RIGHT SIDE: FLOATING PARCHMENT SLATE */
     .floating-parchment-slate {
       flex: 1;
-      background: rgba(255, 253, 246, 0.95);
+      background: rgba(255, 253, 246, 0.96);
       border: 3px solid var(--gold-primary);
       border-radius: 20px;
       padding: 10px 16px;
@@ -385,7 +476,7 @@
     }
     .prompt-text-headline {
       font-family: var(--font-story);
-      font-size: 1.45rem;
+      font-size: 1.4rem;
       font-weight: 800;
       color: #92400E;
     }
@@ -407,9 +498,9 @@
       padding: 3px 8px;
       border-radius: 10px;
       cursor: pointer;
-      background: rgba(254, 243, 199, 0.6);
-      border: 1px dashed rgba(217, 119, 6, 0.4);
-      transition: all 0.16s ease;
+      background: rgba(254, 243, 199, 0.65);
+      border: 1px dashed rgba(217, 119, 6, 0.45);
+      transition: transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.16s ease;
       touch-action: pan-y;
     }
     .dissect-word-chip:hover {
@@ -422,6 +513,7 @@
       border: 1.5px solid #16A34A;
       padding: 2px 6px;
       gap: 4px;
+      transform: scale(1.03);
     }
     .syllable-badge-part {
       background: #FFFFFF;
@@ -470,6 +562,7 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
+      transition: all 0.15s ease;
     }
     .tool-btn.active-tool {
       background: #FEF08A;
@@ -542,10 +635,10 @@
       flex-shrink: 0;
     }
 
-    /* NON-BLOCKING TOP COMPARISON AUDIT CURTAIN (BUG 1 FIX) */
+    /* NON-BLOCKING TOP COMPARISON AUDIT CURTAIN */
     .nonblocking-audit-curtain {
       position: absolute;
-      top: -240px;
+      top: -250px;
       left: 10px;
       right: 10px;
       background: #FFFDF9;
@@ -560,7 +653,7 @@
       transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .nonblocking-audit-curtain.curtain-dropped {
-      transform: translateY(246px);
+      transform: translate3d(0, 256px, 0);
     }
     .audit-key-banner {
       background: #FEF3C7;
@@ -581,7 +674,7 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
-      background: rgba(255, 253, 246, 0.95);
+      background: rgba(255, 253, 246, 0.96);
       border: 3px solid var(--gold-primary);
       border-radius: 20px;
       padding: 12px 18px;
@@ -615,19 +708,20 @@
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       padding-right: 4px;
     }
     .exercise-card-row {
       background: #FFFFFF;
       border: 2px solid #E2E8F0;
       border-radius: 14px;
-      padding: 10px 14px;
+      padding: 8px 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 800;
+      gap: 10px;
     }
     .option-chip {
       background: #F1F5F9;
@@ -702,8 +796,8 @@
       <button type="button" class="icon-btn pen-indicator-btn" id="btnPenToggle" onclick="togglePenMode()" title="Stylus">🖊️</button>
     </div>
 
-    <!-- JARGON-FREE MODE SWITCHER -->
-    <div class="mode-pill-toggle">
+    <!-- JARGON-FREE MODE SWITCHER (AUTO-HIDDEN IN TEXTBOOK MODE) -->
+    <div class="mode-pill-toggle" id="modeSwitcherBox">
       <button type="button" class="mode-btn active" id="tabPractice" onclick="setAppMode('practice')">📘 Practice</button>
       <button type="button" class="mode-btn" id="tabWrite" onclick="setAppMode('write')">✍️ Write Exam</button>
     </div>
@@ -715,6 +809,7 @@
 
   <!-- MASTER STAGE -->
   <main class="master-scenic-stage" id="masterStageContainer">
+    <div class="scenic-bg-layer"></div>
     <div class="scenic-ambient-dimmer"></div>
 
     <!-- STAGE 0: CENTRAL DIM HUB -->
@@ -758,7 +853,7 @@
 
     <!-- WORKSTATION SLIDE VIEWPORT (GPU ACCELERATED) -->
     <section class="slide-deck-viewport" id="slideDeckStage">
-      <!-- NON-BLOCKING PARENT AUDIT DROP CURTAIN (BUG 1 FIX) -->
+      <!-- NON-BLOCKING PARENT AUDIT DROP CURTAIN -->
       <div class="nonblocking-audit-curtain" id="nonblockingAuditCurtain">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <span style="font-family:var(--font-story); font-size:1.15rem; font-weight:800; color:#92400E;">Teacher's Exact Notebook Key</span>
@@ -766,8 +861,8 @@
         </div>
         <div class="audit-key-banner" id="auditAnswerKeyDisplay"></div>
         <div style="display:flex; justify-content:center; align-items:center; gap:20px;">
-          <button type="button" class="icon-btn" style="background:#FEE2E2; border-color:#DC2626; padding:6px 20px; font-size:1.2rem;" onclick="markParentAudit(false)" title="Needs Practice">✗ Practice Again</button>
-          <button type="button" class="icon-btn" style="background:#DCFCE7; border-color:#16A34A; padding:6px 24px; font-size:1.2rem;" onclick="markParentAudit(true)" title="Correct">✓ Perfect</button>
+          <button type="button" class="icon-btn" style="background:#FEE2E2; border-color:#DC2626; padding:6px 20px; font-size:1.15rem;" onclick="markParentAudit(false)" title="Needs Practice">✗ Practice Again</button>
+          <button type="button" class="icon-btn" style="background:#DCFCE7; border-color:#16A34A; padding:6px 24px; font-size:1.15rem;" onclick="markParentAudit(true)" title="Correct">✓ Perfect</button>
         </div>
       </div>
 
@@ -818,7 +913,7 @@
       window.speechSynthesis.speak(u);
     }
 
-    /* SYNTHESIZED SOUND FX INCLUDING PAGE FLIP */
+    /* SYNTHESIZED SOUND ENGINE WITH REALISTIC CRISP PAPER FLIP */
     class SoundEngine {
       constructor() { this.ctx = null; }
       init() {
@@ -831,14 +926,14 @@
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(340, t0);
-        osc.frequency.exponentialRampToValueAtTime(140, t0 + 0.08);
-        gain.gain.setValueAtTime(0.4, t0);
-        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.09);
+        osc.frequency.setValueAtTime(360, t0);
+        osc.frequency.exponentialRampToValueAtTime(150, t0 + 0.07);
+        gain.gain.setValueAtTime(0.35, t0);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.08);
         osc.connect(gain);
         gain.connect(this.ctx.destination);
         osc.start(t0);
-        osc.stop(t0 + 0.1);
+        osc.stop(t0 + 0.09);
       }
       playBell() {
         this.init();
@@ -848,37 +943,73 @@
           const gain = this.ctx.createGain();
           osc.type = 'sine';
           osc.frequency.setValueAtTime(f, t0 + i * 0.06);
-          gain.gain.setValueAtTime(0.2, t0 + i * 0.06);
-          gain.gain.exponentialRampToValueAtTime(0.001, t0 + i * 0.06 + 1.2);
+          gain.gain.setValueAtTime(0.18, t0 + i * 0.06);
+          gain.gain.exponentialRampToValueAtTime(0.001, t0 + i * 0.06 + 1.1);
           osc.connect(gain);
           gain.connect(this.ctx.destination);
           osc.start(t0 + i * 0.06);
-          osc.stop(t0 + i * 0.06 + 1.25);
+          osc.stop(t0 + i * 0.06 + 1.15);
         });
       }
+      /* REALISTIC CRISP NOTEBOOK PAGE TURN (NO LOW-FREQUENCY VIBRATION) */
       playPageFlip() {
         this.init();
         const t0 = this.ctx.currentTime;
-        // BUG 5 FIX: Math.floor prevents audio buffer crash
-        const bufferSize = Math.floor(this.ctx.sampleRate * 0.18);
-        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) {
-          data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.4));
+        const sr = this.ctx.sampleRate;
+
+        // Stage 1: Crisp paper corner catch (0ms - 45ms, 4500Hz high-pass)
+        const len1 = Math.floor(sr * 0.045);
+        const buf1 = this.ctx.createBuffer(1, len1, sr);
+        const d1 = buf1.getChannelData(0);
+        for (let i = 0; i < len1; i++) {
+          d1[i] = (Math.random() * 2 - 1) * Math.sin((i / len1) * Math.PI);
         }
-        const noise = this.ctx.createBufferSource();
-        noise.buffer = buffer;
-        const filter = this.ctx.createBiquadFilter();
-        filter.type = 'bandpass';
-        filter.frequency.setValueAtTime(1200, t0);
-        filter.frequency.exponentialRampToValueAtTime(400, t0 + 0.18);
-        const gain = this.ctx.createGain();
-        gain.gain.setValueAtTime(0.35, t0);
-        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.18);
-        noise.connect(filter);
-        filter.connect(gain);
-        gain.connect(this.ctx.destination);
-        noise.start(t0);
+        const src1 = this.ctx.createBufferSource();
+        src1.buffer = buf1;
+        const hp1 = this.ctx.createBiquadFilter();
+        hp1.type = 'highpass';
+        hp1.frequency.setValueAtTime(4200, t0);
+        const g1 = this.ctx.createGain();
+        g1.gain.setValueAtTime(0.22, t0);
+        src1.connect(hp1);
+        hp1.connect(g1);
+        g1.connect(this.ctx.destination);
+        src1.start(t0);
+
+        // Stage 2: Swift airy page swish & flat paper settle (40ms - 210ms, 2800Hz -> 6200Hz)
+        const len2 = Math.floor(sr * 0.17);
+        const buf2 = this.ctx.createBuffer(1, len2, sr);
+        const d2 = buf2.getChannelData(0);
+        for (let i = 0; i < len2; i++) {
+          const p = i / len2;
+          // Fast attack, smooth airy decay
+          const env = Math.pow(p, 0.3) * Math.pow(1 - p, 1.8) * 2.4;
+          d2[i] = (Math.random() * 2 - 1) * env;
+        }
+        const src2 = this.ctx.createBufferSource();
+        src2.buffer = buf2;
+
+        // Remove all bass/low-mid rumble below 2400Hz
+        const hp2 = this.ctx.createBiquadFilter();
+        hp2.type = 'highpass';
+        hp2.frequency.setValueAtTime(2400, t0 + 0.035);
+
+        // Crisp paper-air formants sweeping upward
+        const bp2 = this.ctx.createBiquadFilter();
+        bp2.type = 'bandpass';
+        bp2.Q.setValueAtTime(1.4, t0 + 0.035);
+        bp2.frequency.setValueAtTime(2800, t0 + 0.035);
+        bp2.frequency.exponentialRampToValueAtTime(6200, t0 + 0.12);
+        bp2.frequency.exponentialRampToValueAtTime(3400, t0 + 0.20);
+
+        const g2 = this.ctx.createGain();
+        g2.gain.setValueAtTime(0.45, t0 + 0.035);
+
+        src2.connect(hp2);
+        hp2.connect(bp2);
+        bp2.connect(g2);
+        g2.connect(this.ctx.destination);
+        src2.start(t0 + 0.035);
       }
       playMeow() {
         this.init();
@@ -900,7 +1031,16 @@
     const audioFX = new SoundEngine();
     function playCatMeow() { audioFX.playMeow(); speakText("Meow! Let's read!"); }
 
+    function triggerSpriteCheer() {
+      const sprite = document.querySelector('.tall-character-sprite');
+      if (!sprite) return;
+      sprite.classList.remove('cheer-bounce');
+      void sprite.offsetWidth;
+      sprite.classList.add('cheer-bounce');
+    }
+
     function toggleFullscreen() {
+      saveAllCanvases();
       const el = document.documentElement;
       if (!document.fullscreenElement && !document.webkitFullscreenElement) {
         if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
@@ -909,7 +1049,18 @@
         if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
         else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
       }
+      setTimeout(setupInkCanvases, 180);
     }
+
+    // Re-hydrate canvas cleanly on any screen orientation/fullscreen resize
+    let resizeTimer = null;
+    window.addEventListener('resize', () => {
+      resizeFinaleCanvas();
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        if (activeSection && activeSection !== 'textbook') setupInkCanvases();
+      }, 120);
+    });
 
     let penOnlyMode = false;
     function togglePenMode() {
@@ -954,7 +1105,7 @@
       "always": ["al", "ways"], "began": ["be", "gan"], "inside": ["in", "side"], "single": ["sin", "gle"]
     };
 
-    /* DATASETS WITH IMMUTABLE IDS (BUG 1 FIX) */
+    /* DATASETS WITH IMMUTABLE IDS */
     const MEANINGS_DATA = [
       { id: "mean_1", q: "nervous", a: "feeling worried", sprite: "assets/troll.webp" },
       { id: "mean_2", q: "encyclopaedia", a: "a book with facts on many subjects", sprite: "assets/rabbit.webp" },
@@ -1022,12 +1173,12 @@
       }
     ];
 
-    /* PERSISTENT TEXTBOOK STATE STORE (BUG 4 & 5 FIX) */
+    /* PERSISTENT TEXTBOOK STATE STORE */
     const textbookStore = {
-      p1: {}, // qIndex -> boolean correct
-      p2: {}, // qIndex -> boolean correct
-      p3_shall_will: {}, // qIndex -> boolean correct
-      p3_prefixes: {} // rootWord -> revealed
+      p1: {},
+      p2: {},
+      p3_shall_will: {},
+      p3_prefixes: {}
     };
 
     /* CONTROLLER STATE */
@@ -1038,8 +1189,9 @@
     let activePageNum = 1;
     let strokeUndoStack = {};
     let currentDrawingTool = 'pen';
-    let writeModeAuditStatus = {}; // itemId -> boolean
+    let writeModeAuditStatus = {};
     let activeTextbookPart = 1;
+    let lastSlideDirection = 'next';
 
     function setAppMode(mode) {
       saveAllCanvases();
@@ -1048,7 +1200,7 @@
       document.getElementById('tabPractice').classList.toggle('active', mode === 'practice');
       document.getElementById('tabWrite').classList.toggle('active', mode === 'write');
 
-      if (activeSection) {
+      if (activeSection && activeSection !== 'textbook') {
         openSection(activeSection);
       }
     }
@@ -1056,6 +1208,8 @@
     function returnToHubMenu() {
       saveAllCanvases();
       dismissAuditCurtain();
+      audioFX.playPageFlip();
+      document.getElementById('modeSwitcherBox').classList.remove('hidden-toggle');
       document.getElementById('slideDeckStage').classList.remove('active-slide');
       document.getElementById('masterStageContainer').classList.remove('stage-darkened');
       document.getElementById('centralHubStage').classList.remove('hidden-hub');
@@ -1065,10 +1219,15 @@
     function openSection(secKey) {
       saveAllCanvases();
       dismissAuditCurtain();
+      audioFX.playPageFlip();
       activeSection = secKey;
       currentItemIdx = 0;
       activePageNum = 1;
       writeModeAuditStatus = {};
+      lastSlideDirection = 'next';
+
+      // Hide mode switcher in Textbook section (Single-mode rule)
+      document.getElementById('modeSwitcherBox').classList.toggle('hidden-toggle', secKey === 'textbook');
 
       document.getElementById('centralHubStage').classList.add('hidden-hub');
       document.getElementById('masterStageContainer').classList.add('stage-darkened');
@@ -1084,17 +1243,17 @@
         activeDeck.sort(() => Math.random() - 0.5);
       }
 
-      renderCurrentDeckItem();
+      renderCurrentDeckItem(false);
     }
 
-    /* RENDER ACTIVE DECK ITEM: OPTION B FLOATING PARCHMENT SLATE */
-    function renderCurrentDeckItem() {
+    /* RENDER ACTIVE DECK ITEM WITH DIRECTIONAL SLIDE & STAGGERED POP-INS */
+    function renderCurrentDeckItem(isPageFlipOnly = false) {
       saveAllCanvases();
       dismissAuditCurtain();
       const viewport = document.getElementById('workBodyFrame');
-      viewport.innerHTML = '';
 
       if (activeSection === 'textbook') {
+        viewport.innerHTML = '';
         renderTextbookModule();
         return;
       }
@@ -1105,7 +1264,6 @@
       const titles = { meanings: 'Meanings', opposites: 'Opposites', sentences: 'Frame Sentences', questions: 'Q & A Mastery' };
       document.getElementById('bannerHeadingText').textContent = titles[activeSection];
 
-      // Parent Check button: ONLY present in Write Mode
       const parentArea = document.getElementById('parentReviewArea');
       if (currentMode === 'write') {
         const isVerified = writeModeAuditStatus[item.id] === true;
@@ -1118,17 +1276,21 @@
         parentArea.innerHTML = '';
       }
 
-      // Left Column: Tall Character Sprite
+      // Apply Directional Slide-Deck Animation Class
+      viewport.className = 'work-body-frame ' + (lastSlideDirection === 'next' ? 'slide-enter-next' : 'slide-enter-prev');
+      viewport.innerHTML = '';
+
+      // Left Column: Tall Character Sprite (Stagger Pop 1)
       const leftCol = document.createElement('div');
-      leftCol.className = 'stage-character-col';
+      leftCol.className = 'stage-character-col stagger-pop-1';
       leftCol.innerHTML = `
         <img src="${item.sprite}" class="tall-character-sprite" alt="" onerror="handleImageFallback(this)" />
       `;
       viewport.appendChild(leftCol);
 
-      // Right Column: Floating Parchment Slate
+      // Right Column: Floating Parchment Slate (Stagger Pop 2)
       const rightSlate = document.createElement('div');
-      rightSlate.className = 'floating-parchment-slate';
+      rightSlate.className = 'floating-parchment-slate stagger-pop-2';
 
       // Header with Question / Word
       const slateHeader = document.createElement('div');
@@ -1139,7 +1301,7 @@
       `;
       rightSlate.appendChild(slateHeader);
 
-      // Answer stream with Punctuation-Safe Syllable Chips (BUG 7 FIX)
+      // Answer stream with Punctuation-Safe Syllable Chips
       if (currentMode === 'practice') {
         const words = item.a.split(' ');
         const wrappedWords = words.map((w, idx) => {
@@ -1163,21 +1325,21 @@
       } else {
         const writeLine = document.createElement('div');
         writeLine.className = 'answer-stream-box';
-        writeLine.innerHTML = `<span style="color:#92400E; font-size:1.15rem;">✍️ Write your answer on the notebook:</span>`;
+        writeLine.innerHTML = `<span style="color:#92400E; font-size:1.1rem;">✍️</span>`;
         rightSlate.appendChild(writeLine);
       }
 
-      // Canvas Unit (Keyed to Immutable item.id)
+      // Canvas Unit (Stagger Pop 3 + 3D Page Turn when flipping pages)
       const canvasContainer = document.createElement('div');
-      canvasContainer.className = 'canvas-notebook-container';
+      canvasContainer.className = 'canvas-notebook-container ' + (isPageFlipOnly ? 'page-flip-anim' : 'stagger-pop-3');
 
       const canvasStorageId = `slate_${currentMode}_${item.id}_p${activePageNum}`;
 
       canvasContainer.innerHTML = `
         <div class="canvas-tools-strip">
           <div class="hud-group">
-            <button type="button" class="tool-btn active-tool" id="btnPen" onclick="selectTool('pen')" title="Pen">🖊️</button>
-            <button type="button" class="tool-btn" id="btnEraser" onclick="selectTool('eraser')" title="Eraser">🧹</button>
+            <button type="button" class="tool-btn ${currentDrawingTool === 'pen' ? 'active-tool' : ''}" id="btnPen" onclick="selectTool('pen')" title="Pen">🖊️</button>
+            <button type="button" class="tool-btn ${currentDrawingTool === 'eraser' ? 'active-tool' : ''}" id="btnEraser" onclick="selectTool('eraser')" title="Eraser">🧹</button>
             <button type="button" class="tool-btn" onclick="undoCanvasStroke('${canvasStorageId}')" title="Undo">↶</button>
             <button type="button" class="tool-btn" onclick="clearSlateCanvas('${canvasStorageId}')" title="Clear">🗑️</button>
           </div>
@@ -1195,10 +1357,11 @@
       rightSlate.appendChild(canvasContainer);
       viewport.appendChild(rightSlate);
 
-      setTimeout(setupInkCanvases, 40);
+      // Mount canvas after slide transition settles
+      setTimeout(setupInkCanvases, 60);
     }
 
-    /* ANY-WORD TAP-AND-HOLD / DOUBLE-TAP SYLLABLE DISSECTOR (BUG 7 FIX) */
+    /* ANY-WORD TAP-AND-HOLD / DOUBLE-TAP SYLLABLE DISSECTOR */
     let wordPressTimer = null;
     let pressStartX = 0, pressStartY = 0;
 
@@ -1213,14 +1376,13 @@
 
     function handleWordPointerMove(e) {
       if (!wordPressTimer) return;
-      // If user drags/scrolls > 8px, cancel hold
       if (Math.hypot(e.clientX - pressStartX, e.clientY - pressStartY) > 8) {
         clearTimeout(wordPressTimer);
         wordPressTimer = null;
       }
     }
 
-    function handleWordPointerUp(e, elemId) {
+    function handleWordPointerUp() {
       if (wordPressTimer) {
         clearTimeout(wordPressTimer);
         wordPressTimer = null;
@@ -1241,6 +1403,8 @@
       const cleanWord = el.getAttribute('data-clean');
       const rawWord = el.getAttribute('data-raw');
       const syllables = SYLLABLE_DICT[cleanWord];
+
+      triggerSpriteCheer();
 
       if (!syllables || syllables.length <= 1) {
         audioFX.playSnap();
@@ -1267,6 +1431,7 @@
     }
 
     function speakCurrentTarget() {
+      triggerSpriteCheer();
       if (activeSection === 'textbook') {
         speakText("Textbook exercises. Complete each question carefully.");
         return;
@@ -1282,6 +1447,9 @@
     function stepItem(dir) {
       saveAllCanvases();
       dismissAuditCurtain();
+      audioFX.playPageFlip();
+      lastSlideDirection = dir >= 0 ? 'next' : 'prev';
+
       if (activeSection === 'textbook') {
         activeTextbookPart = ((activeTextbookPart - 1 + dir + 3) % 3) + 1;
         renderTextbookModule();
@@ -1289,17 +1457,17 @@
       }
       activePageNum = 1;
       currentItemIdx = (currentItemIdx + dir + activeDeck.length) % activeDeck.length;
-      renderCurrentDeckItem();
+      renderCurrentDeckItem(false);
     }
 
     function flipCanvasPage() {
       saveAllCanvases();
       audioFX.playPageFlip();
       activePageNum = (activePageNum === 1) ? 2 : 1;
-      renderCurrentDeckItem();
+      renderCurrentDeckItem(true);
     }
 
-    /* RETINA INK ENGINE WITH 120HZ RECT CACHING (BUG 3 FIX) */
+    /* RETINA INK ENGINE WITH 120HZ RECT CACHING */
     const inkMemoryCache = {};
     const hasDrawnRegistry = {};
 
@@ -1309,8 +1477,10 @@
 
     function selectTool(tool) {
       currentDrawingTool = tool;
-      document.getElementById('btnPen').classList.toggle('active-tool', tool === 'pen');
-      document.getElementById('btnEraser').classList.toggle('active-tool', tool === 'eraser');
+      const penBtn = document.getElementById('btnPen');
+      const eraBtn = document.getElementById('btnEraser');
+      if (penBtn) penBtn.classList.toggle('active-tool', tool === 'pen');
+      if (eraBtn) eraBtn.classList.toggle('active-tool', tool === 'eraser');
     }
 
     function setupInkCanvases() {
@@ -1336,7 +1506,6 @@
         if (cached) {
           inkMemoryCache[storageKey] = cached;
           hasDrawnRegistry[id] = true;
-          // BUG 6 FIX: Seed undo stack with cached snapshot
           if (strokeUndoStack[id].length === 0) strokeUndoStack[id].push(cached);
           const img = new Image();
           img.onload = () => {
@@ -1348,7 +1517,7 @@
 
         let isDrawing = false;
         let lastX = 0, lastY = 0;
-        let cachedRect = null; // BUG 3 FIX: Cache bounding rect to prevent 120Hz thrashing
+        let cachedRect = null;
 
         c.onpointerdown = (e) => {
           if (penOnlyMode && e.pointerType !== "pen" && e.pointerType !== "mouse") {
@@ -1482,10 +1651,9 @@
       purgeStoredCanvas(id);
     }
 
-    /* NON-BLOCKING PARENT AUDIT DROP CURTAIN (BUG 1 & 2 FIX) */
+    /* NON-BLOCKING PARENT AUDIT DROP CURTAIN */
     function openParentAudit() {
       const item = activeDeck[currentItemIdx];
-      // BUG 2 FIX: Check both p1 and p2 for ink
       const hasInk = hasDrawnRegistry[`slate_${currentMode}_${item.id}_p1`] || 
                      hasDrawnRegistry[`slate_${currentMode}_${item.id}_p2`];
 
@@ -1510,6 +1678,7 @@
 
       if (isCorrect) {
         audioFX.playBell();
+        triggerSpriteCheer();
         const allAnswered = activeDeck.every(it => writeModeAuditStatus[it.id] === true);
         if (allAnswered) {
           triggerGrandCelebration();
@@ -1518,14 +1687,25 @@
         }
       } else {
         audioFX.playSnap();
-        speakText(`Spelling error on Question ${currentItemIdx + 1}! Practice this question again.`);
+        speakText(`Practice Question ${currentItemIdx + 1} again!`);
         purgeStoredCanvas(`slate_${currentMode}_${item.id}_p1`);
         purgeStoredCanvas(`slate_${currentMode}_${item.id}_p2`);
-        renderCurrentDeckItem();
+        renderCurrentDeckItem(false);
       }
     }
 
-    /* TEXTBOOK 3-PART SPLIT MODULE WITH VERIFICATION & PERSISTENCE (BUG 4 & 5 FIX) */
+    /* TEXTBOOK 3-PART SPLIT MODULE WITH INTERACTIVE PREFIX CHOICE */
+    const PREFIX_TASKS = [
+      { root: 'clear', correct: 'un', full: 'unclear' },
+      { root: 'tidy', correct: 'un', full: 'untidy' },
+      { root: 'patient', correct: 'im', full: 'impatient' },
+      { root: 'correct', correct: 'in', full: 'incorrect' },
+      { root: 'possible', correct: 'im', full: 'impossible' },
+      { root: 'obey', correct: 'dis', full: 'disobey' },
+      { root: 'visible', correct: 'in', full: 'invisible' },
+      { root: 'sure', correct: 'un', full: 'unsure' }
+    ];
+
     function renderTextbookModule() {
       document.getElementById('bannerHeadingText').textContent = "Textbook Mastery";
       document.getElementById('deckPagination').textContent = `Part ${activeTextbookPart} / 3`;
@@ -1536,8 +1716,11 @@
       `;
 
       const viewport = document.getElementById('workBodyFrame');
+      viewport.className = 'work-body-frame ' + (lastSlideDirection === 'next' ? 'slide-enter-next' : 'slide-enter-prev');
+      viewport.innerHTML = '';
+
       const desk = document.createElement('div');
-      desk.className = 'textbook-wrapper-desk';
+      desk.className = 'textbook-wrapper-desk stagger-pop-1';
 
       desk.innerHTML = `
         <div class="textbook-sub-tabs">
@@ -1577,7 +1760,7 @@
         `;
       } else if (activeTextbookPart === 2) {
         content.innerHTML = `
-          <div style="font-family:var(--font-story); font-size:1.15rem; color:#92400E;">Choose the correct helping verb + main verb pair:</div>
+          <div style="font-family:var(--font-story); font-size:1.1rem; color:#92400E;">Choose the correct helping verb + main verb pair:</div>
           <div class="exercise-card-row">
             <span>1. The cat is climbing on the shelf.</span>
             <div style="display:flex; gap:6px;">
@@ -1615,8 +1798,23 @@
           </div>
         `;
       } else {
+        const prefixRowsHTML = PREFIX_TASKS.map(item => {
+          const isSolved = textbookStore.p3_prefixes[item.root] === true;
+          return `
+            <div class="exercise-card-row" style="padding:6px 12px;">
+              <span><b>${item.root}</b> ➔ ${isSolved ? `<b style="color:#15803D;">${item.full}</b>` : '______'}</span>
+              <div style="display:flex; gap:6px;">
+                ${['un', 'im', 'dis', 'in'].map(pref => `
+                  <span class="option-chip ${isSolved && pref === item.correct ? 'selected-correct' : ''}" 
+                        onclick="selectPrefixOption('${item.root}', '${pref}', '${item.correct}', '${item.full}')">${pref}-</span>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        }).join('');
+
         content.innerHTML = `
-          <div style="font-family:var(--font-story); font-size:1.15rem; color:#92400E;">Fill in with shall or will:</div>
+          <div style="font-family:var(--font-story); font-size:1.1rem; color:#92400E;">Fill in with shall or will:</div>
           <div class="exercise-card-row">
             <span>1. My uncle ________ give me a watch next year.</span>
             <div style="display:flex; gap:8px;">
@@ -1646,31 +1844,17 @@
             </div>
           </div>
 
-          <div style="font-family:var(--font-story); font-size:1.15rem; color:#92400E; margin-top:8px;">
-            Prefix Opposites: Tap to match correct prefix (un-, im-, dis-, in-):
+          <div style="font-family:var(--font-story); font-size:1.1rem; color:#92400E; margin-top:6px;">
+            Prefix Opposites: Choose the correct prefix (un-, im-, dis-, in-):
           </div>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            ${renderPrefixChip('clear', 'unclear')}
-            ${renderPrefixChip('tidy', 'untidy')}
-            ${renderPrefixChip('patient', 'impatient')}
-            ${renderPrefixChip('correct', 'incorrect')}
-            ${renderPrefixChip('possible', 'impossible')}
-            ${renderPrefixChip('obey', 'disobey')}
-            ${renderPrefixChip('visible', 'invisible')}
-            ${renderPrefixChip('sure', 'unsure')}
-          </div>
+          ${prefixRowsHTML}
         `;
       }
     }
 
-    function renderPrefixChip(rootWord, fullWord) {
-      const isSolved = textbookStore.p3_prefixes[rootWord] === true;
-      return `<span class="option-chip ${isSolved ? 'selected-correct' : ''}" onclick="revealPrefix('${rootWord}', '${fullWord}', this)">
-        ${isSolved ? fullWord : rootWord + ' ➔ ???'}
-      </span>`;
-    }
-
     function switchTextbookPart(partNum) {
+      audioFX.playPageFlip();
+      lastSlideDirection = partNum >= activeTextbookPart ? 'next' : 'prev';
       activeTextbookPart = partNum;
       renderTextbookModule();
     }
@@ -1717,20 +1901,22 @@
       }
     }
 
-    function revealPrefix(rootWord, fullWord, chip) {
-      audioFX.playSnap();
-      textbookStore.p3_prefixes[rootWord] = true;
-      chip.textContent = fullWord;
-      chip.classList.add('selected-correct');
-      speakText(fullWord);
+    function selectPrefixOption(rootWord, chosenPrefix, correctPrefix, fullWord) {
+      if (chosenPrefix === correctPrefix) {
+        audioFX.playBell();
+        textbookStore.p3_prefixes[rootWord] = true;
+        speakText(fullWord);
+        renderTextbookModule();
+      } else {
+        audioFX.playSnap();
+        speakText("Try another prefix!");
+      }
     }
 
-    /* BUG 4 FIX: TRUE VALIDATION BEFORE ADVANCING/CELEBRATING */
     function gradeTextbookPart() {
       if (activeTextbookPart === 1) {
         const p1Answers = [textbookStore.p1[0], textbookStore.p1[1], textbookStore.p1[2]];
-        const isComplete = p1Answers.every(ans => ans === true);
-        if (!isComplete) {
+        if (!p1Answers.every(ans => ans === true)) {
           audioFX.playSnap();
           speakText("Please answer all 3 questions in Part 1 correctly!");
           return;
@@ -1739,8 +1925,7 @@
         switchTextbookPart(2);
       } else if (activeTextbookPart === 2) {
         const p2Answers = [textbookStore.p2[0], textbookStore.p2[1], textbookStore.p2[2], textbookStore.p2[3], textbookStore.p2[4]];
-        const isComplete = p2Answers.every(ans => ans === true);
-        if (!isComplete) {
+        if (!p2Answers.every(ans => ans === true)) {
           audioFX.playSnap();
           speakText("Please find all verb pairs in Part 2 correctly!");
           return;
@@ -1749,8 +1934,7 @@
         switchTextbookPart(3);
       } else {
         const swComplete = [textbookStore.p3_shall_will[0], textbookStore.p3_shall_will[1], textbookStore.p3_shall_will[2], textbookStore.p3_shall_will[3]].every(v => v === true);
-        const prefixRoots = ['clear', 'tidy', 'patient', 'correct', 'possible', 'obey', 'visible', 'sure'];
-        const prefComplete = prefixRoots.every(r => textbookStore.p3_prefixes[r] === true);
+        const prefComplete = PREFIX_TASKS.every(t => textbookStore.p3_prefixes[t.root] === true);
         if (!swComplete || !prefComplete) {
           audioFX.playSnap();
           speakText("Please finish all shall and will blanks and prefix matches in Part 3!");
