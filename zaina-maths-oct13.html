@@ -271,6 +271,34 @@ header {
   align-items: center;
   gap: 8px;
 }
+
+/* ICON-ONLY FLOATING PILLS FOR HUB, DIM, & ROUGH PAD */
+.icon-pill-btn {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  color: #FFFFFF;
+  font-size: 1.1rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  text-decoration: none;
+  transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.icon-pill-btn:hover { transform: scale(1.08); background: rgba(30, 41, 59, 0.95); }
+.icon-pill-btn:active { transform: scale(0.94); }
+.icon-pill-btn.rough-icon {
+  background: #FEF3C7;
+  border-color: #FCD34D;
+  color: #92400E;
+}
+
 .head-btn {
   background: rgba(255, 255, 255, 0.94);
   border: 2px solid #CBD5E1;
@@ -289,11 +317,6 @@ header {
   transition: all 0.15s;
 }
 .head-btn:active { transform: translateY(2px); box-shadow: none; }
-.head-btn.rough-btn {
-  background: #FEF3C7;
-  border-color: #FCD34D;
-  color: #92400E;
-}
 
 .views-container {
   flex: 1;
@@ -713,22 +736,23 @@ header {
   position: relative;
   z-index: 10;
 }
+/* ICON-ONLY CHECK & FINISH QUEST BUTTON */
 .quest-finish-btn {
   background: linear-gradient(135deg, #10B981, #059669);
   color: #FFF;
   font-family: var(--font-display);
-  font-size: 1.05rem;
-  font-weight: 800;
-  padding: 10px 24px;
+  font-size: 1.25rem;
+  width: 44px;
+  height: 44px;
   border: none;
-  border-radius: 14px;
+  border-radius: 50%;
   cursor: pointer;
   box-shadow: 0 4px 14px rgba(16, 185, 129, 0.45);
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
 }
-.quest-finish-btn:active { transform: scale(0.96); }
+.quest-finish-btn:active { transform: scale(0.94); }
 
 /* FLOATING ROUGH PAD */
 .floating-rough-pad {
@@ -783,8 +807,8 @@ header {
 }
 
 .notepad-header-controls {
-  background: #251D18;
-  border-bottom: 2px solid #5A3C22;
+  background: #FEF3C7;
+  border-bottom: 2px solid #FDE68A;
   padding: 6px 10px;
   display: flex;
   align-items: center;
@@ -812,15 +836,15 @@ header {
   transition: all 0.15s ease;
 }
 .btn-icon-tool.active {
-  background: rgba(255, 119, 0, 0.25);
-  box-shadow: 0 0 8px rgba(255, 119, 0, 0.7);
+  background: rgba(245, 158, 11, 0.35);
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.7);
   transform: scale(1.1);
 }
 
 .palm-mode-btn {
-  background: #3A2312;
-  border: 1.5px solid #D35400;
-  color: #F1C40F;
+  background: #FDE68A;
+  border: 1.5px solid #D97706;
+  color: #92400E;
   padding: 4px 8px;
   border-radius: 8px;
   font-size: 11px;
@@ -831,8 +855,8 @@ header {
   gap: 4px;
 }
 .palm-mode-btn.active {
-  background: #27AE60;
-  border-color: #2ECC71;
+  background: #10B981;
+  border-color: #059669;
   color: #FFF;
 }
 
@@ -931,16 +955,15 @@ header {
 <div class="app-wrapper">
   <header>
     <div class="brand-group">
-      <a href="index.html" class="head-btn" title="Exit to Master Hub">🏰 Hub</a>
+      <a href="index.html" class="icon-pill-btn" title="Exit to Hub">🏰</a>
       <div class="brand-title">
         ✨ Zaina's Magical Maths <span class="badge-ch">Grade 5 • Ex 5.2</span>
       </div>
     </div>
 
     <div class="header-tools">
-      <button class="head-btn" id="dimToggleBtn" onclick="toggleScreenDim()">💡 Dim</button>
-      <button class="head-btn rough-btn" onclick="toggleRoughPad()">📝 Rough Pad</button>
-      <button class="head-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+      <button class="icon-pill-btn" id="dimToggleBtn" onclick="toggleScreenDim()" title="Dim">💡</button>
+      <button class="icon-pill-btn rough-icon" onclick="toggleRoughPad()" title="Rough Pad">📝</button>
     </div>
   </header>
 
@@ -971,8 +994,8 @@ header {
 
       <div class="quest-finish-bar">
         <span style="font-size:0.9rem; font-weight:800; color:#FDF2F8;" id="modeStatusText">🦄 Interactive Quest</span>
-        <button class="quest-finish-btn" onclick="completeCurrentExerciseQuest()">
-          <span>🌟</span> Check &amp; Finish Quest!
+        <button class="quest-finish-btn" onclick="completeCurrentExerciseQuest()" title="Check & Finish Quest">
+          <span>🌟</span>
         </button>
       </div>
     </section>
@@ -1418,7 +1441,7 @@ function closeGrandCelebration() {
   cycleExerciseSection();
 }
 
-/* MATH CHECKING ENGINE */
+/* MATH CHECKING ENGINE & DEFERRED DRAFT TRACKING */
 function checkMathAnswersMatch(entered, targetAllowedStr, formatRule = "any") {
   if (!entered || !targetAllowedStr) return false;
   const cleanEntered = entered.trim().toLowerCase().replace(/\s+/g, ' ');
@@ -1464,57 +1487,14 @@ function storageKeyForId(itemId) {
   return `v5_zaina_maths::${itemId}`;
 }
 
-function handleDirectInput(inputEl) {
+function handleDraftInput(inputEl) {
   const id = inputEl.getAttribute('data-id');
   const val = inputEl.value;
   if (id) {
     localStorage.setItem(storageKeyForId(id), val);
   }
-
-  const parentSlot = inputEl.closest('.bracket-frac-slot');
-  if (parentSlot) {
-    validateCompositeSlot(parentSlot);
-    return;
-  }
-
-  const correct = inputEl.getAttribute('data-correct');
-  const formatRule = inputEl.getAttribute('data-format') || "any";
-
-  if (val.trim() && correct && checkMathAnswersMatch(val, correct, formatRule)) {
-    inputEl.classList.add('graded-correct');
-    inputEl.classList.remove('graded-wrong');
-  } else {
-    inputEl.classList.remove('graded-correct');
-  }
-}
-
-function validateCompositeSlot(slotEl) {
-  const wholeInp = slotEl.querySelector('.inline-whole');
-  const numInp = slotEl.querySelector('.frac-num');
-  const denInp = slotEl.querySelector('.frac-den');
-
-  const wholeVal = wholeInp ? wholeInp.value.trim() : "";
-  const numVal = numInp ? numInp.value.trim() : "";
-  const denVal = denInp ? denInp.value.trim() : "";
-
-  let combined = "";
-  if (wholeVal && numVal && denVal) {
-    combined = `${wholeVal} ${numVal}/${denVal}`;
-  } else if (numVal && denVal) {
-    combined = `${numVal}/${denVal}`;
-  } else if (wholeVal && !numVal && !denVal) {
-    combined = wholeVal;
-  }
-
-  const correct = slotEl.getAttribute('data-correct') || "";
-  const formatRule = slotEl.getAttribute('data-format') || "any";
-  const inputs = slotEl.querySelectorAll('.pony-input-blank');
-
-  if (combined && correct && checkMathAnswersMatch(combined, correct, formatRule)) {
-    inputs.forEach(i => { i.classList.add('graded-correct'); i.classList.remove('graded-wrong'); });
-  } else {
-    inputs.forEach(i => { i.classList.remove('graded-correct'); });
-  }
+  // Clear any instant grading while typing freely
+  inputEl.classList.remove('graded-correct', 'graded-wrong');
 }
 
 function completeCurrentExerciseQuest() {
@@ -1591,7 +1571,7 @@ function toggleScreenDim() {
   const btn = document.getElementById("dimToggleBtn");
   const isDim = overlay.style.display === "block";
   overlay.style.display = isDim ? "none" : "block";
-  btn.textContent = isDim ? "💡 Dim" : "☀️ Bright";
+  btn.textContent = isDim ? "💡" : "☀️";
 }
 
 function stackedFractionSlotHtml(idBase, correctVal, formatRule = "any", withWhole = false) {
@@ -1601,12 +1581,12 @@ function stackedFractionSlotHtml(idBase, correctVal, formatRule = "any", withWho
 
   return `
     <span class="bracket-frac-slot" data-id="${idBase}" data-correct="${correctVal}" data-format="${formatRule}">
-      ${withWhole ? `<input type="text" inputmode="text" class="pony-input-blank inline-whole" id="input_${idBase}_w" data-id="${idBase}_w" value="${savedWhole}" placeholder="W" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="handleDirectInput(this)">` : ''}
+      ${withWhole ? `<input type="text" inputmode="text" class="pony-input-blank inline-whole" id="input_${idBase}_w" data-id="${idBase}_w" value="${savedWhole}" placeholder="W" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="handleDraftInput(this)">` : ''}
       <span class="bracket-bracket">[</span>
       <span class="stacked-inputs-column">
-        <input type="text" inputmode="text" class="pony-input-blank frac-num" id="input_${idBase}_n" data-id="${idBase}_n" value="${savedNum}" placeholder="Num" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="handleDirectInput(this)">
+        <input type="text" inputmode="text" class="pony-input-blank frac-num" id="input_${idBase}_n" data-id="${idBase}_n" value="${savedNum}" placeholder="Num" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="handleDraftInput(this)">
         <span class="stacked-bar-divider"></span>
-        <input type="text" inputmode="text" class="pony-input-blank frac-den" id="input_${idBase}_d" data-id="${idBase}_d" value="${savedDen}" placeholder="Den" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="handleDirectInput(this)">
+        <input type="text" inputmode="text" class="pony-input-blank frac-den" id="input_${idBase}_d" data-id="${idBase}_d" value="${savedDen}" placeholder="Den" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="handleDraftInput(this)">
       </span>
       <span class="bracket-bracket">]</span>
     </span>
@@ -1628,7 +1608,7 @@ function inputBlankHtml(id, correctVal, formatRule = "any") {
                 autocorrect="off"
                 autocapitalize="off"
                 spellcheck="false"
-                oninput="handleDirectInput(this)"/>`;
+                oninput="handleDraftInput(this)"/>`;
 }
 
 function frac(n, d) {
@@ -1859,7 +1839,7 @@ function cycleExerciseSection() {
   switchSection(nextIdx);
 }
 
-/* ROUGH PAD ENGINE */
+/* ROUGH PAD ENGINE WITH DYNAMIC RESIZEOBSERVER */
 let roughCanvas = null;
 let roughCtx = null;
 let roughIsDrawing = false;
@@ -1867,6 +1847,7 @@ let roughCurrentTool = 'pen';
 let roughActiveColor = '#1E272E';
 let isPenOnlyMode = false;
 let roughUndoStack = [];
+let resizeObserver = null;
 
 function roughStorageKey() {
   return "v6_zaina_maths_rough_pad_canvas";
@@ -1890,42 +1871,60 @@ function initRoughCanvas() {
   roughCtx = roughCanvas.getContext("2d", { alpha: true });
 
   const viewport = document.getElementById("roughCanvasViewport");
-  const r = viewport.getBoundingClientRect();
-  if (r.width <= 0 || r.height <= 0) return;
-  const dpr = window.devicePixelRatio || 1;
+  syncCanvasToViewport(viewport);
 
-  let temp = document.createElement("canvas");
-  temp.width = roughCanvas.width;
-  temp.height = roughCanvas.height;
-  let tCtx = temp.getContext("2d");
-  if (roughCanvas.width > 0 && roughCanvas.height > 0) {
-    tCtx.drawImage(roughCanvas, 0, 0);
-  }
-
-  roughCanvas.width = Math.floor(r.width * dpr);
-  roughCanvas.height = Math.floor(r.height * dpr);
-  roughCanvas.style.width = r.width + "px";
-  roughCanvas.style.height = r.height + "px";
-  roughCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-  if (temp.width > 0 && temp.height > 0) {
-    roughCtx.drawImage(temp, 0, 0, r.width, r.height);
-  } else {
-    loadRoughCanvas();
+  if (!resizeObserver && window.ResizeObserver) {
+    resizeObserver = new ResizeObserver(() => {
+      syncCanvasToViewport(viewport);
+    });
+    resizeObserver.observe(viewport);
   }
 
   setupRoughPointerEvents();
 }
 
+function syncCanvasToViewport(viewport) {
+  if (!roughCanvas || !roughCtx) return;
+  const rect = viewport.getBoundingClientRect();
+  if (rect.width <= 0 || rect.height <= 0) return;
+
+  const dpr = window.devicePixelRatio || 1;
+  const newWidth = Math.floor(rect.width * dpr);
+  const newHeight = Math.floor(rect.height * dpr);
+
+  if (roughCanvas.width === newWidth && roughCanvas.height === newHeight) return;
+
+  let tempBuffer = null;
+  if (roughCanvas.width > 0 && roughCanvas.height > 0) {
+    tempBuffer = document.createElement("canvas");
+    tempBuffer.width = roughCanvas.width;
+    tempBuffer.height = roughCanvas.height;
+    const tempCtx = tempBuffer.getContext("2d");
+    tempCtx.drawImage(roughCanvas, 0, 0);
+  }
+
+  roughCanvas.width = newWidth;
+  roughCanvas.height = newHeight;
+  roughCanvas.style.width = rect.width + "px";
+  roughCanvas.style.height = rect.height + "px";
+  roughCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  if (tempBuffer) {
+    roughCtx.drawImage(tempBuffer, 0, 0, tempBuffer.width / dpr, tempBuffer.height / dpr);
+  } else {
+    loadRoughCanvas();
+  }
+}
+
 function saveRoughCanvas() {
   if (!roughCanvas || roughCanvas.width <= 0) return;
   try {
-    localStorage.setItem(roughStorageKey(), roughCanvas.toDataURL());
+    localStorage.setItem(storageKeyForId("rough_canvas_data"), roughCanvas.toDataURL());
   } catch (e) {}
 }
 
 function loadRoughCanvas() {
-  const saved = localStorage.getItem(roughStorageKey());
+  const saved = localStorage.getItem(storageKeyForId("rough_canvas_data"));
   if (saved) {
     const img = new Image();
     img.onload = () => {
@@ -2101,26 +2100,8 @@ function setupRoughPointerEvents() {
   handle.addEventListener("pointercancel", stopDrag);
 })();
 
-function toggleFullscreen() {
-  if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-    const el = document.documentElement;
-    if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
-    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-  } else {
-    if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
-    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-  }
-}
-
 window.addEventListener("load", () => {
   switchSection(0, false);
-});
-window.addEventListener("resize", () => {
-  const pad = document.getElementById("floatingRoughPad");
-  if (pad && pad.style.display === "flex") {
-    saveRoughCanvas();
-    setTimeout(initRoughCanvas, 100);
-  }
 });
 window.addEventListener("beforeunload", saveRoughCanvas);
 window.addEventListener("pagehide", saveRoughCanvas);
