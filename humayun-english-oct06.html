@@ -139,7 +139,6 @@
       z-index: 10;
     }
 
-    /* DYNAMIC AMBIENT LIGHTING VEIL */
     .scenic-ambient-dimmer {
       position: absolute;
       inset: 0;
@@ -153,7 +152,6 @@
       background: rgba(12, 6, 3, 0.72);
     }
 
-    /* LIVING AMBIENT PARTICLES */
     .ambient-sparkle {
       position: absolute;
       pointer-events: none;
@@ -286,10 +284,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 0 130px 0 80px;
+      padding: 0 140px 0 80px;
       filter: drop-shadow(0 5px 12px rgba(0, 0, 0, 0.4));
       flex-shrink: 0;
       position: relative;
+      overflow: visible !important;
+      margin-top: 14px;
     }
     .banner-text-heading {
       font-family: var(--font-story);
@@ -302,10 +302,10 @@
     }
 
     .freely-floating-max-btn {
-      width: 160px;
-      height: 160px;
+      width: 140px;
+      height: 140px;
       position: absolute;
-      right: -20px;
+      right: 12px;
       top: 50%;
       transform: translateY(-50%);
       background: transparent;
@@ -315,13 +315,18 @@
       align-items: center;
       justify-content: center;
       transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
-      filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.45));
-      z-index: 30;
+      z-index: 40;
+      overflow: visible;
     }
     .freely-floating-max-btn:active { transform: translateY(-50%) scale(0.92); }
-    .max-sprite-img { width: 100%; height: 100%; object-fit: contain; }
+    .max-sprite-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.45));
+    }
 
-    /* WORKSPACE BODY: OPTION B FLOATING PARCHMENT SLATE */
+    /* WORKSPACE BODY */
     .work-body-frame {
       flex: 1;
       display: flex;
@@ -353,7 +358,7 @@
       50% { transform: translateY(-6px); }
     }
 
-    /* RIGHT SIDE: FLOATING ILLUMINATED MANUSCRIPT SLATE */
+    /* RIGHT SIDE: FLOATING PARCHMENT SLATE */
     .floating-parchment-slate {
       flex: 1;
       background: rgba(255, 253, 246, 0.95);
@@ -368,7 +373,6 @@
       min-width: 0;
     }
 
-    /* QUESTION / PROMPT HEADER ON PARCHMENT */
     .slate-prompt-header {
       display: flex;
       align-items: center;
@@ -384,7 +388,6 @@
       color: #92400E;
     }
 
-    /* ANSWER WORDS STREAM WITH TAP-AND-HOLD DISSECTOR */
     .answer-stream-box {
       font-size: 1.15rem;
       font-weight: 800;
@@ -429,7 +432,7 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
 
-    /* FIXED-HEIGHT 4-LINE DUAL MARGIN CANVAS NOTEBOOK SLATE */
+    /* 4-LINE DUAL MARGIN CANVAS NOTEBOOK SLATE */
     .canvas-notebook-container {
       flex: 1;
       display: flex;
@@ -598,14 +601,20 @@
       border-radius: 10px;
       cursor: pointer;
       font-family: var(--font-story);
+      transition: all 0.15s ease;
     }
     .option-chip.selected-correct {
       background: #DCFCE7;
       border-color: #16A34A;
       color: #15803D;
     }
+    .option-chip.selected-wrong {
+      background: #FEE2E2;
+      border-color: #DC2626;
+      color: #991B1B;
+    }
 
-    /* PARENT AUDIT DRAWER (WRITE MODE ONLY) */
+    /* PARENT AUDIT DRAWER */
     #parentAuditDrawer {
       position: fixed;
       inset: 0;
@@ -765,9 +774,7 @@
           <button type="button" class="icon-btn" onclick="stepItem(1)" title="Next">▶</button>
         </div>
 
-        <div class="hud-group" id="parentReviewArea">
-          <!-- Only injected in Write Mode -->
-        </div>
+        <div class="hud-group" id="parentReviewArea"></div>
       </div>
     </section>
   </main>
@@ -856,8 +863,8 @@
       playPageFlip() {
         this.init();
         const t0 = this.ctx.currentTime;
-        // White noise burst shaped like a paper flutter
-        const bufferSize = this.ctx.sampleRate * 0.18;
+        // Accurate unsigned integer buffer size
+        const bufferSize = Math.floor(this.ctx.sampleRate * 0.18);
         const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
         const data = buffer.getChannelData(0);
         for (let i = 0; i < bufferSize; i++) {
@@ -929,7 +936,7 @@
       img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><circle cx='70' cy='70' r='65' fill='%23FEF3C7' stroke='%23D97706' stroke-width='4'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='50'>📚</text></svg>";
     }
 
-    /* MASTER CLASSWORK & TEXTBOOK DATASETS */
+    /* COMPLETE SYLLABLE LOOKUP DICTIONARY */
     const SYLLABLE_DICT = {
       "feeling": ["feel", "ing"], "worried": ["wor", "ried"], "facts": ["facts"], "subjects": ["sub", "jects"],
       "arrange": ["ar", "range"], "other": ["oth", "er"], "overbalance": ["o", "ver", "bal", "ance"],
@@ -947,79 +954,87 @@
       "fairies": ["fair", "ies"], "elephants": ["el", "e", "phants"], "monkeys": ["mon", "keys"],
       "rabbits": ["rab", "bits"], "enjoying": ["en", "joy", "ing"], "stories": ["sto", "ries"],
       "started": ["start", "ed"], "animals": ["an", "i", "mals"], "confused": ["con", "fused"],
-      "scared": ["scared"], "belonged": ["be", "longed"]
+      "scared": ["scared"], "belonged": ["be", "longed"], "wanted": ["want", "ed"],
+      "always": ["al", "ways"], "began": ["be", "gan"], "inside": ["in", "side"], "single": ["sin", "gle"]
     };
 
+    /* DATASETS WITH IMMUTABLE IDS */
     const MEANINGS_DATA = [
-      { q: "nervous", a: "feeling worried", sprite: "assets/troll.webp" },
-      { q: "encyclopaedia", a: "a book with facts on many subjects", sprite: "assets/rabbit.webp" },
-      { q: "stack", a: "arrange one on top of the other", sprite: "assets/knight.webp" },
-      { q: "topple", a: "overbalance and fall", sprite: "assets/fairy.webp" },
-      { q: "scatter", a: "to throw things all over", sprite: "assets/troll.webp" },
-      { q: "troll", a: "an ugly giant", sprite: "assets/troll.webp" },
-      { q: "nibble", a: "a small quick bite", sprite: "assets/rabbit.webp" },
-      { q: "wriggle", a: "twist and turn with quick movement", sprite: "assets/fairy.webp" }
+      { id: "mean_1", q: "nervous", a: "feeling worried", sprite: "assets/troll.webp" },
+      { id: "mean_2", q: "encyclopaedia", a: "a book with facts on many subjects", sprite: "assets/rabbit.webp" },
+      { id: "mean_3", q: "stack", a: "arrange one on top of the other", sprite: "assets/knight.webp" },
+      { id: "mean_4", q: "topple", a: "overbalance and fall", sprite: "assets/fairy.webp" },
+      { id: "mean_5", q: "scatter", a: "to throw things all over", sprite: "assets/troll.webp" },
+      { id: "mean_6", q: "troll", a: "an ugly giant", sprite: "assets/troll.webp" },
+      { id: "mean_7", q: "nibble", a: "a small quick bite", sprite: "assets/rabbit.webp" },
+      { id: "mean_8", q: "wriggle", a: "twist and turn with quick movement", sprite: "assets/fairy.webp" }
     ];
 
     const OPPOSITES_DATA = [
-      { q: "top", a: "bottom", sprite: "assets/knight.webp" },
-      { q: "up", a: "down", sprite: "assets/rabbit.webp" },
-      { q: "found", a: "lost", sprite: "assets/troll.webp" },
-      { q: "begin", a: "end", sprite: "assets/fairy.webp" },
-      { q: "loud", a: "quiet", sprite: "assets/troll.webp" },
-      { q: "hard", a: "soft", sprite: "assets/rabbit.webp" },
-      { q: "under", a: "over", sprite: "assets/knight.webp" }
+      { id: "opp_1", q: "top", a: "bottom", sprite: "assets/knight.webp" },
+      { id: "opp_2", q: "up", a: "down", sprite: "assets/rabbit.webp" },
+      { id: "opp_3", q: "found", a: "lost", sprite: "assets/troll.webp" },
+      { id: "opp_4", q: "begin", a: "end", sprite: "assets/fairy.webp" },
+      { id: "opp_5", q: "loud", a: "quiet", sprite: "assets/troll.webp" },
+      { id: "opp_6", q: "hard", a: "soft", sprite: "assets/rabbit.webp" },
+      { id: "opp_7", q: "under", a: "over", sprite: "assets/knight.webp" }
     ];
 
     const SENTENCES_DATA = [
-      { q: "rescue", a: "The fireman came to rescue the kitten from the tree.", sprite: "assets/knight.webp" },
-      { q: "grab", a: "The monkey tried to grab the banana from my hand.", sprite: "assets/rabbit.webp" },
-      { q: "strange", a: "The dog made a strange noise at night.", sprite: "assets/troll.webp" },
-      { q: "anxious", a: "I felt anxious before my test results.", sprite: "assets/fairy.webp" }
+      { id: "sent_1", q: "rescue", a: "The fireman came to rescue the kitten from the tree.", sprite: "assets/knight.webp" },
+      { id: "sent_2", q: "grab", a: "The monkey tried to grab the banana from my hand.", sprite: "assets/rabbit.webp" },
+      { id: "sent_3", q: "strange", a: "The dog made a strange noise at night.", sprite: "assets/troll.webp" },
+      { id: "sent_4", q: "anxious", a: "I felt anxious before my test results.", sprite: "assets/fairy.webp" }
     ];
 
     const QA_DATA = [
       {
+        id: "qa_1",
         q: "Why was Meena annoyed at the sight of books?",
         a: "Meena was annoyed because there were books everywhere in her house. Her parents were always reading and buying more books.",
         sprite: "assets/meena-character.webp"
       },
       {
+        id: "qa_2",
         q: "Where were books kept in her house?",
         a: "Books were kept in drawers, cupboards, chests, on desks, the sofa, on the stairs, in the fireplace and stacked on chairs.",
         sprite: "assets/rabbit.webp"
       },
       {
+        id: "qa_3",
         q: "What did Meena do to rescue Max?",
         a: "Meena climbed the tall stack of books to rescue Max who was stuck on top.",
         sprite: "assets/knight.webp"
       },
       {
+        id: "qa_4",
         q: "What began to happen when the books fell down?",
         a: "When the books fell down all the characters from the book came out - princes, princesses, fairies, elephants, monkeys, rabbits and many more.",
         sprite: "assets/fairy.webp"
       },
       {
+        id: "qa_5",
         q: "What made Meena read the books and how did it help her? (30-50 words)",
         a: "All the characters from the books came out and made noise in her room. To make them go back, she had to read the books. Meena started enjoying the stories and she began to love reading stories every single day.",
         sprite: "assets/meena-character.webp"
       },
       {
+        id: "qa_6",
         q: "How did the animals feel when they were out of their books? (30-50 words)",
         a: "When the animals were out of their books, they felt confused and scared. They did not know where they belonged and wanted to go back to their own stories because they felt safe inside their books.",
         sprite: "assets/rabbit.webp"
       }
     ];
 
-    /* APP CONTROLLER STATE */
-    let currentMode = 'practice'; // 'practice' or 'write'
+    /* CONTROLLER STATE */
+    let currentMode = 'practice';
     let activeSection = null;
     let activeDeck = [];
     let currentItemIdx = 0;
     let activePageNum = 1;
     let strokeUndoStack = {};
     let currentDrawingTool = 'pen';
-    let writeModeAuditStatus = {};
+    let writeModeAuditStatus = {}; // itemId -> boolean
     let activeTextbookPart = 1;
 
     function setAppMode(mode) {
@@ -1052,12 +1067,11 @@
       document.getElementById('masterStageContainer').classList.add('stage-darkened');
       document.getElementById('slideDeckStage').classList.add('active-slide');
 
-      // Populate Deck
       if (secKey === 'meanings') activeDeck = [...MEANINGS_DATA];
       else if (secKey === 'opposites') activeDeck = [...OPPOSITES_DATA];
       else if (secKey === 'sentences') activeDeck = [...SENTENCES_DATA];
       else if (secKey === 'questions') activeDeck = [...QA_DATA];
-      else if (secKey === 'textbook') activeDeck = ['textbook_full'];
+      else if (secKey === 'textbook') activeDeck = ['tb_1', 'tb_2', 'tb_3'];
 
       if (currentMode === 'write' && secKey !== 'textbook') {
         activeDeck.sort(() => Math.random() - 0.5);
@@ -1095,7 +1109,7 @@
         parentArea.innerHTML = '';
       }
 
-      // Left Column: Tall Character Sprite (Option B)
+      // Left Column: Tall Character Sprite
       const leftCol = document.createElement('div');
       leftCol.className = 'stage-character-col';
       leftCol.innerHTML = `
@@ -1103,7 +1117,7 @@
       `;
       viewport.appendChild(leftCol);
 
-      // Right Column: Floating Illuminated Manuscript Parchment Slate
+      // Right Column: Floating Parchment Slate
       const rightSlate = document.createElement('div');
       rightSlate.className = 'floating-parchment-slate';
 
@@ -1116,37 +1130,38 @@
       `;
       rightSlate.appendChild(slateHeader);
 
-      // Answer stream with Any-Word Syllable Chips (Practice Mode Only)
+      // Answer stream with Punctuation-Safe Syllable Chips
       if (currentMode === 'practice') {
         const words = item.a.split(' ');
         const wrappedWords = words.map((w, idx) => {
           const clean = w.toLowerCase().replace(/[^a-z]/g, '');
           const syllables = SYLLABLE_DICT[clean];
           const hasSyllables = syllables && syllables.length > 1;
-          const wordId = `word_chip_${currentItemIdx}_${idx}`;
+          const wordId = `word_chip_${item.id}_${idx}`;
+          // Preserve raw token inside data-raw
           return `<span class="dissect-word-chip ${hasSyllables ? 'has-syllables' : ''}" id="${wordId}" 
-                        onpointerdown="handleWordPointerDown('${clean}', '${wordId}')" 
-                        onpointerup="handleWordPointerUp('${clean}', '${wordId}')" 
-                        ondblclick="toggleSyllableSplit('${clean}', '${wordId}')">${w}</span>`;
+                        data-raw="${w}"
+                        data-clean="${clean}"
+                        onpointerdown="handleWordPointerDown('${wordId}')" 
+                        onpointerup="handleWordPointerUp('${wordId}')" 
+                        ondblclick="toggleSyllableSplit('${wordId}')">${w}</span>`;
         });
         const ansBox = document.createElement('div');
         ansBox.className = 'answer-stream-box';
         ansBox.innerHTML = wrappedWords.join(' ');
         rightSlate.appendChild(ansBox);
       } else {
-        // Write Mode: No robotic jargon; clean prompt line
         const writeLine = document.createElement('div');
         writeLine.className = 'answer-stream-box';
-        writeLine.innerHTML = `<span style="color:#92400E; font-size:1.15rem;">✍️ Write your answer from memory on the notebook page:</span>`;
+        writeLine.innerHTML = `<span style="color:#92400E; font-size:1.15rem;">✍️ Write your answer on the notebook:</span>`;
         rightSlate.appendChild(writeLine);
       }
 
-      // Fixed-Height Canvas Unit with Red Double Margin
+      // Canvas Unit (Keyed to Immutable item.id)
       const canvasContainer = document.createElement('div');
       canvasContainer.className = 'canvas-notebook-container';
 
-      // Physical Mode-Embedded Canvas ID (ZERO DUPLICATION)
-      const canvasStorageId = `slate_${currentMode}_${activeSection}_${currentItemIdx}_p${activePageNum}`;
+      const canvasStorageId = `slate_${currentMode}_${item.id}_p${activePageNum}`;
 
       canvasContainer.innerHTML = `
         <div class="canvas-tools-strip">
@@ -1175,26 +1190,26 @@
 
     /* ANY-WORD TAP-AND-HOLD / DOUBLE-TAP SYLLABLE DISSECTOR */
     let wordPressTimer = null;
-    let wordLongPressed = false;
 
-    function handleWordPointerDown(cleanWord, elemId) {
+    function handleWordPointerDown(elemId) {
       if (currentMode !== 'practice') return;
-      wordLongPressed = false;
       wordPressTimer = setTimeout(() => {
-        wordLongPressed = true;
-        toggleSyllableSplit(cleanWord, elemId);
+        toggleSyllableSplit(elemId);
       }, 400);
     }
 
-    function handleWordPointerUp(cleanWord, elemId) {
+    function handleWordPointerUp(elemId) {
       if (wordPressTimer) clearTimeout(wordPressTimer);
     }
 
-    function toggleSyllableSplit(cleanWord, elemId) {
+    function toggleSyllableSplit(elemId) {
       const el = document.getElementById(elemId);
       if (!el) return;
 
+      const cleanWord = el.getAttribute('data-clean');
+      const rawWord = el.getAttribute('data-raw');
       const syllables = SYLLABLE_DICT[cleanWord];
+
       if (!syllables || syllables.length <= 1) {
         audioFX.playSnap();
         speakText(cleanWord);
@@ -1202,9 +1217,10 @@
       }
 
       if (el.classList.contains('split-active')) {
+        // Restores exact raw word with intact punctuation & case
         audioFX.playSnap();
         el.classList.remove('split-active');
-        el.innerHTML = cleanWord;
+        el.innerHTML = rawWord;
       } else {
         audioFX.playSnap();
         el.classList.add('split-active');
@@ -1234,12 +1250,16 @@
 
     function stepItem(dir) {
       saveAllCanvases();
+      if (activeSection === 'textbook') {
+        activeTextbookPart = ((activeTextbookPart - 1 + dir + 3) % 3) + 1;
+        renderTextbookModule();
+        return;
+      }
       activePageNum = 1;
       currentItemIdx = (currentItemIdx + dir + activeDeck.length) % activeDeck.length;
       renderCurrentDeckItem();
     }
 
-    /* OPTION A: PAGE FLIP WITH PROCEDURAL PAPER SOUND */
     function flipCanvasPage() {
       saveAllCanvases();
       audioFX.playPageFlip();
@@ -1247,7 +1267,7 @@
       renderCurrentDeckItem();
     }
 
-    /* RETINA INK ENGINE (ZERO DUPLICATION) */
+    /* RETINA INK ENGINE (STABLE KEYING) */
     const inkMemoryCache = {};
     const hasDrawnRegistry = {};
 
@@ -1406,26 +1426,32 @@
       }
     }
 
-    function clearSlateCanvas(id) {
-      const c = document.querySelector(`[data-canvas-id="${id}"]`);
+    /* PURGES MEMORY & LOCALSTORAGE FOR BOTH MOUNTED AND UNMOUNTED PAGES */
+    function purgeStoredCanvas(canvasId) {
+      const key = getStorageKey(canvasId);
+      delete inkMemoryCache[key];
+      delete hasDrawnRegistry[canvasId];
+      delete strokeUndoStack[canvasId];
+      localStorage.removeItem(key);
+
+      const c = document.querySelector(`[data-canvas-id="${canvasId}"]`);
       if (c) {
-        audioFX.playSnap();
         const ctx = c.getContext("2d");
         const dpr = window.devicePixelRatio || 1;
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.clearRect(0, 0, c.width / dpr, c.height / dpr);
-        const key = getStorageKey(id);
-        delete inkMemoryCache[key];
-        hasDrawnRegistry[id] = false;
-        strokeUndoStack[id] = [];
-        localStorage.removeItem(key);
       }
+    }
+
+    function clearSlateCanvas(id) {
+      audioFX.playSnap();
+      purgeStoredCanvas(id);
     }
 
     /* PARENT AUDIT & RETRY LOOP (WRITE MODE ONLY) */
     function openParentAudit() {
       const item = activeDeck[currentItemIdx];
-      const canvasId = `slate_${currentMode}_${activeSection}_${currentItemIdx}_p${activePageNum}`;
+      const canvasId = `slate_${currentMode}_${item.id}_p${activePageNum}`;
 
       if (!hasDrawnRegistry[canvasId]) {
         speakText("Please write your answer on the notebook first!");
@@ -1439,29 +1465,30 @@
 
     function markParentAudit(isCorrect) {
       document.getElementById('parentAuditDrawer').style.display = 'none';
-      writeModeAuditStatus[currentItemIdx] = isCorrect;
+      const item = activeDeck[currentItemIdx];
+      writeModeAuditStatus[item.id] = isCorrect;
 
       if (isCorrect) {
         audioFX.playBell();
-        const allAnswered = activeDeck.every((_, idx) => writeModeAuditStatus[idx] === true);
+        const allAnswered = activeDeck.every(it => writeModeAuditStatus[it.id] === true);
         if (allAnswered) {
           triggerGrandCelebration();
         } else {
           stepItem(1);
         }
       } else {
-        // Direct feedback without generic praise
+        // Direct non-praise retry loop: purge Page 1 & Page 2 safely
         audioFX.playSnap();
         speakText(`Spelling error on Question ${currentItemIdx + 1}! Practice this question again.`);
-        clearSlateCanvas(`slate_${currentMode}_${activeSection}_${currentItemIdx}_p1`);
-        clearSlateCanvas(`slate_${currentMode}_${activeSection}_${currentItemIdx}_p2`);
+        purgeStoredCanvas(`slate_${currentMode}_${item.id}_p1`);
+        purgeStoredCanvas(`slate_${currentMode}_${item.id}_p2`);
         renderCurrentDeckItem();
       }
     }
 
     /* TEXTBOOK 3-PART SPLIT MODULE WITH VERIFICATION */
     function renderTextbookModule() {
-      document.getElementById('bannerHeadingText').textContent = "Textbook Mastery (Single Mode)";
+      document.getElementById('bannerHeadingText').textContent = "Textbook Mastery";
       document.getElementById('deckPagination').textContent = `Part ${activeTextbookPart} / 3`;
       document.getElementById('parentReviewArea').innerHTML = `
         <button type="button" class="icon-btn" style="background:#DCFCE7; border-color:#16A34A;" onclick="gradeTextbookPart()">
@@ -1511,26 +1538,41 @@
         `;
       } else if (activeTextbookPart === 2) {
         content.innerHTML = `
-          <div style="font-family:var(--font-story); font-size:1.15rem; color:#92400E;">Tap the correct helping verb + main verb pair:</div>
+          <div style="font-family:var(--font-story); font-size:1.15rem; color:#92400E;">Choose the correct helping verb + main verb pair:</div>
           <div class="exercise-card-row">
             <span>1. The cat is climbing on the shelf.</span>
-            <span class="option-chip" onclick="selectTbChip(this, true)">is (helping) + climbing (main)</span>
+            <div style="display:flex; gap:6px;">
+              <span class="option-chip" onclick="selectTbChip(this, true)">is (helping) + climbing (main)</span>
+              <span class="option-chip" onclick="selectTbChip(this, false)">shelf (helping) + cat (main)</span>
+            </div>
           </div>
           <div class="exercise-card-row">
             <span>2. The rabbit is nibbling the legs of the table.</span>
-            <span class="option-chip" onclick="selectTbChip(this, true)">is (helping) + nibbling (main)</span>
+            <div style="display:flex; gap:6px;">
+              <span class="option-chip" onclick="selectTbChip(this, true)">is (helping) + nibbling (main)</span>
+              <span class="option-chip" onclick="selectTbChip(this, false)">table (helping) + legs (main)</span>
+            </div>
           </div>
           <div class="exercise-card-row">
             <span>3. The monkeys are tearing the curtains.</span>
-            <span class="option-chip" onclick="selectTbChip(this, true)">are (helping) + tearing (main)</span>
+            <div style="display:flex; gap:6px;">
+              <span class="option-chip" onclick="selectTbChip(this, true)">are (helping) + tearing (main)</span>
+              <span class="option-chip" onclick="selectTbChip(this, false)">curtains (helping) + are (main)</span>
+            </div>
           </div>
           <div class="exercise-card-row">
             <span>4. An aardvark is marching about.</span>
-            <span class="option-chip" onclick="selectTbChip(this, true)">is (helping) + marching (main)</span>
+            <div style="display:flex; gap:6px;">
+              <span class="option-chip" onclick="selectTbChip(this, true)">is (helping) + marching (main)</span>
+              <span class="option-chip" onclick="selectTbChip(this, false)">about (helping) + is (main)</span>
+            </div>
           </div>
           <div class="exercise-card-row">
             <span>5. Meena is enjoying her book.</span>
-            <span class="option-chip" onclick="selectTbChip(this, true)">is (helping) + enjoying (main)</span>
+            <div style="display:flex; gap:6px;">
+              <span class="option-chip" onclick="selectTbChip(this, true)">is (helping) + enjoying (main)</span>
+              <span class="option-chip" onclick="selectTbChip(this, false)">book (helping) + is (main)</span>
+            </div>
           </div>
         `;
       } else {
@@ -1564,16 +1606,19 @@
               <span class="option-chip" onclick="selectTbChip(this, false)">will</span>
             </div>
           </div>
-          <div style="font-family:var(--font-story); font-size:1.15rem; color:#92400E; margin-top:8px;">Prefix Opposites (un-, im-, dis-, in-):</div>
+
+          <div style="font-family:var(--font-story); font-size:1.15rem; color:#92400E; margin-top:8px;">
+            Prefix Opposites: Tap to reveal correct prefix (un-, im-, dis-, in-):
+          </div>
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <span class="option-chip selected-correct" onclick="speakText('unclear')">unclear</span>
-            <span class="option-chip selected-correct" onclick="speakText('untidy')">untidy</span>
-            <span class="option-chip selected-correct" onclick="speakText('impatient')">impatient</span>
-            <span class="option-chip selected-correct" onclick="speakText('incorrect')">incorrect</span>
-            <span class="option-chip selected-correct" onclick="speakText('impossible')">impossible</span>
-            <span class="option-chip selected-correct" onclick="speakText('disobey')">disobey</span>
-            <span class="option-chip selected-correct" onclick="speakText('invisible')">invisible</span>
-            <span class="option-chip selected-correct" onclick="speakText('unsure')">unsure</span>
+            <span class="option-chip" onclick="revealPrefix(this, 'unclear')">clear ➔ ???</span>
+            <span class="option-chip" onclick="revealPrefix(this, 'untidy')">tidy ➔ ???</span>
+            <span class="option-chip" onclick="revealPrefix(this, 'impatient')">patient ➔ ???</span>
+            <span class="option-chip" onclick="revealPrefix(this, 'incorrect')">correct ➔ ???</span>
+            <span class="option-chip" onclick="revealPrefix(this, 'impossible')">possible ➔ ???</span>
+            <span class="option-chip" onclick="revealPrefix(this, 'disobey')">obey ➔ ???</span>
+            <span class="option-chip" onclick="revealPrefix(this, 'invisible')">visible ➔ ???</span>
+            <span class="option-chip" onclick="revealPrefix(this, 'unsure')">sure ➔ ???</span>
           </div>
         `;
       }
@@ -1588,11 +1633,20 @@
       if (isCorrect) {
         audioFX.playBell();
         chip.classList.add('selected-correct');
+        chip.classList.remove('selected-wrong');
         speakText("Correct!");
       } else {
         audioFX.playSnap();
+        chip.classList.add('selected-wrong');
         speakText("Try again!");
       }
+    }
+
+    function revealPrefix(chip, correctWord) {
+      audioFX.playSnap();
+      chip.textContent = correctWord;
+      chip.classList.add('selected-correct');
+      speakText(correctWord);
     }
 
     function gradeTextbookPart() {
