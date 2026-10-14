@@ -334,6 +334,7 @@
       gap: 16px;
       min-height: 0;
       padding: 4px 0;
+      position: relative;
     }
 
     /* LEFT SIDE: TALL CHARACTER SPRITE */
@@ -371,6 +372,7 @@
       justify-content: space-between;
       gap: 8px;
       min-width: 0;
+      position: relative;
     }
 
     .slate-prompt-header {
@@ -408,6 +410,7 @@
       background: rgba(254, 243, 199, 0.6);
       border: 1px dashed rgba(217, 119, 6, 0.4);
       transition: all 0.16s ease;
+      touch-action: pan-y;
     }
     .dissect-word-chip:hover {
       background: #FEF08A;
@@ -539,6 +542,38 @@
       flex-shrink: 0;
     }
 
+    /* NON-BLOCKING TOP COMPARISON AUDIT CURTAIN (BUG 1 FIX) */
+    .nonblocking-audit-curtain {
+      position: absolute;
+      top: -240px;
+      left: 10px;
+      right: 10px;
+      background: #FFFDF9;
+      border: 3.5px solid var(--gold-primary);
+      border-radius: 18px;
+      padding: 12px 18px;
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.65);
+      z-index: 80;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .nonblocking-audit-curtain.curtain-dropped {
+      transform: translateY(246px);
+    }
+    .audit-key-banner {
+      background: #FEF3C7;
+      border: 2px solid var(--gold-primary);
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #78350F;
+      line-height: 1.4;
+      text-align: center;
+    }
+
     /* TEXTBOOK 3-PART SPLIT MODULE */
     .textbook-wrapper-desk {
       width: 100%;
@@ -612,41 +647,6 @@
       background: #FEE2E2;
       border-color: #DC2626;
       color: #991B1B;
-    }
-
-    /* PARENT AUDIT DRAWER */
-    #parentAuditDrawer {
-      position: fixed;
-      inset: 0;
-      z-index: 90000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      background: rgba(12, 6, 3, 0.72);
-      backdrop-filter: blur(5px);
-    }
-    .parent-audit-box {
-      background: #FFFDF9;
-      border: 3.5px solid var(--gold-primary);
-      border-radius: 24px;
-      padding: 22px;
-      width: 90%;
-      max-width: 640px;
-      box-shadow: 0 16px 45px rgba(0,0,0,0.5);
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      text-align: center;
-    }
-    .audit-key-display {
-      background: #FEF3C7;
-      border: 2px solid var(--gold-primary);
-      border-radius: 16px;
-      padding: 14px;
-      font-size: 1.25rem;
-      font-weight: 800;
-      color: #78350F;
-      line-height: 1.4;
     }
 
     /* GRAND ASANA FINALE */
@@ -758,6 +758,19 @@
 
     <!-- WORKSTATION SLIDE VIEWPORT (GPU ACCELERATED) -->
     <section class="slide-deck-viewport" id="slideDeckStage">
+      <!-- NON-BLOCKING PARENT AUDIT DROP CURTAIN (BUG 1 FIX) -->
+      <div class="nonblocking-audit-curtain" id="nonblockingAuditCurtain">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-family:var(--font-story); font-size:1.15rem; font-weight:800; color:#92400E;">Teacher's Exact Notebook Key</span>
+          <button type="button" class="icon-btn" style="padding:2px 8px; font-size:0.9rem;" onclick="dismissAuditCurtain()">✕</button>
+        </div>
+        <div class="audit-key-banner" id="auditAnswerKeyDisplay"></div>
+        <div style="display:flex; justify-content:center; align-items:center; gap:20px;">
+          <button type="button" class="icon-btn" style="background:#FEE2E2; border-color:#DC2626; padding:6px 20px; font-size:1.2rem;" onclick="markParentAudit(false)" title="Needs Practice">✗ Practice Again</button>
+          <button type="button" class="icon-btn" style="background:#DCFCE7; border-color:#16A34A; padding:6px 24px; font-size:1.2rem;" onclick="markParentAudit(true)" title="Correct">✓ Perfect</button>
+        </div>
+      </div>
+
       <div class="palm-scroll-banner-box">
         <div class="banner-text-heading" id="bannerHeadingText">Meanings</div>
         <button type="button" class="freely-floating-max-btn" onclick="speakCurrentTarget()" title="Listen">
@@ -778,23 +791,6 @@
       </div>
     </section>
   </main>
-
-  <!-- PARENT AUDIT MODAL (WRITE MODE ONLY) -->
-  <div id="parentAuditDrawer">
-    <div class="parent-audit-box">
-      <div style="font-family:var(--font-story); font-size:1.4rem; font-weight:800; color:#92400E;">
-        Teacher's Exact Notebook Key
-      </div>
-      <div class="audit-key-display" id="auditAnswerKeyDisplay"></div>
-      <div style="font-size:1.05rem; font-weight:800; color:#3C1904;">
-        Did Humayun write this answer correctly?
-      </div>
-      <div style="display:flex; justify-content:center; gap:24px; margin-top:6px;">
-        <button type="button" class="icon-btn" style="background:#FEE2E2; border-color:#DC2626; padding:8px 24px; font-size:1.4rem;" onclick="markParentAudit(false)" title="Needs Practice">✗</button>
-        <button type="button" class="icon-btn" style="background:#DCFCE7; border-color:#16A34A; padding:8px 28px; font-size:1.4rem;" onclick="markParentAudit(true)" title="Correct">✓</button>
-      </div>
-    </div>
-  </div>
 
   <!-- CELEBRATION FINALE STAGE -->
   <div id="celebrationFinaleStage">
@@ -863,7 +859,7 @@
       playPageFlip() {
         this.init();
         const t0 = this.ctx.currentTime;
-        // Accurate unsigned integer buffer size
+        // BUG 5 FIX: Math.floor prevents audio buffer crash
         const bufferSize = Math.floor(this.ctx.sampleRate * 0.18);
         const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
         const data = buffer.getChannelData(0);
@@ -958,7 +954,7 @@
       "always": ["al", "ways"], "began": ["be", "gan"], "inside": ["in", "side"], "single": ["sin", "gle"]
     };
 
-    /* DATASETS WITH IMMUTABLE IDS */
+    /* DATASETS WITH IMMUTABLE IDS (BUG 1 FIX) */
     const MEANINGS_DATA = [
       { id: "mean_1", q: "nervous", a: "feeling worried", sprite: "assets/troll.webp" },
       { id: "mean_2", q: "encyclopaedia", a: "a book with facts on many subjects", sprite: "assets/rabbit.webp" },
@@ -1026,6 +1022,14 @@
       }
     ];
 
+    /* PERSISTENT TEXTBOOK STATE STORE (BUG 4 & 5 FIX) */
+    const textbookStore = {
+      p1: {}, // qIndex -> boolean correct
+      p2: {}, // qIndex -> boolean correct
+      p3_shall_will: {}, // qIndex -> boolean correct
+      p3_prefixes: {} // rootWord -> revealed
+    };
+
     /* CONTROLLER STATE */
     let currentMode = 'practice';
     let activeSection = null;
@@ -1039,6 +1043,7 @@
 
     function setAppMode(mode) {
       saveAllCanvases();
+      dismissAuditCurtain();
       currentMode = mode;
       document.getElementById('tabPractice').classList.toggle('active', mode === 'practice');
       document.getElementById('tabWrite').classList.toggle('active', mode === 'write');
@@ -1050,6 +1055,7 @@
 
     function returnToHubMenu() {
       saveAllCanvases();
+      dismissAuditCurtain();
       document.getElementById('slideDeckStage').classList.remove('active-slide');
       document.getElementById('masterStageContainer').classList.remove('stage-darkened');
       document.getElementById('centralHubStage').classList.remove('hidden-hub');
@@ -1058,6 +1064,7 @@
 
     function openSection(secKey) {
       saveAllCanvases();
+      dismissAuditCurtain();
       activeSection = secKey;
       currentItemIdx = 0;
       activePageNum = 1;
@@ -1083,6 +1090,7 @@
     /* RENDER ACTIVE DECK ITEM: OPTION B FLOATING PARCHMENT SLATE */
     function renderCurrentDeckItem() {
       saveAllCanvases();
+      dismissAuditCurtain();
       const viewport = document.getElementById('workBodyFrame');
       viewport.innerHTML = '';
 
@@ -1100,9 +1108,10 @@
       // Parent Check button: ONLY present in Write Mode
       const parentArea = document.getElementById('parentReviewArea');
       if (currentMode === 'write') {
+        const isVerified = writeModeAuditStatus[item.id] === true;
         parentArea.innerHTML = `
-          <button type="button" class="icon-btn" onclick="openParentAudit()" title="Check Answer" style="background:#FEF3C7; border-color:#D97706;">
-            🔐 Check
+          <button type="button" class="icon-btn" onclick="openParentAudit()" title="Check Answer" style="background:${isVerified ? '#DCFCE7' : '#FEF3C7'}; border-color:${isVerified ? '#16A34A' : '#D97706'};">
+            ${isVerified ? '✓ Verified' : '🔐 Check'}
           </button>
         `;
       } else {
@@ -1130,7 +1139,7 @@
       `;
       rightSlate.appendChild(slateHeader);
 
-      // Answer stream with Punctuation-Safe Syllable Chips
+      // Answer stream with Punctuation-Safe Syllable Chips (BUG 7 FIX)
       if (currentMode === 'practice') {
         const words = item.a.split(' ');
         const wrappedWords = words.map((w, idx) => {
@@ -1138,12 +1147,13 @@
           const syllables = SYLLABLE_DICT[clean];
           const hasSyllables = syllables && syllables.length > 1;
           const wordId = `word_chip_${item.id}_${idx}`;
-          // Preserve raw token inside data-raw
           return `<span class="dissect-word-chip ${hasSyllables ? 'has-syllables' : ''}" id="${wordId}" 
                         data-raw="${w}"
                         data-clean="${clean}"
-                        onpointerdown="handleWordPointerDown('${wordId}')" 
-                        onpointerup="handleWordPointerUp('${wordId}')" 
+                        onpointerdown="handleWordPointerDown(event, '${wordId}')" 
+                        onpointermove="handleWordPointerMove(event)"
+                        onpointerup="handleWordPointerUp(event, '${wordId}')" 
+                        onpointercancel="handleWordPointerCancel()"
                         ondblclick="toggleSyllableSplit('${wordId}')">${w}</span>`;
         });
         const ansBox = document.createElement('div');
@@ -1188,18 +1198,40 @@
       setTimeout(setupInkCanvases, 40);
     }
 
-    /* ANY-WORD TAP-AND-HOLD / DOUBLE-TAP SYLLABLE DISSECTOR */
+    /* ANY-WORD TAP-AND-HOLD / DOUBLE-TAP SYLLABLE DISSECTOR (BUG 7 FIX) */
     let wordPressTimer = null;
+    let pressStartX = 0, pressStartY = 0;
 
-    function handleWordPointerDown(elemId) {
+    function handleWordPointerDown(e, elemId) {
       if (currentMode !== 'practice') return;
+      pressStartX = e.clientX;
+      pressStartY = e.clientY;
       wordPressTimer = setTimeout(() => {
         toggleSyllableSplit(elemId);
       }, 400);
     }
 
-    function handleWordPointerUp(elemId) {
-      if (wordPressTimer) clearTimeout(wordPressTimer);
+    function handleWordPointerMove(e) {
+      if (!wordPressTimer) return;
+      // If user drags/scrolls > 8px, cancel hold
+      if (Math.hypot(e.clientX - pressStartX, e.clientY - pressStartY) > 8) {
+        clearTimeout(wordPressTimer);
+        wordPressTimer = null;
+      }
+    }
+
+    function handleWordPointerUp(e, elemId) {
+      if (wordPressTimer) {
+        clearTimeout(wordPressTimer);
+        wordPressTimer = null;
+      }
+    }
+
+    function handleWordPointerCancel() {
+      if (wordPressTimer) {
+        clearTimeout(wordPressTimer);
+        wordPressTimer = null;
+      }
     }
 
     function toggleSyllableSplit(elemId) {
@@ -1217,7 +1249,6 @@
       }
 
       if (el.classList.contains('split-active')) {
-        // Restores exact raw word with intact punctuation & case
         audioFX.playSnap();
         el.classList.remove('split-active');
         el.innerHTML = rawWord;
@@ -1250,6 +1281,7 @@
 
     function stepItem(dir) {
       saveAllCanvases();
+      dismissAuditCurtain();
       if (activeSection === 'textbook') {
         activeTextbookPart = ((activeTextbookPart - 1 + dir + 3) % 3) + 1;
         renderTextbookModule();
@@ -1267,7 +1299,7 @@
       renderCurrentDeckItem();
     }
 
-    /* RETINA INK ENGINE (STABLE KEYING) */
+    /* RETINA INK ENGINE WITH 120HZ RECT CACHING (BUG 3 FIX) */
     const inkMemoryCache = {};
     const hasDrawnRegistry = {};
 
@@ -1304,6 +1336,8 @@
         if (cached) {
           inkMemoryCache[storageKey] = cached;
           hasDrawnRegistry[id] = true;
+          // BUG 6 FIX: Seed undo stack with cached snapshot
+          if (strokeUndoStack[id].length === 0) strokeUndoStack[id].push(cached);
           const img = new Image();
           img.onload = () => {
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -1314,6 +1348,7 @@
 
         let isDrawing = false;
         let lastX = 0, lastY = 0;
+        let cachedRect = null; // BUG 3 FIX: Cache bounding rect to prevent 120Hz thrashing
 
         c.onpointerdown = (e) => {
           if (penOnlyMode && e.pointerType !== "pen" && e.pointerType !== "mouse") {
@@ -1323,19 +1358,18 @@
           isDrawing = true;
           hasDrawnRegistry[id] = true;
           try { c.setPointerCapture(e.pointerId); } catch (_) {}
-          const rect = c.getBoundingClientRect();
-          lastX = e.clientX - rect.left;
-          lastY = e.clientY - rect.top;
+          cachedRect = c.getBoundingClientRect();
+          lastX = e.clientX - cachedRect.left;
+          lastY = e.clientY - cachedRect.top;
           e.preventDefault();
         };
 
         c.onpointermove = (e) => {
-          if (!isDrawing) return;
+          if (!isDrawing || !cachedRect) return;
           if (penOnlyMode && e.pointerType !== "pen" && e.pointerType !== "mouse") return;
 
-          const rect = c.getBoundingClientRect();
-          const currX = e.clientX - rect.left;
-          const currY = e.clientY - rect.top;
+          const currX = e.clientX - cachedRect.left;
+          const currY = e.clientY - cachedRect.top;
 
           ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
@@ -1365,6 +1399,7 @@
         const stopStroke = (e) => {
           if (isDrawing) {
             isDrawing = false;
+            cachedRect = null;
             try { c.releasePointerCapture(e.pointerId); } catch (_) {}
             try {
               strokeUndoStack[id].push(c.toDataURL("image/png"));
@@ -1426,7 +1461,6 @@
       }
     }
 
-    /* PURGES MEMORY & LOCALSTORAGE FOR BOTH MOUNTED AND UNMOUNTED PAGES */
     function purgeStoredCanvas(canvasId) {
       const key = getStorageKey(canvasId);
       delete inkMemoryCache[key];
@@ -1448,23 +1482,29 @@
       purgeStoredCanvas(id);
     }
 
-    /* PARENT AUDIT & RETRY LOOP (WRITE MODE ONLY) */
+    /* NON-BLOCKING PARENT AUDIT DROP CURTAIN (BUG 1 & 2 FIX) */
     function openParentAudit() {
       const item = activeDeck[currentItemIdx];
-      const canvasId = `slate_${currentMode}_${item.id}_p${activePageNum}`;
+      // BUG 2 FIX: Check both p1 and p2 for ink
+      const hasInk = hasDrawnRegistry[`slate_${currentMode}_${item.id}_p1`] || 
+                     hasDrawnRegistry[`slate_${currentMode}_${item.id}_p2`];
 
-      if (!hasDrawnRegistry[canvasId]) {
+      if (!hasInk) {
         speakText("Please write your answer on the notebook first!");
         return;
       }
 
       audioFX.playBell();
       document.getElementById('auditAnswerKeyDisplay').textContent = item.a;
-      document.getElementById('parentAuditDrawer').style.display = 'flex';
+      document.getElementById('nonblockingAuditCurtain').classList.add('curtain-dropped');
+    }
+
+    function dismissAuditCurtain() {
+      document.getElementById('nonblockingAuditCurtain').classList.remove('curtain-dropped');
     }
 
     function markParentAudit(isCorrect) {
-      document.getElementById('parentAuditDrawer').style.display = 'none';
+      dismissAuditCurtain();
       const item = activeDeck[currentItemIdx];
       writeModeAuditStatus[item.id] = isCorrect;
 
@@ -1477,7 +1517,6 @@
           stepItem(1);
         }
       } else {
-        // Direct non-praise retry loop: purge Page 1 & Page 2 safely
         audioFX.playSnap();
         speakText(`Spelling error on Question ${currentItemIdx + 1}! Practice this question again.`);
         purgeStoredCanvas(`slate_${currentMode}_${item.id}_p1`);
@@ -1486,7 +1525,7 @@
       }
     }
 
-    /* TEXTBOOK 3-PART SPLIT MODULE WITH VERIFICATION */
+    /* TEXTBOOK 3-PART SPLIT MODULE WITH VERIFICATION & PERSISTENCE (BUG 4 & 5 FIX) */
     function renderTextbookModule() {
       document.getElementById('bannerHeadingText').textContent = "Textbook Mastery";
       document.getElementById('deckPagination').textContent = `Part ${activeTextbookPart} / 3`;
@@ -1517,22 +1556,22 @@
           <div class="exercise-card-row">
             <span>1. Meena did not know the meaning of her name because:</span>
             <div style="display:flex; gap:8px;">
-              <span class="option-chip" onclick="selectTbChip(this, true)">a. she did not read and find out</span>
-              <span class="option-chip" onclick="selectTbChip(this, false)">b. she disliked her name</span>
+              <span class="option-chip ${textbookStore.p1[0] === true ? 'selected-correct' : ''}" onclick="selectTbMCQ(0, true, this)">a. she did not read and find out</span>
+              <span class="option-chip ${textbookStore.p1[0] === false ? 'selected-wrong' : ''}" onclick="selectTbMCQ(0, false, this)">b. she disliked her name</span>
             </div>
           </div>
           <div class="exercise-card-row">
             <span>2. When Meena's parents tried to read out to her:</span>
             <div style="display:flex; gap:8px;">
-              <span class="option-chip" onclick="selectTbChip(this, true)">c. cover ears & hated books</span>
-              <span class="option-chip" onclick="selectTbChip(this, false)">a. listen carefully</span>
+              <span class="option-chip ${textbookStore.p1[1] === true ? 'selected-correct' : ''}" onclick="selectTbMCQ(1, true, this)">c. cover ears & hated books</span>
+              <span class="option-chip ${textbookStore.p1[1] === false ? 'selected-wrong' : ''}" onclick="selectTbMCQ(1, false, this)">a. listen carefully</span>
             </div>
           </div>
           <div class="exercise-card-row">
             <span>3. Max always stayed on top of books rather than below:</span>
             <div style="display:flex; gap:8px;">
-              <span class="option-chip" onclick="selectTbChip(this, true)">d. scared of books falling</span>
-              <span class="option-chip" onclick="selectTbChip(this, false)">a. comfortable</span>
+              <span class="option-chip ${textbookStore.p1[2] === true ? 'selected-correct' : ''}" onclick="selectTbMCQ(2, true, this)">d. scared of books falling</span>
+              <span class="option-chip ${textbookStore.p1[2] === false ? 'selected-wrong' : ''}" onclick="selectTbMCQ(2, false, this)">a. comfortable</span>
             </div>
           </div>
         `;
@@ -1542,36 +1581,36 @@
           <div class="exercise-card-row">
             <span>1. The cat is climbing on the shelf.</span>
             <div style="display:flex; gap:6px;">
-              <span class="option-chip" onclick="selectTbChip(this, true)">is (helping) + climbing (main)</span>
-              <span class="option-chip" onclick="selectTbChip(this, false)">shelf (helping) + cat (main)</span>
+              <span class="option-chip ${textbookStore.p2[0] === true ? 'selected-correct' : ''}" onclick="selectTbVerb(0, true, this)">is (helping) + climbing (main)</span>
+              <span class="option-chip ${textbookStore.p2[0] === false ? 'selected-wrong' : ''}" onclick="selectTbVerb(0, false, this)">shelf (helping) + cat (main)</span>
             </div>
           </div>
           <div class="exercise-card-row">
             <span>2. The rabbit is nibbling the legs of the table.</span>
             <div style="display:flex; gap:6px;">
-              <span class="option-chip" onclick="selectTbChip(this, true)">is (helping) + nibbling (main)</span>
-              <span class="option-chip" onclick="selectTbChip(this, false)">table (helping) + legs (main)</span>
+              <span class="option-chip ${textbookStore.p2[1] === true ? 'selected-correct' : ''}" onclick="selectTbVerb(1, true, this)">is (helping) + nibbling (main)</span>
+              <span class="option-chip ${textbookStore.p2[1] === false ? 'selected-wrong' : ''}" onclick="selectTbVerb(1, false, this)">table (helping) + legs (main)</span>
             </div>
           </div>
           <div class="exercise-card-row">
             <span>3. The monkeys are tearing the curtains.</span>
             <div style="display:flex; gap:6px;">
-              <span class="option-chip" onclick="selectTbChip(this, true)">are (helping) + tearing (main)</span>
-              <span class="option-chip" onclick="selectTbChip(this, false)">curtains (helping) + are (main)</span>
+              <span class="option-chip ${textbookStore.p2[2] === true ? 'selected-correct' : ''}" onclick="selectTbVerb(2, true, this)">are (helping) + tearing (main)</span>
+              <span class="option-chip ${textbookStore.p2[2] === false ? 'selected-wrong' : ''}" onclick="selectTbVerb(2, false, this)">curtains (helping) + are (main)</span>
             </div>
           </div>
           <div class="exercise-card-row">
             <span>4. An aardvark is marching about.</span>
             <div style="display:flex; gap:6px;">
-              <span class="option-chip" onclick="selectTbChip(this, true)">is (helping) + marching (main)</span>
-              <span class="option-chip" onclick="selectTbChip(this, false)">about (helping) + is (main)</span>
+              <span class="option-chip ${textbookStore.p2[3] === true ? 'selected-correct' : ''}" onclick="selectTbVerb(3, true, this)">is (helping) + marching (main)</span>
+              <span class="option-chip ${textbookStore.p2[3] === false ? 'selected-wrong' : ''}" onclick="selectTbVerb(3, false, this)">about (helping) + is (main)</span>
             </div>
           </div>
           <div class="exercise-card-row">
             <span>5. Meena is enjoying her book.</span>
             <div style="display:flex; gap:6px;">
-              <span class="option-chip" onclick="selectTbChip(this, true)">is (helping) + enjoying (main)</span>
-              <span class="option-chip" onclick="selectTbChip(this, false)">book (helping) + is (main)</span>
+              <span class="option-chip ${textbookStore.p2[4] === true ? 'selected-correct' : ''}" onclick="selectTbVerb(4, true, this)">is (helping) + enjoying (main)</span>
+              <span class="option-chip ${textbookStore.p2[4] === false ? 'selected-wrong' : ''}" onclick="selectTbVerb(4, false, this)">book (helping) + is (main)</span>
             </div>
           </div>
         `;
@@ -1581,47 +1620,54 @@
           <div class="exercise-card-row">
             <span>1. My uncle ________ give me a watch next year.</span>
             <div style="display:flex; gap:8px;">
-              <span class="option-chip" onclick="selectTbChip(this, true)">will</span>
-              <span class="option-chip" onclick="selectTbChip(this, false)">shall</span>
+              <span class="option-chip ${textbookStore.p3_shall_will[0] === true ? 'selected-correct' : ''}" onclick="selectTbShallWill(0, true, this)">will</span>
+              <span class="option-chip ${textbookStore.p3_shall_will[0] === false ? 'selected-wrong' : ''}" onclick="selectTbShallWill(0, false, this)">shall</span>
             </div>
           </div>
           <div class="exercise-card-row">
             <span>2. Manju and her sister ________ wear new clothes.</span>
             <div style="display:flex; gap:8px;">
-              <span class="option-chip" onclick="selectTbChip(this, true)">will</span>
-              <span class="option-chip" onclick="selectTbChip(this, false)">shall</span>
+              <span class="option-chip ${textbookStore.p3_shall_will[1] === true ? 'selected-correct' : ''}" onclick="selectTbShallWill(1, true, this)">will</span>
+              <span class="option-chip ${textbookStore.p3_shall_will[1] === false ? 'selected-wrong' : ''}" onclick="selectTbShallWill(1, false, this)">shall</span>
             </div>
           </div>
           <div class="exercise-card-row">
             <span>3. I ________ get up early tomorrow.</span>
             <div style="display:flex; gap:8px;">
-              <span class="option-chip" onclick="selectTbChip(this, true)">shall</span>
-              <span class="option-chip" onclick="selectTbChip(this, false)">will</span>
+              <span class="option-chip ${textbookStore.p3_shall_will[2] === true ? 'selected-correct' : ''}" onclick="selectTbShallWill(2, true, this)">shall</span>
+              <span class="option-chip ${textbookStore.p3_shall_will[2] === false ? 'selected-wrong' : ''}" onclick="selectTbShallWill(2, false, this)">will</span>
             </div>
           </div>
           <div class="exercise-card-row">
             <span>4. We ________ have a holiday next week.</span>
             <div style="display:flex; gap:8px;">
-              <span class="option-chip" onclick="selectTbChip(this, true)">shall</span>
-              <span class="option-chip" onclick="selectTbChip(this, false)">will</span>
+              <span class="option-chip ${textbookStore.p3_shall_will[3] === true ? 'selected-correct' : ''}" onclick="selectTbShallWill(3, true, this)">shall</span>
+              <span class="option-chip ${textbookStore.p3_shall_will[3] === false ? 'selected-wrong' : ''}" onclick="selectTbShallWill(3, false, this)">will</span>
             </div>
           </div>
 
           <div style="font-family:var(--font-story); font-size:1.15rem; color:#92400E; margin-top:8px;">
-            Prefix Opposites: Tap to reveal correct prefix (un-, im-, dis-, in-):
+            Prefix Opposites: Tap to match correct prefix (un-, im-, dis-, in-):
           </div>
           <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <span class="option-chip" onclick="revealPrefix(this, 'unclear')">clear ➔ ???</span>
-            <span class="option-chip" onclick="revealPrefix(this, 'untidy')">tidy ➔ ???</span>
-            <span class="option-chip" onclick="revealPrefix(this, 'impatient')">patient ➔ ???</span>
-            <span class="option-chip" onclick="revealPrefix(this, 'incorrect')">correct ➔ ???</span>
-            <span class="option-chip" onclick="revealPrefix(this, 'impossible')">possible ➔ ???</span>
-            <span class="option-chip" onclick="revealPrefix(this, 'disobey')">obey ➔ ???</span>
-            <span class="option-chip" onclick="revealPrefix(this, 'invisible')">visible ➔ ???</span>
-            <span class="option-chip" onclick="revealPrefix(this, 'unsure')">sure ➔ ???</span>
+            ${renderPrefixChip('clear', 'unclear')}
+            ${renderPrefixChip('tidy', 'untidy')}
+            ${renderPrefixChip('patient', 'impatient')}
+            ${renderPrefixChip('correct', 'incorrect')}
+            ${renderPrefixChip('possible', 'impossible')}
+            ${renderPrefixChip('obey', 'disobey')}
+            ${renderPrefixChip('visible', 'invisible')}
+            ${renderPrefixChip('sure', 'unsure')}
           </div>
         `;
       }
+    }
+
+    function renderPrefixChip(rootWord, fullWord) {
+      const isSolved = textbookStore.p3_prefixes[rootWord] === true;
+      return `<span class="option-chip ${isSolved ? 'selected-correct' : ''}" onclick="revealPrefix('${rootWord}', '${fullWord}', this)">
+        ${isSolved ? fullWord : rootWord + ' ➔ ???'}
+      </span>`;
     }
 
     function switchTextbookPart(partNum) {
@@ -1629,11 +1675,12 @@
       renderTextbookModule();
     }
 
-    function selectTbChip(chip, isCorrect) {
+    function selectTbMCQ(qIdx, isCorrect, chip) {
+      textbookStore.p1[qIdx] = isCorrect;
+      chip.parentElement.querySelectorAll('.option-chip').forEach(el => el.className = 'option-chip');
       if (isCorrect) {
         audioFX.playBell();
         chip.classList.add('selected-correct');
-        chip.classList.remove('selected-wrong');
         speakText("Correct!");
       } else {
         audioFX.playSnap();
@@ -1642,18 +1689,73 @@
       }
     }
 
-    function revealPrefix(chip, correctWord) {
-      audioFX.playSnap();
-      chip.textContent = correctWord;
-      chip.classList.add('selected-correct');
-      speakText(correctWord);
+    function selectTbVerb(qIdx, isCorrect, chip) {
+      textbookStore.p2[qIdx] = isCorrect;
+      chip.parentElement.querySelectorAll('.option-chip').forEach(el => el.className = 'option-chip');
+      if (isCorrect) {
+        audioFX.playBell();
+        chip.classList.add('selected-correct');
+        speakText("Correct verb pair!");
+      } else {
+        audioFX.playSnap();
+        chip.classList.add('selected-wrong');
+        speakText("Try again!");
+      }
     }
 
-    function gradeTextbookPart() {
-      audioFX.playBell();
-      if (activeTextbookPart < 3) {
-        switchTextbookPart(activeTextbookPart + 1);
+    function selectTbShallWill(qIdx, isCorrect, chip) {
+      textbookStore.p3_shall_will[qIdx] = isCorrect;
+      chip.parentElement.querySelectorAll('.option-chip').forEach(el => el.className = 'option-chip');
+      if (isCorrect) {
+        audioFX.playBell();
+        chip.classList.add('selected-correct');
+        speakText("Correct!");
       } else {
+        audioFX.playSnap();
+        chip.classList.add('selected-wrong');
+        speakText("Try again!");
+      }
+    }
+
+    function revealPrefix(rootWord, fullWord, chip) {
+      audioFX.playSnap();
+      textbookStore.p3_prefixes[rootWord] = true;
+      chip.textContent = fullWord;
+      chip.classList.add('selected-correct');
+      speakText(fullWord);
+    }
+
+    /* BUG 4 FIX: TRUE VALIDATION BEFORE ADVANCING/CELEBRATING */
+    function gradeTextbookPart() {
+      if (activeTextbookPart === 1) {
+        const p1Answers = [textbookStore.p1[0], textbookStore.p1[1], textbookStore.p1[2]];
+        const isComplete = p1Answers.every(ans => ans === true);
+        if (!isComplete) {
+          audioFX.playSnap();
+          speakText("Please answer all 3 questions in Part 1 correctly!");
+          return;
+        }
+        audioFX.playBell();
+        switchTextbookPart(2);
+      } else if (activeTextbookPart === 2) {
+        const p2Answers = [textbookStore.p2[0], textbookStore.p2[1], textbookStore.p2[2], textbookStore.p2[3], textbookStore.p2[4]];
+        const isComplete = p2Answers.every(ans => ans === true);
+        if (!isComplete) {
+          audioFX.playSnap();
+          speakText("Please find all verb pairs in Part 2 correctly!");
+          return;
+        }
+        audioFX.playBell();
+        switchTextbookPart(3);
+      } else {
+        const swComplete = [textbookStore.p3_shall_will[0], textbookStore.p3_shall_will[1], textbookStore.p3_shall_will[2], textbookStore.p3_shall_will[3]].every(v => v === true);
+        const prefixRoots = ['clear', 'tidy', 'patient', 'correct', 'possible', 'obey', 'visible', 'sure'];
+        const prefComplete = prefixRoots.every(r => textbookStore.p3_prefixes[r] === true);
+        if (!swComplete || !prefComplete) {
+          audioFX.playSnap();
+          speakText("Please finish all shall and will blanks and prefix matches in Part 3!");
+          return;
+        }
         triggerGrandCelebration();
       }
     }
