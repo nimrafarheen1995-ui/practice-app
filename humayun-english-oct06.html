@@ -1,1059 +1,1254 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Humayun's Word Quest</title>
-<style>
-  :root {
-    --bg: #F0F6FC;
-    --card: #FFFFFF;
-    --ink: #1F3A4B;
-    --ink-soft: #5A7A8E;
-    --border: #D0E2F0;
-    --primary: #4A9FE0;
-    --primary-dark: #3A7FB8;
-    --reward: #FFC93C;
-    --reward-dark: #D4A020;
-    --green: #4BCA7A;
-    --green-dark: #2E9A5A;
-    --orange: #FF8A5C;
-    --orange-dark: #D46030;
-    --purple: #7C3AED;
-    --purple-dark: #6D28D9;
-    --ruled-blue: #93C5FD;
-    --margin-line: #F87171;
-    --shadow: 0 4px 0 #C0D4E4, 0 8px 24px rgba(100, 140, 180, 0.12);
-    --radius: 20px;
-    --font: 'Nunito', 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>LA-1: The Girl Who Hated Books - Classwork Mastery</title>
 
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-  html, body { height: 100%; overflow: hidden; }
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700;800&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
 
-  body {
-    background: var(--bg);
-    color: var(--ink);
-    font-family: var(--font);
-    font-weight: 600;
-    user-select: none; -webkit-user-select: none;
-    display: flex; flex-direction: column;
-    height: 100vh; height: 100dvh;
-    padding: 8px 12px;
-  }
+  <!-- Instant Hardware Cache Preloads -->
+  <link rel="preload" as="image" href="assets/meena-room-bg.webp" type="image/webp">
+  <link rel="preload" as="image" href="assets/max-cat.webp" type="image/webp">
+  <link rel="preload" as="image" href="assets/meena-character.webp" type="image/webp">
 
-  .orientation-warning {
-    display: none; position: fixed; inset: 0; background: var(--bg);
-    z-index: 300; align-items: center; justify-content: center;
-    flex-direction: column; gap: 16px; padding: 40px; text-align: center;
-  }
-  .orientation-warning .icon { font-size: 4rem; animation: rotatePhone 2s infinite ease-in-out; }
-  @keyframes rotatePhone { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(90deg); } }
-  .orientation-warning h2 { font-size: 1.4rem; color: var(--ink); }
-  .orientation-warning p { font-size: 1rem; color: var(--ink-soft); }
-  @media (orientation: portrait) { .orientation-warning { display: flex; } }
+  <style>
+    :root {
+      --gold-primary: #D97706;
+      --gold-deep: #B45309;
+      --gold-glow: #F59E0B;
+      --teal-magic: #0D9488;
+      --teal-deep: #115E59;
+      --paper-cream: #FFFDF9;
+      --ink-blue: #1E3A8A;
+      --ruled-guide: #93C5FD;
+      --ruled-base: #EF4444;
+      --font-story: 'Fredoka', cursive, sans-serif;
+      --font-body: 'Nunito', sans-serif;
+    }
 
-  #screenDimOverlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.45);
-    pointer-events: none;
-    z-index: 99999;
-  }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      font-family: var(--font-body);
+    }
 
-  .app {
-    display: flex; flex-direction: column;
-    height: 100vh; height: 100dvh;
-    max-width: 1400px; margin: 0 auto; width: 100%;
-    gap: 8px;
-    padding-bottom: max(6px, env(safe-area-inset-bottom));
-  }
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      background: #0B0704;
+      color: #3C1904;
+    }
 
-  /* HEADER */
-  .header { display: flex; justify-content: space-between; align-items: center; padding: 2px 4px; flex-shrink: 0; }
-  .header-title { display: flex; align-items: center; gap: 8px; font-size: 1.25rem; font-weight: 800; color: var(--ink); }
-  .header-title .icon { font-size: 1.5rem; line-height: 1; }
-  .header-actions { display: flex; align-items: center; gap: 8px; }
+    body {
+      display: flex;
+      flex-direction: column;
+      padding: clamp(6px, 1vw, 10px) clamp(10px, 1.4vw, 16px);
+      gap: 6px;
+      position: relative;
+    }
 
-  .header-action-btn {
-    min-width: 44px;
-    height: 38px;
-    padding: 0 14px;
-    border-radius: 16px;
-    border: 2px solid var(--border);
-    background: var(--card);
-    color: var(--ink);
-    font-size: 0.85rem;
-    font-weight: 800;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    box-shadow: 0 2px 0 var(--border);
-    white-space: nowrap;
-    text-decoration: none;
-  }
-  .header-action-btn:active { transform: translateY(2px); box-shadow: none; }
+    /* TOP HUD */
+    .top-hud-bar {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 60;
+      flex-shrink: 0;
+    }
 
-  /* MODE TABS */
-  .mode-tabs { display: flex; gap: 6px; padding: 0 4px; flex-shrink: 0; }
-  .mode-tab {
-    flex: 1;
-    border: 3px solid var(--border);
-    border-radius: 14px;
-    padding: 8px;
-    font-size: 0.9rem;
-    font-weight: 800;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    min-height: 42px;
-    background: var(--card);
-    color: var(--ink-soft);
-    box-shadow: 0 3px 0 var(--border);
-    white-space: nowrap;
-  }
-  .mode-tab:active { transform: translateY(3px); box-shadow: none; }
-  .mode-tab.active-practice {
-    background: var(--primary); color: #FFF;
-    border-color: var(--primary-dark); box-shadow: 0 3px 0 var(--primary-dark);
-  }
-  .mode-tab.active-write {
-    background: var(--purple); color: #FFF;
-    border-color: var(--purple-dark); box-shadow: 0 3px 0 var(--purple-dark);
-  }
-  .mode-tab.active-parent {
-    background: #0284C7; color: #FFF;
-    border-color: #0369A1; box-shadow: 0 3px 0 #0369A1;
-  }
+    .hud-left, .hud-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-  /* SECTION TABS */
-  .section-tabs { display: flex; gap: 6px; padding: 0 4px; flex-shrink: 0; overflow-x: auto; }
-  .section-tab {
-    flex: 1; background: var(--card); border: 3px solid var(--border);
-    border-radius: 14px; padding: 8px 6px; font-size: 0.86rem; font-weight: 800;
-    color: var(--ink-soft); cursor: pointer; text-align: center; white-space: nowrap;
-    box-shadow: 0 3px 0 var(--border);
-    display: flex; align-items: center; justify-content: center; min-height: 40px;
-  }
-  .section-tab:active { transform: translateY(3px); box-shadow: none; }
-  .section-tab.active { background: var(--primary); color: #FFF; border-color: var(--primary-dark); box-shadow: 0 3px 0 var(--primary-dark); }
-  body.write-mode .section-tab.active { background: var(--purple); border-color: var(--purple-dark); box-shadow: 0 3px 0 var(--purple-dark); }
-  body.parent-mode .section-tab.active { background: #0284C7; border-color: #0369A1; box-shadow: 0 3px 0 #0369A1; }
+    .hud-btn {
+      background: rgba(255, 255, 255, 0.94);
+      border: 2px solid var(--gold-primary);
+      color: #3C1904;
+      padding: 6px 14px;
+      border-radius: 14px;
+      font-size: 0.92rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      transition: all 0.15s ease;
+    }
+    .hud-btn:active { transform: translateY(2px) scale(0.97); }
 
-  /* WORKSPACE */
-  .workspace {
-    flex: 1;
-    display: flex;
-    min-height: 0;
-    gap: 12px;
-  }
+    .story-title-banner {
+      background: rgba(255, 253, 246, 0.95);
+      border: 2.5px solid var(--gold-primary);
+      border-radius: 20px;
+      padding: 6px 20px;
+      font-family: var(--font-story);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #78350F;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+    }
 
-  /* LAYOUT 1: SPLIT SCREEN (FOR MEANINGS & OPPOSITES) */
-  .split-layout { display: flex; width: 100%; height: 100%; gap: 12px; }
-  .split-left { flex: 0 0 38%; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-  .split-right { flex: 1; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+    .pen-toggle-btn {
+      background: rgba(255, 255, 255, 0.94);
+      border: 2px solid var(--gold-primary);
+      color: #3C1904;
+      font-size: 0.9rem;
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pen-toggle-btn.pen-active {
+      background: #DCFCE7;
+      border-color: #16A34A;
+      color: #15803D;
+    }
 
-  .prompt-card {
-    background: var(--card); border: 3px solid var(--border);
-    border-radius: var(--radius); padding: 14px 16px;
-    box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;
-  }
+    /* MASTER WORKSPACE CONTAINER */
+    .master-stage-frame {
+      flex: 1;
+      position: relative;
+      border: 4px solid #5A3C22;
+      border-radius: 24px;
+      overflow: hidden;
+      background: #0B0704 url('assets/meena-room-bg.webp') no-repeat center center;
+      background-size: cover;
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85);
+      display: flex;
+      min-height: 0;
+      z-index: 10;
+    }
 
-  .card-category-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding-bottom: 6px; border-bottom: 2px dashed var(--border);
-  }
-  .card-category { font-size: 0.95rem; font-weight: 800; color: var(--primary); text-transform: uppercase; }
+    /* THE DIM SCENIC OVERLAY */
+    .scenic-dim-veil {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 45%, rgba(15, 9, 5, 0.35) 0%, rgba(10, 5, 2, 0.65) 100%);
+      pointer-events: none;
+      z-index: 1;
+      transition: opacity 0.4s ease;
+    }
+    .master-stage-frame.slide-active .scenic-dim-veil {
+      opacity: 0.92;
+      background: rgba(12, 6, 3, 0.68);
+    }
 
-  .speakable { cursor: pointer; border-radius: 6px; padding: 2px 4px; transition: background 0.12s; }
-  .speakable:active { background: #FEF08A; color: #000; }
+    /* STAGE 0: CENTRAL DIM HUB */
+    .central-hub-stage {
+      position: absolute;
+      inset: 0;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 16px 24px;
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+    .central-hub-stage.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.96);
+    }
 
-  .prompt-text { font-size: 1.5rem; font-weight: 800; color: var(--ink); line-height: 1.35; min-height: 2.2rem; }
-  .prompt-text u { text-decoration-color: var(--reward); text-decoration-thickness: 4px; text-underline-offset: 5px; }
-  .prompt-text .blank { color: var(--orange); font-size: 1.8rem; }
+    .hub-header-prompt {
+      align-self: center;
+      background: rgba(255, 253, 246, 0.95);
+      border: 2px solid var(--gold-primary);
+      border-radius: 20px;
+      padding: 8px 24px;
+      font-family: var(--font-story);
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #92400E;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    }
 
-  .hint-box {
-    background: #FFF8E7; border-left: 6px solid var(--reward);
-    padding: 10px 14px; border-radius: 8px 16px 16px 8px;
-    font-size: 0.98rem; font-weight: 600; color: #4A3A1A;
-    border: 2px solid #F0DCA0; border-left-width: 6px; line-height: 1.45;
-  }
-  body.write-mode .hint-box { display: none !important; }
+    .hub-portals-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      width: 100%;
+      max-width: 1080px;
+      margin: 0 auto;
+    }
 
-  .test-locked-alert {
-    display: none;
-    background: #F5F3FF; border: 2px solid #DDD6FE; border-left: 6px solid var(--purple);
-    padding: 12px 14px; border-radius: 8px 16px 16px 8px;
-    font-size: 0.95rem; font-weight: 800; color: var(--purple-dark);
-  }
-  body.write-mode .test-locked-alert { display: block; }
+    .hub-portal-card {
+      background: rgba(255, 255, 255, 0.94);
+      border: 3px solid var(--gold-primary);
+      border-radius: 24px;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 8px;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s;
+    }
+    .hub-portal-card:hover {
+      transform: translateY(-6px) scale(1.03);
+      border-color: #F59E0B;
+      box-shadow: 0 16px 30px rgba(245, 158, 11, 0.45);
+    }
+    .hub-portal-card:active { transform: scale(0.96); }
+    .portal-icon { font-size: 2.4rem; }
+    .portal-title {
+      font-family: var(--font-story);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #3C1904;
+    }
+    .portal-sub {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #78350F;
+    }
 
-  .map-card {
-    background: var(--card); border: 3px solid var(--border);
-    border-radius: var(--radius); padding: 10px 12px;
-    box-shadow: var(--shadow); flex-shrink: 0;
-  }
-  .map-title {
-    font-size: 0.8rem; font-weight: 800; color: var(--ink-soft);
-    text-transform: uppercase; margin-bottom: 6px;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .map-grid { display: flex; gap: 6px; flex-wrap: wrap; }
+    /* LIVING ROOM CHARACTERS IN HUB */
+    .hub-characters-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      width: 100%;
+      pointer-events: none;
+    }
+    .hub-meena-anchor {
+      height: clamp(170px, 26vh, 230px);
+      filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.6));
+    }
+    .hub-max-anchor {
+      height: clamp(150px, 22vh, 190px);
+      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+      cursor: pointer;
+      pointer-events: auto;
+      transition: transform 0.2s ease;
+    }
+    .hub-max-anchor:active { transform: scale(0.94); }
 
-  .chest {
-    width: 38px; height: 38px; border-radius: 10px;
-    border: 2px solid var(--border); background: var(--bg);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.15rem; cursor: pointer; transition: all 0.15s;
-    position: relative; flex-shrink: 0;
-  }
-  .chest:active { transform: scale(0.9); }
-  .chest.current { border-color: var(--primary); border-width: 3px; box-shadow: 0 0 0 2px var(--primary); }
-  .chest.done { background: #E8F8F0; border-color: var(--green); }
-  .chest.correct { background: #FFF8E0; border-color: var(--reward-dark); }
-  .chest.retry { background: #FFF0E8; border-color: var(--orange); }
-  .chest .badge { position: absolute; top: -4px; right: -4px; font-size: 0.7rem; line-height: 1; }
+    /* SLIDE DECK WORKSTATION SECTION */
+    .slide-deck-stage {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 8px 16px;
+      opacity: 0;
+      transform: translate3d(0, 30px, 0) scale(0.98);
+      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .slide-deck-stage.active-slide {
+      display: flex;
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1);
+    }
 
-  .canvas-card {
-    background: var(--card); border: 3px solid var(--border);
-    border-radius: var(--radius); box-shadow: var(--shadow);
-    display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden;
-  }
+    /* PALM BANNER HEADER */
+    .palm-scroll-banner-box {
+      width: 100%;
+      height: 70px;
+      background: url('assets/palm-scroll-banner.png') no-repeat center center;
+      background-size: 100% 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 150px 0 90px;
+      filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
+      flex-shrink: 0;
+      position: relative;
+      overflow: visible;
+    }
+    .banner-quest-title {
+      font-family: var(--font-story);
+      font-size: clamp(1.15rem, 1.8vw, 1.5rem);
+      font-weight: 800;
+      color: #351804;
+      text-align: center;
+      flex: 1;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    }
 
-  .canvas-toolbar {
-    display: flex; align-items: center; justify-content: space-between; gap: 6px;
-    padding: 8px 12px; background: var(--bg); border-bottom: 2px solid var(--border);
-    flex-shrink: 0; flex-wrap: wrap;
-  }
-  .tool-group { display: flex; align-items: center; gap: 6px; }
-  .tool-btn {
-    background: var(--card); border: 2px solid var(--border); border-radius: 10px;
-    padding: 6px 12px; font-size: 0.82rem; font-weight: 800; cursor: pointer;
-    color: var(--ink); box-shadow: 0 2px 0 var(--border); height: 36px;
-  }
-  .tool-btn:active { transform: translateY(2px); box-shadow: none; }
-  .tool-btn.active { background: var(--primary); color: #FFF; border-color: var(--primary-dark); box-shadow: 0 2px 0 var(--primary-dark); }
-  body.write-mode .tool-btn.active { background: var(--purple); border-color: var(--purple-dark); box-shadow: 0 2px 0 var(--purple-dark); }
+    /* 210PX BREAKOUT MAX MASCOT */
+    .freely-floating-max-btn {
+      width: 180px;
+      height: 180px;
+      position: absolute;
+      right: -25px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+      z-index: 30;
+    }
+    .freely-floating-max-btn:active { transform: translateY(-50%) scale(0.92); }
+    .max-sprite-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
 
-  .canvas-wrap { flex: 1; min-height: 0; position: relative; overflow: hidden; background: #FFFFFF; }
-  canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: crosshair; position: relative; z-index: 2; }
+    /* PLAYGROUND BODY */
+    .slide-body-viewport {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+      position: relative;
+      padding: 4px 0;
+    }
 
-  /* 2-LINE BLUE RULED TEXTURE */
-  .dual-ruled-lines {
-    position: absolute; inset: 0; z-index: 1; pointer-events: none;
-    background-color: #FFFFFF;
-    background-image: repeating-linear-gradient(
-      #FFFFFF 0px,
-      #FFFFFF 28px,
-      var(--ruled-blue) 29px,
-      #FFFFFF 30px,
-      #FFFFFF 56px,
-      var(--ruled-blue) 57px,
-      #FFFFFF 58px,
-      #FFFFFF 84px
-    );
-    opacity: 0.65;
-  }
-  .dual-ruled-lines::after {
-    content: ''; position: absolute; top: 0; left: 36px;
-    width: 2px; height: 100%; background: var(--margin-line);
-  }
+    /* 2-PANE SPLIT VIEW FOR ZONE 1 & 2 */
+    .two-pane-split-card {
+      width: 100%;
+      max-width: 1040px;
+      height: 100%;
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 16px;
+      align-items: center;
+    }
 
-  /* LAYOUT 2: FULL-WIDTH NOTEPAD (SENTENCES, SHORT Q&A, LONG Q&A) */
-  .notepad-layout {
-    display: flex; flex-direction: column; width: 100%; height: 100%; gap: 8px; min-height: 0;
-  }
+    .left-prompt-box {
+      background: rgba(255, 253, 246, 0.94);
+      border: 3px solid var(--gold-primary);
+      border-radius: 24px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 10px;
+      height: 100%;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    }
+    .prompt-character-badge {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+    }
+    .prompt-main-word {
+      font-family: var(--font-story);
+      font-size: 2.1rem;
+      font-weight: 800;
+      color: #92400E;
+      line-height: 1.1;
+    }
 
-  .subtabs-bar {
-    display: flex; gap: 6px; flex-shrink: 0; overflow-x: auto;
-  }
-  .subtab-btn {
-    background: var(--card); border: 2px solid var(--border);
-    border-radius: 12px; padding: 6px 14px; font-size: 0.88rem; font-weight: 800;
-    color: var(--ink-soft); cursor: pointer; white-space: nowrap;
-    box-shadow: 0 2px 0 var(--border);
-  }
-  .subtab-btn.active {
-    background: var(--primary); color: #FFF; border-color: var(--primary-dark);
-    box-shadow: 0 2px 0 var(--primary-dark);
-  }
-  body.write-mode .subtab-btn.active {
-    background: var(--purple); border-color: var(--purple-dark);
-    box-shadow: 0 2px 0 var(--purple-dark);
-  }
-  body.parent-mode .subtab-btn.active {
-    background: #0284C7; border-color: #0369A1;
-    box-shadow: 0 2px 0 #0369A1;
-  }
+    .right-answer-box {
+      background: rgba(255, 253, 246, 0.95);
+      border: 3px solid var(--gold-primary);
+      border-radius: 24px;
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      gap: 8px;
+    }
 
-  .notepad-prompt-bar {
-    background: var(--card); border: 2px solid var(--border);
-    border-radius: 14px; padding: 10px 14px; font-size: 1.15rem; font-weight: 800;
-    color: var(--ink); flex-shrink: 0; display: flex; flex-direction: column; gap: 4px;
-    box-shadow: 0 2px 0 var(--border);
-  }
-  .notepad-model-ans {
-    font-size: 0.95rem; font-weight: 700; color: #15803D;
-  }
-  body.write-mode .notepad-model-ans { display: none !important; }
+    /* SYLLABLE SNAP RACK */
+    .syllable-snap-rack {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
+      width: 100%;
+    }
+    .snap-label {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #78350F;
+      align-self: flex-start;
+    }
+    .snap-tokens-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      justify-content: center;
+    }
+    .syllable-tile {
+      background: linear-gradient(135deg, #FFFBEB 0%, #FED7AA 100%);
+      border: 2px solid var(--gold-primary);
+      padding: 8px 16px;
+      border-radius: 14px;
+      font-family: var(--font-story);
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #3C1904;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(180, 83, 9, 0.25);
+      transition: transform 0.15s ease;
+    }
+    .syllable-tile:hover { transform: scale(1.05); }
+    .syllable-tile:active { transform: scale(0.95); }
+    .syllable-tile.placed {
+      background: #E2E8F0;
+      border-color: #CBD5E1;
+      color: #94A3B8;
+      cursor: default;
+      box-shadow: none;
+      pointer-events: none;
+    }
 
-  /* PARENT REVIEW STRIP */
-  .parent-review-strip {
-    display: none; background: #F0F9FF; border: 2px solid #BAE6FD;
-    border-radius: 14px; padding: 10px 14px;
-    align-items: center; justify-content: space-between; gap: 10px; flex-shrink: 0;
-  }
-  body.parent-mode .parent-review-strip { display: flex; }
-  .parent-ans-text { font-size: 0.95rem; font-weight: 700; color: #0369A1; line-height: 1.4; max-height: 58px; overflow-y: auto; }
-  .grade-row { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-  .grade-btn {
-    border: none; padding: 8px 16px; border-radius: 10px;
-    font-weight: 800; font-size: 0.85rem; cursor: pointer;
-  }
-  .grade-btn.pass { background: var(--green); color: #FFF; }
-  .grade-btn.retry { background: var(--orange); color: #FFF; }
+    /* RETINA DPR INK ENGINE CANVAS */
+    .ruled-canvas-container {
+      display: flex;
+      align-items: center;
+      background: #FFFFFF;
+      border: 2px solid var(--gold-primary);
+      border-radius: 16px;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.12);
+      overflow: hidden;
+      width: 100%;
+    }
+    .ruled-canvas-wrap {
+      position: relative;
+      width: 100%;
+      height: 95px;
+      background: #FFFFFF;
+      overflow: hidden;
+    }
+    .four-line-guidelines {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background-image: repeating-linear-gradient(
+        #FFFFFF 0px,
+        #FFFFFF 23px,
+        var(--ruled-guide) 24px,
+        #FFFFFF 25px,
+        #FFFFFF 53px,
+        var(--ruled-guide) 54px,
+        #FFFFFF 55px,
+        #FFFFFF 84px,
+        var(--ruled-base) 85px,
+        #FFFFFF 86px,
+        #FFFFFF 95px
+      );
+    }
+    .retina-ink-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      touch-action: none;
+      z-index: 5;
+    }
+    .canvas-clear-btn {
+      background: #F8FAFC;
+      border: none;
+      border-left: 2px solid #CBD5E1;
+      padding: 0 14px;
+      height: 95px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      color: #64748B;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+    .canvas-clear-btn:active { background: #E2E8F0; }
 
-  /* BOTTOM CONTROLS */
-  .bottom-bar {
-    display: flex; justify-content: space-between; align-items: center; gap: 10px;
-    flex-shrink: 0; padding: 2px 4px;
-  }
-  .bottom-left, .bottom-right { display: flex; gap: 8px; align-items: center; }
+    /* FOOTER BAR */
+    .workspace-footer-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 2px dashed rgba(245, 158, 11, 0.6);
+      padding-top: 6px;
+      flex-shrink: 0;
+    }
+    .status-notice-pill {
+      background: rgba(255, 255, 255, 0.94);
+      border: 1.5px solid var(--gold-primary);
+      border-radius: 20px;
+      padding: 4px 16px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #3C1904;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .btn-verify-seal {
+      background: linear-gradient(180deg, #16A34A 0%, #15803D 100%);
+      border: 2.5px solid #86EFAC;
+      color: #FFFFFF;
+      font-family: var(--font-story);
+      font-size: 1.15rem;
+      font-weight: 800;
+      padding: 8px 30px;
+      border-radius: 20px;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(22, 163, 74, 0.4);
+      transition: all 0.15s ease;
+    }
+    .btn-verify-seal:active { transform: scale(0.96); }
 
-  .btn {
-    border: none; border-radius: 14px; padding: 10px 18px;
-    font-size: 0.88rem; font-weight: 800; cursor: pointer;
-    transition: all 0.1s; min-height: 42px;
-    display: flex; align-items: center; gap: 6px;
-    box-shadow: 0 3px 0 rgba(0,0,0,0.15); white-space: nowrap;
-  }
-  .btn:active { transform: translateY(3px); box-shadow: none; }
-  .btn-primary { background: var(--primary); color: #FFF; box-shadow: 0 3px 0 var(--primary-dark); }
-  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-  .btn-green { background: var(--green); color: #FFF; box-shadow: 0 3px 0 var(--green-dark); }
+    /* SELF-CHECK CURTAIN OVERLAY */
+    #selfCheckDrawer {
+      position: fixed;
+      inset: 0;
+      z-index: 95000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(12, 6, 3, 0.65);
+      backdrop-filter: blur(5px);
+    }
+    .self-check-card {
+      background: #FFFDF9;
+      border: 3.5px solid var(--gold-primary);
+      border-radius: 24px;
+      padding: 22px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 90%;
+      max-width: 620px;
+      box-shadow: 0 16px 45px rgba(0,0,0,0.5);
+    }
+    .self-check-answer-key {
+      width: 100%;
+      background: #FEF3C7;
+      border: 2px solid var(--gold-primary);
+      border-radius: 16px;
+      padding: 14px 18px;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #78350F;
+      line-height: 1.4;
+    }
 
-  /* PIN MODAL */
-  .modal-overlay {
-    position: fixed; inset: 0; background: rgba(30, 40, 50, 0.5);
-    backdrop-filter: blur(4px); display: none; align-items: center;
-    justify-content: center; z-index: 100000;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal-box {
-    background: var(--card); border-radius: 20px; padding: 22px;
-    max-width: 320px; width: 90%; text-align: center;
-    border: 3px solid var(--border); box-shadow: 0 12px 36px rgba(0,0,0,0.2);
-  }
-  .pin-dots {
-    font-size: 1.8rem; letter-spacing: 6px; background: #F1F5F9;
-    padding: 10px; border-radius: 12px; margin: 14px 0; font-weight: 900;
-  }
-  .keypad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .key-btn {
-    padding: 12px; font-size: 1.25rem; font-weight: 800; border-radius: 12px;
-    border: 2px solid #E2E8F0; background: #F8FAFC; cursor: pointer;
-  }
-</style>
+    /* ASANA FINALE */
+    #celebrationFinaleStage {
+      position: fixed;
+      inset: 0;
+      z-index: 100000;
+      display: none;
+      overflow: hidden;
+      background: radial-gradient(circle at center, rgba(30, 15, 6, 0.45) 0%, rgba(14, 7, 2, 0.92) 100%);
+      backdrop-filter: blur(6px);
+    }
+    #finaleCanvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+    .victory-scroll-box {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.3);
+      width: 90%;
+      max-width: 540px;
+      background: #FFFDF9;
+      border: 4px solid var(--gold-primary);
+      border-radius: 28px;
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 14px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85);
+      opacity: 0;
+      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+      z-index: 20;
+    }
+    .victory-scroll-box.impact {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+  </style>
 </head>
 <body>
 
-<div id="screenDimOverlay"></div>
-
-<div class="orientation-warning">
-  <div class="icon">📱</div>
-  <h2>Please Rotate Tablet to Landscape</h2>
-  <p>Humayun's Word Quest works best in tablet landscape mode.</p>
-</div>
-
-<div class="app">
-
-  <div class="header">
-    <div class="header-title" id="headerTitle">
-      <a href="javascript:void(0)" onclick="goToHub()" class="header-action-btn">🏠 Hub</a>
-      <span class="icon">🗺️</span>
-      <span>Humayun's Word Quest</span>
+  <!-- TOP HUD -->
+  <header class="top-hud-bar">
+    <div class="hud-left">
+      <button type="button" class="hud-btn" onclick="goToHub()">🪷 Hub</button>
+      <button type="button" class="hud-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+      <button type="button" class="pen-toggle-btn" id="btnPenMode" onclick="togglePenMode()">👆 Touch Mode</button>
     </div>
-    <div class="header-actions">
-      <button type="button" class="header-action-btn" id="btnInputMode" onclick="toggleInputMode()">🖊️ Pen Only</button>
-      <button type="button" class="header-action-btn" id="btnFullscreen" onclick="toggleFullscreen()">⛶ Fullscreen</button>
-      <button type="button" class="header-action-btn" id="dimBtn" onclick="toggleScreenDim()">💡 Dim</button>
+
+    <div class="story-title-banner">
+      <span>📚</span>
+      <span>LA-1: The Girl Who Hated Books</span>
     </div>
-  </div>
 
-  <div class="mode-tabs">
-    <button class="mode-tab active-practice" id="mode-practice" onclick="setMode('study')">📖 Practice</button>
-    <button class="mode-tab" id="mode-write" onclick="setMode('write')">✍️ Write (Test)</button>
-    <button class="mode-tab" id="mode-parent" onclick="openPinModal()">🔒 Parent Review</button>
-  </div>
-
-  <div class="section-tabs">
-    <button class="section-tab active" id="tab-meanings" onclick="selectSection('meanings')">📖 Meanings</button>
-    <button class="section-tab" id="tab-opposites" onclick="selectSection('opposites')">🔄 Opposites</button>
-    <button class="section-tab" id="tab-sentences" onclick="selectSection('sentences')">✏️ Sentences</button>
-    <button class="section-tab" id="tab-qa" onclick="selectSection('qa')">❓ Short Q&amp;A</button>
-    <button class="section-tab" id="tab-long_qa" onclick="selectSection('long_qa')">📝 Long Q&amp;A</button>
-  </div>
-
-  <!-- WORKSPACE -->
-  <main class="workspace" id="mainWorkspace"></main>
-
-  <!-- BOTTOM BAR (SHOWN IN SPLIT VIEW) -->
-  <div class="bottom-bar" id="bottomBar">
-    <div class="bottom-left">
-      <button class="btn btn-primary" id="btnPrev" onclick="navigateStep(-1)">◀ Back</button>
-      <button class="btn btn-primary" id="btnNext" onclick="navigateStep(1)">Next ▶</button>
-      <span id="splitPager" style="font-size:0.9rem; font-weight:800; color:var(--ink-soft); margin-left:6px;">1 / 8</span>
+    <div class="hud-right">
+      <button type="button" class="hud-btn" onclick="returnToPortalMenu()">🏰 Portals</button>
     </div>
-    <div class="bottom-right">
-      <button class="btn btn-green" id="btnDoneCard" onclick="markCardDone()">✅ Done &amp; Save</button>
-    </div>
-  </div>
+  </header>
 
-</div>
+  <!-- MASTER STAGE -->
+  <main class="master-stage-frame" id="masterStageContainer">
+    <div class="scenic-dim-veil"></div>
 
-<!-- PARENT PIN MODAL -->
-<div id="modalPin" class="modal-overlay">
-  <div class="modal-box">
-    <h3 style="font-weight:900; color:var(--ink);">Parent Access</h3>
-    <p style="font-size:0.85rem; color:var(--ink-soft); margin-top:4px;">Enter 4-digit PIN</p>
-    <div class="pin-dots" id="pinDots">----</div>
-    <div class="keypad-grid">
-      <button class="key-btn" onclick="pressPin('1')">1</button>
-      <button class="key-btn" onclick="pressPin('2')">2</button>
-      <button class="key-btn" onclick="pressPin('3')">3</button>
-      <button class="key-btn" onclick="pressPin('4')">4</button>
-      <button class="key-btn" onclick="pressPin('5')">5</button>
-      <button class="key-btn" onclick="pressPin('6')">6</button>
-      <button class="key-btn" onclick="pressPin('7')">7</button>
-      <button class="key-btn" onclick="pressPin('8')">8</button>
-      <button class="key-btn" onclick="pressPin('9')">9</button>
-      <button class="key-btn" onclick="clearPin()">C</button>
-      <button class="key-btn" onclick="pressPin('0')">0</button>
-      <button class="key-btn" onclick="closePinModal()">✕</button>
-    </div>
-  </div>
-</div>
+    <!-- STAGE 0: CENTRAL DIMMED HUB -->
+    <section class="central-hub-stage" id="centralHubStage">
+      <div class="hub-header-prompt">
+        Choose a magical storybook portal to master:
+      </div>
 
-<script>
-const PARENT_PIN = "1995";
-let enteredPin = "";
-let inputRejectionMode = "pen-only"; // 'pen-only' | 'all'
-
-const MASTER_LESSON_CONTENT = {
-  meanings: [
-    { id: "m1", word: "encyclopaedia", answer: "a book with facts on many subjects" },
-    { id: "m2", word: "stack", answer: "arrange one on top of the other" },
-    { id: "m3", word: "topple", answer: "overbalance and fall" },
-    { id: "m4", word: "scatter", answer: "to throw things all over" },
-    { id: "m5", word: "troll", answer: "an ugly giant" },
-    { id: "m6", word: "nibble", answer: "a small quick bite" },
-    { id: "m7", word: "wriggle", answer: "twist and turn with quick movement" },
-    { id: "m8", word: "nervous", answer: "feeling worry" }
-  ],
-  opposites: [
-    { id: "o1", word: "top", answer: "bottom" },
-    { id: "o2", word: "up", answer: "down" },
-    { id: "o3", word: "found", answer: "lost" },
-    { id: "o4", word: "begin", answer: "end" },
-    { id: "o5", word: "loud", answer: "quiet" },
-    { id: "o6", word: "hard", answer: "soft" },
-    { id: "o7", word: "under", answer: "over" }
-  ],
-  sentences: [
-    { id: "s1", tab: "1. rescue", word: "rescue", answer: "the fireman came to rescue the kitten from the tree." },
-    { id: "s2", tab: "2. grab", word: "grab", answer: "the monkey tried to grab the banana from my hand." },
-    { id: "s3", tab: "3. strange", word: "strange", answer: "the dog made a strange noise at night" },
-    { id: "s4", tab: "4. anxious", word: "anxious", answer: "I felt anxious before my test results" }
-  ],
-  qa: [
-    { id: "q1", tab: "Q1: Annoyed", word: "Why was Meena annoyed at the sight of books?", answer: "Meena was annoyed because in her house her parents were always reading and buying more books." },
-    { id: "q2", tab: "Q2: Book Locations", word: "Where were books kept in her house?", answer: "Books were kept in drawers desks, cupboards, chests on the sofa, on the stairs, in the fireplace, and stacked on chairs." },
-    { id: "q3", tab: "Q3: Rescue Max", word: "What did Meena do to rescue Max?", answer: "Meena climbed the tall stack to rescue Max who was stuck on top." },
-    { id: "q4", tab: "Q4: Books Fell Down", word: "What began to happen when the books fell down?", answer: "When the books fell down all the characters from the book came out princes, princesses, fairies, elephants, monkeys, rabbits and many more." }
-  ],
-  long_qa: [
-    { id: "lq1", tab: "Q1: Meena Read", word: "What made Meena read the books and how did it help her?", answer: "All the characters from the books came out and made noise in her room. To make them go back, Meena started enjoying the stories and she began to love reading stories every single day." },
-    { id: "lq2", tab: "Q2: Animal Feelings", word: "How did the animals feel when they were out of their books?", answer: "When the animals were out of their books they felt confused and scared. They did not know where they belonged and wanted to go back to their own stories because they felt safe inside their books." }
-  ]
-};
-
-let activeLessonContent = JSON.parse(JSON.stringify(MASTER_LESSON_CONTENT));
-let currentSectionKey = "meanings";
-let currentIndex = 0;
-let appMode = "study"; // 'study' | 'write' | 'parent'
-
-let activeTool = "pen";
-let activeBaseSize = 4;
-let isDrawing = false;
-let lastX = 0, lastY = 0;
-let activePointerId = null;
-
-let canvas = null;
-let ctx = null;
-
-function speakText(txt) {
-  if (!('speechSynthesis' in window)) return;
-  window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(txt);
-  u.lang = "en-US";
-  u.rate = 0.9;
-  window.speechSynthesis.speak(u);
-}
-
-function goToHub() {
-  if ('speechSynthesis' in window) {
-    try { window.speechSynthesis.cancel(); } catch (e) {}
-  }
-  saveCurrentDrawing();
-  if (window.parent && window.parent !== window) {
-    window.parent.postMessage("close-lesson-to-hub", "*");
-  } else {
-    window.location.href = "index.html";
-  }
-}
-
-function toggleFullscreen() {
-  if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-    const el = document.documentElement;
-    if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
-    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-  } else {
-    if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
-    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-  }
-}
-
-function toggleScreenDim() {
-  const el = document.getElementById("screenDimOverlay");
-  const btn = document.getElementById("dimBtn");
-  const isDim = el.style.display === "block";
-  el.style.display = isDim ? "none" : "block";
-  btn.textContent = isDim ? "💡 Dim" : "☀️ Bright";
-}
-
-function toggleInputMode() {
-  inputRejectionMode = (inputRejectionMode === "pen-only") ? "all" : "pen-only";
-  const btn = document.getElementById("btnInputMode");
-  btn.innerHTML = (inputRejectionMode === "pen-only") ? "🖊️ Pen Only" : "👆 Any Touch";
-}
-
-function isNotepadSection() {
-  return currentSectionKey === "sentences" || currentSectionKey === "qa" || currentSectionKey === "long_qa";
-}
-
-function getCurrentList() { return activeLessonContent[currentSectionKey]; }
-function getCurrentItem() { return getCurrentList()[currentIndex]; }
-
-function shuffleArray(arr) {
-  const a = arr.slice();
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-function applyOrderForMode() {
-  if (appMode === "write") {
-    activeLessonContent = {
-      meanings: shuffleArray(MASTER_LESSON_CONTENT.meanings),
-      opposites: shuffleArray(MASTER_LESSON_CONTENT.opposites),
-      sentences: MASTER_LESSON_CONTENT.sentences,
-      qa: MASTER_LESSON_CONTENT.qa,
-      long_qa: MASTER_LESSON_CONTENT.long_qa
-    };
-  } else {
-    activeLessonContent = JSON.parse(JSON.stringify(MASTER_LESSON_CONTENT));
-  }
-}
-
-/* BULLETPROOF MODE TOGGLE */
-function setMode(mode) {
-  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-  
-  // 1. Save outgoing drawing in the current mode
-  saveCurrentDrawing();
-  
-  // 2. Switch mode cleanly
-  appMode = mode;
-  document.body.className = (mode === "write") ? "write-mode" : (mode === "parent" ? "parent-mode" : "");
-
-  document.getElementById("mode-practice").className = "mode-tab" + (mode === "study" ? " active-practice" : "");
-  document.getElementById("mode-write").className = "mode-tab" + (mode === "write" ? " active-write" : "");
-  document.getElementById("mode-parent").className = "mode-tab" + (mode === "parent" ? " active-parent" : "");
-
-  applyOrderForMode();
-  currentIndex = 0;
-  
-  // 3. Render without saving to prevent cross-contamination
-  renderWorkspace(false);
-}
-
-function selectSection(secKey) {
-  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-  saveCurrentDrawing();
-  currentSectionKey = secKey;
-  currentIndex = 0;
-  updateSectionTabs();
-  renderWorkspace(false);
-}
-
-function updateSectionTabs() {
-  document.querySelectorAll(".section-tab").forEach(t => {
-    t.classList.toggle("active", t.id === "tab-" + currentSectionKey);
-  });
-}
-
-function navigateStep(dir) {
-  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-  saveCurrentDrawing();
-  const list = getCurrentList();
-  const next = currentIndex + dir;
-  if (next >= 0 && next < list.length) {
-    currentIndex = next;
-    renderWorkspace(false);
-  }
-}
-
-function jumpToCard(idx) {
-  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-  saveCurrentDrawing();
-  if (idx >= 0 && idx < getCurrentList().length) {
-    currentIndex = idx;
-    renderWorkspace(false);
-  }
-}
-
-function switchSubTab(idx) {
-  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-  saveCurrentDrawing();
-  currentIndex = idx;
-  renderWorkspace(false);
-}
-
-/* WORKSPACE RENDERER */
-function renderWorkspace(doSave = true) {
-  if (doSave) saveCurrentDrawing();
-
-  const container = document.getElementById("mainWorkspace");
-  const bottomBar = document.getElementById("bottomBar");
-
-  if (isNotepadSection()) {
-    bottomBar.style.display = "none";
-    renderNotepadLayout(container);
-  } else {
-    bottomBar.style.display = "flex";
-    renderSplitLayout(container);
-  }
-}
-
-/* 1. SPLIT VIEW (MEANINGS & OPPOSITES) */
-function renderSplitLayout(container) {
-  const list = getCurrentList();
-  const item = getCurrentItem();
-  if (!item) return;
-
-  document.getElementById("btnPrev").disabled = (currentIndex === 0);
-  document.getElementById("btnNext").disabled = (currentIndex === list.length - 1);
-  document.getElementById("splitPager").innerText = `${currentIndex + 1} / ${list.length}`;
-
-  let promptHtml = "";
-  let hintHtml = "";
-  if (currentSectionKey === "meanings") {
-    promptHtml = `Word: <u>${item.word}</u>`;
-    hintHtml = `<b>Meaning:</b> ${item.answer}`;
-  } else {
-    promptHtml = `Opposite of <u>${item.word}</u> = <span class="blank">?</span>`;
-    hintHtml = `<b>Opposite:</b> ${item.word} &times; <b>${item.answer}</b>`;
-  }
-
-  container.innerHTML = `
-    <div class="split-layout">
-      <div class="split-left">
-        <div class="prompt-card">
-          <div class="card-category-row">
-            <div class="card-category">${currentSectionKey === "meanings" ? "📖 Meanings" : "🔄 Opposites"}</div>
-            <span style="font-size:0.85rem; font-weight:800; color:var(--ink-soft);">${currentIndex + 1} / ${list.length}</span>
-          </div>
-          <div class="prompt-text speakable" onclick="speakText('${item.word}')">${promptHtml}</div>
-          <div class="hint-box speakable" onclick="speakText('${item.answer}')">${hintHtml}</div>
-          <div class="test-locked-alert">Write from memory on the dual-line pad.</div>
+      <div class="hub-portals-grid">
+        <div class="hub-portal-card" onclick="enterZone('meanings')">
+          <div class="portal-icon">📖</div>
+          <div class="portal-title">Word Vault</div>
+          <div class="portal-sub">Meanings & Phonics</div>
         </div>
 
-        <div class="map-card">
-          <div class="map-title">
-            <span>🗺️ Quest Map</span>
-            <span id="mapProgress">0 / ${list.length} ⭐</span>
-          </div>
-          <div class="map-grid" id="mapGrid"></div>
+        <div class="hub-portal-card" onclick="enterZone('opposites')">
+          <div class="portal-icon">🔄</div>
+          <div class="portal-title">Opposites</div>
+          <div class="portal-sub">Antonym Flippers</div>
         </div>
 
-        <div class="parent-review-strip" style="${appMode === 'parent' ? 'display:flex;' : 'display:none;'}">
-          <div class="parent-ans-text"><b>Answer:</b> ${item.answer}</div>
-          <div class="grade-row">
-            <button class="grade-btn pass" onclick="saveGrade('correct')">⭐ Correct</button>
-            <button class="grade-btn retry" onclick="saveGrade('retry')">🔄 Try Again</button>
-          </div>
+        <div class="hub-portal-card" onclick="enterZone('sentences')">
+          <div class="portal-icon">✍️</div>
+          <div class="portal-title">Sentence Forge</div>
+          <div class="portal-sub">Frame Sentences</div>
+        </div>
+
+        <div class="hub-portal-card" onclick="enterZone('questions')">
+          <div class="portal-icon">🏰</div>
+          <div class="portal-title">Story Quests</div>
+          <div class="portal-sub">Short & Long Q&A</div>
         </div>
       </div>
 
-      <div class="split-right">
-        <div class="canvas-card">
-          <div class="canvas-toolbar">
-            <div class="tool-group">
-              <button class="tool-btn active" id="toolPen" onclick="selectTool('pen')">✏️ Pen</button>
-              <button class="tool-btn" id="toolEraser" onclick="selectTool('eraser')">🧹 Eraser</button>
-              <button class="tool-btn" onclick="clearActiveCanvas()">🗑️ Clear</button>
+      <div class="hub-characters-row">
+        <img src="assets/meena-character.webp" class="hub-meena-anchor" alt="Meena" onerror="handleImageFallback(this)" />
+        <img src="assets/max-cat.webp" class="hub-max-anchor" alt="Max the Cat" onclick="playCatMeow()" onerror="handleImageFallback(this)" />
+      </div>
+    </section>
+
+    <!-- SLIDE DECK WORKSTATION (ACTIVE ZONE SLIDES) -->
+    <section class="slide-deck-stage" id="slideDeckStage">
+      <div class="palm-scroll-banner-box">
+        <div class="banner-quest-title" id="bannerHeaderTitle">Word Vault: Meanings</div>
+        <button type="button" class="freely-floating-max-btn" onclick="speakCurrentTarget()" title="Speak">
+          <img src="assets/max-cat.webp" class="max-sprite-img" alt="Max" onerror="handleImageFallback(this)" />
+        </button>
+      </div>
+
+      <div class="slide-body-viewport" id="slideBodyViewport"></div>
+
+      <div class="workspace-footer-bar">
+        <span class="status-notice-pill" id="statusNoticeText">Snap the syllables, then write on the slate!</span>
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="hud-btn" onclick="stepItem(-1)">◀ Prev</button>
+          <button type="button" class="btn-verify-seal" onclick="verifyCurrentWork()">Verify ✨</button>
+          <button type="button" class="hud-btn" onclick="stepItem(1)">Next ▶</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- SELF-CHECK CURTAIN -->
+  <div id="selfCheckDrawer">
+    <div class="self-check-card">
+      <div style="font-family:var(--font-story); font-size:1.4rem; font-weight:800; color:#92400E;">
+        ✨ Teacher's Exact Answer Key
+      </div>
+      <div class="self-check-answer-key" id="selfCheckAnswerKey"></div>
+      <div style="font-size:1rem; font-weight:800; color:#3C1904;">
+        Did you write your answer correctly on the slate?
+      </div>
+      <div style="display:flex; gap:16px; margin-top:8px;">
+        <button type="button" class="hud-btn" onclick="closeSelfCheck(false)">🔄 Rewrite / Practice</button>
+        <button type="button" class="btn-verify-seal" onclick="closeSelfCheck(true)">⭐ Matches Teacher Note!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ASANA FINALE -->
+  <div id="celebrationFinaleStage">
+    <canvas id="finaleCanvas"></canvas>
+    <div class="victory-scroll-box" id="victoryScrollBox">
+      <div style="font-size:3.5rem;">🎉</div>
+      <div style="font-family:var(--font-story); font-size:2rem; font-weight:800; color:#92400E;">
+        Awesome Job, Humayun!
+      </div>
+      <div style="font-size:1.15rem; font-weight:800; color:#3C1904; line-height:1.6;">
+        You have mastered all the classwork meanings, opposites, frame sentences, and questions for "The Girl Who Hated Books"!
+      </div>
+      <button type="button" class="btn-verify-seal" onclick="closeCelebrationStage()">Continue to Hub ➔</button>
+    </div>
+  </div>
+
+  <script>
+    /* PURE ENGLISH VOICE SYNTHESIS */
+    function speakText(text) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = 'en-US';
+      u.rate = 0.88;
+      window.speechSynthesis.speak(u);
+    }
+
+    /* WEBAUDIO SOUND ENGINE */
+    class ProceduralAudio {
+      constructor() { this.ctx = null; }
+      init() {
+        if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+      }
+      playSnap() {
+        this.init();
+        const t0 = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(320, t0);
+        osc.frequency.exponentialRampToValueAtTime(140, t0 + 0.08);
+        gain.gain.setValueAtTime(0.4, t0);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.09);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(t0);
+        osc.stop(t0 + 0.1);
+      }
+      playBell() {
+        this.init();
+        const t0 = this.ctx.currentTime;
+        [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(f, t0 + i * 0.06);
+          gain.gain.setValueAtTime(0.2, t0 + i * 0.06);
+          gain.gain.exponentialRampToValueAtTime(0.001, t0 + i * 0.06 + 1.2);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(t0 + i * 0.06);
+          osc.stop(t0 + i * 0.06 + 1.25);
+        });
+      }
+      playMeow() {
+        this.init();
+        const t0 = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, t0);
+        osc.frequency.exponentialRampToValueAtTime(620, t0 + 0.15);
+        osc.frequency.exponentialRampToValueAtTime(380, t0 + 0.35);
+        gain.gain.setValueAtTime(0.25, t0);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.38);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(t0);
+        osc.stop(t0 + 0.4);
+      }
+    }
+    const audioFX = new ProceduralAudio();
+    function playCatMeow() { audioFX.playMeow(); speakText("Meow! Let's read!"); }
+
+    function toggleFullscreen() {
+      const el = document.documentElement;
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      }
+    }
+
+    let penOnlyMode = false;
+    function togglePenMode() {
+      penOnlyMode = !penOnlyMode;
+      const btn = document.getElementById('btnPenMode');
+      btn.textContent = penOnlyMode ? "🖊️ S-Pen Active" : "👆 Touch Mode";
+      btn.classList.toggle('pen-active', penOnlyMode);
+    }
+
+    function goToHub() {
+      saveAllCanvases();
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage("close-lesson-to-hub", "*");
+      } else {
+        window.location.href = "index.html";
+      }
+    }
+
+    function handleImageFallback(img) {
+      img.onerror = null;
+      img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><circle cx='70' cy='70' r='65' fill='%23FEF3C7' stroke='%23D97706' stroke-width='4'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='50'>📚</text></svg>";
+    }
+
+    /* MASTER CLASSWORK DATASETS (EXACT TEACHER WORDING) */
+    const MEANINGS_DATA = [
+      { prompt: "nervous", answer: "feeling worried", targetSnaps: ["wor", "ried"], sprite: "assets/troll.webp" },
+      { prompt: "encyclopaedia", answer: "a book with facts on many subjects", targetSnaps: ["sub", "jects"], sprite: "assets/rabbit.webp" },
+      { prompt: "stack", answer: "arrange one on top of the other", targetSnaps: ["ar", "range"], sprite: "assets/knight.webp" },
+      { prompt: "topple", answer: "overbalance and fall", targetSnaps: ["o", "ver", "bal", "ance"], sprite: "assets/fairy.webp" },
+      { prompt: "scatter", answer: "to throw things all over", targetSnaps: ["scat", "ter"], sprite: "assets/troll.webp" },
+      { prompt: "troll", answer: "an ugly giant", targetSnaps: ["gi", "ant"], sprite: "assets/troll.webp" },
+      { prompt: "nibble", answer: "a small quick bite", targetSnaps: ["nib", "ble"], sprite: "assets/rabbit.webp" },
+      { prompt: "wriggle", answer: "twist and turn with quick movement", targetSnaps: ["move", "ment"], sprite: "assets/fairy.webp" }
+    ];
+
+    const OPPOSITES_DATA = [
+      { prompt: "top", answer: "bottom", targetSnaps: ["bot", "tom"], sprite: "assets/knight.webp" },
+      { prompt: "up", answer: "down", targetSnaps: ["down"], sprite: "assets/rabbit.webp" },
+      { prompt: "found", answer: "lost", targetSnaps: ["lost"], sprite: "assets/troll.webp" },
+      { prompt: "begin", answer: "end", targetSnaps: ["end"], sprite: "assets/fairy.webp" },
+      { prompt: "loud", answer: "quiet", targetSnaps: ["qui", "et"], sprite: "assets/troll.webp" },
+      { prompt: "hard", answer: "soft", targetSnaps: ["soft"], sprite: "assets/rabbit.webp" },
+      { prompt: "under", answer: "over", targetSnaps: ["o", "ver"], sprite: "assets/knight.webp" }
+    ];
+
+    const SENTENCES_DATA = [
+      { prompt: "rescue", answer: "The fireman came to rescue the kitten from the tree.", targetSnaps: ["fire", "man", "kit", "ten"], sprite: "assets/knight.webp" },
+      { prompt: "grab", answer: "The monkey tried to grab the banana from my hand.", targetSnaps: ["mon", "key", "ba", "na", "na"], sprite: "assets/rabbit.webp" },
+      { prompt: "strange", answer: "The dog made a strange noise at night.", targetSnaps: ["strange", "noise"], sprite: "assets/troll.webp" },
+      { prompt: "anxious", answer: "I felt anxious before my test results.", targetSnaps: ["anx", "ious", "re", "sults"], sprite: "assets/fairy.webp" }
+    ];
+
+    const QUESTIONS_DATA = [
+      {
+        type: "short",
+        prompt: "Why was Meena annoyed at the sight of books?",
+        answer: "Meena was annoyed because there were books everywhere in her house. Her parents were always reading and buying more books.",
+        borrowed: "Meena was annoyed because there were books",
+        targetSnaps: ["eve", "ry", "where", "par", "ents"],
+        sprite: "assets/meena-character.webp"
+      },
+      {
+        type: "short",
+        prompt: "Where were books kept in her house?",
+        answer: "Books were kept in drawers, cupboards, chests, on desks, the sofa, on the stairs, in the fireplace and stacked on chairs.",
+        borrowed: "Books were kept in",
+        targetSnaps: ["draw", "ers", "cup", "boards", "fire", "place"],
+        sprite: "assets/rabbit.webp"
+      },
+      {
+        type: "short",
+        prompt: "What did Meena do to rescue Max?",
+        answer: "Meena climbed the tall stack of books to rescue Max who was stuck on top.",
+        borrowed: "Meena climbed the tall stack of books to rescue Max who was",
+        targetSnaps: ["climbed", "stuck"],
+        sprite: "assets/knight.webp"
+      },
+      {
+        type: "short",
+        prompt: "What began to happen when the books fell down?",
+        answer: "When the books fell down all the characters from the book came out - princes, princesses, fairies, elephants, monkeys, rabbits and many more.",
+        borrowed: "When the books fell down all the characters from the book came out -",
+        targetSnaps: ["char", "ac", "ters", "prin", "cess", "es", "el", "e", "phants"],
+        sprite: "assets/fairy.webp"
+      },
+      {
+        type: "long",
+        prompt: "What made Meena read the books and how did it help her? (30-50 words)",
+        answer: "All the characters from the books came out and made noise in her room. To make them go back, she had to read the books. Meena started enjoying the stories and she began to love reading stories every single day.",
+        borrowed: "All the characters from the books came out...",
+        targetSnaps: ["char", "ac", "ters", "en", "joy", "ing", "sto", "ries"],
+        sprite: "assets/meena-character.webp"
+      },
+      {
+        type: "long",
+        prompt: "How did the animals feel when they were out of their books? (30-50 words)",
+        answer: "When the animals were out of their books, they felt confused and scared. They did not know where they belonged and wanted to go back to their own stories because they felt safe inside their books.",
+        borrowed: "When the animals were out of their books, they felt...",
+        targetSnaps: ["con", "fused", "be", "longed"],
+        sprite: "assets/rabbit.webp"
+      }
+    ];
+
+    /* RETINA DPR INK ENGINE */
+    const activeInkCache = {};
+    const hasDrawnMap = {};
+
+    function getStorageKey(id) {
+      return `v1_meena_cw::ink::${activeZone}::${id}`;
+    }
+
+    function setupDualCanvases() {
+      const dpr = window.devicePixelRatio || 1;
+      document.querySelectorAll(".retina-ink-canvas").forEach(c => {
+        const id = c.getAttribute("data-canvas-id");
+        const bRect = c.parentElement.getBoundingClientRect();
+        const logicalW = Math.round(bRect.width) || 540;
+        const logicalH = Math.round(bRect.height) || 95;
+
+        c.width = Math.round(logicalW * dpr);
+        c.height = Math.round(logicalH * dpr);
+
+        const ctx = c.getContext("2d", { willReadFrequently: false });
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, logicalW, logicalH);
+
+        const storageKey = getStorageKey(id);
+        const cached = activeInkCache[storageKey] || localStorage.getItem(storageKey);
+
+        if (cached) {
+          activeInkCache[storageKey] = cached;
+          hasDrawnMap[id] = true;
+          const img = new Image();
+          img.onload = () => {
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.drawImage(img, 0, 0, logicalW, logicalH);
+          };
+          img.src = cached;
+        }
+
+        let isDrawing = false;
+        let lastX = 0, lastY = 0;
+        const baseTip = 1.8;
+
+        c.onpointerdown = (e) => {
+          if (penOnlyMode && e.pointerType !== "pen" && e.pointerType !== "mouse") {
+            e.preventDefault();
+            return;
+          }
+          isDrawing = true;
+          hasDrawnMap[id] = true;
+          try { c.setPointerCapture(e.pointerId); } catch (_) {}
+          const rect = c.getBoundingClientRect();
+          lastX = e.clientX - rect.left;
+          lastY = e.clientY - rect.top;
+          e.preventDefault();
+        };
+
+        c.onpointermove = (e) => {
+          if (!isDrawing) return;
+          if (penOnlyMode && e.pointerType !== "pen" && e.pointerType !== "mouse") return;
+
+          const rect = c.getBoundingClientRect();
+          const currX = e.clientX - rect.left;
+          const currY = e.clientY - rect.top;
+
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          ctx.beginPath();
+          ctx.moveTo(lastX, lastY);
+          ctx.lineTo(currX, currY);
+          ctx.lineCap = "round";
+          ctx.lineJoin = "round";
+          ctx.strokeStyle = "#1E3A8A";
+
+          const rawP = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
+          ctx.lineWidth = baseTip * (rawP * 1.35 + 0.35);
+          ctx.stroke();
+
+          lastX = currX;
+          lastY = currY;
+          e.preventDefault();
+        };
+
+        const stopStroke = (e) => {
+          if (isDrawing) {
+            isDrawing = false;
+            try { c.releasePointerCapture(e.pointerId); } catch (_) {}
+            saveDualCanvas(c, id);
+          }
+        };
+
+        c.onpointerup = stopStroke;
+        c.onpointercancel = stopStroke;
+      });
+    }
+
+    function saveDualCanvas(c, id) {
+      if (!hasDrawnMap[id]) return;
+      try {
+        const data = c.toDataURL("image/png");
+        const key = getStorageKey(id);
+        activeInkCache[key] = data;
+        localStorage.setItem(key, data);
+      } catch (e) {}
+    }
+
+    function saveAllCanvases() {
+      document.querySelectorAll(".retina-ink-canvas").forEach(c => {
+        const id = c.getAttribute("data-canvas-id");
+        if (hasDrawnMap[id]) saveDualCanvas(c, id);
+      });
+    }
+
+    function clearDualCanvas(id) {
+      const c = document.querySelector(`[data-canvas-id="${id}"]`);
+      if (c) {
+        const ctx = c.getContext("2d");
+        const dpr = window.devicePixelRatio || 1;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, c.width / dpr, c.height / dpr);
+        const key = getStorageKey(id);
+        delete activeInkCache[key];
+        hasDrawnMap[id] = false;
+        localStorage.removeItem(key);
+      }
+    }
+
+    /* WORKSTATION CONTROLLER */
+    let activeZone = null;
+    let activeItemIdx = 0;
+    let placedSnaps = [];
+
+    function returnToPortalMenu() {
+      saveAllCanvases();
+      document.getElementById('slideDeckStage').classList.remove('active-slide');
+      document.getElementById('masterStageContainer').classList.remove('slide-active');
+      document.getElementById('centralHubStage').classList.remove('hidden');
+    }
+
+    function enterZone(zoneKey) {
+      saveAllCanvases();
+      activeZone = zoneKey;
+      activeItemIdx = 0;
+      placedSnaps = [];
+
+      document.getElementById('centralHubStage').classList.add('hidden');
+      document.getElementById('masterStageContainer').classList.add('slide-active');
+      const stage = document.getElementById('slideDeckStage');
+      stage.classList.add('active-slide');
+
+      renderActiveItem();
+    }
+
+    function getDataset() {
+      if (activeZone === 'meanings') return MEANINGS_DATA;
+      if (activeZone === 'opposites') return OPPOSITES_DATA;
+      if (activeZone === 'sentences') return SENTENCES_DATA;
+      return QUESTIONS_DATA;
+    }
+
+    function renderActiveItem() {
+      saveAllCanvases();
+      placedSnaps = [];
+      const data = getDataset();
+      const item = data[activeItemIdx];
+
+      const viewport = document.getElementById('slideBodyViewport');
+      viewport.innerHTML = '';
+
+      // Set Banner Title
+      const titles = {
+        meanings: `Word Vault: Meanings (${activeItemIdx + 1}/${data.length})`,
+        opposites: `Opposites: Antonyms (${activeItemIdx + 1}/${data.length})`,
+        sentences: `Sentence Forge (${activeItemIdx + 1}/${data.length})`,
+        questions: item.type === "long" ? `Long Answer Mastery (${activeItemIdx + 1}/${data.length})` : `Story Quest (${activeItemIdx + 1}/${data.length})`
+      };
+      document.getElementById('bannerHeaderTitle').textContent = titles[activeZone];
+
+      const splitCard = document.createElement('div');
+      splitCard.className = 'two-pane-split-card';
+
+      // Left Prompt Pane
+      splitCard.innerHTML = `
+        <div class="left-prompt-box">
+          <img src="${item.sprite}" class="prompt-character-badge" alt="" onerror="handleImageFallback(this)" />
+          <div style="font-size:0.9rem; font-weight:800; color:#78350F;">${activeZone === 'questions' ? 'QUESTION:' : 'PROMPT WORD:'}</div>
+          <div class="prompt-main-word" style="${activeZone === 'questions' ? 'font-size:1.3rem;' : ''}">${item.prompt}</div>
+          <button type="button" class="hud-btn" onclick="speakText('${item.prompt.replace(/'/g, "\\'")}')">🔊 Read Aloud</button>
+        </div>
+      `;
+
+      // Right Answer & Writing Pane
+      const rightPane = document.createElement('div');
+      rightPane.className = 'right-answer-box';
+
+      // Syllable Snap Target Section
+      const scrambled = [...item.targetSnaps].sort(() => Math.random() - 0.5);
+      let snapHTML = `
+        <div class="syllable-snap-rack">
+          <div class="snap-label">🎯 Break down & spell the long answer words:</div>
+          <div class="snap-tokens-row" id="tokensRow">
+      `;
+      scrambled.forEach((syl, i) => {
+        snapHTML += `<div class="syllable-tile" id="snap_tile_${i}" onclick="placeSyllable('${syl}', 'snap_tile_${i}')">${syl}</div>`;
+      });
+      snapHTML += `
+          </div>
+          <div style="font-family:var(--font-story); font-size:1.1rem; font-weight:800; color:#15803D; min-height:24px;" id="assembledSnapWord"></div>
+        </div>
+      `;
+
+      rightPane.innerHTML = snapHTML;
+
+      // Handwriting Slate
+      const slateId = `slate_${activeZone}_${activeItemIdx}`;
+      rightPane.innerHTML += `
+        <div style="width:100%;">
+          <div style="font-size:0.85rem; font-weight:800; color:#78350F; margin-bottom:4px;">✍️ S-Pen Ruled Slate: Write the answer:</div>
+          <div class="ruled-canvas-container">
+            <div class="ruled-canvas-wrap">
+              <div class="four-line-guidelines"></div>
+              <canvas class="retina-ink-canvas" data-canvas-id="${slateId}"></canvas>
             </div>
-            <div class="tool-group">
-              <button class="tool-btn" id="sizeThin" onclick="setStrokeSize(2)">Thin</button>
-              <button class="tool-btn active" id="sizeMed" onclick="setStrokeSize(4)">Med</button>
-              <button class="tool-btn" id="sizeThick" onclick="setStrokeSize(7)">Thick</button>
-            </div>
-          </div>
-          <div class="canvas-wrap" id="canvasWrap">
-            <div class="dual-ruled-lines"></div>
-            <canvas id="activeCanvas"></canvas>
+            <button type="button" class="canvas-clear-btn" onclick="clearDualCanvas('${slateId}')" title="Clear">🧹</button>
           </div>
         </div>
-      </div>
-    </div>
-  `;
+      `;
 
-  renderMap();
-  setTimeout(() => {
-    initCanvasElement();
-  }, 40);
-}
+      splitCard.appendChild(rightPane);
+      viewport.appendChild(splitCard);
 
-/* 2. FULL-WIDTH NOTEPAD (SENTENCES, SHORT Q&A, LONG Q&A) */
-function renderNotepadLayout(container) {
-  const list = getCurrentList();
-  const item = getCurrentItem();
-  if (!item) return;
+      setTimeout(setupDualCanvases, 40);
+    }
 
-  let promptTitle = "";
-  if (currentSectionKey === "sentences") {
-    promptTitle = `Frame a sentence with: <u class="speakable" onclick="speakText('${item.word}')">${item.word}</u>`;
-  } else {
-    promptTitle = `<span class="speakable" onclick="speakText('${item.word}')">${item.word}</span>`;
-  }
+    function placeSyllable(syl, tileId) {
+      audioFX.playSnap();
+      speakText(syl);
+      placedSnaps.push(syl);
+      document.getElementById(tileId).classList.add('placed');
+      document.getElementById('assembledSnapWord').textContent = `Assembled: ${placedSnaps.join(' • ')}`;
+    }
 
-  container.innerHTML = `
-    <div class="notepad-layout">
-      <div class="subtabs-bar">
-        ${list.map((it, idx) => `
-          <button class="subtab-btn ${idx === currentIndex ? 'active' : ''}" onclick="switchSubTab(${idx})">
-            ${it.tab || it.word}
-          </button>
-        `).join("")}
-      </div>
+    function speakCurrentTarget() {
+      const data = getDataset();
+      const item = data[activeItemIdx];
+      speakText(`${item.prompt}. ${item.answer}`);
+    }
 
-      <div class="notepad-prompt-bar">
-        <div>${promptTitle}</div>
-        <div class="notepad-model-ans speakable" onclick="speakText('${item.answer}')">
-          <b>Model Answer:</b> ${item.answer}
-        </div>
-      </div>
+    function stepItem(dir) {
+      saveAllCanvases();
+      const data = getDataset();
+      activeItemIdx = (activeItemIdx + dir + data.length) % data.length;
+      renderActiveItem();
+    }
 
-      <div class="parent-review-strip" style="${appMode === 'parent' ? 'display:flex;' : 'display:none;'}">
-        <div class="parent-ans-text"><b>Teacher Answer:</b> ${item.answer}</div>
-        <div class="grade-row">
-          <button class="grade-btn pass" onclick="saveGrade('correct')">⭐ Correct</button>
-          <button class="grade-btn retry" onclick="saveGrade('retry')">🔄 Try Again</button>
-        </div>
-      </div>
+    function verifyCurrentWork() {
+      const data = getDataset();
+      const item = data[activeItemIdx];
+      const slateId = `slate_${activeZone}_${activeItemIdx}`;
 
-      <div class="canvas-card" style="flex:1;">
-        <div class="canvas-toolbar">
-          <div class="tool-group">
-            <button class="tool-btn active" id="toolPen" onclick="selectTool('pen')">✏️ Pen</button>
-            <button class="tool-btn" id="toolEraser" onclick="selectTool('eraser')">🧹 Eraser</button>
-            <button class="tool-btn" onclick="clearActiveCanvas()">🗑️ Clear</button>
-          </div>
-          <div class="tool-group">
-            <button class="tool-btn" id="sizeThin" onclick="setStrokeSize(2)">Thin</button>
-            <button class="tool-btn active" id="sizeMed" onclick="setStrokeSize(4)">Med</button>
-            <button class="tool-btn" id="sizeThick" onclick="setStrokeSize(7)">Thick</button>
-          </div>
-        </div>
-        <div class="canvas-wrap" id="canvasWrap">
-          <div class="dual-ruled-lines"></div>
-          <canvas id="activeCanvas"></canvas>
-        </div>
-      </div>
-    </div>
-  `;
-
-  setTimeout(() => {
-    initCanvasElement();
-  }, 40);
-}
-
-/* FRESH NAMESPACE TO PERMANENTLY PREVENT CONTAMINATION */
-function currentStorageKey() {
-  const item = getCurrentItem();
-  if (!item) return null;
-  const targetSlot = (appMode === "parent") ? "write" : appMode;
-  return `v2_isolated_ink::humayun::eng_oct07::${targetSlot}::${item.id}`;
-}
-
-function initCanvasElement() {
-  canvas = document.getElementById("activeCanvas");
-  if (!canvas) return;
-  ctx = canvas.getContext("2d", { willReadFrequently: false });
-  fitCanvas();
-  restoreCurrentDrawing();
-  setupCanvasListeners();
-}
-
-function fitCanvas() {
-  if (!canvas) return;
-  const wrap = document.getElementById("canvasWrap");
-  if (!wrap || wrap.offsetParent === null) return;
-  const rect = wrap.getBoundingClientRect();
-  if (rect.width <= 0 || rect.height <= 0) return;
-
-  const dpr = window.devicePixelRatio || 1;
-  const targetW = Math.floor(rect.width * dpr);
-  const targetH = Math.floor(rect.height * dpr);
-
-  if (canvas.width === targetW && canvas.height === targetH) return;
-
-  canvas.width = targetW;
-  canvas.height = targetH;
-  canvas.style.width = rect.width + "px";
-  canvas.style.height = rect.height + "px";
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-}
-
-function saveCurrentDrawing() {
-  if (appMode === "parent") return; // Read-only in parent review
-  if (!canvas || canvas.width <= 0) return;
-  const key = currentStorageKey();
-  if (!key) return;
-  try {
-    const data = canvas.toDataURL("image/png");
-    localStorage.setItem(key, data);
-  } catch (e) {}
-}
-
-function restoreCurrentDrawing() {
-  if (!canvas || !ctx) return;
-  
-  // MANDATORY: ALWAYS CLEAR TO BLANK BEFORE CHECKING STORAGE
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
-  const key = currentStorageKey();
-  if (!key) return;
-  const saved = localStorage.getItem(key);
-  if (!saved) return;
-  const img = new Image();
-  img.onload = function() {
-    ctx.save();
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    ctx.restore();
-  };
-  img.src = saved;
-}
-
-function clearActiveCanvas() {
-  const key = currentStorageKey();
-  if (!key || !canvas || !ctx) return;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  localStorage.removeItem(key);
-}
-
-function selectTool(tool) {
-  activeTool = tool;
-  const p = document.getElementById("toolPen");
-  const e = document.getElementById("toolEraser");
-  if (p) p.classList.toggle("active", tool === "pen");
-  if (e) e.classList.toggle("active", tool === "eraser");
-}
-
-function setStrokeSize(size) {
-  activeBaseSize = size;
-  const t = document.getElementById("sizeThin");
-  const m = document.getElementById("sizeMed");
-  const k = document.getElementById("sizeThick");
-  if (t) t.classList.toggle("active", size === 2);
-  if (m) m.classList.toggle("active", size === 4);
-  if (k) k.classList.toggle("active", size === 7);
-}
-
-function setupCanvasListeners() {
-  if (!canvas) return;
-
-  canvas.onpointerdown = function(e) {
-    if (appMode === "parent") return; // Read-only
-    if (inputRejectionMode === "pen-only") {
-      if (e.pointerType !== "pen" && e.pointerType !== "mouse") {
-        e.preventDefault();
+      if (!hasDrawnMap[slateId]) {
+        document.getElementById('statusNoticeText').textContent = "Please write your answer on the slate before verifying!";
         return;
       }
+
+      audioFX.playBell();
+      document.getElementById('selfCheckAnswerKey').textContent = item.answer;
+      document.getElementById('selfCheckDrawer').style.display = 'flex';
     }
-    if (isDrawing && activePointerId !== null) return;
-    activePointerId = e.pointerId;
-    isDrawing = true;
-    try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
 
-    const rect = canvas.getBoundingClientRect();
-    lastX = e.clientX - rect.left;
-    lastY = e.clientY - rect.top;
-    e.preventDefault();
-  };
-
-  canvas.onpointermove = function(e) {
-    if (!isDrawing || e.pointerId !== activePointerId || appMode === "parent") return;
-
-    const rect = canvas.getBoundingClientRect();
-    const currX = e.clientX - rect.left;
-    const currY = e.clientY - rect.top;
-
-    ctx.beginPath();
-    ctx.moveTo(lastX, lastY);
-    ctx.lineTo(currX, currY);
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-
-    if (activeTool === "eraser") {
-      ctx.globalCompositeOperation = "destination-out";
-      ctx.lineWidth = activeBaseSize * 6;
-    } else {
-      ctx.globalCompositeOperation = "source-over";
-      ctx.strokeStyle = "#1F3A4B";
-      const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
-      ctx.lineWidth = activeBaseSize * (pressure * 1.5 + 0.35);
-    }
-    ctx.stroke();
-
-    lastX = currX;
-    lastY = currY;
-    e.preventDefault();
-  };
-
-  const stopStroke = function(e) {
-    if (isDrawing && (e.pointerId === activePointerId || activePointerId === null)) {
-      isDrawing = false;
-      activePointerId = null;
-      try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
-      saveCurrentDrawing();
-    }
-  };
-
-  canvas.onpointerup = stopStroke;
-  canvas.onpointercancel = stopStroke;
-  canvas.onpointerleave = stopStroke;
-}
-
-/* QUEST MAP */
-function renderMap() {
-  const grid = document.getElementById("mapGrid");
-  if (!grid) return;
-  const list = getCurrentList();
-  let html = "";
-  let correctCount = 0;
-
-  for (let i = 0; i < list.length; i++) {
-    const it = list[i];
-    const grade = localStorage.getItem(`grade::humayun::eng::${it.id}`);
-    const done = localStorage.getItem(`v2_isolated_ink::humayun::eng_oct07::study::${it.id}`) || 
-                 localStorage.getItem(`v2_isolated_ink::humayun::eng_oct07::write::${it.id}`);
-    let cls = "chest";
-    if (i === currentIndex) cls += " current";
-    if (grade === "correct") { cls += " correct"; correctCount++; }
-    else if (grade === "retry") cls += " retry";
-    else if (done) cls += " done";
-
-    let icon = "📦";
-    let badge = "";
-    if (grade === "correct") badge = "<span class='badge'>⭐</span>";
-    else if (grade === "retry") icon = "🔄";
-
-    html += `<div class="${cls}" onclick="jumpToCard(${i})">${icon}${badge}</div>`;
-  }
-  grid.innerHTML = html;
-  const prog = document.getElementById("mapProgress");
-  if (prog) prog.innerText = `${correctCount} / ${list.length} ⭐`;
-}
-
-function saveGrade(status) {
-  const item = getCurrentItem();
-  if (!item) return;
-  localStorage.setItem(`grade::humayun::eng::${item.id}`, status);
-  if (!isNotepadSection()) renderMap();
-  alert(status === 'correct' ? "⭐ Marked as Correct!" : "🔄 Marked to Review Later.");
-}
-
-function markCardDone() {
-  saveCurrentDrawing();
-  const item = getCurrentItem();
-  if (item && !localStorage.getItem(`grade::humayun::eng::${item.id}`)) {
-    localStorage.setItem(`grade::humayun::eng::${item.id}`, "done");
-  }
-  renderMap();
-  const list = getCurrentList();
-  if (currentIndex < list.length - 1) {
-    navigateStep(1);
-  }
-}
-
-/* PIN MODAL */
-function openPinModal() {
-  enteredPin = "";
-  updatePinDots();
-  document.getElementById("modalPin").classList.add("open");
-}
-function closePinModal() { document.getElementById("modalPin").classList.remove("open"); }
-
-function pressPin(n) {
-  if (enteredPin.length < 4) {
-    enteredPin += n;
-    updatePinDots();
-    if (enteredPin.length === 4) {
-      if (enteredPin === PARENT_PIN) {
-        closePinModal();
-        setMode('parent');
-      } else {
-        alert("Incorrect PIN");
-        clearPin();
+    function closeSelfCheck(isMatched) {
+      document.getElementById('selfCheckDrawer').style.display = 'none';
+      if (isMatched) {
+        audioFX.playBell();
+        const data = getDataset();
+        if (activeItemIdx === data.length - 1) {
+          triggerFinaleCelebration();
+        } else {
+          stepItem(1);
+        }
       }
     }
-  }
-}
 
-function clearPin() { enteredPin = ""; updatePinDots(); }
-function updatePinDots() {
-  let str = "";
-  for (let i = 0; i < 4; i++) {
-    str += (i < enteredPin.length) ? "● " : "- ";
-  }
-  document.getElementById("pinDots").textContent = str.trim();
-}
+    /* ASANA FINALE */
+    const finaleStage = document.getElementById('celebrationFinaleStage');
+    const finaleCanvas = document.getElementById('finaleCanvas');
+    const finaleCtx = finaleCanvas.getContext('2d', { alpha: true });
+    let finaleRunning = false;
+    let petals = [];
 
-window.onload = function() {
-  updateSectionTabs();
-  renderWorkspace(false);
-};
+    function resizeFinaleCanvas() {
+      finaleCanvas.width = window.innerWidth;
+      finaleCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeFinaleCanvas);
 
-window.addEventListener("resize", () => {
-  saveCurrentDrawing();
-  fitCanvas();
-  restoreCurrentDrawing();
-});
+    class ConfettiPetal {
+      constructor() {
+        this.x = Math.random() * window.innerWidth;
+        this.y = -20 - Math.random() * 100;
+        this.size = Math.random() * 12 + 6;
+        this.vx = (Math.random() - 0.5) * 2;
+        this.vy = Math.random() * 2.5 + 2;
+        this.rot = Math.random() * Math.PI * 2;
+        const colors = ['#F59E0B', '#38BDF8', '#34D399', '#F472B6', '#C084FC'];
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        if (this.y > window.innerHeight + 20) {
+          this.y = -20;
+          this.x = Math.random() * window.innerWidth;
+        }
+      }
+      draw(c) {
+        c.save();
+        c.translate(this.x, this.y);
+        c.rotate(this.rot);
+        c.fillStyle = this.color;
+        c.fillRect(-this.size/2, -this.size/2, this.size, this.size * 0.7);
+        c.restore();
+      }
+    }
 
-window.addEventListener("beforeunload", saveCurrentDrawing);
-window.addEventListener("pagehide", saveCurrentDrawing);
-</script>
+    function triggerFinaleCelebration() {
+      resizeFinaleCanvas();
+      finaleStage.style.display = 'block';
+      finaleRunning = true;
+      audioFX.playBell();
+      speakText("Congratulations Humayun! You completed this mastery chapter!");
+
+      petals = [];
+      for (let i = 0; i < 75; i++) petals.push(new ConfettiPetal());
+
+      setTimeout(() => {
+        document.getElementById('victoryScrollBox').classList.add('impact');
+      }, 400);
+
+      requestAnimationFrame(renderPetals);
+    }
+
+    function renderPetals() {
+      if (!finaleRunning) return;
+      finaleCtx.clearRect(0, 0, finaleCanvas.width, finaleCanvas.height);
+      petals.forEach(p => { p.update(); p.draw(finaleCtx); });
+      requestAnimationFrame(renderPetals);
+    }
+
+    function closeCelebrationStage() {
+      finaleRunning = false;
+      finaleStage.style.display = 'none';
+      document.getElementById('victoryScrollBox').classList.remove('impact');
+      goToHub();
+    }
+
+    window.addEventListener("beforeunload", saveAllCanvases);
+    window.addEventListener("pagehide", saveAllCanvases);
+  </script>
 </body>
 </html>
