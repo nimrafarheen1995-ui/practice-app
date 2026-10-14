@@ -57,7 +57,7 @@
       position: relative;
     }
 
-    /* AUTO-HIDING FLOATING ICON DOCK (PURE ICONS, FULL LAYOUT) */
+    /* FLOATING ICON DOCK WITH DIM SCREEN TOGGLE (🌙) */
     .floating-hud-dock {
       position: fixed;
       top: 12px;
@@ -66,7 +66,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      background: rgba(255, 253, 246, 0.92);
+      background: rgba(255, 253, 246, 0.94);
       backdrop-filter: blur(8px);
       border: 2.5px solid var(--gold-primary);
       border-radius: 22px;
@@ -80,7 +80,6 @@
       pointer-events: none;
     }
 
-    /* PULL-DOWN PEEK TAB WHEN DOCK IS HIDDEN */
     .dock-peek-handle {
       position: fixed;
       top: 6px;
@@ -171,12 +170,15 @@
       background: url('assets/meena-room-bg.webp') no-repeat center center;
       background-size: cover;
       transform: scale(1);
-      transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: transform 0.55s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
       will-change: transform;
       z-index: 0;
     }
     .master-scenic-stage.stage-darkened .scenic-bg-layer {
       transform: scale(1.08);
+    }
+    .master-scenic-stage.dim-screen-active .scenic-bg-layer {
+      filter: brightness(0.45) contrast(1.15);
     }
 
     .scenic-ambient-dimmer {
@@ -450,6 +452,7 @@
       filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.65));
       animation: spriteGentleHover 4.2s infinite ease-in-out;
       transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: pointer;
     }
     @keyframes spriteGentleHover {
       0%, 100% { transform: translate3d(0, 0, 0); }
@@ -492,6 +495,7 @@
       font-size: 1.42rem;
       font-weight: 800;
       color: #92400E;
+      cursor: pointer;
     }
 
     .answer-stream-box {
@@ -681,7 +685,7 @@
       text-align: center;
     }
 
-    /* CLEAN 4-EXERCISE TEXTBOOK BOARD (ZERO SUB-TABS) */
+    /* TEXTBOOK 4-EXERCISE BOARD */
     .textbook-board-card {
       flex: 1;
       background: rgba(255, 253, 246, 0.96);
@@ -701,21 +705,22 @@
       border-radius: 14px;
       padding: 10px 16px;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 1.12rem;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 1.08rem;
       font-weight: 800;
-      gap: 12px;
     }
     .option-chip {
       background: #F1F5F9;
       border: 2px solid #CBD5E1;
-      padding: 6px 14px;
-      border-radius: 12px;
+      padding: 5px 12px;
+      border-radius: 10px;
       cursor: pointer;
       font-family: var(--font-story);
-      font-size: 1.05rem;
+      font-size: 0.98rem;
       transition: all 0.15s ease;
+      display: inline-block;
+      margin: 2px 4px 2px 0;
     }
     .option-chip.selected-correct {
       background: #DCFCE7;
@@ -829,7 +834,7 @@
   <div class="ambient-sparkle" style="top: 65%; left: 80%; animation-delay: 3s;">⭐</div>
   <div class="ambient-sparkle" style="top: 30%; left: 75%; animation-delay: 6s;">✨</div>
 
-  <!-- AUTO-HIDING FLOATING ICON DOCK (PURE ICONS ONLY) -->
+  <!-- FLOATING ICON DOCK WITH DIM SCREEN TOGGLE (🌙) -->
   <nav class="floating-hud-dock" id="floatingHudDock">
     <button type="button" class="icon-btn" onclick="goToHub()">🪷</button>
     <button type="button" class="icon-btn" id="btnReturnPortals" onclick="returnToHubMenu()" style="display:none;">🏰</button>
@@ -837,6 +842,7 @@
       <button type="button" class="mode-icon-btn active" id="tabPractice" onclick="setAppMode('practice')">📘</button>
       <button type="button" class="mode-icon-btn" id="tabWrite" onclick="setAppMode('write')">✍️</button>
     </div>
+    <button type="button" class="icon-btn" onclick="toggleDimScreen()" id="dimScreenBtn" title="Dim Screen">🌙</button>
   </nav>
 
   <!-- PEEK HANDLE TO REVEAL DOCK WHEN HIDDEN -->
@@ -849,22 +855,22 @@
 
     <!-- STAGE 0: CENTRAL DIM HUB -->
     <section class="central-hub-view" id="centralHubStage">
-      <div class="hub-title-capsule">
+      <div class="hub-title-capsule" onclick="speakText(this.textContent)">
         LA-1: The Girl Who Hated Books
       </div>
 
-      <!-- PORTALS (TEXTBOOK PORTAL APPEARS ONLY IN WRITE MODE) -->
+      <!-- PORTALS -->
       <div class="hub-portals-grid" id="hubPortalsGrid"></div>
 
       <div class="hub-mascots-dock">
-        <img src="assets/meena-character.webp" class="mascot-meena" alt="" onerror="handleImageFallback(this)" />
+        <img src="assets/meena-character.webp" class="mascot-meena" alt="" onclick="speakText('Meena')" onerror="handleImageFallback(this)" />
         <img src="assets/max-cat.webp" class="mascot-max" alt="" onclick="playCatMeow()" onerror="handleImageFallback(this)" />
       </div>
     </section>
 
     <!-- WORKSTATION SLIDE VIEWPORT -->
     <section class="slide-deck-viewport" id="slideDeckStage">
-      <!-- NON-BLOCKING PARENT AUDIT DROP CURTAIN (PURE ICON BUTTONS) -->
+      <!-- NON-BLOCKING PARENT AUDIT DROP CURTAIN -->
       <div class="nonblocking-audit-curtain" id="nonblockingAuditCurtain">
         <div style="display:flex; justify-content:flex-end;">
           <button type="button" class="icon-btn" style="width:32px; height:32px; font-size:0.95rem;" onclick="dismissAuditCurtain()">✕</button>
@@ -877,10 +883,7 @@
       </div>
 
       <div class="palm-scroll-banner-box">
-        <div class="banner-text-heading" id="bannerHeadingText">Meanings</div>
-        <button type="button" class="freely-floating-max-btn" onclick="speakCurrentTarget()">
-          <img src="assets/max-cat.webp" class="max-sprite-img" alt="" onerror="handleImageFallback(this)" />
-        </button>
+        <div class="banner-text-heading" id="bannerHeadingText" onclick="speakText(this.textContent)">Meanings</div>
       </div>
 
       <div class="work-body-frame" id="workBodyFrame"></div>
@@ -910,8 +913,8 @@
   </div>
 
   <script>
-    /* PURE WEB-SPEECH SYNTHESIZER WITH SLOW, CALM PITCH FOR BLEND/SYLLABLE WORDS */
-    function speakText(text, rate = 0.86, pitch = 1.0) {
+    /* PURE WEB-SPEECH SYNTHESIZER WITH SLOW, CALM LOW PITCH */
+    function speakText(text, rate = 0.82, pitch = 0.85) {
       if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text);
@@ -937,8 +940,8 @@
         const t = setTimeout(() => {
           const u = new SpeechSynthesisUtterance(syl);
           u.lang = 'en-US';
-          u.rate = 0.65;  // Slowed down for clear phonics blending
-          u.pitch = 0.90; // Warm, calm lower pitch
+          u.rate = 0.62;
+          u.pitch = 0.82;
           window.speechSynthesis.speak(u);
         }, delay);
         syllableTimers.push(t);
@@ -948,30 +951,29 @@
       const finalTimer = setTimeout(() => {
         const uFull = new SpeechSynthesisUtterance(fullWord);
         uFull.lang = 'en-US';
-        uFull.rate = 0.78;
-        uFull.pitch = 0.92;
+        uFull.rate = 0.75;
+        uFull.pitch = 0.85;
         window.speechSynthesis.speak(uFull);
       }, delay + 150);
       syllableTimers.push(finalTimer);
     }
 
-    /* SYNTHESIZED SOUND ENGINE */
+    /* SYNTHESIZED SOUND ENGINE WITH LOW WARM WOODEN TONE */
     class SoundEngine {
       constructor() { this.ctx = null; }
       init() {
         if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
         if (this.ctx.state === 'suspended') this.ctx.resume();
       }
-      /* WARM, LOWER-PITCHED WOODEN BLOCK CLICK */
       playSnap() {
         this.init();
         const t0 = this.ctx.currentTime;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(220, t0);
-        osc.frequency.exponentialRampToValueAtTime(105, t0 + 0.08);
-        gain.gain.setValueAtTime(0.32, t0);
+        osc.frequency.setValueAtTime(190, t0);
+        osc.frequency.exponentialRampToValueAtTime(85, t0 + 0.08);
+        gain.gain.setValueAtTime(0.28, t0);
         gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.09);
         osc.connect(gain);
         gain.connect(this.ctx.destination);
@@ -994,7 +996,6 @@
           osc.stop(t0 + i * 0.06 + 1.15);
         });
       }
-      /* REALISTIC CRISP NOTEBOOK PAGE TURN */
       playPageFlip() {
         this.init();
         const t0 = this.ctx.currentTime;
@@ -1055,9 +1056,9 @@
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(380, t0);
-        osc.frequency.exponentialRampToValueAtTime(560, t0 + 0.15);
-        osc.frequency.exponentialRampToValueAtTime(340, t0 + 0.35);
+        osc.frequency.setValueAtTime(340, t0);
+        osc.frequency.exponentialRampToValueAtTime(520, t0 + 0.15);
+        osc.frequency.exponentialRampToValueAtTime(300, t0 + 0.35);
         gain.gain.setValueAtTime(0.22, t0);
         gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.38);
         osc.connect(gain);
@@ -1067,9 +1068,14 @@
       }
     }
     const audioFX = new SoundEngine();
-    function playCatMeow() { audioFX.playMeow(); speakText("Meow!"); }
+    function playCatMeow() { audioFX.playMeow(); speakText("Meow!", 0.9, 0.8); }
 
-    /* FLOATING DOCK AUTO-HIDE & REVEAL */
+    function toggleDimScreen() {
+      const stage = document.getElementById('masterStageContainer');
+      stage.classList.toggle('dim-screen-active');
+      audioFX.playSnap();
+    }
+
     function hideFloatingDock() {
       if (!activeSection) return;
       document.getElementById('floatingHudDock').classList.add('dock-minimized');
@@ -1202,12 +1208,12 @@
       }
     ];
 
-    /* PERSISTENT TEXTBOOK STATE STORE (4 EXERCISES) */
+    /* PERSISTENT TEXTBOOK STATE STORE */
     const textbookStore = {
-      exA: {}, // 0, 1, 2
-      exB: {}, // 0, 1, 2, 3, 4
-      exC: {}, // 0, 1, 2, 3
-      exD: {}  // rootWord -> boolean
+      exA: {},
+      exB: {},
+      exC: {},
+      exD: {}
     };
     let selectedPrefixToken = 'un';
 
@@ -1220,7 +1226,7 @@
     let strokeUndoStack = {};
     let currentDrawingTool = 'pen';
     let writeModeAuditStatus = {};
-    let activeTextbookSlide = 1; // 1 to 4
+    let activeTextbookSlide = 1;
     let lastSlideDirection = 'next';
 
     function renderHubPortals() {
@@ -1231,7 +1237,6 @@
         { key: 'sentences', icon: '✍️', label: 'Sentences' },
         { key: 'questions', icon: '🏰', label: 'Q & A' }
       ];
-      // Textbook portal is added ONLY in Write Mode
       if (currentMode === 'write') {
         portals.push({ key: 'textbook', icon: '📚', label: 'Textbook' });
       }
@@ -1269,7 +1274,6 @@
       audioFX.playPageFlip();
       showFloatingDock();
       document.getElementById('btnReturnPortals').style.display = 'none';
-      document.getElementById('modeSwitcherBox').style.display = 'flex';
       document.getElementById('slideDeckStage').classList.remove('active-slide');
       document.getElementById('masterStageContainer').classList.remove('stage-darkened');
       document.getElementById('centralHubStage').classList.remove('hidden-hub');
@@ -1290,7 +1294,6 @@
       lastSlideDirection = 'next';
 
       document.getElementById('btnReturnPortals').style.display = 'inline-flex';
-      document.getElementById('modeSwitcherBox').style.display = (secKey === 'textbook') ? 'none' : 'flex';
 
       document.getElementById('centralHubStage').classList.add('hidden-hub');
       document.getElementById('masterStageContainer').classList.add('stage-darkened');
@@ -1343,11 +1346,11 @@
       viewport.className = 'work-body-frame ' + (lastSlideDirection === 'next' ? 'slide-enter-next' : 'slide-enter-prev');
       viewport.innerHTML = '';
 
-      // Left Column: Full-Scale Character Sprite
+      // Left Column: Full-Scale Character Sprite (Tap to read aloud)
       const leftCol = document.createElement('div');
       leftCol.className = 'stage-character-col stagger-pop-1';
       leftCol.innerHTML = `
-        <img src="${item.sprite}" class="tall-character-sprite" alt="" onerror="handleImageFallback(this)" />
+        <img src="${item.sprite}" class="tall-character-sprite" alt="" onclick="speakText('${item.q.replace(/'/g, "\\'")}')" onerror="handleImageFallback(this)" />
       `;
       viewport.appendChild(leftCol);
 
@@ -1358,12 +1361,11 @@
       const slateHeader = document.createElement('div');
       slateHeader.className = 'slate-prompt-header';
       slateHeader.innerHTML = `
-        <div class="prompt-text-headline">${item.q}</div>
-        <button type="button" class="icon-btn" onclick="speakText('${item.q.replace(/'/g, "\\'")}')">🔊</button>
+        <div class="prompt-text-headline" onclick="speakText('${item.q.replace(/'/g, "\\'")}')">${item.q}</div>
       `;
       rightSlate.appendChild(slateHeader);
 
-      // Answer stream (Shown in Practice Mode only; zero jargon in Write Mode)
+      // Answer stream (Practice mode only)
       if (currentMode === 'practice') {
         const words = item.a.split(' ');
         const wrappedWords = words.map((w, idx) => {
@@ -1386,7 +1388,7 @@
         rightSlate.appendChild(ansBox);
       }
 
-      // Canvas Unit (Pure Icons Only)
+      // Canvas Unit
       const canvasContainer = document.createElement('div');
       canvasContainer.className = 'canvas-notebook-container ' + (isPageFlipOnly ? 'page-flip-anim' : 'stagger-pop-3');
 
@@ -1464,7 +1466,7 @@
 
       if (!syllables || syllables.length <= 1) {
         audioFX.playSnap();
-        speakText(cleanWord, 0.72, 0.90);
+        speakText(cleanWord, 0.72, 0.85);
         return;
       }
 
@@ -1478,26 +1480,6 @@
         el.classList.add('split-active');
         el.innerHTML = syllables.map(s => `<span class="syllable-badge-part">${s}</span>`).join(' • ');
         speakSyllableSequence(syllables, cleanWord);
-      }
-    }
-
-    function speakCurrentTarget() {
-      triggerSpriteCheer();
-      if (activeSection === 'textbook') {
-        const prompts = [
-          "Tick the right options.",
-          "Helping verb and main verb.",
-          "Fill in with shall or will.",
-          "Match the prefixes."
-        ];
-        speakText(prompts[activeTextbookSlide - 1]);
-        return;
-      }
-      const item = activeDeck[currentItemIdx];
-      if (currentMode === 'practice') {
-        speakText(`${item.q}. ${item.a}`);
-      } else {
-        speakText(item.q);
       }
     }
 
@@ -1525,7 +1507,7 @@
       renderCurrentDeckItem(true);
     }
 
-    /* RETINA INK ENGINE WITH AUTO-HIDING DOCK ON PEN DOWN */
+    /* RETINA INK ENGINE WITH 120HZ RECT CACHING */
     const inkMemoryCache = {};
     const hasDrawnRegistry = {};
 
@@ -1705,7 +1687,7 @@
       purgeStoredCanvas(id);
     }
 
-    /* NON-BLOCKING PARENT AUDIT DROP CURTAIN */
+    /* PARENT AUDIT */
     function openParentAudit() {
       const item = activeDeck[currentItemIdx];
       const hasInk = hasDrawnRegistry[`slate_${currentMode}_${item.id}_p1`] || 
@@ -1749,7 +1731,7 @@
       }
     }
 
-    /* CLEAN 4-EXERCISE TEXTBOOK MODULE (ZERO SUB-TABS, INTERACTIVE PREFIX MATCHING) */
+    /* EXACT VERBATIM TEXTBOOK MODULE (BATCH GRADING & ZERO FLICKER) */
     const PREFIX_TASKS = [
       { root: 'clear', correct: 'un', full: 'unclear' },
       { root: 'tidy', correct: 'un', full: 'untidy' },
@@ -1763,9 +1745,9 @@
 
     function renderTextbookModule() {
       const slideTitles = [
-        "A. Story Choices",
-        "B. Helping & Main Verbs",
-        "C. Shall or Will",
+        "A. Tick (✓) the right options",
+        "B. Main & Helping Verbs",
+        "C. Fill in with shall or will",
         "D. Prefix Opposites Match"
       ];
       const slideSprites = [
@@ -1787,113 +1769,74 @@
       viewport.className = 'work-body-frame ' + (lastSlideDirection === 'next' ? 'slide-enter-next' : 'slide-enter-prev');
       viewport.innerHTML = '';
 
-      // Left Character Column
       const leftCol = document.createElement('div');
       leftCol.className = 'stage-character-col stagger-pop-1';
       leftCol.innerHTML = `
-        <img src="${slideSprites[activeTextbookSlide - 1]}" class="tall-character-sprite" alt="" onerror="handleImageFallback(this)" />
+        <img src="${slideSprites[activeTextbookSlide - 1]}" class="tall-character-sprite" alt="" onclick="speakText(document.getElementById('bannerHeadingText').textContent)" onerror="handleImageFallback(this)" />
       `;
       viewport.appendChild(leftCol);
 
-      // Right Clean Board Card
       const board = document.createElement('div');
       board.className = 'textbook-board-card stagger-pop-2';
 
       if (activeTextbookSlide === 1) {
         board.innerHTML = `
+          <div style="font-family:var(--font-story); font-size:1.15rem; color:#92400E; font-weight:800;" onclick="speakText(this.textContent)">A. Tick (✓) the right options to complete these sentences:</div>
           <div class="exercise-card-row">
-            <span>1. Meena did not know the meaning of her name because:</span>
-            <div style="display:flex; gap:8px;">
-              <span class="option-chip ${textbookStore.exA[0] === true ? 'selected-correct' : ''}" onclick="selectTbItem('exA', 0, true, this)">a. she did not read and find out</span>
-              <span class="option-chip ${textbookStore.exA[0] === false ? 'selected-wrong' : ''}" onclick="selectTbItem('exA', 0, false, this)">b. she disliked her name</span>
+            <span onclick="speakText(this.textContent)">1. Meena did not know the meaning of her name because</span>
+            <div>
+              <span class="option-chip ${textbookStore.exA[0] === 0 ? 'selected-correct' : ''}" onclick="selectTbExact('exA', 0, 0, this)">a. she did not read and find out.</span>
+              <span class="option-chip ${textbookStore.exA[0] === 1 ? 'selected-wrong' : ''}" onclick="selectTbExact('exA', 0, 1, this)">b. she disliked her name.</span><br>
+              <span class="option-chip ${textbookStore.exA[0] === 2 ? 'selected-wrong' : ''}" onclick="selectTbExact('exA', 0, 2, this)">c. she forgot to find out.</span>
+              <span class="option-chip ${textbookStore.exA[0] === 3 ? 'selected-wrong' : ''}" onclick="selectTbExact('exA', 0, 3, this)">d. she did not care to ask.</span>
             </div>
           </div>
           <div class="exercise-card-row">
-            <span>2. When Meena's parents tried to read out to her:</span>
-            <div style="display:flex; gap:8px;">
-              <span class="option-chip ${textbookStore.exA[1] === true ? 'selected-correct' : ''}" onclick="selectTbItem('exA', 1, true, this)">c. cover ears & hated books</span>
-              <span class="option-chip ${textbookStore.exA[1] === false ? 'selected-wrong' : ''}" onclick="selectTbItem('exA', 1, false, this)">a. listen carefully</span>
+            <span onclick="speakText(this.textContent)">2. When Meena's parents tried to read out to her,</span>
+            <div>
+              <span class="option-chip ${textbookStore.exA[1] === 0 ? 'selected-wrong' : ''}" onclick="selectTbExact('exA', 1, 0, this)">a. she would listen carefully.</span>
+              <span class="option-chip ${textbookStore.exA[1] === 1 ? 'selected-wrong' : ''}" onclick="selectTbExact('exA', 1, 1, this)">b. she would get lost in the stories.</span><br>
+              <span class="option-chip ${textbookStore.exA[1] === 2 ? 'selected-correct' : ''}" onclick="selectTbExact('exA', 1, 2, this)">c. she would cover her ears and say that she hated books.</span>
+              <span class="option-chip ${textbookStore.exA[1] === 3 ? 'selected-wrong' : ''}" onclick="selectTbExact('exA', 1, 3, this)">d. she would thank them.</span>
             </div>
           </div>
           <div class="exercise-card-row">
-            <span>3. Max always stayed on top of books rather than below:</span>
-            <div style="display:flex; gap:8px;">
-              <span class="option-chip ${textbookStore.exA[2] === true ? 'selected-correct' : ''}" onclick="selectTbItem('exA', 2, true, this)">d. scared of books falling</span>
-              <span class="option-chip ${textbookStore.exA[2] === false ? 'selected-wrong' : ''}" onclick="selectTbItem('exA', 2, false, this)">a. comfortable</span>
+            <span onclick="speakText(this.textContent)">3. Max always stayed on top of books rather than below them as</span>
+            <div>
+              <span class="option-chip ${textbookStore.exA[2] === 0 ? 'selected-wrong' : ''}" onclick="selectTbExact('exA', 2, 0, this)">a. it was more comfortable.</span>
+              <span class="option-chip ${textbookStore.exA[2] === 1 ? 'selected-wrong' : ''}" onclick="selectTbExact('exA', 2, 1, this)">b. he could see everything better.</span><br>
+              <span class="option-chip ${textbookStore.exA[2] === 2 ? 'selected-wrong' : ''}" onclick="selectTbExact('exA', 2, 2, this)">c. he loved to climb up.</span>
+              <span class="option-chip ${textbookStore.exA[2] === 3 ? 'selected-correct' : ''}" onclick="selectTbExact('exA', 2, 3, this)">d. he was scared of books falling on him.</span>
             </div>
           </div>
         `;
       } else if (activeTextbookSlide === 2) {
         board.innerHTML = `
-          <div class="exercise-card-row">
-            <span>1. The cat is climbing on the shelf.</span>
-            <div style="display:flex; gap:6px;">
-              <span class="option-chip ${textbookStore.exB[0] === true ? 'selected-correct' : ''}" onclick="selectTbItem('exB', 0, true, this)">is + climbing</span>
-              <span class="option-chip ${textbookStore.exB[0] === false ? 'selected-wrong' : ''}" onclick="selectTbItem('exB', 0, false, this)">cat + shelf</span>
-            </div>
-          </div>
-          <div class="exercise-card-row">
-            <span>2. The rabbit is nibbling the legs of the table.</span>
-            <div style="display:flex; gap:6px;">
-              <span class="option-chip ${textbookStore.exB[1] === true ? 'selected-correct' : ''}" onclick="selectTbItem('exB', 1, true, this)">is + nibbling</span>
-              <span class="option-chip ${textbookStore.exB[1] === false ? 'selected-wrong' : ''}" onclick="selectTbItem('exB', 1, false, this)">legs + table</span>
-            </div>
-          </div>
-          <div class="exercise-card-row">
-            <span>3. The monkeys are tearing the curtains.</span>
-            <div style="display:flex; gap:6px;">
-              <span class="option-chip ${textbookStore.exB[2] === true ? 'selected-correct' : ''}" onclick="selectTbItem('exB', 2, true, this)">are + tearing</span>
-              <span class="option-chip ${textbookStore.exB[2] === false ? 'selected-wrong' : ''}" onclick="selectTbItem('exB', 2, false, this)">monkeys + curtains</span>
-            </div>
-          </div>
-          <div class="exercise-card-row">
-            <span>4. An aardvark is marching about.</span>
-            <div style="display:flex; gap:6px;">
-              <span class="option-chip ${textbookStore.exB[3] === true ? 'selected-correct' : ''}" onclick="selectTbItem('exB', 3, true, this)">is + marching</span>
-              <span class="option-chip ${textbookStore.exB[3] === false ? 'selected-wrong' : ''}" onclick="selectTbItem('exB', 3, false, this)">aardvark + about</span>
-            </div>
-          </div>
-          <div class="exercise-card-row">
-            <span>5. Meena is enjoying her book.</span>
-            <div style="display:flex; gap:6px;">
-              <span class="option-chip ${textbookStore.exB[4] === true ? 'selected-correct' : ''}" onclick="selectTbItem('exB', 4, true, this)">is + enjoying</span>
-              <span class="option-chip ${textbookStore.exB[4] === false ? 'selected-wrong' : ''}" onclick="selectTbItem('exB', 4, false, this)">her + book</span>
-            </div>
-          </div>
+          <div style="font-family:var(--font-story); font-size:1.1rem; color:#92400E; font-weight:800;" onclick="speakText(this.textContent)">In these sentences, circle the main verbs first and then underline the helping verbs.</div>
+          <div class="exercise-card-row"><span onclick="speakText(this.textContent)">1. The cat is climbing on the shelf.</span>
+            <div><span class="option-chip ${textbookStore.exB[0] === true ? 'selected-correct' : ''}" onclick="selectTbBatch('exB', 0, true, this)">is (helping) + climbing (main)</span></div></div>
+          <div class="exercise-card-row"><span onclick="speakText(this.textContent)">2. The rabbit is nibbling the legs of the table.</span>
+            <div><span class="option-chip ${textbookStore.exB[1] === true ? 'selected-correct' : ''}" onclick="selectTbBatch('exB', 1, true, this)">is (helping) + nibbling (main)</span></div></div>
+          <div class="exercise-card-row"><span onclick="speakText(this.textContent)">3. The monkeys are tearing the curtains.</span>
+            <div><span class="option-chip ${textbookStore.exB[2] === true ? 'selected-correct' : ''}" onclick="selectTbBatch('exB', 2, true, this)">are (helping) + tearing (main)</span></div></div>
+          <div class="exercise-card-row"><span onclick="speakText(this.textContent)">4. An aardvark is marching about.</span>
+            <div><span class="option-chip ${textbookStore.exB[3] === true ? 'selected-correct' : ''}" onclick="selectTbBatch('exB', 3, true, this)">is (helping) + marching (main)</span></div></div>
+          <div class="exercise-card-row"><span onclick="speakText(this.textContent)">5. Meena is enjoying her book.</span>
+            <div><span class="option-chip ${textbookStore.exB[4] === true ? 'selected-correct' : ''}" onclick="selectTbBatch('exB', 4, true, this)">is (helping) + enjoying (main)</span></div></div>
         `;
       } else if (activeTextbookSlide === 3) {
         board.innerHTML = `
-          <div class="exercise-card-row">
-            <span>1. My uncle ________ give me a watch next year.</span>
-            <div style="display:flex; gap:8px;">
-              <span class="option-chip ${textbookStore.exC[0] === true ? 'selected-correct' : ''}" onclick="selectTbItem('exC', 0, true, this)">will</span>
-              <span class="option-chip ${textbookStore.exC[0] === false ? 'selected-wrong' : ''}" onclick="selectTbItem('exC', 0, false, this)">shall</span>
-            </div>
-          </div>
-          <div class="exercise-card-row">
-            <span>2. Manju and her sister ________ wear their new clothes tomorrow.</span>
-            <div style="display:flex; gap:8px;">
-              <span class="option-chip ${textbookStore.exC[1] === true ? 'selected-correct' : ''}" onclick="selectTbItem('exC', 1, true, this)">will</span>
-              <span class="option-chip ${textbookStore.exC[1] === false ? 'selected-wrong' : ''}" onclick="selectTbItem('exC', 1, false, this)">shall</span>
-            </div>
-          </div>
-          <div class="exercise-card-row">
-            <span>3. I ________ get up early tomorrow.</span>
-            <div style="display:flex; gap:8px;">
-              <span class="option-chip ${textbookStore.exC[2] === true ? 'selected-correct' : ''}" onclick="selectTbItem('exC', 2, true, this)">shall</span>
-              <span class="option-chip ${textbookStore.exC[2] === false ? 'selected-wrong' : ''}" onclick="selectTbItem('exC', 2, false, this)">will</span>
-            </div>
-          </div>
-          <div class="exercise-card-row">
-            <span>4. We ________ have a holiday next week.</span>
-            <div style="display:flex; gap:8px;">
-              <span class="option-chip ${textbookStore.exC[3] === true ? 'selected-correct' : ''}" onclick="selectTbItem('exC', 3, true, this)">shall</span>
-              <span class="option-chip ${textbookStore.exC[3] === false ? 'selected-wrong' : ''}" onclick="selectTbItem('exC', 3, false, this)">will</span>
-            </div>
-          </div>
+          <div style="font-family:var(--font-story); font-size:1.15rem; color:#92400E; font-weight:800;" onclick="speakText(this.textContent)">C. Fill in the blanks with shall or will.</div>
+          <div class="exercise-card-row"><span onclick="speakText(this.textContent)">1. My uncle ________ give me a watch next year.</span>
+            <div style="display:flex; gap:8px;"><span class="option-chip ${textbookStore.exC[0] === 'will' ? 'selected-correct' : ''}" onclick="selectTbBlank('exC', 0, 'will', this)">will</span><span class="option-chip ${textbookStore.exC[0] === 'shall' ? 'selected-wrong' : ''}" onclick="selectTbBlank('exC', 0, 'shall', this)">shall</span></div></div>
+          <div class="exercise-card-row"><span onclick="speakText(this.textContent)">2. Manju and her sister ________ wear their new clothes tomorrow.</span>
+            <div style="display:flex; gap:8px;"><span class="option-chip ${textbookStore.exC[1] === 'will' ? 'selected-correct' : ''}" onclick="selectTbBlank('exC', 1, 'will', this)">will</span><span class="option-chip ${textbookStore.exC[1] === 'shall' ? 'selected-wrong' : ''}" onclick="selectTbBlank('exC', 1, 'shall', this)">shall</span></div></div>
+          <div class="exercise-card-row"><span onclick="speakText(this.textContent)">3. I ________ get up early tomorrow.</span>
+            <div style="display:flex; gap:8px;"><span class="option-chip ${textbookStore.exC[2] === 'shall' ? 'selected-correct' : ''}" onclick="selectTbBlank('exC', 2, 'shall', this)">shall</span><span class="option-chip ${textbookStore.exC[2] === 'will' ? 'selected-wrong' : ''}" onclick="selectTbBlank('exC', 2, 'will', this)">will</span></div></div>
+          <div class="exercise-card-row"><span onclick="speakText(this.textContent)">4. We ________ have a holiday next week.</span>
+            <div style="display:flex; gap:8px;"><span class="option-chip ${textbookStore.exC[3] === 'shall' ? 'selected-correct' : ''}" onclick="selectTbBlank('exC', 3, 'shall', this)">shall</span><span class="option-chip ${textbookStore.exC[3] === 'will' ? 'selected-wrong' : ''}" onclick="selectTbBlank('exC', 3, 'will', this)">will</span></div></div>
         `;
       } else {
-        // Slide 4: Interactive Prefix Opposites Matching Board
         const prefixes = ['un', 'im', 'dis', 'in'];
         const prefixBtns = prefixes.map(p => `
           <button type="button" class="prefix-token-btn ${selectedPrefixToken === p ? 'active-prefix' : ''}" onclick="choosePrefixToken('${p}')">${p}-</button>
@@ -1909,6 +1852,7 @@
         }).join('');
 
         board.innerHTML = `
+          <div style="font-family:var(--font-story); font-size:1.1rem; color:#92400E; font-weight:800;" onclick="speakText(this.textContent)">D. Make the opposites of these words by adding un-, im-, dis- or in-.</div>
           <div class="prefix-match-arena">
             <div class="prefix-dock-row">${prefixBtns}</div>
             <div class="root-words-grid">${rootSlots}</div>
@@ -1919,8 +1863,35 @@
       viewport.appendChild(board);
     }
 
-    function selectTbItem(groupKey, qIdx, isCorrect, chip) {
+    function selectTbExact(groupKey, qIdx, optIdx, chip) {
+      const correctOpts = { 0: 0, 1: 2, 2: 3 };
+      const isCorrect = (optIdx === correctOpts[qIdx]);
+      textbookStore[groupKey][qIdx] = optIdx;
+      chip.parentElement.querySelectorAll('.option-chip').forEach(el => el.className = 'option-chip');
+      if (isCorrect) {
+        audioFX.playBell();
+        triggerSpriteCheer();
+        chip.classList.add('selected-correct');
+        speakText("Correct!");
+      } else {
+        audioFX.playSnap();
+        chip.classList.add('selected-wrong');
+        speakText("Try again!");
+      }
+    }
+
+    function selectTbBatch(groupKey, qIdx, isCorrect, chip) {
       textbookStore[groupKey][qIdx] = isCorrect;
+      audioFX.playBell();
+      triggerSpriteCheer();
+      chip.classList.add('selected-correct');
+      speakText("Correct!");
+    }
+
+    function selectTbBlank(groupKey, qIdx, choice, chip) {
+      const correctChoices = { 0: 'will', 1: 'will', 2: 'shall', 3: 'shall' };
+      const isCorrect = (choice === correctChoices[qIdx]);
+      textbookStore[groupKey][qIdx] = choice;
       chip.parentElement.querySelectorAll('.option-chip').forEach(el => el.className = 'option-chip');
       if (isCorrect) {
         audioFX.playBell();
@@ -1945,7 +1916,7 @@
         audioFX.playBell();
         triggerSpriteCheer();
         textbookStore.exD[rootWord] = true;
-        speakText(fullWord, 0.78, 0.92);
+        speakText(fullWord, 0.78, 0.85);
         renderTextbookModule();
       } else {
         audioFX.playSnap();
@@ -1953,22 +1924,25 @@
       }
     }
 
+    /* BATCH GRADING ACROSS ALL QUESTIONS IN SLIDE */
     function gradeTextbookSlide() {
       if (activeTextbookSlide === 1) {
-        const done = [0, 1, 2].every(i => textbookStore.exA[i] === true);
-        if (!done) { audioFX.playSnap(); speakText("Complete all questions first!"); return; }
+        const correctMap = { 0: 0, 1: 2, 2: 3 };
+        const done = [0, 1, 2].every(i => textbookStore.exA[i] === correctMap[i]);
+        if (!done) { audioFX.playSnap(); speakText("Please complete all 3 questions correctly!"); return; }
         stepItem(1);
       } else if (activeTextbookSlide === 2) {
         const done = [0, 1, 2, 3, 4].every(i => textbookStore.exB[i] === true);
-        if (!done) { audioFX.playSnap(); speakText("Complete all verbs first!"); return; }
+        if (!done) { audioFX.playSnap(); speakText("Please verify all verb pairs!"); return; }
         stepItem(1);
       } else if (activeTextbookSlide === 3) {
-        const done = [0, 1, 2, 3].every(i => textbookStore.exC[i] === true);
-        if (!done) { audioFX.playSnap(); speakText("Complete all blanks first!"); return; }
+        const correctMap = { 0: 'will', 1: 'will', 2: 'shall', 3: 'shall' };
+        const done = [0, 1, 2, 3].every(i => textbookStore.exC[i] === correctMap[i]);
+        if (!done) { audioFX.playSnap(); speakText("Please fill in all blanks correctly!"); return; }
         stepItem(1);
       } else {
         const done = PREFIX_TASKS.every(t => textbookStore.exD[t.root] === true);
-        if (!done) { audioFX.playSnap(); speakText("Match all words first!"); return; }
+        if (!done) { audioFX.playSnap(); speakText("Please match all prefix opposites!"); return; }
         triggerGrandCelebration();
       }
     }
