@@ -250,7 +250,7 @@ body {
   gap: 10px;
 }
 
-/* FLOATING TOP-LEFT TOOLBAR PILLS (MATCHING OCTOBER 14 HUB DESIGN) */
+/* ICON-ONLY FLOATING TOP-LEFT TOOLBAR PILLS */
 .floating-top-toolbar {
   position: fixed;
   top: 14px;
@@ -260,28 +260,31 @@ body {
   gap: 10px;
   z-index: 9999;
 }
-.floating-pill-btn {
+.icon-pill-btn {
   background: rgba(15, 23, 42, 0.85);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 2px solid rgba(255, 255, 255, 0.35);
   color: #FFFFFF;
-  font-size: 0.85rem;
-  font-weight: 800;
-  padding: 6px 16px;
-  border-radius: 999px;
+  font-size: 1.1rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  height: 38px;
+  justify-content: center;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
   text-decoration: none;
   transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.floating-pill-btn:hover { transform: scale(1.06); background: rgba(30, 41, 59, 0.95); }
-.floating-pill-btn:active { transform: scale(0.95); }
-.floating-pill-btn.rough-pill { background: #FEF3C7; border-color: #FCD34D; color: #92400E; }
+.icon-pill-btn:hover { transform: scale(1.08); background: rgba(30, 41, 59, 0.95); }
+.icon-pill-btn:active { transform: scale(0.94); }
+.icon-pill-btn.rough-icon {
+  background: #FEF3C7;
+  border-color: #FCD34D;
+  color: #92400E;
+}
 
 /* HEADER TITLE & BADGE */
 .header-title-bar {
@@ -388,7 +391,7 @@ body {
   z-index: 5;
 }
 
-/* CARD HEADER WITH PROMINENT PONY ARTWORK */
+/* CARD HEADER */
 .card-header-bar {
   display: flex;
   justify-content: space-between;
@@ -498,7 +501,7 @@ body {
   width: 82px;
 }
 
-/* SECTION 2: 3-BOX GRID (Numeral, Like/Unlike Toggle, Like Decimal) */
+/* SECTION 2: 3-BOX GRID */
 .q2-grid-row {
   display: grid;
   grid-template-columns: 1fr 180px 150px;
@@ -631,7 +634,7 @@ body {
   background: #FFF;
 }
 
-/* FIXED ROUGH PAD (CREAM NOTEBOOK BACKGROUND & DYNAMIC RESIZE) */
+/* FLOATING ROUGH PAD WITH VISIBLE BLUE GRID LINES */
 .floating-rough-pad {
   position: fixed;
   top: 75px;
@@ -646,6 +649,7 @@ body {
   flex-direction: column;
   z-index: 99999;
   overflow: hidden;
+  color-scheme: light;
   resize: both;
   min-width: 320px;
   min-height: 320px;
@@ -672,7 +676,7 @@ body {
 }
 
 .notepad-header-controls {
-  background: #251D18; border-bottom: 2px solid #5A3C22; padding: 6px 12px;
+  background: #FEF3C7; border-bottom: 2px solid #FDE68A; padding: 6px 12px;
   display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-shrink: 0;
 }
 .tools-icon-row { display: flex; align-items: center; gap: 6px; }
@@ -681,12 +685,12 @@ body {
   display: inline-flex; align-items: center; justify-content: center;
   padding: 4px 6px; border-radius: 6px; transition: all 0.15s;
 }
-.btn-icon-tool.active { background: rgba(255, 119, 0, 0.28); box-shadow: 0 0 8px rgba(255, 119, 0, 0.8); }
+.btn-icon-tool.active { background: rgba(245, 158, 11, 0.35); box-shadow: 0 0 8px rgba(245, 158, 11, 0.8); }
 .palm-mode-btn {
-  background: #3A2312; border: 1.5px solid #D35400; color: #F1C40F;
-  padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 900; cursor: pointer;
+  background: #FDE68A; border: 1.5px solid #D97706; color: #92400E;
+  padding: 4px 10px; border-radius: 8px; font-size: 13px; font-weight: 900; cursor: pointer;
 }
-.palm-mode-btn.active { background: #27AE60; border-color: #2ECC71; color: #FFF; }
+.palm-mode-btn.active { background: #10B981; border-color: #059669; color: #FFF; }
 .color-swatch-row { display: flex; gap: 6px; align-items: center; }
 .color-swatch { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #FFF; cursor: pointer; }
 .color-swatch.active { transform: scale(1.3); border-color: #FCD34D; }
@@ -695,23 +699,21 @@ body {
   position: relative;
   flex: 1;
   width: 100%;
-  height: 100%;
+  min-height: 0;
   overflow: hidden;
   touch-action: none;
   background-color: #FFFDF0;
-  background-image: 
-    linear-gradient(rgba(148, 163, 184, 0.35) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(148, 163, 184, 0.35) 1px, transparent 1px);
-  background-size: 24px 24px;
+  isolation: isolate;
 }
-#roughCanvas {
+#roughGrid, #roughCanvas {
   position: absolute;
   top: 0;
   left: 0;
   display: block;
-  cursor: crosshair;
   touch-action: none;
 }
+#roughGrid { pointer-events: none; z-index: 0; }
+#roughCanvas { cursor: crosshair; z-index: 1; }
 </style>
 </head>
 <body>
@@ -728,11 +730,11 @@ body {
 <canvas id="milkyWayCanvas"></canvas>
 <canvas id="confettiSnowCanvas"></canvas>
 
-<!-- FLOATING TOP-LEFT TOOLBAR PILLS -->
+<!-- ICON-ONLY FLOATING TOP-LEFT TOOLBAR -->
 <div class="floating-top-toolbar">
-  <a href="index.html" class="floating-pill-btn" title="Exit to Hub">🏰 Hub</a>
-  <button class="floating-pill-btn" id="dimToggleBtn" onclick="toggleScreenDim()">💡 Dim</button>
-  <button class="floating-pill-btn rough-pill" onclick="toggleRoughPad()">📝 Rough Pad</button>
+  <a href="index.html" class="icon-pill-btn" title="Exit to Hub">🏰</a>
+  <button class="icon-pill-btn" id="dimToggleBtn" onclick="toggleScreenDim()" title="Dim">💡</button>
+  <button class="icon-pill-btn rough-icon" onclick="toggleRoughPad()" title="Rough Pad">📝</button>
 </div>
 
 <!-- CELEBRATION MODAL -->
@@ -813,7 +815,7 @@ body {
         </div>
       </div>
 
-      <!-- CARD 2: Q2 3-Box Rows (Numeral Form, Like/Unlike Toggle, Like Decimal) -->
+      <!-- CARD 2: Q2 3-Box Rows -->
       <div class="quest-slide-card state-next" id="card_1" data-card="1" data-companion="assets/rarity.png" data-name="Rarity">
         <div class="card-header-bar">
           <div class="card-title-text">
@@ -825,28 +827,28 @@ body {
         <div class="card-scrollable-content">
           <div class="q2-grid-row">
             <div class="q2-label">a. Nineteen and twenty-three hundredths</div>
-            <input type="text" class="pony-input-blank" data-id="e53_q2_num_a" data-correct="19.23" placeholder="Numeral" oninput="clearGrading(this)"/>
+            <input type="text" class="pony-input-blank" data-id="e53_q2_num_a" data-correct="19.23" placeholder="Numeral Form" oninput="clearGrading(this)"/>
             <button type="button" class="toggle-pill-btn" id="toggle_q2_a" onclick="toggleLikeUnlike('q2_a')">❓ Select</button>
             <input type="text" class="pony-input-blank" data-id="e53_q2_like_a" data-correct="19.230" placeholder="Like Decimal" oninput="clearGrading(this)"/>
           </div>
 
           <div class="q2-grid-row">
             <div class="q2-label">b. Fifty-six point eight</div>
-            <input type="text" class="pony-input-blank" data-id="e53_q2_num_b" data-correct="56.8" placeholder="Numeral" oninput="clearGrading(this)"/>
+            <input type="text" class="pony-input-blank" data-id="e53_q2_num_b" data-correct="56.8" placeholder="Numeral Form" oninput="clearGrading(this)"/>
             <button type="button" class="toggle-pill-btn" id="toggle_q2_b" onclick="toggleLikeUnlike('q2_b')">❓ Select</button>
             <input type="text" class="pony-input-blank" data-id="e53_q2_like_b" data-correct="56.800" placeholder="Like Decimal" oninput="clearGrading(this)"/>
           </div>
 
           <div class="q2-grid-row">
             <div class="q2-label">c. One hundred seventy & ninety-two thousandths</div>
-            <input type="text" class="pony-input-blank" data-id="e53_q2_num_c" data-correct="170.092" placeholder="Numeral" oninput="clearGrading(this)"/>
+            <input type="text" class="pony-input-blank" data-id="e53_q2_num_c" data-correct="170.092" placeholder="Numeral Form" oninput="clearGrading(this)"/>
             <button type="button" class="toggle-pill-btn" id="toggle_q2_c" onclick="toggleLikeUnlike('q2_c')">❓ Select</button>
             <input type="text" class="pony-input-blank" data-id="e53_q2_like_c" data-correct="170.092" placeholder="Like Decimal" oninput="clearGrading(this)"/>
           </div>
 
           <div class="q2-grid-row">
             <div class="q2-label">d. Five point eight four</div>
-            <input type="text" class="pony-input-blank" data-id="e53_q2_num_d" data-correct="5.84" placeholder="Numeral" oninput="clearGrading(this)"/>
+            <input type="text" class="pony-input-blank" data-id="e53_q2_num_d" data-correct="5.84" placeholder="Numeral Form" oninput="clearGrading(this)"/>
             <button type="button" class="toggle-pill-btn" id="toggle_q2_d" onclick="toggleLikeUnlike('q2_d')">❓ Select</button>
             <input type="text" class="pony-input-blank" data-id="e53_q2_like_d" data-correct="5.840" placeholder="Like Decimal" oninput="clearGrading(this)"/>
           </div>
@@ -892,7 +894,6 @@ body {
         <div class="card-scrollable-content">
           <div class="q-row">
             <div class="q-title">a. 0.41, 0.48, 0.42, 0.45, 0.40</div>
-            <div class="q-sub">Arcade Tile Tray:</div>
             <div class="candy-tile-tray" data-tray-target="row_q4_a"></div>
             <div class="chain-inputs-wrap" id="row_q4_a">
               <input type="text" class="pony-input-blank num-blank sort-input" data-id="e53_q4_a1" data-correct="0.40|0.4" oninput="clearGrading(this)" onclick="setActiveSortInput(this)"/>
@@ -909,7 +910,6 @@ body {
 
           <div class="q-row">
             <div class="q-title">b. 1.45, 1.75, 1.35, 1.80, 1.40</div>
-            <div class="q-sub">Arcade Tile Tray:</div>
             <div class="candy-tile-tray" data-tray-target="row_q4_b"></div>
             <div class="chain-inputs-wrap" id="row_q4_b">
               <input type="text" class="pony-input-blank num-blank sort-input" data-id="e53_q4_b1" data-correct="1.35" oninput="clearGrading(this)" onclick="setActiveSortInput(this)"/>
@@ -926,7 +926,6 @@ body {
 
           <div class="q-row">
             <div class="q-title">c. 4.23, 4.73, 4.83, 4.13, 4.93</div>
-            <div class="q-sub">Arcade Tile Tray:</div>
             <div class="candy-tile-tray" data-tray-target="row_q4_c"></div>
             <div class="chain-inputs-wrap" id="row_q4_c">
               <input type="text" class="pony-input-blank num-blank sort-input" data-id="e53_q4_c1" data-correct="4.13" oninput="clearGrading(this)" onclick="setActiveSortInput(this)"/>
@@ -943,7 +942,6 @@ body {
 
           <div class="q-row">
             <div class="q-title">d. 6.28, 6.48, 6.98, 6.08, 6.18</div>
-            <div class="q-sub">Arcade Tile Tray:</div>
             <div class="candy-tile-tray" data-tray-target="row_q4_d"></div>
             <div class="chain-inputs-wrap" id="row_q4_d">
               <input type="text" class="pony-input-blank num-blank sort-input" data-id="e53_q4_d1" data-correct="6.08" oninput="clearGrading(this)" onclick="setActiveSortInput(this)"/>
@@ -972,7 +970,6 @@ body {
         <div class="card-scrollable-content">
           <div class="q-row">
             <div class="q-title">a. 20.41, 20.45, 20.34, 20.50, 20.40</div>
-            <div class="q-sub">Arcade Tile Tray:</div>
             <div class="candy-tile-tray" data-tray-target="row_q5_a"></div>
             <div class="chain-inputs-wrap" id="row_q5_a">
               <input type="text" class="pony-input-blank num-blank sort-input" data-id="e53_q5_a1" data-correct="20.50|20.5" oninput="clearGrading(this)" onclick="setActiveSortInput(this)"/>
@@ -989,7 +986,6 @@ body {
 
           <div class="q-row">
             <div class="q-title">b. 11.5, 11.73, 11.35, 11.80, 11</div>
-            <div class="q-sub">Arcade Tile Tray:</div>
             <div class="candy-tile-tray" data-tray-target="row_q5_b"></div>
             <div class="chain-inputs-wrap" id="row_q5_b">
               <input type="text" class="pony-input-blank num-blank sort-input" data-id="e53_q5_b1" data-correct="11.80|11.8" oninput="clearGrading(this)" onclick="setActiveSortInput(this)"/>
@@ -1006,7 +1002,6 @@ body {
 
           <div class="q-row">
             <div class="q-title">c. 5.11, 5.67, 4.89, 5.15, 5.90</div>
-            <div class="q-sub">Arcade Tile Tray:</div>
             <div class="candy-tile-tray" data-tray-target="row_q5_c"></div>
             <div class="chain-inputs-wrap" id="row_q5_c">
               <input type="text" class="pony-input-blank num-blank sort-input" data-id="e53_q5_c1" data-correct="5.90|5.9" oninput="clearGrading(this)" onclick="setActiveSortInput(this)"/>
@@ -1023,7 +1018,6 @@ body {
 
           <div class="q-row">
             <div class="q-title">d. 0.23, 0.43, 0.93, 0.03, 0.13</div>
-            <div class="q-sub">Arcade Tile Tray:</div>
             <div class="candy-tile-tray" data-tray-target="row_q5_d"></div>
             <div class="chain-inputs-wrap" id="row_q5_d">
               <input type="text" class="pony-input-blank num-blank sort-input" data-id="e53_q5_d1" data-correct="0.93" oninput="clearGrading(this)" onclick="setActiveSortInput(this)"/>
@@ -1062,32 +1056,33 @@ body {
   </div>
 </div>
 
-<!-- FLOATING ROUGH PAD -->
+<!-- FLOATING ROUGH PAD (ICON-ONLY CONTROLS) -->
 <div class="floating-rough-pad" id="floatingRoughPad">
   <div class="rough-header" id="roughHeader">
-    <div class="rough-title">📝 Rough Pad (Galaxy Tab S11)</div>
+    <div class="rough-title">📝 Rough Pad</div>
     <button type="button" class="rough-close-btn" onclick="toggleRoughPad()" title="Close">✕</button>
   </div>
 
   <div class="notepad-header-controls">
     <div class="tools-icon-row">
-      <button type="button" class="btn-icon-tool active" id="toolPen" title="Pen (Draw)">✏️</button>
+      <button type="button" class="btn-icon-tool active" id="toolPen" title="Pen">✏️</button>
       <button type="button" class="btn-icon-tool" id="toolEraser" title="Eraser">🧹</button>
-      <button type="button" class="btn-icon-tool" id="toolClear" title="Clear Canvas">🗑️</button>
+      <button type="button" class="btn-icon-tool" id="toolClear" title="Clear">🗑️</button>
     </div>
 
-    <button type="button" class="palm-mode-btn" id="btnPalmMode" onclick="togglePalmRejectionMode()">
-      👆 Touch
+    <button type="button" class="palm-mode-btn" id="btnPalmMode" onclick="togglePalmRejectionMode()" title="Touch/S-Pen Mode">
+      👆
     </button>
 
     <div class="color-swatch-row">
-      <span class="color-swatch active" data-color="#1E272E" style="background: #1E272E;"></span>
-      <span class="color-swatch" data-color="#0984E3" style="background: #0984E3;"></span>
-      <span class="color-swatch" data-color="#D63031" style="background: #D63031;"></span>
+      <span class="color-swatch active" data-color="#1E272E" style="background: #1E272E;" title="Charcoal"></span>
+      <span class="color-swatch" data-color="#0984E3" style="background: #0984E3;" title="Blue"></span>
+      <span class="color-swatch" data-color="#D63031" style="background: #D63031;" title="Red"></span>
     </div>
   </div>
 
   <div class="notepad-scroll-viewport" id="roughCanvasViewport">
+    <canvas id="roughGrid"></canvas>
     <canvas id="roughCanvas"></canvas>
   </div>
 </div>
@@ -1205,7 +1200,8 @@ function toggleLikeUnlike(key) {
   const next = current === 'unlike' ? 'like' : 'unlike';
   q2ToggleStates[key] = next;
 
-  btn.textContent = next === 'like' ? '⭐ Like' : '⚡ Unlike';
+  btn.textContent = next === 'like' ? '⭐' : '⚡';
+  btn.title = next === 'like' ? 'Like' : 'Unlike';
   btn.className = `toggle-pill-btn active-${next}`;
   localStorage.setItem(`v5_3_toggle_${key}`, next);
 }
@@ -1297,7 +1293,8 @@ function loadSavedInputs() {
       q2ToggleStates[key] = savedToggle;
       const btn = document.getElementById(`toggle_${key}`);
       if (btn) {
-        btn.textContent = savedToggle === 'like' ? '⭐ Like' : '⚡ Unlike';
+        btn.textContent = savedToggle === 'like' ? '⭐' : '⚡';
+        btn.title = savedToggle === 'like' ? 'Like' : 'Unlike';
         btn.className = `toggle-pill-btn active-${savedToggle}`;
       }
     }
@@ -1308,7 +1305,6 @@ function validateAndFinishCarouselQuest() {
   const activeCard = document.getElementById(`card_${currentCardIdx}`);
   let hasWrong = false;
 
-  // Grade standard inputs
   activeCard.querySelectorAll('.pony-input-blank').forEach(el => {
     const val = (el.value || "").trim();
     const targets = el.getAttribute('data-correct') || "";
@@ -1322,7 +1318,6 @@ function validateAndFinishCarouselQuest() {
     }
   });
 
-  // Grade Section 2 Toggles (All are unlike decimals in Q2)
   if (currentCardIdx === 1) {
     ['q2_a', 'q2_b', 'q2_c', 'q2_d'].forEach(key => {
       const btn = document.getElementById(`toggle_${key}`);
@@ -1455,7 +1450,7 @@ function renderMilkyWay() {
 }
 requestAnimationFrame(renderMilkyWay);
 
-/* SAMSUNG S-PEN & RESIZABLE ROUGH PAD (RESIZEOBSERVER + CREAM BACKGROUND) */
+/* ROUGH PAD WITH FIXED VISIBLE GRID LINES & ICON CONTROLS */
 let roughCanvas = null;
 let roughCtx = null;
 let roughDrawing = false;
@@ -1474,50 +1469,74 @@ function toggleRoughPad() {
   }
 }
 
+let roughGrid = null;
+let roughGridCtx = null;
+
 function initRoughCanvas() {
   roughCanvas = document.getElementById("roughCanvas");
-  if (!roughCanvas) return;
-  roughCtx = roughCanvas.getContext("2d", { desynchronized: true });
-  
+  roughGrid = document.getElementById("roughGrid");
+  if (!roughCanvas || !roughGrid) return;
+  roughCtx = roughCanvas.getContext("2d");
+  roughGridCtx = roughGrid.getContext("2d");
+
   const viewport = document.getElementById("roughCanvasViewport");
   syncCanvasToViewport(viewport);
 
   if (!resizeObserver && window.ResizeObserver) {
-    resizeObserver = new ResizeObserver(() => {
-      syncCanvasToViewport(viewport);
-    });
+    resizeObserver = new ResizeObserver(() => syncCanvasToViewport(viewport));
     resizeObserver.observe(viewport);
   }
 
   setupRoughPointerEvents();
 }
 
+// Paints the opaque paper colour and blue grid onto the bottom layer.
+// The drawing layer stays transparent, so ink and erasing both work and
+// the page can never show a black or blank pad.
+function drawRoughGrid(dpr) {
+  const w = roughGrid.width, h = roughGrid.height;
+  roughGridCtx.setTransform(1, 0, 0, 1, 0, 0);
+  roughGridCtx.fillStyle = "#FFFDF0";
+  roughGridCtx.fillRect(0, 0, w, h);
+
+  const step = 28 * dpr;
+  roughGridCtx.strokeStyle = "rgba(130, 170, 210, 0.6)";
+  roughGridCtx.lineWidth = Math.max(1, Math.round(dpr));
+  roughGridCtx.beginPath();
+  for (let x = 0.5; x < w; x += step) { roughGridCtx.moveTo(x, 0); roughGridCtx.lineTo(x, h); }
+  for (let y = 0.5; y < h; y += step) { roughGridCtx.moveTo(0, y); roughGridCtx.lineTo(w, y); }
+  roughGridCtx.stroke();
+}
+
 function syncCanvasToViewport(viewport) {
-  if (!roughCanvas || !roughCtx) return;
+  if (!roughCanvas || !roughCtx || !roughGrid || !roughGridCtx) return;
   const rect = viewport.getBoundingClientRect();
   if (rect.width <= 0 || rect.height <= 0) return;
 
   const dpr = window.devicePixelRatio || 1;
-  const newWidth = Math.floor(rect.width * dpr);
-  const newHeight = Math.floor(rect.height * dpr);
-
+  const newWidth = Math.max(1, Math.floor(rect.width * dpr));
+  const newHeight = Math.max(1, Math.floor(rect.height * dpr));
   if (roughCanvas.width === newWidth && roughCanvas.height === newHeight) return;
 
+  // Keep existing ink across resizes
   let tempBuffer = null;
   if (roughCanvas.width > 0 && roughCanvas.height > 0) {
     tempBuffer = document.createElement("canvas");
     tempBuffer.width = roughCanvas.width;
     tempBuffer.height = roughCanvas.height;
-    const tempCtx = tempBuffer.getContext("2d");
-    tempCtx.drawImage(roughCanvas, 0, 0);
+    tempBuffer.getContext("2d").drawImage(roughCanvas, 0, 0);
   }
 
-  roughCanvas.width = newWidth;
-  roughCanvas.height = newHeight;
-  roughCanvas.style.width = rect.width + "px";
-  roughCanvas.style.height = rect.height + "px";
-  roughCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  for (const c of [roughCanvas, roughGrid]) {
+    c.width = newWidth;
+    c.height = newHeight;
+    c.style.width = rect.width + "px";
+    c.style.height = rect.height + "px";
+  }
 
+  drawRoughGrid(dpr);
+
+  roughCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
   if (tempBuffer) {
     roughCtx.drawImage(tempBuffer, 0, 0, tempBuffer.width / dpr, tempBuffer.height / dpr);
   }
@@ -1597,8 +1616,10 @@ document.getElementById('toolClear').onclick = () => {
 
 function togglePalmRejectionMode() {
   penOnlyMode = !penOnlyMode;
-  document.getElementById('btnPalmMode').textContent = penOnlyMode ? "✍️ S-Pen" : "👆 Touch";
-  document.getElementById('btnPalmMode').classList.toggle('active', penOnlyMode);
+  const btn = document.getElementById('btnPalmMode');
+  btn.textContent = penOnlyMode ? "✍️" : "👆";
+  btn.title = penOnlyMode ? "S-Pen Only Mode" : "Touch & S-Pen Mode";
+  btn.classList.toggle('active', penOnlyMode);
 }
 
 document.querySelectorAll('.floating-rough-pad .color-swatch').forEach(swatch => {
@@ -1635,7 +1656,7 @@ function toggleScreenDim() {
   const o = document.getElementById("screenDimOverlay");
   const isDim = o.style.display === "block";
   o.style.display = isDim ? "none" : "block";
-  document.getElementById("dimToggleBtn").textContent = isDim ? "💡 Dim" : "☀️ Bright";
+  document.getElementById("dimToggleBtn").textContent = isDim ? "💡" : "☀️";
 }
 
 window.addEventListener('load', () => {
