@@ -984,6 +984,102 @@ header {
   cursor: crosshair;
   touch-action: none;
 }
+
+/* ---- question-screen support (imported) ---- */
+.scene-luna {
+  background: radial-gradient(circle at 85% 15%, rgba(129, 140, 248, 0.35) 0%, transparent 45%),
+              linear-gradient(135deg, #030712 0%, #0F172A 50%, #1E1B4B 100%) !important;
+}
+.scene-celestia {
+  background: radial-gradient(circle at 85% 15%, rgba(253, 230, 138, 0.45) 0%, transparent 45%),
+              linear-gradient(135deg, #78350F 0%, #92400E 50%, #F59E0B 100%) !important;
+}
+.bracket-frac-slot {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  vertical-align: middle;
+  margin: 0 4px;
+}
+.bracket-bracket {
+  font-family: var(--font-display);
+  font-size: 1.85rem;
+  line-height: 1;
+  color: #64748B;
+  user-select: none;
+}
+.stacked-inputs-column {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 0;
+}
+.stacked-bar-divider {
+  width: 100%;
+  height: 2.5px;
+  background: #334155;
+  border-radius: 2px;
+}
+.pony-input-blank.frac-num,
+.pony-input-blank.frac-den {
+  min-width: 65px;
+  max-width: 85px;
+  height: 32px;
+  font-size: 0.98rem;
+}
+.pony-input-blank.inline-whole {
+  min-width: 50px;
+  max-width: 65px;
+  margin-right: 4px;
+}
+.strip-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  border: 3px solid #38BDF8;
+}
+.strip-table {
+  width: 100%;
+  min-width: 540px;
+  border-collapse: collapse;
+}
+.strip-table th {
+  background: #F0F9FF;
+  padding: 10px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #0369A1;
+  border: 2px solid #0EA5E9;
+}
+.strip-table td {
+  padding: 10px;
+  border: 2px solid #0EA5E9;
+  vertical-align: middle;
+  text-align: center;
+  background: #FFFFFF;
+}
+.strip-bar-visual {
+  display: inline-flex;
+  border: 3px solid #1E293B;
+  border-radius: 6px;
+  overflow: hidden;
+  height: 26px;
+  width: 180px;
+  max-width: 100%;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.strip-cell {
+  flex: 1;
+  border-right: 2px solid #1E293B;
+  background: #FFFFFF;
+}
+.strip-cell:last-child { border-right: none; }
+.strip-cell.shaded { background: #C084FC; }
 </style>
 </head>
 <body>
@@ -1123,7 +1219,8 @@ header {
           </div>
           <img src="assets/applejack.png" class="hub-pony-avatar" alt="Applejack" onerror="handleImageFallback(this)"/>
         </div>
-      </div>
+
+              </div>
     </section>
 
     <section id="exerciseView" class="scene-twilight">
@@ -1602,25 +1699,105 @@ function closeGrandCelebration() {
   returnToChapterMenu();
 }
 
-/* MATH CHECKING ENGINE & DEFERRED DRAFT TRACKING */
+/* ==========================================================
+   MATH CHECKING ENGINE
+========================================================== */
 function checkMathAnswersMatch(entered, targetAllowedStr, formatRule = "any") {
   if (!entered || !targetAllowedStr) return false;
   const cleanEntered = entered.trim().toLowerCase().replace(/\s+/g, ' ');
   const targets = targetAllowedStr.split('|').map(t => t.trim().toLowerCase().replace(/\s+/g, ' '));
-  return targets.includes(cleanEntered);
+
+  if (targets.includes(cleanEntered)) return true;
+
+  const isMixedInput = /^\d+\s+\d+\/\d+$/.test(cleanEntered);
+  const isImproperInput = /^\d+\/\d+$/.test(cleanEntered);
+
+  if (formatRule === "mixed" && !isMixedInput) return false;
+  if (formatRule === "improper" && !isImproperInput) return false;
+
+  const parseVal = (str) => {
+    const mm = str.match(/^(\d+)\s+(\d+)\/(\d+)$/);
+    if (mm) {
+      const d = parseFloat(mm[3]);
+      return d === 0 ? null : parseFloat(mm[1]) + (parseFloat(mm[2]) / d);
+    }
+    const fm = str.match(/^(\d+)\/(\d+)$/);
+    if (fm) {
+      const d = parseFloat(fm[2]);
+      return d === 0 ? null : parseFloat(fm[1]) / d;
+    }
+    const num = parseFloat(str);
+    return isNaN(num) ? null : num;
+  };
+
+  const valEntered = parseVal(cleanEntered);
+  if (valEntered !== null) {
+    for (let t of targets) {
+      const valT = parseVal(t);
+      if (valT !== null && Math.abs(valEntered - valT) < 0.00001) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 function storageKeyForId(itemId) {
-  return `v5_1_zaina_maths::${itemId}`;
+  return `v5_zaina_maths::${itemId}`;
 }
 
-function handleDraftInput(inputEl) {
+function handleDirectInput(inputEl) {
   const id = inputEl.getAttribute('data-id');
   const val = inputEl.value;
   if (id) {
     localStorage.setItem(storageKeyForId(id), val);
   }
-  inputEl.classList.remove('graded-correct', 'graded-wrong');
+
+  const parentSlot = inputEl.closest('.bracket-frac-slot');
+  if (parentSlot) {
+    validateCompositeSlot(parentSlot);
+    return;
+  }
+
+  const correct = inputEl.getAttribute('data-correct');
+  const formatRule = inputEl.getAttribute('data-format') || "any";
+
+  if (val.trim() && correct && checkMathAnswersMatch(val, correct, formatRule)) {
+    inputEl.classList.add('graded-correct');
+    inputEl.classList.remove('graded-wrong');
+  } else {
+    inputEl.classList.remove('graded-correct');
+  }
+}
+
+function validateCompositeSlot(slotEl) {
+  const wholeInp = slotEl.querySelector('.inline-whole');
+  const numInp = slotEl.querySelector('.frac-num');
+  const denInp = slotEl.querySelector('.frac-den');
+
+  const wholeVal = wholeInp ? wholeInp.value.trim() : "";
+  const numVal = numInp ? numInp.value.trim() : "";
+  const denVal = denInp ? denInp.value.trim() : "";
+
+  let combined = "";
+  if (wholeVal && numVal && denVal) {
+    combined = `${wholeVal} ${numVal}/${denVal}`;
+  } else if (numVal && denVal) {
+    combined = `${numVal}/${denVal}`;
+  } else if (wholeVal && !numVal && !denVal) {
+    combined = wholeVal;
+  }
+
+  const correct = slotEl.getAttribute('data-correct') || "";
+  const formatRule = slotEl.getAttribute('data-format') || "any";
+  const inputs = slotEl.querySelectorAll('.pony-input-blank');
+
+  if (combined && correct && checkMathAnswersMatch(combined, correct, formatRule)) {
+    inputs.forEach(i => { i.classList.add('graded-correct'); i.classList.remove('graded-wrong'); });
+  } else {
+    inputs.forEach(i => { i.classList.remove('graded-correct'); });
+  }
 }
 
 function completeCurrentExerciseQuest() {
@@ -1648,6 +1825,42 @@ function completeCurrentExerciseQuest() {
     }
   });
 
+  document.querySelectorAll('#exerciseScrollBody .bracket-frac-slot').forEach(slotEl => {
+    const wholeInp = slotEl.querySelector('.inline-whole');
+    const numInp = slotEl.querySelector('.frac-num');
+    const denInp = slotEl.querySelector('.frac-den');
+
+    const wholeVal = wholeInp ? wholeInp.value.trim() : "";
+    const numVal = numInp ? numInp.value.trim() : "";
+    const denVal = denInp ? denInp.value.trim() : "";
+
+    let combined = "";
+    if (wholeVal && numVal && denVal) {
+      combined = `${wholeVal} ${numVal}/${denVal}`;
+    } else if (numVal && denVal) {
+      combined = `${numVal}/${denVal}`;
+    } else if (wholeVal && !numVal && !denVal) {
+      combined = wholeVal;
+    }
+
+    const correct = slotEl.getAttribute('data-correct') || "";
+    const formatRule = slotEl.getAttribute('data-format') || "any";
+    const inputs = slotEl.querySelectorAll('.pony-input-blank');
+
+    if (!combined || (numVal && !denVal) || (!numVal && denVal)) {
+      anyWrong = true;
+      inputs.forEach(i => { i.classList.add('graded-wrong'); i.classList.remove('graded-correct'); });
+      return;
+    }
+
+    if (checkMathAnswersMatch(combined, correct, formatRule)) {
+      inputs.forEach(i => { i.classList.add('graded-correct'); i.classList.remove('graded-wrong'); });
+    } else {
+      inputs.forEach(i => { i.classList.add('graded-wrong'); i.classList.remove('graded-correct'); });
+      anyWrong = true;
+    }
+  });
+
   if (anyWrong) {
     playBubbleTap();
     return;
@@ -1661,7 +1874,26 @@ function toggleScreenDim() {
   const btn = document.getElementById("dimToggleBtn");
   const isDim = overlay.style.display === "block";
   overlay.style.display = isDim ? "none" : "block";
-  btn.textContent = isDim ? "💡" : "☀️";
+  btn.textContent = isDim ? "💡 Dim" : "☀️ Bright";
+}
+
+function stackedFractionSlotHtml(idBase, correctVal, formatRule = "any", withWhole = false) {
+  const savedWhole = withWhole ? (localStorage.getItem(storageKeyForId(idBase + '_w')) || "") : "";
+  const savedNum = localStorage.getItem(storageKeyForId(idBase + '_n')) || "";
+  const savedDen = localStorage.getItem(storageKeyForId(idBase + '_d')) || "";
+
+  return `
+    <span class="bracket-frac-slot" data-id="${idBase}" data-correct="${correctVal}" data-format="${formatRule}">
+      ${withWhole ? `<input type="text" inputmode="text" class="pony-input-blank inline-whole" id="input_${idBase}_w" data-id="${idBase}_w" value="${savedWhole}" placeholder="W" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="handleDirectInput(this)">` : ''}
+      <span class="bracket-bracket">[</span>
+      <span class="stacked-inputs-column">
+        <input type="text" inputmode="text" class="pony-input-blank frac-num" id="input_${idBase}_n" data-id="${idBase}_n" value="${savedNum}" placeholder="Num" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="handleDirectInput(this)">
+        <span class="stacked-bar-divider"></span>
+        <input type="text" inputmode="text" class="pony-input-blank frac-den" id="input_${idBase}_d" data-id="${idBase}_d" value="${savedDen}" placeholder="Den" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" oninput="handleDirectInput(this)">
+      </span>
+      <span class="bracket-bracket">]</span>
+    </span>
+  `;
 }
 
 function inputBlankHtml(id, correctVal, formatRule = "any") {
@@ -1679,97 +1911,316 @@ function inputBlankHtml(id, correctVal, formatRule = "any") {
                 autocorrect="off"
                 autocapitalize="off"
                 spellcheck="false"
-                oninput="handleDraftInput(this)"/>`;
+                oninput="handleDirectInput(this)"/>`;
 }
 
 function frac(n, d) {
   return `<span class="stack-frac"><span class="num">${n}</span><span class="den">${d}</span></span>`;
 }
 
+const CLASSWORK_NOTEBOOK_STEPS = {
+  "note_q5_c": `c. 702.913<br/>Solution:<br/>= (7 × 100) + (2 × 1) + ${frac(9, 10)} + ${frac(1, 100)} + ${frac(3, 1000)}`,
+  "note_q5_d": `d. 125.023<br/>Solution:<br/>= (1 × 100) + (2 × 10) + (5 × 1) + ${frac(2, 100)} + ${frac(3, 1000)}`,
+  "note_q6_a": `6. a. Three hundred eighty-five point one two<br/>Solution:<br/>&nbsp;&nbsp;&nbsp;&nbsp;385.12`,
+  "note_q6_b": `6. b. Seven thousand ninety-nine and sixteen hundredths<br/>Solution:<br/>&nbsp;&nbsp;&nbsp;&nbsp;7099.16`,
+  "note_q6_d": `6. d. Sixteen hundred and seventy-five thousandths<br/>Solution:<br/>&nbsp;&nbsp;&nbsp;&nbsp;1600.075`,
+  "note_q7_a": `7. a. 400 + 50 + 8 + ${frac(2, 10)} + ${frac(1, 100)} + ${frac(8, 1000)}<br/>Solution:<br/>&nbsp;&nbsp;&nbsp;&nbsp;458.218`,
+  "note_q7_b": `7. b. 6000 + 20 + 1 + ${frac(358, 1000)}<br/>Solution:<br/>&nbsp;&nbsp;&nbsp;&nbsp;6021.358`,
+  "note_q7_c": `7. c. 100 + 4 + ${frac(9, 10)} + ${frac(5, 100)}<br/>Solution:<br/>&nbsp;&nbsp;&nbsp;&nbsp;104.95`,
+  "note_q7_d": `7. d. ${frac(8, 100)} + ${frac(1, 1000)}<br/>Solution:<br/>&nbsp;&nbsp;&nbsp;&nbsp;0.081`,
+  "note_52_d": `Ex 5.2 — 2. d. 98.089<br/>Solution:<br/>= 98 ${frac(89, 1000)} (or) = ${frac(98089, 1000)}`,
+  "note_52_e": `Ex 5.2 — 2. e. 3.777<br/>Solution:<br/>= 3 ${frac(777, 1000)} (or) = ${frac(3777, 1000)}`,
+  "note_52_f": `Ex 5.2 — 2. f. 4.19<br/>Solution:<br/>= 4 ${frac(19, 100)} (or) = ${frac(419, 100)}`
+};
+
+function openNotebookPopup(key, headerTitle) {
+  playBubbleTap();
+  const modal = document.getElementById("notebookPopupModal");
+  document.getElementById("notebookPopupHeaderTitle").textContent = headerTitle || "Reference Note";
+  document.getElementById("notebookPopupBodyText").innerHTML = CLASSWORK_NOTEBOOK_STEPS[key] || "Reference step.";
+  document.getElementById("notebookPopupPonyImg").src = SECTIONS_DATA[selectedSectionIdx].avatar;
+  modal.classList.add("open");
+}
+
+function closeNotebookPopupModal() {
+  playBubbleTap();
+  document.getElementById("notebookPopupModal").classList.remove("open");
+}
+
+function closeNotebookPopup(e) {
+  if (e.target.id === "notebookPopupModal") {
+    closeNotebookPopupModal();
+  }
+}
+
+function clearCurrentSectionInputs() {
+  if (!confirm("Reset all answers on this page?")) return;
+  document.querySelectorAll('.pony-input-blank').forEach(el => {
+    const id = el.getAttribute('data-id');
+    if (id) localStorage.removeItem(storageKeyForId(id));
+    el.value = "";
+    el.classList.remove('graded-correct', 'graded-wrong');
+  });
+  playBubbleTap();
+}
+
 const SECTIONS_DATA = [
+  /* 0: Ex 5.1 Q1 */
   {
     title: "Exercise 5.1 — 1. Decimal Places",
     ponyName: "Twilight Sparkle",
     avatar: "assets/twilight.png",
     sceneClass: "scene-twilight",
     render: () => `
-      <div style="display:flex; flex-direction:column; gap:10px;">
-        <div class="problem-card">
-          <div class="problem-q-text"><b>a.</b> Number of decimal places in 14.82 = ${inputBlankHtml('e51_q1_a', '2')}</div>
-        </div>
-        <div class="problem-card">
-          <div class="problem-q-text"><b>b.</b> Number of decimal places in 3.1415 = ${inputBlankHtml('e51_q1_b', '4')}</div>
-        </div>
-        <div class="problem-card">
-          <div class="problem-q-text"><b>c.</b> Number of decimal places in 0.007 = ${inputBlankHtml('e51_q1_c', '3')}</div>
-        </div>
+      <div class="problem-card">
+        <div class="problem-q-text"><b>a.</b> The average body temperature is 98.6° Fahrenheit. ${inputBlankHtml('e51_q1_a', '1')} decimal place(s)</div>
+      </div>
+      <div class="problem-card">
+        <div class="problem-q-text"><b>b.</b> Mahua's slice of pizza cost ₹90.35. ${inputBlankHtml('e51_q1_b', '2')} decimal place(s)</div>
+      </div>
+      <div class="problem-card">
+        <div class="problem-q-text"><b>c.</b> In long jump in school, Maria set a record of 4.963 m. ${inputBlankHtml('e51_q1_c', '3')} decimal place(s)</div>
       </div>
     `
   },
+
+  /* 1: Ex 5.1 Q2 */
   {
-    title: "Exercise 5.1 — 2. Place Value",
+    title: "Exercise 5.1 — 2. Place Value of Underlined Digit(s)",
     ponyName: "Rarity",
     avatar: "assets/rarity.png",
     sceneClass: "scene-rarity",
     render: () => `
-      <div style="display:flex; flex-direction:column; gap:10px;">
-        <div class="problem-card">
-          <div class="problem-q-text"><b>a.</b> Place value of <u>5</u> in 14.25 = ${inputBlankHtml('e51_q2_a', '5 hundredths|0.05|hundredths')}</div>
-        </div>
-        <div class="problem-card">
-          <div class="problem-q-text"><b>b.</b> Place value of <u>3</u> in 38.91 = ${inputBlankHtml('e51_q2_b', '3 tens|30|tens')}</div>
-        </div>
+      <div class="problem-card">
+        <div class="problem-q-text"><b>a.</b> 8.9<u>7</u>6 &nbsp;→&nbsp; Place value: ${stackedFractionSlotHtml('e51_q2_a', '7/100|0.07|7 hundredths')}</div>
+      </div>
+      <div class="problem-card">
+        <div class="problem-q-text"><b>b.</b> 1.00<u>3</u> &nbsp;→&nbsp; Place value: ${stackedFractionSlotHtml('e51_q2_b', '3/1000|0.003|3 thousandths')}</div>
+      </div>
+      <div class="problem-card">
+        <div class="problem-q-text"><b>c.</b> 54.<u>2</u>7 &nbsp;→&nbsp; Place value: ${stackedFractionSlotHtml('e51_q2_c', '2/10|0.2|1/5|2 tenths')}</div>
+      </div>
+      <div class="problem-card">
+        <div class="problem-q-text"><b>d.</b> <u>4</u>53.6<u>9</u>1 &nbsp;→&nbsp; Value of 4: ${inputBlankHtml('e51_q2_d1', '400|4 hundreds')} &nbsp;|&nbsp; Value of 9: ${stackedFractionSlotHtml('e51_q2_d2', '9/100|0.09|9 hundredths')}</div>
       </div>
     `
   },
+
+  /* 2: Ex 5.1 Q3 & Q4 */
   {
-    title: "Exercise 5.1 — 3 & 4. Fill in Blanks",
+    title: "Exercise 5.1 — 3 & 4. Fill Blanks & Questions",
     ponyName: "Pinkie Pie",
     avatar: "assets/pinkie.png",
     sceneClass: "scene-pinkie",
     render: () => `
-      <div style="display:flex; flex-direction:column; gap:10px;">
-        <div class="problem-card">
-          <div class="problem-q-text"><b>a.</b> In 19.83, the digit in the tenths place is ${inputBlankHtml('e51_q3_a', '8')}</div>
-        </div>
+      <div class="problem-card">
+        <div style="font-weight:800; color:var(--pinkie-dark); font-size:1.05rem;">Q3. Fill in the blanks:</div>
+        <div class="problem-q-text"><b>a.</b> 0.381 = ${inputBlankHtml('e51_q3_a1', '3')} tenths + 8 hundredths + ${inputBlankHtml('e51_q3_a2', '1')} thousandths</div>
+        <div class="problem-q-text"><b>b.</b> 0.737 = 7 tenths + ${inputBlankHtml('e51_q3_b1', '3')} hundredths + ${inputBlankHtml('e51_q3_b2', '7')} thousandths</div>
+        <div class="problem-q-text"><b>c.</b> 75.06 = 7 ${inputBlankHtml('e51_q3_c1', 'tens')} + 5 ones + ${inputBlankHtml('e51_q3_c2', '6 hundredths|6/100')}</div>
+        <div class="problem-q-text"><b>d.</b> 9.114 = ${inputBlankHtml('e51_q3_d1', '9|9 ones')} + 114 ${inputBlankHtml('e51_q3_d2', 'thousandths')}</div>
+      </div>
+      <div class="problem-card">
+        <div style="font-weight:800; color:var(--pinkie-dark); font-size:1.05rem;">Q4. Answer the questions:</div>
+        <div class="problem-q-text"><b>a.</b> Write thirteen thousandths in decimal form: ${inputBlankHtml('e51_q4_a', '0.013|.013')}</div>
+        <div class="problem-q-text" style="margin-top:6px;"><b>b.</b> Place values of 9 in 19842.0975: First 9: ${inputBlankHtml('e51_q4_b1', '9000|9 thousands')} &nbsp;|&nbsp; Second 9: ${stackedFractionSlotHtml('e51_q4_b2', '9/100|0.09|9 hundredths')}</div>
       </div>
     `
   },
+
+  /* 3: Ex 5.1 Q5 */
   {
-    title: "Exercise 5.1 — 5. Expanded Form",
+    title: "Exercise 5.1 — 5. Expanded Form of Decimals",
     ponyName: "Rainbow Dash",
     avatar: "assets/rainbow.png",
     sceneClass: "scene-rainbow",
     render: () => `
-      <div style="display:flex; flex-direction:column; gap:10px;">
-        <div class="problem-card">
-          <div class="problem-q-text"><b>a.</b> Expanded form of 45.67 = ${inputBlankHtml('e51_q5_a', '40+5+0.6+0.07|40 + 5 + 0.6 + 0.07')}</div>
+      <div class="problem-card">
+        <div class="problem-q-text">
+          <b>a. 34.304</b> = ${inputBlankHtml('e51_q5_a_whole', '3x10 + 4|3 × 10 + 4|30 + 4')} + ${stackedFractionSlotHtml('e51_q5_a_1', '3/10|0.3')} + ${stackedFractionSlotHtml('e51_q5_a_2', '4/1000|0.004')}
+        </div>
+      </div>
+      <div class="problem-card">
+        <div class="problem-q-text">
+          <b>b. 91.445</b> = ${inputBlankHtml('e51_q5_b_whole', '9x10 + 1|9 × 10 + 1|90 + 1')} + ${stackedFractionSlotHtml('e51_q5_b_1', '4/10|0.4')} + ${stackedFractionSlotHtml('e51_q5_b_2', '4/100|0.04')} + ${stackedFractionSlotHtml('e51_q5_b_3', '5/1000|0.005')}
+        </div>
+      </div>
+      <div class="problem-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+          <div class="problem-q-text">
+            <b>c. 702.913</b> = ${inputBlankHtml('e51_q5_c_whole', '7x100 + 2|7 × 100 + 2|700 + 2')} + ${stackedFractionSlotHtml('e51_q5_c_1', '9/10|0.9')} + ${stackedFractionSlotHtml('e51_q5_c_2', '1/100|0.01')} + ${stackedFractionSlotHtml('e51_q5_c_3', '3/1000|0.003')}
+          </div>
+          <button class="notebook-peek-btn" onclick="openNotebookPopup('note_q5_c', 'Ex 5.1 — Q5. c. 702.913')" title="Teacher Reference Note">📓</button>
+        </div>
+      </div>
+      <div class="problem-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+          <div class="problem-q-text">
+            <b>d. 125.023</b> = ${inputBlankHtml('e51_q5_d_whole', '1x100 + 2x10 + 5|1 × 100 + 2 × 10 + 5|100 + 20 + 5')} + ${stackedFractionSlotHtml('e51_q5_d_1', '2/100|0.02')} + ${stackedFractionSlotHtml('e51_q5_d_2', '3/1000|0.003')}
+          </div>
+          <button class="notebook-peek-btn" onclick="openNotebookPopup('note_q5_d', 'Ex 5.1 — Q5. d. 125.023')" title="Teacher Reference Note">📓</button>
+        </div>
+      </div>
+      <div class="problem-card">
+        <div class="problem-q-text">
+          <b>e. 623.008</b> = ${inputBlankHtml('e51_q5_e_whole', '6x100 + 2x10 + 3|6 × 100 + 2 × 10 + 3|600 + 20 + 3')} + ${stackedFractionSlotHtml('e51_q5_e_1', '8/1000|0.008')}
         </div>
       </div>
     `
   },
+
+  /* 4: Ex 5.1 Q6 */
   {
-    title: "Exercise 5.1 — 6. Number Names",
+    title: "Exercise 5.1 — 6. Number Names to Decimals",
     ponyName: "Fluttershy",
     avatar: "assets/fluttershy.png",
     sceneClass: "scene-flutter",
     render: () => `
-      <div style="display:flex; flex-direction:column; gap:10px;">
-        <div class="problem-card">
-          <div class="problem-q-text"><b>a.</b> Twelve point three four = ${inputBlankHtml('e51_q6_a', '12.34')}</div>
+      <div class="problem-card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div class="problem-q-text"><b>a.</b> Three hundred eighty-five point one two &nbsp;→&nbsp; ${inputBlankHtml('e51_q6_a', '385.12')}</div>
+          <button class="notebook-peek-btn" onclick="openNotebookPopup('note_q6_a', 'Ex 5.1 — Q6. a')" title="Teacher Reference Note">📓</button>
+        </div>
+      </div>
+      <div class="problem-card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div class="problem-q-text"><b>b.</b> Seven thousand ninety-nine and sixteen hundredths &nbsp;→&nbsp; ${inputBlankHtml('e51_q6_b', '7099.16')}</div>
+          <button class="notebook-peek-btn" onclick="openNotebookPopup('note_q6_b', 'Ex 5.1 — Q6. b')" title="Teacher Reference Note">📓</button>
+        </div>
+      </div>
+      <div class="problem-card">
+        <div class="problem-q-text"><b>c.</b> Five point two three &nbsp;→&nbsp; ${inputBlankHtml('e51_q6_c', '5.23')}</div>
+      </div>
+      <div class="problem-card">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div class="problem-q-text"><b>d.</b> Sixteen hundred and seventy-five thousandths &nbsp;→&nbsp; ${inputBlankHtml('e51_q6_d', '1600.075')}</div>
+          <button class="notebook-peek-btn" onclick="openNotebookPopup('note_q6_d', 'Ex 5.1 — Q6. d')" title="Teacher Reference Note">📓</button>
         </div>
       </div>
     `
   },
+
+  /* 5: Ex 5.1 Q7 — APPLEJACK */
   {
-    title: "Exercise 5.1 — 7. Decimal Form",
+    title: "Exercise 5.1 — 7. Write in Decimal Form",
     ponyName: "Applejack",
     avatar: "assets/applejack.png",
     sceneClass: "scene-applejack",
     render: () => `
+      <div class="problem-card">
+        <div class="problem-q-text">
+          <b>a.</b> 400 + 50 + 8 + ${frac(2, 10)} + ${frac(1, 100)} + ${frac(8, 1000)} = ${inputBlankHtml('e51_q7_a', '458.218')}
+          <button class="notebook-peek-btn" onclick="openNotebookPopup('note_q7_a', 'Ex 5.1 — Q7. a')" title="Teacher Reference Note">📓</button>
+        </div>
+      </div>
+      <div class="problem-card">
+        <div class="problem-q-text">
+          <b>b.</b> 6000 + 20 + 1 + ${frac(358, 1000)} = ${inputBlankHtml('e51_q7_b', '6021.358')}
+          <button class="notebook-peek-btn" onclick="openNotebookPopup('note_q7_b', 'Ex 5.1 — Q7. b')" title="Teacher Reference Note">📓</button>
+        </div>
+      </div>
+      <div class="problem-card">
+        <div class="problem-q-text">
+          <b>c.</b> 100 + 4 + ${frac(9, 10)} + ${frac(5, 100)} = ${inputBlankHtml('e51_q7_c', '104.95')}
+          <button class="notebook-peek-btn" onclick="openNotebookPopup('note_q7_c', 'Ex 5.1 — Q7. c')" title="Teacher Reference Note">📓</button>
+        </div>
+      </div>
+      <div class="problem-card">
+        <div class="problem-q-text">
+          <b>d.</b> ${frac(8, 100)} + ${frac(1, 1000)} = ${inputBlankHtml('e51_q7_d', '0.081|.081')}
+          <button class="notebook-peek-btn" onclick="openNotebookPopup('note_q7_d', 'Ex 5.1 — Q7. d')" title="Teacher Reference Note">📓</button>
+        </div>
+      </div>
+    `
+  },
+
+  /* 6: Ex 5.2 Q1 — PRINCESS LUNA */
+  {
+    title: "Exercise 5.2 — 1. 10-Block Strip Models",
+    ponyName: "Princess Luna",
+    avatar: "assets/luna.png",
+    sceneClass: "scene-luna",
+    render: () => {
+      const strips = [
+        { row: 1, shaded: 4, f: '4/10|2/5', d: '0.4|.4' },
+        { row: 2, shaded: 1, f: '1/10', d: '0.1|.1' },
+        { row: 3, shaded: 3, f: '3/10', d: '0.3|.3' },
+        { row: 4, shaded: 4, f: '4/10|2/5', d: '0.4|.4' },
+        { row: 5, shaded: 0, f: '0/10|0', d: '0.0|0|.0' },
+        { row: 6, shaded: 2, f: '2/10|1/5', d: '0.2|.2' },
+        { row: 7, shaded: 8, f: '8/10|4/5', d: '0.8|.8' },
+        { row: 8, shaded: 4, f: '4/10|2/5', d: '0.4|.4' },
+        { row: 9, shaded: 9, f: '9/10', d: '0.9|.9' },
+        { row: 10, shaded: 6, f: '6/10|3/5', d: '0.6|.6' }
+      ];
+
+      return `
+        <div class="strip-table-wrapper">
+          <table class="strip-table">
+            <thead>
+              <tr>
+                <th style="width:40px;">Row</th>
+                <th>10-Block Strip Model</th>
+                <th>Fraction Slot</th>
+                <th>Decimal</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${strips.map(s => {
+                let cells = "";
+                for (let i = 0; i < 10; i++) {
+                  cells += `<div class="strip-cell ${i < s.shaded ? 'shaded' : ''}"></div>`;
+                }
+                return `
+                  <tr>
+                    <td><b>${s.row}</b></td>
+                    <td><div class="strip-bar-visual">${cells}</div></td>
+                    <td>${stackedFractionSlotHtml('strip_f_' + s.row, s.f)}</td>
+                    <td>${inputBlankHtml('strip_d_' + s.row, s.d)}</td>
+                  </tr>
+                `;
+              }).join("")}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+  },
+
+  /* 7: Ex 5.2 Q2 — PRINCESS CELESTIA */
+  {
+    title: "Exercise 5.2 — 2. Convert Decimals to Fractions",
+    ponyName: "Princess Celestia",
+    avatar: "assets/celestia.png",
+    sceneClass: "scene-celestia",
+    render: () => `
       <div style="display:flex; flex-direction:column; gap:10px;">
         <div class="problem-card">
-          <div class="problem-q-text"><b>a.</b> 5 + ${frac(3, 10)} + ${frac(8, 1000)} = ${inputBlankHtml('e51_q7_a', '5.308')}</div>
+          <div class="problem-q-text"><b>a. 3.89</b> &nbsp;→&nbsp; Mixed: ${stackedFractionSlotHtml('e52_q2_a_mix', '3 89/100', 'mixed', true)} &nbsp;or&nbsp; Imp: ${stackedFractionSlotHtml('e52_q2_a_imp', '389/100', 'improper', false)}</div>
+        </div>
+        <div class="problem-card">
+          <div class="problem-q-text"><b>b. 5.907</b> &nbsp;→&nbsp; Mixed: ${stackedFractionSlotHtml('e52_q2_b_mix', '5 907/1000', 'mixed', true)} &nbsp;or&nbsp; Imp: ${stackedFractionSlotHtml('e52_q2_b_imp', '5907/1000', 'improper', false)}</div>
+        </div>
+        <div class="problem-card">
+          <div class="problem-q-text"><b>c. 4.006</b> &nbsp;→&nbsp; Mixed: ${stackedFractionSlotHtml('e52_q2_c_mix', '4 6/1000|4 3/500', 'mixed', true)} &nbsp;or&nbsp; Imp: ${stackedFractionSlotHtml('e52_q2_c_imp', '4006/1000|2003/500', 'improper', false)}</div>
+        </div>
+        <div class="problem-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="problem-q-text"><b>d. 98.089</b> &nbsp;→&nbsp; Mixed: ${stackedFractionSlotHtml('e52_q2_d_mix', '98 89/1000', 'mixed', true)} &nbsp;or&nbsp; Imp: ${stackedFractionSlotHtml('e52_q2_d_imp', '98089/1000', 'improper', false)}</div>
+            <button class="notebook-peek-btn" onclick="openNotebookPopup('note_52_d', 'Ex 5.2 — Q2. d. 98.089')" title="Teacher Reference Note">📓</button>
+          </div>
+        </div>
+        <div class="problem-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="problem-q-text"><b>e. 3.777</b> &nbsp;→&nbsp; Mixed: ${stackedFractionSlotHtml('e52_q2_e_mix', '3 777/1000', 'mixed', true)} &nbsp;or&nbsp; Imp: ${stackedFractionSlotHtml('e52_q2_e_imp', '3777/1000', 'improper', false)}</div>
+            <button class="notebook-peek-btn" onclick="openNotebookPopup('note_52_e', 'Ex 5.2 — Q2. e. 3.777')" title="Teacher Reference Note">📓</button>
+          </div>
+        </div>
+        <div class="problem-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="problem-q-text"><b>f. 4.19</b> &nbsp;→&nbsp; Mixed: ${stackedFractionSlotHtml('e52_q2_f_mix', '4 19/100', 'mixed', true)} &nbsp;or&nbsp; Imp: ${stackedFractionSlotHtml('e52_q2_f_imp', '419/100', 'improper', false)}</div>
+            <button class="notebook-peek-btn" onclick="openNotebookPopup('note_52_f', 'Ex 5.2 — Q2. f. 4.19')" title="Teacher Reference Note">📓</button>
+          </div>
         </div>
       </div>
     `
@@ -1789,6 +2240,9 @@ function returnToChapterMenu() {
   saveRoughCanvas();
   document.getElementById("exerciseView").style.display = "none";
   document.getElementById("chapterMenuView").style.display = "flex";
+  
+  const video = document.getElementById("menuBackdropVideo");
+  if (video) video.play().catch(() => {});
 }
 
 function switchSection(idx, doSave = true) {
@@ -1805,19 +2259,8 @@ function switchSection(idx, doSave = true) {
   if (watermarkBottomLeftEl) watermarkBottomLeftEl.src = sec.avatar;
 
   document.getElementById("bannerHeading").textContent = sec.title;
-  document.getElementById("bannerSub").textContent = `Hosted by ${sec.ponyName}`;
+  document.getElementById("bannerSub").textContent = `Cozy Maths with ${sec.ponyName}`;
   document.getElementById("exerciseScrollBody").innerHTML = sec.render();
-}
-
-function clearCurrentSectionInputs() {
-  if (!confirm("Reset all answers on this page?")) return;
-  document.querySelectorAll('.pony-input-blank').forEach(el => {
-    const id = el.getAttribute('data-id');
-    if (id) localStorage.removeItem(storageKeyForId(id));
-    el.value = "";
-    el.classList.remove('graded-correct', 'graded-wrong');
-  });
-  playBubbleTap();
 }
 
 /* ROUGH PAD ENGINE WITH DYNAMIC RESIZEOBSERVER */
