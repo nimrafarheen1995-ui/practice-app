@@ -538,20 +538,11 @@
       pointer-events: none;
       z-index: 1;
       background-image: repeating-linear-gradient(
+        to bottom,
         #FFFFFF 0px,
-        #FFFFFF 24px,
-        var(--ruled-guide) 25px,
-        #FFFFFF 26px,
-        #FFFFFF 54px,
-        var(--ruled-guide) 55px,
-        #FFFFFF 56px,
-        #FFFFFF 84px,
-        var(--ruled-base) 85px,
-        #FFFFFF 86px,
-        #FFFFFF 114px,
-        var(--ruled-guide) 115px,
-        #FFFFFF 116px,
-        #FFFFFF 120px
+        #FFFFFF 29px,
+        var(--ruled-guide) 29px,
+        var(--ruled-guide) 30px
       );
     }
 
@@ -1218,9 +1209,7 @@
       }
     ];
 
-    MCQ_DATA.forEach(item => {
-      item.options.sort(() => Math.random() - 0.5);
-    });
+    // Options stay in the a, b, c, d order written in the book.
 
     let selectedPrefixToken = 'un';
 
@@ -1382,9 +1371,9 @@
                         data-clean="${clean}"
                         onpointerdown="handleWordPointerDown(event, '${wordId}')" 
                         onpointermove="handleWordPointerMove(event)"
-                        onpointerup="handleWordPointerUp()" 
+                        onpointerup="handleWordPointerUp(event, '${wordId}')" 
                         onpointercancel="handleWordPointerCancel()"
-                        ondblclick="toggleSyllableSplit('${wordId}')">${w}</span>`;
+                        oncontextmenu="event.preventDefault()">${w}</span>`;
         });
         const ansBox = document.createElement('div');
         ansBox.className = 'answer-stream-box';
@@ -1422,39 +1411,54 @@
       setTimeout(setupInkCanvases, 60);
     }
 
-    /* ANY-WORD TAP-AND-HOLD / DOUBLE-TAP SYLLABLE DISSECTOR */
+    /* TAP = SPEAK THE WORD  |  TAP-AND-HOLD = SPLIT INTO SYLLABLES, READ SLOWLY */
+    const WORD_HOLD_MS = 450;
     let wordPressTimer = null;
+    let wordHoldFired = false;
+    let wordMoved = false;
     let pressStartX = 0, pressStartY = 0;
 
     function handleWordPointerDown(e, elemId) {
       if (currentMode !== 'practice') return;
       pressStartX = e.clientX;
       pressStartY = e.clientY;
+      wordHoldFired = false;
+      wordMoved = false;
+      clearTimeout(wordPressTimer);
       wordPressTimer = setTimeout(() => {
+        wordPressTimer = null;
+        wordHoldFired = true;
         toggleSyllableSplit(elemId);
-      }, 400);
+      }, WORD_HOLD_MS);
     }
 
     function handleWordPointerMove(e) {
-      if (!wordPressTimer) return;
       if (Math.hypot(e.clientX - pressStartX, e.clientY - pressStartY) > 8) {
+        wordMoved = true;
         clearTimeout(wordPressTimer);
         wordPressTimer = null;
       }
     }
 
-    function handleWordPointerUp() {
-      if (wordPressTimer) {
-        clearTimeout(wordPressTimer);
-        wordPressTimer = null;
-      }
+    function handleWordPointerUp(e, elemId) {
+      const wasTap = wordPressTimer !== null && !wordHoldFired && !wordMoved;
+      clearTimeout(wordPressTimer);
+      wordPressTimer = null;
+      if (wasTap) speakWordTap(elemId);
     }
 
     function handleWordPointerCancel() {
-      if (wordPressTimer) {
-        clearTimeout(wordPressTimer);
-        wordPressTimer = null;
-      }
+      clearTimeout(wordPressTimer);
+      wordPressTimer = null;
+      wordMoved = true;
+    }
+
+    function speakWordTap(elemId) {
+      const el = document.getElementById(elemId);
+      if (!el) return;
+      const cleanWord = el.getAttribute('data-clean');
+      audioFX.playSnap();
+      speakText(cleanWord, 0.82, 0.85);
     }
 
     function toggleSyllableSplit(elemId) {
@@ -1526,6 +1530,11 @@
       if (eraBtn) eraBtn.classList.toggle('active-tool', tool === 'eraser');
     }
 
+    // Palm rejection settings
+    const PALM_CONTACT_PX = 30;   // a touch wider/taller than this is treated as a palm
+    const PEN_QUIET_MS = 1200;    // ignore finger touches for this long after the pen was used
+    let lastPenTime = 0;
+
     function setupInkCanvases() {
       const dpr = window.devicePixelRatio || 1;
       document.querySelectorAll(".retina-ink-canvas").forEach(c => {
@@ -1559,22 +1568,52 @@
         }
 
         let isDrawing = false;
+        let activePointerId = null;
+        let activePointerType = null;
         let lastX = 0, lastY = 0;
         let cachedRect = null;
 
+        const finishStroke = () => {
+          if (!isDrawing) return;
+          isDrawing = false;
+          cachedRect = null;
+          activePointerId = null;
+          activePointerType = null;
+          try {
+            strokeUndoStack[id].push(c.toDataURL("image/png"));
+            if (strokeUndoStack[id].length > 15) strokeUndoStack[id].shift();
+          } catch (_) {}
+          saveCanvasBuffer(c, id);
+        };
+
         c.onpointerdown = (e) => {
-          hideFloatingDock();
+          e.preventDefault();
+          if (e.pointerType === 'pen') {
+            lastPenTime = Date.now();
+            // A pen always takes over from a finger or palm stroke in progress
+            if (isDrawing && activePointerType === 'touch') finishStroke();
+          } else {
+            // Ignore resting palms: large contact patch, a pen in use,
+            // or a second touch joining a stroke already being drawn
+            const palmSized = Math.max(e.width || 0, e.height || 0) > PALM_CONTACT_PX;
+            const penRecently = (Date.now() - lastPenTime) < PEN_QUIET_MS;
+            if (palmSized || penRecently || isDrawing) return;
+          }
+          if (isDrawing) return;
+
+          activePointerId = e.pointerId;
+          activePointerType = e.pointerType;
           isDrawing = true;
+          hideFloatingDock();
           hasDrawnRegistry[id] = true;
           try { c.setPointerCapture(e.pointerId); } catch (_) {}
           cachedRect = c.getBoundingClientRect();
           lastX = e.clientX - cachedRect.left;
           lastY = e.clientY - cachedRect.top;
-          e.preventDefault();
         };
 
         c.onpointermove = (e) => {
-          if (!isDrawing || !cachedRect) return;
+          if (!isDrawing || !cachedRect || e.pointerId !== activePointerId) return;
 
           const currX = e.clientX - cachedRect.left;
           const currY = e.clientY - cachedRect.top;
@@ -1605,16 +1644,9 @@
         };
 
         const stopStroke = (e) => {
-          if (isDrawing) {
-            isDrawing = false;
-            cachedRect = null;
-            try { c.releasePointerCapture(e.pointerId); } catch (_) {}
-            try {
-              strokeUndoStack[id].push(c.toDataURL("image/png"));
-              if (strokeUndoStack[id].length > 15) strokeUndoStack[id].shift();
-            } catch (_) {}
-            saveCanvasBuffer(c, id);
-          }
+          if (e.pointerId !== activePointerId) return;
+          try { c.releasePointerCapture(e.pointerId); } catch (_) {}
+          finishStroke();
         };
 
         c.onpointerup = stopStroke;
@@ -1924,8 +1956,10 @@
     /* BATCH GRADING WITH FINAL FEEDBACK ACROSS ALL 4 EXERCISES */
     function gradeTextbookSlide() {
       if (activeTextbookSlide === 1) {
-        const correctMap = { 0: 0, 1: 2, 2: 3 };
-        const done = [0, 1, 2].every(i => textbookStore.exA[i] === correctMap[i]);
+        const done = MCQ_DATA.every((mcq, qIdx) => {
+          const sel = textbookStore.exA[qIdx];
+          return sel !== undefined && mcq.options[sel] && mcq.options[sel].correct === true;
+        });
         if (!done) {
           audioFX.playSnap();
           speakText("Let's check your answers in Section A and try again!");
