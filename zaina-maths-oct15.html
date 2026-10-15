@@ -40,7 +40,7 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: #0B0F19;
+            background: #030712;
             color: #1E1B4B;
             touch-action: pan-x pan-y;
         }
@@ -61,7 +61,7 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(10, 10, 25, 0.7);
+            background: rgba(10, 10, 25, 0.75);
             pointer-events: none;
             z-index: 99998;
         }
@@ -420,12 +420,9 @@
 
                             <!-- Fixed Size Graph Box Writing Surface with Full-Size Guiding Pony in Corner -->
                             <div class="flex-1 graph-paper relative overflow-hidden" id="canvasArea_${q.id}">
-                                <!-- Full-Size Guiding Pony in Bottom-Right Corner looking over Zaina's work with magical number lenses -->
-                                <div class="absolute right-4 bottom-2 pointer-events-none z-10 opacity-40 hover:opacity-75 transition duration-300 flex flex-col items-end">
-                                    <img src="${realm.avatar}" class="w-44 h-44 md:w-56 md:h-56 object-contain filter drop-shadow-[0_15px_25px_rgba(0,0,0,0.35)] transform rotate-[-4deg]" alt="${realm.pony}" onerror="handleImageFallback(this)"/>
-                                    <div class="bg-white/90 backdrop-blur-sm border border-purple-300 rounded-xl px-3 py-1 shadow-md text-[11px] font-bold text-purple-900 mr-4 mb-2">
-                                        ✨ "${realm.pony}'s Magic Lens Active"
-                                    </div>
+                                <!-- Full-Size Guiding Pony in Bottom-Right Corner (Clean, no text overlay) -->
+                                <div class="absolute right-2 bottom-0 pointer-events-none z-10 opacity-60 hover:opacity-90 transition duration-300">
+                                    <img src="${realm.avatar}" class="w-48 h-48 md:w-60 md:h-60 object-contain filter drop-shadow-[0_15px_30px_rgba(0,0,0,0.4)] transform rotate-[-3deg]" alt="${realm.pony}" onerror="handleImageFallback(this)"/>
                                 </div>
 
                                 <!-- Place Value Grid Overlay with Empty Carry/Borrow Top Row -->
@@ -617,7 +614,7 @@
             }
         }
 
-        // Animated Milky Way Space Theme Background with Moving Planets & Stars
+        // Immersive Milky Way Galaxy & Large Realistic Planets Background Animation
         const mCanvas = document.getElementById("milkyWayCanvas");
         const mCtx = mCanvas.getContext("2d");
         let stars = [];
@@ -627,21 +624,22 @@
             mCanvas.width = window.innerWidth;
             mCanvas.height = window.innerHeight;
             stars = [];
-            for (let i = 0; i < 110; i++) {
+            for (let i = 0; i < 140; i++) {
                 stars.push({
                     x: Math.random() * mCanvas.width,
                     y: Math.random() * mCanvas.height,
-                    radius: Math.random() * 2.5 + 0.5,
-                    vx: (Math.random() - 0.5) * 0.2,
-                    vy: -Math.random() * 0.3 - 0.1,
-                    alpha: Math.random() * 0.8 + 0.2,
-                    dAlpha: (Math.random() - 0.5) * 0.01,
-                    color: ['#FDF2F8', '#DDD6FE', '#BAE6FD', '#FDE047'][Math.floor(Math.random() * 4)]
+                    radius: Math.random() * 2.2 + 0.4,
+                    vx: (Math.random() - 0.5) * 0.15,
+                    vy: -Math.random() * 0.25 - 0.05,
+                    alpha: Math.random() * 0.9 + 0.1,
+                    dAlpha: (Math.random() - 0.5) * 0.008,
+                    color: ['#FDF2F8', '#C7D2FE', '#BAE6FD', '#FEF08A'][Math.floor(Math.random() * 4)]
                 });
             }
+            // Large, vivid, realistic planets with orbital drift
             planets = [
-                { x: mCanvas.width * 0.2, y: mCanvas.height * 0.3, r: 24, color: '#818CF8', vx: 0.15, ring: true },
-                { x: mCanvas.width * 0.8, y: mCanvas.height * 0.7, r: 35, color: '#F472B6', vx: -0.1, ring: false }
+                { x: mCanvas.width * 0.15, y: mCanvas.height * 0.25, r: 55, color1: '#4338CA', color2: '#312E81', vx: 0.08, ring: true },
+                { x: mCanvas.width * 0.85, y: mCanvas.height * 0.75, r: 75, color1: '#BE185D', color2: '#831843', vx: -0.05, ring: false }
             ];
         }
         window.addEventListener("resize", resizeMilkyWay);
@@ -649,19 +647,34 @@
 
         function renderMilkyWay() {
             mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height);
+            
+            // Deep space background gradient
             const grad = mCtx.createLinearGradient(0, 0, mCanvas.width, mCanvas.height);
-            grad.addColorStop(0, '#0F172A');
-            grad.addColorStop(0.5, '#1E1B4B');
-            grad.addColorStop(1, '#070B14');
+            grad.addColorStop(0, '#030712');
+            grad.addColorStop(0.5, '#0F172A');
+            grad.addColorStop(1, '#1E1B4B');
             mCtx.fillStyle = grad;
             mCtx.fillRect(0, 0, mCanvas.width, mCanvas.height);
+
+            // True Milky Way Galactic Band (Glowing diagonal nebula core)
+            mCtx.save();
+            mCtx.globalAlpha = 0.18;
+            const mwGrad = mCtx.createRadialGradient(mCanvas.width * 0.5, mCanvas.height * 0.5, 50, mCanvas.width * 0.5, mCanvas.height * 0.5, mCanvas.width * 0.8);
+            mwGrad.addColorStop(0, '#C084FC');
+            mwGrad.addColorStop(0.4, '#38BDF8');
+            mwGrad.addColorStop(1, 'transparent');
+            mCtx.fillStyle = mwGrad;
+            mCtx.beginPath();
+            mCtx.ellipse(mCanvas.width * 0.5, mCanvas.height * 0.5, mCanvas.width * 0.7, mCanvas.height * 0.35, Math.PI / 6, 0, Math.PI * 2);
+            mCtx.fill();
+            mCtx.restore();
 
             // Render moving stars
             for (let s of stars) {
                 s.x += s.vx;
                 s.y += s.vy;
                 s.alpha += s.dAlpha;
-                if (s.alpha > 0.95 || s.alpha < 0.2) s.dAlpha = -s.dAlpha;
+                if (s.alpha > 0.95 || s.alpha < 0.15) s.dAlpha = -s.dAlpha;
                 if (s.y < 0) s.y = mCanvas.height;
                 if (s.x < 0) s.x = mCanvas.width;
                 if (s.x > mCanvas.width) s.x = 0;
@@ -675,24 +688,30 @@
                 mCtx.restore();
             }
 
-            // Render moving planets across space
+            // Render large, vivid, realistic planets with atmospheric shading & rings
             for (let p of planets) {
                 p.x += p.vx;
                 if (p.x - p.r > mCanvas.width) p.x = -p.r;
                 if (p.x + p.r < 0) p.x = mCanvas.width + p.r;
 
                 mCtx.save();
-                mCtx.globalAlpha = 0.45;
-                mCtx.fillStyle = p.color;
+                mCtx.globalAlpha = 0.65;
+                
+                // Planet body radial gradient for 3D sphere lighting
+                const pGrad = mCtx.createRadialGradient(p.x - p.r * 0.3, p.y - p.r * 0.3, p.r * 0.1, p.x, p.y, p.r);
+                pGrad.addColorStop(0, p.color1);
+                pGrad.addColorStop(1, p.color2);
+                mCtx.fillStyle = pGrad;
                 mCtx.beginPath();
                 mCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
                 mCtx.fill();
 
+                // Optional Planetary Ring
                 if (p.ring) {
-                    mCtx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
-                    mCtx.lineWidth = 3;
+                    mCtx.strokeStyle = 'rgba(216, 180, 254, 0.5)';
+                    mCtx.lineWidth = 5;
                     mCtx.beginPath();
-                    mCtx.ellipse(p.x, p.y, p.r * 1.6, p.r * 0.5, Math.PI / 6, 0, Math.PI * 2);
+                    mCtx.ellipse(p.x, p.y, p.r * 1.8, p.r * 0.4, Math.PI / 5, 0, Math.PI * 2);
                     mCtx.stroke();
                 }
                 mCtx.restore();
