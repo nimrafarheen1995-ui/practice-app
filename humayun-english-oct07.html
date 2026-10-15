@@ -61,7 +61,7 @@
       flex-direction: column;
       height: 100vh;
       height: 100dvh;
-      padding: 10px 16px;
+      padding: 8px max(12px, env(safe-area-inset-right)) 8px max(12px, env(safe-area-inset-left));
       position: relative;
     }
 
@@ -108,10 +108,8 @@
       display: flex;
       flex-direction: column;
       height: 100%;
-      max-width: 1400px;
-      margin: 0 auto;
       width: 100%;
-      gap: 10px;
+      gap: 8px;
       position: relative;
       z-index: 10;
     }
@@ -121,7 +119,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 52px;
+      height: 48px;
       flex-shrink: 0;
       background: rgba(255, 255, 255, 0.94);
       backdrop-filter: blur(10px);
@@ -129,35 +127,6 @@
       border-radius: 18px;
       border: 2.5px solid var(--border);
       box-shadow: var(--shadow);
-      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
-    }
-    .floating-hud-dock.dock-minimized {
-      transform: translate3d(0, -65px, 0);
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .dock-peek-handle {
-      position: fixed;
-      top: 4px;
-      left: 24px;
-      z-index: 95;
-      background: rgba(255, 255, 255, 0.95);
-      border: 2px solid var(--border);
-      border-radius: 0 0 14px 14px;
-      padding: 3px 18px;
-      font-size: 1.1rem;
-      cursor: pointer;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.2);
-      opacity: 0;
-      pointer-events: none;
-      transform: translate3d(0, -20px, 0);
-      transition: transform 0.3s ease, opacity 0.3s ease;
-    }
-    .dock-peek-handle.peek-visible {
-      opacity: 1;
-      pointer-events: auto;
-      transform: translate3d(0, 0, 0);
     }
 
     .brand-group {
@@ -232,7 +201,7 @@
     }
     .action-btn:active { transform: translateY(1px); }
 
-    /* NORMAL NON-STACKED HUB BAY WITH LARGE HUMAYUN SCIENTIST PNG */
+    /* HUB BAY */
     .hub-bay-wrapper {
       flex: 1;
       display: flex;
@@ -258,8 +227,10 @@
       width: 100%;
     }
     .hub-hero-avatar {
-      width: 120px;
-      height: 120px;
+      width: auto;
+      height: auto;
+      max-width: 160px;
+      max-height: 160px;
       object-fit: contain;
       filter: drop-shadow(0 8px 16px rgba(0,0,0,0.2));
     }
@@ -325,7 +296,7 @@
       backdrop-filter: blur(14px);
       border-radius: 24px;
       border: 3px solid var(--border);
-      padding: 16px 20px;
+      padding: 12px 14px;
       display: none;
       flex-direction: column;
       gap: 12px;
@@ -350,59 +321,102 @@
       color: var(--primary-dark);
     }
 
-    .speakable {
-      cursor: pointer;
-      border-radius: 6px;
-      padding: 1px 4px;
-      transition: background 0.12s;
+    .pane-body {
+      display: flex;
+      gap: 12px;
+      flex: 1;
+      min-height: 0;
     }
-    .speakable:active { background: #FEF08A; color: #000; }
 
-    /* AUTHENTIC BINDER COVER STYLING (HUMAYUN'S SCI-FI EXPLORER THEME) */
+    .sec-rail {
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      width: 172px;
+      flex-shrink: 0;
+    }
+    .workspace.has-rail .sec-rail { display: flex; }
+    .rail-title { font-weight: 900; color: var(--primary-dark); font-size: 0.95rem; padding-left: 4px; }
+    .rail-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-align: left;
+      padding: 10px 12px;
+      border-radius: 16px;
+      border: 2px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: transform .12s;
+    }
+    .rail-btn:active { transform: scale(0.97); }
+    .rail-btn.active { background: var(--primary); border-color: var(--primary-dark); color: #fff; box-shadow: 0 6px 16px rgba(5,150,105,.35); }
+    .rail-ico { font-size: 1.5rem; }
+    .rail-nav { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+    .rail-arrow { border: 2px solid var(--border); background: #fff; border-radius: 12px; padding: 8px 14px; font-weight: 900; cursor: pointer; }
+    .rail-arrow:disabled { opacity: .35; }
+    .rail-count { font-weight: 900; color: var(--primary-dark); }
+
+    /* BINDER COVER */
     .binder-cover {
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, #064E3B 0%, #065F46 50%, #0F172A 100%);
-      color: white;
+      background: linear-gradient(135deg, rgba(255,255,255,.40) 0%, rgba(167,243,208,.20) 50%, rgba(255,255,255,.10) 100%) !important;
+      backdrop-filter: blur(18px) saturate(170%);
+      color: #064E3B;
       padding: 24px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       border-radius: 20px;
-      box-shadow: inset 0 0 50px rgba(52, 211, 153, 0.25), 0 24px 48px rgba(0,0,0,0.5);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.9), inset 0 0 40px rgba(255,255,255,.25), 0 16px 40px rgba(6,95,70,.25);
       cursor: pointer;
       z-index: 30;
       transform-origin: 0% 50%;
       transform-style: preserve-3d;
       transition: transform 0.65s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.35s ease;
-      border: 3px solid #34D399;
+      border: 1.5px solid rgba(255,255,255,.75) !important;
     }
     .binder-cover::before {
       content: '';
       position: absolute;
       left: 0; top: 0; bottom: 0;
       width: 32px;
-      background: linear-gradient(90deg, #022C22 0%, #064E3B 70%, #0F172A 100%);
-      border-right: 3px solid rgba(52, 211, 153, 0.4);
+      background: linear-gradient(90deg, rgba(6,95,70,.35), rgba(255,255,255,.12));
+      border-right: 1.5px solid rgba(255,255,255,.65);
     }
     .binder-open {
       transform: perspective(1400px) rotateY(-118deg) rotateX(6deg) translateZ(20px);
       opacity: 0;
       pointer-events: none;
     }
-    .composition-label-box {
-      background-color: #FFFDF8;
-      background-image: repeating-linear-gradient(
-        to bottom,
-        transparent 0px,
-        transparent 25px,
-        rgba(59, 130, 246, 0.28) 25px,
-        rgba(59, 130, 246, 0.28) 26px
-      );
-      position: relative;
-    }
 
-    /* DUAL-LINE & 4-LINE CANVAS NOTEBOOK SLATE */
+    .composition-label-box {
+      width: 288px;
+      max-width: 90%;
+      margin: 0 auto;
+      padding: 20px;
+      border-radius: 12px;
+      border: 4px solid #022C22;
+      color: #0F172A;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      background-color: #FFFDF8;
+    }
+    .label-avatar { width: 64px; height: 64px; object-fit: contain; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25)); }
+    .label-text-col { display: flex; flex-direction: column; gap: 4px; text-align: center; width: 100%; }
+    .label-kicker { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #064E3B; border-bottom: 2px solid #10B981; padding-bottom: 2px; }
+    .label-name { font-family: var(--font-hand) !important; font-size: 1.15rem; font-weight: 700; color: #022C22; }
+    .label-lesson { font-family: var(--font-hand) !important; font-size: 1rem; font-weight: 700; color: #BE123C; }
+    .label-tap-hint { text-align: center; font-weight: 700; font-size: 0.875rem; background: rgba(255,255,255,0.5); color: #064E3B; padding: 10px; border-radius: 12px; }
+
+    /* INLINE BLANK CANVAS */
     .inline-blank-container {
       display: inline-flex;
       align-items: center;
@@ -413,7 +427,6 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.06);
       overflow: hidden;
     }
-
     .inline-canvas-wrapper {
       position: relative;
       height: 68px;
@@ -421,8 +434,8 @@
       overflow: hidden;
       display: flex;
       align-items: center;
+      max-width: min(100%, 36vw);
     }
-
     .dual-lines-texture {
       position: absolute;
       inset: 0;
@@ -430,54 +443,30 @@
       z-index: 1;
       background-color: #FFFFFF;
       background-image: repeating-linear-gradient(
-        #FFFFFF 0px,
-        #FFFFFF 20px,
-        var(--ruled-blue) 21px,
-        #FFFFFF 22px,
-        #FFFFFF 44px,
-        var(--ruled-blue) 45px,
-        #FFFFFF 46px,
-        #FFFFFF 68px
+        #FFFFFF 0px, #FFFFFF 20px,
+        var(--ruled-blue) 21px, #FFFFFF 22px,
+        #FFFFFF 44px, var(--ruled-blue) 45px,
+        #FFFFFF 46px, #FFFFFF 68px
       );
       opacity: 0.9;
     }
     .dual-lines-texture::after {
       content: '';
       position: absolute;
-      top: 0;
-      left: 14px;
-      width: 1.5px;
-      height: 100%;
+      top: 0; left: 14px;
+      width: 1.5px; height: 100%;
       background: var(--margin-red);
       opacity: 0.8;
     }
-
     .dual-canvas {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       cursor: crosshair;
       touch-action: none;
       z-index: 3;
     }
-
-    .watermark-letter {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.8rem;
-      font-weight: 900;
-      color: #94A3B8;
-      opacity: 0.28;
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    .inline-clear-btn {
+    .inline-clear-btn, .inline-undo-btn {
       background: #F8FAFC;
       border: none;
       border-left: 1.5px solid #CBD5E1;
@@ -490,42 +479,19 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.1s;
       z-index: 4;
     }
-    .inline-clear-btn:active { background: #E2E8F0; }
+    .inline-clear-btn:active, .inline-undo-btn:active { background: #E2E8F0; }
 
-    /* PORTALS 1 & 2: FULL WRITING NOTEPAD SLATE */
-    .def-subtabs {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 8px;
-      flex-shrink: 0;
-      overflow-x: auto;
-    }
-    .def-subtab-btn {
-      background: #F8FAFC;
-      border: 2.5px solid var(--border);
-      border-radius: 12px;
-      padding: 8px 16px;
-      font-weight: 800;
-      font-size: 0.95rem;
-      color: var(--subtext);
-      cursor: pointer;
-      transition: all 0.1s;
-      white-space: nowrap;
-    }
-    .def-subtab-btn.active { background: var(--primary); color: #FFF; border-color: var(--primary); }
-
+    /* FULL NOTEPAD SLATE & MULTI-PAGE WRITING SYSTEM */
     .full-notepad-wrapper {
       display: flex;
       flex-direction: column;
       flex: 1;
       min-height: 0;
-      gap: 10px;
+      gap: 8px;
       height: 100%;
       position: relative;
-      overflow: hidden;
     }
     .notepad-prompt-box {
       background: #F8FAFC;
@@ -567,18 +533,45 @@
     }
     .pad-btn.active { background: var(--primary); color: #FFF; border-color: var(--primary); }
 
+    /* Multi-Page Navigation Bar */
+    .page-nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      background: #F1F5F9;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 6px 16px;
+      margin-bottom: 4px;
+    }
+    .page-nav-btn {
+      background: #FFF;
+      border: 2px solid #CBD5E1;
+      border-radius: 10px;
+      padding: 4px 12px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      cursor: pointer;
+      color: var(--text);
+    }
+    .page-nav-btn:active { transform: translateY(1px); }
+    .page-indicator {
+      font-weight: 900;
+      color: var(--primary-dark);
+      font-size: 1rem;
+    }
+
     .full-notepad-container {
       position: relative;
       flex: 1;
       width: 100%;
-      min-height: 320px;
+      min-height: 180px;
       border-radius: 16px;
       overflow: hidden;
       border: 2.5px solid var(--border);
       background: #FFFFFF;
     }
-
-    /* Crisp 4-line Notebook Grid matching English code style */
     .notepad-dual-lines {
       position: absolute;
       inset: 0;
@@ -586,10 +579,8 @@
       background-color: #FFFFFF;
       background-image: repeating-linear-gradient(
         to bottom,
-        #FFFFFF 0px,
-        #FFFFFF 30px,
-        var(--ruled-blue) 30px,
-        var(--ruled-blue) 31px
+        #FFFFFF 0px, #FFFFFF 30px,
+        var(--ruled-blue) 30px, var(--ruled-blue) 31px
       );
       opacity: 0.9;
       z-index: 1;
@@ -597,9 +588,7 @@
     .notepad-dual-lines::after {
       content: '';
       position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 45px;
+      top: 0; bottom: 0; left: 45px;
       width: 6px;
       border-left: 2px solid var(--margin-red);
       border-right: 2px solid var(--margin-red);
@@ -608,31 +597,34 @@
     .full-notepad-canvas {
       position: absolute;
       inset: 0;
+      width: 100%;
+      height: 100%;
       cursor: crosshair;
       touch-action: none;
       z-index: 2;
     }
 
-    /* SELF-GRADING CHECK BAR */
+    /* PRACTICE MODE / REVEAL BOX */
+    body:not(.test-mode) .self-grading-reveal {
+      display: block !important;
+      background: #ECFDF5;
+      border: 2px dashed #34D399;
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-size: 1.15rem;
+      line-height: 1.6;
+    }
     .self-grading-bar {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
       background: #F0FDF4;
       border: 2px solid #86EFAC;
       border-radius: 14px;
       padding: 10px 16px;
-      margin-top: 8px;
+      margin-top: 6px;
     }
-    .self-grading-reveal {
-      display: none;
-      font-weight: 800;
-      color: #065F46;
-      font-size: 0.98rem;
-    }
-    .self-grading-reveal.revealed { display: block; }
 
-    /* PORTAL 3: WORKBOOK TABLES (LARGER 450PX BOXES & STACKED CIRCULAR CARDS ON LEFT) */
+    /* WORKBOOK TABLES & MCQS */
     .workbook-layout-grid {
       display: grid;
       grid-template-columns: 240px 1fr;
@@ -640,13 +632,7 @@
       flex: 1;
       min-height: 0;
     }
-
-    .workbook-sidebar-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
+    .workbook-sidebar-stack { display: flex; flex-direction: column; gap: 12px; }
     .circular-step-card {
       background: #F8FAFC;
       border: 3px solid #CBD5E1;
@@ -656,7 +642,6 @@
       align-items: center;
       gap: 12px;
       cursor: pointer;
-      transition: all 0.2s ease;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
     }
     .circular-step-card.active-step {
@@ -665,409 +650,126 @@
       box-shadow: 0 6px 18px rgba(5,150,105,0.2);
     }
     .circular-num-badge {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: #FFF;
-      border: 2px solid var(--primary);
-      color: var(--primary-dark);
-      font-weight: 900;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      flex-shrink: 0;
+      width: 38px; height: 38px; border-radius: 50%;
+      background: #FFF; border: 2px solid var(--primary);
+      color: var(--primary-dark); font-weight: 900;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0;
     }
-    .circular-step-title {
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: var(--text);
-    }
+    .circular-step-title { font-size: 0.95rem; font-weight: 800; color: var(--text); }
 
     .diff-table {
-      width: 100%;
-      border-collapse: collapse;
-      border-radius: 14px;
-      overflow: hidden;
-      border: 2.5px solid #CBD5E1;
-      font-size: 0.95rem;
+      width: 100%; border-collapse: collapse; border-radius: 14px; overflow: hidden;
+      border: 2.5px solid #CBD5E1; font-size: 0.95rem;
     }
-    .diff-table th {
-      background: #D1FAE5;
-      color: #065F46;
-      padding: 12px 8px;
-      font-weight: 900;
-      border: 1px solid #A7F3D0;
-      text-align: center;
-    }
-    .diff-table td {
-      padding: 14px 10px;
-      border: 1px solid #E2E8F0;
-      vertical-align: middle;
-      font-weight: 700;
-    }
+    .diff-table th { background: #D1FAE5; color: #065F46; padding: 12px 8px; font-weight: 900; border: 1px solid #A7F3D0; text-align: center; }
+    .diff-table td { padding: 14px 10px; border: 1px solid #E2E8F0; vertical-align: middle; font-weight: 700; }
     .diff-table tr:nth-child(even) { background: #F8FAFC; }
 
-    .state-row-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 1.15rem;
-      font-weight: 900;
-      color: var(--primary-dark);
-      margin-bottom: 8px;
-    }
-    .state-row-img {
-      width: 48px;
-      height: 48px;
-      object-fit: contain;
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
-    }
+    .state-row-header { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 1.15rem; font-weight: 900; color: var(--primary-dark); margin-bottom: 8px; }
+    .state-row-img { width: auto !important; height: auto !important; max-width: 120px; max-height: 120px; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15)); }
 
     .answer-tag {
-      background: #D1FAE5;
-      color: #065F46;
-      font-weight: 800;
-      padding: 3px 10px;
-      border-radius: 8px;
-      border: 1px solid #6EE7B7;
-      display: inline-block;
-      margin: 0 4px;
+      background: #D1FAE5; color: #065F46; font-weight: 800; padding: 3px 10px;
+      border-radius: 8px; border: 1px solid #6EE7B7; display: inline-block; margin: 0 4px;
     }
     body.test-mode .answer-tag { display: none !important; }
 
-    .match-columns-learn {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-      width: 100%;
-      margin-top: 8px;
-    }
+    .match-columns-learn { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; width: 100%; margin-top: 8px; }
     .match-btn {
-      background: #F8FAFC;
-      border: 2.5px solid #CBD5E1;
-      border-radius: 14px;
-      padding: 14px 16px;
-      font-size: 1.05rem;
-      font-weight: 800;
-      cursor: pointer;
-      text-align: left;
-      transition: all 0.12s;
+      background: #F8FAFC; border: 2.5px solid #CBD5E1; border-radius: 14px;
+      padding: 14px 16px; font-size: 1.05rem; font-weight: 800; cursor: pointer; text-align: left;
     }
     .match-btn.selected { background: #FEF08A; border-color: #EAB308; box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.35); }
     .match-btn.paired { background: #D1FAE5; border-color: var(--primary); color: #065F46; pointer-events: none; }
-
-    .match-3col-container {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      width: 100%;
-    }
-    .match-3col-header {
-      display: grid;
-      grid-template-columns: 180px 240px 1fr;
-      gap: 18px;
-      padding: 8px 14px;
-      font-weight: 900;
-      color: var(--primary-dark);
-      font-size: 1rem;
-      border-bottom: 2.5px solid #E2E8F0;
-    }
-    .match-3col-row {
-      display: grid;
-      grid-template-columns: 180px 240px 1fr;
-      gap: 18px;
-      align-items: center;
-      background: #F8FAFC;
-      border: 2.5px solid #E2E8F0;
-      border-radius: 16px;
-      padding: 10px 14px;
-    }
-    .match-option-pill {
-      display: inline-block;
-      width: fit-content;
-      background: #FFF;
-      padding: 10px 16px;
-      border-radius: 22px;
-      border: 2.5px solid #CBD5E1;
-      font-size: 0.98rem;
-      font-weight: 800;
-      color: #1E293B;
-    }
+    .match-btn img { width: auto !important; height: 38px; object-fit: contain; vertical-align: middle; display: inline; }
 
     .mcq-item {
-      background: #F8FAFC;
-      border: 2.5px solid #E2E8F0;
-      border-radius: 16px;
-      padding: 14px 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-bottom: 10px;
+      background: #F8FAFC; border: 2.5px solid #E2E8F0; border-radius: 16px;
+      padding: 14px 18px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px;
     }
-    .mcq-q-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 18px;
-    }
-    .mcq-q {
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: #0F172A;
-      flex: 1;
-    }
-    .mcq-opts {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
+    .mcq-q-row { display: flex; justify-content: space-between; align-items: center; gap: 18px; }
+    .mcq-q { font-size: 1.1rem; font-weight: 800; color: #0F172A; flex: 1; }
+    .mcq-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .mcq-opt-btn {
-      background: #FFF;
-      border: 2.5px solid #CBD5E1;
-      padding: 10px 14px;
-      border-radius: 12px;
-      font-size: 0.98rem;
-      font-weight: 700;
-      text-align: left;
-      cursor: pointer;
+      background: #FFF; border: 2.5px solid #CBD5E1; padding: 10px 14px;
+      border-radius: 12px; font-size: 0.98rem; font-weight: 700; text-align: left; cursor: pointer;
     }
-    .mcq-opt-btn.correct { background: #D1FAE5; border-color: var(--primary); color: #065F46; font-weight: 800; }
-    .mcq-opt-btn.wrong { background: #FEE2E2; border-color: #EF4444; color: #991B1B; }
+    .mcq-opt-btn.tapped { transform: scale(1.03); background: #D1FAE5; border-color: var(--primary); }
 
-    .pic-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-    }
+    .pic-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
     .pic-card {
-      background: #F8FAFC;
-      border: 2.5px solid #E2E8F0;
-      border-radius: 16px;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      text-align: center;
+      background: #F8FAFC; border: 2.5px solid #E2E8F0; border-radius: 16px;
+      padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center;
     }
     .pic-icon { font-size: 2.8rem; line-height: 1; }
     .pic-name { font-size: 1.05rem; font-weight: 800; }
     .chip-row { display: flex; gap: 6px; }
     .state-chip {
-      background: #FFF;
-      border: 2px solid #CBD5E1;
-      padding: 4px 10px;
-      border-radius: 10px;
-      font-size: 0.85rem;
-      font-weight: 800;
-      cursor: pointer;
+      background: #FFF; border: 2px solid #CBD5E1; padding: 4px 10px;
+      border-radius: 10px; font-size: 0.85rem; font-weight: 800; cursor: pointer;
     }
     .state-chip.active-chip { background: var(--primary); border-color: var(--primary); color: #FFF; }
 
-    .cmap-wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-      gap: 14px;
-      padding-bottom: 16px;
-    }
+    .cmap-wrapper { display: flex; flex-direction: column; align-items: center; width: 100%; gap: 14px; padding-bottom: 16px; }
     .cmap-root-card {
-      background: #D1FAE5;
-      border: 3.5px solid #059669;
-      border-radius: 18px;
-      padding: 14px 36px;
-      font-size: 1.4rem;
-      font-weight: 900;
-      color: #065F46;
-      box-shadow: 0 6px 16px rgba(5, 150, 105, 0.2);
-      text-align: center;
+      background: #D1FAE5; border: 3.5px solid #059669; border-radius: 18px;
+      padding: 14px 36px; font-size: 1.4rem; font-weight: 900; color: #065F46;
+      box-shadow: 0 6px 16px rgba(5, 150, 105, 0.2); text-align: center;
     }
-    .cmap-branch-label {
-      font-weight: 900;
-      color: #047857;
-      font-size: 1.1rem;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-    }
+    .cmap-branch-label { font-weight: 900; color: #047857; font-size: 1.1rem; display: flex; flex-direction: column; align-items: center; gap: 2px; }
     .cmap-branch-label::before { content: '│'; font-size: 1.3rem; line-height: 1; }
     .cmap-branch-label::after { content: '▼'; font-size: 0.9rem; line-height: 1; }
-
-    .cmap-columns-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      width: 100%;
-    }
+    .cmap-columns-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; width: 100%; }
     .cmap-col-card {
-      background: #F8FAFC;
-      border: 2.5px solid #CBD5E1;
-      border-radius: 20px;
-      padding: 16px 14px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
+      background: #F8FAFC; border: 2.5px solid #CBD5E1; border-radius: 20px;
+      padding: 16px 14px; display: flex; flex-direction: column; align-items: center; gap: 12px;
     }
     .cmap-type-badge {
-      background: #FED7AA;
-      border: 3px solid #F97316;
-      border-radius: 16px;
-      padding: 12px 20px;
-      font-size: 1.3rem;
-      font-weight: 900;
-      color: #9A3412;
-      text-align: center;
-      width: 100%;
-      letter-spacing: 2px;
+      background: #FED7AA; border: 3px solid #F97316; border-radius: 16px;
+      padding: 12px 20px; font-size: 1.3rem; font-weight: 900; color: #9A3412;
+      text-align: center; width: 100%; letter-spacing: 2px;
     }
-    .cmap-down-arrow-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-      color: #DC2626;
-      font-weight: 900;
-      font-size: 1rem;
-    }
+    .cmap-down-arrow-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; color: #DC2626; font-weight: 900; font-size: 1rem; }
     .cmap-down-arrow-wrap span { font-size: 1.8rem; line-height: 1; }
+    .cmap-ex-row { display: flex; flex-direction: column; width: 100%; gap: 6px; align-items: center; }
+    .cmap-ex-label { font-size: 0.85rem; font-weight: 800; color: #64748B; align-self: flex-start; margin-left: 6px; }
 
-    .cmap-ex-row {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      gap: 6px;
-      align-items: center;
-    }
-    .cmap-ex-label {
-      font-size: 0.85rem;
-      font-weight: 800;
-      color: #64748B;
-      align-self: flex-start;
-      margin-left: 6px;
-    }
-
-    /* GRAND CELEBRATION FINALE */
+    /* CELEBRATION FINALE STAGE */
     #celebrationFinaleStage {
-      position: fixed;
-      inset: 0;
-      z-index: 100000;
-      display: none;
-      overflow: hidden;
-      background: rgba(15, 23, 42, 0.8);
-      backdrop-filter: blur(8px);
+      position: fixed; inset: 0; z-index: 100000; display: none; overflow: hidden;
+      background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px);
     }
     #finaleCanvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
     .victory-scroll-card {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.4);
-      width: 90%;
-      max-width: 480px;
-      background: #FFF;
-      border: 4px solid var(--primary);
-      border-radius: 28px;
-      padding: 30px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 16px;
-      box-shadow: 0 24px 64px rgba(0,0,0,0.45);
-      opacity: 0;
-      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
-      z-index: 20;
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.4);
+      width: 90%; max-width: 480px; background: #FFF; border: 4px solid var(--primary);
+      border-radius: 28px; padding: 30px; display: flex; flex-direction: column;
+      align-items: center; text-align: center; gap: 16px; box-shadow: 0 24px 64px rgba(0,0,0,0.45);
+      opacity: 0; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease; z-index: 20;
     }
-    .victory-scroll-card.impact {
-      transform: translate(-50%, -50%) scale(1);
-      opacity: 1;
-    }
-    /* Binder label (replaces Tailwind utility classes that were never loaded) */
-    .composition-label-box { width: 288px; max-width: 90%; margin: 0 auto; padding: 20px; border-radius: 12px; border: 4px solid #022C22; color: #0F172A; box-shadow: 0 20px 40px rgba(0,0,0,0.35); display: flex; flex-direction: column; align-items: center; gap: 8px; }
-    .label-avatar { width: 64px; height: 64px; object-fit: contain; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25)); }
-    .label-text-col { display: flex; flex-direction: column; gap: 4px; text-align: center; width: 100%; }
-    .label-kicker { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #064E3B; border-bottom: 2px solid #10B981; padding-bottom: 2px; }
-    .label-name { font-family: var(--font-hand) !important; font-size: 1.15rem; font-weight: 700; color: #022C22; line-height: 1.2; }
-    .label-lesson { font-family: var(--font-hand) !important; font-size: 1rem; font-weight: 700; color: #BE123C; line-height: 1.2; }
-    .label-tap-hint { text-align: center; font-weight: 700; font-size: 0.875rem; background: rgba(255,255,255,0.25); padding: 10px; border-radius: 12px; }
-    .match-col-text { font-weight: 800; }
-    /* ===== V2: Galaxy Tab S9 fit, navigation, glass binder, practice mode ===== */
-    html { font-size: clamp(14px, 1.2vw, 17px); }
-    body { padding: 8px max(12px, env(safe-area-inset-right)) 8px max(12px, env(safe-area-inset-left)); }
-    .app-container { max-width: none; gap: 8px; }
-    .floating-hud-dock { height: 48px; }
-    .floating-hud-dock.dock-minimized { transform: none; opacity: 1; pointer-events: auto; }
-    .dock-peek-handle { display: none !important; }
-    .workspace { padding: 12px 14px; }
-    .pane-body { display: flex; gap: 12px; flex: 1; min-height: 0; }
-    #portalExerciseContent { min-width: 0; }
-    .full-notepad-wrapper { display: flex; flex-direction: column; gap: 8px; flex: 1; min-height: 0; }
-    .full-notepad-container { min-height: 180px; }
-    .full-notepad-canvas, .dual-canvas { width: 100%; height: 100%; }
-    .inline-canvas-wrapper { max-width: min(100%, 36vw); }
+    .victory-scroll-card.impact { transform: translate(-50%, -50%) scale(1); opacity: 1; }
 
-    #portalSubControls { display: none !important; }
-    .portal-pills { display: none; gap: 6px; margin-left: 6px; }
+    #portalPills { display: flex; gap: 6px; margin-left: 6px; }
     .portal-pill { border: 2px solid var(--border); background: #fff; border-radius: 12px; padding: 4px 12px; font-size: 1.1rem; font-weight: 800; cursor: pointer; }
     .portal-pill.active { background: var(--primary); border-color: var(--primary); color: #fff; }
 
-    .sec-rail { display: none; flex-direction: column; gap: 8px; width: 172px; flex-shrink: 0; }
-    .workspace.has-rail .sec-rail { display: flex; }
-    .workspace.has-rail #portalSubControls { display: none !important; }
-    .rail-title { font-weight: 900; color: var(--primary-dark); font-size: 0.95rem; padding-left: 4px; }
-    .rail-btn { display: flex; align-items: center; gap: 8px; text-align: left; padding: 10px 12px; border-radius: 16px; border: 2px solid var(--border); background: #fff; color: var(--text); font-weight: 800; font-size: 0.95rem; cursor: pointer; transition: transform .12s; }
-    .rail-btn:active { transform: scale(0.97); }
-    .rail-btn.active { background: var(--primary); border-color: var(--primary-dark); color: #fff; box-shadow: 0 6px 16px rgba(5,150,105,.35); }
-    .rail-ico { font-size: 1.5rem; }
-    .rail-nav { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
-    .rail-arrow { border: 2px solid var(--border); background: #fff; border-radius: 12px; padding: 8px 14px; font-weight: 900; cursor: pointer; }
-    .rail-arrow:disabled { opacity: .35; }
-    .rail-count { font-weight: 900; color: var(--primary-dark); }
-    .readall-btn { border: 2px solid var(--border); background: #fff; border-radius: 12px; padding: 2px 10px; margin-left: 10px; font-size: 1.1rem; cursor: pointer; vertical-align: middle; }
-
-    /* Practice = no grading: answers always visible, no self-grade button */
-    body:not(.test-mode) .self-grading-bar > div:first-child { display: none; }
-    body:not(.test-mode) .self-grading-reveal { display: block !important; background: #ECFDF5; border: 2px dashed #34D399; border-radius: 14px; padding: 10px 14px; font-size: 1.25rem; line-height: 1.9; }
-    .mcq-opt-btn.tapped { transform: scale(1.03); }
-
-    /* tap-to-read words + syllables */
-    .w { border-radius: 6px; cursor: pointer; transition: background .15s; }
-    .w.speaking { background: #FEF08A; }
-    .syl { display: inline-block; color: #047857; font-weight: 900; }
-    .syl:nth-child(even) { color: #D97706; }
-    .syl + .syl { margin-left: 3px; padding-left: 3px; border-left: 2px solid rgba(4,120,87,.3); }
-
-    /* glass binder */
-    .binder-cover { background: linear-gradient(135deg, rgba(255,255,255,.40) 0%, rgba(167,243,208,.20) 50%, rgba(255,255,255,.10) 100%) !important; -webkit-backdrop-filter: blur(18px) saturate(170%); backdrop-filter: blur(18px) saturate(170%); color: #064E3B; border: 1.5px solid rgba(255,255,255,.75) !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.9), inset 0 0 40px rgba(255,255,255,.25), 0 16px 40px rgba(6,95,70,.25); }
-    .binder-cover::before { background: linear-gradient(90deg, rgba(6,95,70,.35), rgba(255,255,255,.12)); border-right: 1.5px solid rgba(255,255,255,.65); }
-    .label-tap-hint { background: rgba(255,255,255,.5); color: #064E3B; }
-
-    /* mascots / PNGs shown whole */
-    .state-row-header { flex-direction: column; align-items: center; gap: 6px; }
-    .state-row-img { width: auto !important; height: auto !important; max-width: 150px; max-height: 150px; object-fit: contain; }
-    .hub-hero-avatar { width: auto !important; height: auto !important; max-width: 200px; max-height: 200px; object-fit: contain; border-radius: 0 !important; }
-    .match-btn img { width: auto !important; height: 46px; object-fit: contain; }
-    .inline-undo-btn { border: none; background: transparent; font-size: 1.1rem; padding: 0 6px; cursor: pointer; }
-    #fxToast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: #065F46; color: #fff; padding: 10px 18px; border-radius: 14px; font-weight: 800; z-index: 200000; }
+    #fxToast {
+      position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
+      background: #065F46; color: #fff; padding: 10px 18px; border-radius: 14px; font-weight: 800; z-index: 200000; display: none;
+    }
   </style>
-<script>window.handleImgFallback=function(img){img.onerror=null;img.src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><circle cx='60' cy='60' r='55' fill='%23D1FAE5' stroke='%23059669' stroke-width='4'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='45'>🧪</text></svg>";};</script>
 </head>
 <body>
 
   <div class="orientation-warning">
     <div class="icon">📱</div>
     <h2>Please Rotate Tablet to Landscape</h2>
-    <p>Humayun's Matter Lab &amp; Discovery Deck is optimized for tablet landscape mode.</p>
+    <p>Humayun's Matter Lab &amp; Discovery Deck is optimized for Samsung Galaxy Tab S9 landscape mode.</p>
   </div>
 
   <div id="screenDimOverlay"></div>
-
-  <!-- PEEK HANDLE FOR FLOATING DOCK -->
-  <div class="dock-peek-handle" id="dockPeekHandle" onclick="showFloatingDock()">▾</div>
+  <div id="fxToast"></div>
 
   <div class="app-container">
     <!-- FLOATING HUD DOCK -->
@@ -1076,6 +778,7 @@
         <button type="button" class="action-btn" onclick="goToHub()" title="Hub">🪷</button>
         <button type="button" class="action-btn" id="btnReturnPortals" onclick="returnToHubBay()" style="display:none;" title="Portals">🏰</button>
         <div class="brand-title">🧪 Matter Lab <span class="grade-badge">Grade 3 EVS</span></div>
+        <div id="portalPills" style="display:none;"></div>
       </div>
 
       <div class="mode-switch-wrap">
@@ -1084,18 +787,19 @@
       </div>
 
       <div class="header-actions">
+        <button type="button" class="action-btn" id="btnFx" onclick="toggleFx()" title="Writing Sound">🔔</button>
         <button type="button" class="action-btn" id="btnPalm" onclick="togglePalmRejection()" title="S Pen Palm Rejection">🖊️ Pen Only</button>
         <button type="button" class="action-btn" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
         <button type="button" class="action-btn" id="dimBtn" onclick="toggleScreenDim()" title="Dim Screen">💡</button>
       </div>
     </nav>
 
-    <!-- NORMAL HUB BAY WITH LARGE HUMAYUN SCIENTIST PNG -->
+    <!-- HUB BAY WITH ATTACHED ASSETS -->
     <main class="hub-bay-wrapper" id="hubBayView">
       <div class="hub-hero-header">
-        <img src="assets/lab-scientist-humayun.webp" class="hub-hero-avatar" alt="Humayun Scientist" style="width:120px; height:120px;" onerror="handleImgFallback(this)" />
+        <img src="assets/lab-scientist-humayun.webp" class="hub-hero-avatar" alt="Humayun Scientist" onerror="handleImgFallback(this)" />
         <div>
-          <h2 style="font-size:1.6rem; font-weight:900; color:var(--primary-dark);" class="speakable" onclick="speakText('Welcome to Humayun s Matter Lab')">Welcome to Humayun's Matter Lab!</h2>
+          <h2 style="font-size:1.6rem; font-weight:900; color:var(--primary-dark);">Welcome to Humayun's Matter Lab!</h2>
           <p style="font-size:1.05rem; color:var(--subtext); font-weight:700;">Explore solids, liquids, and gases through your interactive science portals.</p>
         </div>
       </div>
@@ -1127,12 +831,14 @@
         <div class="pane-title" id="paneTitle">Portal Title</div>
         <div id="portalSubControls" style="display:flex; gap:8px;"></div>
       </div>
-
-      <div id="portalExerciseContent" style="display:flex; flex-direction:column; gap:12px; flex:1; min-height:0;"></div>
+      <div class="pane-body">
+        <div class="sec-rail" id="secRail"></div>
+        <div id="portalExerciseContent" style="display:flex; flex-direction:column; gap:12px; flex:1; min-height:0;"></div>
+      </div>
     </main>
   </div>
 
-  <!-- CELEBRATION FINALE STAGE -->
+  <!-- CELEBRATION FINALE -->
   <div id="celebrationFinaleStage">
     <canvas id="finaleCanvas"></canvas>
     <div class="victory-scroll-card" id="victoryScrollCard">
@@ -1152,36 +858,66 @@
     let currentQIdx = 0;
     let currentWorkbookSec = 0;
     let palmRejectionMode = "pen-only";
+    let currentNotepadPage = 1;
 
     const activeInkCache = {};
-    const hasDrawnMap = {};
     const binderOpenedMap = {};
+    const DPR = Math.min(window.devicePixelRatio || 1, 2);
 
     function handleImgFallback(img) {
       img.onerror = null;
       img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><circle cx='60' cy='60' r='55' fill='%23D1FAE5' stroke='%23059669' stroke-width='4'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='45'>🧪</text></svg>";
     }
 
-    function speakText(txt, rate = 0.85, pitch = 0.9) {
-      if (!('speechSynthesis' in window)) return;
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(txt);
-      u.lang = "en-US";
-      u.rate = rate;
-      u.pitch = pitch;
-      window.speechSynthesis.speak(u);
+    function toast(msg) {
+      let t = document.getElementById('fxToast');
+      if (!t) { t = document.createElement('div'); t.id = 'fxToast'; document.body.appendChild(t); }
+      t.textContent = msg; t.style.display = 'block';
+      clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 3200);
     }
 
-    function hideFloatingDock() {
-      if (!activePortalKey) return;
-      document.getElementById('floatingHudDock').classList.add('dock-minimized');
-      document.getElementById('dockPeekHandle').classList.add('peek-visible');
+    /* Sound effects */
+    let actx = null, noiseBuf = null, fxOn = true;
+    function audio() {
+      if (!actx) {
+        try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; }
+        const len = actx.sampleRate * 2; noiseBuf = actx.createBuffer(1, len, actx.sampleRate);
+        const d = noiseBuf.getChannelData(0); for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+      }
+      if (actx.state === 'suspended') actx.resume();
+      return actx;
     }
-
-    function showFloatingDock() {
-      document.getElementById('floatingHudDock').classList.remove('dock-minimized');
-      document.getElementById('dockPeekHandle').classList.remove('peek-visible');
+    function startScratch(kind) {
+      if (!fxOn) return null; const a = audio(); if (!a) return null;
+      const src = a.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
+      const f = a.createBiquadFilter(); f.type = kind === 'eraser' ? 'lowpass' : 'bandpass';
+      f.frequency.value = kind === 'eraser' ? 600 : 2600; f.Q.value = 0.9;
+      const g = a.createGain(); g.gain.value = 0;
+      src.connect(f); f.connect(g); g.connect(a.destination); src.start();
+      return { src, f, g, kind };
     }
+    function updateScratch(s, speed) {
+      if (!s) return; const t = actx.currentTime, er = s.kind === 'eraser';
+      s.g.gain.setTargetAtTime(Math.min(er ? 0.16 : 0.09, speed * 0.012), t, 0.02);
+      s.f.frequency.setTargetAtTime((er ? 500 : 2400) + Math.min(speed, 40) * (er ? 10 : 30), t, 0.03);
+    }
+    function stopScratch(s) { if (!s) return; try { s.g.gain.setTargetAtTime(0, actx.currentTime, 0.03); s.src.stop(actx.currentTime + 0.15); } catch (e) {} }
+    function playUndo() {
+      if (!fxOn) return; const a = audio(); if (!a) return;
+      const o = a.createOscillator(), g = a.createGain(), t = a.currentTime;
+      o.type = 'sine'; o.frequency.setValueAtTime(620, t); o.frequency.exponentialRampToValueAtTime(240, t + 0.14);
+      g.gain.setValueAtTime(0.18, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
+      o.connect(g); g.connect(a.destination); o.start(); o.stop(t + 0.18);
+    }
+    function playClear() {
+      const s = startScratch('eraser'); if (!s) return;
+      updateScratch(s, 14); setTimeout(() => stopScratch(s), 260);
+    }
+    window.toggleFx = function() {
+      fxOn = !fxOn;
+      document.getElementById('btnFx').textContent = fxOn ? '🔔' : '🔕';
+      toast(fxOn ? 'Writing sounds on' : 'Writing sounds off');
+    };
 
     function toggleFullscreen() {
       if (!document.fullscreenElement && !document.webkitFullscreenElement) {
@@ -1204,12 +940,10 @@
 
     function togglePalmRejection() {
       palmRejectionMode = (palmRejectionMode === "pen-only") ? "all" : "pen-only";
-      const btn = document.getElementById("btnPalm");
-      btn.innerHTML = (palmRejectionMode === "pen-only") ? "🖊️ Pen Only" : "👆 Any Touch";
+      document.getElementById("btnPalm").innerHTML = (palmRejectionMode === "pen-only") ? "🖊️ Pen Only" : "👆 Any Touch";
     }
 
     function goToHub() {
-      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
       saveAllCanvases();
       if (window.parent && window.parent !== window) {
         window.parent.postMessage("close-lesson-to-hub", "*");
@@ -1220,15 +954,15 @@
 
     function returnToHubBay() {
       saveAllCanvases();
-      showFloatingDock();
       document.getElementById('btnReturnPortals').style.display = 'none';
       document.getElementById('portalWorkspacePane').classList.remove('active-workspace');
+      document.getElementById('portalWorkspacePane').classList.remove('has-rail');
+      document.getElementById('portalPills').style.display = 'none';
       document.getElementById('hubBayView').style.display = 'flex';
       activePortalKey = null;
     }
 
     function setAppMode(newMode) {
-      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
       saveAllCanvases();
       appMode = newMode;
       document.body.classList.toggle('test-mode', newMode === 'test');
@@ -1241,82 +975,153 @@
       return `v2_matterlab::humayun::${appMode}::${id}`;
     }
 
+    /* Ink Engine & Multi-Page Canvas System */
+    window.pad = { tool: 'pen', color: '#065F46', width: 4 };
+    const dirty = new Set(); let saveTimer = null;
+    function scheduleSave(c) { dirty.add(c); clearTimeout(saveTimer); saveTimer = setTimeout(flushInk, 700); }
+    function flushInk() {
+      clearTimeout(saveTimer);
+      dirty.forEach(c => {
+        if (!c._key) return;
+        try {
+          if (!c._has) { localStorage.removeItem(c._key); delete activeInkCache[c._key]; return; }
+          const d = c.toDataURL('image/webp', 0.7); activeInkCache[c._key] = d; localStorage.setItem(c._key, d);
+        } catch (e) {}
+      });
+      dirty.clear();
+    }
+    window.saveAllCanvases = window.saveFullNotepads = flushInk;
+
+    function initInk(c, key, kind) {
+      if (c._ink) return; c._ink = true; c._key = key; c._undo = []; c._has = false;
+      c.style.width = '100%'; c.style.height = '100%';
+      const ctx = c.getContext('2d'); c._ctx = ctx;
+
+      function load() {
+        const saved = activeInkCache[key] || localStorage.getItem(key); if (!saved) return;
+        activeInkCache[key] = saved; const img = new Image();
+        img.onload = () => { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, c.width, c.height); ctx.drawImage(img, 0, 0, c.width, c.height); ctx.restore(); c._has = true; };
+        img.src = saved;
+      }
+      function size() {
+        const r = c.getBoundingClientRect(), w = Math.round(r.width), h = Math.round(r.height);
+        if (w < 2 || h < 2) return false;
+        if (c._w === w && c._h === h) return true;
+        let old = null;
+        if (c._w) { old = document.createElement('canvas'); old.width = c.width; old.height = c.height; old.getContext('2d').drawImage(c, 0, 0); }
+        c.width = Math.round(w * DPR); c.height = Math.round(h * DPR); ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+        if (old) ctx.drawImage(old, 0, 0, w, h);
+        c._w = w; c._h = h;
+        if (!c._loaded) { c._loaded = true; load(); }
+        return true;
+      }
+      size();
+      if (window.ResizeObserver) new ResizeObserver(size).observe(c);
+
+      function snapshot() {
+        try { c._undo.push(ctx.getImageData(0, 0, c.width, c.height)); while (c._undo.length > (kind === 'pad' ? 6 : 10)) c._undo.shift(); } catch (e) {}
+      }
+      c._undoFn = () => {
+        const s = c._undo.pop(); if (!s) { toast('Nothing to undo'); return; }
+        if (s.width !== c.width || s.height !== c.height) return;
+        ctx.putImageData(s, 0, 0); c._has = true; scheduleSave(c); playUndo();
+      };
+      c._clearFn = () => {
+        snapshot(); ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, c.width, c.height); ctx.restore();
+        c._has = false; localStorage.removeItem(key); delete activeInkCache[key]; playClear();
+      };
+
+      let st = null;
+      c.addEventListener('pointerdown', e => {
+        if (palmRejectionMode === 'pen-only' && e.pointerType === 'touch') { e.preventDefault(); return; }
+        if (st || !size()) return;
+        e.preventDefault(); try { c.setPointerCapture(e.pointerId); } catch (_) {}
+        snapshot();
+        const r = c.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+        const tool = kind === 'pad' ? pad.tool : 'pen';
+        st = { id: e.pointerId, x, y, mx: x, my: y, tool, t: performance.now(), sound: startScratch(tool) };
+      });
+      c.addEventListener('pointermove', e => {
+        if (!st || e.pointerId !== st.id) return; e.preventDefault();
+        const list = (e.getCoalescedEvents && e.getCoalescedEvents().length) ? e.getCoalescedEvents() : [e];
+        const r = c.getBoundingClientRect(); let dist = 0;
+        for (const ev of list) {
+          const x = ev.clientX - r.left, y = ev.clientY - r.top, pr = ev.pressure > 0 ? ev.pressure : 0.5;
+          const mx = (st.x + x) / 2, my = (st.y + y) / 2;
+          ctx.lineCap = ctx.lineJoin = 'round';
+          if (st.tool === 'eraser') { ctx.globalCompositeOperation = 'destination-out'; ctx.lineWidth = pad.width * 6; }
+          else { ctx.globalCompositeOperation = 'source-over'; ctx.strokeStyle = kind === 'pad' ? pad.color : '#065F46'; ctx.lineWidth = (kind === 'pad' ? pad.width : 3.8) * (pr * 1.4 + 0.4); }
+          ctx.beginPath(); ctx.moveTo(st.mx, st.my); ctx.quadraticCurveTo(st.x, st.y, mx, my); ctx.stroke();
+          dist += Math.hypot(x - st.x, y - st.y); st.x = x; st.y = y; st.mx = mx; st.my = my;
+        }
+        ctx.globalCompositeOperation = 'source-over';
+        const now = performance.now(); updateScratch(st.sound, dist / Math.max(1, now - st.t) * 10); st.t = now;
+        if (st.tool !== 'eraser' || c._has) c._has = true;
+      });
+      const end = e => {
+        if (!st || e.pointerId !== st.id) return;
+        stopScratch(st.sound); st = null; try { c.releasePointerCapture(e.pointerId); } catch (_) {}
+        scheduleSave(c);
+      };
+      ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(n => c.addEventListener(n, end));
+      c.addEventListener('contextmenu', e => e.preventDefault());
+    }
+
     function inlineDualBlank(id, width = 240, watermark = "") {
       return `
         <span class="inline-blank-container">
           <span class="inline-canvas-wrapper" style="width:${width}px;">
             <span class="dual-lines-texture"></span>
-            <span class="watermark-letter" id="wm_${id}">${watermark}</span>
+            <span style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:2.5rem; font-weight:900; color:#94A3B8; opacity:0.25; pointer-events:none;">${watermark}</span>
             <canvas class="dual-canvas" data-canvas-id="${id}"></canvas>
           </span>
+          <button type="button" class="inline-undo-btn" title="Undo" onclick="document.querySelector('.dual-canvas[data-canvas-id=\\'${id}\\']')._undoFn()">↩️</button>
           <button type="button" class="inline-clear-btn" onclick="clearDualCanvas('${id}')" title="Clear">🧹</button>
         </span>
       `;
     }
 
+    window.clearDualCanvas = id => { const c = document.querySelector(`.dual-canvas[data-canvas-id="${id}"]`); if (c) c._clearFn(); };
+    window.setupDualCanvases = function() {
+      document.querySelectorAll('.dual-canvas').forEach(c => initInk(c, getStorageKey(c.getAttribute('data-canvas-id')), 'inline'));
+    };
+    window.fitFullNotepads = window.setupFullNotepads = function() {
+      document.querySelectorAll('.full-notepad-canvas').forEach(c => {
+        const id = c.getAttribute('data-np-id');
+        initInk(c, getStorageKey(`np_${id}::p${currentNotepadPage}`), 'pad');
+      });
+    };
+    window.clearNPCanvas = () => { const c = document.querySelector('.full-notepad-canvas'); if (c) c._clearFn(); };
+    window.undoNP = () => { const c = document.querySelector('.full-notepad-canvas'); if (c) c._undoFn(); };
+    window.setNPTool = t => { pad.tool = t; document.getElementById("btnNPPen").classList.toggle("active", t === 'pen'); document.getElementById("btnNPEraser").classList.toggle("active", t === 'eraser'); };
+    window.setNPWidth = w => { pad.width = w; [2, 4, 7].forEach(n => { document.getElementById("npThick" + n).classList.toggle("active", n === w); }); };
+    window.setNPColor = col => { pad.color = col; setNPTool('pen'); };
+    window.syncNotepadToolbar = () => { setNPTool(pad.tool); setNPWidth(pad.width); };
+
+    function changeNotepadPage(delta, baseId) {
+      saveAllCanvases();
+      currentNotepadPage = Math.max(1, currentNotepadPage + delta);
+      openPortal(activePortalKey, true);
+    }
+
     const DEFINITIONS_DATA = [
-      {
-        id: "matter",
-        tab: "a) Matter",
-        prompt: `<b>a) Matter</b><br/>
-                 <span class="learn-ans-reveal"><b>Definition:</b> Anything that has mass and takes up space is matter.<br/>
-                 <b>Examples:</b> 1. Chair, 2. Car</span>`,
-        hint: "Anything that has mass and takes up space is matter. Examples: 1. Chair, 2. Car",
-        answerKey: "Definition: Anything that has mass and takes up space is matter. Examples: 1. Chair, 2. Car"
-      },
-      {
-        id: "evaporation",
-        tab: "b) Evaporation",
-        prompt: `<b>b) Evaporation</b><br/>
-                 <span class="learn-ans-reveal"><b>Definition:</b> The process by which water changes into water vapour is called evaporation.<br/>
-                 <b>Examples:</b> 1. Wet floor becoming dry, 2. Clothes drying</span>`,
-        hint: "The process by which water changes into water vapour is called evaporation. Examples: 1. Wet floor becoming dry, 2. Clothes drying",
-        answerKey: "Definition: The process by which water changes into water vapour is called evaporation. Examples: 1. Wet floor, 2. Clothes drying"
-      },
-      {
-        id: "condensation",
-        tab: "c) Condensation",
-        prompt: `<b>c) Condensation</b><br/>
-                 <span class="learn-ans-reveal"><b>Definition:</b> The process by which water vapour changes into water is called condensation.<br/>
-                 <b>Examples:</b> 1. Fog on car glass, 2. Water drops on a cold bottle</span>`,
-        hint: "The process by which water vapour changes into water is called condensation. Examples: 1. Fog on car glass, 2. Water drops on a cold bottle",
-        answerKey: "Definition: The process by which water vapour changes into water is called condensation. Examples: 1. Fog on car, 2. Cold bottle"
-      },
-      {
-        id: "freezing",
-        tab: "d) Freezing",
-        prompt: `<b>d) Freezing</b><br/>
-                 <span class="learn-ans-reveal"><b>Definition:</b> The process of liquid changing into a solid on cooling.<br/>
-                 <b>Examples:</b> 1. Ice cubes from freezer, 2. Ice-cream getting hard</span>`,
-        hint: "The process of liquid changing into a solid on cooling. Examples: 1. Ice cubes from freezer, 2. Ice-cream getting hard",
-        answerKey: "Definition: The process of liquid changing into a solid on cooling. Examples: 1. Ice cubes, 2. Ice cream"
-      }
+      { id: "matter", tab: "a) Matter", prompt: `<b>a) Matter</b><br/><span class="learn-ans-reveal"><b>Definition:</b> Anything that has mass and takes up space is matter.<br/><b>Examples:</b> 1. Chair, 2. Car</span>`, answerKey: "Anything that has mass and takes up space is matter. Examples: Chair, Car" },
+      { id: "evaporation", tab: "b) Evaporation", prompt: `<b>b) Evaporation</b><br/><span class="learn-ans-reveal"><b>Definition:</b> The process by which water changes into water vapour.<br/><b>Examples:</b> 1. Wet floor drying, 2. Clothes drying</span>`, answerKey: "The process by which water changes into water vapour. Examples: Wet floor, Clothes drying" },
+      { id: "condensation", tab: "c) Condensation", prompt: `<b>c) Condensation</b><br/><span class="learn-ans-reveal"><b>Definition:</b> Water vapour changes into water drops.<br/><b>Examples:</b> 1. Fog on car glass, 2. Cold water bottle</span>`, answerKey: "Water vapour changes into water drops. Examples: Fog on car, Cold bottle" },
+      { id: "freezing", tab: "d) Freezing", prompt: `<b>d) Freezing</b><br/><span class="learn-ans-reveal"><b>Definition:</b> Liquid changing into a solid on cooling.<br/><b>Examples:</b> 1. Ice cubes, 2. Ice cream</span>`, answerKey: "Liquid changing into a solid on cooling. Examples: Ice cubes, Ice cream" }
     ];
 
     const QA_DATA = [
-      {
-        id: "qa1",
-        tab: "Q1) Melting Cause",
-        q: "1. State the cause that makes a solid melting into a liquid?",
-        hint: "State the cause that makes a solid melting into a liquid?",
-        answerKey: "A solid melts into a liquid because of heat. Example: Ice becomes water when kept outside the freezer."
-      },
-      {
-        id: "qa2",
-        tab: "Q2) Evaporation Process",
-        q: "2. Explain the process of evaporation?",
-        hint: "Explain the process of evaporation?",
-        answerKey: "When water is heated continuously it starts boiling, forming water vapour rising as steam called evaporation."
-      }
+      { id: "qa1", tab: "Q1) Melting", q: "1. State the cause that makes a solid melt into a liquid?", answerKey: "A solid melts into a liquid because of heat. Example: Ice becomes water when kept outside." },
+      { id: "qa2", tab: "Q2) Evaporation", q: "2. Explain the process of evaporation?", answerKey: "When water is heated continuously it starts boiling, forming water vapour rising as steam." }
     ];
 
     function openPortal(portalKey, skipSave = false) {
-      if (!skipSave) saveAllCanvases();
+      if (!skipSave) { saveAllCanvases(); if (activePortalKey !== portalKey) currentNotepadPage = 1; }
       activePortalKey = portalKey;
       document.getElementById('hubBayView').style.display = 'none';
       document.getElementById('portalWorkspacePane').classList.add('active-workspace');
       document.getElementById('btnReturnPortals').style.display = 'inline-flex';
-      hideFloatingDock();
 
       const content = document.getElementById('portalExerciseContent');
       const subControls = document.getElementById('portalSubControls');
@@ -1324,68 +1129,55 @@
 
       if (portalKey === 'definitions') {
         document.getElementById('paneTitle').textContent = "📖 Portal 1: Definitions & Examples";
-        subControls.innerHTML = DEFINITIONS_DATA.map((d, i) => `
-          <button class="def-subtab-btn ${i === currentDefIdx ? 'active' : ''}" onclick="switchDefTab(${i})">${d.tab}</button>
-        `).join("");
+        subControls.innerHTML = DEFINITIONS_DATA.map((d, i) => `<button class="def-subtab-btn ${i === currentDefIdx ? 'active' : ''}" onclick="switchDefTab(${i})" style="padding:6px 12px; border-radius:10px; border:2px solid var(--border); font-weight:800; background:${i===currentDefIdx?'var(--primary)':'#F8FAFC'}; color:${i===currentDefIdx?'#FFF':'var(--subtext)'}; cursor:pointer;">${d.tab}</button>`).join("");
         content.render = renderDefinitionsPortal;
       } else if (portalKey === 'qa') {
         document.getElementById('paneTitle').textContent = "🔥 Portal 2: Short & Detailed Q&A";
-        subControls.innerHTML = QA_DATA.map((q, i) => `
-          <button class="def-subtab-btn ${i === currentQIdx ? 'active' : ''}" onclick="switchQTab(${i})">${q.tab}</button>
-        `).join("");
+        subControls.innerHTML = QA_DATA.map((q, i) => `<button class="def-subtab-btn ${i === currentQIdx ? 'active' : ''}" onclick="switchQTab(${i})" style="padding:6px 12px; border-radius:10px; border:2px solid var(--border); font-weight:800; background:${i===currentQIdx?'var(--primary)':'#F8FAFC'}; color:${i===currentQIdx?'#FFF':'var(--subtext)'}; cursor:pointer;">${q.tab}</button>`).join("");
         content.render = renderQAPortal;
       } else if (portalKey === 'workbook') {
         document.getElementById('paneTitle').textContent = "🧪 Portal 3: Lab Workbook Exercises";
         subControls.innerHTML = `
-          <button class="def-subtab-btn ${currentWorkbookSec === 0 ? 'active' : ''}" onclick="switchWorkbookSec(0)">1. Diff Table</button>
-          <button class="def-subtab-btn ${currentWorkbookSec === 1 ? 'active' : ''}" onclick="switchWorkbookSec(1)">2. Match</button>
-          <button class="def-subtab-btn ${currentWorkbookSec === 2 ? 'active' : ''}" onclick="switchWorkbookSec(2)">3. MCQs</button>
-          <button class="def-subtab-btn ${currentWorkbookSec === 3 ? 'active' : ''}" onclick="switchWorkbookSec(3)">4. Pictures</button>
-          <button class="def-subtab-btn ${currentWorkbookSec === 4 ? 'active' : ''}" onclick="switchWorkbookSec(4)">5. Concept Map</button>
+          <button class="def-subtab-btn ${currentWorkbookSec === 0 ? 'active' : ''}" onclick="switchWorkbookSec(0)" style="padding:6px 10px; border-radius:10px; border:2px solid var(--border); font-weight:800; background:${currentWorkbookSec===0?'var(--primary)':'#F8FAFC'}; color:${currentWorkbookSec===0?'#FFF':'var(--subtext)'}; cursor:pointer;">1. Diff Table</button>
+          <button class="def-subtab-btn ${currentWorkbookSec === 1 ? 'active' : ''}" onclick="switchWorkbookSec(1)" style="padding:6px 10px; border-radius:10px; border:2px solid var(--border); font-weight:800; background:${currentWorkbookSec===1?'var(--primary)':'#F8FAFC'}; color:${currentWorkbookSec===1?'#FFF':'var(--subtext)'}; cursor:pointer;">2. Match</button>
+          <button class="def-subtab-btn ${currentWorkbookSec === 2 ? 'active' : ''}" onclick="switchWorkbookSec(2)" style="padding:6px 10px; border-radius:10px; border:2px solid var(--border); font-weight:800; background:${currentWorkbookSec===2?'var(--primary)':'#F8FAFC'}; color:${currentWorkbookSec===2?'#FFF':'var(--subtext)'}; cursor:pointer;">3. MCQs</button>
+          <button class="def-subtab-btn ${currentWorkbookSec === 3 ? 'active' : ''}" onclick="switchWorkbookSec(3)" style="padding:6px 10px; border-radius:10px; border:2px solid var(--border); font-weight:800; background:${currentWorkbookSec===3?'var(--primary)':'#F8FAFC'}; color:${currentWorkbookSec===3?'#FFF':'var(--subtext)'}; cursor:pointer;">4. Pictures</button>
+          <button class="def-subtab-btn ${currentWorkbookSec === 4 ? 'active' : ''}" onclick="switchWorkbookSec(4)" style="padding:6px 10px; border-radius:10px; border:2px solid var(--border); font-weight:800; background:${currentWorkbookSec===4?'var(--primary)':'#F8FAFC'}; color:${currentWorkbookSec===4?'#FFF':'var(--subtext)'}; cursor:pointer;">5. Concept Map</button>
         `;
         content.render = renderWorkbookPortal;
       }
 
       content.innerHTML = content.render();
+      decoratePortalUI(portalKey);
       if (portalKey === 'definitions' || portalKey === 'qa') {
         requestAnimationFrame(() => requestAnimationFrame(() => { fitFullNotepads(); syncNotepadToolbar(); }));
-        setTimeout(fitFullNotepads, 250);
       } else {
         setupDualCanvases();
       }
     }
 
-    function switchDefTab(idx) {
-      saveFullNotepads();
-      currentDefIdx = idx;
-      openPortal('definitions');
-    }
-
-    function switchQTab(idx) {
-      saveFullNotepads();
-      currentQIdx = idx;
-      openPortal('qa');
-    }
-
-    function switchWorkbookSec(secIdx) {
-      saveAllCanvases();
-      currentWorkbookSec = secIdx;
-      openPortal('workbook');
-    }
+    function switchDefTab(idx) { saveAllCanvases(); currentDefIdx = idx; currentNotepadPage = 1; openPortal('definitions'); }
+    function switchQTab(idx) { saveAllCanvases(); currentQIdx = idx; currentNotepadPage = 1; openPortal('qa'); }
+    function switchWorkbookSec(secIdx) { saveAllCanvases(); currentWorkbookSec = secIdx; openPortal('workbook'); }
 
     function renderDefinitionsPortal() {
       const cur = DEFINITIONS_DATA[currentDefIdx];
-      const isOpen = !!binderOpenedMap[`def_${cur.id}`];
+      const isOpen = !!binderOpenedMap[`def_${cur.id}::p${currentNotepadPage}`];
       return `
         <div class="full-notepad-wrapper">
-          <div class="notepad-prompt-box">
-            <span class="speakable" onclick="speakText('${cur.hint}')">${cur.prompt}</span>
-          </div>
+          <div class="notepad-prompt-box">${cur.prompt}</div>
           <div class="notepad-toolbar">
             <div class="tool-group">
               <button class="pad-btn active" id="btnNPPen" onclick="setNPTool('pen')" title="Pen">🖊️</button>
               <button class="pad-btn" id="btnNPEraser" onclick="setNPTool('eraser')" title="Eraser">🧹</button>
               <button class="pad-btn" onclick="clearNPCanvas()" title="Clear">🗑️</button>
+              <button class="pad-btn" onclick="undoNP()" title="Undo">↩️</button>
+            </div>
+            <div class="page-nav-bar">
+              <button type="button" class="page-nav-btn" onclick="changeNotepadPage(-1)" ${currentNotepadPage === 1 ? 'disabled style="opacity:0.4;"' : ''}>◀ Prev</button>
+              <span class="page-indicator">Page ${currentNotepadPage}</span>
+              <button type="button" class="page-nav-btn" onclick="changeNotepadPage(1)">Next ▶</button>
+              <button type="button" class="action-btn" style="background:#10B981; color:#FFF; height:32px; font-size:0.8rem; padding:0 10px;" onclick="changeNotepadPage(1)">➕ Page</button>
             </div>
             <div class="tool-group">
               <button class="pad-btn" id="npThick2" onclick="setNPWidth(2)" title="Thin">▪</button>
@@ -1397,20 +1189,19 @@
               <button class="pad-btn" onclick="closeBinder('def_${cur.id}')" title="Close Cover">📕</button>
             </div>
           </div>
-          <div class="full-notepad-container" id="fullNotepadContainer">
+          <div class="full-notepad-container">
             <div class="notepad-dual-lines"></div>
             <canvas class="full-notepad-canvas" data-np-id="def_${cur.id}"></canvas>
 
-            <!-- Binder Cover -->
             <div class="binder-cover ${isOpen ? 'binder-open' : ''}" id="binder_def_${cur.id}" onclick="openBinder('def_${cur.id}')">
               <div style="display:flex; justify-content:space-between; align-items:center;">
                 <span style="background:rgba(255,255,255,0.25); padding:4px 12px; border-radius:999px; font-size:0.8rem; font-weight:800;">Science Lab Academy</span>
                 <span>📖</span>
               </div>
               <div class="composition-label-box">
-                <img src="assets/humayun-avatar.webp" class="label-avatar" alt="Humayun Avatar" onerror="handleImgFallback(this)"/>
+                <img src="assets/humayun-avatar.webp" class="label-avatar" alt="Humayun" onerror="handleImgFallback(this)"/>
                 <div class="label-text-col">
-                  <div class="label-kicker">Explorer Classwork</div>
+                  <div class="label-kicker">Explorer Classwork - Page ${currentNotepadPage}</div>
                   <div class="label-name">Humayun • Grade 3</div>
                   <div class="label-lesson">EVS Lesson 1: Solids, Liquids, Gases</div>
                 </div>
@@ -1420,11 +1211,8 @@
           </div>
 
           <div class="self-grading-bar">
-            <div>
-              <button class="action-btn" style="background:var(--primary); color:#FFF;" onclick="toggleSelfGrade('def_${cur.id}')">✅ Check Answer / Self-Grade</button>
-            </div>
-            <div class="self-grading-reveal" id="grade_reveal_def_${cur.id}">
-              <b>Correct Answer Key:</b> ${cur.answerKey}
+            <div class="self-grading-reveal">
+              <b>Answer Key:</b> ${cur.answerKey}
             </div>
           </div>
         </div>
@@ -1433,17 +1221,22 @@
 
     function renderQAPortal() {
       const curQ = QA_DATA[currentQIdx];
-      const isOpen = !!binderOpenedMap[curQ.id];
+      const isOpen = !!binderOpenedMap[`${curQ.id}::p${currentNotepadPage}`];
       return `
         <div class="full-notepad-wrapper">
-          <div class="notepad-prompt-box">
-            <span class="speakable" onclick="speakText('${curQ.q}')"><b>${curQ.q}</b></span>
-          </div>
+          <div class="notepad-prompt-box"><b>${curQ.q}</b></div>
           <div class="notepad-toolbar">
             <div class="tool-group">
               <button class="pad-btn active" id="btnNPPen" onclick="setNPTool('pen')" title="Pen">🖊️</button>
               <button class="pad-btn" id="btnNPEraser" onclick="setNPTool('eraser')" title="Eraser">🧹</button>
               <button class="pad-btn" onclick="clearNPCanvas()" title="Clear">🗑️</button>
+              <button class="pad-btn" onclick="undoNP()" title="Undo">↩️</button>
+            </div>
+            <div class="page-nav-bar">
+              <button type="button" class="page-nav-btn" onclick="changeNotepadPage(-1)" ${currentNotepadPage === 1 ? 'disabled style="opacity:0.4;"' : ''}>◀ Prev</button>
+              <span class="page-indicator">Page ${currentNotepadPage}</span>
+              <button type="button" class="page-nav-btn" onclick="changeNotepadPage(1)">Next ▶</button>
+              <button type="button" class="action-btn" style="background:#10B981; color:#FFF; height:32px; font-size:0.8rem; padding:0 10px;" onclick="changeNotepadPage(1)">➕ Page</button>
             </div>
             <div class="tool-group">
               <button class="pad-btn" id="npThick2" onclick="setNPWidth(2)" title="Thin">▪</button>
@@ -1455,11 +1248,10 @@
               <button class="pad-btn" onclick="closeBinder('${curQ.id}')" title="Close Cover">📕</button>
             </div>
           </div>
-          <div class="full-notepad-container" id="fullNotepadContainer">
+          <div class="full-notepad-container">
             <div class="notepad-dual-lines"></div>
             <canvas class="full-notepad-canvas" data-np-id="${curQ.id}"></canvas>
 
-            <!-- Binder Cover -->
             <div class="binder-cover ${isOpen ? 'binder-open' : ''}" id="binder_${curQ.id}" onclick="openBinder('${curQ.id}')">
               <div style="display:flex; justify-content:space-between; align-items:center;">
                 <span style="background:rgba(255,255,255,0.25); padding:4px 12px; border-radius:999px; font-size:0.8rem; font-weight:800;">Q&amp;A Notebook</span>
@@ -1468,7 +1260,7 @@
               <div class="composition-label-box">
                 <img src="assets/humayun-avatar.webp" class="label-avatar" alt="Humayun" onerror="handleImgFallback(this)"/>
                 <div class="label-text-col">
-                  <div class="label-kicker">Explorer Classwork</div>
+                  <div class="label-kicker">Explorer Classwork - Page ${currentNotepadPage}</div>
                   <div class="label-name">Humayun • Grade 3</div>
                   <div class="label-lesson">EVS Lesson 1: Q&amp;A</div>
                 </div>
@@ -1478,37 +1270,21 @@
           </div>
 
           <div class="self-grading-bar">
-            <div>
-              <button class="action-btn" style="background:var(--primary); color:#FFF;" onclick="toggleSelfGrade('${curQ.id}')">✅ Check Answer / Self-Grade</button>
-            </div>
-            <div class="self-grading-reveal" id="grade_reveal_${curQ.id}">
-              <b>Correct Answer Key:</b> ${curQ.answerKey}
+            <div class="self-grading-reveal">
+              <b>Answer Key:</b> ${curQ.answerKey}
             </div>
           </div>
         </div>
       `;
     }
 
-    function toggleSelfGrade(id) {
-      const rev = document.getElementById(`grade_reveal_${id}`);
-      if (rev) {
-        rev.classList.toggle('revealed');
-        if (rev.classList.contains('revealed')) {
-          triggerGrandCelebration(true);
-        }
-      }
-    }
-
     function renderWorkbookPortal() {
       let mainContent = "";
-
       if (currentWorkbookSec === 0) {
         mainContent = `
           <table class="diff-table">
             <tr>
-              <th colspan="2" style="background:#065F46; color:#FFF; font-size:1.1rem; padding:12px;">
-                Differences between Solids, Liquids and Gases
-              </th>
+              <th colspan="2" style="background:#065F46; color:#FFF; font-size:1.1rem; padding:12px;">Differences between Solids, Liquids and Gases</th>
             </tr>
             <tr>
               <td style="width:220px; font-weight:900; background:#F0FDF4;">
@@ -1518,8 +1294,8 @@
                 </div>
               </td>
               <td>
-                <span class="speakable">1. Have a fixed</span> ${inlineDualBlank('diff_s_shape', 450)} <span class="answer-tag">shape</span> and ${inlineDualBlank('diff_s_vol', 450)} <span class="answer-tag">volume</span>.
-                <div style="margin-top:8px;"><span class="speakable">2. Do not flow. Examples:</span> ${inlineDualBlank('diff_s_ex1', 320)} <span class="answer-tag">Chair</span> and ${inlineDualBlank('diff_s_ex2', 320)} <span class="answer-tag">Book</span>.</div>
+                1. Have a fixed ${inlineDualBlank('diff_s_shape', 450, 'shape')} <span class="answer-tag">shape</span> and ${inlineDualBlank('diff_s_vol', 450, 'volume')} <span class="answer-tag">volume</span>.
+                <div style="margin-top:8px;">2. Do not flow. Examples: ${inlineDualBlank('diff_s_ex1', 320, 'Chair')} <span class="answer-tag">Chair</span> and ${inlineDualBlank('diff_s_ex2', 320, 'Book')} <span class="answer-tag">Book</span>.</div>
               </td>
             </tr>
             <tr>
@@ -1530,8 +1306,8 @@
                 </div>
               </td>
               <td>
-                <span class="speakable">1. Fixed volume, no fixed</span> ${inlineDualBlank('diff_l_shape', 450)} <span class="answer-tag">shape</span>. Takes ${inlineDualBlank('diff_l_cont', 450)} <span class="answer-tag">shape</span> of container.
-                <div style="margin-top:8px;"><span class="speakable">2. Flow easily. Examples:</span> ${inlineDualBlank('diff_l_ex1', 320)} <span class="answer-tag">Water</span> and ${inlineDualBlank('diff_l_ex2', 320)} <span class="answer-tag">Milk</span>.</div>
+                1. Fixed volume, no fixed ${inlineDualBlank('diff_l_shape', 450, 'shape')} <span class="answer-tag">shape</span>. Takes ${inlineDualBlank('diff_l_cont', 450, 'container')} <span class="answer-tag">shape</span> of container.
+                <div style="margin-top:8px;">2. Flow easily. Examples: ${inlineDualBlank('diff_l_ex1', 320, 'Water')} <span class="answer-tag">Water</span> and ${inlineDualBlank('diff_l_ex2', 320, 'Milk')} <span class="answer-tag">Milk</span>.</div>
               </td>
             </tr>
             <tr>
@@ -1542,8 +1318,8 @@
                 </div>
               </td>
               <td>
-                <span class="speakable">1. Do not have any fixed</span> ${inlineDualBlank('diff_g_shape', 450)} <span class="answer-tag">shape</span> and ${inlineDualBlank('diff_g_vol', 450)} <span class="answer-tag">volume</span>.
-                <div style="margin-top:8px;"><span class="speakable">2. Flow very easily. Examples:</span> ${inlineDualBlank('diff_g_ex1', 320)} <span class="answer-tag">Oxygen</span> and ${inlineDualBlank('diff_g_ex2', 320)} <span class="answer-tag">Steam</span>.</div>
+                1. Do not have any fixed ${inlineDualBlank('diff_g_shape', 450, 'shape')} <span class="answer-tag">shape</span> and ${inlineDualBlank('diff_g_vol', 450, 'volume')} <span class="answer-tag">volume</span>.
+                <div style="margin-top:8px;">2. Flow very easily. Examples: ${inlineDualBlank('diff_g_ex1', 320, 'Oxygen')} <span class="answer-tag">Oxygen</span> and ${inlineDualBlank('diff_g_ex2', 320, 'Steam')} <span class="answer-tag">Steam</span>.</div>
               </td>
             </tr>
           </table>
@@ -1556,11 +1332,11 @@
           mainContent = `
             <div class="match-columns-learn">
               <div style="display:flex; flex-direction:column; gap:8px;">
-                <button class="match-btn" data-pair="1" onclick="handleMatch(this, 'left')"><img src="assets/ice-cube-mascot.webp" style="width:24px; vertical-align:middle; display:inline;" alt=""/> 1. Solid</button>
-                <button class="match-btn" data-pair="2" onclick="handleMatch(this, 'left')"><img src="assets/steam-cloud-mascot.webp" style="width:24px; vertical-align:middle; display:inline;" alt=""/> 2. Water vapour</button>
-                <button class="match-btn" data-pair="3" onclick="handleMatch(this, 'left')"><img src="assets/water-drop-mascot.webp" style="width:24px; vertical-align:middle; display:inline;" alt=""/> 3. Liquid</button>
+                <button class="match-btn" data-pair="1" onclick="handleMatch(this, 'left')"><img src="assets/ice-cube-mascot.webp" alt=""/> 1. Solid</button>
+                <button class="match-btn" data-pair="2" onclick="handleMatch(this, 'left')"><img src="assets/steam-cloud-mascot.webp" alt=""/> 2. Water vapour</button>
+                <button class="match-btn" data-pair="3" onclick="handleMatch(this, 'left')"><img src="assets/water-drop-mascot.webp" alt=""/> 3. Liquid</button>
                 <button class="match-btn" data-pair="4" onclick="handleMatch(this, 'left')">🧪 4. Matter</button>
-                <button class="match-btn" data-pair="5" onclick="handleMatch(this, 'left')"><img src="assets/ice-cube-mascot.webp" style="width:24px; vertical-align:middle; display:inline;" alt=""/> 5. Ice</button>
+                <button class="match-btn" data-pair="5" onclick="handleMatch(this, 'left')"><img src="assets/ice-cube-mascot.webp" alt=""/> 5. Ice</button>
               </div>
               <div style="display:flex; flex-direction:column; gap:8px;">
                 <button class="match-btn" data-pair="3" onclick="handleMatch(this, 'right')">a. Can flow</button>
@@ -1576,23 +1352,18 @@
           `;
         } else {
           mainContent = `
-            <div class="match-3col-container">
-              <div class="match-3col-header">
-                <span>Questions</span>
-                <span>Options</span>
-                <span>Write Answer</span>
-              </div>
+            <div style="display:flex; flex-direction:column; gap:12px; width:100%;">
               ${[
-                { id: "m_row1", q: "1. Solid", opt: "a. Can flow" },
-                { id: "m_row2", q: "2. Water vapour", opt: "b. Does not change shape" },
-                { id: "m_row3", q: "3. Liquid", opt: "c. Gaseous state" },
-                { id: "m_row4", q: "4. Matter", opt: "d. Frozen water" },
-                { id: "m_row5", q: "5. Ice", opt: "e. Has mass and occupies space" }
+                { id: "m_row1", q: "1. Solid", opt: "b. Does not change shape" },
+                { id: "m_row2", q: "2. Water vapour", opt: "c. Gaseous state" },
+                { id: "m_row3", q: "3. Liquid", opt: "a. Can flow" },
+                { id: "m_row4", q: "4. Matter", opt: "e. Has mass and occupies space" },
+                { id: "m_row5", q: "5. Ice", opt: "d. Frozen water" }
               ].map(row => `
-                <div class="match-3col-row">
-                  <div class="match-col-text speakable" onclick="speakText('${row.q}')">${row.q}</div>
-                  <div><span class="match-option-pill speakable" onclick="speakText('${row.opt}')">${row.opt}</span></div>
-                  <div>${inlineDualBlank(row.id, 320)}</div>
+                <div style="display:grid; grid-template-columns:180px 1fr 320px; gap:16px; align-items:center; background:#F8FAFC; border:2px solid #E2E8F0; padding:10px 14px; border-radius:14px;">
+                  <div style="font-weight:900;">${row.q}</div>
+                  <div style="font-weight:800; color:#047857;">${row.opt}</div>
+                  <div>${inlineDualBlank(row.id, 300, 'Match')}</div>
                 </div>
               `).join("")}
             </div>
@@ -1614,7 +1385,7 @@
           ${mcqData.map(item => `
             <div class="mcq-item">
               <div class="mcq-q-row">
-                <div class="mcq-q speakable" onclick="speakText('${item.q}')">${item.q}</div>${appMode !== 'learn' ? `<div>${inlineDualBlank(item.id, 320)}</div>` : ''}
+                <div class="mcq-q">${item.q}</div>${appMode !== 'learn' ? `<div>${inlineDualBlank(item.id, 280, 'Ans')}</div>` : ''}
               </div>
               <div class="mcq-opts">
                 ${item.opts.map((optText, oIdx) => {
@@ -1649,8 +1420,8 @@
                 const saved = localStorage.getItem(`chip::humayun::evs::${it.id}`) || it.correct;
                 return `
                   <div class="pic-card">
-                    <span class="pic-icon speakable" onclick="speakText('${it.name}')">${it.icon}</span>
-                    <span class="pic-name speakable" onclick="speakText('${it.name}')">${it.name}</span>
+                    <span class="pic-icon">${it.icon}</span>
+                    <span class="pic-name">${it.name}</span>
                     <div class="chip-row">
                       <button class="state-chip ${saved === 'Solid' ? 'active-chip' : ''}" onclick="selectChip('${it.id}', 'Solid')">Solid</button>
                       <button class="state-chip ${saved === 'Liquid' ? 'active-chip' : ''}" onclick="selectChip('${it.id}', 'Liquid')">Liquid</button>
@@ -1661,9 +1432,9 @@
               } else {
                 return `
                   <div class="pic-card">
-                    <span class="pic-icon speakable" onclick="speakText('${it.name}')">${it.icon}</span>
-                    <span class="pic-name speakable" onclick="speakText('${it.name}')">${it.name}</span>
-                    <div style="margin-top:4px;">${inlineDualBlank('pic_ink_' + it.id, 180)}</div>
+                    <span class="pic-icon">${it.icon}</span>
+                    <span class="pic-name">${it.name}</span>
+                    <div style="margin-top:4px;">${inlineDualBlank('pic_ink_' + it.id, 180, 'State')}</div>
                   </div>
                 `;
               }
@@ -1675,27 +1446,27 @@
         `;
       } else {
         const mapData = [
-          { id: "solid", prompt: "S _ L _ D", fullWord: "SOLID", ex1_id: "cmap_s_ex1", ex2_id: "cmap_s_ex2", learnEx1: "Chair", learnEx2: "Book" },
-          { id: "liquid", prompt: "L _ _ _ I D", fullWord: "LIQUID", ex1_id: "cmap_l_ex1", ex2_id: "cmap_l_ex2", learnEx1: "Water", learnEx2: "Milk" },
-          { id: "gas", prompt: "G _ _", fullWord: "GAS", ex1_id: "cmap_g_ex1", ex2_id: "cmap_g_ex2", learnEx1: "Oxygen", learnEx2: "Steam" }
+          { id: "solid", prompt: "S _ L _ D", fullWord: "SOLID", learnEx1: "Chair", learnEx2: "Book" },
+          { id: "liquid", prompt: "L _ _ _ I D", fullWord: "LIQUID", learnEx1: "Water", learnEx2: "Milk" },
+          { id: "gas", prompt: "G _ _", fullWord: "GAS", learnEx1: "Oxygen", learnEx2: "Steam" }
         ];
 
         mainContent = `
           <div class="cmap-wrapper">
-            <div class="cmap-root-card speakable" onclick="speakText('States of Matter')">States of Matter</div>
-            <div class="cmap-branch-label speakable" onclick="speakText('Types of States of Matter')">Types</div>
+            <div class="cmap-root-card">States of Matter</div>
+            <div class="cmap-branch-label">Types</div>
             <div class="cmap-columns-grid">
               ${mapData.map(col => `
                 <div class="cmap-col-card">
-                  <div class="cmap-type-badge speakable" onclick="speakText('${col.fullWord}')">${col.prompt}</div>${appMode !== 'learn' ? `<div style="margin-top:2px; width:100%; display:flex; justify-content:center;">${inlineDualBlank('cmap_type_' + col.id, 180)}</div>` : `<div style="font-weight:900; color:var(--primary-dark); font-size:1rem; margin:4px 0;">➔ ${col.fullWord}</div>`}
+                  <div class="cmap-type-badge">${col.prompt}</div>${appMode !== 'learn' ? `<div style="margin-top:2px; width:100%; display:flex; justify-content:center;">${inlineDualBlank('cmap_type_' + col.id, 180, col.fullWord)}</div>` : `<div style="font-weight:900; color:var(--primary-dark); font-size:1rem; margin:4px 0;">➔ ${col.fullWord}</div>`}
                   <div class="cmap-down-arrow-wrap"><span>⬇</span> Examples</div>
                   <div class="cmap-ex-row">
                     <span class="cmap-ex-label">Example 1:</span>
-                    ${appMode !== 'learn' ? inlineDualBlank(col.ex1_id, 180) : `<div class="answer-tag" style="width:100%; text-align:center; padding:6px; font-size:0.95rem;">${col.learnEx1}</div>`}
+                    ${appMode !== 'learn' ? inlineDualBlank('cmap_ex1_' + col.id, 180, col.learnEx1) : `<div class="answer-tag" style="width:100%; text-align:center; padding:6px; font-size:0.95rem;">${col.learnEx1}</div>`}
                   </div>
                   <div class="cmap-ex-row">
                     <span class="cmap-ex-label">Example 2:</span>
-                    ${appMode !== 'learn' ? inlineDualBlank(col.ex2_id, 180) : `<div class="answer-tag" style="width:100%; text-align:center; padding:6px; font-size:0.95rem;">${col.learnEx2}</div>`}
+                    ${appMode !== 'learn' ? inlineDualBlank('cmap_ex2_' + col.id, 180, col.learnEx2) : `<div class="answer-tag" style="width:100%; text-align:center; padding:6px; font-size:0.95rem;">${col.learnEx2}</div>`}
                   </div>
                 </div>
               `).join("")}
@@ -1731,346 +1502,79 @@
     }
 
     function completeWorkbookStep(stepIdx) {
-      if (stepIdx < 4) {
-        switchWorkbookSec(stepIdx + 1);
-      } else {
-        triggerGrandCelebration();
-      }
+      if (stepIdx < 4) { switchWorkbookSec(stepIdx + 1); }
+      else { triggerGrandCelebration(); }
     }
 
     let selectedLeftMatch = null;
     let selectedRightMatch = null;
-
     function handleMatch(btn, side) {
       if (btn.classList.contains('paired')) return;
       if (side === 'left') {
         if (selectedLeftMatch) selectedLeftMatch.classList.remove('selected');
-        selectedLeftMatch = btn;
-        btn.classList.add('selected');
+        selectedLeftMatch = btn; btn.classList.add('selected');
       } else {
         if (selectedRightMatch) selectedRightMatch.classList.remove('selected');
-        selectedRightMatch = btn;
-        btn.classList.add('selected');
+        selectedRightMatch = btn; btn.classList.add('selected');
       }
       if (selectedLeftMatch && selectedRightMatch) {
         if (selectedLeftMatch.getAttribute('data-pair') === selectedRightMatch.getAttribute('data-pair')) {
-          selectedLeftMatch.classList.remove('selected');
-          selectedRightMatch.classList.remove('selected');
-          selectedLeftMatch.classList.add('paired');
-          selectedRightMatch.classList.add('paired');
-          selectedLeftMatch.innerHTML += " ✓";
-          selectedRightMatch.innerHTML += " ✓";
-          speakText("Correct match");
+          selectedLeftMatch.classList.remove('selected'); selectedRightMatch.classList.remove('selected');
+          selectedLeftMatch.classList.add('paired'); selectedRightMatch.classList.add('paired');
+          selectedLeftMatch.innerHTML += " ✓"; selectedRightMatch.innerHTML += " ✓";
         } else {
-          selectedLeftMatch.classList.remove('selected');
-          selectedRightMatch.classList.remove('selected');
-          speakText("Try again");
+          selectedLeftMatch.classList.remove('selected'); selectedRightMatch.classList.remove('selected');
         }
-        selectedLeftMatch = null;
-        selectedRightMatch = null;
+        selectedLeftMatch = null; selectedRightMatch = null;
       }
     }
 
     function checkMcq(btn, isCorrect, speakVal) {
-      speakText(speakVal);
       const parent = btn.parentElement;
-      parent.querySelectorAll(".mcq-opt-btn").forEach(b => b.className = "mcq-opt-btn");
-      if (appMode === 'learn') {
-        btn.className = isCorrect ? "mcq-opt-btn correct" : "mcq-opt-btn wrong";
-      } else {
-        btn.className = "mcq-opt-btn correct";
-      }
+      parent.querySelectorAll(".mcq-opt-btn").forEach(b => b.classList.remove('tapped'));
+      btn.classList.add('tapped');
     }
 
     function selectChip(itemId, state) {
       localStorage.setItem(`chip::humayun::evs::${itemId}`, state);
-      speakText(state);
       openPortal('workbook');
     }
 
-    /* BINDER COVER ACTIONS */
     function openBinder(id) {
-      binderOpenedMap[id] = true;
+      binderOpenedMap[`${id}::p${currentNotepadPage}`] = true;
       const cover = document.getElementById(`binder_${id}`);
       if (cover) cover.classList.add('binder-open');
     }
 
     function closeBinder(id) {
-      binderOpenedMap[id] = false;
+      binderOpenedMap[`${id}::p${currentNotepadPage}`] = false;
       const cover = document.getElementById(`binder_${id}`);
       if (cover) cover.classList.remove('binder-open');
     }
 
-    /* CANVAS & S PEN RETINA ENGINE */
-    function setupDualCanvases() {
-      const canvasList = document.querySelectorAll(".dual-canvas");
-      canvasList.forEach(c => {
-        const id = c.getAttribute("data-canvas-id");
-        const bRect = c.parentElement.getBoundingClientRect();
-        c.width = Math.round(bRect.width) || 300;
-        c.height = 68;
+    /* Portal UI & Sidebar Decorator */
+    const ICONS = { definitions: ['🧱', '💧', '☁️', '🧊'], qa: ['🔥', '♨️'] };
+    function decoratePortalUI(k) {
+      const rk = (k === 'definitions' || k === 'qa');
+      document.getElementById('portalWorkspacePane').classList.toggle('has-rail', rk);
+      
+      const pills = document.getElementById('portalPills');
+      pills.style.display = 'flex';
+      const items = [['definitions', '📖'], ['qa', '🔥'], ['workbook', '🧪']];
+      pills.innerHTML = items.map(([pk, ico]) => `<button type="button" class="portal-pill ${pk === k ? 'active' : ''}" onclick="openPortal('${pk}')">${ico} ${items.indexOf(items.find(x => x[0] === pk)) + 1}</button>`).join('');
 
-        const ctx = c.getContext("2d", { willReadFrequently: false });
-        ctx.clearRect(0, 0, c.width, c.height);
-
-        const storageKey = getStorageKey(id);
-        const cachedData = activeInkCache[storageKey] || localStorage.getItem(storageKey);
-
-        if (cachedData) {
-          activeInkCache[storageKey] = cachedData;
-          hasDrawnMap[id] = true;
-          const img = new Image();
-          img.onload = () => { ctx.clearRect(0, 0, c.width, c.height); ctx.drawImage(img, 0, 0, c.width, c.height); };
-          img.src = cachedData;
-        }
-
-        let isDrawing = false;
-        let lastX = 0, lastY = 0;
-
-        c.onpointerdown = (e) => {
-          if (palmRejectionMode === "pen-only" && e.pointerType !== "pen" && e.pointerType !== "mouse") {
-            e.preventDefault();
-            return;
-          }
-          isDrawing = true;
-          hasDrawnMap[id] = true;
-          try { c.setPointerCapture(e.pointerId); } catch (_) {}
-          const rect = c.getBoundingClientRect();
-          lastX = e.clientX - rect.left;
-          lastY = e.clientY - rect.top;
-          e.preventDefault();
-        };
-
-        c.onpointermove = (e) => {
-          if (!isDrawing) return;
-          const rect = c.getBoundingClientRect();
-          const currX = e.clientX - rect.left;
-          const currY = e.clientY - rect.top;
-
-          ctx.beginPath();
-          ctx.moveTo(lastX, lastY);
-          ctx.lineTo(currX, currY);
-          ctx.lineCap = "round";
-          ctx.lineJoin = "round";
-          ctx.strokeStyle = "#065F46";
-          const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
-          ctx.lineWidth = 3.8 * (pressure * 1.5 + 0.35);
-          ctx.stroke();
-
-          lastX = currX;
-          lastY = currY;
-          e.preventDefault();
-        };
-
-        const stopStroke = (e) => {
-          if (isDrawing) {
-            isDrawing = false;
-            try { c.releasePointerCapture(e.pointerId); } catch (_) {}
-            saveDualCanvas(c, id);
-          }
-        };
-        c.onpointerup = stopStroke;
-        c.onpointercancel = stopStroke;
-      });
-    }
-
-    function saveDualCanvas(c, id) {
-      if (!hasDrawnMap[id]) return;
-      try {
-        const data = c.toDataURL("image/png");
-        const key = getStorageKey(id);
-        activeInkCache[key] = data;
-        localStorage.setItem(key, data);
-      } catch (e) {}
-    }
-
-    function saveAllCanvases() {
-      document.querySelectorAll(".dual-canvas").forEach(c => {
-        const id = c.getAttribute("data-canvas-id");
-        if (hasDrawnMap[id]) saveDualCanvas(c, id);
-      });
-      saveFullNotepads();
-    }
-
-    function clearDualCanvas(id) {
-      const c = document.querySelector(`.dual-canvas[data-canvas-id="${id}"]`);
-      if (c) {
-        const ctx = c.getContext("2d");
-        ctx.clearRect(0, 0, c.width, c.height);
-        const key = getStorageKey(id);
-        delete activeInkCache[key];
-        hasDrawnMap[id] = false;
-        localStorage.removeItem(key);
+      const rail = document.getElementById('secRail');
+      if (rk) {
+        const data = k === 'definitions' ? DEFINITIONS_DATA : QA_DATA;
+        const idx = k === 'definitions' ? currentDefIdx : currentQIdx;
+        const fn = k === 'definitions' ? 'switchDefTab' : 'switchQTab';
+        rail.innerHTML = `<div class="rail-title">${k === 'definitions' ? 'Words' : 'Questions'}</div>` +
+          data.map((d, i) => `<button type="button" class="rail-btn ${i === idx ? 'active' : ''}" onclick="${fn}(${i})"><span class="rail-ico">${ICONS[k][i]}</span><span>${d.tab}</span></button>`).join('') +
+          `<div class="rail-nav"><button type="button" class="rail-arrow" onclick="${fn}(${idx - 1})" ${idx === 0 ? 'disabled' : ''}>◀</button><span class="rail-count">${idx + 1}/${data.length}</span><button type="button" class="rail-arrow" onclick="${fn}(${idx + 1})" ${idx === data.length - 1 ? 'disabled' : ''}>▶</button></div>`;
       }
     }
 
-    /* FULL NOTEPAD SLATE ENGINE */
-    const notepadInstances = {};
-
-    function fitFullNotepads() {
-      document.querySelectorAll(".full-notepad-canvas").forEach(c => {
-        const id = c.getAttribute("data-np-id");
-        const wrap = c.parentElement;
-        if (!wrap || wrap.offsetParent === null) return;
-        const rect = wrap.getBoundingClientRect();
-        if (rect.width <= 0 || rect.height <= 0) return;
-
-        const dpr = window.devicePixelRatio || 1;
-        const targetW = Math.floor(rect.width * dpr);
-        const targetH = Math.floor(rect.height * dpr);
-
-        if (c.width === targetW && c.height === targetH) return;
-
-        c.width = targetW;
-        c.height = targetH;
-        c.style.width = rect.width + "px";
-        c.style.height = rect.height + "px";
-
-        const ctx = c.getContext("2d");
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-        if (!notepadInstances[id]) {
-          notepadInstances[id] = { tool: "pen", color: "#065F46", lineWidth: 4, isDrawing: false, pointerId: null, lastX: 0, lastY: 0 };
-          setupNotepadPointerEvents(c, id);
-        }
-        restoreNotepadCanvas(id, c, ctx);
-      });
-    }
-
-    function saveFullNotepads() {
-      document.querySelectorAll(".full-notepad-canvas").forEach(c => {
-        const id = c.getAttribute("data-np-id");
-        if (c.width > 0) {
-          try {
-            const data = c.toDataURL("image/png");
-            const key = getStorageKey(`np_${id}`);
-            activeInkCache[key] = data;
-            localStorage.setItem(key, data);
-          } catch (e) {}
-        }
-      });
-    }
-
-    function restoreNotepadCanvas(id, c, ctx) {
-      const key = getStorageKey(`np_${id}`);
-      const saved = activeInkCache[key] || localStorage.getItem(key);
-      if (!saved) return;
-      activeInkCache[key] = saved;
-      const img = new Image();
-      img.onload = () => {
-        ctx.save();
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.clearRect(0, 0, c.width, c.height);
-        ctx.drawImage(img, 0, 0, c.width, c.height);
-        ctx.restore();
-      };
-      img.src = saved;
-    }
-
-    function setupFullNotepads() {
-      fitFullNotepads();
-    }
-
-    function setupNotepadPointerEvents(c, id) {
-      c.onpointerdown = (e) => {
-        if (palmRejectionMode === "pen-only" && e.pointerType !== "pen" && e.pointerType !== "mouse") {
-          e.preventDefault();
-          return;
-        }
-        const inst = notepadInstances[id];
-        if (inst.isDrawing && inst.pointerId !== null) return;
-        inst.pointerId = e.pointerId;
-        inst.isDrawing = true;
-        try { c.setPointerCapture(e.pointerId); } catch (_) {}
-        const rect = c.getBoundingClientRect();
-        inst.lastX = e.clientX - rect.left;
-        inst.lastY = e.clientY - rect.top;
-        e.preventDefault();
-      };
-
-      c.onpointermove = (e) => {
-        const inst = notepadInstances[id];
-        if (!inst.isDrawing || e.pointerId !== inst.pointerId) return;
-
-        const rect = c.getBoundingClientRect();
-        const currX = e.clientX - rect.left;
-        const currY = e.clientY - rect.top;
-        const ctx = c.getContext("2d");
-
-        ctx.beginPath();
-        ctx.moveTo(inst.lastX, inst.lastY);
-        ctx.lineTo(currX, currY);
-        ctx.lineCap = "round";
-        ctx.lineJoin = "round";
-
-        if (inst.tool === "eraser") {
-          ctx.globalCompositeOperation = "destination-out";
-          ctx.lineWidth = inst.lineWidth * 6;
-        } else {
-          ctx.globalCompositeOperation = "source-over";
-          ctx.strokeStyle = inst.color || "#065F46";
-          const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
-          ctx.lineWidth = inst.lineWidth * (pressure * 1.5 + 0.35);
-        }
-        ctx.stroke();
-        inst.lastX = currX;
-        inst.lastY = currY;
-        e.preventDefault();
-      };
-
-      const stopStroke = (e) => {
-        const inst = notepadInstances[id];
-        if (inst.isDrawing && (e.pointerId === inst.pointerId || inst.pointerId === null)) {
-          inst.isDrawing = false;
-          inst.pointerId = null;
-          try { c.releasePointerCapture(e.pointerId); } catch (_) {}
-          saveFullNotepads();
-        }
-      };
-      c.onpointerup = stopStroke;
-      c.onpointercancel = stopStroke;
-    }
-
-    function clearNPCanvas() {
-      const cur = activePortalKey === 'definitions' ? `def_${DEFINITIONS_DATA[currentDefIdx].id}` : QA_DATA[currentQIdx].id;
-      const c = document.querySelector(`.full-notepad-canvas[data-np-id="${cur}"]`);
-      if (!c) return;
-      const ctx = c.getContext("2d");
-      ctx.clearRect(0, 0, c.width, c.height);
-      const key = getStorageKey(`np_${cur}`);
-      delete activeInkCache[key];
-      localStorage.removeItem(key);
-    }
-
-    function syncNotepadToolbar() {
-      const id = activePortalKey === 'definitions' ? `def_${DEFINITIONS_DATA[currentDefIdx].id}`
-               : (activePortalKey === 'qa' ? QA_DATA[currentQIdx].id : null);
-      const inst = id && notepadInstances[id];
-      if (inst) { inst.tool = 'pen'; inst.lineWidth = 4; }
-    }
-
-    function setNPTool(t) {
-      const cur = activePortalKey === 'definitions' ? `def_${DEFINITIONS_DATA[currentDefIdx].id}` : QA_DATA[currentQIdx].id;
-      if (notepadInstances[cur]) notepadInstances[cur].tool = t;
-      document.getElementById("btnNPPen").classList.toggle("active", t === 'pen');
-      document.getElementById("btnNPEraser").classList.toggle("active", t === 'eraser');
-    }
-
-    function setNPWidth(w) {
-      const cur = activePortalKey === 'definitions' ? `def_${DEFINITIONS_DATA[currentDefIdx].id}` : QA_DATA[currentQIdx].id;
-      if (notepadInstances[cur]) notepadInstances[cur].lineWidth = w;
-      document.getElementById("npThick2").classList.toggle("active", w === 2);
-      document.getElementById("npThick4").classList.toggle("active", w === 4);
-      document.getElementById("npThick7").classList.toggle("active", w === 7);
-    }
-
-    function setNPColor(col) {
-      const cur = activePortalKey === 'definitions' ? `def_${DEFINITIONS_DATA[currentDefIdx].id}` : QA_DATA[currentQIdx].id;
-      if (notepadInstances[cur]) notepadInstances[cur].color = col;
-      setNPTool('pen');
-    }
-
-    /* GRAND CELEBRATION FINALE */
+    /* Celebration Finale */
     const finaleStage = document.getElementById('celebrationFinaleStage');
     const finaleCanvas = document.getElementById('finaleCanvas');
     const finaleCtx = finaleCanvas.getContext('2d', { alpha: true });
@@ -2102,14 +1606,10 @@
       }
     }
 
-    let celebrationStayInPortal = false;
-
-    function triggerGrandCelebration(stayInPortal = false) {
-      celebrationStayInPortal = stayInPortal;
+    function triggerGrandCelebration() {
       resizeFinaleCanvas();
       finaleStage.style.display = 'block';
       finaleRunning = true;
-      speakText("Awesome work Humayun!");
       petals = [];
       for (let i = 0; i < 75; i++) petals.push(new ConfettiPetal());
       setTimeout(() => document.getElementById('victoryScrollCard').classList.add('impact'), 300);
@@ -2127,297 +1627,18 @@
       finaleRunning = false;
       finaleStage.style.display = 'none';
       document.getElementById('victoryScrollCard').classList.remove('impact');
-      if (!celebrationStayInPortal) returnToHubBay();
+      returnToHubBay();
     }
 
     window.addEventListener("resize", () => {
       resizeFinaleCanvas();
       if (activePortalKey === 'definitions' || activePortalKey === 'qa') {
-        saveFullNotepads(); fitFullNotepads();
+        saveAllCanvases(); fitFullNotepads();
       }
     });
 
     window.addEventListener("beforeunload", saveAllCanvases);
     window.addEventListener("pagehide", saveAllCanvases);
-    document.addEventListener("visibilitychange", () => { if (document.hidden) saveAllCanvases(); });
   </script>
-<script>
-(function () {
-  const $ = id => document.getElementById(id);
-  const DPR = Math.min(window.devicePixelRatio || 1, 2);
-
-  /* ---------- toast ---------- */
-  function toast(msg) {
-    let t = $('fxToast'); if (!t) { t = document.createElement('div'); t.id = 'fxToast'; document.body.appendChild(t); }
-    t.textContent = msg; t.style.display = 'block'; clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 3200);
-  }
-
-  /* ---------- sound effects (synthesised, no files needed) ---------- */
-  let actx = null, noiseBuf = null, fxOn = true;
-  function audio() {
-    if (!actx) {
-      try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; }
-      const len = actx.sampleRate * 2; noiseBuf = actx.createBuffer(1, len, actx.sampleRate);
-      const d = noiseBuf.getChannelData(0); for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
-    }
-    if (actx.state === 'suspended') actx.resume();
-    return actx;
-  }
-  function startScratch(kind) {
-    if (!fxOn) return null; const a = audio(); if (!a) return null;
-    const src = a.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
-    const f = a.createBiquadFilter(); f.type = kind === 'eraser' ? 'lowpass' : 'bandpass';
-    f.frequency.value = kind === 'eraser' ? 600 : 2600; f.Q.value = 0.9;
-    const g = a.createGain(); g.gain.value = 0;
-    src.connect(f); f.connect(g); g.connect(a.destination); src.start();
-    return { src, f, g, kind };
-  }
-  function updateScratch(s, speed) {
-    if (!s) return; const t = actx.currentTime, er = s.kind === 'eraser';
-    s.g.gain.setTargetAtTime(Math.min(er ? 0.16 : 0.09, speed * 0.012), t, 0.02);
-    s.f.frequency.setTargetAtTime((er ? 500 : 2400) + Math.min(speed, 40) * (er ? 10 : 30), t, 0.03);
-  }
-  function stopScratch(s) { if (!s) return; try { s.g.gain.setTargetAtTime(0, actx.currentTime, 0.03); s.src.stop(actx.currentTime + 0.15); } catch (e) {} }
-  function playUndo() {
-    if (!fxOn) return; const a = audio(); if (!a) return;
-    const o = a.createOscillator(), g = a.createGain(), t = a.currentTime;
-    o.type = 'sine'; o.frequency.setValueAtTime(620, t); o.frequency.exponentialRampToValueAtTime(240, t + 0.14);
-    g.gain.setValueAtTime(0.18, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
-    o.connect(g); g.connect(a.destination); o.start(); o.stop(t + 0.18);
-  }
-  function playClear() { const s = startScratch('eraser'); if (!s) return; updateScratch(s, 14); setTimeout(() => stopScratch(s), 260); }
-  window.toggleFx = function () { fxOn = !fxOn; $('btnFx').textContent = fxOn ? '🔔' : '🔕'; toast(fxOn ? 'Writing sounds on' : 'Writing sounds off'); };
-
-  /* ---------- ink engine (replaces the old canvas code) ---------- */
-  window.pad = { tool: 'pen', color: '#065F46', width: 4 };
-  const dirty = new Set(); let saveTimer = null;
-  function scheduleSave(c) { dirty.add(c); clearTimeout(saveTimer); saveTimer = setTimeout(flushInk, 700); }
-  function flushInk() {
-    clearTimeout(saveTimer);
-    dirty.forEach(c => {
-      if (!c._key) return;
-      try {
-        if (!c._has) { localStorage.removeItem(c._key); delete activeInkCache[c._key]; return; }
-        const d = c.toDataURL('image/webp', 0.7); activeInkCache[c._key] = d; localStorage.setItem(c._key, d);
-      } catch (e) { toast('Storage is full. Writing is kept until you close the app.'); }
-    });
-    dirty.clear();
-  }
-  window.saveAllCanvases = window.saveFullNotepads = flushInk;
-  window.saveDualCanvas = function () {};
-
-  function initInk(c, key, kind) {
-    if (c._ink) return; c._ink = true; c._key = key; c._undo = []; c._has = false;
-    c.style.width = '100%'; c.style.height = '100%';
-    const ctx = c.getContext('2d'); c._ctx = ctx;
-
-    function load() {
-      const saved = activeInkCache[key] || localStorage.getItem(key); if (!saved) return;
-      activeInkCache[key] = saved; const img = new Image();
-      img.onload = () => { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, c.width, c.height); ctx.drawImage(img, 0, 0, c.width, c.height); ctx.restore(); c._has = true; };
-      img.src = saved;
-    }
-    function size() {
-      const r = c.getBoundingClientRect(), w = Math.round(r.width), h = Math.round(r.height);
-      if (w < 2 || h < 2) return false;
-      if (c._w === w && c._h === h) return true;
-      let old = null;
-      if (c._w) { old = document.createElement('canvas'); old.width = c.width; old.height = c.height; old.getContext('2d').drawImage(c, 0, 0); }
-      c.width = Math.round(w * DPR); c.height = Math.round(h * DPR); ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-      if (old) ctx.drawImage(old, 0, 0, w, h);
-      c._w = w; c._h = h;
-      if (!c._loaded) { c._loaded = true; load(); }
-      return true;
-    }
-    size();
-    if (window.ResizeObserver) new ResizeObserver(size).observe(c);
-
-    function snapshot() {
-      try { c._undo.push(ctx.getImageData(0, 0, c.width, c.height)); while (c._undo.length > (kind === 'pad' ? 6 : 10)) c._undo.shift(); } catch (e) {}
-    }
-    c._undoFn = () => {
-      const s = c._undo.pop(); if (!s) { toast('Nothing to undo'); return; }
-      if (s.width !== c.width || s.height !== c.height) return;
-      ctx.putImageData(s, 0, 0); c._has = true; scheduleSave(c); playUndo();
-    };
-    c._clearFn = () => {
-      snapshot(); ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, c.width, c.height); ctx.restore();
-      c._has = false; localStorage.removeItem(key); delete activeInkCache[key]; playClear();
-    };
-
-    let st = null;
-    c.addEventListener('pointerdown', e => {
-      if (palmRejectionMode === 'pen-only' && e.pointerType === 'touch') { e.preventDefault(); return; }
-      if (st || !size()) return;
-      e.preventDefault(); try { c.setPointerCapture(e.pointerId); } catch (_) {}
-      snapshot();
-      const r = c.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
-      const tool = kind === 'pad' ? pad.tool : 'pen';
-      st = { id: e.pointerId, x, y, mx: x, my: y, tool, t: performance.now(), sound: startScratch(tool) };
-    });
-    c.addEventListener('pointermove', e => {
-      if (!st || e.pointerId !== st.id) return; e.preventDefault();
-      const list = (e.getCoalescedEvents && e.getCoalescedEvents().length) ? e.getCoalescedEvents() : [e];
-      const r = c.getBoundingClientRect(); let dist = 0;
-      for (const ev of list) {
-        const x = ev.clientX - r.left, y = ev.clientY - r.top, pr = ev.pressure > 0 ? ev.pressure : 0.5;
-        const mx = (st.x + x) / 2, my = (st.y + y) / 2;
-        ctx.lineCap = ctx.lineJoin = 'round';
-        if (st.tool === 'eraser') { ctx.globalCompositeOperation = 'destination-out'; ctx.lineWidth = pad.width * 6; }
-        else { ctx.globalCompositeOperation = 'source-over'; ctx.strokeStyle = kind === 'pad' ? pad.color : '#065F46'; ctx.lineWidth = (kind === 'pad' ? pad.width : 3.8) * (pr * 1.4 + 0.4); }
-        ctx.beginPath(); ctx.moveTo(st.mx, st.my); ctx.quadraticCurveTo(st.x, st.y, mx, my); ctx.stroke();
-        dist += Math.hypot(x - st.x, y - st.y); st.x = x; st.y = y; st.mx = mx; st.my = my;
-      }
-      ctx.globalCompositeOperation = 'source-over';
-      const now = performance.now(); updateScratch(st.sound, dist / Math.max(1, now - st.t) * 10); st.t = now;
-      if (st.tool !== 'eraser' || c._has) c._has = true;
-    });
-    const end = e => {
-      if (!st || e.pointerId !== st.id) return;
-      stopScratch(st.sound); st = null; try { c.releasePointerCapture(e.pointerId); } catch (_) {}
-      scheduleSave(c);
-    };
-    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(n => c.addEventListener(n, end));
-    c.addEventListener('contextmenu', e => e.preventDefault());
-  }
-
-  window.setupDualCanvases = function () {
-    document.querySelectorAll('.dual-canvas').forEach(c => {
-      const id = c.getAttribute('data-canvas-id'); initInk(c, getStorageKey(id), 'inline');
-      const box = c.closest('.inline-blank-container'), clr = box && box.querySelector('.inline-clear-btn');
-      if (clr && !box.querySelector('.inline-undo-btn')) {
-        const b = document.createElement('button'); b.type = 'button'; b.className = 'inline-undo-btn'; b.title = 'Undo'; b.textContent = '↩️';
-        b.onclick = () => c._undoFn(); box.insertBefore(b, clr);
-      }
-    });
-  };
-  window.fitFullNotepads = window.setupFullNotepads = function () {
-    document.querySelectorAll('.full-notepad-canvas').forEach(c => initInk(c, getStorageKey('np_' + c.getAttribute('data-np-id')), 'pad'));
-  };
-  window.clearDualCanvas = id => { const c = document.querySelector(`.dual-canvas[data-canvas-id="${id}"]`); if (c) c._clearFn(); };
-  window.clearNPCanvas = () => { const c = document.querySelector('.full-notepad-canvas'); if (c) c._clearFn(); };
-  window.undoNP = () => { const c = document.querySelector('.full-notepad-canvas'); if (c) c._undoFn(); };
-  window.setNPTool = t => { pad.tool = t; const a = $('btnNPPen'), b = $('btnNPEraser'); if (a) a.classList.toggle('active', t === 'pen'); if (b) b.classList.toggle('active', t === 'eraser'); };
-  window.setNPWidth = w => { pad.width = w; [2, 4, 7].forEach(n => { const b = $('npThick' + n); if (b) b.classList.toggle('active', n === w); }); };
-  window.setNPColor = col => { pad.color = col; setNPTool('pen'); };
-  window.syncNotepadToolbar = () => { setNPTool(pad.tool); setNPWidth(pad.width); };
-
-  /* ---------- speech: tap any word ---------- */
-  let voice = null;
-  function pickVoice() {
-    if (!('speechSynthesis' in window)) return; const vs = speechSynthesis.getVoices();
-    voice = vs.find(v => /en[-_]IN/i.test(v.lang)) || vs.find(v => /en[-_]GB/i.test(v.lang)) || vs.find(v => /^en/i.test(v.lang)) || null;
-  }
-  if ('speechSynthesis' in window) { speechSynthesis.onvoiceschanged = pickVoice; pickVoice(); }
-  window.speakText = function (txt, rate = 0.85, pitch = 1) {
-    if (!('speechSynthesis' in window)) return; speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(txt);
-    if (voice) { u.voice = voice; u.lang = voice.lang; } else u.lang = 'en-IN';
-    u.rate = rate; u.pitch = pitch; speechSynthesis.speak(u);
-  };
-  document.addEventListener('click', e => {
-    const w = e.target.closest && e.target.closest('.w'); if (!w) return;
-    e.stopPropagation(); e.preventDefault();
-    speakText(w.dataset.w, 0.7, 1); w.classList.add('speaking'); setTimeout(() => w.classList.remove('speaking'), 700);
-  }, true);
-  window.readAll = btn => { const box = btn.closest('.notepad-prompt-box'); const s = box && box.querySelector('.speakable'); if (s) speakText(s.textContent.replace(/\s+/g, ' '), 0.8, 1); };
-
-  const SYL = { anything: 'an·y·thing', definition: 'def·i·ni·tion', examples: 'ex·am·ples', evaporation: 'e·vap·o·ra·tion', condensation: 'con·den·sa·tion', process: 'pro·cess', changes: 'chang·es', changing: 'chang·ing', becoming: 'be·com·ing', becomes: 'be·comes', drying: 'dry·ing', freezing: 'freez·ing', freezer: 'freez·er', cooling: 'cool·ing', liquid: 'liq·uid', solid: 'sol·id', vapour: 'va·pour', matter: 'mat·ter', because: 'be·cause', outside: 'out·side', continuously: 'con·tin·u·ous·ly', heated: 'heat·ed', boiling: 'boil·ing', forming: 'form·ing', rising: 'ris·ing', bottle: 'bot·tle', droplets: 'drop·lets', water: 'wa·ter', volume: 'vol·ume', container: 'con·tain·er', oxygen: 'ox·y·gen', starts: 'starts' };
-  const SKIP = 'script,style,canvas,button,.match-btn,.w,.state-chip,.mcq-opt-btn,.inline-blank-container,.circular-step-card,.rail-btn';
-  function wrapWords(root) {
-    if (!root) return;
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: n => (!n.nodeValue.trim() || !n.parentElement || n.parentElement.closest(SKIP)) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
-    const nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
-    nodes.forEach(n => {
-      const syl = appMode === 'learn' && n.parentElement.closest('.learn-ans-reveal,.self-grading-reveal');
-      const frag = document.createDocumentFragment();
-      n.nodeValue.split(/(\s+)/).forEach(tok => {
-        if (!tok) return;
-        if (/^\s+$/.test(tok)) { frag.appendChild(document.createTextNode(tok)); return; }
-        const m = tok.match(/^([^\p{L}\p{N}]*)([\p{L}\p{N}][\p{L}\p{N}'’-]*)(.*)$/u);
-        if (!m) { frag.appendChild(document.createTextNode(tok)); return; }
-        const pre = m[1], word = m[2], post = m[3];
-        if (pre) frag.appendChild(document.createTextNode(pre));
-        const sp = document.createElement('span'); sp.className = 'w'; sp.dataset.w = word;
-        const key = word.toLowerCase(), parts = syl && SYL[key] && SYL[key].indexOf('·') > -1 ? SYL[key].split('·') : null;
-        if (parts) {
-          if (word[0] !== word[0].toLowerCase()) parts[0] = parts[0][0].toUpperCase() + parts[0].slice(1);
-          parts.forEach(s => { const x = document.createElement('span'); x.className = 'syl'; x.textContent = s; sp.appendChild(x); });
-        } else sp.textContent = word;
-        frag.appendChild(sp);
-        if (post) frag.appendChild(document.createTextNode(post));
-      });
-      n.parentNode.replaceChild(frag, n);
-    });
-  }
-
-  /* ---------- navigation: portal pills + section rail ---------- */
-  const content = $('portalExerciseContent');
-  const body = document.createElement('div'); body.className = 'pane-body';
-  const rail = document.createElement('div'); rail.id = 'secRail'; rail.className = 'sec-rail';
-  content.parentNode.insertBefore(body, content); body.appendChild(rail); body.appendChild(content);
-
-  const pills = document.createElement('div'); pills.id = 'portalPills'; pills.className = 'portal-pills';
-  document.querySelector('.brand-group').appendChild(pills);
-  function buildPills() {
-    const items = [['definitions', '📖'], ['qa', '🔥'], ['workbook', '🧪']];
-    pills.style.display = activePortalKey ? 'flex' : 'none';
-    pills.innerHTML = items.map(([k, i]) => `<button type="button" class="portal-pill ${k === activePortalKey ? 'active' : ''}" onclick="openPortal('${k}')">${i} ${items.indexOf(items.find(x => x[0] === k)) + 1}</button>`).join('');
-  }
-  const ICONS = { definitions: ['🧱', '💧', '☁️', '🧊'], qa: ['🔥', '♨️'] };
-  function buildRail(k) {
-    const data = k === 'definitions' ? DEFINITIONS_DATA : QA_DATA, idx = k === 'definitions' ? currentDefIdx : currentQIdx;
-    const fn = k === 'definitions' ? 'switchDefTab' : 'switchQTab';
-    rail.innerHTML = `<div class="rail-title">${k === 'definitions' ? 'Words' : 'Questions'}</div>` +
-      data.map((d, i) => `<button type="button" class="rail-btn ${i === idx ? 'active' : ''}" onclick="${fn}(${i})"><span class="rail-ico">${ICONS[k][i]}</span><span>${d.tab}</span></button>`).join('') +
-      `<div class="rail-nav"><button type="button" class="rail-arrow" onclick="${fn}(${idx - 1})" ${idx === 0 ? 'disabled' : ''}>◀</button><span class="rail-count">${idx + 1}/${data.length}</span><button type="button" class="rail-arrow" onclick="${fn}(${idx + 1})" ${idx === data.length - 1 ? 'disabled' : ''}>▶</button></div>`;
-  }
-  function decorate(k) {
-    const rk = (k === 'definitions' || k === 'qa');
-    $('portalWorkspacePane').classList.toggle('has-rail', rk);
-    buildPills();
-    if (rk) {
-      buildRail(k);
-      const pb = content.querySelector('.notepad-prompt-box');
-      if (pb && !pb.querySelector('.readall-btn')) { const b = document.createElement('button'); b.type = 'button'; b.className = 'readall-btn'; b.title = 'Read all'; b.textContent = '🔊'; b.setAttribute('onclick', 'readAll(this)'); pb.appendChild(b); }
-      const tg = content.querySelector('.notepad-toolbar .tool-group');
-      if (tg && !tg.querySelector('.undo-np')) { const b = document.createElement('button'); b.type = 'button'; b.className = 'pad-btn undo-np'; b.title = 'Undo'; b.textContent = '↩️'; b.setAttribute('onclick', 'undoNP()'); tg.appendChild(b); }
-      content.querySelectorAll('.self-grading-reveal b').forEach(b => { if (appMode === 'learn') b.textContent = '✍️ Copy this answer:'; });
-      syncNotepadToolbar();
-    }
-    wrapWords(content);
-  }
-  const _open = window.openPortal;
-  window.openPortal = function (k, skip) { _open(k, skip); decorate(k); };
-  const _ret = window.returnToHubBay;
-  window.returnToHubBay = function () { _ret(); $('portalWorkspacePane').classList.remove('has-rail'); buildPills(); };
-  window.hideFloatingDock = function () {};
-
-  /* practice-mode MCQ: no right/wrong marking */
-  const _chk = window.checkMcq;
-  window.checkMcq = function (btn, ok, val) {
-    if (appMode === 'learn') {
-      speakText(val); btn.parentElement.querySelectorAll('.mcq-opt-btn').forEach(b => b.classList.remove('wrong'));
-      btn.classList.add('tapped'); setTimeout(() => btn.classList.remove('tapped'), 400);
-    } else _chk(btn, ok, val);
-  };
-
-  /* ---------- Samsung helpers ---------- */
-  const acts = document.querySelector('.header-actions');
-  const fx = document.createElement('button'); fx.type = 'button'; fx.className = 'action-btn'; fx.id = 'btnFx'; fx.title = 'Writing sounds'; fx.textContent = '🔔'; fx.setAttribute('onclick', 'toggleFx()');
-  acts.insertBefore(fx, acts.firstChild);
-  const _fs = window.toggleFullscreen;
-  window.toggleFullscreen = function () { _fs(); setTimeout(() => { try { screen.orientation.lock('landscape').catch(() => {}); } catch (e) {} }, 400); };
-  let wl = null;
-  async function wake() { try { if ('wakeLock' in navigator && !wl) { wl = await navigator.wakeLock.request('screen'); wl.addEventListener('release', () => wl = null); } } catch (e) {} }
-  document.addEventListener('pointerdown', wake, { passive: true });
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) wake(); });
-  window.addEventListener('pagehide', flushInk);
-
-  wrapWords(document.querySelector('.hub-hero-header'));
-  buildPills();
-})();
-</script>
-
 </body>
 </html>
