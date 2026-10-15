@@ -16,7 +16,7 @@
     <link rel="preload" as="image" href="assets/celestia.png"/>
 
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Quicksand:wght@500;700;800&family=Fredoka:wght@600;700;800&family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Quicksand:wght@500;700;800&family=Fredoka:wght@600;700;800&family=Kalam:wght@700&family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -26,6 +26,7 @@
             --celestia: #F59E0B;
             --font-main: 'Quicksand', sans-serif;
             --font-display: 'Fredoka', cursive, sans-serif;
+            --font-hand: 'Kalam', cursive, sans-serif;
             --active-pen-color: #1e1b4b;
         }
 
@@ -70,6 +71,7 @@
 
         .font-fun { font-family: 'Comic Neue', cursive; }
         .font-display { font-family: var(--font-display); }
+        .font-hand { font-family: var(--font-hand); }
 
         /* Graph Box Grid Paper Pattern */
         .graph-paper {
@@ -80,25 +82,85 @@
             background-size: 24px 24px;
         }
 
-        /* Authentic Notebook Protective Sheet Cover (Glossy Film Over-layer) */
+        /* Authentic Classwork Notebook Sheet Cover with Spine, Plastic Film Sheen & 3D Lift-and-Flip */
         .binder-cover {
-            transition: transform 0.65s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.4s ease;
-            transform-origin: left center;
+            transition: transform 0.75s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.45s ease;
+            transform-origin: 0% 50%; /* Pivots cleanly from the left spine edge */
             transform-style: preserve-3d;
-            background-image: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.15) 100%);
-            box-shadow: inset 0 0 40px rgba(255,255,255,0.2), 0 25px 50px -12px rgba(30, 27, 75, 0.5);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            background-image: linear-gradient(135deg, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0.06) 45%, rgba(255,255,255,0.18) 50%, rgba(0,0,0,0.22) 100%);
+            box-shadow: inset 0 0 50px rgba(255,255,255,0.28), 0 30px 60px -12px rgba(30, 27, 75, 0.65);
         }
+        /* Diagonal Plastic Sheet Reflection Highlight */
+        .binder-cover::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.22) 45%, rgba(255,255,255,0.04) 52%, transparent 65%);
+            pointer-events: none;
+            z-index: 4;
+        }
+        /* Black Cloth Spine Tape */
         .binder-cover::before {
             content: '';
             position: absolute;
             left: 0; top: 0; bottom: 0;
-            width: 28px;
-            background: linear-gradient(90deg, rgba(0,0,0,0.4), rgba(0,0,0,0.1) 60%, transparent);
-            border-right: 2px solid rgba(255,255,255,0.25);
+            width: 34px;
+            background: linear-gradient(90deg, #0f172a 0%, #1f2937 55%, #374151 85%, #111827 100%);
+            border-right: 3px solid rgba(255,255,255,0.35);
+            box-shadow: inset -3px 0 6px rgba(0,0,0,0.6), 3px 0 10px rgba(0,0,0,0.35);
+            z-index: 5;
         }
+        /* Metallic Spiral Rings along spine */
+        .notebook-spine-rings {
+            position: absolute;
+            left: 27px;
+            top: 16px;
+            bottom: 16px;
+            width: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .spiral-ring {
+            width: 18px;
+            height: 10px;
+            border-radius: 6px;
+            background: linear-gradient(135deg, #ffffff 0%, #d1d5db 45%, #6b7280 80%, #1f2937 100%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.65), inset 0 1px 2px rgba(255,255,255,0.9);
+        }
+
+        /* 3D Exercise Book Lift-and-Flip Motion */
         .binder-open {
-            transform: perspective(1400px) rotateY(-112deg);
+            transform: perspective(1400px) rotateY(-118deg) rotateX(8deg) translateZ(20px);
             opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Classic Composition Notebook Label Box with Blue Ruled Lines & Double Red Margin */
+        .composition-label-box {
+            background-color: #fffef8;
+            background-image: repeating-linear-gradient(
+                to bottom,
+                transparent 0px,
+                transparent 25px,
+                rgba(59, 130, 246, 0.28) 25px,
+                rgba(59, 130, 246, 0.28) 26px
+            );
+            position: relative;
+        }
+        .composition-label-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 26px;
+            width: 4px;
+            border-left: 1.5px solid rgba(239, 68, 68, 0.65);
+            border-right: 1.5px solid rgba(239, 68, 68, 0.65);
             pointer-events: none;
         }
 
@@ -117,7 +179,7 @@
             100% { opacity: 1; transform: none; }
         }
 
-        /* Castle Gateway Cards & Star-Map Progress */
+        /* Castle Gateway Cards */
         .gateway-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(14px);
@@ -313,18 +375,20 @@
         /* ===== TABLET SCALE (Galaxy S11) ===== */
         @media (min-width: 900px) {
             html { font-size: 18px; }
-            main { max-width: 1360px !important; }
-            input[id^="ans_"] { font-size: 1.05rem !important; width: 9.5rem !important; }
-            #activeCardContainer:not(.hidden) { display: flex; justify-content: center; }
-            #activeCardContainer > div { width: 100%; max-width: 1320px; min-width: 0; box-sizing: border-box; }
+            main { max-width: 1180px !important; }
+            input[id^="ans_"] { font-size: 1.05rem !important; width: 9rem !important; }
         }
-        .workspace-h { height: clamp(460px, 68vh, 860px); }
-        button[onclick^="changeQuestion"] { min-height: 42px; min-width: 84px; padding: 6px 14px !important; font-size: 0.92rem !important; }
+        .workspace-h { height: clamp(440px, 74vh, 900px); }
+        @media (min-width: 900px) {
+            #activeCardContainer:not(.hidden) { display: flex; justify-content: center; }
+            #activeCardContainer > div { width: min(100%, 1100px); min-width: 0; max-width: 100%; box-sizing: border-box; }
+        }
+        button[onclick^="changeQuestion"] { min-height: 44px; min-width: 64px; padding: 8px 14px !important; font-size: 0.95rem !important; }
         button[onclick^="changeQuestion"]:disabled { opacity: 0.4 !important; }
         .ink-toolbar { flex-wrap: wrap; gap: 8px; }
         .ink-toolbar > div { flex-wrap: wrap; }
-        .ink-toolbar > div:nth-child(2) button { min-width: 42px; min-height: 42px; font-size: 1.2rem; display: inline-flex; align-items: center; justify-content: center; }
-        .ink-toolbar button { min-width: 42px; min-height: 42px; font-size: 1.15rem; }
+        .ink-toolbar > div:nth-child(2) button { min-width: 44px; min-height: 44px; font-size: 1.3rem; display: inline-flex; align-items: center; justify-content: center; }
+        .ink-toolbar button { min-width: 44px; min-height: 44px; font-size: 1.15rem; }
         .ink-toolbar button.p-1\.5 { display: inline-flex; align-items: center; justify-content: center; }
 
         /* ===== SPACE: floating planets, orbit ring, 3D depth ===== */
@@ -365,7 +429,7 @@
             width: clamp(54px, 9vmin, 92px);
             height: auto;
             transform: translate(-50%, -50%);
-            filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45)) drop-shadow(0 0 12px var(--active-pen-color));
+            filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45)) drop-shadow(0 0 14px var(--active-pen-color));
             animation: counterSpin var(--dur) linear infinite;
             will-change: transform, filter;
             transition: filter 0.3s ease;
@@ -527,7 +591,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="relative z-20 bg-slate-900 text-slate-400 py-2.5 text-center text-xs border-t border-white/10">
+    <footer class="relative z-20 bg-slate-900 text-slate-400 py-2.5 text-center text-xs border-t border-white/10 shrink-0">
         Exercise 5.4 • Grade 5 Mathematics • Royal Academy
     </footer>
 
@@ -680,7 +744,7 @@
         }
         if (!InkSound.enabled) document.getElementById('inkSoundBtn').textContent = '🔇';
 
-        /* ===== SPACE SCENE: textured planets with pony companions orbiting them ===== */
+        /* ===== SPACE SCENE ===== */
         const SPACE_SCENE = [
             { kind: 'gas',    pos: 'left:1.5%;top:9%',    size: 200, ponies: [{ img: 'assets/rainbow.png', r: 0.74, dur: 17 }, { img: 'assets/pinkie.png', r: 0.98, dur: 27 }] },
             { kind: 'desert', pos: 'right:3%;bottom:10%', size: 160, ponies: [{ img: 'assets/applejack.png', r: 0.78, dur: 14 }, { img: 'assets/celestia.png', r: 1.02, dur: 23 }] },
@@ -959,20 +1023,34 @@
                             </div>
                         </div>
 
-                        <!-- Full Hardcover Binder Cover with Protective Sheet Gloss & Companion Pony PNG -->
+                        <!-- Authentic Classwork Notebook Cover with Spine, Spiral Rings, and Ruled Composition Label -->
                         <div id="binderCover_${q.id}" class="binder-cover ${isBinderOpen ? 'binder-open' : ''} absolute inset-0 bg-gradient-to-br ${realm.themeColor} text-white p-8 flex flex-col justify-between shadow-2xl z-30 cursor-pointer" onclick="openBinder('${q.id}')">
-                            <div class="flex justify-between items-start">
-                                <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase">Exercise 5.4</span>
+                            <div class="notebook-spine-rings">
+                                <div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div>
+                            </div>
+
+                            <div class="flex justify-between items-start ml-8 relative z-10">
+                                <span class="bg-white/20 px-3.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase">Exercise 5.4</span>
                                 <span class="text-2xl">📖</span>
                             </div>
-                            <div class="text-center flex flex-col items-center gap-3 my-auto relative">
-                                <div class="orbit-ring"></div>
-                                <img src="${realm.avatar}" class="w-28 h-28 object-contain filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)] animate-bounce" alt="${realm.pony}" onerror="handleImageFallback(this)"/>
-                                <h3 class="text-xl font-bold font-display">${realm.pony}</h3>
-                                <p class="text-sm text-purple-200">Tap anywhere on cover to open working slate</p>
-                                <span class="mt-2 bg-white text-indigo-900 font-bold px-4 py-2 rounded-xl shadow-lg text-sm uppercase tracking-widest">Open Binder ⚡</span>
+
+                            <!-- Classic Composition Notebook Label Box -->
+                            <div class="mx-auto my-auto composition-label-box text-slate-900 rounded-2xl p-4 pl-9 w-72 shadow-2xl border-4 border-indigo-950">
+                                <div class="absolute inset-0 border-2 border-red-400/80 rounded-xl pointer-events-none m-1"></div>
+                                <div class="flex flex-col gap-1 text-left relative z-10">
+                                    <div class="text-[10px] uppercase font-extrabold text-indigo-900 tracking-widest border-b-2 border-blue-400 pb-0.5">Royal Academy Classwork</div>
+                                    <div class="font-hand text-lg text-blue-950 font-bold leading-tight pt-0.5">Zaina • Grade 5</div>
+                                    <div class="font-hand text-base text-rose-700 font-bold leading-tight">Exercise 5.4 — Decimals</div>
+                                    <div class="font-hand text-xs text-indigo-700 font-bold bg-amber-100/90 border border-amber-300 rounded px-2 py-0.5 mt-1 inline-block w-fit">${realm.pony}</div>
+                                </div>
                             </div>
-                            <div class="text-center text-xs text-purple-300">
+
+                            <div class="text-center flex flex-col items-center gap-2 ml-8 relative z-10">
+                                <img src="${realm.avatar}" class="w-20 h-20 object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)] animate-bounce" alt="${realm.pony}" onerror="handleImageFallback(this)"/>
+                                <span class="bg-white text-indigo-900 font-bold px-4 py-2 rounded-xl shadow-lg text-xs uppercase tracking-widest">Tap to Open Binder ⚡</span>
+                            </div>
+
+                            <div class="text-center text-xs text-purple-300 ml-8 relative z-10">
                                 ${q.label} • Protected & Saved Locally
                             </div>
                         </div>
@@ -1034,7 +1112,6 @@
             };
 
             const drawSegment = (x1, y1, x2, y2, pressure) => {
-                const tool = canvasStates[id].tool;
                 ctx.save();
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
@@ -1109,12 +1186,13 @@
                 if (e.pointerType === 'pen') lastPenSeen = Date.now();
             });
 
+            // RIGID S-PEN PALM REJECTION FILTER
             canvas.addEventListener('pointerdown', (e) => {
                 if (e.pointerType === 'pen') {
                     lastPenSeen = Date.now();
                     if (activePointerId !== null && activeType === 'touch') endStroke();
                 } else {
-                    const palm = Math.max(e.width || 0, e.height || 0) > 30;
+                    const palm = Math.max(e.width || 0, e.height || 0) > 26;
                     const penBusy = Date.now() - lastPenSeen < 1200;
                     if (palm || penBusy || activePointerId !== null) return;
                 }
@@ -1159,6 +1237,7 @@
                     return;
                 }
 
+                // 240Hz Coalesced S-Pen smooth input handling
                 const events = (e.getCoalescedEvents && e.getCoalescedEvents().length) ? e.getCoalescedEvents() : [e];
                 let total = 0;
                 for (const ev of events) {
@@ -1435,7 +1514,7 @@
             mCanvas.width = window.innerWidth;
             mCanvas.height = window.innerHeight;
             stars = [];
-            for (let i = 0; i < 160; i++) {
+            for (let i = 0; i < 150; i++) {
                 stars.push({
                     x: Math.random() * mCanvas.width,
                     y: Math.random() * mCanvas.height,
@@ -1470,7 +1549,6 @@
             }, 40);
         }
 
-        // Override page/question switches to trigger warp jump
         const _switchPageSmoothly = switchPageSmoothly;
         switchPageSmoothly = function(qId, delta) {
             triggerWarpJump();
@@ -1519,7 +1597,6 @@
                 mCtx.fillStyle = s.color;
                 mCtx.beginPath();
                 if (warpFactor > 1.2) {
-                    // Warp streak effect
                     mCtx.ellipse(s.x, s.y, s.radius, s.radius * warpFactor * 3, 0, 0, Math.PI * 2);
                 } else {
                     mCtx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
