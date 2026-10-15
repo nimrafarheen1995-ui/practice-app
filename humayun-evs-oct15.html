@@ -13,12 +13,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800&family=Kalam:wght@700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
 
   <!-- Preload Asset Images -->
-  <link rel="preload" as="image" href="assets/matter-lab-bg.webp">
+  <link rel="preload" as="image" href="assets/matter-lab-bg_2.webp">
   <link rel="preload" as="image" href="assets/humayun-avatar.webp">
   <link rel="preload" as="image" href="assets/lab-scientist-humayun.webp">
   <link rel="preload" as="image" href="assets/ice-cube-mascot.webp">
   <link rel="preload" as="image" href="assets/water-drop-mascot.webp">
   <link rel="preload" as="image" href="assets/steam-cloud-mascot.webp">
+  <link rel="preload" as="image" href="assets/particle-solid-icon.webp">
+  <link rel="preload" as="image" href="assets/particle-liquid-icon.webp">
+  <link rel="preload" as="image" href="assets/particle-gas-icon.webp">
 
   <style>
     :root {
@@ -55,7 +58,7 @@
     }
 
     body {
-      background: url('assets/matter-lab-bg.webp') no-repeat center center fixed;
+      background: url('assets/matter-lab-bg_2.webp') no-repeat center center fixed;
       background-size: cover;
       color: var(--text);
       display: flex;
@@ -208,7 +211,6 @@
     }
     .action-btn:active { transform: translateY(1px); }
 
-    /* DOCKED LEFT ICON PILL SELECTOR FOR SECTIONS */
     .portal-pills-row {
       display: flex;
       gap: 6px;
@@ -519,7 +521,7 @@
     .label-kicker { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #064E3B; border-bottom: 2px solid #10B981; padding-bottom: 2px; }
     .label-name { font-family: var(--font-hand) !important; font-size: 1.1rem; font-weight: 700; color: #022C22; }
     .label-lesson { font-family: var(--font-hand) !important; font-size: 0.95rem; font-weight: 700; color: #BE123C; }
-    .label-tap-hint { text-align: center; font-weight: 700; font-size: 0.82rem; background: rgba(255,255,255,0.85); color: #064E3B; padding: 8px 14px; border-radius: 12px; z-index: 6; }
+    .label-tap-hint { text-align: center; font-weight: 700; font-size: 0.82rem; background: rgba(255,255,255,0.85); color: #065F46; padding: 8px 14px; border-radius: 12px; z-index: 6; }
 
     /* INLINE BLANK CANVAS */
     .inline-blank-container {
@@ -607,6 +609,7 @@
     }
     .notepad-prompt-mascot { width: 44px; height: 44px; object-fit: contain; flex-shrink: 0; }
     .notepad-prompt-box b { color: var(--primary-dark); }
+    body.test-mode .notepad-prompt-box .learn-ans-reveal { display: none !important; }
 
     .notepad-toolbar {
       display: flex;
@@ -741,16 +744,39 @@
     .state-row-header { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 1rem; font-weight: 900; color: var(--primary-dark); }
     .state-row-img { width: auto !important; height: auto !important; max-width: 85px; max-height: 85px; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15)); }
 
-    .match-row-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #F8FAFC;
-      border: 2px solid #CBD5E1;
-      border-radius: 12px;
-      padding: 8px 12px;
-      gap: 10px;
+    .answer-tag {
+      background: #D1FAE5; color: #065F46; font-weight: 800; padding: 2px 8px;
+      border-radius: 6px; border: 1px solid #6EE7B7; display: inline-block; margin: 0 4px;
     }
+    body.test-mode .answer-tag { display: none !important; }
+
+    .match-columns-learn { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; width: 100%; }
+    .match-btn {
+      background: #F8FAFC; border: 2px solid #CBD5E1; border-radius: 12px;
+      padding: 10px 14px; font-size: 0.95rem; font-weight: 800; cursor: pointer; text-align: left;
+    }
+    .match-btn.selected { background: #FEF08A; border-color: #EAB308; box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.35); }
+    .match-btn.paired { background: #D1FAE5; border-color: var(--primary); color: #065F46; pointer-events: none; }
+    .match-btn img { width: auto !important; height: 30px; object-fit: contain; vertical-align: middle; display: inline; }
+
+    /* RESTORED 3-COLUMN MATCHING LAYOUT FOR WRITE MODE */
+    .match-three-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+    .match-row-3col {
+      display: grid;
+      grid-template-columns: 1fr 1fr 280px;
+      gap: 12px;
+      align-items: center;
+      background: #F8FAFC;
+      border: 2px solid #E2E8F0;
+      border-radius: 14px;
+      padding: 10px 14px;
+    }
+
     .mcq-item {
       background: #F8FAFC; border: 2px solid #E2E8F0; border-radius: 14px;
       padding: 10px 14px; display: flex; flex-direction: column; gap: 6px; margin-bottom: 6px;
@@ -769,8 +795,14 @@
       background: #F8FAFC; border: 2px solid #E2E8F0; border-radius: 14px;
       padding: 8px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center;
     }
-    .pic-icon { font-size: 2.2rem; line-height: 1; }
+    .pic-ico-img { width: 44px; height: 44px; object-fit: contain; }
     .pic-name { font-size: 0.95rem; font-weight: 800; }
+    .chip-row { display: flex; gap: 6px; }
+    .state-chip {
+      background: #FFF; border: 2px solid #CBD5E1; padding: 3px 8px;
+      border-radius: 8px; font-size: 0.8rem; font-weight: 800; cursor: pointer;
+    }
+    .state-chip.active-chip { background: var(--primary); border-color: var(--primary); color: #FFF; }
 
     .cmap-wrapper { display: flex; flex-direction: column; align-items: center; width: 100%; gap: 10px; padding-bottom: 10px; }
     .cmap-root-card {
@@ -789,8 +821,9 @@
     .cmap-type-badge {
       background: #FED7AA; border: 2.5px solid #F97316; border-radius: 12px;
       padding: 8px 14px; font-size: 1.1rem; font-weight: 900; color: #9A3412;
-      text-align: center; width: 100%; letter-spacing: 1px;
+      text-align: center; width: 100%; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 8px;
     }
+    .cmap-type-badge img { width: 28px; height: 28px; object-fit: contain; }
     .cmap-down-arrow-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; color: #DC2626; font-weight: 900; font-size: 0.9rem; }
     .cmap-down-arrow-wrap span { font-size: 1.3rem; line-height: 1; }
     .cmap-ex-row { display: flex; flex-direction: column; width: 100%; gap: 2px; align-items: center; }
@@ -815,27 +848,6 @@
       position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
       background: #065F46; color: #fff; padding: 10px 18px; border-radius: 14px; font-weight: 800; z-index: 200000; display: none;
     }
-
-    /* 3D FLOATING PLANETS SYSTEM */
-    .space-system {
-      position: fixed;
-      z-index: 2;
-      pointer-events: none;
-      animation: floatPlanet 18s ease-in-out infinite;
-      will-change: transform;
-    }
-    .space-system .planet-svg {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      overflow: visible;
-      filter: drop-shadow(0 0 16px rgba(255, 255, 255, 0.2));
-    }
-    @keyframes floatPlanet {
-      0%, 100% { transform: translate3d(0, 0, 0); }
-      50% { transform: translate3d(14px, -18px, 0); }
-    }
   </style>
 </head>
 <body>
@@ -849,20 +861,19 @@
   <div id="screenDimOverlay"></div>
   <div id="fxToast"></div>
 
-  <div class="space-system" style="left:2%; top:12%; width:110px; height:110px;">
-    <svg class="planet-svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="url(#p1g)"/><radialGradient id="p1g" cx="35%" cy="30%"><stop offset="0%" stop-color="#34D399"/><stop offset="100%" stop-color="#065F46"/></radialGradient></svg>
-  </div>
-  <div class="space-system" style="right:3%; bottom:8%; width:130px; height:130px;">
-    <svg class="planet-svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="url(#p2g)"/><radialGradient id="p2g" cx="35%" cy="30%"><stop offset="0%" stop-color="#38BDF8"/><stop offset="100%" stop-color="#0369A1"/></radialGradient></svg>
-  </div>
-
   <div class="app-container">
-    <!-- TOP HUD DOCK WITH FULLY WORKING BUTTONS -->
+    <!-- TOP HUD DOCK WITH PRACTICE & WRITE MODE SWITCH -->
     <nav class="floating-hud-dock" id="floatingHudDock">
       <div class="brand-group">
         <button type="button" class="action-btn" onclick="playClickSound(); goToHub()" title="Hub">🪷</button>
         <button type="button" class="action-btn" id="btnReturnPortals" onclick="playClickSound(); returnToHubBay()" style="display:none;" title="Portals">🏰</button>
         <div class="brand-title">🔬 Discovery Realm <span class="grade-badge">Grade 3 EVS</span></div>
+      </div>
+
+      <!-- PRACTICE VS WRITE MODE SWITCH -->
+      <div class="mode-switch-wrap">
+        <button class="mode-btn active-learn" id="btnModeLearn" onclick="playClickSound(); setAppMode('learn')">📘 Practice</button>
+        <button class="mode-btn" id="btnModeTest" onclick="playClickSound(); setAppMode('test')">✍️ Write</button>
       </div>
 
       <!-- DOCKED LEFT ICON PILL SELECTOR FOR SECTIONS -->
@@ -885,19 +896,19 @@
 
       <div class="portals-normal-grid">
         <div class="portal-3d-card" onclick="playClickSound(); openPortal('definitions')">
-          <div class="portal-icon-wrap">📖</div>
+          <div class="portal-icon-wrap"><img src="assets/particle-solid-icon.webp" style="width:44px; height:44px; object-fit:contain;" alt="" onerror="handleImgFallback(this)"/></div>
           <div class="portal-title">1. Definitions &amp; Examples</div>
           <div class="portal-desc">Matter, Evaporation, Condensation &amp; Freezing</div>
         </div>
 
         <div class="portal-3d-card" onclick="playClickSound(); openPortal('qa')">
-          <div class="portal-icon-wrap">🔥</div>
+          <div class="portal-icon-wrap"><img src="assets/particle-liquid-icon.webp" style="width:44px; height:44px; object-fit:contain;" alt="" onerror="handleImgFallback(this)"/></div>
           <div class="portal-title">2. Short &amp; Detailed Q&amp;A</div>
           <div class="portal-desc">Melting causes &amp; Evaporation process</div>
         </div>
 
         <div class="portal-3d-card" onclick="playClickSound(); openPortal('workbook')">
-          <div class="portal-icon-wrap">🧪</div>
+          <div class="portal-icon-wrap"><img src="assets/particle-gas-icon.webp" style="width:44px; height:44px; object-fit:contain;" alt="" onerror="handleImgFallback(this)"/></div>
           <div class="portal-title">3. Lab Workbook Exercises</div>
           <div class="portal-desc">Differences Table, Match, MCQs &amp; Concept Map</div>
         </div>
@@ -930,6 +941,7 @@
   </div>
 
   <script>
+    let appMode = "learn";
     let activePortalKey = null;
     let currentDefIdx = 0;
     let currentQIdx = 0;
@@ -941,7 +953,6 @@
     const binderOpenedMap = {};
     const DPR = Math.min(window.devicePixelRatio || 1, 2);
 
-    /* Audio Context & Sound Synthesizer */
     let audioCtx = null;
     function getAudioContext() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1085,11 +1096,19 @@
       activePortalKey = null;
     }
 
-    function getStorageKey(id) {
-      return `v3_realm::humayun::${id}`;
+    function setAppMode(newMode) {
+      saveAllCanvases();
+      appMode = newMode;
+      document.body.classList.toggle('test-mode', newMode === 'test');
+      document.getElementById("btnModeLearn").className = `mode-btn ${newMode === 'learn' ? 'active-learn' : ''}`;
+      document.getElementById("btnModeTest").className = `mode-btn ${newMode === 'test' ? 'active-test' : ''}`;
+      if (activePortalKey) openPortal(activePortalKey, true);
     }
 
-    /* Ink Engine & Multi-Page Canvas System */
+    function getStorageKey(id) {
+      return `v3_realm::humayun::${appMode}::${id}`;
+    }
+
     window.pad = { tool: 'pen', color: '#065F46', width: 4 };
     const dirty = new Set(); let saveTimer = null;
     function scheduleSave(c) { dirty.add(c); clearTimeout(saveTimer); saveTimer = setTimeout(flushInk, 700); }
@@ -1225,15 +1244,25 @@
     }
 
     const DEFINITIONS_DATA = [
-      { id: "matter", tab: "a) Matter", mascot: "assets/lab-scientist-humayun.webp", prompt: `<b>a) Matter</b><br/>Anything that has mass and takes up space is matter.<br/><b>Examples:</b> Chair, Book, Car` },
-      { id: "evaporation", tab: "b) Evaporation", mascot: "assets/steam-cloud-mascot.webp", prompt: `<b>b) Evaporation</b><br/>The process by which water changes into water vapour.<br/><b>Examples:</b> Wet floor drying, Clothes drying in sun` },
-      { id: "condensation", tab: "c) Condensation", mascot: "assets/water-drop-mascot.webp", prompt: `<b>c) Condensation</b><br/>The process by which water vapour changes back into water drops.<br/><b>Examples:</b> Fog on car glass, Cold water bottle droplets` },
+      { id: "matter", tab: "a) Matter", mascot: "assets/particle-solid-icon.webp", prompt: `<b>a) Matter</b><br/>Anything that has mass and takes up space is matter.<br/><b>Examples:</b> Chair, Book, Car` },
+      { id: "evaporation", tab: "b) Evaporation", mascot: "assets/particle-gas-icon.webp", prompt: `<b>b) Evaporation</b><br/>The process by which water changes into water vapour.<br/><b>Examples:</b> Wet floor drying, Clothes drying in sun` },
+      { id: "condensation", tab: "c) Condensation", mascot: "assets/particle-liquid-icon.webp", prompt: `<b>c) Condensation</b><br/>The process by which water vapour changes back into water drops.<br/><b>Examples:</b> Fog on car glass, Cold water bottle droplets` },
       { id: "freezing", tab: "d) Freezing", mascot: "assets/ice-cube-mascot.webp", prompt: `<b>d) Freezing</b><br/>The process of liquid changing into a solid on cooling.<br/><b>Examples:</b> Ice cubes in freezer, Ice cream hardening` }
     ];
 
     const QA_DATA = [
-      { id: "qa1", tab: "Q1) Melting", q: "1. State the cause that makes a solid melt into a liquid?" },
-      { id: "qa2", tab: "Q2) Evaporation", q: "2. Explain the process of evaporation?" }
+      { 
+        id: "qa1", 
+        tab: "1. Solid Melt", 
+        q: "1. State the cause that makes a solid melt into a liquid?", 
+        answerKey: "A solid melts into a liquid because of heat. Example: Ice becomes water when kept outside." 
+      },
+      { 
+        id: "qa2", 
+        tab: "2. Evaporation", 
+        q: "2. Explain the process of evaporation?", 
+        answerKey: "When water is heated continuously it starts boiling. Boiling water forms water vapour, which we see rising as steam. This process in which water changes into water vapour is called evaporation." 
+      }
     ];
 
     function openPortal(portalKey, skipSave = false) {
@@ -1273,11 +1302,17 @@
     function renderDefinitionsPortal() {
       const cur = DEFINITIONS_DATA[currentDefIdx];
       const isOpen = !!binderOpenedMap[`def_${cur.id}::p${currentNotepadPage}`];
+      
+      // Fixed: In Write Mode ('test'), hide the answer/definition text from the prompt box entirely
+      const promptDisplayHtml = (appMode === 'learn') 
+        ? cur.prompt 
+        : `<b>${cur.tab.split(') ')[1]}</b><br/>Write the definition and examples from memory!`;
+
       return `
         <div class="full-notepad-wrapper">
           <div class="notepad-prompt-box">
             <img src="${cur.mascot}" class="notepad-prompt-mascot" alt="Mascot" onerror="handleImgFallback(this)"/>
-            <div>${cur.prompt}</div>
+            <div>${promptDisplayHtml}</div>
           </div>
           <div class="notepad-toolbar">
             <div class="tool-group">
@@ -1335,9 +1370,12 @@
       const isOpen = !!binderOpenedMap[`${curQ.id}::p${currentNotepadPage}`];
       return `
         <div class="full-notepad-wrapper">
-          <div class="notepad-prompt-box">
-            <img src="assets/lab-scientist-humayun.webp" class="notepad-prompt-mascot" alt="Mascot" onerror="handleImgFallback(this)"/>
-            <div><b>${curQ.q}</b></div>
+          <div class="notepad-prompt-box" style="flex-direction:column; align-items:flex-start; gap:6px;">
+            <div style="display:flex; align-items:center; gap:12px; width:100%;">
+              <img src="assets/lab-scientist-humayun.webp" class="notepad-prompt-mascot" alt="Mascot" onerror="handleImgFallback(this)"/>
+              <div><b>${curQ.q}</b></div>
+            </div>
+            <div style="background:#ECFDF5; border:2px dashed #34D399; padding:8px 12px; border-radius:10px; width:100%; font-weight:800; color:#065F46; font-size:0.95rem; display:${appMode === 'learn' ? 'block' : 'none'};"><b>Answer:</b> ${curQ.answerKey}</div>
           </div>
           <div class="notepad-toolbar">
             <div class="tool-group">
@@ -1393,6 +1431,7 @@
     function renderWorkbookPortal() {
       let mainContent = "";
       if (currentWorkbookSec === 0) {
+        // Difference Table - Fixed duplication. In Practice mode show tags, in Write mode show clean inline blanks without duplicated text.
         mainContent = `
           <table class="diff-table">
             <tr>
@@ -1401,37 +1440,37 @@
             <tr>
               <td style="width:190px; font-weight:900; background:#F0FDF4;">
                 <div class="state-row-header">
-                  <img src="assets/ice-cube-mascot.webp" class="state-row-img" alt="Solid" onerror="handleImgFallback(this)"/>
+                  <img src="assets/particle-solid-icon.webp" class="state-row-img" alt="Solid" onerror="handleImgFallback(this)"/>
                   <span>SOLIDS</span>
                 </div>
               </td>
               <td>
-                1. Have a fixed ${inlineDualBlank('diff_s_shape', 340, 'shape')} shape and ${inlineDualBlank('diff_s_vol', 340, 'volume')} volume.
-                <div style="margin-top:6px;">2. Do not flow. Examples: ${inlineDualBlank('diff_s_ex1', 250, 'Chair')} chair and ${inlineDualBlank('diff_s_ex2', 250, 'Book')} book.</div>
+                1. Have a fixed ${appMode === 'learn' ? '<span class="answer-tag">shape</span>' : inlineDualBlank('diff_s_shape', 340, 'shape')} shape and ${appMode === 'learn' ? '<span class="answer-tag">volume</span>' : inlineDualBlank('diff_s_vol', 340, 'volume')} volume.
+                <div style="margin-top:6px;">2. Do not flow. Examples: ${appMode === 'learn' ? '<span class="answer-tag">chair</span>' : inlineDualBlank('diff_s_ex1', 250, 'Chair')} chair and ${appMode === 'learn' ? '<span class="answer-tag">book</span>' : inlineDualBlank('diff_s_ex2', 250, 'Book')} book.</div>
               </td>
             </tr>
             <tr>
               <td style="font-weight:900; background:#F0FDF4;">
                 <div class="state-row-header">
-                  <img src="assets/water-drop-mascot.webp" class="state-row-img" alt="Liquid" onerror="handleImgFallback(this)"/>
+                  <img src="assets/particle-liquid-icon.webp" class="state-row-img" alt="Liquid" onerror="handleImgFallback(this)"/>
                   <span>LIQUIDS</span>
                 </div>
               </td>
               <td>
-                1. Fixed volume, no fixed ${inlineDualBlank('diff_l_shape', 340, 'shape')} shape. Takes ${inlineDualBlank('diff_l_cont', 340, 'container')} shape of container.
-                <div style="margin-top:6px;">2. Flow easily. Examples: ${inlineDualBlank('diff_l_ex1', 250, 'Water')} water and ${inlineDualBlank('diff_l_ex2', 250, 'Milk')} milk.</div>
+                1. Fixed volume, no fixed ${appMode === 'learn' ? '<span class="answer-tag">shape</span>' : inlineDualBlank('diff_l_shape', 340, 'shape')} shape. Takes ${appMode === 'learn' ? '<span class="answer-tag">container</span>' : inlineDualBlank('diff_l_cont', 340, 'container')} shape of container.
+                <div style="margin-top:6px;">2. Flow easily. Examples: ${appMode === 'learn' ? '<span class="answer-tag">water</span>' : inlineDualBlank('diff_l_ex1', 250, 'Water')} water and ${appMode === 'learn' ? '<span class="answer-tag">milk</span>' : inlineDualBlank('diff_l_ex2', 250, 'Milk')} milk.</div>
               </td>
             </tr>
             <tr>
               <td style="font-weight:900; background:#F0FDF4;">
                 <div class="state-row-header">
-                  <img src="assets/steam-cloud-mascot.webp" class="state-row-img" alt="Gas" onerror="handleImgFallback(this)"/>
+                  <img src="assets/particle-gas-icon.webp" class="state-row-img" alt="Gas" onerror="handleImgFallback(this)"/>
                   <span>GASES</span>
                 </div>
               </td>
               <td>
-                1. Do not have any fixed ${inlineDualBlank('diff_g_shape', 340, 'shape')} shape and ${inlineDualBlank('diff_g_vol', 340, 'volume')} volume.
-                <div style="margin-top:6px;">2. Flow very easily. Examples: ${inlineDualBlank('diff_g_ex1', 250, 'Oxygen')} oxygen and ${inlineDualBlank('diff_g_ex2', 250, 'Steam')} steam.</div>
+                1. Do not have any fixed ${appMode === 'learn' ? '<span class="answer-tag">shape</span>' : inlineDualBlank('diff_g_shape', 340, 'shape')} shape and ${appMode === 'learn' ? '<span class="answer-tag">volume</span>' : inlineDualBlank('diff_g_vol', 340, 'volume')} volume.
+                <div style="margin-top:6px;">2. Flow very easily. Examples: ${appMode === 'learn' ? '<span class="answer-tag">oxygen</span>' : inlineDualBlank('diff_g_ex1', 250, 'Oxygen')} oxygen and ${appMode === 'learn' ? '<span class="answer-tag">steam</span>' : inlineDualBlank('diff_g_ex2', 250, 'Steam')} steam.</div>
               </td>
             </tr>
           </table>
@@ -1440,46 +1479,73 @@
           </div>
         `;
       } else if (currentWorkbookSec === 1) {
-        const matchPairs = [
-          { id: "m1", q: "1. Solid", ans: "b. Does not change shape" },
-          { id: "m2", q: "2. Water vapour", ans: "c. Gaseous state" },
-          { id: "m3", q: "3. Liquid", ans: "a. Can flow" },
-          { id: "m4", q: "4. Matter", ans: "e. Has mass and occupies space" },
-          { id: "m5", q: "5. Ice", ans: "d. Frozen water" }
-        ];
-        mainContent = `
-          <div style="display:flex; flex-direction:column; gap:10px; width:100%;">
-            <div style="font-weight:900; color:var(--primary-dark); font-size:1rem; margin-bottom:2px;">Match the Following (Write answers by hand):</div>
-            ${matchPairs.map(row => `
-              <div class="match-row-item">
-                <div style="font-weight:900; width:140px;">${row.q}</div>
-                <div style="font-weight:800; color:#047857; flex:1;">${row.ans}</div>
-                <div>${inlineDualBlank('match_ans_' + row.id, 240, 'Write Ans')}</div>
+        if (appMode === 'learn') {
+          mainContent = `
+            <div class="match-columns-learn">
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <button class="match-btn" data-pair="1" onclick="playClickSound(); handleMatch(this, 'left')"><img src="assets/particle-solid-icon.webp" alt=""/> 1. Solid</button>
+                <button class="match-btn" data-pair="2" onclick="playClickSound(); handleMatch(this, 'left')"><img src="assets/particle-gas-icon.webp" alt=""/> 2. Water vapour</button>
+                <button class="match-btn" data-pair="3" onclick="playClickSound(); handleMatch(this, 'left')"><img src="assets/particle-liquid-icon.webp" alt=""/> 3. Liquid</button>
+                <button class="match-btn" data-pair="4" onclick="playClickSound(); handleMatch(this, 'left')">🧪 4. Matter</button>
+                <button class="match-btn" data-pair="5" onclick="playClickSound(); handleMatch(this, 'left')"><img src="assets/ice-cube-mascot.webp" alt=""/> 5. Ice</button>
               </div>
-            `).join("")}
-          </div>
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <button class="match-btn" data-pair="3" onclick="playClickSound(); handleMatch(this, 'right')">a. Can flow</button>
+                <button class="match-btn" data-pair="1" onclick="playClickSound(); handleMatch(this, 'right')">b. Does not change shape</button>
+                <button class="match-btn" data-pair="2" onclick="playClickSound(); handleMatch(this, 'right')">c. Gaseous state</button>
+                <button class="match-btn" data-pair="5" onclick="playClickSound(); handleMatch(this, 'right')">d. Frozen water</button>
+                <button class="match-btn" data-pair="4" onclick="playClickSound(); handleMatch(this, 'right')">e. Has mass and occupies space</button>
+              </div>
+            </div>
+          `;
+        } else {
+          // Restored 3-column matching layout for write mode
+          const matchPairs = [
+            { id: "m1", col1: "1. Solid", col2: "b. Does not change shape" },
+            { id: "m2", col1: "2. Water vapour", col2: "c. Gaseous state" },
+            { id: "m3", col1: "3. Liquid", col2: "a. Can flow" },
+            { id: "m4", col1: "4. Matter", col2: "e. Has mass and occupies space" },
+            { id: "m5", col1: "5. Ice", col2: "d. Frozen water" }
+          ];
+          mainContent = `
+            <div class="match-three-col">
+              <div style="font-weight:900; color:var(--primary-dark); font-size:1rem; margin-bottom:2px;">Match the Following (Write corresponding letter/answer in the canvas):</div>
+              ${matchPairs.map((row, idx) => `
+                <div class="match-row-3col">
+                  <div style="font-weight:900;">${row.col1}</div>
+                  <div style="font-weight:800; color:#047857;">${row.col2}</div>
+                  <div>${inlineDualBlank('match_ans_' + row.id, 260, 'Write match')}</div>
+                </div>
+              `).join("")}
+            </div>
+          `;
+        }
+        mainContent += `
           <div style="margin-top:14px; display:flex; justify-content:flex-end;">
             <button class="action-btn" style="background:var(--primary); color:#FFF; font-weight:800;" onclick="playClickSound(); completeWorkbookStep(1)">Next Lab Step ➔</button>
           </div>
         `;
       } else if (currentWorkbookSec === 2) {
         const mcqData = [
-          { id: "mcq1", q: "1. Anything that has mass and takes up space is known as:", opts: ["a. liquid", "b. solid", "c. matter", "d. both a and b"] },
-          { id: "mcq2", q: "2. Which of the following is not a state of matter?", opts: ["a. Solid", "b. Liquid", "c. Shadow", "d. Gas"] },
-          { id: "mcq3", q: "3. Deepa heated water. She saw gas rising up. This process is:", opts: ["a. freezing", "b. condensation", "c. melting", "d. evaporation"] },
-          { id: "mcq4", q: "4. Tiny droplets of water are formed through the process of:", opts: ["a. melting", "b. condensation", "c. evaporation", "d. freezing"] },
-          { id: "mcq5", q: "5. Which of the following is a state of matter?", opts: ["a. Water", "b. Chapatti", "c. Car", "d. All of these"] }
+          { id: "mcq1", q: "1. Anything that has mass and takes up space is known as:", opts: ["a. liquid", "b. solid", "c. matter", "d. both a and b"], correctIdx: 2 },
+          { id: "mcq2", q: "2. Which of the following is not a state of matter?", opts: ["a. Solid", "b. Liquid", "c. Shadow", "d. Gas"], correctIdx: 2 },
+          { id: "mcq3", q: "3. Deepa heated water. She saw gas rising up. This process is:", opts: ["a. freezing", "b. condensation", "c. melting", "d. evaporation"], correctIdx: 3 },
+          { id: "mcq4", q: "4. Tiny droplets of water are formed through the process of:", opts: ["a. melting", "b. condensation", "c. evaporation", "d. freezing"], correctIdx: 1 },
+          { id: "mcq5", q: "5. Which of the following is a state of matter?", opts: ["a. Water", "b. Chapatti", "c. Car", "d. All of these"], correctIdx: 3 }
         ];
 
         mainContent = `
           ${mcqData.map(item => `
             <div class="mcq-item">
               <div class="mcq-q-row">
-                <div class="mcq-q">${item.q}</div>
-                <div>${inlineDualBlank('mcq_ans_' + item.id, 200, 'Answer')}</div>
+                <div class="mcq-q">${item.q}</div>${appMode !== 'learn' ? `<div>${inlineDualBlank('mcq_ans_' + item.id, 200, 'Answer')}</div>` : ''}
               </div>
               <div class="mcq-opts">
-                ${item.opts.map((optText) => `<button class="mcq-opt-btn" onclick="playClickSound(); checkMcq(this)">${optText}</button>`).join("")}
+                ${item.opts.map((optText, oIdx) => {
+                  const isCorrect = (oIdx === item.correctIdx);
+                  const learnClass = (appMode === 'learn' && isCorrect) ? 'correct' : '';
+                  return `<button class="mcq-opt-btn ${learnClass}" onclick="playClickSound(); checkMcq(this)">${optText}</button>`;
+                }).join("")}
               </div>
             </div>
           `).join("")}
@@ -1489,26 +1555,43 @@
         `;
       } else if (currentWorkbookSec === 3) {
         const items = [
-          { id: "p1", name: "1. Ice cubes", icon: "🧊" },
-          { id: "p2", name: "2. Kerosene", icon: "⛽" },
-          { id: "p3", name: "3. Oil", icon: "🧴" },
-          { id: "p4", name: "4. Tree", icon: "🌳" },
-          { id: "p5", name: "5. Smoke", icon: "🏭" },
-          { id: "p6", name: "6. Hot Tea", icon: "☕" },
-          { id: "p7", name: "7. Steam", icon: "♨️" },
-          { id: "p8", name: "8. Eraser", icon: "🧼" },
-          { id: "p9", name: "9. Soap", icon: "🧴" }
+          { id: "p1", name: "1. Ice cubes", img: "assets/ice-cube-mascot.webp", correct: "Solid" },
+          { id: "p2", name: "2. Kerosene", img: "assets/water-drop-mascot.webp", correct: "Liquid" },
+          { id: "p3", name: "3. Oil", img: "assets/water-drop-mascot.webp", correct: "Liquid" },
+          { id: "p4", name: "4. Tree", img: "assets/particle-solid-icon.webp", correct: "Solid" },
+          { id: "p5", name: "5. Smoke", img: "assets/steam-cloud-mascot.webp", correct: "Gas" },
+          { id: "p6", name: "6. Hot Tea", img: "assets/particle-liquid-icon.webp", correct: "Liquid" },
+          { id: "p7", name: "7. Steam", img: "assets/steam-cloud-mascot.webp", correct: "Gas" },
+          { id: "p8", name: "8. Eraser", img: "assets/particle-solid-icon.webp", correct: "Solid" },
+          { id: "p9", name: "9. Soap", img: "assets/particle-liquid-icon.webp", correct: "Liquid" }
         ];
 
         mainContent = `
           <div class="pic-grid">
-            ${items.map(it => `
-              <div class="pic-card">
-                <span class="pic-icon">${it.icon}</span>
-                <span class="pic-name">${it.name}</span>
-                <div style="margin-top:4px;">${inlineDualBlank('pic_ink_' + it.id, 160, 'State')}</div>
-              </div>
-            `).join("")}
+            ${items.map(it => {
+              if (appMode === 'learn') {
+                const saved = localStorage.getItem(`chip::humayun::evs::${it.id}`) || it.correct;
+                return `
+                  <div class="pic-card">
+                    <img src="${it.img}" class="pic-ico-img" alt="" onerror="handleImgFallback(this)"/>
+                    <span class="pic-name">${it.name}</span>
+                    <div class="chip-row">
+                      <button class="state-chip ${saved === 'Solid' ? 'active-chip' : ''}" onclick="playClickSound(); selectChip('${it.id}', 'Solid')">Solid</button>
+                      <button class="state-chip ${saved === 'Liquid' ? 'active-chip' : ''}" onclick="playClickSound(); selectChip('${it.id}', 'Liquid')">Liquid</button>
+                      <button class="state-chip ${saved === 'Gas' ? 'active-chip' : ''}" onclick="playClickSound(); selectChip('${it.id}', 'Gas')">Gas</button>
+                    </div>
+                  </div>
+                `;
+              } else {
+                return `
+                  <div class="pic-card">
+                    <img src="${it.img}" class="pic-ico-img" alt="" onerror="handleImgFallback(this)"/>
+                    <span class="pic-name">${it.name}</span>
+                    <div style="margin-top:4px;">${inlineDualBlank('pic_ink_' + it.id, 160, 'State')}</div>
+                  </div>
+                `;
+              }
+            }).join("")}
           </div>
           <div style="margin-top:14px; display:flex; justify-content:flex-end;">
             <button class="action-btn" style="background:var(--primary); color:#FFF; font-weight:800;" onclick="playClickSound(); completeWorkbookStep(3)">Next Lab Step ➔</button>
@@ -1516,9 +1599,9 @@
         `;
       } else {
         const mapData = [
-          { id: "solid", prompt: "S _ L _ D", fullWord: "SOLID" },
-          { id: "liquid", prompt: "L _ _ _ I D", fullWord: "LIQUID" },
-          { id: "gas", prompt: "G _ _", fullWord: "GAS" }
+          { id: "solid", prompt: "S _ L _ D", fullWord: "SOLID", learnEx1: "Chair", learnEx2: "Book", icon: "assets/particle-solid-icon.webp" },
+          { id: "liquid", prompt: "L _ _ _ I D", fullWord: "LIQUID", learnEx1: "Water", learnEx2: "Milk", icon: "assets/particle-liquid-icon.webp" },
+          { id: "gas", prompt: "G _ _", fullWord: "GAS", learnEx1: "Oxygen", learnEx2: "Steam", icon: "assets/particle-gas-icon.webp" }
         ];
 
         mainContent = `
@@ -1528,16 +1611,15 @@
             <div class="cmap-columns-grid">
               ${mapData.map(col => `
                 <div class="cmap-col-card">
-                  <div class="cmap-type-badge">${col.prompt}</div>
-                  <div style="font-weight:900; color:var(--primary-dark); font-size:0.95rem; margin:2px 0;">➔ ${col.fullWord}</div>
+                  <div class="cmap-type-badge"><img src="${col.icon}" alt="" onerror="handleImgFallback(this)"/><span>${col.prompt}</span></div>${appMode !== 'learn' ? `<div style="margin-top:2px; width:100%; display:flex; justify-content:center;">${inlineDualBlank('cmap_type_' + col.id, 150, col.fullWord)}</div>` : `<div style="font-weight:900; color:var(--primary-dark); font-size:0.95rem; margin:2px 0;">➔ ${col.fullWord}</div>`}
                   <div class="cmap-down-arrow-wrap"><span>⬇</span> Examples</div>
                   <div class="cmap-ex-row">
                     <span class="cmap-ex-label">Example 1:</span>
-                    ${inlineDualBlank('cmap_ex1_' + col.id, 150, 'Ex')}
+                    ${appMode !== 'learn' ? inlineDualBlank('cmap_ex1_' + col.id, 150, col.learnEx1) : `<div class="answer-tag" style="width:100%; text-align:center; padding:6px; font-size:0.9rem;">${col.learnEx1}</div>`}
                   </div>
                   <div class="cmap-ex-row">
                     <span class="cmap-ex-label">Example 2:</span>
-                    ${inlineDualBlank('cmap_ex2_' + col.id, 150, 'Ex')}
+                    ${appMode !== 'learn' ? inlineDualBlank('cmap_ex2_' + col.id, 150, col.learnEx2) : `<div class="answer-tag" style="width:100%; text-align:center; padding:6px; font-size:0.9rem;">${col.learnEx2}</div>`}
                   </div>
                 </div>
               `).join("")}
@@ -1577,10 +1659,38 @@
       else { triggerGrandCelebration(); }
     }
 
+    let selectedLeftMatch = null;
+    let selectedRightMatch = null;
+    function handleMatch(btn, side) {
+      if (btn.classList.contains('paired')) return;
+      if (side === 'left') {
+        if (selectedLeftMatch) selectedLeftMatch.classList.remove('selected');
+        selectedLeftMatch = btn; btn.classList.add('selected');
+      } else {
+        if (selectedRightMatch) selectedRightMatch.classList.remove('selected');
+        selectedRightMatch = btn; btn.classList.add('selected');
+      }
+      if (selectedLeftMatch && selectedRightMatch) {
+        if (selectedLeftMatch.getAttribute('data-pair') === selectedRightMatch.getAttribute('data-pair')) {
+          selectedLeftMatch.classList.remove('selected'); selectedRightMatch.classList.remove('selected');
+          selectedLeftMatch.classList.add('paired'); selectedRightMatch.classList.add('paired');
+          selectedLeftMatch.innerHTML += " ✓"; selectedRightMatch.innerHTML += " ✓";
+        } else {
+          selectedLeftMatch.classList.remove('selected'); selectedRightMatch.classList.remove('selected');
+        }
+        selectedLeftMatch = null; selectedRightMatch = null;
+      }
+    }
+
     function checkMcq(btn) {
       const parent = btn.parentElement;
       parent.querySelectorAll(".mcq-opt-btn").forEach(b => b.classList.remove('correct'));
       btn.classList.add('correct');
+    }
+
+    function selectChip(itemId, state) {
+      localStorage.setItem(`chip::humayun::evs::${itemId}`, state);
+      openPortal('workbook');
     }
 
     function openBinder(id) {
@@ -1598,9 +1708,9 @@
     }
 
     const RAIL_ICONS = [
-      "assets/ice-cube-mascot.webp",
-      "assets/steam-cloud-mascot.webp",
-      "assets/water-drop-mascot.webp",
+      "assets/particle-solid-icon.webp",
+      "assets/particle-gas-icon.webp",
+      "assets/particle-liquid-icon.webp",
       "assets/ice-cube-mascot.webp"
     ];
 
