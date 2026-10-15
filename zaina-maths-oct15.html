@@ -1,1051 +1,1041 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
-    <title>Zaina's Magical Maths Adventure: Exercise 5.4</title>
+<!-- Hardware & Instant Preload Links for Galaxy S-Series Tablets -->
+<link rel="preload" as="image" href="assets/twilight.png"/>
+<link rel="preload" as="image" href="assets/rarity.png"/>
+<link rel="preload" as="image" href="assets/pinkie.png"/>
+<link rel="preload" as="image" href="assets/rainbow.png"/>
+<link rel="preload" as="image" href="assets/fluttershy.png"/>
+<link rel="preload" as="image" href="assets/applejack.png"/>
+<link rel="preload" as="image" href="assets/luna.png"/>
+<link rel="preload" as="image" href="assets/celestia.png"/>
 
-    <!-- Hardware & Instant Preload Links for Galaxy S-Series Tablets -->
-    <link rel="preload" as="image" href="assets/twilight.png"/>
-    <link rel="preload" as="image" href="assets/rarity.png"/>
-    <link rel="preload" as="image" href="assets/pinkie.png"/>
-    <link rel="preload" as="image" href="assets/rainbow.png"/>
-    <link rel="preload" as="image" href="assets/fluttershy.png"/>
-    <link rel="preload" as="image" href="assets/applejack.png"/>
-    <link rel="preload" as="image" href="assets/luna.png"/>
-    <link rel="preload" as="image" href="assets/celestia.png"/>
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Quicksand:wght@500;700;800&family=Fredoka:wght@600;700;800&family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
 
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Quicksand:wght@500;700;800&family=Fredoka:wght@600;700;800&family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --twilight: #8B5CF6;
-            --pinkie: #EC4899;
-            --rainbow: #0EA5E9;
-            --celestia: #F59E0B;
-            --font-main: 'Quicksand', sans-serif;
-            --font-display: 'Fredoka', cursive, sans-serif;
-        }
+<style>
+    :root {
+        --twilight: #8B5CF6;
+        --pinkie: #EC4899;
+        --rainbow: #0EA5E9;
+        --celestia: #F59E0B;
+        --font-main: 'Quicksand', sans-serif;
+        --font-display: 'Fredoka', cursive, sans-serif;
+    }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-            font-family: var(--font-main);
-        }
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
+        font-family: var(--font-main);
+    }
 
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: #0B0F19;
-            color: #1E1B4B;
-            touch-action: pan-x pan-y;
-        }
+    html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #0B0F19;
+        color: #1E1B4B;
+        touch-action: pan-x pan-y;
+    }
 
-        body {
-            display: flex;
-            flex-direction: column;
-        }
+    body {
+        display: flex;
+        flex-direction: column;
+    }
 
-        #milkyWayCanvas, #confettiSnowCanvas {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-        }
-        #milkyWayCanvas { z-index: 1; }
-        #confettiSnowCanvas { z-index: 99999; }
+    #milkyWayCanvas, #confettiSnowCanvas {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+    }
+    #milkyWayCanvas { z-index: 1; }
+    #confettiSnowCanvas { z-index: 99999; }
 
-        #screenDimOverlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(10, 10, 25, 0.7);
-            pointer-events: none;
-            z-index: 99998;
-        }
+    #screenDimOverlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(10, 10, 25, 0.7);
+        pointer-events: none;
+        z-index: 99998;
+    }
 
-        .font-fun { font-family: 'Comic Neue', cursive; }
-        .font-display { font-family: var(--font-display); }
+    .font-fun { font-family: 'Comic Neue', cursive; }
+    .font-display { font-family: var(--font-display); }
 
-        /* Graph Box Grid Paper Pattern */
-        .graph-paper {
-            background-color: #ffffff;
-            background-image: 
-                linear-gradient(to right, #e2e8f0 1px, transparent 1px),
-                linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
-            background-size: 24px 24px;
-        }
+    /* Graph Box Grid Paper Pattern */
+    .graph-paper {
+        background-color: #ffffff;
+        background-image: 
+            linear-gradient(to right, #e2e8f0 1px, transparent 1px),
+            linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
+        background-size: 24px 24px;
+    }
 
-        /* 3D 4D Book Binder Opening & Page Flipping Animations */
-        .binder-cover {
-            transition: transform 0.65s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.4s ease;
-            transform-origin: left center;
-            transform-style: preserve-3d;
-        }
-        .binder-open {
-            transform: perspective(1400px) rotateY(-112deg);
-            opacity: 0;
-            pointer-events: none;
-        }
+    /* 3D 4D Book Binder Opening & Page Flipping Animations */
+    .binder-cover {
+        transition: transform 0.65s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.4s ease;
+        transform-origin: left center;
+        transform-style: preserve-3d;
+    }
+    .binder-open {
+        transform: perspective(1400px) rotateY(-112deg);
+        opacity: 0;
+        pointer-events: none;
+    }
 
-        .card-4d-wrapper {
-            perspective: 1600px;
-            transform-style: preserve-3d;
-        }
-        .card-4d {
-            box-shadow: 0 25px 50px -12px rgba(30, 27, 75, 0.4), 0 0 30px rgba(139, 92, 246, 0.3);
-            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
-            transform-style: preserve-3d;
-        }
-        .page-flip-anim {
-            animation: pageFlip4d 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        @keyframes pageFlip4d {
-            0% { transform: rotateY(90deg) scale(0.9); opacity: 0; }
-            100% { transform: rotateY(0deg) scale(1); opacity: 1; }
-        }
+    .card-4d-wrapper {
+        perspective: 1600px;
+        transform-style: preserve-3d;
+    }
+    .card-4d {
+        box-shadow: 0 30px 60px -15px rgba(30, 27, 75, 0.5), 0 0 35px rgba(139, 92, 246, 0.35);
+        transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+        transform-style: preserve-3d;
+    }
+    .page-flip-anim {
+        animation: pageFlip4d 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes pageFlip4d {
+        0% { transform: rotateY(90deg) scale(0.9); opacity: 0; }
+        100% { transform: rotateY(0deg) scale(1); opacity: 1; }
+    }
 
-        /* Castle Gateway Cards */
-        .gateway-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(14px);
-            border: 3px solid rgba(255, 255, 255, 0.9);
-            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-            cursor: pointer;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
-        }
-        .gateway-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 20px 45px rgba(139, 92, 246, 0.4);
-            border-color: #C084FC;
-        }
-        .gateway-card:active { transform: scale(0.98); }
+    /* Castle Gateway Cards */
+    .gateway-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(14px);
+        border: 3px solid rgba(255, 255, 255, 0.9);
+        transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        cursor: pointer;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    }
+    .gateway-card:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 20px 45px rgba(139, 92, 246, 0.4);
+        border-color: #C084FC;
+    }
+    .gateway-card:active { transform: scale(0.98); }
 
-        .gateway-pony-avatar {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            object-fit: contain;
-            border: 3px solid #DDD6FE;
-            background: #FFF;
-            padding: 3px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
+    .gateway-pony-avatar {
+        width: 76px;
+        height: 76px;
+        border-radius: 50%;
+        object-fit: contain;
+        border: 3px solid #DDD6FE;
+        background: #FFF;
+        padding: 3px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
 
-        /* GRAND CELEBRATION FINALE STAGE */
-        #grandCelebrationStage {
-            position: fixed;
-            inset: 0;
-            z-index: 100000;
-            pointer-events: none;
-            display: none;
-            overflow: hidden;
-            background: radial-gradient(circle at center, rgba(30, 27, 75, 0.65) 0%, rgba(7, 11, 20, 0.95) 100%);
-            backdrop-filter: blur(6px);
-        }
-        #grandFinaleCanvas {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 10;
-        }
-        .magic-banner-centerpiece {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0.2);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 25;
-            opacity: 0;
-            pointer-events: none;
-            transition: transform 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
-        }
-        .magic-banner-centerpiece.impact {
-            transform: translate(-50%, -50%) scale(1);
-            opacity: 1;
-        }
-        .magic-crown-halo {
-            position: absolute;
-            width: 460px;
-            height: 460px;
-            border-radius: 50%;
-            border: 28px solid transparent;
-            border-top-color: rgba(244, 114, 182, 0.8);
-            border-right-color: rgba(192, 132, 252, 0.75);
-            border-bottom-color: rgba(56, 189, 248, 0.5);
-            border-left-color: rgba(253, 224, 71, 0.7);
-            filter: drop-shadow(0 0 35px rgba(236, 72, 153, 0.7));
-            transform: rotate(-25deg);
-        }
-        .magic-top-title {
-            font-family: var(--font-display);
-            font-size: 56px;
-            font-weight: 900;
-            color: #FDF2F8;
-            text-shadow: 0 0 25px #EC4899, 0 0 50px #8B5CF6, 0 4px 8px rgba(0,0,0,0.8);
-            letter-spacing: 4px;
-            text-align: center;
-        }
-        .magic-subtitle-sparkle {
-            font-family: 'Cinzel', serif;
-            font-size: 22px;
-            font-weight: 900;
-            color: #FEF08A;
-            letter-spacing: 5px;
-            margin-top: 8px;
-            text-shadow: 0 0 16px rgba(250, 204, 21, 0.9);
-            text-align: center;
-        }
-        .gliding-companion-rocket {
-            position: absolute;
-            width: 200px;
-            height: 200px;
-            z-index: 20;
-            pointer-events: none;
-            transform: rotate(12deg);
-            filter: drop-shadow(0 0 28px rgba(255, 255, 255, 0.9));
-        }
-        .gliding-companion-rocket img { width: 100%; height: 100%; object-fit: contain; }
+    /* GRAND CELEBRATION FINALE STAGE */
+    #grandCelebrationStage {
+        position: fixed;
+        inset: 0;
+        z-index: 100000;
+        pointer-events: none;
+        display: none;
+        overflow: hidden;
+        background: radial-gradient(circle at center, rgba(30, 27, 75, 0.65) 0%, rgba(7, 11, 20, 0.95) 100%);
+        backdrop-filter: blur(6px);
+    }
+    #grandFinaleCanvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+    }
+    .magic-banner-centerpiece {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.2);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 25;
+        opacity: 0;
+        pointer-events: none;
+        transition: transform 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+    }
+    .magic-banner-centerpiece.impact {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    .magic-crown-halo {
+        position: absolute;
+        width: 460px;
+        height: 460px;
+        border-radius: 50%;
+        border: 28px solid transparent;
+        border-top-color: rgba(244, 114, 182, 0.8);
+        border-right-color: rgba(192, 132, 252, 0.75);
+        border-bottom-color: rgba(56, 189, 248, 0.5);
+        border-left-color: rgba(253, 224, 71, 0.7);
+        filter: drop-shadow(0 0 35px rgba(236, 72, 153, 0.7));
+        transform: rotate(-25deg);
+    }
+    .magic-top-title {
+        font-family: var(--font-display);
+        font-size: 56px;
+        font-weight: 900;
+        color: #FDF2F8;
+        text-shadow: 0 0 25px #EC4899, 0 0 50px #8B5CF6, 0 4px 8px rgba(0,0,0,0.8);
+        letter-spacing: 4px;
+        text-align: center;
+    }
+    .magic-subtitle-sparkle {
+        font-family: 'Cinzel', serif;
+        font-size: 22px;
+        font-weight: 900;
+        color: #FEF08A;
+        letter-spacing: 5px;
+        margin-top: 8px;
+        text-shadow: 0 0 16px rgba(250, 204, 21, 0.9);
+        text-align: center;
+    }
+    .gliding-companion-rocket {
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        z-index: 20;
+        pointer-events: none;
+        transform: rotate(12deg);
+        filter: drop-shadow(0 0 28px rgba(255, 255, 255, 0.9));
+    }
+    .gliding-companion-rocket img { width: 100%; height: 100%; object-fit: contain; }
 
-        .royal-scroll-landing-right {
-            position: absolute;
-            top: 50%;
-            right: 40px;
-            transform: translateY(-50%) translateX(240px);
-            width: 480px;
-            z-index: 30;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            opacity: 0;
-            transition: transform 0.65s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.5s ease;
-            pointer-events: none;
-        }
-        .royal-scroll-landing-right.landed {
-            transform: translateY(-50%) translateX(0);
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .royal-unfurled-scroll {
-            flex: 1;
-            background: #FFFDF0;
-            border: 4px solid #F59E0B;
-            border-radius: 20px;
-            padding: 18px 22px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-            color: #1E293B;
-        }
-        .royal-scroll-title {
-            font-family: var(--font-display);
-            font-size: 1.2rem;
-            font-weight: 800;
-            color: #B45309;
-            border-bottom: 2px dashed #FCD34D;
-            padding-bottom: 6px;
-            margin-bottom: 8px;
-        }
-        .royal-scroll-body {
-            font-size: 0.92rem;
-            font-weight: 800;
-            line-height: 1.55;
-            color: #334155;
-            margin-bottom: 12px;
-        }
-        .royal-btn-continue {
-            background: linear-gradient(135deg, #10B981, #059669);
-            border: 2px solid #86EFAC;
-            color: #FFF;
-            font-family: var(--font-display);
-            font-weight: 800;
-            font-size: 0.92rem;
-            padding: 10px 20px;
-            border-radius: 12px;
-            cursor: pointer;
-        }
-        .royal-victory-companion {
-            width: 160px;
-            height: 230px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        .royal-victory-companion img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .royal-scroll-landing-right {
+        position: absolute;
+        top: 50%;
+        right: 40px;
+        transform: translateY(-50%) translateX(240px);
+        width: 480px;
+        z-index: 30;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        opacity: 0;
+        transition: transform 0.65s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.5s ease;
+        pointer-events: none;
+    }
+    .royal-scroll-landing-right.landed {
+        transform: translateY(-50%) translateX(0);
+        opacity: 1;
+        pointer-events: auto;
+    }
+    .royal-unfurled-scroll {
+        flex: 1;
+        background: #FFFDF0;
+        border: 4px solid #F59E0B;
+        border-radius: 20px;
+        padding: 18px 22px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        color: #1E293B;
+    }
+    .royal-scroll-title {
+        font-family: var(--font-display);
+        font-size: 1.2rem;
+        font-weight: 800;
+        color: #B45309;
+        border-bottom: 2px dashed #FCD34D;
+        padding-bottom: 6px;
+        margin-bottom: 8px;
+    }
+    .royal-scroll-body {
+        font-size: 0.92rem;
+        font-weight: 800;
+        line-height: 1.55;
+        color: #334155;
+        margin-bottom: 12px;
+    }
+    .royal-btn-continue {
+        background: linear-gradient(135deg, #10B981, #059669);
+        border: 2px solid #86EFAC;
+        color: #FFF;
+        font-family: var(--font-display);
+        font-weight: 800;
+        font-size: 0.92rem;
+        padding: 10px 20px;
+        border-radius: 12px;
+        cursor: pointer;
+    }
+    .royal-victory-companion {
+        width: 160px;
+        height: 230px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .royal-victory-companion img { max-width: 100%; max-height: 100%; object-fit: contain; }
 
-        /* Floating Top Toolbar Pills */
-        .icon-pill-btn {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.35);
-            color: #FFFFFF;
-            font-size: 1.1rem;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
-            text-decoration: none;
-            transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .icon-pill-btn:hover { transform: scale(1.08); background: rgba(30, 41, 59, 0.95); }
-        .icon-pill-btn:active { transform: scale(0.94); }
-    </style>
-</head>
-<body class="min-h-screen flex flex-col relative overflow-hidden">
+    /* Floating Top Toolbar Pills */
+    .icon-pill-btn {
+        background: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 2px solid rgba(255, 255, 255, 0.35);
+        color: #FFFFFF;
+        font-size: 1.1rem;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+        text-decoration: none;
+        transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .icon-pill-btn:hover { transform: scale(1.08); background: rgba(30, 41, 59, 0.95); }
+    .icon-pill-btn:active { transform: scale(0.94); }
+</style>
 
-    <canvas id="milkyWayCanvas"></canvas>
-    <canvas id="confettiSnowCanvas"></canvas>
-    <div id="screenDimOverlay"></div>
 
-    <!-- GRAND CELEBRATION STAGE -->
-    <div id="grandCelebrationStage">
-        <canvas id="grandFinaleCanvas"></canvas>
-        <div class="magic-banner-centerpiece" id="magicCenterpiece">
-            <div class="magic-crown-halo"></div>
-            <div class="magic-top-title">✨ CORRECT! ✨</div>
-            <div class="magic-subtitle-sparkle">MAGICAL MATHS MASTER!</div>
-        </div>
-        <div class="gliding-companion-rocket" id="glidingCompanionRocket">
-            <img src="assets/twilight.png" id="glidingCompanionImg" alt="Companion" onerror="handleImageFallback(this)">
-        </div>
-        <div class="royal-scroll-landing-right" id="royalScrollLandingRight">
-            <div class="royal-unfurled-scroll">
-                <div class="royal-scroll-title" id="royalScrollTitle">🌟 VERIFIED WITH PERFECTION! 🌟</div>
-                <div class="royal-scroll-body" id="royalScrollBody">
-                    Amazing work, Zaina! Your decimal calculation is correct!
-                </div>
-                <button class="royal-btn-continue" onclick="closeGrandCelebration()">Continue Quest ➔</button>
+<canvas id="milkyWayCanvas"></canvas>
+<canvas id="confettiSnowCanvas"></canvas>
+<div id="screenDimOverlay"></div>
+
+<!-- GRAND CELEBRATION STAGE -->
+<div id="grandCelebrationStage">
+    <canvas id="grandFinaleCanvas"></canvas>
+    <div class="magic-banner-centerpiece" id="magicCenterpiece">
+        <div class="magic-crown-halo"></div>
+        <div class="magic-top-title">✨ CORRECT! ✨</div>
+        <div class="magic-subtitle-sparkle">MAGICAL MATHS MASTER!</div>
+    </div>
+    <div class="gliding-companion-rocket" id="glidingCompanionRocket">
+        <img src="assets/twilight.png" id="glidingCompanionImg" alt="Companion" onerror="handleImageFallback(this)">
+    </div>
+    <div class="royal-scroll-landing-right" id="royalScrollLandingRight">
+        <div class="royal-unfurled-scroll">
+            <div class="royal-scroll-title" id="royalScrollTitle">🌟 VERIFIED WITH PERFECTION! 🌟</div>
+            <div class="royal-scroll-body" id="royalScrollBody">
+                Amazing work, Zaina! Your decimal calculation is correct!
             </div>
-            <div class="royal-victory-companion">
-                <img src="assets/twilight.png" id="royalVictoryImg" alt="Victory Companion" onerror="handleImageFallback(this)">
+            <button class="royal-btn-continue" onclick="closeGrandCelebration()">Continue Quest ➔</button>
+        </div>
+        <div class="royal-victory-companion">
+            <img src="assets/twilight.png" id="royalVictoryImg" alt="Victory Companion" onerror="handleImageFallback(this)">
+        </div>
+    </div>
+</div>
+
+<!-- Top Header & Navigation Bar -->
+<header class="relative z-20 bg-slate-900/85 backdrop-blur-md border-b border-white/10 text-white shadow-lg py-3 px-6 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+        <a href="index.html" class="icon-pill-btn" title="Exit to Hub" onclick="exitToHub(event)">🏰</a>
+        <div class="flex flex-col">
+            <h1 class="text-base md:text-xl font-bold font-display tracking-wide flex items-center gap-2">
+                ✨ Zaina's Magical Maths <span class="bg-pink-500/30 border border-pink-400 text-pink-200 text-xs px-2.5 py-0.5 rounded-full">Ex 5.4</span>
+            </h1>
+        </div>
+    </div>
+
+    <div class="flex items-center gap-2">
+        <button class="icon-pill-btn" id="dimToggleBtn" onclick="toggleScreenDim()" title="Dim Screen">💡</button>
+        <button onclick="returnToGateway()" id="gatewayNavBtn" class="hidden bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs px-3.5 py-2 rounded-xl shadow transition flex items-center gap-1.5 border border-purple-400">
+            🏰 Castle Gateway
+        </button>
+    </div>
+</header>
+
+<!-- Main Widescreen Container Optimized for Galaxy Tab S11 -->
+<main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center relative z-10 overflow-hidden">
+    
+    <!-- VIEW 1: THE ROYAL MAGIC CASTLE GATEWAY (HUB) -->
+    <div id="gatewayView" class="w-full flex flex-col gap-6 items-center animate-fade-in">
+        <div class="text-center">
+            <h2 class="text-2xl md:text-4xl font-bold font-display text-white drop-shadow-md">Choose Your Royal Realm</h2>
+            <p class="text-purple-200 text-sm md:text-base mt-1">Select a magical tower to start your Exercise 5.4 decimal quest!</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full max-w-4xl">
+            <!-- Addition Gateway Card -->
+            <div onclick="switchRealm('addition')" class="gateway-card rounded-2xl p-5 flex items-center gap-5 border-l-8 border-purple-600">
+                <img src="assets/twilight.png" class="gateway-pony-avatar" alt="Twilight Sparkle" onerror="handleImageFallback(this)"/>
+                <div class="flex-1">
+                    <span class="text-xs font-bold uppercase tracking-wider text-purple-600">Tower I</span>
+                    <h3 class="text-xl font-bold text-slate-900">Twilight's Library</h3>
+                    <p class="text-sm text-slate-600 font-medium">Addition of Decimals (Q1)</p>
+                </div>
+                <span class="text-purple-600 font-bold text-2xl">➔</span>
+            </div>
+
+            <!-- Subtraction Gateway Card -->
+            <div onclick="switchRealm('subtraction')" class="gateway-card rounded-2xl p-5 flex items-center gap-5 border-l-8 border-indigo-600">
+                <img src="assets/luna.png" class="gateway-pony-avatar" alt="Princess Luna" onerror="handleImageFallback(this)"/>
+                <div class="flex-1">
+                    <span class="text-xs font-bold uppercase tracking-wider text-indigo-600">Tower II</span>
+                    <h3 class="text-xl font-bold text-slate-900">Princess Luna's Observatory</h3>
+                    <p class="text-sm text-slate-600 font-medium">Subtraction of Decimals (Q2)</p>
+                </div>
+                <span class="text-indigo-600 font-bold text-2xl">➔</span>
+            </div>
+
+            <!-- Simplify Gateway Card -->
+            <div onclick="switchRealm('simplify')" class="gateway-card rounded-2xl p-5 flex items-center gap-5 border-l-8 border-blue-600">
+                <img src="assets/rainbow.png" class="gateway-pony-avatar" alt="Rainbow Dash" onerror="handleImageFallback(this)"/>
+                <div class="flex-1">
+                    <span class="text-xs font-bold uppercase tracking-wider text-blue-600">Tower III</span>
+                    <h3 class="text-xl font-bold text-slate-900">Rainbow Dash's Cloud Arena</h3>
+                    <p class="text-sm text-slate-600 font-medium">Simplify Expressions (Q3)</p>
+                </div>
+                <span class="text-blue-600 font-bold text-2xl">➔</span>
+            </div>
+
+            <!-- Word & Perimeter Gateway Card -->
+            <div onclick="switchRealm('wordperimeter')" class="gateway-card rounded-2xl p-5 flex items-center gap-5 border-l-8 border-amber-500">
+                <img src="assets/celestia.png" class="gateway-pony-avatar" alt="Princess Celestia" onerror="handleImageFallback(this)"/>
+                <div class="flex-1">
+                    <span class="text-xs font-bold uppercase tracking-wider text-amber-600">Tower IV</span>
+                    <h3 class="text-xl font-bold text-slate-900">Celestia's Sun Palace</h3>
+                    <p class="text-sm text-slate-600 font-medium">Word Problems & Perimeter (Q4-Q5)</p>
+                </div>
+                <span class="text-amber-500 font-bold text-2xl">➔</span>
             </div>
         </div>
     </div>
 
-    <!-- Top Header & Navigation Bar -->
-    <header class="relative z-20 bg-slate-900/85 backdrop-blur-md border-b border-white/10 text-white shadow-lg py-3 px-6 flex justify-between items-center">
-        <div class="flex items-center gap-3">
-            <a href="index.html" class="icon-pill-btn" title="Exit to Hub" onclick="exitToHub(event)">🏰</a>
-            <div class="flex flex-col">
-                <h1 class="text-base md:text-xl font-bold font-display tracking-wide flex items-center gap-2">
-                    ✨ Zaina's Magical Maths <span class="bg-pink-500/30 border border-pink-400 text-pink-200 text-xs px-2.5 py-0.5 rounded-full">Ex 5.4</span>
-                </h1>
-            </div>
-        </div>
+    <!-- VIEW 2: ACTIVE 4D NOTEBOOK BINDER WORKSPACE (WIDESCREEN EXPANDED FOR TABLET) -->
+    <div id="activeCardContainer" class="w-full h-[calc(100vh-140px)] hidden card-4d-wrapper flex flex-col">
+        <!-- Rendered dynamically -->
+    </div>
 
-        <div class="flex items-center gap-2">
-            <button class="icon-pill-btn" id="dimToggleBtn" onclick="toggleScreenDim()" title="Dim Screen">💡</button>
-            <button onclick="returnToGateway()" id="gatewayNavBtn" class="hidden bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs px-3.5 py-2 rounded-xl shadow transition flex items-center gap-1.5 border border-purple-400">
-                🏰 Castle Gateway
-            </button>
-        </div>
-    </header>
+</main>
 
-    <!-- Main Container -->
-    <main class="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center relative z-10 overflow-hidden">
-        
-        <!-- VIEW 1: THE ROYAL MAGIC CASTLE GATEWAY (HUB) -->
-        <div id="gatewayView" class="w-full flex flex-col gap-6 items-center animate-fade-in">
-            <div class="text-center">
-                <h2 class="text-2xl md:text-3xl font-bold font-display text-white drop-shadow-md">Choose Your Royal Realm</h2>
-                <p class="text-purple-200 text-sm mt-1">Select a magical tower to start your Exercise 5.4 decimal quest!</p>
-            </div>
+<!-- Footer -->
+<footer class="relative z-20 bg-slate-900 text-slate-400 py-2.5 text-center text-xs border-t border-white/10">
+    Exercise 5.4 • Grade 5 Mathematics • Royal Academy
+</footer>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-3xl">
-                <!-- Addition Gateway Card -->
-                <div onclick="switchRealm('addition')" class="gateway-card rounded-2xl p-4 flex items-center gap-4 border-l-8 border-purple-600">
-                    <img src="assets/twilight.png" class="gateway-pony-avatar" alt="Twilight Sparkle" onerror="handleImageFallback(this)"/>
-                    <div class="flex-1">
-                        <span class="text-xs font-bold uppercase tracking-wider text-purple-600">Tower I</span>
-                        <h3 class="text-lg font-bold text-slate-900">Twilight's Library</h3>
-                        <p class="text-xs text-slate-600 font-medium">Addition of Decimals (Q1)</p>
-                    </div>
-                    <span class="text-purple-600 font-bold text-xl">➔</span>
-                </div>
+<script>
+    function handleImageFallback(imgEl) {
+        imgEl.onerror = null;
+        imgEl.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><circle cx='60' cy='60' r='56' fill='%23EDE9FE' stroke='%23C4B5FD' stroke-width='4'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='56'>🦄</text></svg>";
+    }
 
-                <!-- Subtraction Gateway Card -->
-                <div onclick="switchRealm('subtraction')" class="gateway-card rounded-2xl p-4 flex items-center gap-4 border-l-8 border-indigo-600">
-                    <img src="assets/luna.png" class="gateway-pony-avatar" alt="Princess Luna" onerror="handleImageFallback(this)"/>
-                    <div class="flex-1">
-                        <span class="text-xs font-bold uppercase tracking-wider text-indigo-600">Tower II</span>
-                        <h3 class="text-lg font-bold text-slate-900">Princess Luna's Observatory</h3>
-                        <p class="text-xs text-slate-600 font-medium">Subtraction of Decimals (Q2)</p>
-                    </div>
-                    <span class="text-indigo-600 font-bold text-xl">➔</span>
-                </div>
+    let audioCtx = null;
+    function getAudioContext() {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        return audioCtx;
+    }
 
-                <!-- Simplify Gateway Card -->
-                <div onclick="switchRealm('simplify')" class="gateway-card rounded-2xl p-4 flex items-center gap-4 border-l-8 border-blue-600">
-                    <img src="assets/rainbow.png" class="gateway-pony-avatar" alt="Rainbow Dash" onerror="handleImageFallback(this)"/>
-                    <div class="flex-1">
-                        <span class="text-xs font-bold uppercase tracking-wider text-blue-600">Tower III</span>
-                        <h3 class="text-lg font-bold text-slate-900">Rainbow Dash's Cloud Arena</h3>
-                        <p class="text-xs text-slate-600 font-medium">Simplify Expressions (Q3)</p>
-                    </div>
-                    <span class="text-blue-600 font-bold text-xl">➔</span>
-                </div>
+    function playMagicWhoosh(isOpening = true) {
+        try {
+            const ctx = getAudioContext();
+            const t0 = ctx.currentTime;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            if (isOpening) {
+                osc.frequency.setValueAtTime(250, t0);
+                osc.frequency.exponentialRampToValueAtTime(650, t0 + 0.35);
+            } else {
+                osc.frequency.setValueAtTime(600, t0);
+                osc.frequency.exponentialRampToValueAtTime(220, t0 + 0.35);
+            }
+            gain.gain.setValueAtTime(0.2, t0);
+            gain.gain.linearRampToValueAtTime(0.01, t0 + 0.4);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(t0);
+            osc.stop(t0 + 0.4);
+        } catch (e) {}
+    }
 
-                <!-- Word & Perimeter Gateway Card -->
-                <div onclick="switchRealm('wordperimeter')" class="gateway-card rounded-2xl p-4 flex items-center gap-4 border-l-8 border-amber-500">
-                    <img src="assets/celestia.png" class="gateway-pony-avatar" alt="Princess Celestia" onerror="handleImageFallback(this)"/>
-                    <div class="flex-1">
-                        <span class="text-xs font-bold uppercase tracking-wider text-amber-600">Tower IV</span>
-                        <h3 class="text-lg font-bold text-slate-900">Celestia's Sun Palace</h3>
-                        <p class="text-xs text-slate-600 font-medium">Word Problems & Perimeter (Q4-Q5)</p>
-                    </div>
-                    <span class="text-amber-500 font-bold text-xl">➔</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- VIEW 2: ACTIVE 4D NOTEBOOK BINDER WORKSPACE -->
-        <div id="activeCardContainer" class="w-full hidden card-4d-wrapper">
-            <!-- Rendered dynamically -->
-        </div>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="relative z-20 bg-slate-900 text-slate-400 py-2.5 text-center text-xs border-t border-white/10">
-        Exercise 5.4 • Grade 5 Mathematics • Royal Academy
-    </footer>
-
-    <script>
-        function handleImageFallback(imgEl) {
-            imgEl.onerror = null;
-            imgEl.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><circle cx='60' cy='60' r='56' fill='%23EDE9FE' stroke='%23C4B5FD' stroke-width='4'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='56'>🦄</text></svg>";
-        }
-
-        let audioCtx = null;
-        function getAudioContext() {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            return audioCtx;
-        }
-
-        function playMagicWhoosh(isOpening = true) {
-            try {
-                const ctx = getAudioContext();
-                const t0 = ctx.currentTime;
+    function playGrandFanfare() {
+        try {
+            const ctx = getAudioContext();
+            const t0 = ctx.currentTime;
+            [392.00, 523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
                 osc.type = 'triangle';
-                if (isOpening) {
-                    osc.frequency.setValueAtTime(250, t0);
-                    osc.frequency.exponentialRampToValueAtTime(650, t0 + 0.35);
-                } else {
-                    osc.frequency.setValueAtTime(600, t0);
-                    osc.frequency.exponentialRampToValueAtTime(220, t0 + 0.35);
-                }
-                gain.gain.setValueAtTime(0.2, t0);
-                gain.gain.linearRampToValueAtTime(0.01, t0 + 0.4);
+                osc.frequency.setValueAtTime(freq, t0 + idx * 0.08);
+                gain.gain.setValueAtTime(0.25, t0 + idx * 0.08);
+                gain.gain.exponentialRampToValueAtTime(0.001, t0 + idx * 0.08 + 1.2);
                 osc.connect(gain);
                 gain.connect(ctx.destination);
-                osc.start(t0);
-                osc.stop(t0 + 0.4);
-            } catch (e) {}
+                osc.start(t0 + idx * 0.08);
+                osc.stop(t0 + idx * 0.08 + 1.25);
+            });
+        } catch (e) {}
+    }
+
+    const curriculumData = {
+        addition: {
+            realmName: "Twilight Sparkle's Library",
+            pony: "Twilight Sparkle",
+            avatar: "assets/twilight.png",
+            themeColor: "from-purple-900 to-indigo-900",
+            questions: [
+                { id: "q1_a", label: "1.a", text: "Add: 79.9 and 87.09", answer: "166.99" },
+                { id: "q1_b", label: "1.b", text: "Add: 98.52 and 43.87", answer: "142.39" },
+                { id: "q1_c", label: "1.c", text: "Add: 23.45, 13.101 and 345.5", answer: "382.051" },
+                { id: "q1_d", label: "1.d", text: "Add: 365.21 and 126.98", answer: "492.19" },
+                { id: "q1_e", label: "1.e", text: "Add: 123.86, 98.545 and 434.098", answer: "656.503" },
+                { id: "q1_f", label: "1.f", text: "Add: 326.18, 23.2 and 50.36", answer: "399.74" }
+            ]
+        },
+        subtraction: {
+            realmName: "Princess Luna's Observatory",
+            pony: "Princess Luna",
+            avatar: "assets/luna.png",
+            themeColor: "from-slate-900 to-blue-950",
+            questions: [
+                { id: "q2_a", label: "2.a", text: "Subtract 12.856 from 54.2", answer: "41.344" },
+                { id: "q2_b", label: "2.b", text: "Subtract 0.11 from 10.8", answer: "10.69" },
+                { id: "q2_c", label: "2.c", text: "Subtract 39.26 from 50.04", answer: "10.78" },
+                { id: "q2_d", label: "2.d", text: "Subtract 53.98 from 2235.67", answer: "2181.69" },
+                { id: "q2_e", label: "2.e", text: "Subtract 202.184 from 400.87", answer: "198.686" },
+                { id: "q2_f", label: "2.f", text: "Subtract 113.7 from 565.54", answer: "451.84" }
+            ]
+        },
+        simplify: {
+            realmName: "Rainbow Dash's Cloud Arena",
+            pony: "Rainbow Dash",
+            avatar: "assets/rainbow.png",
+            themeColor: "from-blue-700 to-cyan-900",
+            questions: [
+                { id: "q3_a", label: "3.a", text: "Simplify: 11.56 + 9.08 - 15.77", answer: "4.87" },
+                { id: "q3_b", label: "3.b", text: "Simplify: 134.24 - 87.09 + 67.98", answer: "115.13" },
+                { id: "q3_c", label: "3.c", text: "Simplify: 68.176 - 32.1 - 12.11", answer: "23.966" }
+            ]
+        },
+        wordperimeter: {
+            realmName: "Celestia's Sun Palace",
+            pony: "Princess Celestia",
+            avatar: "assets/celestia.png",
+            themeColor: "from-amber-700 to-orange-950",
+            questions: [
+                { id: "q4", label: "Q4", text: "Simran bought two articles worth ₹120.45 and ₹450.85. She paid ₹700 to the shopkeeper. How much money will she get back?", answer: "128.70" },
+                { id: "q5", label: "Q5", text: "Calculate the perimeter of the rectangle (Length = 11.26 cm, Breadth = 5.6 cm)", answer: "33.72" }
+            ]
         }
+    };
 
-        function playGrandFanfare() {
-            try {
-                const ctx = getAudioContext();
-                const t0 = ctx.currentTime;
-                [392.00, 523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(freq, t0 + idx * 0.08);
-                    gain.gain.setValueAtTime(0.25, t0 + idx * 0.08);
-                    gain.gain.exponentialRampToValueAtTime(0.001, t0 + idx * 0.08 + 1.2);
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc.start(t0 + idx * 0.08);
-                    osc.stop(t0 + idx * 0.08 + 1.25);
-                });
-            } catch (e) {}
-        }
+    let currentRealmKey = 'addition';
+    let currentIndexMap = { addition: 0, subtraction: 0, simplify: 0, wordperimeter: 0 };
+    const activePages = {};
+    const canvasStates = {};
 
-        const curriculumData = {
-            addition: {
-                realmName: "Twilight Sparkle's Library",
-                pony: "Twilight Sparkle",
-                avatar: "assets/twilight.png",
-                themeColor: "from-purple-900 to-indigo-900",
-                questions: [
-                    { id: "q1_a", label: "1.a", text: "Add: 79.9 and 87.09", answer: "166.99" },
-                    { id: "q1_b", label: "1.b", text: "Add: 98.52 and 43.87", answer: "142.39" },
-                    { id: "q1_c", label: "1.c", text: "Add: 23.45, 13.101 and 345.5", answer: "382.051" },
-                    { id: "q1_d", label: "1.d", text: "Add: 365.21 and 126.98", answer: "492.19" },
-                    { id: "q1_e", label: "1.e", text: "Add: 123.86, 98.545 and 434.098", answer: "656.503" },
-                    { id: "q1_f", label: "1.f", text: "Add: 326.18, 23.2 and 50.36", answer: "399.74" }
-                ]
-            },
-            subtraction: {
-                realmName: "Princess Luna's Observatory",
-                pony: "Princess Luna",
-                avatar: "assets/luna.png",
-                themeColor: "from-slate-900 to-blue-950",
-                questions: [
-                    { id: "q2_a", label: "2.a", text: "Subtract 12.856 from 54.2", answer: "41.344" },
-                    { id: "q2_b", label: "2.b", text: "Subtract 0.11 from 10.8", answer: "10.69" },
-                    { id: "q2_c", label: "2.c", text: "Subtract 39.26 from 50.04", answer: "10.78" },
-                    { id: "q2_d", label: "2.d", text: "Subtract 53.98 from 2235.67", answer: "2181.69" },
-                    { id: "q2_e", label: "2.e", text: "Subtract 202.184 from 400.87", answer: "198.686" },
-                    { id: "q2_f", label: "2.f", text: "Subtract 113.7 from 565.54", answer: "451.84" }
-                ]
-            },
-            simplify: {
-                realmName: "Rainbow Dash's Cloud Arena",
-                pony: "Rainbow Dash",
-                avatar: "assets/rainbow.png",
-                themeColor: "from-blue-700 to-cyan-900",
-                questions: [
-                    { id: "q3_a", label: "3.a", text: "Simplify: 11.56 + 9.08 - 15.77", answer: "4.87" },
-                    { id: "q3_b", label: "3.b", text: "Simplify: 134.24 - 87.09 + 67.98", answer: "115.13" },
-                    { id: "q3_c", label: "3.c", text: "Simplify: 68.176 - 32.1 - 12.11", answer: "23.966" }
-                ]
-            },
-            wordperimeter: {
-                realmName: "Celestia's Sun Palace",
-                pony: "Princess Celestia",
-                avatar: "assets/celestia.png",
-                themeColor: "from-amber-700 to-orange-950",
-                questions: [
-                    { id: "q4", label: "Q4", text: "Simran bought two articles worth ₹120.45 and ₹450.85. She paid ₹700 to the shopkeeper. How much money will she get back?", answer: "128.70" },
-                    { id: "q5", label: "Q5", text: "Calculate the perimeter of the rectangle (Length = 11.26 cm, Breadth = 5.6 cm)", answer: "33.72" }
-                ]
-            }
-        };
+    function switchRealm(realmKey) {
+        playMagicWhoosh(true);
+        currentRealmKey = realmKey;
+        document.getElementById('gatewayView').classList.add('hidden');
+        document.getElementById('activeCardContainer').classList.remove('hidden');
+        document.getElementById('gatewayNavBtn').classList.remove('hidden');
+        renderActiveCard(true);
+    }
 
-        let currentRealmKey = 'addition';
-        let currentIndexMap = { addition: 0, subtraction: 0, simplify: 0, wordperimeter: 0 };
-        const activePages = {};
-        const canvasStates = {};
+    function returnToGateway() {
+        playMagicWhoosh(false);
+        const realm = curriculumData[currentRealmKey];
+        const q = realm.questions[currentIndexMap[currentRealmKey]];
+        saveCurrentCanvasInk(q.id);
 
-        function switchRealm(realmKey) {
-            playMagicWhoosh(true);
-            currentRealmKey = realmKey;
-            document.getElementById('gatewayView').classList.add('hidden');
-            document.getElementById('activeCardContainer').classList.remove('hidden');
-            document.getElementById('gatewayNavBtn').classList.remove('hidden');
+        document.getElementById('activeCardContainer').classList.add('hidden');
+        document.getElementById('gatewayNavBtn').classList.add('hidden');
+        document.getElementById('gatewayView').classList.remove('hidden');
+    }
+
+    function changeQuestion(direction) {
+        playMagicWhoosh(true);
+        const realm = curriculumData[currentRealmKey];
+        let newIndex = currentIndexMap[currentRealmKey] + direction;
+        if(newIndex >= 0 && newIndex < realm.questions.length) {
+            currentIndexMap[currentRealmKey] = newIndex;
             renderActiveCard(true);
         }
+    }
 
-        function returnToGateway() {
-            playMagicWhoosh(false);
-            const realm = curriculumData[currentRealmKey];
-            const q = realm.questions[currentIndexMap[currentRealmKey]];
-            saveCurrentCanvasInk(q.id);
-
-            document.getElementById('activeCardContainer').classList.add('hidden');
-            document.getElementById('gatewayNavBtn').classList.add('hidden');
-            document.getElementById('gatewayView').classList.remove('hidden');
+    function switchPageSmoothly(qId, delta) {
+        if(!activePages[qId]) activePages[qId] = 1;
+        let newPage = activePages[qId] + delta;
+        if(newPage >= 1 && newPage <= 2) {
+            saveCurrentCanvasInk(qId);
+            activePages[qId] = newPage;
+            document.getElementById(`pageIndicator_${qId}`).innerText = `Pg ${newPage} / 2`;
+            loadCanvasInk(qId, newPage);
         }
+    }
 
-        function changeQuestion(direction) {
-            playMagicWhoosh(true);
-            const realm = curriculumData[currentRealmKey];
-            let newIndex = currentIndexMap[currentRealmKey] + direction;
-            if(newIndex >= 0 && newIndex < realm.questions.length) {
-                currentIndexMap[currentRealmKey] = newIndex;
-                renderActiveCard(true);
-            }
-        }
+    function renderActiveCard(animate = false) {
+        const container = document.getElementById('activeCardContainer');
+        const realm = curriculumData[currentRealmKey];
+        const qIndex = currentIndexMap[currentRealmKey];
+        const q = realm.questions[qIndex];
+        const savedAnswer = localStorage.getItem(`zaina_ans_${q.id}`) || '';
+        
+        if(!activePages[q.id]) activePages[q.id] = 1;
+        const currentPage = activePages[q.id];
 
-        function switchPageSmoothly(qId, delta) {
-            if(!activePages[qId]) activePages[qId] = 1;
-            let newPage = activePages[qId] + delta;
-            if(newPage >= 1 && newPage <= 2) {
-                saveCurrentCanvasInk(qId);
-                activePages[qId] = newPage;
-                document.getElementById(`pageIndicator_${qId}`).innerText = `Pg ${newPage} / 2`;
-                loadCanvasInk(qId, newPage);
-            }
-        }
-
-        function renderActiveCard(animate = false) {
-            const container = document.getElementById('activeCardContainer');
-            const realm = curriculumData[currentRealmKey];
-            const qIndex = currentIndexMap[currentRealmKey];
-            const q = realm.questions[qIndex];
-            const savedAnswer = localStorage.getItem(`zaina_ans_${q.id}`) || '';
-            
-            if(!activePages[q.id]) activePages[q.id] = 1;
-            const currentPage = activePages[q.id];
-
-            container.innerHTML = `
-                <div class="bg-white rounded-2xl card-4d ${animate ? 'page-flip-anim' : ''} border border-slate-200 overflow-hidden relative">
-                    <!-- Top Navigation & Question Bar -->
-                    <div class="p-3.5 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                        <div class="flex items-center gap-3">
-                            <span class="bg-indigo-600 text-white font-bold text-xs px-2.5 py-0.5 rounded-lg">${q.label}</span>
-                            <p class="font-medium text-slate-800 text-sm md:text-base">${q.text}</p>
-                        </div>
-                        <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-                            <input type="text" id="ans_${q.id}" value="${savedAnswer}" placeholder="Answer..." 
-                                class="px-3 py-1.5 rounded-lg border border-slate-300 text-sm w-28 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold text-center"
-                                onchange="saveAnswer('${q.id}')">
-                            <button onclick="checkAnswer('${q.id}', '${q.answer}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg transition shadow-sm text-sm">✅</button>
-                        </div>
+        container.innerHTML = `
+            <div class="bg-white rounded-3xl card-4d ${animate ? 'page-flip-anim' : ''} border border-slate-200 overflow-hidden relative flex-1 flex flex-col">
+                <!-- Top Navigation & Question Bar -->
+                <div class="p-4 md:p-5 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <div class="flex items-center gap-3">
+                        <span class="bg-indigo-600 text-white font-bold text-sm px-3.5 py-1 rounded-xl shadow">${q.label}</span>
+                        <p class="font-bold text-slate-900 text-base md:text-lg">${q.text}</p>
                     </div>
-
-                    <!-- Question Pagination Bar -->
-                    <div class="bg-indigo-50/50 px-4 py-2 border-b border-indigo-100 flex justify-between items-center text-xs text-indigo-900 font-semibold">
-                        <span>${realm.realmName} (${qIndex + 1} of ${realm.questions.length})</span>
-                        <div class="flex gap-2">
-                            <button onclick="changeQuestion(-1)" ${qIndex === 0 ? 'disabled opacity-40' : ''} class="px-2.5 py-1 bg-white border border-indigo-200 rounded shadow-sm">⬅️ Prev</button>
-                            <button onclick="changeQuestion(1)" ${qIndex === realm.questions.length - 1 ? 'disabled opacity-40' : ''} class="px-2.5 py-1 bg-white border border-indigo-200 rounded shadow-sm">Next ➡️</button>
-                        </div>
-                    </div>
-
-                    <!-- Workspace Area -->
-                    <div class="relative h-[430px] bg-slate-100 overflow-hidden">
-                        
-                        <!-- Opened Notebook Canvas -->
-                        <div class="absolute inset-0 flex flex-col bg-white">
-                            <!-- Toolbar -->
-                            <div class="bg-amber-950 text-amber-100 p-2.5 flex justify-between items-center z-10 shadow-md">
-                                <div class="flex items-center gap-2">
-                                    <button onclick="setTool('${q.id}', 'pen')" id="toolPen_${q.id}" class="p-1.5 rounded bg-amber-600 text-white shadow">✏️</button>
-                                    <button onclick="setTool('${q.id}', 'line')" id="toolLine_${q.id}" class="p-1.5 rounded hover:bg-amber-800">📏</button>
-                                    <button onclick="setTool('${q.id}', 'eraser')" id="toolEraser_${q.id}" class="p-1.5 rounded hover:bg-amber-800">🧹</button>
-                                    <button onclick="clearCanvas('${q.id}')" class="p-1.5 rounded hover:bg-amber-800 text-red-300">🗑️</button>
-                                </div>
-
-                                <!-- Smooth Page Navigation (Pg 1 / 2) -->
-                                <div class="flex items-center bg-amber-900 px-3 py-1 rounded-xl border border-amber-700 shadow-inner gap-3">
-                                    <button onclick="switchPageSmoothly('${q.id}', -1)" class="hover:scale-110 transition">◀️</button>
-                                    <span id="pageIndicator_${q.id}" class="text-xs font-bold tracking-wider text-amber-200">Pg ${currentPage} / 2</span>
-                                    <button onclick="switchPageSmoothly('${q.id}', 1)" class="hover:scale-110 transition">▶️</button>
-                                </div>
-
-                                <div class="flex items-center gap-2">
-                                    <button onclick="toggleGrid('${q.id}')" class="bg-amber-600 px-2.5 py-1 rounded text-xs font-bold shadow">⚡ Grid</button>
-                                    <div class="flex gap-1.5 ml-2">
-                                        <button onclick="setColor('${q.id}', '#1e1b4b')" class="w-5 h-5 rounded-full bg-slate-900 border-2 border-white shadow"></button>
-                                        <button onclick="setColor('${q.id}', '#2563eb')" class="w-5 h-5 rounded-full bg-blue-600 border-2 border-white shadow"></button>
-                                        <button onclick="setColor('${q.id}', '#dc2626')" class="w-5 h-5 rounded-full bg-red-600 border-2 border-white shadow"></button>
-                                    </div>
-                                    <button onclick="closeBinder('${q.id}')" class="bg-slate-800 text-white text-xs px-2.5 py-1 rounded font-bold shadow ml-2">📕 Cover</button>
-                                </div>
-                            </div>
-
-                            <!-- Fixed Size Graph Box Writing Surface with Full-Size Guiding Pony in Corner -->
-                            <div class="flex-1 graph-paper relative overflow-hidden" id="canvasArea_${q.id}">
-                                <!-- Full-Size Guiding Pony in Bottom-Right Corner looking over Zaina's work -->
-                                <div class="absolute right-2 bottom-0 pointer-events-none z-10 opacity-60 hover:opacity-90 transition duration-300 flex flex-col items-end">
-                                    <img src="${realm.avatar}" class="w-52 h-52 md:w-64 md:h-64 object-contain filter drop-shadow-[0_20px_30px_rgba(0,0,0,0.4)] transform rotate-[-4deg]" alt="${realm.pony}" onerror="handleImageFallback(this)"/>
-                                </div>
-
-                                <!-- Place Value Grid Overlay with Empty Carry/Borrow Top Row -->
-                                <div id="gridOverlay_${q.id}" class="absolute inset-0 pointer-events-none hidden flex flex-col bg-indigo-50/10 z-20">
-                                    <div class="h-10 border-b-2 border-indigo-400 grid grid-cols-8 divide-x divide-indigo-300 bg-amber-50/20">
-                                        <div class="col-span-8"></div>
-                                    </div>
-                                    <div class="flex-1 grid grid-cols-8 divide-x divide-indigo-300 border-b-2 border-indigo-400">
-                                        <div class="text-center text-[10px] font-bold text-indigo-700 pt-1">TH</div>
-                                        <div class="text-center text-[10px] font-bold text-indigo-700 pt-1">H</div>
-                                        <div class="text-center text-[10px] font-bold text-indigo-700 pt-1">T</div>
-                                        <div class="text-center text-[10px] font-bold text-indigo-700 pt-1">O</div>
-                                        <div class="text-center text-[10px] font-bold text-indigo-700 pt-1">.</div>
-                                        <div class="text-center text-[10px] font-bold text-indigo-700 pt-1">Ths</div>
-                                        <div class="text-center text-[10px] font-bold text-indigo-700 pt-1">Hths</div>
-                                        <div class="text-center text-[10px] font-bold text-indigo-700 pt-1">Thths</div>
-                                    </div>
-                                </div>
-                                <canvas id="canvas_${q.id}" class="absolute inset-0 w-full h-full cursor-crosshair touch-none z-10"></canvas>
-                            </div>
-                        </div>
-
-                        <!-- Full Hardcover Binder Cover with Companion Pony PNG -->
-                        <div id="binderCover_${q.id}" class="binder-cover absolute inset-0 bg-gradient-to-br ${realm.themeColor} text-white p-8 flex flex-col justify-between shadow-2xl z-30 cursor-pointer" onclick="openBinder('${q.id}')">
-                            <div class="flex justify-between items-start">
-                                <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase">Exercise 5.4</span>
-                                <span class="text-2xl">📖</span>
-                            </div>
-                            <div class="text-center flex flex-col items-center gap-3 my-auto">
-                                <img src="${realm.avatar}" class="w-28 h-28 object-contain filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)] animate-bounce" alt="${realm.pony}" onerror="handleImageFallback(this)"/>
-                                <h3 class="text-xl font-bold font-display">${realm.pony}</h3>
-                                <p class="text-sm text-purple-200">Tap anywhere on cover to open working slate</p>
-                                <span class="mt-2 bg-white text-indigo-900 font-bold px-4 py-2 rounded-xl shadow-lg text-xs uppercase tracking-widest">Open Binder ⚡</span>
-                            </div>
-                            <div class="text-center text-xs text-purple-300">
-                                ${q.label} • Protected & Saved Locally
-                            </div>
-                        </div>
-
+                    <div class="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
+                        <input type="text" id="ans_${q.id}" value="${savedAnswer}" placeholder="Answer..." 
+                            class="px-4 py-2 rounded-xl border-2 border-slate-300 text-base w-36 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-bold text-center bg-white shadow-inner"
+                            onchange="saveAnswer('${q.id}')">
+                        <button onclick="checkAnswer('${q.id}', '${q.answer}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl transition shadow-md text-base">✅ Verify</button>
                     </div>
                 </div>
-            `;
-            initCanvas(q.id, currentPage);
-        }
 
-        function initCanvas(id, page) {
-            const canvas = document.getElementById(`canvas_${id}`);
-            const container = document.getElementById(`canvasArea_${id}`);
-            const ctx = canvas.getContext('2d');
+                <!-- Question Pagination Bar -->
+                <div class="bg-indigo-50/70 px-5 py-2.5 border-b border-indigo-100 flex justify-between items-center text-sm text-indigo-950 font-bold">
+                    <span>${realm.realmName} (${qIndex + 1} of ${realm.questions.length})</span>
+                    <div class="flex gap-2.5">
+                        <button onclick="changeQuestion(-1)" ${qIndex === 0 ? 'disabled opacity-40' : ''} class="px-3 py-1.5 bg-white border border-indigo-200 rounded-lg shadow-sm font-bold">⬅️ Prev</button>
+                        <button onclick="changeQuestion(1)" ${qIndex === realm.questions.length - 1 ? 'disabled opacity-40' : ''} class="px-3 py-1.5 bg-white border border-indigo-200 rounded-lg shadow-sm font-bold">Next ➡️</button>
+                    </div>
+                </div>
 
-            canvas.width = container.clientWidth;
-            canvas.height = container.clientHeight;
+                <!-- Workspace Area (Expanded for Samsung Tab S11) -->
+                <div class="relative flex-1 bg-slate-100 overflow-hidden flex flex-col">
+                    
+                    <!-- Opened Notebook Canvas -->
+                    <div class="absolute inset-0 flex flex-col bg-white">
+                        <!-- Toolbar -->
+                        <div class="bg-amber-950 text-amber-100 p-3 flex justify-between items-center z-20 shadow-md">
+                            <div class="flex items-center gap-2.5">
+                                <button onclick="setTool('${q.id}', 'pen')" id="toolPen_${q.id}" class="p-2 rounded-lg bg-amber-600 text-white shadow font-bold text-sm">✏️ Pen</button>
+                                <button onclick="setTool('${q.id}', 'line')" id="toolLine_${q.id}" class="p-2 rounded-lg hover:bg-amber-800 text-sm">📏 Line</button>
+                                <button onclick="setTool('${q.id}', 'eraser')" id="toolEraser_${q.id}" class="p-2 rounded-lg hover:bg-amber-800 text-sm">🧹 Erase</button>
+                                <button onclick="clearCanvas('${q.id}')" class="p-2 rounded-lg hover:bg-amber-800 text-red-300 text-sm">🗑️ Clear</button>
+                            </div>
 
-            let drawing = false;
-            let startX = 0, startY = 0;
-            let snapshot = null;
-            if (!canvasStates[id]) canvasStates[id] = { tool: 'pen', color: '#1e1b4b' };
+                            <!-- Smooth Page Navigation (Pg 1 / 2) -->
+                            <div class="flex items-center bg-amber-900 px-4 py-1.5 rounded-xl border border-amber-700 shadow-inner gap-3">
+                                <button onclick="switchPageSmoothly('${q.id}', -1)" class="hover:scale-110 transition font-bold">◀️</button>
+                                <span id="pageIndicator_${q.id}" class="text-xs md:text-sm font-bold tracking-wider text-amber-200">Pg ${currentPage} / 2</span>
+                                <button onclick="switchPageSmoothly('${q.id}', 1)" class="hover:scale-110 transition font-bold">▶️</button>
+                            </div>
 
-            loadCanvasInk(id, page);
+                            <div class="flex items-center gap-3">
+                                <button onclick="toggleGrid('${q.id}')" class="bg-amber-600 hover:bg-amber-500 px-3 py-1.5 rounded-lg text-xs font-bold shadow text-white">⚡ Grid</button>
+                                <div class="flex gap-2 ml-1">
+                                    <button onclick="setColor('${q.id}', '#1e1b4b')" class="w-6 h-6 rounded-full bg-slate-900 border-2 border-white shadow"></button>
+                                    <button onclick="setColor('${q.id}', '#2563eb')" class="w-6 h-6 rounded-full bg-blue-600 border-2 border-white shadow"></button>
+                                    <button onclick="setColor('${q.id}', '#dc2626')" class="w-6 h-6 rounded-full bg-red-600 border-2 border-white shadow"></button>
+                                </div>
+                                <button onclick="closeBinder('${q.id}')" class="bg-slate-800 hover:bg-slate-700 text-white text-xs px-3 py-1.5 rounded-lg font-bold shadow ml-2">📕 Cover</button>
+                            </div>
+                        </div>
 
-            canvas.addEventListener('pointerdown', (e) => {
-                drawing = true;
-                startX = e.offsetX;
-                startY = e.offsetY;
+                        <!-- Fixed Size Graph Box Writing Surface with Full-Size Guiding Pony in Corner -->
+                        <div class="flex-1 graph-paper relative overflow-hidden flex flex-col" id="canvasArea_${q.id}">
+                            <!-- Full-Size Guiding Pony in Bottom-Right Corner -->
+                            <div class="absolute right-4 bottom-2 pointer-events-none z-10 opacity-70 hover:opacity-95 transition duration-300 flex flex-col items-end">
+                                <img src="${realm.avatar}" class="w-60 h-60 md:w-72 md:h-72 object-contain filter drop-shadow-[0_20px_35px_rgba(0,0,0,0.45)] transform rotate-[-4deg]" alt="${realm.pony}" onerror="handleImageFallback(this)"/>
+                            </div>
 
-                const activeTool = canvasStates[id].tool;
-                if (activeTool === 'line') {
-                    snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                } else {
-                    ctx.beginPath();
-                    ctx.moveTo(startX, startY);
-                }
-            });
+                            <!-- Place Value Grid Overlay with Empty Carry/Borrow Top Row -->
+                            <div id="gridOverlay_${q.id}" class="absolute inset-0 pointer-events-none hidden flex flex-col bg-indigo-50/10 z-20">
+                                <div class="h-12 border-b-2 border-indigo-400 grid grid-cols-8 divide-x divide-indigo-300 bg-amber-50/20">
+                                    <div class="col-span-8"></div>
+                                </div>
+                                <div class="flex-1 grid grid-cols-8 divide-x divide-indigo-300 border-b-2 border-indigo-400">
+                                    <div class="text-center text-xs font-bold text-indigo-700 pt-2">TH</div>
+                                    <div class="text-center text-xs font-bold text-indigo-700 pt-2">H</div>
+                                    <div class="text-center text-xs font-bold text-indigo-700 pt-2">T</div>
+                                    <div class="text-center text-xs font-bold text-indigo-700 pt-2">O</div>
+                                    <div class="text-center text-xs font-bold text-indigo-700 pt-2">.</div>
+                                    <div class="text-center text-xs font-bold text-indigo-700 pt-2">Ths</div>
+                                    <div class="text-center text-xs font-bold text-indigo-700 pt-2">Hths</div>
+                                    <div class="text-center text-xs font-bold text-indigo-700 pt-2">Thths</div>
+                                </div>
+                            </div>
+                            <canvas id="canvas_${q.id}" class="absolute inset-0 w-full h-full cursor-crosshair touch-none z-10"></canvas>
+                        </div>
+                    </div>
 
-            canvas.addEventListener('pointermove', (e) => {
-                if (!drawing) return;
-                const activeTool = canvasStates[id].tool;
+                    <!-- Full Hardcover Binder Cover with Companion Pony PNG -->
+                    <div id="binderCover_${q.id}" class="binder-cover absolute inset-0 bg-gradient-to-br ${realm.themeColor} text-white p-10 flex flex-col justify-between shadow-2xl z-30 cursor-pointer" onclick="openBinder('${q.id}')">
+                        <div class="flex justify-between items-start">
+                            <span class="bg-white/20 px-4 py-1.5 rounded-full text-sm font-bold tracking-wider uppercase">Exercise 5.4</span>
+                            <span class="text-3xl">📖</span>
+                        </div>
+                        <div class="text-center flex flex-col items-center gap-4 my-auto">
+                            <img src="${realm.avatar}" class="w-36 h-36 object-contain filter drop-shadow-[0_15px_25px_rgba(0,0,0,0.65)] animate-bounce" alt="${realm.pony}" onerror="handleImageFallback(this)"/>
+                            <h3 class="text-2xl font-bold font-display">${realm.pony}</h3>
+                            <p class="text-base text-purple-200">Tap anywhere on cover to open working slate</p>
+                            <span class="mt-3 bg-white text-indigo-900 font-bold px-6 py-3 rounded-2xl shadow-xl text-sm uppercase tracking-widest">Open Binder ⚡</span>
+                        </div>
+                        <div class="text-center text-sm text-purple-300 font-semibold">
+                            ${q.label} • Protected & Saved Locally
+                        </div>
+                    </div>
 
-                if (activeTool === 'line') {
-                    if (snapshot) ctx.putImageData(snapshot, 0, 0);
-                    ctx.beginPath();
-                    ctx.moveTo(startX, startY);
-                    ctx.lineTo(e.offsetX, e.offsetY);
-                    ctx.strokeStyle = canvasStates[id].color;
-                    ctx.lineWidth = 2.5;
-                    ctx.lineCap = 'round';
-                    ctx.stroke();
-                } else if (activeTool === 'eraser') {
-                    ctx.save();
-                    ctx.globalCompositeOperation = 'destination-out';
-                    ctx.lineWidth = 28;
-                    ctx.lineCap = 'round';
-                    ctx.lineTo(e.offsetX, e.offsetY);
-                    ctx.stroke();
-                    ctx.restore();
-                } else {
-                    ctx.save();
-                    ctx.globalCompositeOperation = 'source-over';
-                    ctx.strokeStyle = canvasStates[id].color;
-                    ctx.lineWidth = 2.5;
-                    ctx.lineCap = 'round';
-                    ctx.lineTo(e.offsetX, e.offsetY);
-                    ctx.stroke();
-                    ctx.restore();
-                }
-            });
+                </div>
+            </div>
+        `;
+        initCanvas(q.id, currentPage);
+    }
 
-            canvas.addEventListener('pointerup', () => {
-                if (drawing) {
-                    drawing = false;
-                    saveCurrentCanvasInk(id);
-                }
-            });
-        }
+    function initCanvas(id, page) {
+        const canvas = document.getElementById(`canvas_${id}`);
+        const container = document.getElementById(`canvasArea_${id}`);
+        const ctx = canvas.getContext('2d');
 
-        function loadCanvasInk(id, page) {
-            const canvas = document.getElementById(`canvas_${id}`);
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
 
-            const storageKey = `zaina_ink_${id}_p${page}`;
-            const savedInk = localStorage.getItem(storageKey);
-            if (savedInk) {
-                const img = new Image();
-                img.onload = () => ctx.drawImage(img, 0, 0);
-                img.src = savedInk;
-            }
-        }
+        let drawing = false;
+        let startX = 0, startY = 0;
+        let snapshot = null;
+        if (!canvasStates[id]) canvasStates[id] = { tool: 'pen', color: '#1e1b4b' };
 
-        function saveCurrentCanvasInk(id) {
-            const canvas = document.getElementById(`canvas_${id}`);
-            const page = activePages[id] || 1;
-            const storageKey = `zaina_ink_${id}_p${page}`;
-            localStorage.setItem(storageKey, canvas.toDataURL());
-        }
+        loadCanvasInk(id, page);
 
-        function setTool(id, tool) {
-            canvasStates[id].tool = tool;
-            ['Pen', 'Line', 'Eraser'].forEach(t => {
-                const btn = document.getElementById(`tool${t}_${id}`);
-                if(btn) {
-                    if(t.toLowerCase() === tool) {
-                        btn.className = "p-1.5 rounded bg-amber-600 text-white shadow";
-                    } else {
-                        btn.className = "p-1.5 rounded hover:bg-amber-800";
-                    }
-                }
-            });
-        }
+        canvas.addEventListener('pointerdown', (e) => {
+            drawing = true;
+            startX = e.offsetX;
+            startY = e.offsetY;
 
-        function setColor(id, color) {
-            canvasStates[id].color = color;
-            setTool(id, 'pen');
-        }
-
-        function toggleGrid(id) {
-            const overlay = document.getElementById(`gridOverlay_${id}`);
-            overlay.classList.toggle('hidden');
-        }
-
-        function clearCanvas(id) {
-            const canvas = document.getElementById(`canvas_${id}`);
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const page = activePages[id] || 1;
-            localStorage.removeItem(`zaina_ink_${id}_p${page}`);
-        }
-
-        function openBinder(id) {
-            playMagicWhoosh(true);
-            document.getElementById(`binderCover_${id}`).classList.add('binder-open');
-        }
-
-        function closeBinder(id) {
-            playMagicWhoosh(false);
-            saveCurrentCanvasInk(id);
-            document.getElementById(`binderCover_${id}`).classList.remove('binder-open');
-        }
-
-        function saveAnswer(id) {
-            const val = document.getElementById(`ans_${id}`).value;
-            localStorage.setItem(`zaina_ans_${id}`, val);
-        }
-
-        function checkAnswer(id, correctAnswer) {
-            const val = document.getElementById(`ans_${id}`).value.trim();
-            if (val === correctAnswer) {
-                triggerGrandCelebration();
+            const activeTool = canvasStates[id].tool;
+            if (activeTool === 'line') {
+                snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
             } else {
-                alert("Not quite yet! Check your working on the graph paper and try again.");
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
             }
-        }
+        });
 
-        // GRAND CELEBRATION STAGE CONTROLS
-        const grandStage = document.getElementById("grandCelebrationStage");
-        const grandCanvas = document.getElementById("grandFinaleCanvas");
-        const grandCtx = grandCanvas.getContext("2d", { alpha: true });
-        let grandAnimRunning = false;
-        let magicConfettiStorm = [];
+        canvas.addEventListener('pointermove', (e) => {
+            if (!drawing) return;
+            const activeTool = canvasStates[id].tool;
 
-        function resizeGrandCanvas() {
-            grandCanvas.width = window.innerWidth;
-            grandCanvas.height = window.innerHeight;
-        }
-        window.addEventListener("resize", resizeGrandCanvas);
-
-        function triggerGrandCelebration() {
-            resizeGrandCanvas();
-            grandStage.style.display = 'block';
-            grandAnimRunning = true;
-
-            playGrandFanfare();
-            document.getElementById("magicCenterpiece").className = 'magic-banner-centerpiece impact';
-
-            const realm = curriculumData[currentRealmKey];
-            document.getElementById("glidingCompanionImg").src = realm.avatar;
-            document.getElementById("royalVictoryImg").src = realm.avatar;
-
-            document.getElementById("royalScrollTitle").innerText = `🌟 ${realm.pony.toUpperCase()} VERIFIED! 🌟`;
-            document.getElementById("royalScrollBody").innerHTML = `
-                Magnificent work, Zaina!<br/>
-                You solved this calculation with complete precision!
-            `;
-
-            magicConfettiStorm = [];
-            const colors = ['#EC4899', '#C084FC', '#38BDF8', '#FDE047', '#4ADE80', '#FFFFFF'];
-            for (let i = 0; i < 70; i++) {
-                magicConfettiStorm.push({
-                    x: Math.random() * window.innerWidth,
-                    y: -20 - Math.random() * 200,
-                    size: Math.random() * 8 + 4,
-                    vx: (Math.random() - 0.5) * 2,
-                    vy: Math.random() * 3 + 2,
-                    color: colors[Math.floor(Math.random() * colors.length)]
-                });
+            if (activeTool === 'line') {
+                if (snapshot) ctx.putImageData(snapshot, 0, 0);
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(e.offsetX, e.offsetY);
+                ctx.strokeStyle = canvasStates[id].color;
+                ctx.lineWidth = 2.5;
+                ctx.lineCap = 'round';
+                ctx.stroke();
+            } else if (activeTool === 'eraser') {
+                ctx.save();
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.lineWidth = 28;
+                ctx.lineCap = 'round';
+                ctx.lineTo(e.offsetX, e.offsetY);
+                ctx.stroke();
+                ctx.restore();
+            } else {
+                ctx.save();
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.strokeStyle = canvasStates[id].color;
+                ctx.lineWidth = 2.5;
+                ctx.lineCap = 'round';
+                ctx.lineTo(e.offsetX, e.offsetY);
+                ctx.stroke();
+                ctx.restore();
             }
+        });
 
-            setTimeout(() => {
-                document.getElementById("royalScrollLandingRight").className = 'royal-scroll-landing-right landed';
-            }, 1200);
-
-            requestAnimationFrame(renderGrandScene);
-        }
-
-        function renderGrandScene() {
-            if (!grandAnimRunning) return;
-            grandCtx.clearRect(0, 0, grandCanvas.width, grandCanvas.height);
-            for (let p of magicConfettiStorm) {
-                p.x += p.vx;
-                p.y += p.vy;
-                if (p.y > window.innerHeight + 20) p.y = -10;
-                grandCtx.fillStyle = p.color;
-                grandCtx.beginPath();
-                grandCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                grandCtx.fill();
+        canvas.addEventListener('pointerup', () => {
+            if (drawing) {
+                drawing = false;
+                saveCurrentCanvasInk(id);
             }
-            requestAnimationFrame(renderGrandScene);
+        });
+    }
+
+    function loadCanvasInk(id, page) {
+        const canvas = document.getElementById(`canvas_${id}`);
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const storageKey = `zaina_ink_${id}_p${page}`;
+        const savedInk = localStorage.getItem(storageKey);
+        if (savedInk) {
+            const img = new Image();
+            img.onload = () => ctx.drawImage(img, 0, 0);
+            img.src = savedInk;
         }
+    }
 
-        function closeGrandCelebration() {
-            grandAnimRunning = false;
-            grandStage.style.display = 'none';
-            document.getElementById("magicCenterpiece").className = 'magic-banner-centerpiece';
-            document.getElementById("royalScrollLandingRight").className = 'royal-scroll-landing-right';
-            changeQuestion(1);
-        }
+    function saveCurrentCanvasInk(id) {
+        const canvas = document.getElementById(`canvas_${id}`);
+        const page = activePages[id] || 1;
+        const storageKey = `zaina_ink_${id}_p${page}`;
+        localStorage.setItem(storageKey, canvas.toDataURL());
+    }
 
-        // Immersive Milky Way Space Background with Real Realistic Planets & Galaxy Clouds
-        const mCanvas = document.getElementById("milkyWayCanvas");
-        const mCtx = mCanvas.getContext("2d");
-        let stars = [];
-        let planets = [];
-        let galaxies = [];
-
-        function resizeMilkyWay() {
-            mCanvas.width = window.innerWidth;
-            mCanvas.height = window.innerHeight;
-            stars = [];
-            for (let i = 0; i < 150; i++) {
-                stars.push({
-                    x: Math.random() * mCanvas.width,
-                    y: Math.random() * mCanvas.height,
-                    radius: Math.random() * 2.2 + 0.4,
-                    vx: (Math.random() - 0.5) * 0.15,
-                    vy: -Math.random() * 0.25 - 0.05,
-                    alpha: Math.random() * 0.85 + 0.15,
-                    dAlpha: (Math.random() - 0.5) * 0.008,
-                    color: ['#FDF2F8', '#DDD6FE', '#BAE6FD', '#FDE047', '#FFFFFF'][Math.floor(Math.random() * 5)]
-                });
-            }
-            galaxies = [
-                { x: mCanvas.width * 0.75, y: mCanvas.height * 0.25, r: 180, alpha: 0.18, angle: 0.2 },
-                { x: mCanvas.width * 0.2, y: mCanvas.height * 0.8, r: 220, alpha: 0.12, angle: -0.4 }
-            ];
-            planets = [
-                { x: mCanvas.width * 0.15, y: mCanvas.height * 0.25, r: 42, color: '#3B82F6', vx: 0.08, ring: true, ringColor: 'rgba(147, 197, 253, 0.5)' },
-                { x: mCanvas.width * 0.85, y: mCanvas.height * 0.75, r: 58, color: '#F43F5E', vx: -0.05, ring: false }
-            ];
-        }
-        window.addEventListener("resize", resizeMilkyWay);
-        resizeMilkyWay();
-
-        function renderMilkyWay() {
-            mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height);
-            const grad = mCtx.createLinearGradient(0, 0, mCanvas.width, mCanvas.height);
-            grad.addColorStop(0, '#05070F');
-            grad.addColorStop(0.5, '#0F172A');
-            grad.addColorStop(1, '#070B14');
-            mCtx.fillStyle = grad;
-            mCtx.fillRect(0, 0, mCanvas.width, mCanvas.height);
-
-            // Render Milky Way Nebula / Galaxy Clouds
-            for (let g of galaxies) {
-                mCtx.save();
-                mCtx.globalAlpha = g.alpha;
-                const radGrad = mCtx.createRadialGradient(g.x, g.y, 10, g.x, g.y, g.r);
-                radGrad.addColorStop(0, 'rgba(192, 132, 252, 0.8)');
-                radGrad.addColorStop(0.5, 'rgba(56, 189, 248, 0.4)');
-                radGrad.addColorStop(1, 'transparent');
-                mCtx.fillStyle = radGrad;
-                mCtx.beginPath();
-                mCtx.arc(g.x, g.y, g.r, 0, Math.PI * 2);
-                mCtx.fill();
-                mCtx.restore();
-            }
-
-            // Render stars
-            for (let s of stars) {
-                s.x += s.vx;
-                s.y += s.vy;
-                s.alpha += s.dAlpha;
-                if (s.alpha > 0.95 || s.alpha < 0.2) s.dAlpha = -s.dAlpha;
-                if (s.y < 0) s.y = mCanvas.height;
-                if (s.x < 0) s.x = mCanvas.width;
-                if (s.x > mCanvas.width) s.x = 0;
-
-                mCtx.save();
-                mCtx.globalAlpha = s.alpha;
-                mCtx.fillStyle = s.color;
-                mCtx.beginPath();
-                mCtx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
-                mCtx.fill();
-                mCtx.restore();
-            }
-
-            // Render realistic planets
-            for (let p of planets) {
-                p.x += p.vx;
-                if (p.x - p.r > mCanvas.width) p.x = -p.r;
-                if (p.x + p.r < 0) p.x = mCanvas.width + p.r;
-
-                mCtx.save();
-                mCtx.globalAlpha = 0.85;
-                const pGrad = mCtx.createRadialGradient(p.x - p.r * 0.3, p.y - p.r * 0.3, p.r * 0.1, p.x, p.y, p.r);
-                pGrad.addColorStop(0, '#FFFFFF');
-                pGrad.addColorStop(0.3, p.color);
-                pGrad.addColorStop(1, '#020617');
-                mCtx.fillStyle = pGrad;
-                mCtx.beginPath();
-                mCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                mCtx.fill();
-
-                if (p.ring) {
-                    mCtx.strokeStyle = p.ringColor;
-                    mCtx.lineWidth = 5;
-                    mCtx.beginPath();
-                    mCtx.ellipse(p.x, p.y, p.r * 1.8, p.r * 0.45, Math.PI / 5, 0, Math.PI * 2);
-                    mCtx.stroke();
+    function setTool(id, tool) {
+        canvasStates[id].tool = tool;
+        ['Pen', 'Line', 'Eraser'].forEach(t => {
+            const btn = document.getElementById(`tool${t}_${id}`);
+            if(btn) {
+                if(t.toLowerCase() === tool) {
+                    btn.className = "p-2 rounded-lg bg-amber-600 text-white shadow font-bold text-sm";
+                } else {
+                    btn.className = "p-2 rounded-lg hover:bg-amber-800 text-sm";
                 }
-                mCtx.restore();
             }
+        });
+    }
 
-            requestAnimationFrame(renderMilkyWay);
+    function setColor(id, color) {
+        canvasStates[id].color = color;
+        setTool(id, 'pen');
+    }
+
+    function toggleGrid(id) {
+        const overlay = document.getElementById(`gridOverlay_${id}`);
+        overlay.classList.toggle('hidden');
+    }
+
+    function clearCanvas(id) {
+        const canvas = document.getElementById(`canvas_${id}`);
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const page = activePages[id] || 1;
+        localStorage.removeItem(`zaina_ink_${id}_p${page}`);
+    }
+
+    function openBinder(id) {
+        playMagicWhoosh(true);
+        document.getElementById(`binderCover_${id}`).classList.add('binder-open');
+    }
+
+    function closeBinder(id) {
+        playMagicWhoosh(false);
+        saveCurrentCanvasInk(id);
+        document.getElementById(`binderCover_${id}`).classList.remove('binder-open');
+    }
+
+    function saveAnswer(id) {
+        const val = document.getElementById(`ans_${id}`).value;
+        localStorage.setItem(`zaina_ans_${id}`, val);
+    }
+
+    function checkAnswer(id, correctAnswer) {
+        const val = document.getElementById(`ans_${id}`).value.trim();
+        if (val === correctAnswer) {
+            triggerGrandCelebration();
+        } else {
+            alert("Not quite yet! Check your working on the graph paper and try again.");
         }
+    }
+
+    // GRAND CELEBRATION STAGE CONTROLS
+    const grandStage = document.getElementById("grandCelebrationStage");
+    const grandCanvas = document.getElementById("grandFinaleCanvas");
+    const grandCtx = grandCanvas.getContext("2d", { alpha: true });
+    let grandAnimRunning = false;
+    let magicConfettiStorm = [];
+
+    function resizeGrandCanvas() {
+        grandCanvas.width = window.innerWidth;
+        grandCanvas.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeGrandCanvas);
+
+    function triggerGrandCelebration() {
+        resizeGrandCanvas();
+        grandStage.style.display = 'block';
+        grandAnimRunning = true;
+
+        playGrandFanfare();
+        document.getElementById("magicCenterpiece").className = 'magic-banner-centerpiece impact';
+
+        const realm = curriculumData[currentRealmKey];
+        document.getElementById("glidingCompanionImg").src = realm.avatar;
+        document.getElementById("royalVictoryImg").src = realm.avatar;
+
+        document.getElementById("royalScrollTitle").innerText = `🌟 ${realm.pony.toUpperCase()} VERIFIED! 🌟`;
+        document.getElementById("royalScrollBody").innerHTML = `
+            Magnificent work, Zaina!<br/>
+            You solved this calculation with complete precision!
+        `;
+
+        magicConfettiStorm = [];
+        const colors = ['#EC4899', '#C084FC', '#38BDF8', '#FDE047', '#4ADE80', '#FFFFFF'];
+        for (let i = 0; i < 70; i++) {
+            magicConfettiStorm.push({
+                x: Math.random() * window.innerWidth,
+                y: -20 - Math.random() * 200,
+                size: Math.random() * 8 + 4,
+                vx: (Math.random() - 0.5) * 2,
+                vy: Math.random() * 3 + 2,
+                color: colors[Math.floor(Math.random() * colors.length)]
+            });
+        }
+
+        setTimeout(() => {
+            document.getElementById("royalScrollLandingRight").className = 'royal-scroll-landing-right landed';
+        }, 1200);
+
+        requestAnimationFrame(renderGrandScene);
+    }
+
+    function renderGrandScene() {
+        if (!grandAnimRunning) return;
+        grandCtx.clearRect(0, 0, grandCanvas.width, grandCanvas.height);
+        for (let p of magicConfettiStorm) {
+            p.x += p.vx;
+            p.y += p.vy;
+            if (p.y > window.innerHeight + 20) p.y = -10;
+            grandCtx.fillStyle = p.color;
+            grandCtx.beginPath();
+            grandCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            grandCtx.fill();
+        }
+        requestAnimationFrame(renderGrandScene);
+    }
+
+    function closeGrandCelebration() {
+        grandAnimRunning = false;
+        grandStage.style.display = 'none';
+        document.getElementById("magicCenterpiece").className = 'magic-banner-centerpiece';
+        document.getElementById("royalScrollLandingRight").className = 'royal-scroll-landing-right';
+        changeQuestion(1);
+    }
+
+    // Immersive Milky Way Space Background with Real Realistic Planets & Galaxy Clouds
+    const mCanvas = document.getElementById("milkyWayCanvas");
+    const mCtx = mCanvas.getContext("2d");
+    let stars = [];
+    let planets = [];
+    let galaxies = [];
+
+    function resizeMilkyWay() {
+        mCanvas.width = window.innerWidth;
+        mCanvas.height = window.innerHeight;
+        stars = [];
+        for (let i = 0; i < 160; i++) {
+            stars.push({
+                x: Math.random() * mCanvas.width,
+                y: Math.random() * mCanvas.height,
+                radius: Math.random() * 2.2 + 0.4,
+                vx: (Math.random() - 0.5) * 0.15,
+                vy: -Math.random() * 0.25 - 0.05,
+                alpha: Math.random() * 0.85 + 0.15,
+                dAlpha: (Math.random() - 0.5) * 0.008,
+                color: ['#FDF2F8', '#DDD6FE', '#BAE6FD', '#FDE047', '#FFFFFF'][Math.floor(Math.random() * 5)]
+            });
+        }
+        galaxies = [
+            { x: mCanvas.width * 0.75, y: mCanvas.height * 0.25, r: 200, alpha: 0.2, angle: 0.2 },
+            { x: mCanvas.width * 0.2, y: mCanvas.height * 0.8, r: 250, alpha: 0.15, angle: -0.4 }
+        ];
+        planets = [
+            { x: mCanvas.width * 0.15, y: mCanvas.height * 0.25, r: 52, color: '#3B82F6', vx: 0.08, ring: true, ringColor: 'rgba(147, 197, 253, 0.5)' },
+            { x: mCanvas.width * 0.85, y: mCanvas.height * 0.75, r: 68, color: '#F43F5E', vx: -0.05, ring: false }
+        ];
+    }
+    window.addEventListener("resize", resizeMilkyWay);
+    resizeMilkyWay();
+
+    function renderMilkyWay() {
+        mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height);
+        const grad = mCtx.createLinearGradient(0, 0, mCanvas.width, mCanvas.height);
+        grad.addColorStop(0, '#05070F');
+        grad.addColorStop(0.5, '#0F172A');
+        grad.addColorStop(1, '#070B14');
+        mCtx.fillStyle = grad;
+        mCtx.fillRect(0, 0, mCanvas.width, mCanvas.height);
+
+        // Render Milky Way Nebula / Galaxy Clouds
+        for (let g of galaxies) {
+            mCtx.save();
+            mCtx.globalAlpha = g.alpha;
+            const radGrad = mCtx.createRadialGradient(g.x, g.y, 10, g.x, g.y, g.r);
+            radGrad.addColorStop(0, 'rgba(192, 132, 252, 0.85)');
+            radGrad.addColorStop(0.5, 'rgba(56, 189, 248, 0.45)');
+            radGrad.addColorStop(1, 'transparent');
+            mCtx.fillStyle = radGrad;
+            mCtx.beginPath();
+            mCtx.arc(g.x, g.y, g.r, 0, Math.PI * 2);
+            mCtx.fill();
+            mCtx.restore();
+        }
+
+        // Render stars
+        for (let s of stars) {
+            s.x += s.vx;
+            s.y += s.vy;
+            s.alpha += s.dAlpha;
+            if (s.alpha > 0.95 || s.alpha < 0.2) s.dAlpha = -s.dAlpha;
+            if (s.y < 0) s.y = mCanvas.height;
+            if (s.x < 0) s.x = mCanvas.width;
+            if (s.x > mCanvas.width) s.x = 0;
+
+            mCtx.save();
+            mCtx.globalAlpha = s.alpha;
+            mCtx.fillStyle = s.color;
+            mCtx.beginPath();
+            mCtx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+            mCtx.fill();
+            mCtx.restore();
+        }
+
+        // Render realistic planets
+        for (let p of planets) {
+            p.x += p.vx;
+            if (p.x - p.r > mCanvas.width) p.x = -p.r;
+            if (p.x + p.r < 0) p.x = mCanvas.width + p.r;
+
+            mCtx.save();
+            mCtx.globalAlpha = 0.9;
+            const pGrad = mCtx.createRadialGradient(p.x - p.r * 0.3, p.y - p.r * 0.3, p.r * 0.1, p.x, p.y, p.r);
+            pGrad.addColorStop(0, '#FFFFFF');
+            pGrad.addColorStop(0.3, p.color);
+            pGrad.addColorStop(1, '#020617');
+            mCtx.fillStyle = pGrad;
+            mCtx.beginPath();
+            mCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            mCtx.fill();
+
+            if (p.ring) {
+                mCtx.strokeStyle = p.ringColor;
+                mCtx.lineWidth = 6;
+                mCtx.beginPath();
+                mCtx.ellipse(p.x, p.y, p.r * 1.8, p.r * 0.45, Math.PI / 5, 0, Math.PI * 2);
+                mCtx.stroke();
+            }
+            mCtx.restore();
+        }
+
         requestAnimationFrame(renderMilkyWay);
+    }
+    requestAnimationFrame(renderMilkyWay);
 
-        // Screen Dimmer Toggle
-        function toggleScreenDim() {
-            const overlay = document.getElementById("screenDimOverlay");
-            const btn = document.getElementById("dimToggleBtn");
-            const isDim = overlay.style.display === "block";
-            overlay.style.display = isDim ? "none" : "block";
-            btn.textContent = isDim ? "💡" : "☀️";
+    // Screen Dimmer Toggle
+    function toggleScreenDim() {
+        const overlay = document.getElementById("screenDimOverlay");
+        const btn = document.getElementById("dimToggleBtn");
+        const isDim = overlay.style.display === "block";
+        overlay.style.display = isDim ? "none" : "block";
+        btn.textContent = isDim ? "💡" : "☀️";
+    }
+
+    // Exit to Hub mechanism
+    let isLeavingToHub = false;
+    function exitToHub(e) {
+        if (e) e.preventDefault();
+        if (isLeavingToHub) return;
+        isLeavingToHub = true;
+
+        if (window.parent && window.parent !== window) {
+            window.parent.postMessage("close-lesson-to-hub", "*");
+            setTimeout(() => { isLeavingToHub = false; }, 1500);
+            return;
         }
 
-        // Exit to Hub mechanism
-        let isLeavingToHub = false;
-        function exitToHub(e) {
-            if (e) e.preventDefault();
-            if (isLeavingToHub) return;
-            isLeavingToHub = true;
-
-            if (window.parent && window.parent !== window) {
-                window.parent.postMessage("close-lesson-to-hub", "*");
-                setTimeout(() => { isLeavingToHub = false; }, 1500);
-                return;
-            }
-
-            setTimeout(() => { window.location.href = "index.html"; }, 60);
-        }
-    </script>
-</body>
-</html>
+        setTimeout(() => { window.location.href = "index.html"; }, 60);
+    }
+</script>
