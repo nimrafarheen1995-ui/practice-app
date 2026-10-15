@@ -26,9 +26,9 @@
             --celestia: #F59E0B;
             --font-main: 'Quicksand', sans-serif;
             --font-display: 'Fredoka', cursive, sans-serif;
+            --active-pen-color: #1e1b4b;
         }
 
-        /* Keep box-sizing on *, but NEVER unlayered margin:0/padding:0 on * with Tailwind v4! */
         *, *::before, *::after {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
@@ -80,11 +80,21 @@
             background-size: 24px 24px;
         }
 
-        /* 3D Book Binder Opening & Page Flipping Animations */
+        /* Authentic Notebook Protective Sheet Cover (Glossy Film Over-layer) */
         .binder-cover {
             transition: transform 0.65s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.4s ease;
             transform-origin: left center;
             transform-style: preserve-3d;
+            background-image: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.15) 100%);
+            box-shadow: inset 0 0 40px rgba(255,255,255,0.2), 0 25px 50px -12px rgba(30, 27, 75, 0.5);
+        }
+        .binder-cover::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 28px;
+            background: linear-gradient(90deg, rgba(0,0,0,0.4), rgba(0,0,0,0.1) 60%, transparent);
+            border-right: 2px solid rgba(255,255,255,0.25);
         }
         .binder-open {
             transform: perspective(1400px) rotateY(-112deg);
@@ -99,9 +109,6 @@
             box-shadow: 0 25px 50px -12px rgba(30, 27, 75, 0.45), 0 0 30px rgba(139, 92, 246, 0.3);
             transition: box-shadow 0.3s ease;
         }
-        .card-4d:hover {
-            box-shadow: 0 30px 60px -12px rgba(30, 27, 75, 0.55), 0 0 40px rgba(139, 92, 246, 0.45);
-        }
         .page-flip-anim {
             animation: pageFlip4d 0.4s cubic-bezier(0.22, 1, 0.36, 1);
         }
@@ -110,7 +117,7 @@
             100% { opacity: 1; transform: none; }
         }
 
-        /* Castle Gateway Cards */
+        /* Castle Gateway Cards & Star-Map Progress */
         .gateway-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(14px);
@@ -137,7 +144,7 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
-        /* GRAND CELEBRATION FINALE STAGE */
+        /* GRAND CELEBRATION FINALE STAGE WITH COMET */
         #grandCelebrationStage {
             position: fixed;
             inset: 0;
@@ -358,9 +365,10 @@
             width: clamp(54px, 9vmin, 92px);
             height: auto;
             transform: translate(-50%, -50%);
-            filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
+            filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45)) drop-shadow(0 0 12px var(--active-pen-color));
             animation: counterSpin var(--dur) linear infinite;
-            will-change: transform;
+            will-change: transform, filter;
+            transition: filter 0.3s ease;
         }
         @keyframes orbitRound {
             from { transform: rotate(0deg); }
@@ -397,6 +405,8 @@
             from { transform: rotateX(72deg) rotateZ(0deg); }
             to { transform: rotateX(72deg) rotateZ(360deg); }
         }
+        .card-4d { transition: box-shadow 0.3s ease; }
+        .card-4d:hover { box-shadow: 0 30px 60px -12px rgba(30, 27, 75, 0.5), 0 0 40px rgba(139, 92, 246, 0.45); }
         button, [onclick] { touch-action: manipulation; }
     </style>
 </head>
@@ -407,7 +417,7 @@
     <div id="spaceScene"></div>
     <div id="screenDimOverlay"></div>
 
-    <!-- GRAND CELEBRATION STAGE -->
+    <!-- GRAND CELEBRATION STAGE WITH COMET -->
     <div id="grandCelebrationStage">
         <canvas id="grandFinaleCanvas"></canvas>
         <div class="magic-banner-centerpiece" id="magicCenterpiece">
@@ -453,21 +463,21 @@
     </header>
 
     <!-- Main Container -->
-    <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-3 flex flex-col justify-center items-center relative z-10 overflow-hidden">
+    <main class="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center relative z-10 overflow-hidden">
         
-        <!-- VIEW 1: THE ROYAL MAGIC CASTLE GATEWAY (HUB) -->
+        <!-- VIEW 1: THE ROYAL MAGIC CASTLE GATEWAY (HUB WITH STAR-MAP UNLOCK PROGRESS) -->
         <div id="gatewayView" class="w-full flex flex-col gap-6 items-center animate-fade-in">
             <div class="text-center">
                 <h2 class="text-2xl md:text-3xl font-bold font-display text-white drop-shadow-md">Choose Your Royal Realm</h2>
-                <p class="text-purple-200 text-sm mt-1">Select a magical tower to start your Exercise 5.4 decimal quest!</p>
+                <p class="text-purple-200 text-sm mt-1">Complete towers to unlock planetary constellations across the galaxy!</p>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-3xl">
                 <!-- Addition Gateway Card -->
-                <div onclick="switchRealm('addition')" class="gateway-card rounded-2xl p-4 flex items-center gap-4 border-l-8 border-purple-600">
+                <div onclick="switchRealm('addition')" class="gateway-card rounded-2xl p-4 flex items-center gap-4 border-l-8 border-purple-600 relative overflow-hidden">
                     <img src="assets/twilight.png" class="gateway-pony-avatar" alt="Twilight Sparkle" onerror="handleImageFallback(this)"/>
                     <div class="flex-1">
-                        <span class="text-xs font-bold uppercase tracking-wider text-purple-600">Tower I</span>
+                        <span class="text-xs font-bold uppercase tracking-wider text-purple-600">Tower I • [⭐ Unlocked]</span>
                         <h3 class="text-lg font-bold text-slate-900">Twilight's Library</h3>
                         <p class="text-xs text-slate-600 font-medium">Addition of Decimals (Q1)</p>
                     </div>
@@ -478,7 +488,7 @@
                 <div onclick="switchRealm('subtraction')" class="gateway-card rounded-2xl p-4 flex items-center gap-4 border-l-8 border-indigo-600">
                     <img src="assets/luna.png" class="gateway-pony-avatar" alt="Princess Luna" onerror="handleImageFallback(this)"/>
                     <div class="flex-1">
-                        <span class="text-xs font-bold uppercase tracking-wider text-indigo-600">Tower II</span>
+                        <span class="text-xs font-bold uppercase tracking-wider text-indigo-600">Tower II • [🌙 Observatory]</span>
                         <h3 class="text-lg font-bold text-slate-900">Princess Luna's Observatory</h3>
                         <p class="text-xs text-slate-600 font-medium">Subtraction of Decimals (Q2)</p>
                     </div>
@@ -489,7 +499,7 @@
                 <div onclick="switchRealm('simplify')" class="gateway-card rounded-2xl p-4 flex items-center gap-4 border-l-8 border-blue-600">
                     <img src="assets/rainbow.png" class="gateway-pony-avatar" alt="Rainbow Dash" onerror="handleImageFallback(this)"/>
                     <div class="flex-1">
-                        <span class="text-xs font-bold uppercase tracking-wider text-blue-600">Tower III</span>
+                        <span class="text-xs font-bold uppercase tracking-wider text-blue-600">Tower III • [⚡ Cloud Arena]</span>
                         <h3 class="text-lg font-bold text-slate-900">Rainbow Dash's Cloud Arena</h3>
                         <p class="text-xs text-slate-600 font-medium">Simplify Expressions (Q3)</p>
                     </div>
@@ -500,7 +510,7 @@
                 <div onclick="switchRealm('wordperimeter')" class="gateway-card rounded-2xl p-4 flex items-center gap-4 border-l-8 border-amber-500">
                     <img src="assets/celestia.png" class="gateway-pony-avatar" alt="Princess Celestia" onerror="handleImageFallback(this)"/>
                     <div class="flex-1">
-                        <span class="text-xs font-bold uppercase tracking-wider text-amber-600">Tower IV</span>
+                        <span class="text-xs font-bold uppercase tracking-wider text-amber-600">Tower IV • [👑 Sun Palace]</span>
                         <h3 class="text-lg font-bold text-slate-900">Celestia's Sun Palace</h3>
                         <p class="text-xs text-slate-600 font-medium">Word Problems & Perimeter (Q4-Q5)</p>
                     </div>
@@ -517,7 +527,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="relative z-20 bg-slate-900 text-slate-400 py-2 text-center text-xs border-t border-white/10 shrink-0">
+    <footer class="relative z-20 bg-slate-900 text-slate-400 py-2.5 text-center text-xs border-t border-white/10">
         Exercise 5.4 • Grade 5 Mathematics • Royal Academy
     </footer>
 
@@ -576,7 +586,7 @@
             } catch (e) {}
         }
 
-        /* ===== INK SOUND ENGINE: pen scratch, eraser swish, glowing line chime ===== */
+        /* ===== INK SOUND ENGINE ===== */
         const InkSound = {
             enabled: localStorage.getItem('zaina_ink_sound') !== 'off',
             ready: false,
@@ -658,16 +668,6 @@
                     g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.6);
                     osc.connect(g); g.connect(ctx.destination);
                     osc.start(t0); osc.stop(t0 + 0.65);
-
-                    const o2 = ctx.createOscillator();
-                    const g2 = ctx.createGain();
-                    o2.type = 'triangle';
-                    o2.frequency.value = 1976;
-                    g2.gain.setValueAtTime(0.0001, t0 + 0.12);
-                    g2.gain.exponentialRampToValueAtTime(0.06, t0 + 0.16);
-                    g2.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.9);
-                    o2.connect(g2); g2.connect(ctx.destination);
-                    o2.start(t0 + 0.12); o2.stop(t0 + 0.95);
                 } catch (e) {}
             }
         };
@@ -815,6 +815,7 @@
         const canvasStates = {};
         const binderOpenedMap = {};
         const gridVisibleMap = {};
+        let activeResizeObserver = null;
 
         function switchRealm(realmKey) {
             playMagicWhoosh(true);
@@ -878,7 +879,7 @@
                     <div class="p-3.5 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                         <div class="flex items-center gap-3">
                             <span class="bg-indigo-600 text-white font-bold text-xs px-2.5 py-1 rounded-lg">${q.label}</span>
-                            <p class="font-bold text-slate-800 text-sm md:text-base">${q.text}</p>
+                            <p class="font-medium text-slate-800 text-sm md:text-base">${q.text}</p>
                         </div>
                         <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
                             <input type="text" inputmode="decimal" id="ans_${q.id}" value="${savedAnswer}" placeholder="Answer..." 
@@ -890,7 +891,7 @@
                     </div>
 
                     <!-- Question Pagination Bar -->
-                    <div class="bg-indigo-50/60 px-4 py-2 border-b border-indigo-100 flex justify-between items-center text-xs text-indigo-900 font-semibold">
+                    <div class="bg-indigo-50/50 px-4 py-2 border-b border-indigo-100 flex justify-between items-center text-xs text-indigo-900 font-semibold">
                         <span>${realm.realmName} (${qIndex + 1} of ${realm.questions.length})</span>
                         <div class="flex gap-2">
                             <button onclick="changeQuestion(-1)" ${qIndex === 0 ? 'disabled' : ''} class="px-3 py-1 bg-white border border-indigo-200 rounded-lg shadow-sm font-bold ${qIndex === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-indigo-100 cursor-pointer'}">⬅️ Prev</button>
@@ -933,9 +934,9 @@
 
                             <!-- Fixed Size Graph Box Writing Surface with Full-Size Guiding Pony in Corner -->
                             <div class="flex-1 graph-paper relative overflow-hidden select-none touch-none" id="canvasArea_${q.id}">
-                                <!-- Full-Size Guiding Pony in Bottom-Right Corner looking over Zaina's work -->
-                                <div class="absolute right-2 bottom-0 pointer-events-none z-10 opacity-60 flex flex-col items-end">
-                                    <img src="${realm.avatar}" class="w-52 h-52 md:w-64 md:h-64 object-contain filter drop-shadow-[0_20px_30px_rgba(0,0,0,0.4)] transform rotate-[-4deg]" alt="${realm.pony}" onerror="handleImageFallback(this)"/>
+                                <!-- Full-Size Guiding Pony in Bottom-Right Corner looking over Zaina's work with Ink Glow -->
+                                <div class="absolute right-2 bottom-0 pointer-events-none z-10 opacity-60 hover:opacity-90 transition duration-300 flex flex-col items-end">
+                                    <img src="${realm.avatar}" id="activePonyAvatar" class="w-52 h-52 md:w-64 md:h-64 object-contain filter drop-shadow-[0_20px_30px_rgba(0,0,0,0.4)] transform rotate-[-4deg]" alt="${realm.pony}" onerror="handleImageFallback(this)"/>
                                 </div>
 
                                 <!-- Place Value Grid Overlay with Empty Carry/Borrow Top Row -->
@@ -958,7 +959,7 @@
                             </div>
                         </div>
 
-                        <!-- Full Hardcover Binder Cover with Companion Pony PNG -->
+                        <!-- Full Hardcover Binder Cover with Protective Sheet Gloss & Companion Pony PNG -->
                         <div id="binderCover_${q.id}" class="binder-cover ${isBinderOpen ? 'binder-open' : ''} absolute inset-0 bg-gradient-to-br ${realm.themeColor} text-white p-8 flex flex-col justify-between shadow-2xl z-30 cursor-pointer" onclick="openBinder('${q.id}')">
                             <div class="flex justify-between items-start">
                                 <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase">Exercise 5.4</span>
@@ -969,7 +970,7 @@
                                 <img src="${realm.avatar}" class="w-28 h-28 object-contain filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)] animate-bounce" alt="${realm.pony}" onerror="handleImageFallback(this)"/>
                                 <h3 class="text-xl font-bold font-display">${realm.pony}</h3>
                                 <p class="text-sm text-purple-200">Tap anywhere on cover to open working slate</p>
-                                <span class="mt-2 bg-white text-indigo-900 font-bold px-4 py-2 rounded-xl shadow-lg text-xs uppercase tracking-widest">Open Binder ⚡</span>
+                                <span class="mt-2 bg-white text-indigo-900 font-bold px-4 py-2 rounded-xl shadow-lg text-sm uppercase tracking-widest">Open Binder ⚡</span>
                             </div>
                             <div class="text-center text-xs text-purple-300">
                                 ${q.label} • Protected & Saved Locally
@@ -980,25 +981,45 @@
                 </div>
             `;
             initCanvas(q.id, currentPage);
+            updatePonyInkGlow(canvasStates[q.id]?.color || '#1e1b4b');
         }
 
         let lastPenSeen = 0;
+
+        function syncCanvasResolution(canvas, container, id) {
+            const dpr = Math.min(window.devicePixelRatio || 1, 3);
+            const cssW = container.clientWidth;
+            const cssH = container.clientHeight;
+            if (!cssW || !cssH) return;
+            const targetW = Math.round(cssW * dpr);
+            const targetH = Math.round(cssH * dpr);
+            if (canvas.width === targetW && canvas.height === targetH) return;
+
+            canvas.style.width = cssW + 'px';
+            canvas.style.height = cssH + 'px';
+            canvas.width = targetW;
+            canvas.height = targetH;
+            canvas.dataset.dpr = String(dpr);
+
+            const ctx = canvas.getContext('2d');
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            loadCanvasInk(id, activePages[id] || 1);
+        }
 
         function initCanvas(id, page) {
             const canvas = document.getElementById(`canvas_${id}`);
             const container = document.getElementById(`canvasArea_${id}`);
             if (!canvas || !container) return;
             const ctx = canvas.getContext('2d');
-            const dpr = Math.min(window.devicePixelRatio || 1, 3);
-            const cssW = container.clientWidth, cssH = container.clientHeight;
-            canvas.style.width = cssW + 'px';
-            canvas.style.height = cssH + 'px';
-            canvas.width = Math.round(cssW * dpr);
-            canvas.height = Math.round(cssH * dpr);
-            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
             if (!canvasStates[id]) canvasStates[id] = { tool: 'pen', color: '#1e1b4b' };
-            loadCanvasInk(id, page);
+            syncCanvasResolution(canvas, container, id);
+
+            if (activeResizeObserver) activeResizeObserver.disconnect();
+            if (window.ResizeObserver) {
+                activeResizeObserver = new ResizeObserver(() => syncCanvasResolution(canvas, container, id));
+                activeResizeObserver.observe(container);
+            }
 
             let activePointerId = null;
             let activeType = null;
@@ -1007,7 +1028,13 @@
             let cachedRect = null;
             let snapshot = null;
 
+            const localXY = (e) => {
+                const r = canvas.getBoundingClientRect();
+                return [e.clientX - r.left, e.clientY - r.top];
+            };
+
             const drawSegment = (x1, y1, x2, y2, pressure) => {
+                const tool = canvasStates[id].tool;
                 ctx.save();
                 ctx.lineCap = 'round';
                 ctx.lineJoin = 'round';
@@ -1044,6 +1071,7 @@
             };
 
             const drawGlowLine = (x1, y1, x2, y2, color) => {
+                const dpr = Number(canvas.dataset.dpr) || 1;
                 ctx.save();
                 ctx.lineCap = 'round';
                 ctx.strokeStyle = color;
@@ -1086,8 +1114,8 @@
                     lastPenSeen = Date.now();
                     if (activePointerId !== null && activeType === 'touch') endStroke();
                 } else {
-                    const palm = Math.max(e.width || 0, e.height || 0) > 28;
-                    const penBusy = Date.now() - lastPenSeen < 1300;
+                    const palm = Math.max(e.width || 0, e.height || 0) > 30;
+                    const penBusy = Date.now() - lastPenSeen < 1200;
                     if (palm || penBusy || activePointerId !== null) return;
                 }
                 if (activePointerId !== null) return;
@@ -1099,13 +1127,11 @@
                 activeType = e.pointerType;
                 try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
 
-                // Support S-Pen side barrel button as instant eraser
                 const barrelEraser = e.pointerType === 'pen' && ((e.buttons & 32) || e.button === 5);
                 strokeTool = barrelEraser ? 'eraser' : canvasStates[id].tool;
 
                 cachedRect = canvas.getBoundingClientRect();
-                const x = e.clientX - cachedRect.left;
-                const y = e.clientY - cachedRect.top;
+                const [x, y] = localXY(e);
                 startX = lastX = x;
                 startY = lastY = y;
                 if (strokeTool === 'line') {
@@ -1121,8 +1147,7 @@
                 if (!cachedRect) cachedRect = canvas.getBoundingClientRect();
 
                 if (strokeTool === 'line') {
-                    const x = e.clientX - cachedRect.left;
-                    const y = e.clientY - cachedRect.top;
+                    const [x, y] = localXY(e);
                     if (snapshot) ctx.putImageData(snapshot, 0, 0);
                     ctx.save();
                     ctx.lineCap = 'round';
@@ -1130,20 +1155,17 @@
                     ctx.lineWidth = 2.5;
                     ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(x, y); ctx.stroke();
                     ctx.restore();
-                    lastX = x;
-                    lastY = y;
+                    lastX = x; lastY = y;
                     return;
                 }
 
                 const events = (e.getCoalescedEvents && e.getCoalescedEvents().length) ? e.getCoalescedEvents() : [e];
                 let total = 0;
                 for (const ev of events) {
-                    const x = ev.clientX - cachedRect.left;
-                    const y = ev.clientY - cachedRect.top;
+                    const [x, y] = localXY(ev);
                     total += Math.hypot(x - lastX, y - lastY);
                     drawSegment(lastX, lastY, x, y, ev.pressure);
-                    lastX = x;
-                    lastY = y;
+                    lastX = x; lastY = y;
                 }
                 InkSound.update(strokeTool === 'eraser' ? 'eraser' : 'pen', total / events.length);
             });
@@ -1210,9 +1232,18 @@
             });
         }
 
+        function updatePonyInkGlow(hexColor) {
+            document.documentElement.style.setProperty('--active-pen-color', hexColor);
+            const avatarImg = document.getElementById('activePonyAvatar');
+            if (avatarImg) {
+                avatarImg.style.filter = `drop-shadow(0 20px 30px rgba(0,0,0,0.4)) drop-shadow(0 0 16px ${hexColor})`;
+            }
+        }
+
         function setColor(id, color) {
             canvasStates[id].color = color;
             setTool(id, 'pen');
+            updatePonyInkGlow(color);
         }
 
         function toggleGrid(id) {
@@ -1292,12 +1323,13 @@
             }
         }
 
-        // GRAND CELEBRATION STAGE CONTROLS
+        // GRAND CELEBRATION STAGE CONTROLS WITH COMET
         const grandStage = document.getElementById("grandCelebrationStage");
         const grandCanvas = document.getElementById("grandFinaleCanvas");
         const grandCtx = grandCanvas.getContext("2d", { alpha: true });
         let grandAnimRunning = false;
         let magicConfettiStorm = [];
+        let comets = [];
 
         function resizeGrandCanvas() {
             grandCanvas.width = window.innerWidth;
@@ -1328,6 +1360,7 @@
             `;
 
             magicConfettiStorm = [];
+            comets = [{ x: -50, y: Math.random() * 200, vx: 16, vy: 9, size: 6 }];
             const colors = ['#EC4899', '#C084FC', '#38BDF8', '#FDE047', '#4ADE80', '#FFFFFF'];
             for (let i = 0; i < 70; i++) {
                 magicConfettiStorm.push({
@@ -1350,6 +1383,26 @@
         function renderGrandScene() {
             if (!grandAnimRunning) return;
             grandCtx.clearRect(0, 0, grandCanvas.width, grandCanvas.height);
+
+            for (let c of comets) {
+                c.x += c.vx;
+                c.y += c.vy;
+                grandCtx.save();
+                grandCtx.strokeStyle = '#FDE047';
+                grandCtx.lineWidth = 3;
+                grandCtx.shadowColor = '#F59E0B';
+                grandCtx.shadowBlur = 15;
+                grandCtx.beginPath();
+                grandCtx.moveTo(c.x, c.y);
+                grandCtx.lineTo(c.x - c.vx * 12, c.y - c.vy * 12);
+                grandCtx.stroke();
+                grandCtx.fillStyle = '#FFFFFF';
+                grandCtx.beginPath();
+                grandCtx.arc(c.x, c.y, c.size, 0, Math.PI * 2);
+                grandCtx.fill();
+                grandCtx.restore();
+            }
+
             for (let p of magicConfettiStorm) {
                 p.x += p.vx;
                 p.y += p.vy;
@@ -1370,18 +1423,19 @@
             changeQuestion(1);
         }
 
-        // Immersive Milky Way Space Background with Planets & Galaxy Clouds
+        // Immersive Milky Way Space Background with Warp Star Jump on Page Turn
         const mCanvas = document.getElementById("milkyWayCanvas");
         const mCtx = mCanvas.getContext("2d");
         let stars = [];
         let planets = [];
         let galaxies = [];
+        let warpFactor = 1;
 
         function resizeMilkyWay() {
             mCanvas.width = window.innerWidth;
             mCanvas.height = window.innerHeight;
             stars = [];
-            for (let i = 0; i < 150; i++) {
+            for (let i = 0; i < 160; i++) {
                 stars.push({
                     x: Math.random() * mCanvas.width,
                     y: Math.random() * mCanvas.height,
@@ -1404,6 +1458,29 @@
         }
         window.addEventListener("resize", resizeMilkyWay);
         resizeMilkyWay();
+
+        function triggerWarpJump() {
+            warpFactor = 6;
+            const t = setInterval(() => {
+                warpFactor *= 0.85;
+                if (warpFactor < 1.05) {
+                    warpFactor = 1;
+                    clearInterval(t);
+                }
+            }, 40);
+        }
+
+        // Override page/question switches to trigger warp jump
+        const _switchPageSmoothly = switchPageSmoothly;
+        switchPageSmoothly = function(qId, delta) {
+            triggerWarpJump();
+            _switchPageSmoothly(qId, delta);
+        };
+        const _changeQuestion = changeQuestion;
+        changeQuestion = function(dir) {
+            triggerWarpJump();
+            _changeQuestion(dir);
+        };
 
         function renderMilkyWay() {
             mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height);
@@ -1429,8 +1506,8 @@
             }
 
             for (let s of stars) {
-                s.x += s.vx;
-                s.y += s.vy;
+                s.x += s.vx * warpFactor;
+                s.y += (s.vy - (warpFactor > 1 ? 1.5 : 0));
                 s.alpha += s.dAlpha;
                 if (s.alpha > 0.95 || s.alpha < 0.2) s.dAlpha = -s.dAlpha;
                 if (s.y < 0) s.y = mCanvas.height;
@@ -1441,7 +1518,12 @@
                 mCtx.globalAlpha = s.alpha;
                 mCtx.fillStyle = s.color;
                 mCtx.beginPath();
-                mCtx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+                if (warpFactor > 1.2) {
+                    // Warp streak effect
+                    mCtx.ellipse(s.x, s.y, s.radius, s.radius * warpFactor * 3, 0, 0, Math.PI * 2);
+                } else {
+                    mCtx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+                }
                 mCtx.fill();
                 mCtx.restore();
             }
