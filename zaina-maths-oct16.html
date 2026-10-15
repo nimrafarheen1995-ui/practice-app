@@ -309,8 +309,12 @@
         }
         .workspace-h { height: clamp(440px, 74vh, 900px); }
         @media (min-width: 900px) {
-            #activeCardContainer, #activeCardContainer > div { width: 100%; min-width: 0; }
+            #activeCardContainer { display: flex; justify-content: center; }
+            #activeCardContainer > div { width: min(100%, 1100px); min-width: 0; max-width: 100%; box-sizing: border-box; }
         }
+        /* Bigger, easier Prev / Next buttons */
+        button[onclick^="changeQuestion"] { min-height: 44px; min-width: 64px; padding: 8px 14px !important; font-size: 0.95rem !important; }
+        button[onclick^="changeQuestion"]:disabled { opacity: 0.4 !important; }
         .ink-toolbar { flex-wrap: wrap; gap: 8px; }
         .ink-toolbar > div { flex-wrap: wrap; }
         .ink-toolbar > div:nth-child(2) button { min-width: 44px; min-height: 44px; font-size: 1.3rem; }
@@ -904,6 +908,7 @@
                                     <button onclick="setTool('${q.id}', 'pen')" id="toolPen_${q.id}" class="p-1.5 rounded bg-amber-600 text-white shadow">✏️</button>
                                     <button onclick="setTool('${q.id}', 'line')" id="toolLine_${q.id}" class="p-1.5 rounded hover:bg-amber-800">📏</button>
                                     <button onclick="setTool('${q.id}', 'eraser')" id="toolEraser_${q.id}" class="p-1.5 rounded hover:bg-amber-800">🧹</button>
+                                    <button onclick="undoInk('${q.id}')" title="Undo" class="p-1.5 rounded hover:bg-amber-800">↩️</button>
                                     <button onclick="clearCanvas('${q.id}')" class="p-1.5 rounded hover:bg-amber-800 text-red-300">🗑️</button>
                                 </div>
 
@@ -1182,7 +1187,10 @@
             const page = activePages[id] || 1;
             const key = `zaina_ink_${id}_p${page}`;
             try {
-                localStorage.setItem(key, canvas.toDataURL());
+                const previous = localStorage.getItem(key) || '';
+                const next = canvas.toDataURL();
+                if (previous !== next) pushUndo(key, previous);
+                localStorage.setItem(key, next);
                 localStorage.setItem(key + '_size', JSON.stringify({ w: canvas.width, h: canvas.height }));
             } catch (_) {}
         }
@@ -1211,13 +1219,38 @@
             overlay.classList.toggle('hidden');
         }
 
+        const undoStacks = {};   // per page, in memory: earlier saved states ('' = blank page)
+        function pushUndo(key, value) {
+            const st = undoStacks[key] || (undoStacks[key] = []);
+            if (st.length && st[st.length - 1] === value) return;
+            st.push(value);
+            if (st.length > 25) st.shift();
+        }
+
+        function undoInk(id) {
+            const page = activePages[id] || 1;
+            const key = `zaina_ink_${id}_p${page}`;
+            const st = undoStacks[key] || [];
+            if (!st.length) return;
+            const previous = st.pop();
+            if (previous) localStorage.setItem(key, previous);
+            else localStorage.removeItem(key);
+            loadCanvasInk(id, page);
+        }
+
         function clearCanvas(id) {
             const canvas = document.getElementById(`canvas_${id}`);
             const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
             const page = activePages[id] || 1;
-            localStorage.removeItem(`zaina_ink_${id}_p${page}`);
-            localStorage.removeItem(`zaina_ink_${id}_p${page}_size`);
+            const key = `zaina_ink_${id}_p${page}`;
+            const current = localStorage.getItem(key);
+            if (current) pushUndo(key, current);   // so Undo can bring the writing back
+            ctx.save();
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.restore();
+            localStorage.removeItem(key);
+            localStorage.removeItem(key + '_size');
         }
 
         function openBinder(id) {
