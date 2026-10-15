@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Humayun's Science Discovery Realm: Grade 3 EVS</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800&family=Kalam:wght@700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Preload Asset Images -->
+  <link rel="preload" as="image" href="assets/matter-lab-bg.webp">
+  <link rel="preload" as="image" href="assets/humayun-avatar.webp">
+  <link rel="preload" as="image" href="assets/lab-scientist-humayun.webp">
+  <link rel="preload" as="image" href="assets/ice-cube-mascot.webp">
+  <link rel="preload" as="image" href="assets/water-drop-mascot.webp">
+  <link rel="preload" as="image" href="assets/steam-cloud-mascot.webp">
+
+  <style>
+    :root {
+      --bg: #ECFDF5;
+      --card-bg: rgba(255, 255, 255, 0.94);
+      --text: #065F46;
+      --subtext: #047857;
+      --border: #A7F3D0;
+      --primary: #059669;
+      --primary-dark: #047857;
+      --accent: #F59E0B;
+      --ruled-blue: #93C5FD;
+      --margin-red: #F87171;
+      --shadow: 0 20px 50px rgba(4, 120, 87, 0.25);
+      --font: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-hand: 'Kalam', cursive, sans-serif;
+      --font-display: 'Fredoka', cursive, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      font-family: var(--font) !important;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-size: 16px;
+      background: #0B0F19;
+    }
+
+    body {
+      background: url('assets/matter-lab-bg.webp') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+      padding: 8px max(16px, env(safe-area-inset-right)) 8px max(16px, env(safe-area-inset-left));
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(236, 253, 245, 0.55) 0%, rgba(6, 95, 70, 0.4) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .orientation-warning {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #ECFDF5;
+      z-index: 999999;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      padding: 30px;
+      text-align: center;
+    }
+    .orientation-warning .icon { font-size: 4rem; animation: rotPhone 2s infinite ease-in-out; }
+    @keyframes rotPhone { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(90deg); } }
+    .orientation-warning h2 { font-size: 1.6rem; font-weight: 900; color: #065F46; }
+    .orientation-warning p { font-size: 1.1rem; color: #047857; font-weight: 700; }
+    @media (orientation: portrait) {
+      .orientation-warning { display: flex; }
+    }
+
+    #screenDimOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      pointer-events: none;
+      z-index: 99999;
+    }
+
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      max-width: 1240px;
+      margin: 0 auto;
+      gap: 10px;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* STREAMLINED TOP HUD DOCK */
+    .floating-hud-dock {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 48px;
+      flex-shrink: 0;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      padding: 4px 16px;
+      border-radius: 18px;
+      border: 2.5px solid var(--border);
+      box-shadow: var(--shadow);
+      z-index: 50;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-title {
+      font-family: var(--font-display) !important;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .grade-badge {
+      background: #D1FAE5;
+      color: var(--primary-dark);
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .action-btn {
+      border: 2px solid var(--border);
+      background: #FFF;
+      color: var(--text);
+      font-weight: 800;
+      font-size: 0.85rem;
+      padding: 6px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      height: 38px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      transition: transform 0.12s ease;
+      position: relative;
+      z-index: 60;
+    }
+    .action-btn:active { transform: translateY(1px); }
+
+    .portal-pills-row {
+      display: flex;
+      gap: 6px;
+      margin-left: 12px;
+    }
+    .portal-pill-sm {
+      border: 2px solid var(--border);
+      background: #F8FAFC;
+      border-radius: 10px;
+      padding: 4px 10px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--subtext);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .portal-pill-sm.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #FFF;
+    }
+
+    /* HUB BAY */
+    .hub-bay-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 20px;
+      gap: 20px;
+      overflow-y: auto;
+    }
+
+    .hub-hero-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      border: 3px solid var(--border);
+      border-radius: 26px;
+      padding: 16px 28px;
+      box-shadow: var(--shadow);
+      max-width: 820px;
+      width: 100%;
+    }
+    .hub-hero-avatar {
+      width: auto;
+      height: auto;
+      max-width: 140px;
+      max-height: 140px;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 14px rgba(0,0,0,0.2));
+    }
+
+    .portals-normal-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(260px, 1fr));
+      gap: 18px;
+      width: 100%;
+      max-width: 1050px;
+    }
+
+    .portal-3d-card {
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      border: 3.5px solid var(--border);
+      border-radius: 24px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 12px;
+      cursor: pointer;
+      box-shadow: 0 14px 32px rgba(0,0,0,0.12);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .portal
