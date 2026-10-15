@@ -307,7 +307,13 @@
             main { max-width: 1180px !important; }
             input[id^="ans_"] { font-size: 1.05rem !important; width: 9rem !important; }
         }
-        .workspace-h { height: clamp(440px, 64vh, 780px); }
+        .workspace-h { height: clamp(440px, 74vh, 900px); }
+        @media (min-width: 900px) {
+            #activeCardContainer, #activeCardContainer > div { width: 100%; min-width: 0; }
+        }
+        .ink-toolbar { flex-wrap: wrap; gap: 8px; }
+        .ink-toolbar > div { flex-wrap: wrap; }
+        .ink-toolbar > div:nth-child(2) button { min-width: 44px; min-height: 44px; font-size: 1.3rem; }
         .ink-toolbar button { min-width: 44px; min-height: 44px; font-size: 1.15rem; }
         .ink-toolbar button.p-1\.5 { display: inline-flex; align-items: center; justify-content: center; }
 
@@ -317,7 +323,7 @@
             z-index: 2;
             pointer-events: none;
             animation: floatPlanet 18s ease-in-out infinite;
-            transform-style: preserve-3d;
+            will-change: transform;
         }
         .space-system .planet-svg {
             position: absolute;
@@ -334,6 +340,7 @@
             width: 0;
             height: 0;
             animation: orbitRound var(--dur) linear infinite;
+            will-change: transform;
         }
         .pony-anchor {
             position: absolute;
@@ -350,6 +357,7 @@
             transform: translate(-50%, -50%);
             filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
             animation: counterSpin var(--dur) linear infinite;
+            will-change: transform;
         }
         @keyframes orbitRound {
             from { transform: rotate(0deg); }
@@ -364,8 +372,8 @@
             100% { left: 60%; top: 14%; transform: rotate(-8deg) scale(1.1); }
         }
         @keyframes floatPlanet {
-            0%, 100% { transform: translate3d(0, 0, 0) rotateY(0deg); }
-            50% { transform: translate3d(18px, -22px, 80px) rotateY(25deg); }
+            0%, 100% { transform: translate3d(0, 0, 0); }
+            50% { transform: translate3d(18px, -22px, 0); }
         }
         .orbit-ring {
             position: absolute;
@@ -724,7 +732,7 @@
     <clipPath id="${u}top"><rect x="0" y="0" width="100" height="50"/></clipPath>
     <clipPath id="${u}bot"><rect x="0" y="50" width="100" height="50"/></clipPath>
     <filter id="${u}n" x="0" y="0" width="100%" height="100%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="4" seed="${P.seed}"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="3" seed="${P.seed}"/>
       <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 2.4 -1"/>
     </filter>
   </defs>
@@ -871,7 +879,7 @@
                         <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
                             <input type="text" id="ans_${q.id}" value="${savedAnswer}" placeholder="Answer..." 
                                 class="px-3 py-1.5 rounded-lg border border-slate-300 text-sm w-28 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold text-center"
-                                onchange="saveAnswer('${q.id}')">
+                                oninput="saveAnswer('${q.id}')">
                             <button onclick="checkAnswer('${q.id}', '${q.answer}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg transition shadow-sm text-sm">✅</button>
                         </div>
                     </div>
@@ -967,6 +975,8 @@
             initCanvas(q.id, currentPage);
         }
 
+        let lastPenSeen = 0;   // last time the S-Pen was seen hovering or touching (palm rejection)
+
         function initCanvas(id, page) {
             const canvas = document.getElementById(`canvas_${id}`);
             const container = document.getElementById(`canvasArea_${id}`);
@@ -983,16 +993,54 @@
             if (!canvasStates[id]) canvasStates[id] = { tool: 'pen', color: '#1e1b4b' };
             loadCanvasInk(id, page);
 
-            const card = canvas.closest('.card-4d');
-            let activePointerId = null;   // only one pointer draws at a time (palm rejection)
+            let activePointerId = null;   // one pointer draws at a time (palm rejection)
             let activeType = null;
-            let lastPenTime = 0;
             let lastX = 0, lastY = 0, startX = 0, startY = 0;
             let snapshot = null;
 
             const localXY = (e) => {
                 const r = canvas.getBoundingClientRect();
                 return [e.clientX - r.left, e.clientY - r.top];
+            };
+
+            // One straight piece of ink (pen or eraser)
+            const drawSegment = (x1, y1, x2, y2, pressure) => {
+                const tool = canvasStates[id].tool;
+                ctx.save();
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                if (tool === 'eraser') {
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.strokeStyle = '#000';
+                    ctx.lineWidth = 28;
+                } else {
+                    ctx.globalCompositeOperation = 'source-over';
+                    ctx.strokeStyle = canvasStates[id].color;
+                    ctx.lineWidth = 2.5 * (0.8 + (pressure > 0 ? pressure : 0.5) * 0.8);
+                }
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+                ctx.restore();
+            };
+
+            // A tap leaves a crisp dot (decimal points, full stops, single marks)
+            const drawDot = (x, y, pressure) => {
+                const tool = canvasStates[id].tool;
+                ctx.save();
+                if (tool === 'eraser') {
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.fillStyle = '#000';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 14, 0, Math.PI * 2);
+                } else {
+                    ctx.fillStyle = canvasStates[id].color;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 2.2 * (0.8 + (pressure > 0 ? pressure : 0.5) * 0.8), 0, Math.PI * 2);
+                }
+                ctx.fill();
+                ctx.restore();
             };
 
             // Glowing straight line (soft halo + bright core)
@@ -1027,19 +1075,18 @@
                 snapshot = null;
                 activePointerId = null;
                 activeType = null;
-                if (card) card.style.transition = '';
                 saveCurrentCanvasInk(id);
             };
 
             canvas.addEventListener('pointerdown', (e) => {
                 if (e.pointerType === 'pen') {
-                    lastPenTime = Date.now();
+                    lastPenSeen = Date.now();
                     // S-Pen takes over from a finger or palm stroke already in progress
                     if (activePointerId !== null && activeType === 'touch') endStroke();
                 } else {
-                    // Ignore resting palms: big contact patch, pen in use, or a second touch
+                    // Ignore resting palms: big contact patch, S-Pen nearby, or a second touch
                     const palm = Math.max(e.width || 0, e.height || 0) > 30;
-                    const penBusy = Date.now() - lastPenTime < 1200;
+                    const penBusy = Date.now() - lastPenSeen < 1200;
                     if (palm || penBusy || activePointerId !== null) return;
                 }
                 if (activePointerId !== null) return;
@@ -1050,7 +1097,6 @@
                 activePointerId = e.pointerId;
                 activeType = e.pointerType;
                 try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
-                if (card) { card.style.transition = 'none'; card.style.transform = ''; }
 
                 const [x, y] = localXY(e);
                 startX = lastX = x;
@@ -1058,18 +1104,18 @@
                 if (canvasStates[id].tool === 'line') {
                     snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 } else {
-                    ctx.beginPath();
-                    ctx.moveTo(x, y);
+                    drawDot(x, y, e.pressure);
                 }
             });
 
             canvas.addEventListener('pointermove', (e) => {
+                // S-Pen hovering counts as "pen is near", so a palm resting first is ignored
+                if (e.pointerType === 'pen') lastPenSeen = Date.now();
                 if (e.pointerId !== activePointerId) return;
-                const [x, y] = localXY(e);
-                const tool = canvasStates[id].tool;
-                const dist = Math.hypot(x - lastX, y - lastY);
 
+                const tool = canvasStates[id].tool;
                 if (tool === 'line') {
+                    const [x, y] = localXY(e);
                     if (snapshot) ctx.putImageData(snapshot, 0, 0);
                     ctx.save();
                     ctx.lineCap = 'round';
@@ -1077,56 +1123,68 @@
                     ctx.lineWidth = 2.5;
                     ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(x, y); ctx.stroke();
                     ctx.restore();
-                } else if (tool === 'eraser') {
-                    ctx.save();
-                    ctx.globalCompositeOperation = 'destination-out';
-                    ctx.strokeStyle = '#000';
-                    ctx.lineWidth = 28;
-                    ctx.lineCap = 'round';
-                    ctx.lineJoin = 'round';
-                    ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.stroke();
-                    ctx.restore();
-                    InkSound.update('eraser', dist);
-                } else {
-                    const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
-                    ctx.save();
-                    ctx.globalCompositeOperation = 'source-over';
-                    ctx.strokeStyle = canvasStates[id].color;
-                    ctx.lineWidth = 2.5 * (0.8 + pressure * 0.8);   // S-Pen pressure
-                    ctx.lineCap = 'round';
-                    ctx.lineJoin = 'round';
-                    ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.stroke();
-                    ctx.restore();
-                    InkSound.update('pen', dist);
+                    lastX = x;
+                    lastY = y;
+                    return;
                 }
-                lastX = x;
-                lastY = y;
+
+                // 240Hz S-Pen: draw every sample the screen batched into this frame
+                const events = (e.getCoalescedEvents && e.getCoalescedEvents().length) ? e.getCoalescedEvents() : [e];
+                let total = 0;
+                for (const ev of events) {
+                    const [x, y] = localXY(ev);
+                    total += Math.hypot(x - lastX, y - lastY);
+                    drawSegment(lastX, lastY, x, y, ev.pressure);
+                    lastX = x;
+                    lastY = y;
+                }
+                InkSound.update(tool === 'eraser' ? 'eraser' : 'pen', total / events.length);
             });
 
             canvas.addEventListener('pointerup', (e) => { if (e.pointerId === activePointerId) endStroke(); });
             canvas.addEventListener('pointercancel', (e) => { if (e.pointerId === activePointerId) endStroke(); });
-
         }
 
         function loadCanvasInk(id, page) {
             const canvas = document.getElementById(`canvas_${id}`);
             const ctx = canvas.getContext('2d');
+            ctx.save();
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.restore();
+            // Fresh load: nothing drawn yet on this page. (Fixes page 1 going blank after page 2.)
+            delete canvas.dataset.dirty;
 
-            const storageKey = `zaina_ink_${id}_p${page}`;
-            const savedInk = localStorage.getItem(storageKey);
-            if (savedInk) {
-                const img = new Image();
-                img.onload = () => { if (canvas.dataset.dirty === '1') return; ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(img, 0, 0, canvas.width, canvas.height); ctx.restore(); };
-                img.src = savedInk;
-            }
+            const key = `zaina_ink_${id}_p${page}`;
+            const saved = localStorage.getItem(key);
+            if (!saved) return;
+            let size = null;
+            try { size = JSON.parse(localStorage.getItem(key + '_size') || 'null'); } catch (_) {}
+
+            const img = new Image();
+            img.onload = () => {
+                // Don't paint over strokes the user has started since the load began
+                if (canvas.dataset.dirty === '1') return;
+                // Saved size is kept so writing is never stretched; older saves are CSS-sized
+                const sw = size ? size.w : img.width;
+                const sh = size ? size.h : img.height;
+                const s = Math.min(canvas.width / sw, canvas.height / sh);
+                ctx.save();
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.drawImage(img, 0, 0, img.width * s, img.height * s);
+                ctx.restore();
+            };
+            img.src = saved;
         }
 
         function saveCurrentCanvasInk(id) {
             const canvas = document.getElementById(`canvas_${id}`);
             const page = activePages[id] || 1;
-            const storageKey = `zaina_ink_${id}_p${page}`;
-            localStorage.setItem(storageKey, canvas.toDataURL());
+            const key = `zaina_ink_${id}_p${page}`;
+            try {
+                localStorage.setItem(key, canvas.toDataURL());
+                localStorage.setItem(key + '_size', JSON.stringify({ w: canvas.width, h: canvas.height }));
+            } catch (_) {}
         }
 
         function setTool(id, tool) {
@@ -1159,6 +1217,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             const page = activePages[id] || 1;
             localStorage.removeItem(`zaina_ink_${id}_p${page}`);
+            localStorage.removeItem(`zaina_ink_${id}_p${page}_size`);
         }
 
         function openBinder(id) {
