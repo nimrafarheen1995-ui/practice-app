@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800&family=Kalam:wght@700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
 
   <!-- Preload Asset Images -->
-  <link rel="preload" as="image" href="assets/matter-lab-bg_2.webp">
+  <link rel="preload" as="image" href="assets/matter-lab-bg.webp">
   <link rel="preload" as="image" href="assets/humayun-avatar.webp">
   <link rel="preload" as="image" href="assets/lab-scientist-humayun.webp">
   <link rel="preload" as="image" href="assets/ice-cube-mascot.webp">
@@ -58,7 +58,7 @@
     }
 
     body {
-      background: url('assets/matter-lab-bg_2.webp') no-repeat center center fixed;
+      background: url('assets/matter-lab-bg.webp') no-repeat center center fixed;
       background-size: cover;
       color: var(--text);
       display: flex;
@@ -848,6 +848,26 @@
       position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%);
       background: #065F46; color: #fff; padding: 10px 18px; border-radius: 14px; font-weight: 800; z-index: 200000; display: none;
     }
+
+    .space-system {
+      position: fixed;
+      z-index: 2;
+      pointer-events: none;
+      animation: floatPlanet 18s ease-in-out infinite;
+      will-change: transform;
+    }
+    .space-system .planet-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      filter: drop-shadow(0 0 16px rgba(255, 255, 255, 0.2));
+    }
+    @keyframes floatPlanet {
+      0%, 100% { transform: translate3d(0, 0, 0); }
+      50% { transform: translate3d(14px, -18px, 0); }
+    }
   </style>
 </head>
 <body>
@@ -860,6 +880,13 @@
 
   <div id="screenDimOverlay"></div>
   <div id="fxToast"></div>
+
+  <div class="space-system" style="left:2%; top:12%; width:110px; height:110px;">
+    <svg class="planet-svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="url(#p1g)"/><radialGradient id="p1g" cx="35%" cy="30%"><stop offset="0%" stop-color="#34D399"/><stop offset="100%" stop-color="#065F46"/></radialGradient></svg>
+  </div>
+  <div class="space-system" style="right:3%; bottom:8%; width:130px; height:130px;">
+    <svg class="planet-svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="url(#p2g)"/><radialGradient id="p2g" cx="35%" cy="30%"><stop offset="0%" stop-color="#38BDF8"/><stop offset="100%" stop-color="#0369A1"/></radialGradient></svg>
+  </div>
 
   <div class="app-container">
     <!-- TOP HUD DOCK WITH PRACTICE & WRITE MODE SWITCH -->
@@ -1303,16 +1330,16 @@
       const cur = DEFINITIONS_DATA[currentDefIdx];
       const isOpen = !!binderOpenedMap[`def_${cur.id}::p${currentNotepadPage}`];
       
-      // Fixed: In Write Mode ('test'), hide the answer/definition text from the prompt box entirely
-      const promptDisplayHtml = (appMode === 'learn') 
+      // Fixed: In Write Mode, hide the definition and examples from the prompt box so the student has to write them from memory.
+      const promptContent = (appMode === 'learn') 
         ? cur.prompt 
-        : `<b>${cur.tab.split(') ')[1]}</b><br/>Write the definition and examples from memory!`;
+        : `<b>${cur.tab}</b><br/><span style="color:#64748B; font-weight:700;">Write the definition and examples from memory on the notepad slate!</span>`;
 
       return `
         <div class="full-notepad-wrapper">
           <div class="notepad-prompt-box">
             <img src="${cur.mascot}" class="notepad-prompt-mascot" alt="Mascot" onerror="handleImgFallback(this)"/>
-            <div>${promptDisplayHtml}</div>
+            <div>${promptContent}</div>
           </div>
           <div class="notepad-toolbar">
             <div class="tool-group">
@@ -1358,7 +1385,7 @@
                   <div class="label-lesson">EVS Lesson 1: Definitions</div>
                 </div>
               </div>
-              <div class="label-tap-hint">Tap to Open Binder ⚡</div>
+              <div class="label-tap-hint">⚡</div>
             </div>
           </div>
         </div>
@@ -1421,7 +1448,7 @@
                   <div class="label-lesson">EVS Lesson 1: Q&amp;A</div>
                 </div>
               </div>
-              <div class="label-tap-hint">Tap to Open Writing Slate ⚡</div>
+              <div class="label-tap-hint">⚡</div>
             </div>
           </div>
         </div>
@@ -1431,7 +1458,7 @@
     function renderWorkbookPortal() {
       let mainContent = "";
       if (currentWorkbookSec === 0) {
-        // Difference Table - Fixed duplication. In Practice mode show tags, in Write mode show clean inline blanks without duplicated text.
+        // Fixed: In Practice Mode, answers appear as tags. In Write Mode, they are blank canvases! No duplicate answers.
         mainContent = `
           <table class="diff-table">
             <tr>
@@ -1445,8 +1472,8 @@
                 </div>
               </td>
               <td>
-                1. Have a fixed ${appMode === 'learn' ? '<span class="answer-tag">shape</span>' : inlineDualBlank('diff_s_shape', 340, 'shape')} shape and ${appMode === 'learn' ? '<span class="answer-tag">volume</span>' : inlineDualBlank('diff_s_vol', 340, 'volume')} volume.
-                <div style="margin-top:6px;">2. Do not flow. Examples: ${appMode === 'learn' ? '<span class="answer-tag">chair</span>' : inlineDualBlank('diff_s_ex1', 250, 'Chair')} chair and ${appMode === 'learn' ? '<span class="answer-tag">book</span>' : inlineDualBlank('diff_s_ex2', 250, 'Book')} book.</div>
+                1. Have a fixed ${appMode === 'learn' ? '<span class="answer-tag">shape</span>' : inlineDualBlank('diff_s_shape', 240, 'shape')} and fixed ${appMode === 'learn' ? '<span class="answer-tag">volume</span>' : inlineDualBlank('diff_s_vol', 240, 'volume')}.
+                <div style="margin-top:6px;">2. Do not flow. Examples: ${appMode === 'learn' ? '<span class="answer-tag">chair</span>' : inlineDualBlank('diff_s_ex1', 200, 'Chair')} and ${appMode === 'learn' ? '<span class="answer-tag">book</span>' : inlineDualBlank('diff_s_ex2', 200, 'Book')}.</div>
               </td>
             </tr>
             <tr>
@@ -1457,8 +1484,8 @@
                 </div>
               </td>
               <td>
-                1. Fixed volume, no fixed ${appMode === 'learn' ? '<span class="answer-tag">shape</span>' : inlineDualBlank('diff_l_shape', 340, 'shape')} shape. Takes ${appMode === 'learn' ? '<span class="answer-tag">container</span>' : inlineDualBlank('diff_l_cont', 340, 'container')} shape of container.
-                <div style="margin-top:6px;">2. Flow easily. Examples: ${appMode === 'learn' ? '<span class="answer-tag">water</span>' : inlineDualBlank('diff_l_ex1', 250, 'Water')} water and ${appMode === 'learn' ? '<span class="answer-tag">milk</span>' : inlineDualBlank('diff_l_ex2', 250, 'Milk')} milk.</div>
+                1. Fixed volume, no fixed ${appMode === 'learn' ? '<span class="answer-tag">shape</span>' : inlineDualBlank('diff_l_shape', 240, 'shape')}. Takes shape of ${appMode === 'learn' ? '<span class="answer-tag">container</span>' : inlineDualBlank('diff_l_cont', 240, 'container')}.
+                <div style="margin-top:6px;">2. Flow easily. Examples: ${appMode === 'learn' ? '<span class="answer-tag">water</span>' : inlineDualBlank('diff_l_ex1', 200, 'Water')} and ${appMode === 'learn' ? '<span class="answer-tag">milk</span>' : inlineDualBlank('diff_l_ex2', 200, 'Milk')}.</div>
               </td>
             </tr>
             <tr>
@@ -1469,8 +1496,8 @@
                 </div>
               </td>
               <td>
-                1. Do not have any fixed ${appMode === 'learn' ? '<span class="answer-tag">shape</span>' : inlineDualBlank('diff_g_shape', 340, 'shape')} shape and ${appMode === 'learn' ? '<span class="answer-tag">volume</span>' : inlineDualBlank('diff_g_vol', 340, 'volume')} volume.
-                <div style="margin-top:6px;">2. Flow very easily. Examples: ${appMode === 'learn' ? '<span class="answer-tag">oxygen</span>' : inlineDualBlank('diff_g_ex1', 250, 'Oxygen')} oxygen and ${appMode === 'learn' ? '<span class="answer-tag">steam</span>' : inlineDualBlank('diff_g_ex2', 250, 'Steam')} steam.</div>
+                1. Do not have any fixed ${appMode === 'learn' ? '<span class="answer-tag">shape</span>' : inlineDualBlank('diff_g_shape', 240, 'shape')} and no fixed ${appMode === 'learn' ? '<span class="answer-tag">volume</span>' : inlineDualBlank('diff_g_vol', 240, 'volume')}.
+                <div style="margin-top:6px;">2. Flow very easily. Examples: ${appMode === 'learn' ? '<span class="answer-tag">oxygen</span>' : inlineDualBlank('diff_g_ex1', 200, 'Oxygen')} and ${appMode === 'learn' ? '<span class="answer-tag">steam</span>' : inlineDualBlank('diff_g_ex2', 200, 'Steam')}.</div>
               </td>
             </tr>
           </table>
@@ -1499,7 +1526,7 @@
             </div>
           `;
         } else {
-          // Restored 3-column matching layout for write mode
+          // RESTORED 3-COLUMN MATCHING LAYOUT FOR WRITE MODE
           const matchPairs = [
             { id: "m1", col1: "1. Solid", col2: "b. Does not change shape" },
             { id: "m2", col1: "2. Water vapour", col2: "c. Gaseous state" },
