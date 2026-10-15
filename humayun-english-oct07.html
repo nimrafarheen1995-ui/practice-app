@@ -599,7 +599,7 @@
       color: #065F46;
       transition: transform 0.12s;
     }
-    .vocab-word-chip:active { transform: scale(0.95); background: #FEF08A; }
+    .vocab-word-chip:active { transform: scale(0.95); background: #FEF08A; color: #000; }
 
     .notepad-toolbar {
       display: flex;
@@ -664,7 +664,6 @@
       z-index: 2;
     }
 
-    /* PAGE PAGINATION CONTROLLER WITH MANUAL [+] ADD BUTTON */
     .notepad-page-strip {
       display: flex;
       justify-content: space-between;
@@ -678,7 +677,6 @@
       flex-shrink: 0;
     }
 
-    /* SELF-GRADING CHECK BAR */
     .self-grading-bar {
       display: flex;
       justify-content: space-between;
@@ -726,7 +724,6 @@
       box-shadow: 0 10px 28px rgba(0,0,0,0.1);
       transform-style: preserve-3d;
     }
-    /* 3D Stack Deck Positions */
     .circular-step-card[data-stack="0"] {
       transform: translate3d(0, 0, 0) scale(1);
       z-index: 3;
@@ -1107,7 +1104,7 @@
       </div>
     </nav>
 
-    <!-- NORMAL HUB BAY WITH REWRITTEN TITLE & FULL-SIZE ASSETS -->
+    <!-- NORMAL HUB BAY -->
     <main class="hub-bay-wrapper" id="hubBayView">
       <div class="hub-hero-header">
         <img src="assets/lab-scientist-humayun.webp" class="hub-hero-avatar" alt="Humayun Scientist" style="width:90px; height:90px;" onerror="handleImgFallback(this)" />
@@ -1186,7 +1183,7 @@
       img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><circle cx='60' cy='60' r='55' fill='%23D1FAE5' stroke='%23059669' stroke-width='4'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='45'>🧪</text></svg>";
     }
 
-    /* CLEAN SPEECH UTILITY (ONLY PRONOUNCES TARGET WORD, NO NUMBERS/SYMBOLS) */
+    /* CLEAN SPEECH UTILITY */
     function cleanSpeakText(text) {
       if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
@@ -1200,7 +1197,7 @@
       window.speechSynthesis.speak(u);
     }
 
-    /* ENGLISH-STYLE SYLLABLE SPLITTING & PRONUNCIATION */
+    /* SYLLABLE DISSECTION */
     const SYLLABLE_MAP = {
       "matter": "mat • ter",
       "evaporation": "e • vap • o • ra • tion",
@@ -1468,6 +1465,7 @@
         <div class="full-notepad-wrapper">
           <div class="notepad-prompt-box">
             <span class="speakable" onclick="cleanSpeakText('${cur.hint}')">${wrappedPrompt}</span>
+            <button class="action-btn" style="margin-left:auto; background:#D1FAE5; color:#065F46;" onclick="cleanSpeakText('${cur.hint}')">🔊 Read Aloud</button>
           </div>
           <div class="notepad-toolbar">
             <div class="tool-group">
@@ -1539,6 +1537,7 @@
         <div class="full-notepad-wrapper">
           <div class="notepad-prompt-box">
             <span class="speakable" onclick="cleanSpeakText('${curQ.hint}')"><b>${wrappedQ}</b></span>
+            <button class="action-btn" style="margin-left:auto; background:#D1FAE5; color:#065F46;" onclick="cleanSpeakText('${curQ.hint}')">🔊 Read Aloud</button>
           </div>
           <div class="notepad-toolbar">
             <div class="tool-group">
@@ -1637,7 +1636,6 @@
       let mainContent = "";
 
       if (currentWorkbookSec === 0) {
-        // Section 1: Differences Lab
         mainContent = `
           <table class="diff-table">
             <tr>
@@ -1687,7 +1685,6 @@
           </div>
         `;
       } else if (currentWorkbookSec === 1) {
-        // Section 2: Match Following
         if (appMode === 'learn') {
           mainContent = `
             <div style="font-weight:900; font-size:1.15rem; color:var(--primary-dark); margin-bottom:10px;">Match the Following States of Matter</div>
@@ -1736,7 +1733,6 @@
           `;
         }
       } else if (currentWorkbookSec === 2) {
-        // Section 3: Objective MCQs
         const mcqData = [
           { id: "mcq1", q: "1. Anything that has mass and takes up space is known as:", opts: ["a. liquid", "b. solid", "c. matter", "d. both a and b"], correctIdx: 2 },
           { id: "mcq2", q: "2. Which of the following is not a state of matter?", opts: ["a. Solid", "b. Liquid", "c. Shadow", "d. Gas"], correctIdx: 2 },
@@ -1766,7 +1762,6 @@
           </div>
         `;
       } else if (currentWorkbookSec === 3) {
-        // Section 4: Picture State Identification
         const items = [
           { id: "p1", name: "1. Ice cubes", icon: "🧊", correct: "Solid" },
           { id: "p2", name: "2. Kerosene", icon: "⛽", correct: "Liquid" },
@@ -1812,7 +1807,6 @@
           </div>
         `;
       } else {
-        // Section 5: Concept Map
         const mapData = [
           { id: "solid", prompt: "S _ L _ D", fullWord: "SOLID", ex1_id: "cmap_s_ex1", ex2_id: "cmap_s_ex2", learnEx1: "Chair", learnEx2: "Book" },
           { id: "liquid", prompt: "L _ _ _ I D", fullWord: "LIQUID", ex1_id: "cmap_l_ex1", ex2_id: "cmap_l_ex2", learnEx1: "Water", learnEx2: "Milk" },
@@ -1858,7 +1852,7 @@
       return `
         <div class="workbook-layout-grid">
           <div class="workbook-sidebar-stack">
-            ${sectionsList.map((s, i) => {
+            ${sectionsList.map((s) => {
               const stackPos = (s.idx - currentWorkbookSec + sectionsList.length) % sectionsList.length;
               return `
                 <div class="circular-step-card ${currentWorkbookSec === s.idx ? 'active-step' : ''}" data-stack="${stackPos}" onclick="switchWorkbookSec(${s.idx})">
@@ -1937,7 +1931,7 @@
       if (cover) cover.classList.remove('binder-open');
     }
 
-    /* CANVAS & S PEN RETINA ENGINE */
+    /* CANVAS & S PEN RETINA ENGINE WITH HUD AUTO-HIDE */
     function setupDualCanvases() {
       const canvasList = document.querySelectorAll(".dual-canvas");
       canvasList.forEach(c => {
@@ -1964,6 +1958,7 @@
         let lastX = 0, lastY = 0;
 
         c.onpointerdown = (e) => {
+          hideFloatingDock();
           if (palmRejectionMode === "pen-only" && e.pointerType !== "pen" && e.pointerType !== "mouse") {
             e.preventDefault();
             return;
@@ -2040,7 +2035,7 @@
       }
     }
 
-    /* FULL NOTEPAD SLATE ENGINE WITH STRICT PAGE ISOLATION */
+    /* FULL NOTEPAD SLATE ENGINE WITH PAGE ISOLATION & CLEAR FIX */
     const notepadInstances = {};
 
     function fitFullNotepads() {
@@ -2115,6 +2110,7 @@
 
     function setupNotepadPointerEvents(c, id) {
       c.onpointerdown = (e) => {
+        hideFloatingDock();
         if (palmRejectionMode === "pen-only" && e.pointerType !== "pen" && e.pointerType !== "mouse") {
           e.preventDefault();
           return;
@@ -2177,18 +2173,21 @@
     }
 
     function clearNPCanvas() {
-      const cur = activePortalKey === 'definitions' ? `def_${DEFINITIONS_DATA[currentDefIdx].id}` : QA_DATA[currentQIdx].id;
+      const cur = activePortalKey === 'definitions' ? DEFINITIONS_DATA[currentDefIdx].id : QA_DATA[currentQIdx].id;
       const c = document.querySelector(`.full-notepad-canvas[data-np-id="${cur}"]`);
       if (!c) return;
       const ctx = c.getContext("2d");
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.clearRect(0, 0, c.width, c.height);
+      ctx.restore();
       const key = getStorageKey(`np_${cur}_p${notepadPageNum}`);
       delete activeInkCache[key];
       localStorage.removeItem(key);
     }
 
     function setNPTool(t) {
-      const cur = activePortalKey === 'definitions' ? `def_${DEFINITIONS_DATA[currentDefIdx].id}` : QA_DATA[currentQIdx].id;
+      const cur = activePortalKey === 'definitions' ? DEFINITIONS_DATA[currentDefIdx].id : QA_DATA[currentQIdx].id;
       const stateKey = cur + "_p" + notepadPageNum;
       if (notepadInstances[stateKey]) notepadInstances[stateKey].tool = t;
       document.getElementById("btnNPPen").classList.toggle("active", t === 'pen');
@@ -2196,7 +2195,7 @@
     }
 
     function setNPWidth(w) {
-      const cur = activePortalKey === 'definitions' ? `def_${DEFINITIONS_DATA[currentDefIdx].id}` : QA_DATA[currentQIdx].id;
+      const cur = activePortalKey === 'definitions' ? DEFINITIONS_DATA[currentDefIdx].id : QA_DATA[currentQIdx].id;
       const stateKey = cur + "_p" + notepadPageNum;
       if (notepadInstances[stateKey]) notepadInstances[stateKey].lineWidth = w;
       document.getElementById("npThick2").classList.toggle("active", w === 2);
@@ -2205,13 +2204,13 @@
     }
 
     function setNPColor(col) {
-      const cur = activePortalKey === 'definitions' ? `def_${DEFINITIONS_DATA[currentDefIdx].id}` : QA_DATA[currentQIdx].id;
+      const cur = activePortalKey === 'definitions' ? DEFINITIONS_DATA[currentDefIdx].id : QA_DATA[currentQIdx].id;
       const stateKey = cur + "_p" + notepadPageNum;
       if (notepadInstances[stateKey]) notepadInstances[stateKey].color = col;
       setNPTool('pen');
     }
 
-    /* GRAND CELEBRATION FINALE */
+    /* GRAND CELEBRATION FINALE WITH MASCOTS */
     const finaleStage = document.getElementById('celebrationFinaleStage');
     const finaleCanvas = document.getElementById('finaleCanvas');
     const finaleCtx = finaleCanvas.getContext('2d', { alpha: true });
@@ -2247,7 +2246,7 @@
       resizeFinaleCanvas();
       finaleStage.style.display = 'block';
       finaleRunning = true;
-      cleanSpeakText("Awesome work Humayun!");
+      cleanSpeakText("Outstanding Lab Work Humayun!");
       petals = [];
       for (let i = 0; i < 75; i++) petals.push(new ConfettiPetal());
       setTimeout(() => document.getElementById('victoryScrollCard').classList.add('impact'), 300);
