@@ -40,7 +40,7 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: #030712;
+            background: #05070E;
             color: #1E1B4B;
             touch-action: pan-x pan-y;
         }
@@ -95,7 +95,7 @@
             transform-style: preserve-3d;
         }
         .card-4d {
-            box-shadow: 0 25px 50px -12px rgba(30, 27, 75, 0.4), 0 0 30px rgba(139, 92, 246, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(30, 27, 75, 0.5), 0 0 35px rgba(139, 92, 246, 0.35);
             transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
             transform-style: preserve-3d;
         }
@@ -114,11 +114,11 @@
             border: 3px solid rgba(255, 255, 255, 0.9);
             transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
             cursor: pointer;
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
         }
         .gateway-card:hover {
             transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 20px 45px rgba(139, 92, 246, 0.4);
+            box-shadow: 0 20px 45px rgba(139, 92, 246, 0.5);
             border-color: #C084FC;
         }
         .gateway-card:active { transform: scale(0.98); }
@@ -131,7 +131,7 @@
             border: 3px solid #DDD6FE;
             background: #FFF;
             padding: 3px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         /* Floating Top Toolbar Pills */
@@ -251,6 +251,76 @@
     </footer>
 
     <script>
+        // Web Audio API Sound Synthesizer
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        function playBubbleTap() {
+            try {
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(420, ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(740, ctx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.09);
+            } catch(e) {}
+        }
+
+        function playPonyChime() {
+            try {
+                const ctx = getAudioContext();
+                [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.08);
+                    gain.gain.setValueAtTime(0.18, ctx.currentTime + idx * 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.08 + 0.35);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(ctx.currentTime + idx * 0.08);
+                    osc.stop(ctx.currentTime + idx * 0.08 + 0.4);
+                });
+            } catch (e) {}
+        }
+
+        function playMagicWhooshSound() {
+            try {
+                const ctx = getAudioContext();
+                const t0 = ctx.currentTime;
+                const dur = 1.2;
+                const buf = ctx.createBuffer(1, ctx.sampleRate * dur, ctx.sampleRate);
+                const data = buf.getChannelData(0);
+                for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+                const noise = ctx.createBufferSource();
+                noise.buffer = buf;
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'bandpass';
+                filter.Q.value = 3;
+                filter.frequency.setValueAtTime(300, t0);
+                filter.frequency.exponentialRampToValueAtTime(2200, t0 + dur);
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0.01, t0);
+                gain.gain.linearRampToValueAtTime(0.2, t0 + dur * 0.4);
+                gain.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(ctx.destination);
+                noise.start(t0);
+                noise.stop(t0 + dur);
+            } catch(e) {}
+        }
+
         function handleImageFallback(imgEl) {
             imgEl.onerror = null;
             imgEl.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><circle cx='60' cy='60' r='56' fill='%23EDE9FE' stroke='%23C4B5FD' stroke-width='4'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='56'>🦄</text></svg>";
@@ -314,6 +384,7 @@
         const canvasStates = {};
 
         function switchRealm(realmKey) {
+            playMagicWhooshSound();
             currentRealmKey = realmKey;
             document.getElementById('gatewayView').classList.add('hidden');
             document.getElementById('activeCardContainer').classList.remove('hidden');
@@ -322,6 +393,7 @@
         }
 
         function returnToGateway() {
+            playBubbleTap();
             const realm = curriculumData[currentRealmKey];
             const q = realm.questions[currentIndexMap[currentRealmKey]];
             saveCurrentCanvasInk(q.id);
@@ -332,6 +404,7 @@
         }
 
         function changeQuestion(direction) {
+            playMagicWhooshSound();
             const realm = curriculumData[currentRealmKey];
             let newIndex = currentIndexMap[currentRealmKey] + direction;
             if(newIndex >= 0 && newIndex < realm.questions.length) {
@@ -341,6 +414,7 @@
         }
 
         function switchPageSmoothly(qId, delta) {
+            playBubbleTap();
             if(!activePages[qId]) activePages[qId] = 1;
             let newPage = activePages[qId] + delta;
             if(newPage >= 1 && newPage <= 2) {
@@ -394,10 +468,10 @@
                             <!-- Toolbar -->
                             <div class="bg-amber-950 text-amber-100 p-2.5 flex justify-between items-center z-10 shadow-md">
                                 <div class="flex items-center gap-2">
-                                    <button onclick="setTool('${q.id}', 'pen')" id="toolPen_${q.id}" class="p-1.5 rounded bg-amber-600 text-white shadow">✏️</button>
-                                    <button onclick="setTool('${q.id}', 'line')" id="toolLine_${q.id}" class="p-1.5 rounded hover:bg-amber-800">📏</button>
-                                    <button onclick="setTool('${q.id}', 'eraser')" id="toolEraser_${q.id}" class="p-1.5 rounded hover:bg-amber-800">🧹</button>
-                                    <button onclick="clearCanvas('${q.id}')" class="p-1.5 rounded hover:bg-amber-800 text-red-300">🗑️</button>
+                                    <button onclick="setTool('${q.id}', 'pen')" id="toolPen_${q.id}" class="p-1.5 rounded bg-amber-600 text-white shadow" title="Pen">✏️</button>
+                                    <button onclick="setTool('${q.id}', 'line')" id="toolLine_${q.id}" class="p-1.5 rounded hover:bg-amber-800" title="Line">📏</button>
+                                    <button onclick="setTool('${q.id}', 'eraser')" id="toolEraser_${q.id}" class="p-1.5 rounded hover:bg-amber-800" title="Eraser">🧹</button>
+                                    <button onclick="clearCanvas('${q.id}')" class="p-1.5 rounded hover:bg-amber-800 text-red-300" title="Clear">🗑️</button>
                                 </div>
 
                                 <!-- Smooth Page Navigation (Pg 1 / 2) -->
@@ -420,9 +494,9 @@
 
                             <!-- Fixed Size Graph Box Writing Surface with Full-Size Guiding Pony in Corner -->
                             <div class="flex-1 graph-paper relative overflow-hidden" id="canvasArea_${q.id}">
-                                <!-- Full-Size Guiding Pony in Bottom-Right Corner (Clean, no text overlay) -->
+                                <!-- Full-Size Guiding Pony in Bottom-Right Corner looking over Zaina's work (No label text) -->
                                 <div class="absolute right-2 bottom-0 pointer-events-none z-10 opacity-60 hover:opacity-90 transition duration-300">
-                                    <img src="${realm.avatar}" class="w-48 h-48 md:w-60 md:h-60 object-contain filter drop-shadow-[0_15px_30px_rgba(0,0,0,0.4)] transform rotate-[-3deg]" alt="${realm.pony}" onerror="handleImageFallback(this)"/>
+                                    <img src="${realm.avatar}" class="w-48 h-48 md:w-64 md:h-64 object-contain filter drop-shadow-[0_20px_30px_rgba(0,0,0,0.4)] transform rotate-[-3deg]" alt="${realm.pony}" onerror="handleImageFallback(this)"/>
                                 </div>
 
                                 <!-- Place Value Grid Overlay with Empty Carry/Borrow Top Row -->
@@ -560,6 +634,7 @@
         }
 
         function setTool(id, tool) {
+            playBubbleTap();
             canvasStates[id].tool = tool;
             ['Pen', 'Line', 'Eraser'].forEach(t => {
                 const btn = document.getElementById(`tool${t}_${id}`);
@@ -574,16 +649,19 @@
         }
 
         function setColor(id, color) {
+            playBubbleTap();
             canvasStates[id].color = color;
             setTool(id, 'pen');
         }
 
         function toggleGrid(id) {
+            playBubbleTap();
             const overlay = document.getElementById(`gridOverlay_${id}`);
             overlay.classList.toggle('hidden');
         }
 
         function clearCanvas(id) {
+            playBubbleTap();
             const canvas = document.getElementById(`canvas_${id}`);
             const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -592,10 +670,12 @@
         }
 
         function openBinder(id) {
+            playMagicWhooshSound();
             document.getElementById(`binderCover_${id}`).classList.add('binder-open');
         }
 
         function closeBinder(id) {
+            playBubbleTap();
             saveCurrentCanvasInk(id);
             document.getElementById(`binderCover_${id}`).classList.remove('binder-open');
         }
@@ -608,38 +688,51 @@
         function checkAnswer(id, correctAnswer) {
             const val = document.getElementById(`ans_${id}`).value.trim();
             if (val === correctAnswer) {
+                playPonyChime();
                 alert("✨ Correct! Amazing work, Zaina!");
             } else {
+                playBubbleTap();
                 alert("Not quite yet! Check your working on the graph paper and try again.");
             }
         }
 
-        // Immersive Milky Way Galaxy & Large Realistic Planets Background Animation
+        // Animated Immersive Milky Way Space Theme with Large Realistic Planets & Galaxies
         const mCanvas = document.getElementById("milkyWayCanvas");
         const mCtx = mCanvas.getContext("2d");
         let stars = [];
         let planets = [];
+        let galaxyClouds = [];
 
         function resizeMilkyWay() {
             mCanvas.width = window.innerWidth;
             mCanvas.height = window.innerHeight;
+            
             stars = [];
-            for (let i = 0; i < 140; i++) {
+            for (let i = 0; i < 150; i++) {
                 stars.push({
                     x: Math.random() * mCanvas.width,
                     y: Math.random() * mCanvas.height,
                     radius: Math.random() * 2.2 + 0.4,
                     vx: (Math.random() - 0.5) * 0.15,
                     vy: -Math.random() * 0.25 - 0.05,
-                    alpha: Math.random() * 0.9 + 0.1,
+                    alpha: Math.random() * 0.85 + 0.15,
                     dAlpha: (Math.random() - 0.5) * 0.008,
-                    color: ['#FDF2F8', '#C7D2FE', '#BAE6FD', '#FEF08A'][Math.floor(Math.random() * 4)]
+                    color: ['#FFFFFF', '#E0E7FF', '#BAE6FD', '#FDE047', '#F472B6'][Math.floor(Math.random() * 5)]
                 });
             }
-            // Large, vivid, realistic planets with orbital drift
+
+            // Large, vivid, detailed planets orbiting subtly
             planets = [
-                { x: mCanvas.width * 0.15, y: mCanvas.height * 0.25, r: 55, color1: '#4338CA', color2: '#312E81', vx: 0.08, ring: true },
-                { x: mCanvas.width * 0.85, y: mCanvas.height * 0.75, r: 75, color1: '#BE185D', color2: '#831843', vx: -0.05, ring: false }
+                { x: mCanvas.width * 0.15, y: mCanvas.height * 0.25, r: 42, color: '#6366F1', vx: 0.08, ring: true, ringColor: 'rgba(199, 210, 254, 0.4)' },
+                { x: mCanvas.width * 0.85, y: mCanvas.height * 0.75, r: 60, color: '#EC4899', vx: -0.05, ring: false, texture: '#9D174D' },
+                { x: mCanvas.width * 0.75, y: mCanvas.height * 0.2, r: 30, color: '#38BDF8', vx: 0.04, ring: true, ringColor: 'rgba(186, 230, 253, 0.5)' }
+            ];
+
+            // Deep background galaxy nebula clouds
+            galaxyClouds = [
+                { x: mCanvas.width * 0.3, y: mCanvas.height * 0.4, r: 220, color: 'rgba(139, 92, 246, 0.12)' },
+                { x: mCanvas.width * 0.7, y: mCanvas.height * 0.6, r: 280, color: 'rgba(236, 72, 153, 0.09)' },
+                { x: mCanvas.width * 0.5, y: mCanvas.height * 0.2, r: 320, color: 'rgba(14, 165, 233, 0.1)' }
             ];
         }
         window.addEventListener("resize", resizeMilkyWay);
@@ -650,24 +743,22 @@
             
             // Deep space background gradient
             const grad = mCtx.createLinearGradient(0, 0, mCanvas.width, mCanvas.height);
-            grad.addColorStop(0, '#030712');
-            grad.addColorStop(0.5, '#0F172A');
-            grad.addColorStop(1, '#1E1B4B');
+            grad.addColorStop(0, '#03050B');
+            grad.addColorStop(0.5, '#0B0F19');
+            grad.addColorStop(1, '#110C1D');
             mCtx.fillStyle = grad;
             mCtx.fillRect(0, 0, mCanvas.width, mCanvas.height);
 
-            // True Milky Way Galactic Band (Glowing diagonal nebula core)
-            mCtx.save();
-            mCtx.globalAlpha = 0.18;
-            const mwGrad = mCtx.createRadialGradient(mCanvas.width * 0.5, mCanvas.height * 0.5, 50, mCanvas.width * 0.5, mCanvas.height * 0.5, mCanvas.width * 0.8);
-            mwGrad.addColorStop(0, '#C084FC');
-            mwGrad.addColorStop(0.4, '#38BDF8');
-            mwGrad.addColorStop(1, 'transparent');
-            mCtx.fillStyle = mwGrad;
-            mCtx.beginPath();
-            mCtx.ellipse(mCanvas.width * 0.5, mCanvas.height * 0.5, mCanvas.width * 0.7, mCanvas.height * 0.35, Math.PI / 6, 0, Math.PI * 2);
-            mCtx.fill();
-            mCtx.restore();
+            // Render glowing galaxy nebula clouds for depth
+            for (let g of galaxyClouds) {
+                const radial = mCtx.createRadialGradient(g.x, g.y, 10, g.x, g.y, g.r);
+                radial.addColorStop(0, g.color);
+                radial.addColorStop(1, 'transparent');
+                mCtx.fillStyle = radial;
+                mCtx.beginPath();
+                mCtx.arc(g.x, g.y, g.r, 0, Math.PI * 2);
+                mCtx.fill();
+            }
 
             // Render moving stars
             for (let s of stars) {
@@ -688,30 +779,30 @@
                 mCtx.restore();
             }
 
-            // Render large, vivid, realistic planets with atmospheric shading & rings
+            // Render vivid, large realistic planets
             for (let p of planets) {
                 p.x += p.vx;
                 if (p.x - p.r > mCanvas.width) p.x = -p.r;
                 if (p.x + p.r < 0) p.x = mCanvas.width + p.r;
 
                 mCtx.save();
-                mCtx.globalAlpha = 0.65;
-                
-                // Planet body radial gradient for 3D sphere lighting
+                // Planet body with radial shading for 3D sphere look
                 const pGrad = mCtx.createRadialGradient(p.x - p.r * 0.3, p.y - p.r * 0.3, p.r * 0.1, p.x, p.y, p.r);
-                pGrad.addColorStop(0, p.color1);
-                pGrad.addColorStop(1, p.color2);
+                pGrad.addColorStop(0, '#FFFFFF');
+                pGrad.addColorStop(0.3, p.color);
+                pGrad.addColorStop(1, '#020617');
+                
                 mCtx.fillStyle = pGrad;
                 mCtx.beginPath();
                 mCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
                 mCtx.fill();
 
-                // Optional Planetary Ring
+                // Optional Planetary Rings
                 if (p.ring) {
-                    mCtx.strokeStyle = 'rgba(216, 180, 254, 0.5)';
-                    mCtx.lineWidth = 5;
+                    mCtx.strokeStyle = p.ringColor;
+                    mCtx.lineWidth = 4;
                     mCtx.beginPath();
-                    mCtx.ellipse(p.x, p.y, p.r * 1.8, p.r * 0.4, Math.PI / 5, 0, Math.PI * 2);
+                    mCtx.ellipse(p.x, p.y, p.r * 1.8, p.r * 0.55, Math.PI / 5, 0, Math.PI * 2);
                     mCtx.stroke();
                 }
                 mCtx.restore();
@@ -723,6 +814,7 @@
 
         // Screen Dimmer Toggle
         function toggleScreenDim() {
+            playBubbleTap();
             const overlay = document.getElementById("screenDimOverlay");
             const btn = document.getElementById("dimToggleBtn");
             const isDim = overlay.style.display === "block";
