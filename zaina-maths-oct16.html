@@ -312,13 +312,52 @@
         .ink-toolbar button.p-1\.5 { display: inline-flex; align-items: center; justify-content: center; }
 
         /* ===== SPACE: floating planets, orbit ring, 3D depth ===== */
-        .space-planet {
+        .space-system {
             position: fixed;
-            border-radius: 50%;
-            pointer-events: none;
             z-index: 2;
+            pointer-events: none;
             animation: floatPlanet 18s ease-in-out infinite;
             transform-style: preserve-3d;
+        }
+        .space-system .planet-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+            filter: drop-shadow(0 0 18px rgba(255, 255, 255, 0.15));
+        }
+        .pony-orbit {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 0;
+            height: 0;
+            animation: orbitRound var(--dur) linear infinite;
+        }
+        .pony-anchor {
+            position: absolute;
+            left: 0;
+            top: 0;
+            transform: translateX(var(--r));
+        }
+        .pony-anchor img {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: clamp(54px, 9vmin, 92px);
+            height: auto;
+            transform: translate(-50%, -50%);
+            filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
+            animation: counterSpin var(--dur) linear infinite;
+        }
+        @keyframes orbitRound {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes counterSpin {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(-360deg); }
         }
         @keyframes rocketGlide {
             0% { left: -230px; top: 58%; transform: rotate(12deg) scale(0.8); }
@@ -347,17 +386,16 @@
             from { transform: rotateX(72deg) rotateZ(0deg); }
             to { transform: rotateX(72deg) rotateZ(360deg); }
         }
-        .card-4d { transition: transform 0.25s ease, box-shadow 0.3s ease; }
+        .card-4d { transition: box-shadow 0.3s ease; }
         .card-4d:hover { box-shadow: 0 30px 60px -12px rgba(30, 27, 75, 0.5), 0 0 40px rgba(139, 92, 246, 0.45); }
+        button, [onclick] { touch-action: manipulation; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col relative overflow-hidden">
 
     <canvas id="milkyWayCanvas"></canvas>
     <canvas id="confettiSnowCanvas"></canvas>
-    <div class="space-planet" style="width:150px;height:150px;left:4%;top:10%;background:radial-gradient(circle at 30% 30%,#fbcfe8,#be185d 55%,#4c1d95);box-shadow:0 0 70px rgba(236,72,153,.45);"></div>
-    <div class="space-planet" style="width:96px;height:96px;right:6%;bottom:12%;background:radial-gradient(circle at 35% 30%,#fef08a,#d97706 60%,#78350f);box-shadow:0 0 50px rgba(250,204,21,.4);animation-delay:-6s;"></div>
-    <div class="space-planet" style="width:56px;height:56px;right:22%;top:14%;background:radial-gradient(circle at 30% 30%,#bae6fd,#0284c7 60%,#0c4a6e);animation-delay:-11s;"></div>
+    <div id="spaceScene"></div>
     <div id="screenDimOverlay"></div>
 
     <!-- GRAND CELEBRATION STAGE -->
@@ -636,6 +674,83 @@
             if (!InkSound.enabled) InkSound.stop();
         }
         if (!InkSound.enabled) document.getElementById('inkSoundBtn').textContent = '🔇';
+
+        /* ===== SPACE SCENE: textured planets with pony companions orbiting them ===== */
+        const SPACE_SCENE = [
+            { kind: 'gas',    pos: 'left:1.5%;top:9%',    size: 200, ponies: [{ img: 'assets/rainbow.png', r: 0.74, dur: 17 }, { img: 'assets/pinkie.png', r: 0.98, dur: 27 }] },
+            { kind: 'desert', pos: 'right:3%;bottom:10%', size: 160, ponies: [{ img: 'assets/applejack.png', r: 0.78, dur: 14 }, { img: 'assets/celestia.png', r: 1.02, dur: 23 }] },
+            { kind: 'ocean',  pos: 'right:19%;top:6%',    size: 84,  ponies: [{ img: 'assets/luna.png', r: 0.95, dur: 12 }] },
+            { kind: 'ocean',  pos: 'left:4%;bottom:6%',   size: 112, ponies: [{ img: 'assets/twilight.png', r: 0.9, dur: 19 }] }
+        ];
+
+        let spaceUid = 0;
+        function planetSVG(kind) {
+            const u = 'pl' + (++spaceUid);
+            const P = {
+                gas:    { c1: '#fde68a', c2: '#f472b6', c3: '#3b0764', bands: ['#fbcfe8', '#f9a8d4', '#c084fc', '#fb7185', '#a78bfa'], ring: true,  craters: false, cloud: false, seed: 7,  atmos: '#f0abfc' },
+                desert: { c1: '#fef3c7', c2: '#f59e0b', c3: '#78350f', bands: ['#fde68a', '#b45309', '#fbbf24'], ring: false, craters: true,  cloud: false, seed: 21, atmos: '#fcd34d' },
+                ocean:  { c1: '#e0f2fe', c2: '#0ea5e9', c3: '#0c4a6e', bands: ['#bae6fd', '#0369a1'], ring: false, craters: false, cloud: true,  seed: 3,  atmos: '#7dd3fc' }
+            }[kind];
+
+            const bands = P.bands.map((col, i) => {
+                const h = 72 / P.bands.length;
+                return `<rect x="0" y="${(14 + i * h).toFixed(1)}" width="100" height="${(h * 0.75).toFixed(1)}" fill="${col}" opacity="0.42"/>`;
+            }).join('');
+            const craters = P.craters ? [[34, 38, 7], [60, 58, 5], [70, 32, 4], [44, 68, 6], [24, 56, 3.5]].map(([x, y, r]) =>
+                `<circle cx="${x}" cy="${y}" r="${r}" fill="#78350f" opacity="0.5"/><circle cx="${(x + r * 0.3).toFixed(1)}" cy="${(y + r * 0.3).toFixed(1)}" r="${(r * 0.7).toFixed(1)}" fill="#fef3c7" opacity="0.18"/>`
+            ).join('') : '';
+            const clouds = P.cloud ? `<rect x="0" y="0" width="100" height="100" filter="url(#${u}n)" opacity="0.95"/>` : '';
+
+            const ringPath = `<ellipse cx="50" cy="50" rx="47" ry="12" fill="none" stroke="url(#${u}ring)" stroke-width="5" transform="rotate(-18 50 50)"/>`;
+            const ringBack  = P.ring ? `<g clip-path="url(#${u}top)">${ringPath}</g>` : '';
+            const ringFront = P.ring ? `<g clip-path="url(#${u}bot)">${ringPath}</g>` : '';
+
+            return `
+<svg class="planet-svg" viewBox="0 0 100 100" aria-hidden="true">
+  <defs>
+    <radialGradient id="${u}g" cx="36%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="${P.c1}"/><stop offset="55%" stop-color="${P.c2}"/><stop offset="100%" stop-color="${P.c3}"/>
+    </radialGradient>
+    <radialGradient id="${u}shade" cx="38%" cy="32%" r="82%">
+      <stop offset="50%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#020617" stop-opacity="0.9"/>
+    </radialGradient>
+    <radialGradient id="${u}hl" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8"/><stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="${u}ring" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="${P.c1}" stop-opacity="0"/><stop offset="50%" stop-color="${P.c1}" stop-opacity="0.95"/><stop offset="100%" stop-color="${P.c1}" stop-opacity="0"/>
+    </linearGradient>
+    <clipPath id="${u}c"><circle cx="50" cy="50" r="46"/></clipPath>
+    <clipPath id="${u}top"><rect x="0" y="0" width="100" height="50"/></clipPath>
+    <clipPath id="${u}bot"><rect x="0" y="50" width="100" height="50"/></clipPath>
+    <filter id="${u}n" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="4" seed="${P.seed}"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 2.4 -1"/>
+    </filter>
+  </defs>
+  ${ringBack}
+  <circle cx="50" cy="50" r="46" fill="url(#${u}g)"/>
+  <g clip-path="url(#${u}c)">${bands}${craters}${clouds}</g>
+  <circle cx="50" cy="50" r="46" fill="url(#${u}shade)"/>
+  <circle cx="34" cy="28" r="20" fill="url(#${u}hl)"/>
+  ${ringFront}
+  <circle cx="50" cy="50" r="47" fill="none" stroke="${P.atmos}" stroke-width="2" opacity="0.55"/>
+</svg>`;
+        }
+
+        function buildSpaceScene() {
+            const host = document.getElementById('spaceScene');
+            if (!host) return;
+            host.innerHTML = SPACE_SCENE.map(sys => `
+                <div class="space-system" style="${sys.pos};width:${sys.size}px;height:${sys.size}px;">
+                    ${planetSVG(sys.kind)}
+                    ${sys.ponies.map(p => `
+                        <div class="pony-orbit" style="--r:${Math.round(p.r * sys.size)}px;--dur:${p.dur}s;">
+                            <div class="pony-anchor"><img src="${p.img}" alt="" onerror="handleImageFallback(this)"/></div>
+                        </div>`).join('')}
+                </div>`).join('');
+        }
+        buildSpaceScene();
 
         const curriculumData = {
             addition: {
@@ -991,17 +1106,6 @@
             canvas.addEventListener('pointerup', (e) => { if (e.pointerId === activePointerId) endStroke(); });
             canvas.addEventListener('pointercancel', (e) => { if (e.pointerId === activePointerId) endStroke(); });
 
-            // Gentle 3D tilt when the pen or mouse hovers over the card (never while drawing)
-            if (card) {
-                card.addEventListener('pointermove', (e) => {
-                    if (e.pointerType === 'touch' || e.buttons || activePointerId !== null) return;
-                    const r = card.getBoundingClientRect();
-                    const px = (e.clientX - r.left) / r.width - 0.5;
-                    const py = (e.clientY - r.top) / r.height - 0.5;
-                    card.style.transform = `perspective(1400px) rotateX(${(-py * 3).toFixed(2)}deg) rotateY(${(px * 4).toFixed(2)}deg)`;
-                });
-                card.addEventListener('pointerleave', () => { card.style.transform = ''; });
-            }
         }
 
         function loadCanvasInk(id, page) {
