@@ -186,29 +186,6 @@
     }
     .action-btn:active { transform: translateY(1px); }
 
-    /* SMALL FLOATING PILL ICON DOCK ON THE LEFT */
-    .portal-pills-row {
-      display: flex;
-      gap: 6px;
-      margin-left: 12px;
-    }
-    .portal-pill-sm {
-      border: 2px solid var(--border);
-      background: #F8FAFC;
-      border-radius: 10px;
-      padding: 4px 10px;
-      font-size: 0.9rem;
-      font-weight: 800;
-      color: var(--subtext);
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .portal-pill-sm.active {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: #FFF;
-    }
-
     /* HUB BAY */
     .hub-bay-wrapper {
       flex: 1;
@@ -457,12 +434,12 @@
     /* FULL-COVER AVATAR BACKGROUND WATERMARK */
     .binder-avatar-bg {
       position: absolute;
-      right: -20px;
-      bottom: -20px;
-      width: 280px;
-      height: 280px;
+      right: -10px;
+      bottom: -10px;
+      width: 320px;
+      height: 320px;
       object-fit: contain;
-      opacity: 0.22;
+      opacity: 0.28;
       pointer-events: none;
       z-index: 2;
     }
@@ -766,7 +743,7 @@
       padding: 12px 10px; display: flex; flex-direction: column; align-items: center; gap: 8px;
     }
     .cmap-type-badge {
-      background: #FED7AA; border: 2px solid #F97316; border-radius: 12px;
+      background: #FED7AA; border: 2.5px solid #F97316; border-radius: 12px;
       padding: 8px 14px; font-size: 1.1rem; font-weight: 900; color: #9A3412;
       text-align: center; width: 100%; letter-spacing: 1px;
     }
@@ -887,7 +864,6 @@
     <main class="workspace" id="portalWorkspacePane">
       <div class="pane-header">
         <div class="pane-title" id="paneTitle">Station Title</div>
-        <div id="portalSubControls" style="display:flex; gap:6px;"></div>
       </div>
       <div class="pane-body">
         <button class="rail-toggle-tab" id="railToggleBtn" onclick="playClickSound(); toggleRail()" title="Toggle Question Navigation">▶️</button>
@@ -1224,23 +1200,17 @@
       document.getElementById('btnReturnPortals').style.display = 'inline-flex';
 
       const content = document.getElementById('portalExerciseContent');
-      const subControls = document.getElementById('portalSubControls');
-      subControls.innerHTML = "";
+      const paneTitle = document.getElementById('paneTitle');
 
-      if (portalKey === 'workbook') {
-        document.getElementById('paneTitle').innerHTML = `🧪 Lab Workbook Exercises`;
-        subControls.innerHTML = `
-          <button class="def-subtab-btn ${currentWorkbookSec === 0 ? 'active' : ''}" onclick="playClickSound(); switchWorkbookSec(0)" style="padding:4px 8px; border-radius:8px; border:2px solid var(--border); font-weight:800; font-size:0.8rem; background:${currentWorkbookSec===0?'var(--primary)':'#F8FAFC'}; color:${currentWorkbookSec===0?'#FFF':'var(--subtext)'}; cursor:pointer;">1. Diff</button>
-          <button class="def-subtab-btn ${currentWorkbookSec === 1 ? 'active' : ''}" onclick="playClickSound(); switchWorkbookSec(1)" style="padding:4px 8px; border-radius:8px; border:2px solid var(--border); font-weight:800; font-size:0.8rem; background:${currentWorkbookSec===1?'var(--primary)':'#F8FAFC'}; color:${currentWorkbookSec===1?'#FFF':'var(--subtext)'}; cursor:pointer;">2. Match</button>
-          <button class="def-subtab-btn ${currentWorkbookSec === 2 ? 'active' : ''}" onclick="playClickSound(); switchWorkbookSec(2)" style="padding:4px 8px; border-radius:8px; border:2px solid var(--border); font-weight:800; font-size:0.8rem; background:${currentWorkbookSec===2?'var(--primary)':'#F8FAFC'}; color:${currentWorkbookSec===2?'#FFF':'var(--subtext)'}; cursor:pointer;">3. MCQs</button>
-          <button class="def-subtab-btn ${currentWorkbookSec === 3 ? 'active' : ''}" onclick="playClickSound(); switchWorkbookSec(3)" style="padding:4px 8px; border-radius:8px; border:2px solid var(--border); font-weight:800; font-size:0.8rem; background:${currentWorkbookSec===3?'var(--primary)':'#F8FAFC'}; color:${currentWorkbookSec===3?'#FFF':'var(--subtext)'}; cursor:pointer;">4. Pics</button>
-          <button class="def-subtab-btn ${currentWorkbookSec === 4 ? 'active' : ''}" onclick="playClickSound(); switchWorkbookSec(4)" style="padding:4px 8px; border-radius:8px; border:2px solid var(--border); font-weight:800; font-size:0.8rem; background:${currentWorkbookSec===4?'var(--primary)':'#F8FAFC'}; color:${currentWorkbookSec===4?'#FFF':'var(--subtext)'}; cursor:pointer;">5. Map</button>
-        `;
+      if (portalKey === 'definitions') {
+        paneTitle.innerHTML = `📖 Definitions &amp; Examples`;
+        content.render = renderDefinitionsPortal;
+      } else if (portalKey === 'qa') {
+        paneTitle.innerHTML = `🔥 Short &amp; Detailed Q&amp;A`;
+        content.render = renderQAPortal;
+      } else if (portalKey === 'workbook') {
+        paneTitle.innerHTML = `🧪 Lab Workbook Exercises`;
         content.render = renderWorkbookPortal;
-      } else if (portalKey === 'definitions') {
-        document.getElementById('paneTitle').innerHTML = `📖 Definitions &amp; Examples`;
-      } else {
-        document.getElementById('paneTitle').innerHTML = `🔥 Short &amp; Detailed Q&amp;A`;
       }
 
       content.innerHTML = content.render();
