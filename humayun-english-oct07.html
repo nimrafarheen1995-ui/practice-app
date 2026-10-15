@@ -6,620 +6,626 @@
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>Matter Lab &amp; Discovery Deck: Solids, Liquids &amp; Gases</title>
+  <title>Matter Lab &amp; Discovery Deck: Grade 3 EVS</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700;800&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
 
-  <!-- Zero-Lag Hardware Preloads for Custom WebP Assets -->
-  <link rel="preload" as="image" href="assets/lab-scientist-humayun.webp" type="image/webp">
-  <link rel="preload" as="image" href="assets/ice-cube-mascot.webp" type="image/webp">
-  <link rel="preload" as="image" href="assets/water-drop-mascot.webp" type="image/webp">
-  <link rel="preload" as="image" href="assets/steam-cloud-mascot.webp" type="image/webp">
-  <link rel="preload" as="image" href="assets/particle-solid-icon.webp" type="image/webp">
-  <link rel="preload" as="image" href="assets/particle-liquid-icon.webp" type="image/webp">
-  <link rel="preload" as="image" href="assets/particle-gas-icon.webp" type="image/webp">
+  <!-- Preload Asset Images -->
+  <link rel="preload" as="image" href="assets/humayun-avatar.webp">
+  <link rel="preload" as="image" href="assets/lab-scientist-humayun.webp">
+  <link rel="preload" as="image" href="assets/ice-cube-mascot.webp">
+  <link rel="preload" as="image" href="assets/water-drop-mascot.webp">
+  <link rel="preload" as="image" href="assets/steam-cloud-mascot.webp">
 
   <style>
     :root {
-      --lab-blue-primary: #0284C7;
-      --lab-blue-deep: #0369A1;
-      --lab-blue-glow: #38BDF8;
-      --lab-text: #0F172A;
-      --ruled-guide: #93C5FD;
-      --ruled-base: #EF4444;
-      --font-story: 'Fredoka', cursive, sans-serif;
-      --font-body: 'Nunito', sans-serif;
+      --bg: #F0FDF4;
+      --card-bg: #FFFFFF;
+      --text: #14532D;
+      --subtext: #166534;
+      --border: #BBF7D0;
+      --primary: #16A34A;
+      --primary-dark: #15803D;
+      --accent: #F59E0B;
+      --ruled-blue: #93C5FD;
+      --margin-red: #F87171;
+      --shadow: 0 8px 30px rgba(20, 83, 45, 0.12);
+      --font: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      user-select: none;
-      -webkit-user-select: none;
       -webkit-tap-highlight-color: transparent;
-      font-family: var(--font-body);
+      user-select: none;
+      font-family: var(--font) !important;
     }
 
     html, body {
-      width: 100vw;
-      height: 100vh;
-      height: 100dvh;
+      height: 100%;
       overflow: hidden;
-      background: #061A2D;
-      color: var(--lab-text);
+      font-size: 16px;
     }
 
     body {
+      background: var(--bg);
+      color: var(--text);
       display: flex;
       flex-direction: column;
-      padding: 6px;
-      position: relative;
+      height: 100vh;
+      height: 100dvh;
+      padding: 8px 14px;
+      transition: background 0.4s ease;
     }
 
-    /* FLOATING ICON DOCK */
-    .floating-hud-dock {
+    body.theme-ice { --bg: #E0F2FE; --card-bg: #FFFFFF; --text: #0369A1; --subtext: #0284C7; --border: #BAE6FD; --primary: #0284C7; --primary-dark: #0369A1; }
+    body.theme-aqua { --bg: #ECFDF5; --card-bg: #FFFFFF; --text: #065F46; --subtext: #047857; --border: #A7F3D0; --primary: #059669; --primary-dark: #047857; }
+    body.theme-amber { --bg: #FEF3C7; --card-bg: #FFFFFF; --text: #92400E; --subtext: #B45309; --border: #FDE68A; --primary: #D97706; --primary-dark: #B45309; }
+
+    .orientation-warning {
+      display: none;
       position: fixed;
-      top: 12px;
-      left: 16px;
-      z-index: 95;
+      inset: 0;
+      background: #F0FDF4;
+      z-index: 999999;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+      padding: 30px;
+      text-align: center;
+    }
+    .orientation-warning .icon { font-size: 4rem; animation: rotPhone 2s infinite ease-in-out; }
+    @keyframes rotPhone { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(90deg); } }
+    .orientation-warning h2 { font-size: 1.6rem; font-weight: 900; color: #14532D; }
+    .orientation-warning p { font-size: 1.1rem; color: #166534; font-weight: 700; }
+    @media (orientation: portrait) {
+      .orientation-warning { display: flex; }
+    }
+
+    #screenDimOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      pointer-events: none;
+      z-index: 99999;
+    }
+
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      gap: 8px;
+    }
+
+    /* FLOATING HUD DOCK (HUMAYUN'S ENGLISH STYLE) */
+    .floating-hud-dock {
       display: flex;
       align-items: center;
-      gap: 8px;
-      background: rgba(240, 249, 255, 0.94);
+      justify-content: space-between;
+      height: 48px;
+      flex-shrink: 0;
+      background: rgba(255, 255, 255, 0.92);
       backdrop-filter: blur(8px);
-      border: 2.5px solid var(--lab-blue-primary);
-      border-radius: 22px;
-      padding: 5px 10px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      padding: 4px 12px;
+      border-radius: 16px;
+      border: 2px solid var(--border);
+      box-shadow: var(--shadow);
       transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
     }
     .floating-hud-dock.dock-minimized {
-      transform: translate3d(0, -68px, 0);
+      transform: translate3d(0, -60px, 0);
       opacity: 0;
       pointer-events: none;
     }
 
     .dock-peek-handle {
       position: fixed;
-      top: 6px;
-      left: 24px;
-      z-index: 94;
-      background: rgba(240, 249, 255, 0.85);
-      border: 2px solid var(--lab-blue-primary);
-      border-radius: 0 0 14px 14px;
-      padding: 2px 14px;
+      top: 4px;
+      left: 20px;
+      z-index: 95;
+      background: rgba(255, 255, 255, 0.9);
+      border: 2px solid var(--border);
+      border-radius: 0 0 12px 12px;
+      padding: 2px 16px;
       font-size: 1rem;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       opacity: 0;
       pointer-events: none;
       transform: translate3d(0, -20px, 0);
       transition: transform 0.3s ease, opacity 0.3s ease;
     }
     .dock-peek-handle.peek-visible {
-      opacity: 0.9;
+      opacity: 1;
       pointer-events: auto;
       transform: translate3d(0, 0, 0);
     }
 
-    .icon-btn {
-      background: #FFFFFF;
-      border: 2px solid var(--lab-blue-primary);
-      color: var(--lab-text);
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-title {
+      font-family: 'Fredoka', cursive, sans-serif !important;
       font-size: 1.25rem;
       font-weight: 800;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-      transition: transform 0.15s ease, background 0.15s ease;
-    }
-    .icon-btn:active { transform: scale(0.92); }
-
-    .mode-pill-toggle {
+      color: var(--primary-dark);
       display: flex;
-      background: #E0F2FE;
-      border: 2px solid var(--lab-blue-primary);
-      border-radius: 16px;
-      padding: 2px;
-      gap: 4px;
-    }
-    .mode-icon-btn {
-      background: transparent;
-      border: none;
-      width: 40px;
-      height: 36px;
-      border-radius: 12px;
-      font-size: 1.25rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.18s ease;
-    }
-    .mode-icon-btn.active {
-      background: linear-gradient(180deg, #38BDF8 0%, #0284C7 100%);
-      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.45);
-      transform: scale(1.05);
-      color: #FFF;
-    }
-
-    /* 100% FULL-BLEED MASTER LAB STAGE */
-    .master-scenic-stage {
-      flex: 1;
-      width: 100%;
-      height: 100%;
-      position: relative;
-      border: 3.5px solid #0369A1;
-      border-radius: 22px;
-      overflow: hidden;
-      background: linear-gradient(135deg, #061A2D 0%, #0B2545 50%, #03223F 100%);
-      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85);
-      display: flex;
-      min-height: 0;
-      z-index: 10;
-      transition: background 0.5s ease;
-    }
-    .master-scenic-stage.atmosphere-solid { background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #0F2027 100%); }
-    .master-scenic-stage.atmosphere-liquid { background: linear-gradient(135deg, #023E8A 0%, #0077B6 50%, #03045E 100%); }
-    .master-scenic-stage.atmosphere-gas { background: linear-gradient(135deg, #533800 0%, #854D0E 50%, #713F12 100%); }
-
-    .scenic-ambient-dimmer {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 15% 70%, rgba(56, 189, 248, 0.18) 0%, rgba(3, 105, 161, 0.28) 45%, rgba(6, 26, 45, 0.65) 100%);
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    .ambient-sparkle {
-      position: absolute;
-      pointer-events: none;
-      z-index: 2;
-      opacity: 0.6;
-      animation: floatSparkle 10s infinite ease-in-out;
-    }
-    @keyframes floatSparkle {
-      0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0.25; }
-      50% { transform: translate3d(8px, -28px, 0) rotate(180deg); opacity: 0.85; }
-    }
-
-    /* CENTRAL HUB (STAGE 0) */
-    .central-hub-view {
-      position: absolute;
-      inset: 0;
-      z-index: 10;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 16px 24px;
-      opacity: 1;
-      transform: translate3d(0, 0, 0) scale(1);
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      will-change: transform, opacity;
-    }
-    .central-hub-view.hidden-hub {
-      opacity: 0;
-      pointer-events: none;
-      transform: scale(0.97);
-    }
-
-    .hub-title-capsule {
-      align-self: center;
-      background: linear-gradient(180deg, #F0F9FF 0%, #BAE6FD 100%);
-      border: 3px solid var(--lab-blue-primary);
-      border-radius: 22px;
-      padding: 8px 30px;
-      font-family: var(--font-story);
-      font-size: 1.38rem;
-      font-weight: 800;
-      color: #0369A1;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.4);
-      cursor: pointer;
-    }
-
-    .hub-portals-grid {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-      z-index: 12;
-      flex-wrap: wrap;
-    }
-
-    .portal-launch-card {
-      flex: 1;
-      min-width: 200px;
-      max-width: 260px;
-      background: rgba(255, 255, 255, 0.95);
-      border: 3px solid var(--lab-blue-primary);
-      border-radius: 24px;
-      padding: 16px 12px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 8px;
-      cursor: pointer;
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
-      transition: transform 0.2s ease, border-color 0.2s;
-    }
-    .portal-launch-card:hover {
-      transform: translateY(-5px) scale(1.03);
-      border-color: #38BDF8;
-    }
-    .portal-launch-card:active { transform: scale(0.96); }
-
-    .hub-mascots-dock {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      width: 100%;
-      pointer-events: none;
-    }
-    .mascot-scientist {
-      height: clamp(170px, 26vh, 230px);
-      filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.65));
-      pointer-events: auto;
-      cursor: pointer;
-    }
-    .mascot-trio {
-      display: flex;
-      gap: 10px;
-      pointer-events: auto;
-    }
-    .mascot-trio img {
-      height: clamp(110px, 18vh, 150px);
-      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.55));
-      cursor: pointer;
-      transition: transform 0.18s ease;
-    }
-    .mascot-trio img:active { transform: scale(0.92); }
-
-    /* WORKSTATION SLIDE VIEWPORT */
-    .slide-deck-viewport {
-      position: absolute;
-      inset: 0;
-      z-index: 20;
-      display: none;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 8px 16px;
-      opacity: 0;
-      transform: scale(0.99);
-      transition: opacity 0.2s ease, transform 0.2s ease;
-      will-change: transform, opacity;
-    }
-    .slide-deck-viewport.active-slide {
-      display: flex;
-      opacity: 1;
-      transform: scale(1);
-    }
-
-    /* LAB BANNER */
-    .palm-scroll-banner-box {
-      width: 100%;
-      height: 54px;
-      background: linear-gradient(180deg, #E0F2FE 0%, #38BDF8 100%);
-      border: 3px solid #0369A1;
-      border-radius: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 140px 0 80px;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45), inset 0 2px 4px rgba(255, 255, 255, 0.6);
-      flex-shrink: 0;
-      position: relative;
-    }
-    .banner-text-heading {
-      font-family: var(--font-story);
-      font-size: clamp(1.15rem, 1.7vw, 1.4rem);
-      font-weight: 800;
-      color: #0F172A;
-      text-align: center;
-      flex: 1;
-      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
-      cursor: pointer;
-    }
-
-    .mascot-floating-badge {
-      width: 110px;
-      height: 110px;
-      position: absolute;
-      right: 14px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 40;
-    }
-    .mascot-badge-img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
-    }
-
-    /* WORKSPACE BODY */
-    .work-body-frame {
-      flex: 1;
-      display: flex;
-      align-items: stretch;
-      gap: 16px;
-      min-height: 0;
-      padding: 6px 0;
-      position: relative;
-    }
-
-    .stage-character-col {
-      width: 210px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      gap: 12px;
-    }
-    .tall-character-sprite {
-      max-height: 230px;
-      max-width: 100%;
-      object-fit: contain;
-      filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.65));
-      cursor: pointer;
-    }
-    .tall-character-sprite.cheer-bounce {
-      transform: scale(1.08) translateY(-8px);
-      transition: transform 0.2s ease;
-    }
-
-    /* PARTICLE SIMULATOR WIDGET */
-    .particle-sim-widget {
-      background: rgba(255, 255, 255, 0.92);
-      border: 2px solid var(--lab-blue-primary);
-      border-radius: 14px;
-      padding: 8px;
-      display: flex;
-      flex-direction: column;
       align-items: center;
       gap: 6px;
-      width: 100%;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-    }
-    .sim-card-img {
-      width: 80px;
-      height: 80px;
-      object-fit: contain;
     }
 
-    /* FLOATING PARCHMENT SLATE */
-    .floating-parchment-slate {
-      flex: 1;
-      background: rgba(255, 255, 255, 0.96);
-      border: 3px solid var(--lab-blue-primary);
-      border-radius: 20px;
-      padding: 10px 16px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 8px;
-      min-width: 0;
-      position: relative;
-    }
-
-    .slate-prompt-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 2px dashed rgba(2, 132, 199, 0.4);
-      padding-bottom: 6px;
-      flex-shrink: 0;
-    }
-    .prompt-text-headline {
-      font-family: var(--font-story);
-      font-size: 1.35rem;
+    .grade-badge {
+      background: rgba(220, 252, 231, 0.8);
+      color: var(--primary-dark);
+      font-size: 0.78rem;
       font-weight: 800;
-      color: #0369A1;
-      cursor: pointer;
+      padding: 2px 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
     }
 
-    .answer-stream-box {
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: #0F172A;
-      line-height: 1.45;
+    .mode-switch-wrap {
       display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 0;
-    }
-    .dissect-word-chip {
-      display: inline-flex;
-      align-items: center;
-      padding: 3px 8px;
-      border-radius: 10px;
-      cursor: pointer;
-      background: rgba(224, 242, 254, 0.85);
-      border: 1px dashed rgba(2, 132, 199, 0.45);
-      touch-action: pan-y;
-    }
-    .dissect-word-chip.split-active {
-      background: #DCFCE7;
-      border: 1.5px solid #16A34A;
-      padding: 2px 6px;
-      gap: 4px;
-    }
-    .syllable-badge-part {
-      background: #FFFFFF;
-      border: 1px solid #15803D;
-      border-radius: 6px;
-      padding: 2px 6px;
-      font-family: var(--font-story);
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: #166534;
-    }
-
-    /* 4-LINE DUAL MARGIN CANVAS NOTEBOOK SLATE */
-    .canvas-notebook-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      min-height: 150px;
-      background: #FFFFFF;
-      border: 2px solid var(--lab-blue-primary);
-      border-radius: 14px;
-      padding: 4px 8px;
-      box-shadow: inset 0 2px 6px rgba(0,0,0,0.06);
-      position: relative;
-    }
-
-    .canvas-tools-strip {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1.5px solid #E2E8F0;
-      padding-bottom: 3px;
-      flex-shrink: 0;
-    }
-    .tool-btn {
       background: #F8FAFC;
-      border: 1.5px solid #CBD5E1;
-      border-radius: 10px;
-      width: 38px;
-      height: 34px;
-      font-size: 1.1rem;
-      cursor: pointer;
+      padding: 3px;
+      border-radius: 12px;
+      border: 2px solid var(--border);
+    }
+
+    .mode-btn {
+      border: none;
+      background: transparent;
+      padding: 5px 12px;
+      font-size: 0.85rem;
       font-weight: 800;
-      color: #475569;
+      color: var(--subtext);
+      border-radius: 9px;
+      cursor: pointer;
+      transition: all 0.12s;
+    }
+    .mode-btn.active-learn { background: var(--primary); color: #FFF; }
+    .mode-btn.active-test { background: #7C3AED; color: #FFF; }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .action-btn {
+      border: 2px solid var(--border);
+      background: #FFF;
+      color: var(--text);
+      font-weight: 800;
+      font-size: 0.82rem;
+      padding: 5px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      height: 36px;
       display: inline-flex;
       align-items: center;
-      justify-content: center;
+      gap: 4px;
+      text-decoration: none;
     }
-    .tool-btn.active-tool {
-      background: #E0F2FE;
-      border-color: #0284C7;
-      color: #0369A1;
-    }
+    .action-btn:active { transform: translateY(1px); }
 
-    .notebook-sheet-viewport {
+    /* HOLOGRAPHIC 3D CAROUSEL HUB BAY */
+    .hub-bay-wrapper {
       flex: 1;
-      position: relative;
-      width: 100%;
-      min-height: 110px;
-      overflow: hidden;
-      background: #FFFFFF;
-    }
-
-    .notebook-double-margin {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 30px;
-      width: 5px;
-      border-left: 2px solid var(--ruled-base);
-      border-right: 2px solid var(--ruled-base);
-      pointer-events: none;
-      z-index: 2;
-      opacity: 0.85;
-    }
-
-    .notebook-four-lines-bg {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 1;
-      background-image: repeating-linear-gradient(
-        to bottom,
-        #FFFFFF 0px,
-        #FFFFFF 29px,
-        var(--ruled-guide) 29px,
-        var(--ruled-guide) 30px
-      );
-    }
-
-    .retina-ink-canvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      touch-action: none;
-      cursor: crosshair;
-      z-index: 5;
-    }
-
-    /* FOOTER DOCK */
-    .workspace-footer-bar {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: space-between;
-      border-top: 2px dashed rgba(56, 189, 248, 0.6);
-      padding-top: 4px;
-      flex-shrink: 0;
-    }
-
-    /* NON-BLOCKING PARENT AUDIT CURTAIN */
-    .nonblocking-audit-curtain {
-      position: absolute;
-      top: -250px;
-      left: 14px;
-      right: 14px;
-      background: #FFFFFF;
-      border: 3.5px solid var(--lab-blue-primary);
-      border-radius: 18px;
-      padding: 10px 18px;
-      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.65);
-      z-index: 80;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      transition: transform 0.3s ease;
-    }
-    .nonblocking-audit-curtain.curtain-dropped {
-      transform: translate3d(0, 258px, 0);
-    }
-    .audit-key-banner {
-      background: #F0F9FF;
-      border: 2px solid var(--lab-blue-primary);
-      border-radius: 12px;
-      padding: 10px 14px;
-      font-size: 1.15rem;
-      font-weight: 800;
-      color: #0369A1;
-      line-height: 1.4;
-      text-align: center;
-    }
-
-    /* WORKBOOK BOARDS & TABLES */
-    .textbook-board-card {
-      flex: 1;
-      background: rgba(255, 255, 255, 0.96);
-      border: 3px solid var(--lab-blue-primary);
-      border-radius: 20px;
-      padding: 14px 18px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-around;
-      gap: 10px;
+      justify-content: center;
+      padding: 20px;
+      gap: 20px;
+      perspective: 1200px;
       overflow-y: auto;
     }
 
+    .hub-hero-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(255,255,255,0.85);
+      border: 3px solid var(--border);
+      border-radius: 24px;
+      padding: 14px 24px;
+      box-shadow: var(--shadow);
+    }
+    .hub-hero-avatar {
+      width: 64px;
+      height: 64px;
+      object-fit: contain;
+    }
+
+    .portals-3d-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(320px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .portal-3d-card {
+      background: rgba(255, 255, 255, 0.95);
+      border: 3.5px solid var(--border);
+      border-radius: 26px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      transform-style: preserve-3d;
+    }
+    .portal-3d-card:hover {
+      transform: translateY(-6px) scale(1.02);
+      border-color: var(--primary);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+    }
+    .portal-3d-card:active { transform: scale(0.98); }
+
+    .portal-icon-wrap {
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      background: #F0FDF4;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      flex-shrink: 0;
+    }
+    .portal-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .portal-title {
+      font-family: 'Fredoka', cursive, sans-serif !important;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+    .portal-desc {
+      font-size: 0.9rem;
+      color: var(--subtext);
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    /* ACTIVE WORKSPACE */
+    .workspace {
+      flex: 1;
+      background: var(--card-bg);
+      border-radius: 20px;
+      border: 2px solid var(--border);
+      padding: 14px 18px;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: var(--shadow);
+      min-height: 0;
+      overflow-y: auto;
+    }
+    .workspace.active-workspace { display: flex; }
+
+    .pane-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px dashed var(--border);
+      padding-bottom: 8px;
+      flex-shrink: 0;
+    }
+
+    .pane-title {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: var(--primary-dark);
+    }
+
+    .speakable {
+      cursor: pointer;
+      border-radius: 6px;
+      padding: 1px 4px;
+      transition: background 0.12s;
+    }
+    .speakable:active { background: #FEF08A; color: #000; }
+
+    /* DUAL-LINE & 4-LINE CANVAS NOTEBOOK SLATE */
+    .inline-blank-container {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      background: #FFFFFF;
+      border: 2px solid #CBD5E1;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
+
+    .inline-canvas-wrapper {
+      position: relative;
+      height: 68px;
+      background: #FFFFFF;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+
+    .dual-lines-texture {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      background-color: #FFFFFF;
+      background-image: repeating-linear-gradient(
+        #FFFFFF 0px,
+        #FFFFFF 20px,
+        var(--ruled-blue) 21px,
+        #FFFFFF 22px,
+        #FFFFFF 44px,
+        var(--ruled-blue) 45px,
+        #FFFFFF 46px,
+        #FFFFFF 68px
+      );
+      opacity: 0.9;
+    }
+    .dual-lines-texture::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 14px;
+      width: 1.5px;
+      height: 100%;
+      background: var(--margin-red);
+      opacity: 0.8;
+    }
+
+    .dual-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      touch-action: none;
+      z-index: 3;
+    }
+
+    .watermark-letter {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: #94A3B8;
+      opacity: 0.28;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .inline-clear-btn {
+      background: #F8FAFC;
+      border: none;
+      border-left: 1.5px solid #CBD5E1;
+      padding: 0 10px;
+      height: 68px;
+      cursor: pointer;
+      font-size: 1.05rem;
+      color: #64748B;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.1s;
+      z-index: 4;
+    }
+    .inline-clear-btn:active { background: #E2E8F0; }
+
+    /* PORTAL 1: DEFINITIONS WITH HUMAYUN'S FULL NOTEPAD SLATE */
+    .def-subtabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 6px;
+      flex-shrink: 0;
+    }
+    .def-subtab-btn {
+      background: #F8FAFC;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 6px 14px;
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: var(--subtext);
+      cursor: pointer;
+      transition: all 0.1s;
+    }
+    .def-subtab-btn.active { background: var(--primary); color: #FFF; border-color: var(--primary); }
+
+    .full-notepad-wrapper {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      gap: 8px;
+      height: 100%;
+    }
+    .notepad-prompt-box {
+      background: #F8FAFC;
+      border: 2px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 1.05rem;
+      line-height: 1.5;
+      flex-shrink: 0;
+    }
+    .notepad-prompt-box b { color: var(--primary-dark); }
+    body.test-mode .notepad-prompt-box .learn-ans-reveal { display: none !important; }
+
+    .notepad-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--border);
+      gap: 6px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+    .tool-group { display: flex; gap: 6px; align-items: center; }
+    .pad-btn {
+      background: #F8FAFC;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 6px 12px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      cursor: pointer;
+      color: var(--text);
+      height: 36px;
+    }
+    .pad-btn.active { background: var(--primary); color: #FFF; border-color: var(--primary); }
+
+    .full-notepad-container {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      min-height: 280px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 2px solid var(--border);
+      background: #FFFFFF;
+    }
+    .notepad-dual-lines {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-color: #FFFFFF;
+      background-image: repeating-linear-gradient(
+        #FFFFFF 0px,
+        #FFFFFF 28px,
+        var(--ruled-blue) 29px,
+        #FFFFFF 30px,
+        #FFFFFF 56px,
+        var(--ruled-blue) 57px,
+        #FFFFFF 58px,
+        #FFFFFF 84px
+      );
+      opacity: 0.85;
+      z-index: 1;
+    }
+    .notepad-dual-lines::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 36px;
+      width: 2px;
+      height: 100%;
+      background: var(--margin-red);
+    }
+    #fullNotepadCanvas {
+      position: absolute;
+      inset: 0;
+      cursor: crosshair;
+      touch-action: none;
+      z-index: 2;
+    }
+
+    /* PORTAL 2 & 3: Q&A & STATE-CHANGE LAB */
+    .qa-card {
+      background: #F8FAFC;
+      border: 2px solid #E2E8F0;
+      border-radius: 14px;
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .qa-question {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #0F172A;
+    }
+    .qa-answer {
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: #334155;
+      line-height: 1.5;
+    }
+    body.test-mode .qa-answer { display: none !important; }
+
+    /* PARTICLE SIMULATOR SANDBOX */
+    .particle-sandbox {
+      background: linear-gradient(135deg, #F0FDF4 0%, #E0F2FE 100%);
+      border: 3px solid var(--border);
+      border-radius: 20px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .particle-tabs {
+      display: flex;
+      gap: 8px;
+    }
+    .particle-tab {
+      background: #FFF;
+      border: 2px solid var(--border);
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 0.95rem;
+    }
+    .particle-tab.active-ptab {
+      background: var(--primary);
+      color: #FFF;
+      border-color: var(--primary);
+    }
+    .particle-viewport {
+      width: 100%;
+      max-width: 600px;
+      height: 200px;
+      background: #FFF;
+      border: 2px solid #CBD5E1;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .particle-img-display {
+      max-height: 170px;
+      object-fit: contain;
+      animation: floatMascot 3s infinite ease-in-out;
+    }
+    @keyframes floatMascot {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    /* PORTAL 4: WORKBOOK TABLES & MCQS */
     .diff-table {
       width: 100%;
       border-collapse: collapse;
@@ -629,47 +635,218 @@
       font-size: 0.92rem;
     }
     .diff-table th {
-      background: #E0F2FE;
-      color: #0369A1;
-      padding: 8px 4px;
+      background: #DCFCE7;
+      color: #166534;
+      padding: 10px 6px;
       font-weight: 900;
-      border: 1px solid #BAE6FD;
+      border: 1px solid #BBF7D0;
       text-align: center;
     }
     .diff-table td {
-      padding: 6px 8px;
+      padding: 8px;
       border: 1px solid #E2E8F0;
       vertical-align: middle;
       font-weight: 700;
     }
     .diff-table tr:nth-child(even) { background: #F8FAFC; }
 
-    .mcq-row-card {
+    .answer-tag {
+      background: #DCFCE7;
+      color: #15803D;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid #86EFAC;
+      display: inline-block;
+      margin: 0 4px;
+    }
+    body.test-mode .answer-tag { display: none !important; }
+
+    .match-columns-learn {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      width: 100%;
+      margin-top: 6px;
+    }
+    .match-btn {
+      background: #F8FAFC;
+      border: 2px solid #CBD5E1;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 1.02rem;
+      font-weight: 800;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.12s;
+    }
+    .match-btn.selected { background: #FEF08A; border-color: #EAB308; box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.35); }
+    .match-btn.paired { background: #DCFCE7; border-color: var(--primary); color: #166534; pointer-events: none; }
+
+    .match-3col-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+    }
+    .match-3col-header {
+      display: grid;
+      grid-template-columns: 160px 220px 1fr;
+      gap: 16px;
+      padding: 6px 12px;
+      font-weight: 900;
+      color: var(--primary-dark);
+      font-size: 0.95rem;
+      border-bottom: 2px solid #E2E8F0;
+    }
+    .match-3col-row {
+      display: grid;
+      grid-template-columns: 160px 220px 1fr;
+      gap: 16px;
+      align-items: center;
       background: #F8FAFC;
       border: 2px solid #E2E8F0;
       border-radius: 14px;
-      padding: 10px 14px;
+      padding: 8px 12px;
+    }
+    .match-option-pill {
+      display: inline-block;
+      width: fit-content;
+      background: #FFF;
+      padding: 8px 14px;
+      border-radius: 20px;
+      border: 2px solid #CBD5E1;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #1E293B;
+    }
+
+    .mcq-item {
+      background: #F8FAFC;
+      border: 2px solid #E2E8F0;
+      border-radius: 14px;
+      padding: 12px 14px;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .mcq-q-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .mcq-q {
       font-size: 1.05rem;
       font-weight: 800;
+      color: #0F172A;
+      flex: 1;
     }
-    .option-chip {
-      background: #FFFFFF;
+    .mcq-opts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .mcq-opt-btn {
+      background: #FFF;
       border: 2px solid #CBD5E1;
-      padding: 5px 12px;
+      padding: 8px 12px;
       border-radius: 10px;
-      cursor: pointer;
-      font-family: var(--font-story);
       font-size: 0.95rem;
-      display: inline-block;
-      margin: 2px 4px 2px 0;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
     }
-    .option-chip.selected-choice {
-      background: #E0F2FE;
-      border-color: #0284C7;
-      color: #0369A1;
+    .mcq-opt-btn.correct { background: #DCFCE7; border-color: var(--primary); color: #166534; font-weight: 800; }
+    .mcq-opt-btn.wrong { background: #FEE2E2; border-color: #EF4444; color: #991B1B; }
+
+    .pic-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .pic-card {
+      background: #F8FAFC;
+      border: 2px solid #E2E8F0;
+      border-radius: 14px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      text-align: center;
+    }
+    .pic-icon { font-size: 2.4rem; line-height: 1; }
+    .pic-name { font-size: 1rem; font-weight: 800; }
+    .chip-row { display: flex; gap: 4px; }
+    .state-chip {
+      background: #FFF;
+      border: 1.5px solid #CBD5E1;
+      padding: 3px 8px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .state-chip.active-chip { background: var(--primary); border-color: var(--primary); color: #FFF; }
+
+    .cmap-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      gap: 12px;
+      padding-bottom: 14px;
+    }
+    .cmap-root-card {
+      background: #DCFCE7;
+      border: 3px solid #16A34A;
+      border-radius: 16px;
+      padding: 12px 32px;
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: #14532D;
+      text-align: center;
+    }
+    .cmap-branch-label {
+      font-weight: 900;
+      color: #166534;
+      font-size: 1.05rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .cmap-branch-label::before { content: '│'; font-size: 1.2rem; line-height: 1; }
+    .cmap-branch-label::after { content: '▼'; font-size: 0.85rem; line-height: 1; }
+
+    .cmap-columns-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      width: 100%;
+    }
+    .cmap-col-card {
+      background: #F8FAFC;
+      border: 2px solid #CBD5E1;
+      border-radius: 18px;
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    .cmap-type-badge {
+      background: #FED7AA;
+      border: 2.5px solid #F97316;
+      border-radius: 14px;
+      padding: 10px 18px;
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: #9A3412;
+      text-align: center;
+      width: 100%;
     }
 
     /* GRAND CELEBRATION FINALE */
@@ -679,7 +856,7 @@
       z-index: 100000;
       display: none;
       overflow: hidden;
-      background: radial-gradient(circle at center, rgba(3, 105, 161, 0.45) 0%, rgba(6, 26, 45, 0.92) 100%);
+      background: rgba(15, 23, 42, 0.75);
       backdrop-filter: blur(6px);
     }
     #finaleCanvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
@@ -687,11 +864,11 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%) scale(0.3);
+      transform: translate(-50%, -50%) scale(0.4);
       width: 90%;
-      max-width: 480px;
-      background: #FFFFFF;
-      border: 4px solid var(--lab-blue-primary);
+      max-width: 460px;
+      background: #FFF;
+      border: 4px solid var(--primary);
       border-radius: 26px;
       padding: 26px;
       display: flex;
@@ -699,9 +876,9 @@
       align-items: center;
       text-align: center;
       gap: 14px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
       opacity: 0;
-      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
       z-index: 20;
     }
     .victory-scroll-card.impact {
@@ -710,204 +887,138 @@
     }
   </style>
 </head>
-<body>
+<body class="theme-aqua">
 
-  <!-- AMBIENT PARTICLES -->
-  <div class="ambient-sparkle" style="top: 15%; left: 22%;">🔬</div>
-  <div class="ambient-sparkle" style="top: 65%; left: 80%; animation-delay: 3s;">💧</div>
-  <div class="ambient-sparkle" style="top: 30%; left: 75%; animation-delay: 6s;">❄️</div>
+  <div class="orientation-warning">
+    <div class="icon">📱</div>
+    <h2>Please Rotate Tablet to Landscape</h2>
+    <p>Matter Lab &amp; Discovery Deck is optimized for tablet landscape mode.</p>
+  </div>
 
-  <!-- FLOATING HUD DOCK -->
-  <nav class="floating-hud-dock" id="floatingHudDock">
-    <button type="button" class="icon-btn" onclick="goToHub()">🏠</button>
-    <button type="button" class="icon-btn" id="btnReturnPortals" onclick="returnToHubMenu()" style="display:none;">🧪</button>
-    <div class="mode-pill-toggle" id="modeSwitcherBox">
-      <button type="button" class="mode-icon-btn active" id="tabPractice" onclick="setAppMode('practice')">📘</button>
-      <button type="button" class="mode-icon-btn" id="tabWrite" onclick="setAppMode('write')">✍️</button>
-    </div>
-  </nav>
+  <div id="screenDimOverlay"></div>
 
+  <!-- PEEK HANDLE FOR FLOATING DOCK -->
   <div class="dock-peek-handle" id="dockPeekHandle" onclick="showFloatingDock()">▾</div>
 
-  <!-- MASTER LAB STAGE -->
-  <main class="master-scenic-stage" id="masterStageContainer">
-    <div class="scenic-ambient-dimmer"></div>
-
-    <!-- STAGE 0: CENTRAL PORTAL HUB -->
-    <section class="central-hub-view" id="centralHubStage">
-      <div class="hub-title-capsule" onclick="speakText(this.textContent)">
-        🧪 Matter Lab &amp; Discovery Deck: Solids, Liquids &amp; Gases
+  <div class="app-container">
+    <!-- FLOATING HUD DOCK -->
+    <nav class="floating-hud-dock" id="floatingHudDock">
+      <div class="brand-group">
+        <button type="button" class="action-btn" onclick="goToHub()" title="Hub">🪷</button>
+        <button type="button" class="action-btn" id="btnReturnPortals" onclick="returnToHubBay()" style="display:none;" title="Portals">🏰</button>
+        <div class="brand-title">🧪 Matter Lab <span class="grade-badge">Grade 3 EVS</span></div>
       </div>
 
-      <div class="hub-portals-grid" id="hubPortalsGrid"></div>
-
-      <div class="hub-mascots-dock">
-        <img src="assets/lab-scientist-humayun.webp" class="mascot-scientist" alt="" onclick="speakText('Humayun Scientist')" onerror="handleImageFallback(this)" />
-        <div class="mascot-trio">
-          <img src="assets/ice-cube-mascot.webp" alt="Ice Cube" onclick="speakText('Ice Cube is Solid!')" onerror="handleImageFallback(this)" />
-          <img src="assets/water-drop-mascot.webp" alt="Water Drop" onclick="speakText('Water Drop is Liquid!')" onerror="handleImageFallback(this)" />
-          <img src="assets/steam-cloud-mascot.webp" alt="Steam Cloud" onclick="speakText('Steam Cloud is Gas!')" onerror="handleImageFallback(this)" />
-        </div>
+      <div class="mode-switch-wrap">
+        <button class="mode-btn active-learn" id="btnModeLearn" onclick="setAppMode('learn')">📘 Practice</button>
+        <button class="mode-btn" id="btnModeTest" onclick="setAppMode('test')">✍️ Write</button>
       </div>
-    </section>
 
-    <!-- WORKSTATION SLIDE VIEWPORT -->
-    <section class="slide-deck-viewport" id="slideDeckStage">
-      <div class="nonblocking-audit-curtain" id="nonblockingAuditCurtain">
-        <div style="display:flex; justify-content:flex-end;">
-          <button type="button" class="icon-btn" style="width:32px; height:32px; font-size:0.95rem;" onclick="dismissAuditCurtain()">✕</button>
-        </div>
-        <div class="audit-key-banner" id="auditAnswerKeyDisplay"></div>
-        <div style="display:flex; justify-content:center; align-items:center; gap:28px;">
-          <button type="button" class="icon-btn" style="background:#FEE2E2; border-color:#DC2626; width:64px; height:48px; font-size:1.5rem;" onclick="markParentAudit(false)">✗</button>
-          <button type="button" class="icon-btn" style="background:#DCFCE7; border-color:#16A34A; width:64px; height:48px; font-size:1.5rem;" onclick="markParentAudit(true)">✓</button>
+      <div class="header-actions">
+        <button type="button" class="action-btn" id="btnPalm" onclick="togglePalmRejection()" title="S Pen Palm Rejection">🖊️ Pen Only</button>
+        <button type="button" class="action-btn" onclick="toggleFullscreen()" title="Fullscreen">⛶</button>
+        <button type="button" class="action-btn" id="dimBtn" onclick="toggleScreenDim()" title="Dim Screen">💡</button>
+      </div>
+    </nav>
+
+    <!-- HUB BAY: 3D DISCOVERY CAROUSEL -->
+    <main class="hub-bay-wrapper" id="hubBayView">
+      <div class="hub-hero-header">
+        <img src="assets/lab-scientist-humayun.webp" class="hub-hero-avatar" alt="Humayun" onerror="handleImgFallback(this)" />
+        <div>
+          <h2 style="font-size:1.4rem; font-weight:900; color:var(--primary-dark);" class="speakable" onclick="speakText('Welcome to Humayun s Matter Lab')">Welcome to Humayun's Matter Lab!</h2>
+          <p style="font-size:0.95ln; color:var(--subtext); font-weight:700;">Explore solids, liquids, gases, and phase changes through interactive bays.</p>
         </div>
       </div>
 
-      <div class="palm-scroll-banner-box">
-        <div class="banner-text-heading" id="bannerHeadingText" onclick="speakText(this.textContent)">Lab Station</div>
-        <button type="button" class="mascot-floating-badge" id="bannerMascotBtn" onclick="speakMascotBadge()">
-          <img src="assets/water-drop-mascot.webp" class="mascot-badge-img" id="bannerMascotImg" alt="" />
-        </button>
-      </div>
-
-      <div class="work-body-frame" id="workBodyFrame"></div>
-
-      <div class="workspace-footer-bar">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <button type="button" class="icon-btn" onclick="stepItem(-1)">◀</button>
-          <span style="font-family:var(--font-story); font-size:1.15rem; font-weight:800; color:#FFF; text-shadow:0 1px 3px #000; min-width:54px; text-align:center;" id="deckPagination">1 / 4</span>
-          <button type="button" class="icon-btn" onclick="stepItem(1)">▶</button>
+      <div class="portals-3d-grid">
+        <div class="portal-3d-card" onclick="openPortal('definitions')">
+          <div class="portal-icon-wrap">📖</div>
+          <div class="portal-info">
+            <div class="portal-title">1. Definitions &amp; Examples</div>
+            <div class="portal-desc">Matter, Evaporation, Condensation &amp; Freezing[cite: 3, 4, 5]</div>
+          </div>
         </div>
 
-        <div id="parentReviewArea"></div>
-      </div>
-    </section>
-  </main>
+        <div class="portal-3d-card" onclick="openPortal('qa')">
+          <div class="portal-icon-wrap">🔥</div>
+          <div class="portal-info">
+            <div class="portal-title">2. Short &amp; Detailed Q&amp;A</div>
+            <div class="portal-desc">Melting causes &amp; Evaporation process[cite: 5, 6]</div>
+          </div>
+        </div>
 
-  <!-- CELEBRATION FINALE -->
+        <div class="portal-3d-card" onclick="openPortal('statechange')">
+          <div class="portal-icon-wrap">🔄</div>
+          <div class="portal-info">
+            <div class="portal-title">3. State-Change Lab &amp; Particles</div>
+            <div class="portal-desc">Solid ⇌ Liquid ⇌ Gas cycle &amp; Molecular Simulator[cite: 6]</div>
+          </div>
+        </div>
+
+        <div class="portal-3d-card" onclick="openPortal('workbook')">
+          <div class="portal-icon-wrap">🧪</div>
+          <div class="portal-info">
+            <div class="portal-title">4. Lab Workbook Exercises</div>
+            <div class="portal-desc">Differences Table, Match, MCQs &amp; Concept Map[cite: 1]</div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- PORTAL WORKSPACE -->
+    <main class="workspace" id="portalWorkspacePane">
+      <div class="pane-header">
+        <div class="pane-title" id="paneTitle">Portal Title</div>
+        <div id="portalSubControls" style="display:flex; gap:6px;"></div>
+      </div>
+
+      <div id="portalExerciseContent" style="display:flex; flex-direction:column; gap:10px; flex:1; min-height:0;"></div>
+    </main>
+  </div>
+
+  <!-- CELEBRATION FINALE STAGE -->
   <div id="celebrationFinaleStage">
     <canvas id="finaleCanvas"></canvas>
     <div class="victory-scroll-card" id="victoryScrollCard">
-      <div style="font-size:3.8rem;">🏆</div>
-      <div style="font-family:var(--font-story); font-size:2rem; font-weight:800; color:#0369A1;">
-        Brilliant Science Work, Humayun!
+      <div style="font-size:3.5rem;">🏆</div>
+      <div style="font-family:'Fredoka',sans-serif; font-size:1.8rem; font-weight:800; color:var(--primary-dark);">
+        Outstanding Lab Work, Humayun!
       </div>
-      <button type="button" class="icon-btn" style="width:72px; height:52px; font-size:1.6rem; background:#DCFCE7; border-color:#16A34A;" onclick="closeCelebrationStage()">➔</button>
+      <p style="font-size:1rem; font-weight:700; color:#475569;">You mastered all the states of matter!</p>
+      <button type="button" class="action-btn" style="background:var(--primary); color:#FFF; font-size:1.2rem; padding:10px 24px;" onclick="closeCelebrationStage()">Continue Discovery ➔</button>
     </div>
   </div>
 
   <script>
-    /* SPEECH SYNTHESIS ENGINE */
-    function speakText(text, rate = 0.82, pitch = 0.85) {
+    let appMode = "learn";
+    let activePortalKey = null;
+    let currentDefIdx = 0;
+    let currentWorkbookSec = 0;
+    let particleMode = "solid";
+    let palmRejectionMode = "pen-only";
+
+    const activeInkCache = {};
+    const hasDrawnMap = {};
+
+    function handleImgFallback(img) {
+      img.onerror = null;
+      img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><circle cx='60' cy='60' r='55' fill='%23DCFCE7' stroke='%2316A34A' stroke-width='4'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='45'>🧪</text></svg>";
+    }
+
+    /* SPEECH SYNTHESIS WITH SYLLABLE DISSECTION */
+    function speakText(txt, rate = 0.85, pitch = 0.9) {
       if (!('speechSynthesis' in window)) return;
       window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = 'en-US';
+      const u = new SpeechSynthesisUtterance(txt);
+      u.lang = "en-US";
       u.rate = rate;
       u.pitch = pitch;
       window.speechSynthesis.speak(u);
     }
 
-    let syllableTimers = [];
-    function clearSyllableTimers() {
-      syllableTimers.forEach(t => clearTimeout(t));
-      syllableTimers = [];
-    }
-
-    function speakSyllableSequence(syllables, fullWord) {
-      if (!('speechSynthesis' in window)) return;
-      clearSyllableTimers();
-      window.speechSynthesis.cancel();
-
-      let delay = 0;
-      syllables.forEach((syl) => {
-        const t = setTimeout(() => {
-          const u = new SpeechSynthesisUtterance(syl);
-          u.lang = 'en-US';
-          u.rate = 0.62;
-          u.pitch = 0.82;
-          window.speechSynthesis.speak(u);
-        }, delay);
-        syllableTimers.push(t);
-        delay += 750;
-      });
-
-      const finalTimer = setTimeout(() => {
-        const uFull = new SpeechSynthesisUtterance(fullWord);
-        uFull.lang = 'en-US';
-        uFull.rate = 0.75;
-        uFull.pitch = 0.85;
-        window.speechSynthesis.speak(uFull);
-      }, delay + 150);
-      syllableTimers.push(finalTimer);
-    }
-
-    /* SOUND ENGINE */
-    class SoundEngine {
-      constructor() { this.ctx = null; }
-      init() {
-        if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-        if (this.ctx.state === 'suspended') this.ctx.resume();
-      }
-      playSnap() {
-        this.init();
-        const t0 = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(220, t0);
-        osc.frequency.exponentialRampToValueAtTime(90, t0 + 0.08);
-        gain.gain.setValueAtTime(0.28, t0);
-        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.09);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(t0);
-        osc.stop(t0 + 0.095);
-      }
-      playBell() {
-        this.init();
-        const t0 = this.ctx.currentTime;
-        [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(f, t0 + i * 0.06);
-          gain.gain.setValueAtTime(0.18, t0 + i * 0.06);
-          gain.gain.exponentialRampToValueAtTime(0.001, t0 + i * 0.06 + 1.1);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start(t0 + i * 0.06);
-          osc.stop(t0 + i * 0.06 + 1.15);
-        });
-      }
-      playPageFlip() {
-        this.init();
-        const t0 = this.ctx.currentTime;
-        const sr = this.ctx.sampleRate;
-        const len = Math.floor(sr * 0.12);
-        const buf = this.ctx.createBuffer(1, len, sr);
-        const d = buf.getChannelData(0);
-        for (let i = 0; i < len; i++) {
-          d[i] = (Math.random() * 2 - 1) * Math.sin((i / len) * Math.PI);
-        }
-        const src = this.ctx.createBufferSource();
-        src.buffer = buf;
-        const hp = this.ctx.createBiquadFilter();
-        hp.type = 'highpass';
-        hp.frequency.setValueAtTime(3000, t0);
-        const g = this.ctx.createGain();
-        g.gain.setValueAtTime(0.3, t0);
-        src.connect(hp);
-        hp.connect(g);
-        g.connect(this.ctx.destination);
-        src.start(t0);
-      }
-    }
-    const audioFX = new SoundEngine();
-
     function hideFloatingDock() {
-      if (!activeSection) return;
+      if (!activePortalKey) return;
       document.getElementById('floatingHudDock').classList.add('dock-minimized');
       document.getElementById('dockPeekHandle').classList.add('peek-visible');
     }
@@ -917,15 +1028,33 @@
       document.getElementById('dockPeekHandle').classList.remove('peek-visible');
     }
 
-    function triggerSpriteCheer() {
-      const sprite = document.querySelector('.tall-character-sprite');
-      if (!sprite) return;
-      sprite.classList.remove('cheer-bounce');
-      void sprite.offsetWidth;
-      sprite.classList.add('cheer-bounce');
+    function toggleFullscreen() {
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        const el = document.documentElement;
+        if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      }
+    }
+
+    function toggleScreenDim() {
+      const el = document.getElementById("screenDimOverlay");
+      const btn = document.getElementById("dimBtn");
+      const isDim = el.style.display === "block";
+      el.style.display = isDim ? "none" : "block";
+      btn.textContent = isDim ? "💡" : "☀️";
+    }
+
+    function togglePalmRejection() {
+      palmRejectionMode = (palmRejectionMode === "pen-only") ? "all" : "pen-only";
+      const btn = document.getElementById("btnPalm");
+      btn.innerHTML = (palmRejectionMode === "pen-only") ? "🖊️ Pen Only" : "👆 Any Touch";
     }
 
     function goToHub() {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
       saveAllCanvases();
       if (window.parent && window.parent !== window) {
         window.parent.postMessage("close-lesson-to-hub", "*");
@@ -934,604 +1063,504 @@
       }
     }
 
-    function handleImageFallback(img) {
-      img.onerror = null;
-      img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><circle cx='70' cy='70' r='65' fill='%23E0F2FE' stroke='%230284C7' stroke-width='4'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='50'>🧪</text></svg>";
-    }
-
-    /* SYLLABLE DICTIONARY */
-    const SYLLABLE_DICT = {
-      "matter": ["mat", "ter"], "evaporation": ["e", "vap", "o", "ra", "tion"],
-      "condensation": ["con", "den", "sa", "tion"], "freezing": ["freez", "ing"],
-      "solid": ["sol", "id"], "liquid": ["liq", "uid"], "gas": ["gas"],
-      "volume": ["vol", "ume"], "shape": ["shape"], "chair": ["chair"],
-      "water": ["wa", "ter"], "steam": ["steam"], "melting": ["melt", "ing"],
-      "heating": ["heat", "ing"], "cooling": ["cool", "ing"]
-    };
-
-    /* CURRICULUM PORTALS DATA */
-    const PORTAL_1_DEFS = [
-      { id: "def_matter", q: "a) Matter", a: "Anything that has mass and takes up space is matter. Examples: 1. Chair, 2. Car.", sprite: "assets/lab-scientist-humayun.webp" },
-      { id: "def_evap", q: "b) Evaporation", a: "The process by which water changes into water vapour is called evaporation. Examples: 1. Wet floor dry, 2. Clothes drying.", sprite: "assets/steam-cloud-mascot.webp" },
-      { id: "def_cond", q: "c) Condensation", a: "The process by which water vapour changes into water is called condensation. Examples: 1. Fog on car, 2. Water drops on cold bottle.", sprite: "assets/water-drop-mascot.webp" },
-      { id: "def_freez", q: "d) Freezing", a: "The process of liquid changing into a solid on cooling. Examples: 1. Ice cubes from freezer, 2. Ice cream getting hard.", sprite: "assets/ice-cube-mascot.webp" }
-    ];
-
-    const PORTAL_2_QA = [
-      { id: "qa_1", q: "Q2: State the cause that makes a solid melt into a liquid?", a: "A solid melts into a liquid because of heat. Example: Ice becomes water when kept outside the freezer.", sprite: "assets/ice-cube-mascot.webp" },
-      { id: "qa_2", q: "Detailed Q1: Explain the process of evaporation?", a: "When water is heated continuously it starts boiling. Boiling water forms water vapour, which we see rising as steam. This process in which water changes into water vapour is called evaporation.", sprite: "assets/steam-cloud-mascot.webp" }
-    ];
-
-    const PORTAL_3_CYCLE = [
-      { id: "cyc_1", q: "Solid (Ice) to Liquid (Water)", a: "Melting: A solid turns into a liquid on heating (e.g. Ice turns into water).", sprite: "assets/ice-cube-mascot.webp" },
-      { id: "cyc_2", q: "Liquid (Water) to Gas (Water Vapour)", a: "Evaporation: Liquid turns into gas on heating (e.g. Boiling water forms steam).", sprite: "assets/water-drop-mascot.webp" },
-      { id: "cyc_3", q: "Gas (Water Vapour) to Liquid (Water)", a: "Condensation: Gas turns into liquid on cooling (e.g. Fog on car glass or cold bottle drops).", sprite: "assets/steam-cloud-mascot.webp" },
-      { id: "cyc_4", q: "Liquid (Water) to Solid (Ice)", a: "Freezing: Liquid turns into solid on cooling (e.g. Ice cubes in freezer).", sprite: "assets/ice-cube-mascot.webp" }
-    ];
-
-    const PORTAL_4_WORKBOOK = [
-      { id: "wb_diff", title: "1. Differences Table", type: "diff_table" },
-      { id: "wb_match", title: "2. Match Following", type: "match_following" },
-      { id: "wb_mcq", title: "3. Objective MCQs", type: "mcq" },
-      { id: "wb_pic", title: "4. Identify State", type: "pic_id" },
-      { id: "wb_cmap", title: "5. Concept Map", type: "concept_map" }
-    ];
-
-    /* APP CONTROLLER STATE */
-    let currentMode = 'practice';
-    let activeSection = null;
-    let activeDeck = [];
-    let currentItemIdx = 0;
-    let activePageNum = 1;
-    let strokeUndoStack = {};
-    let currentDrawingTool = 'pen';
-    let writeModeAuditStatus = {};
-    let lastSlideDirection = 'next';
-    let workbookSubIdx = 0;
-
-    function renderHubPortals() {
-      const grid = document.getElementById('hubPortalsGrid');
-      const portals = [
-        { key: 'defs', icon: '📖', label: '1. Definitions' },
-        { key: 'qa', icon: '🔥', label: '2. Q & A' },
-        { key: 'cycle', icon: '🔄', label: '3. State Cycle' },
-        { key: 'workbook', icon: '🧪', label: '4. Lab Workbook' }
-      ];
-      grid.innerHTML = portals.map(p => `
-        <div class="portal-launch-card" onclick="openSection('${p.key}')">
-          <div style="font-size:2.4rem;">${p.icon}</div>
-          <div style="font-family:var(--font-story); font-size:1.18rem; font-weight:800;">${p.label}</div>
-        </div>
-      `).join('');
-    }
-
-    function setAppMode(mode) {
+    function returnToHubBay() {
       saveAllCanvases();
-      dismissAuditCurtain();
-      clearSyllableTimers();
-      currentMode = mode;
-      document.getElementById('tabPractice').classList.toggle('active', mode === 'practice');
-      document.getElementById('tabWrite').classList.toggle('active', mode === 'write');
-
-      if (activeSection) openSection(activeSection);
-    }
-
-    function returnToHubMenu() {
-      saveAllCanvases();
-      dismissAuditCurtain();
-      clearSyllableTimers();
-      audioFX.playPageFlip();
       showFloatingDock();
       document.getElementById('btnReturnPortals').style.display = 'none';
-      document.getElementById('slideDeckStage').classList.remove('active-slide');
-      document.getElementById('masterStageContainer').className = 'master-scenic-stage';
-      document.getElementById('centralHubStage').classList.remove('hidden-hub');
-      activeSection = null;
+      document.getElementById('portalWorkspacePane').classList.remove('active-workspace');
+      document.getElementById('hubBayView').style.display = 'flex';
+      activePortalKey = null;
+      document.body.className = "theme-aqua";
     }
 
-    function openSection(secKey) {
+    function setAppMode(newMode) {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
       saveAllCanvases();
-      dismissAuditCurtain();
-      clearSyllableTimers();
-      audioFX.playPageFlip();
-      activeSection = secKey;
-      currentItemIdx = 0;
-      activePageNum = 1;
-      workbookSubIdx = 0;
-      writeModeAuditStatus = {};
-      lastSlideDirection = 'next';
+      appMode = newMode;
+      document.body.classList.toggle('test-mode', newMode === 'test');
+      document.getElementById("btnModeLearn").className = `mode-btn ${newMode === 'learn' ? 'active-learn' : ''}`;
+      document.getElementById("btnModeTest").className = `mode-btn ${newMode === 'test' ? 'active-test' : ''}`;
+      if (activePortalKey) openPortal(activePortalKey);
+    }
 
+    function getStorageKey(id) {
+      return `v2_matterlab::humayun::${appMode}::${id}`;
+    }
+
+    function inlineDualBlank(id, width = 240, watermark = "") {
+      return `
+        <span class="inline-blank-container">
+          <span class="inline-canvas-wrapper" style="width:${width}px;">
+            <span class="dual-lines-texture"></span>
+            <span class="watermark-letter" id="wm_${id}">${watermark}</span>
+            <canvas class="dual-canvas" data-canvas-id="${id}"></canvas>
+          </span>
+          <button type="button" class="inline-clear-btn" onclick="clearDualCanvas('${id}')" title="Clear">🧹</button>
+        </span>
+      `;
+    }
+
+    /* CURRICULUM DATA */
+    const DEFINITIONS_DATA = [
+      {
+        id: "matter",
+        tab: "a) Matter",
+        theme: "theme-aqua",
+        prompt: `<b>a) Matter</b><br/>
+                 <span class="learn-ans-reveal"><b>Definition:</b> Anything that has mass and takes up space is matter[cite: 3].<br/>
+                 <b>Examples:</b> 1. Chair, 2. Car[cite: 3]</span>`,
+        hint: "Anything that has mass and takes up space is matter. Examples: 1. Chair, 2. Car"
+      },
+      {
+        id: "evaporation",
+        tab: "b) Evaporation",
+        theme: "theme-amber",
+        prompt: `<b>b) Evaporation</b><br/>
+                 <span class="learn-ans-reveal"><b>Definition:</b> The process by which water changes into water vapour is called evaporation[cite: 4].<br/>
+                 <b>Examples:</b> 1. Wet floor becoming dry, 2. Clothes drying[cite: 4]</span>`,
+        hint: "The process by which water changes into water vapour is called evaporation. Examples: 1. Wet floor becoming dry, 2. Clothes drying"
+      },
+      {
+        id: "condensation",
+        tab: "c) Condensation",
+        theme: "theme-ice",
+        prompt: `<b>c) Condensation</b><br/>
+                 <span class="learn-ans-reveal"><b>Definition:</b> The process by which water vapour changes into water is called condensation[cite: 4].<br/>
+                 <b>Examples:</b> 1. Fog on car glass, 2. Water drops on a cold bottle[cite: 4]</span>`,
+        hint: "The process by which water vapour changes into water is called condensation. Examples: 1. Fog on car glass, 2. Water drops on a cold bottle"
+      },
+      {
+        id: "freezing",
+        tab: "d) Freezing",
+        theme: "theme-ice",
+        prompt: `<b>d) Freezing</b><br/>
+                 <span class="learn-ans-reveal"><b>Definition:</b> The process of liquid changing into a solid on cooling[cite: 4, 5].<br/>
+                 <b>Examples:</b> 1. Ice cubes from freezer, 2. Ice-cream getting hard[cite: 5]</span>`,
+        hint: "The process of liquid changing into a solid on cooling. Examples: 1. Ice cubes from freezer, 2. Ice-cream getting hard"
+      }
+    ];
+
+    const QA_DATA = [
+      {
+        id: "qa1",
+        q: "1. State the cause that makes a solid melting into a liquid?",
+        a: "A solid melts into a liquid because of heat. Example: Ice becomes water when kept outside the freezer[cite: 5]."
+      },
+      {
+        id: "qa2",
+        q: "2. Explain the process of evaporation?",
+        a: "When water is heated continuously it starts boiling. Boiling water forms water vapour, which we see rising as steam. This process in which water changes into water vapour is called evaporation[cite: 5, 6]."
+      }
+    ];
+
+    /* PORTAL LAUNCH ENGINE */
+    function openPortal(portalKey) {
+      saveAllCanvases();
+      activePortalKey = portalKey;
+      document.getElementById('hubBayView').style.display = 'none';
+      document.getElementById('portalWorkspacePane').classList.add('active-workspace');
       document.getElementById('btnReturnPortals').style.display = 'inline-flex';
-      document.getElementById('centralHubStage').classList.add('hidden-hub');
-      document.getElementById('slideDeckStage').classList.add('active-slide');
+      hideFloatingDock();
 
-      if (secKey === 'defs') {
-        activeDeck = [...PORTAL_1_DEFS];
-        setAtmosphere('solid');
-      } else if (secKey === 'qa') {
-        activeDeck = [...PORTAL_2_QA];
-        setAtmosphere('gas');
-      } else if (secKey === 'cycle') {
-        activeDeck = [...PORTAL_3_CYCLE];
-        setAtmosphere('liquid');
-      } else if (secKey === 'workbook') {
-        activeDeck = [...PORTAL_4_WORKBOOK];
-        setAtmosphere('solid');
-      }
+      const content = document.getElementById('portalExerciseContent');
+      const subControls = document.getElementById('portalSubControls');
+      subControls.innerHTML = "";
 
-      if (currentMode === 'write' && secKey !== 'workbook') {
-        activeDeck.sort(() => Math.random() - 0.5);
-      }
-
-      renderCurrentDeckItem(false);
-    }
-
-    function setAtmosphere(mode) {
-      const stage = document.getElementById('masterStageContainer');
-      stage.className = `master-scenic-stage atmosphere-${mode}`;
-    }
-
-    function speakMascotBadge() {
-      const titles = { defs: 'Definitions Portal', qa: 'Questions and Answers Portal', cycle: 'State Change Cycle', workbook: 'Lab Workbook' };
-      speakText(titles[activeSection] || 'Lab Station');
-    }
-
-    function renderCurrentDeckItem(isPageFlipOnly = false) {
-      saveAllCanvases();
-      dismissAuditCurtain();
-      clearSyllableTimers();
-      const viewport = document.getElementById('workBodyFrame');
-
-      if (activeSection === 'workbook') {
-        viewport.innerHTML = '';
-        renderWorkbookModule();
-        return;
-      }
-
-      const item = activeDeck[currentItemIdx];
-      document.getElementById('deckPagination').textContent = `${currentItemIdx + 1} / ${activeDeck.length}`;
-
-      const titles = { defs: 'Definitions & Examples', qa: 'Short & Detailed Q & A', cycle: 'Interactive State Cycle' };
-      document.getElementById('bannerHeadingText').textContent = titles[activeSection];
-
-      // Update badge mascot image
-      const badgeImg = document.getElementById('bannerMascotImg');
-      if (activeSection === 'defs') badgeImg.src = 'assets/ice-cube-mascot.webp';
-      else if (activeSection === 'qa') badgeImg.src = 'assets/steam-cloud-mascot.webp';
-      else badgeImg.src = 'assets/water-drop-mascot.webp';
-
-      const parentArea = document.getElementById('parentReviewArea');
-      if (currentMode === 'write') {
-        const isVerified = writeModeAuditStatus[item.id] === true;
-        parentArea.innerHTML = `
-          <button type="button" class="icon-btn" onclick="openParentAudit()" style="background:${isVerified ? '#DCFCE7' : '#E0F2FE'}; border-color:${isVerified ? '#16A34A' : '#0284C7'};">
-            ${isVerified ? '✓' : '🔐'}
-          </button>
+      if (portalKey === 'definitions') {
+        document.body.className = DEFINITIONS_DATA[currentDefIdx].theme;
+        document.getElementById('paneTitle').textContent = "📖 Portal 1: Definitions & Examples";
+        subControls.innerHTML = DEFINITIONS_DATA.map((d, i) => `
+          <button class="def-subtab-btn ${i === currentDefIdx ? 'active' : ''}" onclick="switchDefTab(${i})">${d.tab}</button>
+        `).join("");
+        content.render = renderDefinitionsPortal;
+      } else if (portalKey === 'qa') {
+        document.body.className = "theme-amber";
+        document.getElementById('paneTitle').textContent = "🔥 Portal 2: Short & Detailed Q&A";
+        content.render = renderQAPortal;
+      } else if (portalKey === 'statechange') {
+        document.body.className = "theme-ice";
+        document.getElementById('paneTitle').textContent = "🔄 Portal 3: State-Change Lab & Particles";
+        content.render = renderStateChangePortal;
+      } else if (portalKey === 'workbook') {
+        document.body.className = "theme-aqua";
+        document.getElementById('paneTitle').textContent = "🧪 Portal 4: Lab Workbook Exercises";
+        subControls.innerHTML = `
+          <button class="def-subtab-btn ${currentWorkbookSec === 0 ? 'active' : ''}" onclick="switchWorkbookSec(0)">1. Diff Table</button>
+          <button class="def-subtab-btn ${currentWorkbookSec === 1 ? 'active' : ''}" onclick="switchWorkbookSec(1)">2. Match</button>
+          <button class="def-subtab-btn ${currentWorkbookSec === 2 ? 'active' : ''}" onclick="switchWorkbookSec(2)">3. MCQs</button>
+          <button class="def-subtab-btn ${currentWorkbookSec === 3 ? 'active' : ''}" onclick="switchWorkbookSec(3)">4. Pictures</button>
+          <button class="def-subtab-btn ${currentWorkbookSec === 4 ? 'active' : ''}" onclick="switchWorkbookSec(4)">5. Concept Map</button>
         `;
+        content.render = renderWorkbookPortal;
+      }
+
+      content.innerHTML = content.render();
+      if (portalKey === 'definitions') {
+        setTimeout(() => { setupFullNPCanvas(); fitFullNPCanvas(); restoreFullNPCanvas(); }, 50);
       } else {
-        parentArea.innerHTML = '';
+        setupDualCanvases();
       }
+    }
 
-      viewport.className = 'work-body-frame ' + (lastSlideDirection === 'next' ? 'slide-enter-next' : 'slide-enter-prev');
-      viewport.innerHTML = '';
+    function switchDefTab(idx) {
+      saveFullNPCanvas();
+      currentDefIdx = idx;
+      openPortal('definitions');
+    }
 
-      const leftCol = document.createElement('div');
-      leftCol.className = 'stage-character-col stagger-pop-1';
-      leftCol.innerHTML = `
-        <img src="${item.sprite}" class="tall-character-sprite" alt="" onclick="speakText('${item.q.replace(/'/g, "\\'")}')" onerror="handleImageFallback(this)" />
-        <div class="particle-sim-widget">
-          <img src="assets/particle-solid-icon.webp" class="sim-card-img" id="simWidgetIcon" alt="Atom Model" />
-          <div style="font-size:0.8rem; font-weight:800; color:#0369A1;">Molecule Lab</div>
-        </div>
-      `;
-      viewport.appendChild(leftCol);
+    function switchWorkbookSec(secIdx) {
+      saveAllCanvases();
+      currentWorkbookSec = secIdx;
+      openPortal('workbook');
+    }
 
-      // Update particle sim icon based on active section
-      setTimeout(() => {
-        const simIcon = document.getElementById('simWidgetIcon');
-        if (simIcon) {
-          if (activeSection === 'defs') simIcon.src = 'assets/particle-solid-icon.webp';
-          else if (activeSection === 'qa') simIcon.src = 'assets/particle-gas-icon.webp';
-          else simIcon.src = 'assets/particle-liquid-icon.webp';
-        }
-      }, 50);
-
-      const rightSlate = document.createElement('div');
-      rightSlate.className = 'floating-parchment-slate stagger-pop-2';
-
-      const slateHeader = document.createElement('div');
-      slateHeader.className = 'slate-prompt-header';
-      slateHeader.innerHTML = `
-        <div class="prompt-text-headline" onclick="speakText('${item.q.replace(/'/g, "\\'")}')">${item.q}</div>
-      `;
-      rightSlate.appendChild(slateHeader);
-
-      if (currentMode === 'practice') {
-        const words = item.a.split(' ');
-        const wrappedWords = words.map((w, idx) => {
-          const clean = w.toLowerCase().replace(/[^a-z]/g, '');
-          const syllables = SYLLABLE_DICT[clean];
-          const hasSyllables = syllables && syllables.length > 1;
-          const wordId = `word_chip_${item.id}_${idx}`;
-          return `<span class="dissect-word-chip ${hasSyllables ? 'has-syllables' : ''}" id="${wordId}" 
-                        data-raw="${w}" data-clean="${clean}"
-                        onpointerdown="handleWordPointerDown(event, '${wordId}')" 
-                        onpointermove="handleWordPointerMove(event)"
-                        onpointerup="handleWordPointerUp(event, '${wordId}')" 
-                        onpointercancel="handleWordPointerCancel()">${w}</span>`;
-        });
-        const ansBox = document.createElement('div');
-        ansBox.className = 'answer-stream-box';
-        ansBox.innerHTML = wrappedWords.join(' ');
-        rightSlate.appendChild(ansBox);
-      }
-
-      const canvasContainer = document.createElement('div');
-      canvasContainer.className = 'canvas-notebook-container ' + (isPageFlipOnly ? 'page-flip-anim' : 'stagger-pop-3');
-
-      const canvasStorageId = `slate_${currentMode}_${item.id}_p${activePageNum}`;
-
-      canvasContainer.innerHTML = `
-        <div class="canvas-tools-strip">
-          <div style="display:flex; gap:6px;">
-            <button type="button" class="tool-btn ${currentDrawingTool === 'pen' ? 'active-tool' : ''}" id="btnPen" onclick="selectTool('pen')">🖊️</button>
-            <button type="button" class="tool-btn ${currentDrawingTool === 'eraser' ? 'active-tool' : ''}" id="btnEraser" onclick="selectTool('eraser')">🧹</button>
-            <button type="button" class="tool-btn" onclick="undoCanvasStroke('${canvasStorageId}')">↶</button>
-            <button type="button" class="tool-btn" onclick="clearSlateCanvas('${canvasStorageId}')">🗑️</button>
+    /* RENDER PORTAL 1: DEFINITIONS */
+    function renderDefinitionsPortal() {
+      const cur = DEFINITIONS_DATA[currentDefIdx];
+      return `
+        <div class="full-notepad-wrapper">
+          <div class="notepad-prompt-box">
+            <span class="speakable" onclick="speakText('${cur.hint}')">${cur.prompt}</span>
           </div>
-          <div style="display:flex; align-items:center; gap:6px;">
-            <span style="font-family:var(--font-story); font-size:0.95rem; font-weight:800; color:#0369A1;">${activePageNum}/2</span>
-            <button type="button" class="tool-btn" onclick="flipCanvasPage()">➕</button>
+          <div class="notepad-toolbar">
+            <div class="tool-group">
+              <button class="pad-btn active" id="btnNPPen" onclick="setNPTool('pen')">🖊️ Pen</button>
+              <button class="pad-btn" id="btnNPEraser" onclick="setNPTool('eraser')">🧹 Eraser</button>
+              <button class="pad-btn" onclick="clearNPCanvas()">🗑️ Clear</button>
+            </div>
+            <div class="tool-group">
+              <button class="pad-btn" id="npThick2" onclick="setNPWidth(2)">Thin</button>
+              <button class="pad-btn active" id="npThick4" onclick="setNPWidth(4)">Med</button>
+              <button class="pad-btn" id="npThick7" onclick="setNPWidth(7)">Thick</button>
+            </div>
+          </div>
+          <div class="full-notepad-container" id="fullNotepadContainer">
+            <div class="notepad-dual-lines"></div>
+            <canvas id="fullNotepadCanvas"></canvas>
           </div>
         </div>
-        <div class="notebook-sheet-viewport">
-          <div class="notebook-double-margin"></div>
-          <div class="notebook-four-lines-bg"></div>
-          <canvas class="retina-ink-canvas" data-canvas-id="${canvasStorageId}"></canvas>
+      `;
+    }
+
+    /* RENDER PORTAL 2: Q&A */
+    function renderQAPortal() {
+      return QA_DATA.map(item => `
+        <div class="qa-card">
+          <div class="qa-question speakable" onclick="speakText('${item.q}')">${item.q}</div>
+          <div class="qa-answer speakable" onclick="speakText('${item.a}')">${item.a}</div>
+          <div style="margin-top:6px;">${inlineDualBlank(item.id, 600)}</div>
+        </div>
+      `).join("");
+    }
+
+    /* RENDER PORTAL 3: STATE CHANGE & PARTICLE SIMULATOR */
+    function renderStateChangePortal() {
+      const imgMap = {
+        solid: "assets/particle-solid-icon.webp",
+        liquid: "assets/particle-liquid-icon.webp",
+        gas: "assets/particle-gas-icon.webp"
+      };
+      const descMap = {
+        solid: "Solid: Tightly packed blue spheres in a rigid lattice matrix. They vibrate in place[cite: 16].",
+        liquid: "Liquid: Flowing aqua spheres close together but sliding freely past each other[cite: 15].",
+        gas: "Gas: Freely scattered amber spheres bouncing rapidly with high energy[cite: 14]."
+      };
+
+      return `
+        <div class="particle-sandbox">
+          <div style="font-weight:900; color:var(--primary-dark); font-size:1.1rem;" class="speakable" onclick="speakText('Live Molecular Particle Simulator')">🔬 Live Molecular Particle Simulator</div>
+          <div class="particle-tabs">
+            <button class="particle-tab ${particleMode === 'solid' ? 'active-ptab' : ''}" onclick="switchParticleMode('solid')">🧊 Solid Lattice</button>
+            <button class="particle-tab ${particleMode === 'liquid' ? 'active-ptab' : ''}" onclick="switchParticleMode('liquid')">💧 Liquid Flow</button>
+            <button class="particle-tab ${particleMode === 'gas' ? 'active-ptab' : ''}" onclick="switchParticleMode('gas')">♨️ Gas Bounce</button>
+          </div>
+          <div class="particle-viewport">
+            <img src="${imgMap[particleMode]}" class="particle-img-display" alt="" onerror="handleImgFallback(this)" />
+          </div>
+          <div style="font-weight:800; font-size:0.95rem; text-align:center; color:var(--text);" class="speakable" onclick="speakText('${descMap[particleMode]}')">${descMap[particleMode]}</div>
+        </div>
+
+        <div class="qa-card">
+          <div class="qa-question speakable" onclick="speakText('State Change Cycle Diagram')">🔄 Complete State-Change Heating &amp; Cooling Cycle[cite: 6]</div>
+          <div style="font-size:1.05rem; font-weight:800; line-height:1.6;" class="speakable" onclick="speakText('Solid Ice melts on heating to liquid water. Liquid water evaporates on heating to gas water vapour. Gas water vapour condenses on cooling to liquid water. Liquid water freezes on cooling to solid ice.')">
+            • <b>Solid (Ice)</b> ➔ <i>Heating (Melting)</i> ➔ <b>Liquid (Water)</b> ➔ <i>Heating (Evaporation)</i> ➔ <b>Gas (Water Vapour)</b>[cite: 6]<br/>
+            • <b>Gas (Water Vapour)</b> ➔ <i>Cooling (Condensation)</i> ➔ <b>Liquid (Water)</b> ➔ <i>Cooling (Freezing)</i> ➔ <b>Solid (Ice)</b>[cite: 6]
+          </div>
+          <div style="margin-top:10px;">${inlineDualBlank('state_cycle_draw', 600)}</div>
         </div>
       `;
-      rightSlate.appendChild(canvasContainer);
-      viewport.appendChild(rightSlate);
-
-      setTimeout(setupInkCanvases, 60);
     }
 
-    /* WORD INTERACTION (TAP & HOLD SYLLABLES) */
-    const WORD_HOLD_MS = 450;
-    let wordPressTimer = null;
-    let wordHoldFired = false;
-    let wordMoved = false;
-    let pressStartX = 0, pressStartY = 0;
-
-    function handleWordPointerDown(e, elemId) {
-      if (currentMode !== 'practice') return;
-      pressStartX = e.clientX;
-      pressStartY = e.clientY;
-      wordHoldFired = false;
-      wordMoved = false;
-      clearTimeout(wordPressTimer);
-      wordPressTimer = setTimeout(() => {
-        wordPressTimer = null;
-        wordHoldFired = true;
-        toggleSyllableSplit(elemId);
-      }, WORD_HOLD_MS);
+    function switchParticleMode(m) {
+      particleMode = m;
+      openPortal('statechange');
     }
 
-    function handleWordPointerMove(e) {
-      if (Math.hypot(e.clientX - pressStartX, e.clientY - pressStartY) > 8) {
-        wordMoved = true;
-        clearTimeout(wordPressTimer);
-        wordPressTimer = null;
-      }
-    }
-
-    function handleWordPointerUp(e, elemId) {
-      const wasTap = wordPressTimer !== null && !wordHoldFired && !wordMoved;
-      clearTimeout(wordPressTimer);
-      wordPressTimer = null;
-      if (wasTap) speakWordTap(elemId);
-    }
-
-    function handleWordPointerCancel() {
-      clearTimeout(wordPressTimer);
-      wordPressTimer = null;
-      wordMoved = true;
-    }
-
-    function speakWordTap(elemId) {
-      const el = document.getElementById(elemId);
-      if (!el) return;
-      const cleanWord = el.getAttribute('data-clean');
-      audioFX.playSnap();
-      speakText(cleanWord, 0.82, 0.85);
-    }
-
-    function toggleSyllableSplit(elemId) {
-      const el = document.getElementById(elemId);
-      if (!el) return;
-
-      const cleanWord = el.getAttribute('data-clean');
-      const rawWord = el.getAttribute('data-raw');
-      const syllables = SYLLABLE_DICT[cleanWord];
-
-      triggerSpriteCheer();
-
-      if (!syllables || syllables.length <= 1) {
-        audioFX.playSnap();
-        speakText(cleanWord, 0.72, 0.85);
-        return;
-      }
-
-      if (el.classList.contains('split-active')) {
-        audioFX.playSnap();
-        clearSyllableTimers();
-        el.classList.remove('split-active');
-        el.innerHTML = rawWord;
-      } else {
-        audioFX.playSnap();
-        el.classList.add('split-active');
-        el.innerHTML = syllables.map(s => `<span class="syllable-badge-part">${s}</span>`).join(' • ');
-        speakSyllableSequence(syllables, cleanWord);
-      }
-    }
-
-    function stepItem(dir) {
-      saveAllCanvases();
-      dismissAuditCurtain();
-      clearSyllableTimers();
-      audioFX.playPageFlip();
-      lastSlideDirection = dir >= 0 ? 'next' : 'prev';
-
-      if (activeSection === 'workbook') {
-        workbookSubIdx = ((workbookSubIdx + dir + PORTAL_4_WORKBOOK.length) % PORTAL_4_WORKBOOK.length);
-        renderCurrentDeckItem(false);
-        return;
-      }
-      activePageNum = 1;
-      currentItemIdx = (currentItemIdx + dir + activeDeck.length) % activeDeck.length;
-      renderCurrentDeckItem(false);
-    }
-
-    function flipCanvasPage() {
-      saveAllCanvases();
-      audioFX.playPageFlip();
-      activePageNum = (activePageNum === 1) ? 2 : 1;
-      renderCurrentDeckItem(true);
-    }
-
-    /* LAB WORKBOOK MODULE */
-    let workbookStore = { mcq: {} };
-
-    function renderWorkbookModule() {
-      const currentWb = PORTAL_4_WORKBOOK[workbookSubIdx];
-      document.getElementById('bannerHeadingText').textContent = `Lab Workbook: ${currentWb.title}`;
-      document.getElementById('deckPagination').textContent = `${workbookSubIdx + 1} / ${PORTAL_4_WORKBOOK.length}`;
-      document.getElementById('bannerMascotImg').src = 'assets/lab-scientist-humayun.webp';
-      document.getElementById('parentReviewArea').innerHTML = `
-        <button type="button" class="icon-btn" style="background:#DCFCE7; border-color:#16A34A;" onclick="stepItem(1)">➔</button>
-      `;
-
-      const viewport = document.getElementById('workBodyFrame');
-      viewport.className = 'work-body-frame ' + (lastSlideDirection === 'next' ? 'slide-enter-next' : 'slide-enter-prev');
-      viewport.innerHTML = '';
-
-      const leftCol = document.createElement('div');
-      leftCol.className = 'stage-character-col stagger-pop-1';
-      leftCol.innerHTML = `
-        <img src="assets/lab-scientist-humayun.webp" class="tall-character-sprite" alt="" onclick="speakText('${currentWb.title}')" onerror="handleImageFallback(this)" />
-        <div class="particle-sim-widget">
-          <img src="assets/particle-liquid-icon.webp" class="sim-card-img" alt="Atom" />
-          <div style="font-size:0.8rem; font-weight:800; color:#0369A1;">Lab Station</div>
-        </div>
-      `;
-      viewport.appendChild(leftCol);
-
-      const board = document.createElement('div');
-      board.className = 'textbook-board-card stagger-pop-2';
-
-      if (currentWb.type === 'diff_table') {
-        board.innerHTML = `
-          <div style="font-family:var(--font-story); font-size:1.15rem; color:#0369A1; font-weight:800;" onclick="speakText(this.textContent)">Complete the Differences between Solids, Liquids and Gases[cite: 1]</div>
+    /* RENDER PORTAL 4: WORKBOOK */
+    function renderWorkbookPortal() {
+      if (currentWorkbookSec === 0) {
+        return `
           <table class="diff-table">
             <tr>
-              <th onclick="speakText('Solids')">Solids[cite: 1]</th>
-              <th onclick="speakText('Liquids')">Liquids[cite: 1]</th>
-              <th onclick="speakText('Gases')">Gases[cite: 1]</th>
+              <th class="speakable" onclick="speakText('Solids')">Solids</th>
+              <th class="speakable" onclick="speakText('Liquids')">Liquids</th>
+              <th class="speakable" onclick="speakText('Gases')">Gases</th>
             </tr>
             <tr>
-              <td>1. Fixed shape &amp; volume[cite: 1]. Examples: Chair, Book[cite: 1].</td>
-              <td>1. Fixed volume, take shape of container[cite: 1]. Flow easily[cite: 1]. Examples: Water, Milk[cite: 1].</td>
-              <td>1. No fixed shape or volume[cite: 1]. Flow very easily[cite: 1]. Examples: Oxygen, Steam[cite: 1].</td>
+              <td>1. Have fixed ${inlineDualBlank('diff_s_shape', 140)} <span class="answer-tag">shape</span> &amp; ${inlineDualBlank('diff_s_vol', 140)} <span class="answer-tag">volume</span>[cite: 1].</td>
+              <td>1. Fixed ${inlineDualBlank('diff_l_vol', 140)} <span class="answer-tag">volume</span>, no fixed ${inlineDualBlank('diff_l_shape', 140)} <span class="answer-tag">shape</span>[cite: 1].</td>
+              <td>1. No fixed ${inlineDualBlank('diff_g_shape', 140)} <span class="answer-tag">shape</span> or ${inlineDualBlank('diff_g_vol', 140)} <span class="answer-tag">volume</span>[cite: 1].</td>
+            </tr>
+            <tr>
+              <td>2. Do not flow[cite: 1].</td>
+              <td>2. ${inlineDualBlank('diff_l_flow', 140)} <span class="answer-tag">Flow</span> easily[cite: 1].</td>
+              <td>2. ${inlineDualBlank('diff_g_flow', 140)} <span class="answer-tag">Flow</span> very easily[cite: 1].</td>
+            </tr>
+            <tr>
+              <td>3. Cannot be poured[cite: 1].</td>
+              <td>3. Take ${inlineDualBlank('diff_l_cont', 140)} <span class="answer-tag">shape</span> of container[cite: 1].</td>
+              <td>3. Take entire ${inlineDualBlank('diff_g_cont', 140)} <span class="answer-tag">space</span> of container[cite: 1].</td>
+            </tr>
+            <tr>
+              <td>4. Ex: ${inlineDualBlank('diff_s_ex1', 120)} <span class="answer-tag">Chair</span>, ${inlineDualBlank('diff_s_ex2', 120)} <span class="answer-tag">Book</span>[cite: 1].</td>
+              <td>4. Ex: ${inlineDualBlank('diff_l_ex1', 120)} <span class="answer-tag">Water</span>, ${inlineDualBlank('diff_l_ex2', 120)} <span class="answer-tag">Milk</span>[cite: 1].</td>
+              <td>4. Ex: ${inlineDualBlank('diff_g_ex1', 120)} <span class="answer-tag">Oxygen</span>, ${inlineDualBlank('diff_g_ex2', 120)} <span class="answer-tag">Steam</span>[cite: 1].</td>
             </tr>
           </table>
         `;
-      } else if (currentWb.type === 'match_following') {
-        board.innerHTML = `
-          <div style="font-family:var(--font-story); font-size:1.15rem; color:#0369A1; font-weight:800;" onclick="speakText(this.textContent)">Match the Following States and Concepts[cite: 1]:</div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-weight:800;">
-            <div style="background:#F8FAFC; padding:10px; border-radius:12px; border:2px solid #CBD5E1;">
-              1. Solid ➔ b. Does not change shape[cite: 1]<br/>
-              2. Water vapour ➔ c. Gaseous state[cite: 1]<br/>
-              3. Liquid ➔ a. Can flow[cite: 1]
+      } else if (currentWorkbookSec === 1) {
+        if (appMode === 'learn') {
+          return `
+            <div class="match-columns-learn">
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <button class="match-btn" data-pair="1" onclick="handleMatch(this, 'left')">1. Solid</button>
+                <button class="match-btn" data-pair="2" onclick="handleMatch(this, 'left')">2. Water vapour</button>
+                <button class="match-btn" data-pair="3" onclick="handleMatch(this, 'left')">3. Liquid</button>
+                <button class="match-btn" data-pair="4" onclick="handleMatch(this, 'left')">4. Matter</button>
+                <button class="match-btn" data-pair="5" onclick="handleMatch(this, 'left')">5. Ice</button>
+              </div>
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <button class="match-btn" data-pair="3" onclick="handleMatch(this, 'right')">a. Can flow[cite: 1]</button>
+                <button class="match-btn" data-pair="1" onclick="handleMatch(this, 'right')">b. Does not change shape[cite: 1]</button>
+                <button class="match-btn" data-pair="2" onclick="handleMatch(this, 'right')">c. Gaseous state[cite: 1]</button>
+                <button class="match-btn" data-pair="5" onclick="handleMatch(this, 'right')">d. Frozen water[cite: 1]</button>
+                <button class="match-btn" data-pair="4" onclick="handleMatch(this, 'right')">e. Has mass and occupies space[cite: 1]</button>
+              </div>
             </div>
-            <div style="background:#F8FAFC; padding:10px; border-radius:12px; border:2px solid #CBD5E1;">
-              4. Matter ➔ e. Has mass and occupies space[cite: 1]<br/>
-              5. Ice ➔ d. Frozen water[cite: 1]
+          `;
+        } else {
+          return `
+            <div class="match-3col-container">
+              <div class="match-3col-header"><span>Questions</span><span>Options</span><span>Write Answer</span></div>
+              ${[
+                { id: "m1", q: "1. Solid", opt: "a. Can flow[cite: 1]" },
+                { id: "m2", q: "2. Water vapour", opt: "b. Does not change shape[cite: 1]" },
+                { id: "m3", q: "3. Liquid", opt: "c. Gaseous state[cite: 1]" },
+                { id: "m4", q: "4. Matter", opt: "d. Frozen water[cite: 1]" },
+                { id: "m5", q: "5. Ice", opt: "e. Has mass and occupies space[cite: 1]" }
+              ].map(r => `
+                <div class="match-3col-row">
+                  <div class="speakable" onclick="speakText('${r.q}')">${r.q}</div>
+                  <div><span class="match-option-pill speakable" onclick="speakText('${r.opt}')">${r.opt}</span></div>
+                  <div>${inlineDualBlank(r.id, 320)}</div>
+                </div>
+              `).join("")}
+            </div>
+          `;
+        }
+      } else if (currentWorkbookSec === 2) {
+        const mcqData = [
+          { id: "mcq1", q: "1. Anything that has mass and takes up space is known as[cite: 1]:", opts: ["a. liquid", "b. solid", "c. matter[cite: 1]", "d. both a and b"], correctIdx: 2 },
+          { id: "mcq2", q: "2. Which of the following is not a state of matter[cite: 1]?", opts: ["a. Solid", "b. Liquid", "c. Shadow[cite: 1]", "d. Gas"], correctIdx: 2 },
+          { id: "mcq3", q: "3. Deepa heated water for a very long time. Gas rising up is[cite: 1]:", opts: ["a. freezing", "b. condensation", "c. melting", "d. evaporation[cite: 1]"], correctIdx: 3 },
+          { id: "mcq4", q: "4. Tiny droplets of water are formed through[cite: 1]:", opts: ["a. melting", "b. condensation[cite: 1]", "c. evaporation", "d. freezing"], correctIdx: 1 },
+          { id: "mcq5", q: "5. Which of the following is a state of matter[cite: 1]?", opts: ["a. Water", "b. Chapatti", "c. Car", "d. All of these[cite: 1]"], correctIdx: 3 }
+        ];
+
+        return mcqData.map(item => `
+          <div class="mcq-item">
+            <div class="mcq-q-row">
+              <div class="mcq-q speakable" onclick="speakText('${item.q}')">${item.q}</div>
+              ${appMode !== 'learn' ? `<div>${inlineDualBlank(item.id, 320)}</div>` : ''}
+            </div>
+            <div class="mcq-opts">
+              ${item.opts.map((optText, oIdx) => {
+                const isCorrect = (oIdx === item.correctIdx);
+                const learnClass = (appMode === 'learn' && isCorrect) ? 'correct' : '';
+                return `<button class="mcq-opt-btn ${learnClass}" onclick="checkMcq(this, ${isCorrect}, '${optText}')">${optText}</button>`;
+              }).join("")}
             </div>
           </div>
-        `;
-      } else if (currentWb.type === 'mcq') {
-        const mcqs = [
-          { q: "1. Anything that has mass and takes up space is known as:", opts: ["a. liquid", "b. solid", "c. matter", "d. both a and b"], correct: 2 },
-          { q: "2. Which of the following is not a state of matter?", opts: ["a. Solid", "b. Liquid", "c. Shadow", "d. Gas"], correct: 2 },
-          { q: "3. Deepa heated water. She saw gas rising up. This process is:", opts: ["a. freezing", "b. condensation", "c. melting", "d. evaporation"], correct: 3 }
+        `).join("");
+      } else if (currentWorkbookSec === 3) {
+        const items = [
+          { id: "p1", name: "1. Ice cubes", icon: "🧊", correct: "Solid" },
+          { id: "p2", name: "2. Kerosene", icon: "⛽", correct: "Liquid" },
+          { id: "p3", name: "3. Oil", icon: "🧴", correct: "Liquid" },
+          { id: "p4", name: "4. Tree", icon: "🌳", correct: "Solid" },
+          { id: "p5", name: "5. Smoke", icon: "🏭", correct: "Gas" },
+          { id: "p6", name: "6. Hot Tea", icon: "☕", correct: "Liquid" },
+          { id: "p7", name: "7. Steam", icon: "♨️", correct: "Gas" },
+          { id: "p8", name: "8. Eraser", icon: "🧼", correct: "Solid" },
+          { id: "p9", name: "9. Soap", icon: "🧴", correct: "Liquid" }
         ];
-        let mcqHTML = `<div style="font-family:var(--font-story); font-size:1.15rem; color:#0369A1; font-weight:800;" onclick="speakText(this.textContent)">Tick (✓) the Correct Answer[cite: 1]:</div>`;
-        mcqs.forEach((m, idx) => {
-          mcqHTML += `
-            <div class="mcq-row-card">
-              <span onclick="speakText('${m.q}')">${m.q}</span>
-              <div>
-          `;
-          m.opts.forEach((optText, oIdx) => {
-            const isSel = workbookStore.mcq[idx] === oIdx;
-            mcqHTML += `<span class="option-chip ${isSel ? 'selected-choice' : ''}" onclick="selectWbMcq(${idx}, ${oIdx}, this)">${optText}</span> `;
-          });
-          mcqHTML += `</div></div>`;
-        });
-        board.innerHTML = mcqHTML;
-      } else if (currentWb.type === 'pic_id') {
-        board.innerHTML = `
-          <div style="font-family:var(--font-story); font-size:1.15rem; color:#0369A1; font-weight:800;" onclick="speakText(this.textContent)">Identify the State of Matter (Solid, Liquid or Gas)[cite: 1]:</div>
-          <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; text-align:center; font-weight:800;">
-            <div style="background:#F8FAFC; padding:10px; border-radius:12px; border:2px solid #CBD5E1;">🧊 Ice: <b>Solid</b>[cite: 1]</div>
-            <div style="background:#F8FAFC; padding:10px; border-radius:12px; border:2px solid #CBD5E1;">⛽ Kerosene: <b>Liquid</b>[cite: 1]</div>
-            <div style="background:#F8FAFC; padding:10px; border-radius:12px; border:2px solid #CBD5E1;">🏭 Smoke: <b>Gas</b>[cite: 1]</div>
+
+        return `
+          <div class="pic-grid">
+            ${items.map(it => {
+              if (appMode === 'learn') {
+                const saved = localStorage.getItem(`chip::humayun::evs::${it.id}`) || it.correct;
+                return `
+                  <div class="pic-card">
+                    <span class="pic-icon speakable" onclick="speakText('${it.name}')">${it.icon}</span>
+                    <span class="pic-name speakable" onclick="speakText('${it.name}')">${it.name}</span>
+                    <div class="chip-row">
+                      <button class="state-chip ${saved === 'Solid' ? 'active-chip' : ''}" onclick="selectChip('${it.id}', 'Solid')">Solid</button>
+                      <button class="state-chip ${saved === 'Liquid' ? 'active-chip' : ''}" onclick="selectChip('${it.id}', 'Liquid')">Liquid</button>
+                      <button class="state-chip ${saved === 'Gas' ? 'active-chip' : ''}" onclick="selectChip('${it.id}', 'Gas')">Gas</button>
+                    </div>
+                  </div>
+                `;
+              } else {
+                return `
+                  <div class="pic-card">
+                    <span class="pic-icon speakable" onclick="speakText('${it.name}')">${it.icon}</span>
+                    <span class="pic-name speakable" onclick="speakText('${it.name}')">${it.name}</span>
+                    <div style="margin-top:4px;">${inlineDualBlank('pic_ink_' + it.id, 180)}</div>
+                  </div>
+                `;
+              }
+            }).join("")}
           </div>
         `;
       } else {
-        board.innerHTML = `
-          <div style="font-family:var(--font-story); font-size:1.15rem; color:#0369A1; font-weight:800;" onclick="speakText(this.textContent)">Complete the Concept Map[cite: 1]:</div>
-          <div style="display:flex; flex-direction:column; align-items:center; gap:10px;">
-            <div style="background:#E0F2FE; border:2px solid #0284C7; padding:8px 20px; border-radius:14px; font-weight:900; color:#0369A1;">States of Matter[cite: 1]</div>
-            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; width:100%;">
-              <div style="background:#F8FAFC; border:2px solid #CBD5E1; padding:10px; border-radius:12px; text-align:center; font-weight:800;">SOLID[cite: 1]<br/>(Chair, Book)[cite: 1]</div>
-              <div style="background:#F8FAFC; border:2px solid #CBD5E1; padding:10px; border-radius:12px; text-align:center; font-weight:800;">LIQUID[cite: 1]<br/>(Water, Milk)[cite: 1]</div>
-              <div style="background:#F8FAFC; border:2px solid #CBD5E1; padding:10px; border-radius:12px; text-align:center; font-weight:800;">GAS[cite: 1]<br/>(Oxygen, Steam)[cite: 1]</div>
+        return `
+          <div class="cmap-wrapper">
+            <div class="cmap-root-card speakable" onclick="speakText('States of Matter')">States of Matter[cite: 1]</div>
+            <div class="cmap-branch-label speakable" onclick="speakText('Types of States of Matter')">Types[cite: 1]</div>
+            <div class="cmap-columns-grid">
+              ${[
+                { full: "SOLID", ex1: "Chair[cite: 1]", ex2: "Book[cite: 1]", id: "s" },
+                { full: "LIQUID", ex1: "Water[cite: 1]", ex2: "Milk[cite: 1]", id: "l" },
+                { full: "GAS", ex1: "Oxygen[cite: 1]", ex2: "Steam[cite: 1]", id: "g" }
+              ].map(col => `
+                <div class="cmap-col-card">
+                  <div class="cmap-type-badge speakable" onclick="speakText('${col.full}')">${col.full}[cite: 1]</div>${appMode !== 'learn' ? inlineDualBlank('cmap_type_' + col.id, 180) : ''}
+                  <div style="font-weight:800; color:var(--primary-dark);">Examples[cite: 1]:</div>
+                  <div>${appMode !== 'learn' ? inlineDualBlank('cmap_ex1_' + col.id, 180) : `<span class="answer-tag">${col.ex1}</span>`}</div>
+                  <div>${appMode !== 'learn' ? inlineDualBlank('cmap_ex2_' + col.id, 180) : `<span class="answer-tag">${col.ex2}</span>`}</div>
+                </div>
+              `).join("")}
             </div>
           </div>
         `;
       }
-
-      viewport.appendChild(board);
     }
 
-    function selectWbMcq(qIdx, oIdx, chip) {
-      audioFX.playSnap();
-      workbookStore.mcq[qIdx] = oIdx;
-      chip.parentElement.querySelectorAll('.option-chip').forEach(el => el.classList.remove('selected-choice'));
-      chip.classList.add('selected-choice');
+    let selectedLeftMatch = null;
+    let selectedRightMatch = null;
+
+    function handleMatch(btn, side) {
+      if (side === 'left') {
+        if (selectedLeftMatch) selectedLeftMatch.classList.remove('selected');
+        selectedLeftMatch = btn;
+        btn.classList.add('selected');
+      } else {
+        if (selectedRightMatch) selectedRightMatch.classList.remove('selected');
+        selectedRightMatch = btn;
+        btn.classList.add('selected');
+      }
+      if (selectedLeftMatch && selectedRightMatch) {
+        if (selectedLeftMatch.getAttribute('data-pair') === selectedRightMatch.getAttribute('data-pair')) {
+          selectedLeftMatch.classList.remove('selected');
+          selectedRightMatch.classList.remove('selected');
+          selectedLeftMatch.classList.add('paired');
+          selectedRightMatch.classList.add('paired');
+          selectedLeftMatch.innerHTML += " ✓";
+          selectedRightMatch.innerHTML += " ✓";
+          speakText("Correct match");
+        } else {
+          selectedLeftMatch.classList.remove('selected');
+          selectedRightMatch.classList.remove('selected');
+          alert("Try again!");
+        }
+        selectedLeftMatch = null;
+        selectedRightMatch = null;
+      }
     }
 
-    /* RETINA INK ENGINE & PALM REJECTION */
-    const inkMemoryCache = {};
-    const hasDrawnRegistry = {};
-
-    function getStorageKey(canvasId) {
-      return `v2_matterlab::ink::${canvasId}`;
+    function checkMcq(btn, isCorrect, speakVal) {
+      speakText(speakVal);
+      const parent = btn.parentElement;
+      parent.querySelectorAll(".mcq-opt-btn").forEach(b => b.className = "mcq-opt-btn");
+      if (appMode === 'learn') {
+        btn.className = isCorrect ? "mcq-opt-btn correct" : "mcq-opt-btn wrong";
+      } else {
+        btn.className = "mcq-opt-btn correct";
+      }
     }
 
-    function selectTool(tool) {
-      currentDrawingTool = tool;
-      const penBtn = document.getElementById('btnPen');
-      const eraBtn = document.getElementById('btnEraser');
-      if (penBtn) penBtn.classList.toggle('active-tool', tool === 'pen');
-      if (eraBtn) eraBtn.classList.toggle('active-tool', tool === 'eraser');
+    function selectChip(itemId, state) {
+      localStorage.setItem(`chip::humayun::evs::${itemId}`, state);
+      speakText(state);
+      openPortal('workbook');
     }
 
-    const PALM_CONTACT_PX = 30;
-    const PEN_QUIET_MS = 1200;
-    let lastPenTime = 0;
-
-    function setupInkCanvases() {
-      const dpr = window.devicePixelRatio || 1;
-      document.querySelectorAll(".retina-ink-canvas").forEach(c => {
+    /* CANVAS & S PEN RETINA ENGINE */
+    function setupDualCanvases() {
+      const canvasList = document.querySelectorAll(".dual-canvas");
+      canvasList.forEach(c => {
         const id = c.getAttribute("data-canvas-id");
         const bRect = c.parentElement.getBoundingClientRect();
-        const logicalW = Math.round(bRect.width) || 780;
-        const logicalH = Math.round(bRect.height) || 120;
-
-        c.width = Math.round(logicalW * dpr);
-        c.height = Math.round(logicalH * dpr);
+        c.width = Math.round(bRect.width) || 300;
+        c.height = 68;
 
         const ctx = c.getContext("2d", { willReadFrequently: false });
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        ctx.clearRect(0, 0, logicalW, logicalH);
-
-        if (!strokeUndoStack[id]) strokeUndoStack[id] = [];
+        ctx.clearRect(0, 0, c.width, c.height);
 
         const storageKey = getStorageKey(id);
-        const cached = inkMemoryCache[storageKey] || localStorage.getItem(storageKey);
+        const cachedData = activeInkCache[storageKey] || localStorage.getItem(storageKey);
 
-        if (cached) {
-          inkMemoryCache[storageKey] = cached;
-          hasDrawnRegistry[id] = true;
-          if (strokeUndoStack[id].length === 0) strokeUndoStack[id].push(cached);
+        if (cachedData) {
+          activeInkCache[storageKey] = cachedData;
+          hasDrawnMap[id] = true;
           const img = new Image();
-          img.onload = () => {
-            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            ctx.drawImage(img, 0, 0, logicalW, logicalH);
-          };
-          img.src = cached;
+          img.onload = () => { ctx.clearRect(0, 0, c.width, c.height); ctx.drawImage(img, 0, 0, c.width, c.height); };
+          img.src = cachedData;
         }
 
         let isDrawing = false;
-        let activePointerId = null;
-        let activePointerType = null;
         let lastX = 0, lastY = 0;
-        let cachedRect = null;
-
-        const finishStroke = () => {
-          if (!isDrawing) return;
-          isDrawing = false;
-          cachedRect = null;
-          activePointerId = null;
-          activePointerType = null;
-          try {
-            strokeUndoStack[id].push(c.toDataURL("image/png"));
-            if (strokeUndoStack[id].length > 15) strokeUndoStack[id].shift();
-          } catch (_) {}
-          saveCanvasBuffer(c, id);
-        };
 
         c.onpointerdown = (e) => {
-          e.preventDefault();
-          if (e.pointerType === 'pen') {
-            lastPenTime = Date.now();
-            if (isDrawing && activePointerType === 'touch') finishStroke();
-          } else {
-            const palmSized = Math.max(e.width || 0, e.height || 0) > PALM_CONTACT_PX;
-            const penRecently = (Date.now() - lastPenTime) < PEN_QUIET_MS;
-            if (palmSized || penRecently || isDrawing) return;
+          if (palmRejectionMode === "pen-only" && e.pointerType !== "pen" && e.pointerType !== "mouse") {
+            e.preventDefault();
+            return;
           }
-          if (isDrawing) return;
-
-          activePointerId = e.pointerId;
-          activePointerType = e.pointerType;
           isDrawing = true;
-          hideFloatingDock();
-          hasDrawnRegistry[id] = true;
+          hasDrawnMap[id] = true;
           try { c.setPointerCapture(e.pointerId); } catch (_) {}
-          cachedRect = c.getBoundingClientRect();
-          lastX = e.clientX - cachedRect.left;
-          lastY = e.clientY - cachedRect.top;
+          const rect = c.getBoundingClientRect();
+          lastX = e.clientX - rect.left;
+          lastY = e.clientY - rect.top;
+          e.preventDefault();
         };
 
         c.onpointermove = (e) => {
-          if (!isDrawing || !cachedRect || e.pointerId !== activePointerId) return;
+          if (!isDrawing) return;
+          const rect = c.getBoundingClientRect();
+          const currX = e.clientX - rect.left;
+          const currY = e.clientY - rect.top;
 
-          const currX = e.clientX - cachedRect.left;
-          const currY = e.clientY - cachedRect.top;
-
-          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-          if (currentDrawingTool === 'pen') {
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.beginPath();
-            ctx.moveTo(lastX, lastY);
-            ctx.lineTo(currX, currY);
-            ctx.lineCap = "round";
-            ctx.lineJoin = "round";
-            ctx.strokeStyle = "#0F172A";
-            const rawP = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
-            ctx.lineWidth = 1.8 * (rawP * 1.35 + 0.35);
-            ctx.stroke();
-          } else {
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.beginPath();
-            ctx.arc(currX, currY, 15, 0, Math.PI * 2);
-            ctx.fill();
-          }
+          ctx.beginPath();
+          ctx.moveTo(lastX, lastY);
+          ctx.lineTo(currX, currY);
+          ctx.lineCap = "round";
+          ctx.lineJoin = "round";
+          ctx.strokeStyle = "#14532D";
+          const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
+          ctx.lineWidth = 3.8 * (pressure * 1.5 + 0.35);
+          ctx.stroke();
 
           lastX = currX;
           lastY = currY;
@@ -1539,133 +1568,184 @@
         };
 
         const stopStroke = (e) => {
-          if (e.pointerId !== activePointerId) return;
-          try { c.releasePointerCapture(e.pointerId); } catch (_) {}
-          finishStroke();
+          if (isDrawing) {
+            isDrawing = false;
+            try { c.releasePointerCapture(e.pointerId); } catch (_) {}
+            saveDualCanvas(c, id);
+          }
         };
-
         c.onpointerup = stopStroke;
         c.onpointercancel = stopStroke;
       });
     }
 
-    function saveCanvasBuffer(c, id) {
-      if (!hasDrawnRegistry[id]) return;
+    function saveDualCanvas(c, id) {
+      if (!hasDrawnMap[id]) return;
       try {
         const data = c.toDataURL("image/png");
         const key = getStorageKey(id);
-        inkMemoryCache[key] = data;
+        activeInkCache[key] = data;
         localStorage.setItem(key, data);
-      } catch (_) {}
+      } catch (e) {}
     }
 
     function saveAllCanvases() {
-      document.querySelectorAll(".retina-ink-canvas").forEach(c => {
+      document.querySelectorAll(".dual-canvas").forEach(c => {
         const id = c.getAttribute("data-canvas-id");
-        if (hasDrawnRegistry[id]) saveCanvasBuffer(c, id);
+        if (hasDrawnMap[id]) saveDualCanvas(c, id);
       });
+      saveFullNPCanvas();
     }
 
-    function undoCanvasStroke(id) {
-      const c = document.querySelector(`[data-canvas-id="${id}"]`);
-      if (!c || !strokeUndoStack[id] || strokeUndoStack[id].length === 0) return;
-
-      audioFX.playSnap();
-      strokeUndoStack[id].pop();
-      const prevData = strokeUndoStack[id][strokeUndoStack[id].length - 1];
-
-      const ctx = c.getContext("2d");
-      const dpr = window.devicePixelRatio || 1;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, c.width / dpr, c.height / dpr);
-
-      const key = getStorageKey(id);
-      if (prevData) {
-        const img = new Image();
-        img.onload = () => {
-          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-          ctx.drawImage(img, 0, 0, c.width / dpr, c.height / dpr);
-        };
-        img.src = prevData;
-        inkMemoryCache[key] = prevData;
-        localStorage.setItem(key, prevData);
-      } else {
-        delete inkMemoryCache[key];
-        hasDrawnRegistry[id] = false;
+    function clearDualCanvas(id) {
+      const c = document.querySelector(`.dual-canvas[data-canvas-id="${id}"]`);
+      if (c) {
+        const ctx = c.getContext("2d");
+        ctx.clearRect(0, 0, c.width, c.height);
+        const key = getStorageKey(id);
+        delete activeInkCache[key];
+        hasDrawnMap[id] = false;
         localStorage.removeItem(key);
       }
     }
 
-    function purgeStoredCanvas(canvasId) {
-      const key = getStorageKey(canvasId);
-      delete inkMemoryCache[key];
-      delete hasDrawnRegistry[canvasId];
-      delete strokeUndoStack[canvasId];
+    /* FULL NOTEPAD SLATE ENGINE */
+    let npCanvas = null, npCtx = null, npIsDrawing = false, npTool = "pen", npLineWidth = 4, npLastX = 0, npLastY = 0, npPointerId = null;
+
+    function getNPStorageKey() {
+      const cur = DEFINITIONS_DATA[currentDefIdx];
+      return getStorageKey(`def_${cur.id}`);
+    }
+
+    function fitFullNPCanvas() {
+      npCanvas = document.getElementById("fullNotepadCanvas");
+      if (!npCanvas) return;
+      const wrap = document.getElementById("fullNotepadContainer");
+      if (!wrap || wrap.offsetParent === null) return;
+      const rect = wrap.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
+
+      const dpr = window.devicePixelRatio || 1;
+      npCanvas.width = Math.floor(rect.width * dpr);
+      npCanvas.height = Math.floor(rect.height * dpr);
+      npCanvas.style.width = rect.width + "px";
+      npCanvas.style.height = rect.height + "px";
+      npCtx = npCanvas.getContext("2d");
+      npCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function saveFullNPCanvas() {
+      if (!npCanvas || npCanvas.width <= 0) return;
+      try {
+        const data = npCanvas.toDataURL("image/png");
+        const key = getNPStorageKey();
+        activeInkCache[key] = data;
+        localStorage.setItem(key, data);
+      } catch (e) {}
+    }
+
+    function restoreFullNPCanvas() {
+      if (!npCanvas || !npCtx) return;
+      npCtx.clearRect(0, 0, npCanvas.width, npCanvas.height);
+      const key = getNPStorageKey();
+      const saved = activeInkCache[key] || localStorage.getItem(key);
+      if (!saved) return;
+      activeInkCache[key] = saved;
+      const img = new Image();
+      img.onload = () => {
+        npCtx.save();
+        npCtx.setTransform(1, 0, 0, 1, 0, 0);
+        npCtx.drawImage(img, 0, 0, npCanvas.width, npCanvas.height);
+        npCtx.restore();
+      };
+      img.src = saved;
+    }
+
+    function clearNPCanvas() {
+      if (!npCanvas || !npCtx) return;
+      npCtx.clearRect(0, 0, npCanvas.width, npCanvas.height);
+      const key = getNPStorageKey();
+      delete activeInkCache[key];
       localStorage.removeItem(key);
-
-      const c = document.querySelector(`[data-canvas-id="${canvasId}"]`);
-      if (c) {
-        const ctx = c.getContext("2d");
-        const dpr = window.devicePixelRatio || 1;
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        ctx.clearRect(0, 0, c.width / dpr, c.height / dpr);
-      }
     }
 
-    function clearSlateCanvas(id) {
-      audioFX.playSnap();
-      purgeStoredCanvas(id);
+    function setNPTool(t) {
+      npTool = t;
+      document.getElementById("btnNPPen").classList.toggle("active", t === 'pen');
+      document.getElementById("btnNPEraser").classList.toggle("active", t === 'eraser');
     }
 
-    /* PARENT AUDIT & CELEBRATION FINALE */
-    function openParentAudit() {
-      const item = activeDeck[currentItemIdx];
-      const hasInk = hasDrawnRegistry[`slate_${currentMode}_${item.id}_p1`] || 
-                     hasDrawnRegistry[`slate_${currentMode}_${item.id}_p2`];
-
-      if (!hasInk) {
-        audioFX.playSnap();
-        speakText("Write your answer on the slate first!");
-        return;
-      }
-
-      audioFX.playBell();
-      document.getElementById('auditAnswerKeyDisplay').textContent = item.a;
-      document.getElementById('nonblockingAuditCurtain').classList.add('curtain-dropped');
+    function setNPWidth(w) {
+      npLineWidth = w;
+      document.getElementById("npThick2").classList.toggle("active", w === 2);
+      document.getElementById("npThick4").classList.toggle("active", w === 4);
+      document.getElementById("npThick7").classList.toggle("active", w === 7);
     }
 
-    function dismissAuditCurtain() {
-      document.getElementById('nonblockingAuditCurtain').classList.remove('curtain-dropped');
-    }
+    function setupFullNPCanvas() {
+      npCanvas = document.getElementById("fullNotepadCanvas");
+      if (!npCanvas) return;
+      npCtx = npCanvas.getContext("2d");
 
-    function markParentAudit(isCorrect) {
-      dismissAuditCurtain();
-      const item = activeDeck[currentItemIdx];
-      writeModeAuditStatus[item.id] = isCorrect;
-
-      if (isCorrect) {
-        audioFX.playBell();
-        triggerSpriteCheer();
-        const allAnswered = activeDeck.every(it => writeModeAuditStatus[it.id] === true);
-        if (allAnswered) {
-          triggerGrandCelebration();
-        } else {
-          stepItem(1);
+      npCanvas.onpointerdown = (e) => {
+        if (palmRejectionMode === "pen-only" && e.pointerType !== "pen" && e.pointerType !== "mouse") {
+          e.preventDefault();
+          return;
         }
-      } else {
-        audioFX.playSnap();
-        speakText(`Try writing Question ${currentItemIdx + 1} again!`);
-        purgeStoredCanvas(`slate_${currentMode}_${item.id}_p1`);
-        purgeStoredCanvas(`slate_${currentMode}_${item.id}_p2`);
-        renderCurrentDeckItem(false);
-      }
+        if (npIsDrawing && npPointerId !== null) return;
+        npPointerId = e.pointerId;
+        npIsDrawing = true;
+        try { npCanvas.setPointerCapture(e.pointerId); } catch (_) {}
+        const rect = npCanvas.getBoundingClientRect();
+        npLastX = e.clientX - rect.left;
+        npLastY = e.clientY - rect.top;
+        e.preventDefault();
+      };
+
+      npCanvas.onpointermove = (e) => {
+        if (!npIsDrawing || e.pointerId !== npPointerId) return;
+        const rect = npCanvas.getBoundingClientRect();
+        const currX = e.clientX - rect.left;
+        const currY = e.clientY - rect.top;
+
+        npCtx.beginPath();
+        npCtx.moveTo(npLastX, npLastY);
+        npCtx.lineTo(currX, currY);
+        npCtx.lineCap = "round";
+        npCtx.lineJoin = "round";
+
+        if (npTool === "eraser") {
+          npCtx.globalCompositeOperation = "destination-out";
+          npCtx.lineWidth = npLineWidth * 6;
+        } else {
+          npCtx.globalCompositeOperation = "source-over";
+          npCtx.strokeStyle = "#14532D";
+          const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
+          npCtx.lineWidth = npLineWidth * (pressure * 1.5 + 0.35);
+        }
+        npCtx.stroke();
+        npLastX = currX;
+        npLastY = currY;
+        e.preventDefault();
+      };
+
+      const stopNPStroke = (e) => {
+        if (npIsDrawing) {
+          npIsDrawing = false;
+          npPointerId = null;
+          try { npCanvas.releasePointerCapture(e.pointerId); } catch (_) {}
+          saveFullNPCanvas();
+        }
+      };
+      npCanvas.onpointerup = stopNPStroke;
+      npCanvas.onpointercancel = stopNPStroke;
     }
 
+    /* GRAND CELEBRATION FINALE */
     const finaleStage = document.getElementById('celebrationFinaleStage');
     const finaleCanvas = document.getElementById('finaleCanvas');
     const finaleCtx = finaleCanvas.getContext('2d', { alpha: true });
-    let finaleRunning = false;
-    let petals = [];
+    let finaleRunning = false, petals = [];
 
     function resizeFinaleCanvas() {
       finaleCanvas.width = window.innerWidth;
@@ -1678,25 +1758,17 @@
         this.y = -20 - Math.random() * 100;
         this.size = Math.random() * 12 + 6;
         this.vx = (Math.random() - 0.5) * 2;
-        this.vy = Math.random() * 2.5 + 2;
+        this.vy = Math.random() * 3 + 2;
         this.rot = Math.random() * Math.PI * 2;
-        const colors = ['#0284C7', '#38BDF8', '#34D399', '#F472B6', '#C084FC'];
-        this.color = colors[Math.floor(Math.random() * colors.length)];
+        this.color = ['#16A34A', '#0284C7', '#F59E0B', '#7C3AED'][Math.floor(Math.random() * 4)];
       }
       update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        if (this.y > window.innerHeight + 20) {
-          this.y = -20;
-          this.x = Math.random() * window.innerWidth;
-        }
+        this.x += this.vx; this.y += this.vy;
+        if (this.y > window.innerHeight + 20) { this.y = -20; this.x = Math.random() * window.innerWidth; }
       }
       draw(c) {
-        c.save();
-        c.translate(this.x, this.y);
-        c.rotate(this.rot);
-        c.fillStyle = this.color;
-        c.fillRect(-this.size/2, -this.size/2, this.size, this.size * 0.7);
+        c.save(); c.translate(this.x, this.y); c.rotate(this.rot);
+        c.fillStyle = this.color; c.fillRect(-this.size/2, -this.size/2, this.size, this.size * 0.7);
         c.restore();
       }
     }
@@ -1705,16 +1777,10 @@
       resizeFinaleCanvas();
       finaleStage.style.display = 'block';
       finaleRunning = true;
-      audioFX.playBell();
-      speakText("Awesome science work Humayun!");
-
+      speakText("Awesome work Humayun!");
       petals = [];
-      for (let i = 0; i < 80; i++) petals.push(new ConfettiPetal());
-
-      setTimeout(() => {
-        document.getElementById('victoryScrollCard').classList.add('impact');
-      }, 400);
-
+      for (let i = 0; i < 75; i++) petals.push(new ConfettiPetal());
+      setTimeout(() => document.getElementById('victoryScrollCard').classList.add('impact'), 300);
       requestAnimationFrame(renderPetals);
     }
 
@@ -1729,17 +1795,14 @@
       finaleRunning = false;
       finaleStage.style.display = 'none';
       document.getElementById('victoryScrollCard').classList.remove('impact');
-      returnToHubMenu();
+      returnToHubBay();
     }
 
-    window.onload = () => {
-      setAppMode('practice');
-      renderHubPortals();
-    };
-
-    window.addEventListener('resize', () => {
+    window.addEventListener("resize", () => {
       resizeFinaleCanvas();
-      if (activeSection && activeSection !== 'workbook') setupInkCanvases();
+      if (activePortalKey === 'definitions') {
+        saveFullNPCanvas(); fitFullNPCanvas(); restoreFullNPCanvas();
+      }
     });
 
     window.addEventListener("beforeunload", saveAllCanvases);
