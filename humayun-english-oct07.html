@@ -143,7 +143,19 @@ body.night .quote{color:#C6F6D5}
 <script>
 const ASSET_BASE = 'assets/';
 const HUB_URL = 'index.html';
-const IMG = { guide:'humayun-avatar.webp', bg:'village-map-bg.webp', fib:'stop-time-travel.webp', mcq:'stop-village-square.webp', tf:'stop-panchayat-hall.webp', qa:'stop-story-hut.webp', think:'stop-think-tree.webp', win:'village-celebration.jpg', tractor:'map-tractor-sprite.jpg', watermark:'notebook-watermark.webp' };
+const IMG = { 
+  guide: 'humayun-avatar.webp', 
+  bg: 'village-map-bg.webp', 
+  fib: 'stop-time-travel.webp', 
+  mcq: 'stop-village-square.webp', 
+  tf: 'stop-panchayat-hall.webp', 
+  qa: 'stop-story-hut.webp', 
+  think: 'stop-think-tree.webp', 
+  win: 'village-celebration.jpg',
+  tractor: 'map-tractor-sprite.jpg',
+  globe: 'ulagam-globe.png',
+  watermark: 'notebook-watermark.webp'
+};
 
 const STOPS = [
  {id:'fib',em:'🏕️',t:'Time Travel Trail',s:'A. Fill in the blanks',x:9,y:72,shuffle:1},
@@ -152,29 +164,35 @@ const STOPS = [
  {id:'qa',em:'📖',t:'Story Hut',s:'Textbook questions',x:71,y:44,shuffle:0},
  {id:'think',em:'🌳',t:'Think Tree',s:'Think and answer',x:90,y:74,shuffle:0}];
 STOPS[3].pages=2;
+
 const FIB=[
  {id:'f1',t:['Early humans were ',['nomads'],'.']},
  {id:'f2',t:['Early humans moved from place to place, in search of ',['food'],' and ',['shelter'],'.']},
  {id:'f3',t:['In many villages, ',['farming'],' is the main occupation of the people.']},
  {id:'f4',t:['In many villages in coastal regions, ',['fishing'],' is the main occupation.']},
  {id:'f5',t:['Earlier, people in villages went either on foot or by ',['bullock carts'],'.']}];
+
 const MCQ=[
  {id:'m1',q:'The main occupation of people in the villages of Jammu and Kashmir',o:['fishing','pottery','handicrafts','carpentry'],a:2},
  {id:'m2',q:'Nowadays, people also use ___ as a means of transport in many villages.',o:['volvo buses','motorcycles','mountain bikes','luxury cars'],a:1},
  {id:'m3',q:'Who heads the Gram Panchayat?',o:['Principal','Sarpanch','Prime Minister','President'],a:1},
  {id:'m4',q:'Villages mainly have farms, fields and ___.',o:['malls','swings','amusement parks','forests'],a:3},
  {id:'m5',q:'Who elects the members of the Gram Panchayat?',o:['people living in cities','people living in villages','people living in pucca houses','farmers'],a:1}];
+
 const TF=[
  {id:'t1',s:'Villages have shopping malls.',a:'F'},
  {id:'t2',s:'In many villages, people live in pucca houses.',a:'T'},
  {id:'t3',s:'The main needs of the villagers are modern services like dining restaurants.',a:'F'},
  {id:'t4',s:'The Gram Panchayat adopts measures to maintain cleanliness in the village.',a:'T'},
  {id:'t5',s:'Early humans lived in bungalows.',a:'F'}];
+
 const QA=[
  {id:'q1',q:'What is the main occupation of people in villages?',a:'<p>Farming is the main occupation of the people in villages.</p>'},
  {id:'q2',q:'What is Gram Panchayat and what are its two functions?',a:"<p>A village has a local government to address people's needs and maintain peace and order. This local government is called Gram Panchayat. Two functions of Gram Panchayat are:</p><ul><li>Making roads and repairing them.</li><li>Setting up school and healthcare facilities and repairing old ones.</li></ul>"}];
+
 const THINK={quote:'"Villages form our roots. Respect them."',q:"Why are villages called our 'roots' and why should we respect them?",
  a:'<ul><li>Villages are called our roots because about 60% of people in India live in villages.</li><li>We must respect them because hard-working farmers labour in the sun and rain everyday to grow fresh crops and vegetables for us.</li><li>Villages live close to nature and teach us important lessons about protecting animals, saving water, and loving the Earth.</li></ul>'};
+
 const SYLLABLES={"Farming":["Farm","ing"],"Village":["Vil","lage"],"Villages":["Vil","lag","es"],"Local":["Lo","cal"],"Government":["Gov","ern","ment"],"Address":["Ad","dress"],"People's":["Peo","ple's"],"Maintain":["Main","tain"],"Peace":["P","eace"],"Order":["Or","der"],"Making":["Mak","ing"],"Roads":["R","oads"],"Repairing":["Re","pair","ing"],"Setting":["Set","ting"],"School":["Sch","ool"],"Healthcare":["Health","care"],"Facilities":["Fa","cil","i","ties"],"Because":["Be","cause"],"Respect":["Re","spect"],"Hard-working":["Hard","work","ing"],"Labour":["La","bour"],"Everyday":["Eve","ry","day"],"Fresh":["Fr","esh"],"Vegetables":["Veg","e","ta","bles"],"Important":["Im","por","tant"],"Lessons":["Les","sons"],"Protecting":["Pro","tect","ing"],"Animals":["An","i","mals"],"Saving":["Sav","ing"],"Loving":["Lov","ing"]};
 const partsOf=w=>{const k=w.replace(/’/g,"'");const p=SYLLABLES[k[0].toUpperCase()+k.slice(1).toLowerCase()];return p?p.map(x=>x.toLowerCase()):null};
 
@@ -215,12 +233,12 @@ function markDone(id){const d=done();d[id]=1;store.set(S+'done',JSON.stringify(d
 const box=(k,w,hint)=>`<span class="ib" style="width:${w}px"><span class="cv"><canvas data-k="${k}" data-kind="box"></canvas></span><span class="tools"><button onclick="undoInk('${k}')" title="Undo">↩️</button><button onclick="clearInk('${k}')" title="Clear">🧹</button></span></span>${mode==='practice'&&hint?`<span class="hint">${hint}</span>`:''}`;
 const blankW=a=>Math.min(450,Math.max(130,a.length*38+60));
 const ra='';
-const COLORS=['#1E3A5F','#111827','#2563EB','#DC2626','#059669'],SIZES=[['Thin pen',2.4],['Medium pen',4],['Thick pen',7]];
+const COLORS=['#1E3A5F','#111827','#2563EB','#DC2626','#059669','#EAB308'],SIZES=[['Thin pen',2.4],['Medium pen',4],['Thick pen',7],['Highlighter',16]];
 let penSize=4,penColor='#1E3A5F';
 function applyPenUI(){document.querySelectorAll('.sz').forEach(b=>b.classList.toggle('on',+b.dataset.sz===penSize));document.querySelectorAll('.sw').forEach(b=>b.classList.toggle('on',b.dataset.c===penColor))}
 function setSize(v){penSize=v;setTool('pen');applyPenUI()}
 function setColor(c){penColor=c;setTool('pen');applyPenUI()}
-const pad=id=>{const n=sheetCount(id),cur=Math.min(n,padPage[id]||1),k=id+'_p'+cur;return `<div class="pad" style="background-image:url('${ASSET_BASE}${IMG.watermark}'),repeating-linear-gradient(transparent 0 38px,#C7D2DE 38px 40px)"><canvas data-k="${k}" data-kind="pad"></canvas><div class="ptools"><div class="tg"><button id="tPen" onclick="setTool('pen')" title="Pen">✏️</button><button id="tEr" onclick="setTool('eraser')" title="Eraser">🩹</button><button onclick="undoInk('${k}')" title="Undo">↩️</button><button onclick="clearInk('${k}')" title="Clear">🧹</button></div><div class="tg">${SIZES.map(([t,v])=>`<button class="sz" data-sz="${v}" onclick="setSize(${v})" title="${t}" aria-label="${t}"><i style="height:${Math.max(2,v)}px"></i></button>`).join('')}</div><div class="tg">${COLORS.map(c=>`<button class="sw" data-c="${c}" onclick="setColor('${c}')" style="background:${c}" aria-label="Ink colour"></button>`).join('')}</div><span class="pg"><button onclick="sheetGo('${id}',-1)" ${cur<=1?'disabled':''}>◀</button><b>${cur}/${n}</b><button onclick="sheetGo('${id}',1)" ${cur>=n?'disabled':''}>▶</button><button onclick="sheetAdd('${id}')" title="Add an extra sheet">＋</button></span></div></div>`};
+const pad=id=>{const n=sheetCount(id),cur=Math.min(n,padPage[id]||1),k=id+'_p'+cur;return `<div class="pad"><canvas data-k="${k}" data-kind="pad"></canvas><div class="ptools"><div class="tg"><button id="tPen" onclick="setTool('pen')" title="Pen">✏️</button><button id="tEr" onclick="setTool('eraser')" title="Eraser">🩹</button><button onclick="undoInk('${k}')" title="Undo">↩️</button><button onclick="clearInk('${k}')" title="Clear">🧹</button></div><div class="tg">${SIZES.map(([t,v])=>`<button class="sz" data-sz="${v}" onclick="setSize(${v})" title="${t}" aria-label="${t}"><i style="height:${Math.max(2,v===16?12:v)}px"></i></button>`).join('')}</div><div class="tg">${COLORS.map(c=>`<button class="sw" data-c="${c}" onclick="setColor('${c}')" style="background:${c}" aria-label="Ink colour"></button>`).join('')}</div><span class="pg"><button onclick="sheetGo('${id}',-1)" ${cur<=1?'disabled':''}>◀</button><b>${cur}/${n}</b><button onclick="sheetGo('${id}',1)" ${cur>=n?'disabled':''}>▶</button><button onclick="sheetAdd('${id}')" title="Add an extra sheet">＋</button></span></div></div>`};
 function bodyFor(s){
  if(s.id==='fib')return ordered('fib',FIB).map((it,n)=>{let b=0;return `<div class="item"><span class="num">${n+1}.</span><div class="sent">${it.t.map(p=>typeof p==='string'?p:box(it.id+'_'+(b++),blankW(p[0]),p[0])).join('')}${ra}</div></div>`}).join('');
  if(s.id==='mcq')return ordered('mcq',MCQ).map((it,n)=>`<div class="item"><span class="num">${n+1}.</span><div class="q">${it.q.replace('___','<span class="bl"></span>')}${ra}</div><div class="opts">${it.o.map((o,k)=>`<span class="opt ${mode==='practice'&&k===it.a?'correct':''}"><i>${'abcd'[k]}.</i>${o}</span>`).join('')}</div><div class="ansrow"><label>✍️ Write the correct answer:</label>${box(it.id,380,'✔ '+'abcd'[it.a]+'. '+it.o[it.a])}</div></div>`).join('');
@@ -241,8 +259,9 @@ function render(){
   return wrapWords(app)}
  const s=STOPS[view];const bind=s.id==='qa'||s.id==='think';
  app.innerHTML=`<div class="stopbar"><h2>${s.em} ${s.t}</h2><span class="sub">${s.s}${pagesOf(view)>1?` · Question ${page+1} of${pagesOf(view)}`:''}</span><span class="sp"></span>${s.shuffle?`<button class="ibtn" onclick="shuffleStop('${s.id}')" title="Shuffle the exercises" aria-label="Shuffle"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="M15 15l6 6"/><path d="M4 4l5 5"/></svg></button>`:''}<button class="btn" ${view===0&&page===0?'disabled':''} onclick="stepNav(-1)">◀</button><button class="btn" ${view===STOPS.length-1&&page===pagesOf(view)-1?'disabled':''} onclick="stepNav(1)">▶</button></div>
- <div class="bwrap"><div class="stopbody${bind?' withclose':''}" id="sb" style="background-image:url('${ASSET_BASE}${IMG.watermark}')">${bodyFor(s)}</div>${bind?`<button class="close-binder" onclick="closeBinder('${s.id}')" title="Close notebook" aria-label="Close notebook">📕<span>Close notebook</span></button><div class="rings">${'<i class="ring"></i>'.repeat(22)}</div><div class="binder-cover ${openedStops[s.id]?'binder-open':''}" onclick="openBinder(this,'${s.id}')"><div class="cb-label"><div class="cb-head">${imgTag('guide','🧑‍🎓')}<span>Classwork Notebook</span></div><div class="cb-row"><span>Name:</span><b>Humayun</b></div><div class="cb-row"><span>Subject:</span><b>Social Studies</b></div><div class="cb-row"><span>Exercise:</span><b>${s.t} ·${s.s}</b></div></div><div class="cb-hint">Tap to open ⚡</div></div>`:''}</div><div class="stopfoot"><button class="check" onclick="markDone('${s.id}')" title="Done" aria-label="Done"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></button></div>`;
+ <div class="bwrap"><div class="stopbody${bind?' withclose':''}" id="sb">${bodyFor(s)}</div>${bind?`<button class="close-binder" onclick="closeBinder('${s.id}')" title="Close notebook" aria-label="Close notebook">📕<span>Close notebook</span></button><div class="rings">${'<i class="ring"></i>'.repeat(22)}</div><div class="binder-cover ${openedStops[s.id]?'binder-open':''}" onclick="openBinder(this,'${s.id}')"><div class="cb-label"><div class="cb-head">${imgTag('guide','🧑‍🎓')}<span>Classwork Notebook</span></div><div class="cb-row"><span>Name:</span><b>Humayun</b></div><div class="cb-row"><span>Subject:</span><b>Social Studies</b></div><div class="cb-row"><span>Exercise:</span><b>${s.t} ·${s.s}</b></div></div><div class="cb-hint">Tap to open ⚡</div></div>`:''}</div><div class="stopfoot"><button class="check" onclick="markDone('${s.id}')" title="Done" aria-label="Done"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></button></div>`;
  wrapWords($('sb')); requestAnimationFrame(()=>requestAnimationFrame(initAllInk)); setTool(tool);applyPenUI();
+ if(bind && !openedStops[s.id]) { speak("Welcome to " + s.t + ". Let's explore and learn about Indian Villages!"); }
 }
 
 let actx=null,noiseBuf=null,fxOn=true;
@@ -263,7 +282,7 @@ let tool='pen'; const cache={}, dirty=new Set(); let st_t=null;
 function setTool(t){tool=t;document.querySelectorAll('#tPen').forEach(b=>b.classList.toggle('on',t==='pen'));document.querySelectorAll('#tEr').forEach(b=>b.classList.toggle('on',t==='eraser'))}
 function scheduleSave(c){dirty.add(c);clearTimeout(st_t);st_t=setTimeout(flushInk,700)}
 function flushInk(){clearTimeout(st_t);dirty.forEach(c=>{if(!c._key)return;if(!c._has){store.del(c._key);delete cache[c._key];return}
-  try{const d=c.toDataURL('image/webp',.7);cache[c._key]=d;if(!store.set(c._key,d))toast('Storage is full. Writing is kept until you close the app.')}catch(e){}});dirty.clear()}
+  try{const d=c.toDataURL('image/webp',.7);cache[c._key]=d;if(!store.set(c._key,d))toast('Storage full.')}catch(e){}});dirty.clear()}
 const inkOf=k=>document.querySelector(`canvas[data-k="${k}"]`);
 function undoInk(k){const c=inkOf(k);if(c)c._undo_fn()}
 function clearInk(k){const c=inkOf(k);if(c)c._clear_fn()}
@@ -283,7 +302,10 @@ function initInk(c,key,kind){
   const r=c.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,tl=kind==='pad'?tool:'pen';st={id:e.pointerId,type:e.pointerType,x,y,mx:x,my:y,tl,t:performance.now(),snd:startScratch(tl)}});
  c.addEventListener('pointermove',e=>{if(!st||e.pointerId!==st.id)return;e.preventDefault();if(st.type==='touch'&&palmLike(e)){stopScratch(st.snd);const sn=c._undo.pop();if(sn&&sn.width===c.width)ctx.putImageData(sn,0,0);try{c.releasePointerCapture(st.id)}catch(_){}st=null;return}const ev=(e.getCoalescedEvents&&e.getCoalescedEvents().length)?e.getCoalescedEvents():[e],r=c.getBoundingClientRect();let dist=0;
   for(const v of ev){const x=v.clientX-r.left,y=v.clientY-r.top,pr=v.pressure>0?v.pressure:.5,mx=(st.x+x)/2,my=(st.y+y)/2;ctx.lineCap=ctx.lineJoin='round';
-   if(st.tl==='eraser'){ctx.globalCompositeOperation='destination-out';ctx.lineWidth=kind==='pad'?penSize*6+8:26}else{ctx.globalCompositeOperation='source-over';ctx.strokeStyle=kind==='pad'?penColor:'#1E3A5F';ctx.lineWidth=(kind==='pad'?penSize:3.6)*(pr*1.4+.4)}
+   if(st.tl==='eraser'){ctx.globalCompositeOperation='destination-out';ctx.lineWidth=kind==='pad'?penSize*6+8:26}else{ctx.globalCompositeOperation='source-over';
+    if(penColor==='#EAB308'){ctx.strokeStyle='rgba(234, 179, 8, 0.45)';ctx.lineWidth=penSize*3.5}
+    else{ctx.strokeStyle=kind==='pad'?penColor:'#1E3A5F';ctx.lineWidth=(kind==='pad'?penSize:3.6)*(pr*1.4+.4)}
+   }
    ctx.beginPath();ctx.moveTo(st.mx,st.my);ctx.quadraticCurveTo(st.x,st.y,mx,my);ctx.stroke();dist+=Math.hypot(x-st.x,y-st.y);st.x=x;st.y=y;st.mx=mx;st.my=my}
   ctx.globalCompositeOperation='source-over';const n=performance.now();updScratch(st.snd,dist/Math.max(1,n-st.t)*10);st.t=n;if(st.tl!=='eraser')c._has=true});
  const end=e=>{if(!st||e.pointerId!==st.id)return;stopScratch(st.snd);st=null;try{c.releasePointerCapture(e.pointerId)}catch(_){}scheduleSave(c)};
@@ -323,7 +345,7 @@ function wrapWords(root){if(!root)return;
 let wl=null;async function wake(){try{if('wakeLock' in navigator&&!wl){wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>wl=null)}}catch(e){}}
 document.addEventListener('pointerdown',wake,{passive:true});
 let fsTried=false;document.addEventListener('pointerdown',()=>{if(fsTried)return;fsTried=true;const d=document.documentElement;if(!document.fullscreenElement&&d.requestFullscreen)d.requestFullscreen().then(()=>{try{screen.orientation.lock('landscape').catch(()=>{})}catch(e){}}).catch(()=>{})});
-$('brand').innerHTML=imgTag('guide','🧑‍🎓','bav')+'<b>Social Studies · Indian Villages</b>';
+$('brand').innerHTML=imgTag('globe','🌐','bav')+'<b>Social Studies · Indian Villages</b>';
 render();
 </script>
 </body>
