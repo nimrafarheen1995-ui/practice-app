@@ -3,20 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
-    <title>Zaina's Magical Maths Adventure: Exercise 5.5 (6D Edition)</title>
+    <title>Zaina's Magical Maths Adventure: Exercise 5.5</title>
 
-    <!-- Hardware Preload Links for Galaxy S-Series Tablets -->
+    <!-- Preload Pony Companion Roster Assets -->
+    <link rel="preload" as="image" href="assets/fluttershy.png"/>
+    <link rel="preload" as="image" href="assets/rarity.png"/>
+    <link rel="preload" as="image" href="assets/pinkie.png"/>
+    <link rel="preload" as="image" href="assets/luna.png"/>
     <link rel="preload" as="image" href="assets/twilight.png"/>
+    <link rel="preload" as="image" href="assets/celestia.png"/>
     <link rel="preload" as="image" href="assets/applejack.png"/>
     <link rel="preload" as="image" href="assets/rainbow.png"/>
-    <link rel="preload" as="image" href="assets/celestia.png"/>
-    <link rel="preload" as="image" href="assets/luna.png"/>
 
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Quicksand:wght@500;700;800&family=Fredoka:wght@600;700;800&family=Kalam:wght@700&family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800&family=Quicksand:wght@500;700;800&family=Kalam:wght@700&family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
+
     <style>
         :root {
             --twilight: #8B5CF6;
@@ -41,7 +44,7 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
-            background: #0B0F19;
+            background: #060913;
             color: #1E1B4B;
             touch-action: pan-x pan-y;
         }
@@ -51,12 +54,13 @@
             flex-direction: column;
         }
 
-        #milkyWayCanvas, #confettiSnowCanvas {
+        /* PROCEDURAL CANVAS LAYERS */
+        #astrolabeCanvas, #confettiSnowCanvas {
             position: fixed;
             inset: 0;
             pointer-events: none;
         }
-        #milkyWayCanvas { z-index: 1; }
+        #astrolabeCanvas { z-index: 1; }
         #confettiSnowCanvas { z-index: 99999; }
 
         /* GRADUATED SCREEN DIM OVERLAY (0% TO 50%) */
@@ -73,7 +77,7 @@
         .font-display { font-family: var(--font-display); }
         .font-hand { font-family: var(--font-hand); }
 
-        /* Clean Graph Box Grid Paper Pattern */
+        /* Crisp Mathematics Grid Texture */
         .graph-paper {
             background-color: #ffffff;
             background-image: 
@@ -82,7 +86,9 @@
             background-size: 24px 24px;
         }
 
-        /* 6D SWIPEABLE CAROUSEL STAGE FOR MAIN GATEWAY */
+        /* ==========================================================
+           6D SWIPEABLE REALM CAROUSEL WITH DEPTH PERSPECTIVE
+        ========================================================== */
         .stage-6d-wrapper {
             perspective: 1600px;
             perspective-origin: center center;
@@ -136,7 +142,7 @@
             pointer-events: none;
         }
 
-        /* 6D Positional Transforms */
+        /* 6D Space Transforms */
         .carousel-6d-card.pos-center {
             transform: translate3d(0, 0, 40px) rotateY(0deg) scale(1);
             opacity: 1;
@@ -175,7 +181,7 @@
             transform: scale(1.1) rotate(4deg);
         }
 
-        /* 3D Notebook Binder in Active Workspace */
+        /* 3D Binder & Workbook Cover */
         .card-4d-wrapper { perspective: 1600px; }
         .card-4d {
             box-shadow: 0 25px 50px -12px rgba(30, 27, 75, 0.45), 0 0 30px rgba(139, 92, 246, 0.3);
@@ -260,7 +266,7 @@
             pointer-events: none;
         }
 
-        /* Grand Celebration Stage */
+        /* Grand Celebration Modal */
         #grandCelebrationStage {
             position: fixed;
             inset: 0;
@@ -434,7 +440,8 @@
 </head>
 <body class="min-h-screen flex flex-col relative overflow-hidden">
 
-    <canvas id="milkyWayCanvas"></canvas>
+    <!-- PROCEDURAL ASTROLABE OBSERVATORY CANVAS -->
+    <canvas id="astrolabeCanvas"></canvas>
     <canvas id="confettiSnowCanvas"></canvas>
     <div id="screenDimOverlay"></div>
 
@@ -475,7 +482,7 @@
         </div>
 
         <div class="flex items-center gap-3">
-            <!-- Dim Slider (0% - 50%) -->
+            <!-- Ambient Dim Slider (0% - 50%) -->
             <div class="flex items-center gap-2 bg-slate-800/80 border border-white/20 rounded-full px-3 py-1 text-xs">
                 <span>💡 Dim:</span>
                 <input type="range" id="dimRangeSlider" min="0" max="0.5" step="0.05" value="0" 
@@ -498,47 +505,47 @@
         <div id="gatewayView" class="w-full flex flex-col items-center gap-4">
             <div class="text-center">
                 <h2 class="text-2xl md:text-3xl font-bold font-display text-white drop-shadow-md">Choose Your Multiplication Realm</h2>
-                <p class="text-purple-200 text-xs md:text-sm mt-0.5">Swipe horizontally or tap any card to enter</p>
+                <p class="text-purple-200 text-xs md:text-sm mt-0.5">Swipe horizontally or tap any card to orbit realms</p>
             </div>
 
             <!-- 6D Carousel Stage -->
             <div class="stage-6d-wrapper" id="carousel6DStage">
                 <div class="carousel-6d-track" id="carousel6DTrack">
                     
-                    <!-- Card 0: Realm 1 -->
+                    <!-- Card 0: Realm 1 (Forge) -->
                     <div class="carousel-6d-card pos-center" id="card6d_0" onclick="handleCardTap(0)">
                         <div class="flex flex-col items-center pointer-events-none">
                             <span class="text-[10px] font-bold uppercase tracking-widest text-purple-600 bg-purple-100 px-3 py-0.5 rounded-full">Realm I • [6 Multiplications]</span>
                             <h3 class="text-xl font-bold text-slate-900 mt-2 font-display">Multiplication Forge</h3>
                             <p class="text-xs text-slate-600 mt-1">Independent Long Multiplications (Q1: a–f)</p>
                         </div>
-                        <img src="assets/twilight.png" class="gateway-pony-avatar-6d" alt="Twilight Sparkle" onerror="handleImageFallback(this)"/>
+                        <img src="assets/twilight.png" class="gateway-pony-avatar-6d" alt="Multiplication Forge" onerror="handleImageFallback(this)"/>
                         <button type="button" onclick="switchRealm('forge')" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-lg transition active:scale-95 cursor-pointer">
                             Enter Forge ➔
                         </button>
                     </div>
 
-                    <!-- Card 1: Realm 2 -->
+                    <!-- Card 1: Realm 2 (Market) -->
                     <div class="carousel-6d-card pos-right" id="card6d_1" onclick="handleCardTap(1)">
                         <div class="flex flex-col items-center pointer-events-none">
                             <span class="text-[10px] font-bold uppercase tracking-widest text-amber-700 bg-amber-100 px-3 py-0.5 rounded-full">Realm II • [Word Problem]</span>
                             <h3 class="text-xl font-bold text-slate-900 mt-2 font-display">Sweet Orchard Market</h3>
                             <p class="text-xs text-slate-600 mt-1">Rupa's Grocery Calculation (Q2)</p>
                         </div>
-                        <img src="assets/applejack.png" class="gateway-pony-avatar-6d" alt="Applejack" onerror="handleImageFallback(this)"/>
+                        <img src="assets/applejack.png" class="gateway-pony-avatar-6d" alt="Sweet Orchard Market" onerror="handleImageFallback(this)"/>
                         <button type="button" onclick="switchRealm('market')" class="bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-lg transition active:scale-95 cursor-pointer">
                             Enter Market ➔
                         </button>
                     </div>
 
-                    <!-- Card 2: Realm 3 -->
+                    <!-- Card 2: Realm 3 (Gear Machine) -->
                     <div class="carousel-6d-card pos-left" id="card6d_2" onclick="handleCardTap(2)">
                         <div class="flex flex-col items-center pointer-events-none">
                             <span class="text-[10px] font-bold uppercase tracking-widest text-cyan-700 bg-cyan-100 px-3 py-0.5 rounded-full">Realm III • [Function Core]</span>
                             <h3 class="text-xl font-bold text-slate-900 mt-2 font-display">Magical Gear Machine</h3>
                             <p class="text-xs text-slate-600 mt-1">Calculate the Output (Q3)</p>
                         </div>
-                        <img src="assets/rainbow.png" class="gateway-pony-avatar-6d" alt="Rainbow Dash" onerror="handleImageFallback(this)"/>
+                        <img src="assets/rainbow.png" class="gateway-pony-avatar-6d" alt="Magical Gear Machine" onerror="handleImageFallback(this)"/>
                         <button type="button" onclick="switchRealm('machine')" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-lg transition active:scale-95 cursor-pointer">
                             Enter Machine ➔
                         </button>
@@ -555,9 +562,9 @@
             </div>
         </div>
 
-        <!-- VIEW 2: ACTIVE 4D WORKSPACE BINDER -->
+        <!-- VIEW 2: ACTIVE WORKSPACE BINDER -->
         <div id="activeCardContainer" class="w-full hidden card-4d-wrapper">
-            <!-- Injected dynamically -->
+            <!-- Dynamically populated -->
         </div>
 
     </main>
@@ -573,7 +580,7 @@
             imgEl.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><circle cx='60' cy='60' r='56' fill='%23EDE9FE' stroke='%23C4B5FD' stroke-width='4'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='56'>🦄</text></svg>";
         }
 
-        /* SCREEN DIM LEVEL CONTROL */
+        /* AMBIENT SCREEN DIM CONTROL */
         function updateScreenDimLevel(val) {
             const overlay = document.getElementById("screenDimOverlay");
             overlay.style.opacity = val;
@@ -637,7 +644,7 @@
             } catch (e) {}
         }
 
-        /* INK SOUND ENGINE (FROM EXERCISE 5.4) */
+        /* PROCEDURAL INK SOUND ENGINE (FROM EXERCISE 5.4) */
         const InkSound = {
             enabled: localStorage.getItem('zaina_ink_sound') !== 'off',
             ready: false,
@@ -731,7 +738,121 @@
         }
         if (!InkSound.enabled) document.getElementById('inkSoundBtn').textContent = '🔇';
 
-        /* 6D SWIPE CAROUSEL ENGINE */
+        /* ==========================================================
+           CELESTIAL ASTROLABE OBSERVATORY BACKGROUND (PROCEDURAL)
+        ========================================================== */
+        const aCanvas = document.getElementById("astrolabeCanvas");
+        const aCtx = aCanvas.getContext("2d");
+        let dustNodes = [];
+        let astrolabeAngle = 0;
+
+        function resizeAstrolabe() {
+            aCanvas.width = window.innerWidth;
+            aCanvas.height = window.innerHeight;
+            dustNodes = [];
+            for (let i = 0; i < 110; i++) {
+                dustNodes.push({
+                    x: Math.random() * aCanvas.width,
+                    y: Math.random() * aCanvas.height,
+                    radius: Math.random() * 2.0 + 0.4,
+                    vx: (Math.random() - 0.5) * 0.18,
+                    vy: (Math.random() - 0.5) * 0.18,
+                    alpha: Math.random() * 0.8 + 0.2,
+                    color: ['#FDE047', '#DDD6FE', '#BAE6FD', '#F472B6', '#FFFFFF'][Math.floor(Math.random() * 5)]
+                });
+            }
+        }
+        window.addEventListener("resize", resizeAstrolabe);
+        resizeAstrolabe();
+
+        function renderAstrolabeScene() {
+            aCtx.clearRect(0, 0, aCanvas.width, aCanvas.height);
+
+            // Rich deep midnight gradient
+            const bgGrad = aCtx.createLinearGradient(0, 0, aCanvas.width, aCanvas.height);
+            bgGrad.addColorStop(0, '#040711');
+            bgGrad.addColorStop(0.5, '#0B0F1E');
+            bgGrad.addColorStop(1, '#070A15');
+            aCtx.fillStyle = bgGrad;
+            aCtx.fillRect(0, 0, aCanvas.width, aCanvas.height);
+
+            // Astronomical Clock Rings (Tilted Plane at rotateX 68deg)
+            const cx = aCanvas.width * 0.5;
+            const cy = aCanvas.height * 0.48;
+            astrolabeAngle += 0.0022;
+
+            aCtx.save();
+            aCtx.translate(cx, cy);
+            // Simulate 68-degree orbital tilt: vertical compression factor of cos(68deg) ≈ 0.37
+            aCtx.scale(1, 0.37);
+
+            // Ring 1: Massive Outer Astrolabe
+            aCtx.save();
+            aCtx.rotate(astrolabeAngle);
+            aCtx.strokeStyle = "rgba(245, 158, 11, 0.22)";
+            aCtx.lineWidth = 3.5;
+            aCtx.beginPath();
+            aCtx.arc(0, 0, 480, 0, Math.PI * 2);
+            aCtx.stroke();
+            // Compass Cardinal Markers
+            for (let i = 0; i < 12; i++) {
+                const th = (i * Math.PI) / 6;
+                aCtx.fillStyle = "rgba(253, 224, 71, 0.55)";
+                aCtx.beginPath();
+                aCtx.arc(Math.cos(th) * 480, Math.sin(th) * 480, 5, 0, Math.PI * 2);
+                aCtx.fill();
+            }
+            aCtx.restore();
+
+            // Ring 2: Counter-rotating Golden Orrery
+            aCtx.save();
+            aCtx.rotate(-astrolabeAngle * 1.4);
+            aCtx.strokeStyle = "rgba(139, 92, 246, 0.28)";
+            aCtx.lineWidth = 2.5;
+            aCtx.setLineDash([12, 16]);
+            aCtx.beginPath();
+            aCtx.arc(0, 0, 350, 0, Math.PI * 2);
+            aCtx.stroke();
+            aCtx.setLineDash([]);
+            aCtx.restore();
+
+            // Ring 3: Core Celestial Astrolabe
+            aCtx.save();
+            aCtx.rotate(astrolabeAngle * 0.8);
+            aCtx.strokeStyle = "rgba(56, 189, 248, 0.3)";
+            aCtx.lineWidth = 2;
+            aCtx.beginPath();
+            aCtx.arc(0, 0, 220, 0, Math.PI * 2);
+            aCtx.stroke();
+            aCtx.restore();
+
+            aCtx.restore();
+
+            // Floating Constellation Dust
+            for (let d of dustNodes) {
+                d.x += d.vx;
+                d.y += d.vy;
+                if (d.x < 0) d.x = aCanvas.width;
+                if (d.x > aCanvas.width) d.x = 0;
+                if (d.y < 0) d.y = aCanvas.height;
+                if (d.y > aCanvas.height) d.y = 0;
+
+                aCtx.save();
+                aCtx.globalAlpha = d.alpha;
+                aCtx.fillStyle = d.color;
+                aCtx.beginPath();
+                aCtx.arc(d.x, d.y, d.radius, 0, Math.PI * 2);
+                aCtx.fill();
+                aCtx.restore();
+            }
+
+            requestAnimationFrame(renderAstrolabeScene);
+        }
+        requestAnimationFrame(renderAstrolabeScene);
+
+        /* ==========================================================
+           6D SWIPE CAROUSEL GESTURE SYSTEM
+        ========================================================== */
         let activeRealmIndex = 0;
         const realmKeys = ['forge', 'market', 'machine'];
 
@@ -770,7 +891,6 @@
             }
         }
 
-        // Direct Touch & Pointer Swipe Handling on 6D Track
         (function setup6DSwipeGestures() {
             const track = document.getElementById('carousel6DTrack');
             let startX = 0, startY = 0, isTracking = false;
@@ -795,47 +915,94 @@
             track.addEventListener('pointercancel', () => { isTracking = false; }, { passive: true });
         })();
 
-        /* EXERCISE 5.5 CURRICULUM WITH ACCURATE KEYS */
+        /* ==========================================================
+           8-PONY COMPANION ROSTER WITH INDEPENDENT WORKSPACES
+        ========================================================== */
         const curriculumData = {
             forge: {
                 realmName: "Multiplication Forge",
-                pony: "Twilight Sparkle",
-                avatar: "assets/twilight.png",
-                themeColor: "from-purple-900 to-indigo-900",
                 questions: [
-                    { id: "e55_q1_a", label: "1.a", text: "Multiply: 0.25 by 0.2", answer: "0.05" },
-                    { id: "e55_q1_b", label: "1.b", text: "Multiply: 102 by 0.22", answer: "22.44" },
-                    { id: "e55_q1_c", label: "1.c", text: "Multiply: 4.1 by 2.3", answer: "9.43" },
-                    { id: "e55_q1_d", label: "1.d", text: "Multiply: 31.23 by 8.7", answer: "271.701" },
-                    { id: "e55_q1_e", label: "1.e", text: "Multiply: 32.2 × 64.823 × 5.3", answer: "11062.69318" },
-                    { id: "e55_q1_f", label: "1.f", text: "Multiply: 12.34 × 11.2 × 54.1", answer: "7477.0528" }
+                    {
+                        id: "e55_q1_a",
+                        label: "1.a",
+                        text: "Multiply: 0.25 by 0.2",
+                        answer: "0.05",
+                        pony: "Fluttershy",
+                        avatar: "assets/fluttershy.png",
+                        themeColor: "from-emerald-800 to-teal-950"
+                    },
+                    {
+                        id: "e55_q1_b",
+                        label: "1.b",
+                        text: "Multiply: 102 by 0.22",
+                        answer: "22.44",
+                        pony: "Rarity",
+                        avatar: "assets/rarity.png",
+                        themeColor: "from-purple-900 to-fuchsia-950"
+                    },
+                    {
+                        id: "e55_q1_c",
+                        label: "1.c",
+                        text: "Multiply: 4.1 by 2.3",
+                        answer: "9.43",
+                        pony: "Pinkie Pie",
+                        avatar: "assets/pinkie.png",
+                        themeColor: "from-pink-800 to-rose-950"
+                    },
+                    {
+                        id: "e55_q1_d",
+                        label: "1.d",
+                        text: "Multiply: 31.23 by 8.7",
+                        answer: "271.701",
+                        pony: "Princess Luna",
+                        avatar: "assets/luna.png",
+                        themeColor: "from-slate-900 to-blue-950"
+                    },
+                    {
+                        id: "e55_q1_e",
+                        label: "1.e",
+                        text: "Multiply: 32.2 × 64.823 × 5.3",
+                        answer: "11062.69318",
+                        pony: "Twilight Sparkle",
+                        avatar: "assets/twilight.png",
+                        themeColor: "from-purple-950 to-indigo-950"
+                    },
+                    {
+                        id: "e55_q1_f",
+                        label: "1.f",
+                        text: "Multiply: 12.34 × 11.2 × 54.1",
+                        answer: "7477.0528",
+                        pony: "Princess Celestia",
+                        avatar: "assets/celestia.png",
+                        themeColor: "from-amber-700 to-yellow-950"
+                    }
                 ]
             },
             market: {
                 realmName: "Sweet Orchard Market",
-                pony: "Applejack",
-                avatar: "assets/applejack.png",
-                themeColor: "from-amber-800 to-yellow-950",
                 questions: [
                     {
                         id: "e55_q2",
                         label: "Q2",
                         text: "Rupa went to the grocery store. The cost of 1 kg watermelons was ₹64.5. The cost of 1 kg mangoes was ₹186.1. Calculate her total bill if she bought 2.5 kg watermelons and 4 kg mangoes.",
-                        answer: "905.65"
+                        answer: "905.65",
+                        pony: "Applejack",
+                        avatar: "assets/applejack.png",
+                        themeColor: "from-amber-800 to-orange-950"
                     }
                 ]
             },
             machine: {
                 realmName: "Magical Gear Machine",
-                pony: "Rainbow Dash",
-                avatar: "assets/rainbow.png",
-                themeColor: "from-cyan-800 to-blue-950",
                 questions: [
                     {
                         id: "e55_q3",
                         label: "Q3",
                         text: "Calculate the output: [INPUT: 4.7] ➔ [× 8] ➔ [OUTPUT: ?]",
-                        answer: "37.6"
+                        answer: "37.6",
+                        pony: "Rainbow Dash",
+                        avatar: "assets/rainbow.png",
+                        themeColor: "from-cyan-800 to-blue-950"
                     }
                 ]
             }
@@ -881,7 +1048,6 @@
             }
         }
 
-        /* IDENTICAL TO 5.4: SAVE INK BEFORE PAGE CHANGE, THEN RELOAD TARGET PAGE INK */
         function switchPageSmoothly(qId, delta) {
             if (!activePages[qId]) activePages[qId] = 1;
             let targetPage = activePages[qId] + delta;
@@ -924,7 +1090,7 @@
 
                     <!-- Question Pagination Bar -->
                     <div class="bg-indigo-50/50 px-4 py-2 border-b border-indigo-100 flex justify-between items-center text-xs text-indigo-900 font-semibold">
-                        <span>${realm.realmName} (${qIndex + 1} of ${realm.questions.length})</span>
+                        <span>${realm.realmName} • Host: ${q.pony} (${qIndex + 1} of ${realm.questions.length})</span>
                         <div class="flex gap-2">
                             <button onclick="changeQuestion(-1)" ${qIndex === 0 ? 'disabled' : ''} class="px-3 py-1 bg-white border border-indigo-200 rounded-lg shadow-sm font-bold ${qIndex === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-indigo-100 cursor-pointer'}">⬅️ Prev</button>
                             <button onclick="changeQuestion(1)" ${qIndex === realm.questions.length - 1 ? 'disabled' : ''} class="px-3 py-1 bg-white border border-indigo-200 rounded-lg shadow-sm font-bold ${qIndex === realm.questions.length - 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-indigo-100 cursor-pointer'}">Next ➡️</button>
@@ -963,17 +1129,17 @@
                                 </div>
                             </div>
 
-                            <!-- Fixed Graph Box Writing Surface with Guiding Pony in Corner -->
+                            <!-- Dedicated Clean Graph Surface with Individual Pony Host in Corner -->
                             <div class="flex-1 graph-paper relative overflow-hidden select-none touch-none" id="canvasArea_${q.id}">
                                 <div class="absolute right-2 bottom-0 pointer-events-none z-10 opacity-60 hover:opacity-90 transition duration-300 flex flex-col items-end">
-                                    <img src="${realm.avatar}" id="activePonyAvatar" class="w-48 h-48 md:w-60 md:h-60 object-contain filter drop-shadow-[0_20px_30px_rgba(0,0,0,0.4)] transform rotate-[-4deg]" alt="${realm.pony}" onerror="handleImageFallback(this)"/>
+                                    <img src="${q.avatar}" id="activePonyAvatar" class="w-48 h-48 md:w-60 md:h-60 object-contain filter drop-shadow-[0_20px_30px_rgba(0,0,0,0.4)] transform rotate-[-4deg]" alt="${q.pony}" onerror="handleImageFallback(this)"/>
                                 </div>
                                 <canvas id="canvas_${q.id}" oncontextmenu="return false;" class="absolute inset-0 w-full h-full cursor-crosshair touch-none z-10"></canvas>
                             </div>
                         </div>
 
-                        <!-- 3D Notebook Binder Cover -->
-                        <div id="binderCover_${q.id}" class="binder-cover ${isBinderOpen ? 'binder-open' : ''} absolute inset-0 bg-gradient-to-br ${realm.themeColor} text-white p-8 flex flex-col justify-between shadow-2xl z-30 cursor-pointer" onclick="openBinder('${q.id}')">
+                        <!-- 3D Notebook Binder Cover Matching Individual Pony Host -->
+                        <div id="binderCover_${q.id}" class="binder-cover ${isBinderOpen ? 'binder-open' : ''} absolute inset-0 bg-gradient-to-br ${q.themeColor} text-white p-8 flex flex-col justify-between shadow-2xl z-30 cursor-pointer" onclick="openBinder('${q.id}')">
                             <div class="notebook-spine-rings">
                                 <div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div>
                             </div>
@@ -983,19 +1149,19 @@
                                 <span class="text-2xl">📖</span>
                             </div>
 
-                            <!-- Classic Composition Notebook Label Box -->
+                            <!-- Classic Composition Notebook Ruled Box -->
                             <div class="mx-auto my-auto composition-label-box text-slate-900 rounded-2xl p-4 pl-9 w-72 shadow-2xl border-4 border-indigo-950">
                                 <div class="absolute inset-0 border-2 border-red-400/80 rounded-xl pointer-events-none m-1"></div>
                                 <div class="flex flex-col gap-1 text-left relative z-10">
                                     <div class="text-[10px] uppercase font-extrabold text-indigo-900 tracking-widest border-b-2 border-blue-400 pb-0.5">Royal Academy Classwork</div>
                                     <div class="font-hand text-lg text-blue-950 font-bold leading-tight pt-0.5">Zaina • Grade 5</div>
                                     <div class="font-hand text-base text-rose-700 font-bold leading-tight">Exercise 5.5 — Decimals</div>
-                                    <div class="font-hand text-xs text-indigo-700 font-bold bg-amber-100/90 border border-amber-300 rounded px-2 py-0.5 mt-1 inline-block w-fit">${realm.pony}</div>
+                                    <div class="font-hand text-xs text-indigo-700 font-bold bg-amber-100/90 border border-amber-300 rounded px-2 py-0.5 mt-1 inline-block w-fit">Host: ${q.pony}</div>
                                 </div>
                             </div>
 
                             <div class="text-center flex flex-col items-center gap-2 ml-8 relative z-10">
-                                <img src="${realm.avatar}" class="w-20 h-20 object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)] animate-bounce" alt="${realm.pony}" onerror="handleImageFallback(this)"/>
+                                <img src="${q.avatar}" class="w-20 h-20 object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)] animate-bounce" alt="${q.pony}" onerror="handleImageFallback(this)"/>
                                 <span class="bg-white text-indigo-900 font-bold px-4 py-2 rounded-xl shadow-lg text-xs uppercase tracking-widest">Tap to Open Binder ⚡</span>
                             </div>
 
@@ -1032,7 +1198,6 @@
             loadCanvasInk(id, activePages[id] || 1);
         }
 
-        /* 5.4 CANVAS INITIALIZATION ENGINE */
         function initCanvas(id, page) {
             const canvas = document.getElementById(`canvas_${id}`);
             const container = document.getElementById(`canvasArea_${id}`);
@@ -1135,7 +1300,7 @@
                 if (e.pointerType === 'pen') lastPenSeen = Date.now();
             });
 
-            // S-PEN PALM REJECTION GATE
+            // RIGID S-PEN PALM REJECTION FILTER
             canvas.addEventListener('pointerdown', (e) => {
                 if (e.pointerType === 'pen') {
                     lastPenSeen = Date.now();
@@ -1185,6 +1350,7 @@
                     return;
                 }
 
+                // 240Hz Coalesced S-Pen Event Processing
                 const events = (e.getCoalescedEvents && e.getCoalescedEvents().length) ? e.getCoalescedEvents() : [e];
                 let total = 0;
                 for (const ev of events) {
@@ -1200,7 +1366,7 @@
             canvas.addEventListener('pointercancel', (e) => { if (e.pointerId === activePointerId) endStroke(); });
         }
 
-        /* 5.4 INK PERSISTENCE FUNCTIONS (EXACT MATCH) */
+        /* INK PERSISTENCE ENGINE (EXACT MATCH EXERCISE 5.4) */
         function loadCanvasInk(id, page) {
             const canvas = document.getElementById(`canvas_${id}`);
             if (!canvas) return;
@@ -1329,7 +1495,7 @@
             if (answersMatch(val, correctAnswer)) {
                 triggerGrandCelebration();
             } else {
-                alert("Not quite yet! Check your long multiplication on the graph paper and try again.");
+                alert("Not quite yet! Check your multiplication calculations on the paper and try again.");
             }
         }
 
@@ -1355,13 +1521,14 @@
             document.getElementById("magicCenterpiece").className = 'magic-banner-centerpiece impact';
 
             const realm = curriculumData[currentRealmKey];
-            document.getElementById("glidingCompanionImg").src = realm.avatar;
-            document.getElementById("royalVictoryImg").src = realm.avatar;
+            const q = realm.questions[currentIndexMap[currentRealmKey]];
+            document.getElementById("glidingCompanionImg").src = q.avatar;
+            document.getElementById("royalVictoryImg").src = q.avatar;
 
-            document.getElementById("royalScrollTitle").innerText = `🌟 ${realm.pony.toUpperCase()} VERIFIED! 🌟`;
+            document.getElementById("royalScrollTitle").innerText = `🌟 ${q.pony.toUpperCase()} VERIFIED! 🌟`;
             document.getElementById("royalScrollBody").innerHTML = `
                 Magnificent work, Zaina!<br/>
-                Your decimal multiplication was solved with complete precision!
+                Your decimal multiplication was solved with complete precision alongside <b>${q.pony}</b>!
             `;
 
             magicConfettiStorm = [];
@@ -1408,62 +1575,7 @@
             changeQuestion(1);
         }
 
-        /* MILKY WAY CANVAS */
-        const mCanvas = document.getElementById("milkyWayCanvas");
-        const mCtx = mCanvas.getContext("2d");
-        let stars = [];
-
-        function resizeMilkyWay() {
-            mCanvas.width = window.innerWidth;
-            mCanvas.height = window.innerHeight;
-            stars = [];
-            for (let i = 0; i < 90; i++) {
-                stars.push({
-                    x: Math.random() * mCanvas.width,
-                    y: Math.random() * mCanvas.height,
-                    radius: Math.random() * 2.2 + 0.6,
-                    vx: (Math.random() - 0.5) * 0.3,
-                    vy: -Math.random() * 0.45 - 0.15,
-                    alpha: Math.random() * 0.75 + 0.25,
-                    dAlpha: (Math.random() - 0.5) * 0.012,
-                    color: ['#FDF2F8', '#DDD6FE', '#BAE6FD', '#FDE047'][Math.floor(Math.random() * 4)]
-                });
-            }
-        }
-        window.addEventListener("resize", resizeMilkyWay);
-        resizeMilkyWay();
-
-        function renderMilkyWay() {
-            mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height);
-            const grad = mCtx.createLinearGradient(0, 0, mCanvas.width, mCanvas.height);
-            grad.addColorStop(0, '#0F172A');
-            grad.addColorStop(0.5, '#1E1B4B');
-            grad.addColorStop(1, '#090D16');
-            mCtx.fillStyle = grad;
-            mCtx.fillRect(0, 0, mCanvas.width, mCanvas.height);
-
-            for (let s of stars) {
-                s.x += s.vx;
-                s.y += s.vy;
-                s.alpha += s.dAlpha;
-                if (s.alpha > 0.95 || s.alpha < 0.2) s.dAlpha = -s.dAlpha;
-                if (s.y < 0) s.y = mCanvas.height;
-                if (s.x < 0) s.x = mCanvas.width;
-                if (s.x > mCanvas.width) s.x = 0;
-
-                mCtx.save();
-                mCtx.globalAlpha = s.alpha;
-                mCtx.fillStyle = s.color;
-                mCtx.beginPath();
-                mCtx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
-                mCtx.fill();
-                mCtx.restore();
-            }
-            requestAnimationFrame(renderMilkyWay);
-        }
-        requestAnimationFrame(renderMilkyWay);
-
-        /* EXIT TO HUB */
+        /* EXIT TO MASTER HUB */
         let isLeavingToHub = false;
         function exitToHub(e) {
             if (e) e.preventDefault();
