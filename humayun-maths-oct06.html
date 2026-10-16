@@ -2,1852 +2,1652 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Humayun's Ninja Maths Adventure: Chunin Exam Vault (Oct 16)</title>
-
-  <!-- Preload Core Shinobi Roster Assets -->
-  <link rel="preload" as="image" href="assets/naruto.png"/>
-  <link rel="preload" as="image" href="assets/sasuke.png"/>
-  <link rel="preload" as="image" href="assets/kakashi.png"/>
-  <link rel="preload" as="image" href="assets/lee.png"/>
-  <link rel="preload" as="image" href="assets/shikamaru.png"/>
-  <link rel="preload" as="image" href="assets/neji.png"/>
-
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Humayun - Grade 3 Maths: Division Rainbow</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Noto+Serif+JP:wght@800;900&family=Nunito:wght@700;800;900&family=Fredoka:wght@600;700;800&family=Kalam:wght@700&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Quicksand:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --ninja-orange: #EA580C;
-      --ninja-wood: #2B170C;
-      --parchment-border: #8B5A2B;
-      --gold-seal: #D97706;
-      --paper-cream: #FFFDF0;
-      --font-main: 'Nunito', sans-serif;
-      --font-display: 'Cinzel', serif;
-      --font-kanji: 'Noto Serif JP', serif;
-      --font-hand: 'Kalam', cursive;
+      --primary: #4338ca;
+      --primary-light: #eef2ff;
+      --accent: #f59e0b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #cbd5e1;
+      --radius: 18px;
+      --header-h: 64px;
     }
 
-    *, *::before, *::after {
+    * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
       -webkit-tap-highlight-color: transparent;
       user-select: none;
-      -webkit-user-select: none;
-      font-family: var(--font-main);
-    }
-
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #080A0E;
-      color: #1E293B;
-      touch-action: pan-x pan-y;
     }
 
     body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
       display: flex;
       flex-direction: column;
     }
 
-    /* AMBIENT SCREEN DIM OVERLAY (0% TO 50%) */
-    #screenDimOverlay {
+    #dimOverlay {
       position: fixed;
-      inset: 0;
-      background: #000000;
-      opacity: 0;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.45);
       pointer-events: none;
-      z-index: 99998;
-      transition: opacity 0.2s ease;
+      z-index: 9998;
+      display: none;
     }
 
-    #fxCanvas, #confettiSnowCanvas {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-    }
-    #fxCanvas { z-index: 1; }
-    #confettiSnowCanvas { z-index: 99999; }
-
-    /* AUTHENTIC GRAPH PAPER PATTERN */
-    .ninja-graph-paper {
-      background-color: #FFFDF0;
-      background-image: 
-        linear-gradient(to right, rgba(140, 87, 39, 0.16) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(140, 87, 39, 0.16) 1px, transparent 1px);
-      background-size: 24px 24px;
-    }
-
-    /* ==========================================================
-       8D HYPER-SPATIAL CAROUSEL ENGINE (MAIN GATEWAY)
-    ========================================================== */
-    .stage-8d-wrapper {
-      perspective: 1700px;
-      perspective-origin: center 46%;
-      width: 100%;
-      height: 400px;
-      position: relative;
+    header.header {
+      height: var(--header-h);
+      background: #ffffff;
+      border-bottom: 2px solid var(--border);
       display: flex;
       align-items: center;
-      justify-content: center;
-      overflow: visible;
-      user-select: none;
-    }
-
-    .carousel-8d-track {
-      position: relative;
-      width: 330px;
-      height: 370px;
-      transform-style: preserve-3d;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transform: rotateX(12deg);
-      transition: transform 0.4s ease-out;
-    }
-
-    .carousel-8d-card {
-      position: absolute;
-      width: 320px;
-      height: 360px;
-      border-radius: 24px;
-      padding: 22px 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
       justify-content: space-between;
-      background: rgba(255, 253, 242, 0.96);
-      backdrop-filter: blur(16px);
-      border: 3.5px solid #8B5A2B;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.65), inset 0 0 20px rgba(217, 119, 6, 0.25);
-      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease, filter 0.45s ease, box-shadow 0.3s ease;
-      cursor: pointer;
-      will-change: transform, opacity;
-      overflow: hidden;
-      touch-action: manipulation;
+      padding: 0 1.25rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
-    /* Moving Dynamic Specular Foil Sheen */
-    .carousel-8d-card::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(115deg, transparent 32%, rgba(255, 255, 255, 0.42) 46%, rgba(255, 255, 255, 0.05) 54%, transparent 68%);
-      pointer-events: none;
-    }
-
-    /* 8D Multi-Axis Spatial States */
-    .carousel-8d-card.pos-center {
-      transform: translate3d(0, -8px, 80px) rotateY(0deg) rotateZ(0deg) scale(1.02);
-      opacity: 1;
-      z-index: 20;
-      border-color: #D97706;
-      box-shadow: 0 28px 70px rgba(217, 119, 6, 0.45), 0 0 35px rgba(245, 158, 11, 0.3);
-      filter: none;
-      pointer-events: auto;
-    }
-    .carousel-8d-card.pos-left {
-      transform: translate3d(-250px, 12px, -260px) rotateY(34deg) rotateZ(-2.5deg) scale(0.82);
-      opacity: 0.42;
-      z-index: 10;
-      filter: blur(1.5px) grayscale(25%);
-      pointer-events: auto;
-    }
-    .carousel-8d-card.pos-right {
-      transform: translate3d(250px, 12px, -260px) rotateY(-34deg) rotateZ(2.5deg) scale(0.82);
-      opacity: 0.42;
-      z-index: 10;
-      filter: blur(1.5px) grayscale(25%);
-      pointer-events: auto;
-    }
-
-    .shinobi-avatar-8d {
-      width: 95px;
-      height: 95px;
-      border-radius: 50%;
-      object-fit: contain;
-      border: 3.5px solid #D97706;
-      background: #FFF;
-      padding: 4px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-      transition: transform 0.3s ease;
-      pointer-events: none;
-    }
-    .carousel-8d-card:hover .shinobi-avatar-8d {
-      transform: scale(1.1) rotate(4deg);
-    }
-
-    /* 3D WORKBOOK BINDER */
-    .card-4d-wrapper { perspective: 1600px; }
-    .card-4d {
-      box-shadow: 0 25px 50px -12px rgba(43, 23, 12, 0.55), 0 0 30px rgba(217, 119, 6, 0.3);
-      transition: box-shadow 0.3s ease;
-    }
-    .page-flip-anim { animation: pageFlip4d 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
-    @keyframes pageFlip4d {
-      0% { opacity: 0; transform: translateY(10px); }
-      100% { opacity: 1; transform: none; }
-    }
-
-    .binder-cover {
-      transition: transform 0.75s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.45s ease;
-      transform-origin: 0% 50%;
-      transform-style: preserve-3d;
-      backdrop-filter: blur(4px);
-      box-shadow: inset 0 0 50px rgba(255,255,255,0.22), 0 30px 60px -12px rgba(20, 10, 6, 0.8);
-    }
-    .binder-cover::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.25) 48%, rgba(255,255,255,0.04) 52%, transparent 68%);
-      pointer-events: none;
-      z-index: 4;
-    }
-    .binder-cover::before {
-      content: '';
-      position: absolute;
-      left: 0; top: 0; bottom: 0;
-      width: 34px;
-      background: linear-gradient(90deg, #180D06 0%, #3B2011 55%, #5C321B 85%, #180D06 100%);
-      border-right: 3px solid rgba(245, 158, 11, 0.4);
-      box-shadow: inset -3px 0 6px rgba(0,0,0,0.6), 3px 0 10px rgba(0,0,0,0.4);
-      z-index: 5;
-    }
-    .notebook-spine-rings {
-      position: absolute;
-      left: 27px;
-      top: 16px;
-      bottom: 16px;
-      width: 16px;
+    .header-left, .header-right {
       display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      pointer-events: none;
-      z-index: 10;
-    }
-    .spiral-ring {
-      width: 18px;
-      height: 10px;
-      border-radius: 6px;
-      background: linear-gradient(135deg, #FFF 0%, #D4AF37 45%, #856114 80%, #2B170C 100%);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.7), inset 0 1px 2px rgba(255,255,255,0.9);
-    }
-    .binder-open {
-      transform: perspective(1400px) rotateY(-118deg) rotateX(8deg) translateZ(20px);
-      opacity: 0;
-      pointer-events: none;
+      align-items: center;
+      gap: 0.65rem;
     }
 
-    .composition-label-box {
-      background-color: #FFFDF7;
-      background-image: repeating-linear-gradient(
-        to bottom,
-        transparent 0px,
-        transparent 25px,
-        rgba(180, 83, 9, 0.22) 25px,
-        rgba(180, 83, 9, 0.22) 26px
-      );
-      position: relative;
-    }
-    .composition-label-box::before {
-      content: '';
-      position: absolute;
-      top: 0; bottom: 0; left: 26px;
-      width: 4px;
-      border-left: 1.5px solid rgba(220, 38, 38, 0.65);
-      border-right: 1.5px solid rgba(220, 38, 38, 0.65);
-      pointer-events: none;
-    }
-
-    /* TOP PILL CONTROLS */
-    .icon-pill-btn {
-      background: rgba(26, 15, 9, 0.9);
-      backdrop-filter: blur(10px);
-      border: 2px solid rgba(217, 119, 6, 0.55);
-      color: #FCD34D;
-      font-size: 1.05rem;
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
+    .header-action-btn {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      color: #334155;
+      font-size: 0.88rem;
+      font-weight: 800;
+      padding: 0.45rem 0.85rem;
+      border-radius: 12px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+      gap: 0.35rem;
       text-decoration: none;
-      transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .icon-pill-btn:hover { transform: scale(1.08); background: #3B2011; border-color: #F59E0B; }
-    .icon-pill-btn:active { transform: scale(0.94); }
+    .header-action-btn:hover { background: #e2e8f0; }
 
-    .workspace-h { height: clamp(450px, 73vh, 900px); }
-    @media (min-width: 900px) {
-      #activeCardContainer:not(.hidden) { display: flex; justify-content: center; }
-      #activeCardContainer > div { width: min(100%, 1120px); }
+    .badge-student {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #fff;
+      font-weight: 900;
+      font-size: 0.88rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
     }
 
-    /* TREE-BRANCH NUMBER LINE INTERACTION (EX 1.3) */
-    .number-line-wood-bar {
-      background: linear-gradient(180deg, #3A2312 0%, #1E110A 100%);
-      border: 2.5px solid #D97706;
-      border-radius: 14px;
-      padding: 10px 14px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    .lesson-title h1 {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: #0f172a;
+      line-height: 1.1;
+    }
+    .lesson-title span {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .toggle-pad-btn {
+      background: linear-gradient(135deg, #4f46e5, #4338ca);
+      color: #ffffff;
+      border: none;
+      border-radius: 999px;
+      padding: 0.48rem 1.05rem;
+      font-size: 0.88rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    }
+
+    /* Main Landscape Split Screen */
+    .main-workspace {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 1.25rem;
+      padding: 1.25rem;
+      max-width: 1700px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    @media (max-width: 980px) {
+      .main-workspace { grid-template-columns: 1fr; }
+    }
+
+    /* Left Pane: Full-Card Large Floating Rainbow Arch */
+    .rainbow-pane {
+      background: #ffffff;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 1.25rem;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      justify-content: space-between;
+      gap: 0.85rem;
     }
-    .line-canvas-wrapper {
+
+    .rainbow-stage-box {
+      width: 100%;
+      flex: 1;
+      background: linear-gradient(180deg, #f0fdf4 0%, #e0f2fe 100%);
+      border: 2px dashed #bae6fd;
+      border-radius: 20px;
+      padding: 1.25rem 1rem 0.5rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .brush-shelf {
+      width: 100%;
+      min-height: 52px;
+      border-radius: 14px;
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      padding: 0.5rem 1rem;
+      margin-bottom: 0.5rem;
+      font-size: 0.96rem;
+      font-weight: 800;
+      color: #334155;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      transition: all 0.25s ease;
+    }
+
+    .brush-color-swatch {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 0 2px rgba(0,0,0,0.25);
+      flex-shrink: 0;
+    }
+
+    /* Full-Card Rainbow Canvas Stack (Pure Floating Arch, No Ground Line) */
+    .rainbow-canvas-container {
       position: relative;
       width: 100%;
-      height: 90px;
-      background: #FFFDF0;
-      border: 2px solid #D4AF37;
-      border-radius: 10px;
-      overflow: hidden;
+      max-width: 650px;
+      aspect-ratio: 500 / 280;
+      touch-action: none;
+      margin: auto 0;
     }
 
-    /* ==========================================================
-       TACTICAL CARVED RIVER-STONE NUMERIC KEYPAD DOCK
-    ========================================================== */
-    .keypad-stone-dock {
-      background: linear-gradient(180deg, #26160E 0%, #170C06 100%);
-      border: 2.5px solid #8B5A2B;
+    svg.rainbow-svg-base {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    canvas#rainbowPaintCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      touch-action: none;
+      cursor: crosshair;
+    }
+
+    svg.rainbow-svg-top {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .rainbow-arc-base {
+      fill: none;
+      stroke-linecap: round;
+      stroke: #e2e8f0;
+      transition: stroke 0.3s ease;
+    }
+
+    .rainbow-arc-top {
+      fill: none;
+      stroke-linecap: round;
+      stroke: rgba(148, 163, 184, 0.4);
+    }
+
+    .arc-glow {
+      animation: arcPulse 1.2s infinite alternate;
+    }
+
+    @keyframes arcPulse {
+      from { stroke: #93c5fd; }
+      to { stroke: #2563eb; }
+    }
+
+    .rainbow-text {
+      font-family: 'Quicksand', sans-serif;
+      font-weight: 900;
+      fill: #0f172a;
+      font-size: 15px;
+      text-anchor: middle;
+      dominant-baseline: central;
+      pointer-events: none;
+    }
+
+    /* Action Shelf */
+    .action-shelf {
+      width: 100%;
+      background: #f8fafc;
+      border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 10px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      box-shadow: 0 10px 28px rgba(0,0,0,0.65), inset 0 2px 4px rgba(255,255,255,0.1);
-    }
-
-    .keypad-slot-row {
+      padding: 0.85rem 1.1rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      background: #0E0704;
-      border: 2px solid #5A3C22;
-      border-radius: 10px;
-      padding: 6px 12px;
-    }
-    .keypad-slot-label {
-      font-size: 13px;
-      font-weight: 800;
-      color: #FCD34D;
-    }
-    .keypad-carved-display {
-      min-width: 90px;
-      height: 38px;
-      background: #251811;
-      border: 2px solid #D97706;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 19px;
-      font-weight: 900;
-      color: #FFD700;
-      text-shadow: 0 0 12px rgba(255, 215, 0, 0.85);
-      padding: 0 8px;
+      gap: 1rem;
     }
 
-    .stone-keys-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-    }
-
-    .stone-key-btn {
-      height: 48px;
-      background: linear-gradient(180deg, #FBF6E9 0%, #E8DCC2 100%);
-      border: 2px solid #B8860B;
-      border-radius: 10px;
-      font-size: 18px;
-      font-weight: 900;
-      color: #3E2413;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 0 #7A4A24;
-      transition: all 0.08s ease;
-      touch-action: manipulation;
-    }
-    .stone-key-btn:active {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 #7A4A24;
-      background: #D9CEB4;
-    }
-    .stone-key-btn.btn-qr-comma {
-      background: linear-gradient(180deg, #FEF08A 0%, #FDE047 100%);
-      border-color: #D97706;
-      color: #92400E;
-      font-size: 13px;
-      font-weight: 900;
-    }
-    .stone-key-btn.btn-del {
-      background: linear-gradient(180deg, #FEE2E2 0%, #FECDD3 100%);
-      border-color: #EF4444;
-      color: #B91C1C;
-    }
-    .stone-key-btn.btn-submit {
-      background: linear-gradient(180deg, #22C55E 0%, #16A34A 100%);
-      border-color: #4ADE80;
-      color: #FFF;
-      grid-column: span 2;
-      font-size: 14px;
-    }
-
-    /* GRAND CELEBRATION STAGE */
-    #grandCelebrationStage {
-      position: fixed;
-      inset: 0;
-      z-index: 100000;
-      pointer-events: none;
-      display: none;
-      overflow: hidden;
-      background: radial-gradient(circle at center, rgba(30, 18, 12, 0.75) 0%, rgba(7, 9, 12, 0.96) 100%);
-      backdrop-filter: blur(6px);
-    }
-    #grandFinaleCanvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 10;
-    }
-    .kanji-banner-centerpiece {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.2);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 25;
-      opacity: 0;
-      pointer-events: none;
-      transition: transform 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
-    }
-    .kanji-banner-centerpiece.impact {
-      transform: translate(-50%, -50%) scale(1);
-      opacity: 1;
-    }
-    .enso-brush-crescent {
-      position: absolute;
-      width: 440px;
-      height: 440px;
-      border-radius: 50%;
-      border: 32px solid transparent;
-      border-top-color: rgba(255, 215, 0, 0.75);
-      border-right-color: rgba(212, 175, 55, 0.65);
-      border-bottom-color: rgba(184, 134, 11, 0.3);
-      filter: drop-shadow(0 0 25px rgba(255, 215, 0, 0.6));
-      transform: rotate(-35deg);
-    }
-    .kanji-top-title {
-      font-family: var(--font-kanji);
-      font-size: 64px;
-      font-weight: 900;
-      color: #FFD700;
-      text-shadow: 0 0 20px #FFB700, 0 0 45px #FF9500, 0 4px 8px rgba(0,0,0,0.8);
-      letter-spacing: 10px;
-      text-align: center;
-      line-height: 1.1;
-    }
-    .kanji-subtitle-gold {
-      font-family: var(--font-display);
-      font-size: 22px;
-      font-weight: 900;
-      color: #FFF4D0;
-      letter-spacing: 5px;
-      margin-top: 6px;
-      text-shadow: 0 2px 6px #000;
-      text-align: center;
-    }
-    .gliding-companion-rocket {
-      position: absolute;
-      width: 200px;
-      height: 200px;
-      z-index: 20;
-      pointer-events: none;
-      transform: rotate(25deg);
-      filter: drop-shadow(0 0 28px rgba(255, 215, 0, 0.9));
-    }
-    .gliding-companion-rocket img { width: 100%; height: 100%; object-fit: contain; }
-
-    .royal-scroll-landing-right {
-      position: absolute;
-      top: 50%;
-      right: 40px;
-      transform: translateY(-50%) translateX(240px);
-      width: 490px;
-      z-index: 30;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      opacity: 0;
-      transition: transform 0.65s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.5s ease;
-      pointer-events: none;
-    }
-    .royal-scroll-landing-right.landed {
-      transform: translateY(-50%) translateX(0);
-      opacity: 1;
-      pointer-events: auto;
-    }
-    .royal-unfurled-scroll {
-      flex: 1;
-      background: #FFFDF0;
-      border: 4px solid #8B5A2B;
-      border-radius: 20px;
-      padding: 18px 22px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-      color: #1E293B;
-    }
-    .royal-scroll-title {
-      font-family: var(--font-display);
-      font-size: 1.25rem;
+    .shuffle-btn {
+      background: #ffffff;
+      border: 2px solid var(--border);
+      color: #0f172a;
       font-weight: 800;
-      color: #92400E;
-      border-bottom: 2px dashed #D97706;
-      padding-bottom: 6px;
-      margin-bottom: 8px;
-    }
-    .royal-scroll-body {
-      font-size: 0.94rem;
-      font-weight: 800;
-      line-height: 1.55;
-      color: #334155;
-      margin-bottom: 12px;
-    }
-    .royal-btn-continue {
-      background: linear-gradient(135deg, #16A34A, #15803D);
-      border: 2px solid #86EFAC;
-      color: #FFF;
-      font-family: var(--font-display);
-      font-weight: 800;
-      font-size: 0.92rem;
-      padding: 10px 22px;
+      font-size: 0.95rem;
+      padding: 0.65rem 1.25rem;
       border-radius: 12px;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.15s;
     }
-    .royal-victory-companion {
-      width: 160px;
-      height: 230px;
+    .shuffle-btn:hover { background: #f1f5f9; }
+    .shuffle-btn:active { transform: scale(0.97); }
+
+    .score-pill {
+      background: #ecfdf5;
+      color: #065f46;
+      border: 2px solid #a7f3d0;
+      padding: 0.55rem 1.15rem;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: 0.95rem;
+    }
+
+    /* Right Pane: Clean Cards & Docked Keypad */
+    .questions-pane {
+      background: #ffffff;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      justify-content: space-between;
+    }
+
+    .questions-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.85rem;
+      max-height: 480px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    @media (max-width: 600px) {
+      .questions-grid { grid-template-columns: 1fr; }
+    }
+
+    .q-card {
+      background: #f8fafc;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 0.85rem 1rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      transition: all 0.15s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+      position: relative;
+    }
+
+    .q-card.active-target {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.2);
+    }
+
+    .q-card.ready-to-color {
+      border-color: #f59e0b;
+      background: #fffbeb;
+      animation: pulseGlow 1.5s infinite alternate;
+    }
+
+    @keyframes pulseGlow {
+      from { box-shadow: 0 0 4px #fbbf24; }
+      to { box-shadow: 0 0 12px #f59e0b; }
+    }
+
+    .q-card.completed {
+      border-color: #10b981;
+      background: #f0fdf4;
+    }
+
+    .q-card.is-wrong {
+      border-color: #f87171;
+      background: #fef2f2;
+    }
+
+    .q-card.is-locked {
+      border-color: #f59e0b;
+      background: #fffbeb;
+    }
+
+    .q-swatch-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: #334155;
+    }
+
+    .q-swatch-info {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .q-color-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 6px;
+      border: 1px solid rgba(0,0,0,0.12);
+      flex-shrink: 0;
+    }
+
+    .card-status-tag {
+      font-size: 0.78rem;
+      font-weight: 900;
+    }
+
+    .equation-row {
+      font-family: 'Quicksand', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
       display: flex;
       align-items: center;
       justify-content: center;
-      flex-shrink: 0;
+      gap: 0.45rem;
+      color: #0f172a;
     }
-    .royal-victory-companion img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+    .math-sym { color: #6366f1; }
+
+    .target-box {
+      width: 58px;
+      height: 48px;
+      border-radius: 10px;
+      border: 2px dashed #94a3b8;
+      background: #ffffff;
+      font-size: 1.45rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0f172a;
+      transition: all 0.15s;
+    }
+    .active-target .target-box {
+      border: 2px solid var(--primary);
+      box-shadow: 0 0 0 2px rgba(67, 56, 202, 0.15);
+    }
+    .is-locked .target-box {
+      border-color: #f59e0b;
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    .locked-clue {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #92400e;
+      background: #fef3c7;
+      border-radius: 6px;
+      padding: 0.35rem 0.5rem;
+      text-align: center;
+    }
+
+    /* Keypad */
+    .docked-keypad {
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+
+    .keypad-header {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #475569;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .keypad-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.5rem;
+    }
+
+    .key-btn {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      height: 50px;
+      font-family: 'Quicksand', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: #0f172a;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+      transition: all 0.1s;
+    }
+    .key-btn:active {
+      background: #e2e8f0;
+      transform: translateY(1px);
+    }
+    .key-btn.action-key {
+      background: #e2e8f0;
+      font-size: 1rem;
+      font-weight: 800;
+      color: #334155;
+    }
+    .key-btn.ok-key {
+      background: #10b981;
+      color: #ffffff;
+      font-weight: 900;
+      font-size: 1.15rem;
+    }
+
+    /* Scratchpad Modal */
+    .floating-gridpad {
+      position: fixed;
+      top: 90px;
+      right: 30px;
+      width: 450px;
+      height: 390px;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 1000;
+      display: none;
+    }
+
+    .pad-topbar {
+      background: #1e293b;
+      color: #ffffff;
+      padding: 0.55rem 0.95rem;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+      touch-action: none;
+    }
+    .pad-topbar:active { cursor: grabbing; }
+
+    .pad-title {
+      font-size: 0.9rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .pad-close-btn {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 1.3rem;
+      line-height: 1;
+      font-weight: 900;
+      cursor: pointer;
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+    }
+    .pad-close-btn:hover { background: rgba(255,255,255,0.15); }
+
+    .pad-tools {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: #f8fafc;
+      padding: 0.45rem 0.85rem;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .tool-btn {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      padding: 0.3rem 0.6rem;
+      font-size: 0.82rem;
+      font-weight: 800;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .tool-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    .color-chip {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      cursor: pointer;
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.25);
+      transition: transform 0.1s;
+    }
+    .color-chip:active { transform: scale(0.9); }
+    .color-chip.active-chip {
+      box-shadow: 0 0 0 2px var(--primary);
+      transform: scale(1.15);
+    }
+
+    .size-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .size-btn.active-size {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .size-dot {
+      background: #334155;
+      border-radius: 50%;
+    }
+
+    .pen-palm-btn {
+      margin-left: auto;
+      font-size: 0.75rem;
+      padding: 0.3rem 0.65rem;
+      border-radius: 999px;
+      border: 1px solid #0284c7;
+      background: #e0f2fe;
+      color: #0369a1;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .pen-palm-btn.active {
+      background: #0284c7;
+      color: #ffffff;
+    }
+
+    .gridpad-canvas-wrap {
+      flex: 1;
+      position: relative;
+      background-color: #ffffff;
+      background-image:
+        linear-gradient(to right, #cbd5e1 1px, transparent 1px),
+        linear-gradient(to bottom, #cbd5e1 1px, transparent 1px);
+      background-size: 20px 20px;
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    canvas#mathCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    #confettiCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 9999;
+    }
   </style>
 </head>
-<body class="min-h-screen flex flex-col relative overflow-hidden">
+<body>
 
-  <!-- BACKGROUND CANVAS & AMBIENT DIM OVERLAY -->
-  <canvas id="fxCanvas"></canvas>
-  <canvas id="confettiSnowCanvas"></canvas>
-  <div id="screenDimOverlay"></div>
+  <div id="dimOverlay"></div>
+  <canvas id="confettiCanvas"></canvas>
 
-  <!-- GRAND VICTORY STAGE (CHUNIN EXAM SEAL) -->
-  <div id="grandCelebrationStage">
-    <canvas id="grandFinaleCanvas"></canvas>
-    <div class="kanji-banner-centerpiece" id="kanjiCenterpiece">
-      <div class="enso-brush-crescent"></div>
-      <div class="kanji-top-title">任務完了</div>
-      <div class="kanji-subtitle-gold">CHUNIN TRIAL ACCOMPLISHED!</div>
-    </div>
-    <div class="gliding-companion-rocket" id="glidingCompanionRocket">
-      <img src="assets/naruto.png" id="glidingCompanionImg" alt="Shinobi" onerror="handleImageFallback(this)">
-    </div>
-    <div class="royal-scroll-landing-right" id="royalScrollLandingRight">
-      <div class="royal-unfurled-scroll">
-        <div class="royal-scroll-title" id="royalScrollTitle">🌟 JUTSU CONFIRMED! 🌟</div>
-        <div class="royal-scroll-body" id="royalScrollBody">
-          Excellent work, Humayun! Your division calculations and remainder steps are verified!
-        </div>
-        <button class="royal-btn-continue" onclick="closeGrandCelebration()">Continue Mission ➔</button>
-      </div>
-      <div class="royal-victory-companion">
-        <img src="assets/naruto.png" id="royalVictoryImg" alt="Victory Shinobi" onerror="handleImageFallback(this)">
-      </div>
-    </div>
-  </div>
-
-  <!-- TOP NINJA HUD -->
-  <header class="relative z-20 bg-slate-900/90 backdrop-blur-md border-b border-amber-900/40 text-white shadow-lg py-2.5 px-6 flex justify-between items-center shrink-0">
-    <div class="flex items-center gap-3">
-      <a href="index.html" class="icon-pill-btn" title="Exit to Hub" onclick="goToHub(event)">🍃</a>
-      <div class="flex flex-col">
-        <h1 class="text-base md:text-xl font-bold font-display tracking-wide flex items-center gap-2 text-amber-300">
-          🍥 Humayun's Ninja Maths <span class="bg-amber-600/30 border border-amber-400 text-amber-200 text-xs px-2.5 py-0.5 rounded-full font-sans">Oct 16 Exam</span>
-        </h1>
+  <header class="header">
+    <div class="header-left">
+      <a href="javascript:void(0)" onclick="goToHub()" class="header-action-btn">
+        🏠 Hub
+      </a>
+      <div class="badge-student">Humayun</div>
+      <div class="lesson-title">
+        <h1>Division Warm-Up</h1>
+        <span>Grade 3 Maths • Oct 05</span>
       </div>
     </div>
 
-    <div class="flex items-center gap-3">
-      <!-- Ambient Screen Dim Slider (0% to 50%) -->
-      <div class="flex items-center gap-2 bg-stone-900/90 border border-amber-600/40 rounded-full px-3 py-1 text-xs">
-        <span class="text-amber-300">💡 Dim:</span>
-        <input type="range" id="dimRangeSlider" min="0" max="0.5" step="0.05" value="0" 
-               oninput="updateScreenDimLevel(this.value)" 
-               class="w-16 md:w-20 accent-amber-500 cursor-pointer">
-        <span id="dimPctLabel" class="w-7 font-bold text-amber-400">0%</span>
-      </div>
-
-      <button class="icon-pill-btn" id="inkSoundBtn" onclick="toggleInkSound()" title="Sound on/off">🔊</button>
-      <button onclick="returnToGateway()" id="gatewayNavBtn" class="hidden bg-amber-700 hover:bg-amber-600 text-white font-bold text-xs px-3.5 py-2 rounded-xl shadow transition flex items-center gap-1.5 border border-amber-500">
-        🏯 Chunin Vault
+    <div class="header-right">
+      <button class="header-action-btn" id="soundToggleBtn" onclick="toggleSound()" title="Toggle Sound">
+        🔊 Sound: ON
+      </button>
+      <button class="toggle-pad-btn" onclick="toggleScratchpad()">
+        📝 Scratchpad
+      </button>
+      <button class="header-action-btn" onclick="toggleDimScreen()" title="Dim Screen">
+        🌙 Dim
+      </button>
+      <button class="header-action-btn" onclick="toggleFullscreen()" title="Fullscreen">
+        ⛶
       </button>
     </div>
   </header>
 
-  <!-- MAIN VIEWPORT -->
-  <main class="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center relative z-10 overflow-hidden">
-    
-    <!-- VIEW 1: 8D HYPER-SPATIAL SWIPEABLE CAROUSEL (3 VAULTS) -->
-    <div id="gatewayView" class="w-full flex flex-col gap-4 items-center">
-      <div class="text-center">
-        <h2 class="text-2xl md:text-3xl font-bold font-display text-amber-300 drop-shadow-md">The 8D Chunin Exam Vault</h2>
-        <p class="text-stone-300 text-xs md:text-sm mt-0.5">Swipe horizontally with S-Pen or touch to orbit through examination scrolls</p>
-      </div>
+  <main class="main-workspace">
 
-      <!-- 8D Stage Wrapper -->
-      <div class="stage-8d-wrapper" id="carousel8DStage">
-        <div class="carousel-8d-track" id="carousel8DTrack">
+    <!-- Left: Full-Card Large Floating Rainbow Arch -->
+    <section class="rainbow-pane">
+      <div class="rainbow-stage-box">
+        <div class="brush-shelf" id="brushShelf">
+          <span>Tap a card on the right, solve the division, and stroke the rainbow!</span>
+        </div>
 
-          <!-- Card 0: Trial I (Ex 1.3) -->
-          <div class="carousel-8d-card pos-center" id="card8d_0" onclick="handleCardTap(0)">
-            <div class="flex flex-col items-center pointer-events-none">
-              <span class="text-[10px] font-bold uppercase tracking-wider text-cyan-800 bg-cyan-100 px-3 py-0.5 rounded-full">Trial I • Ex 1.3</span>
-              <h3 class="text-lg font-bold text-slate-900 mt-2 font-display">Number Line Leap</h3>
-              <p class="text-xs text-stone-600 mt-1">Interactive Number Line Division & Noor's Mistakes[cite: 10]</p>
-            </div>
-            <img src="assets/kakashi.png" class="shinobi-avatar-8d" alt="Kakashi Hatake" onerror="handleImageFallback(this)"/>
-            <button type="button" onclick="switchTrial('trial13')" class="bg-gradient-to-r from-cyan-700 to-teal-800 hover:from-cyan-600 hover:to-teal-700 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-lg transition active:scale-95 cursor-pointer">
-              Open Scroll ➔
-            </button>
-          </div>
+        <div class="rainbow-canvas-container" id="rainbowContainer">
+          <!-- Base Underlay Semicircles (No bottom line)[cite: 1] -->
+          <svg class="rainbow-svg-base" viewBox="0 0 500 280">
+            <path id="base-arc-12" d="M 30,270 A 220,220 0 0,1 470,270" class="rainbow-arc-base" stroke-width="26" />
+            <path id="base-arc-6"  d="M 60,270 A 190,190 0 0,1 440,270" class="rainbow-arc-base" stroke-width="26" />
+            <path id="base-arc-3"  d="M 90,270 A 160,160 0 0,1 410,270" class="rainbow-arc-base" stroke-width="26" />
+            <path id="base-arc-4"  d="M 120,270 A 130,130 0 0,1 380,270" class="rainbow-arc-base" stroke-width="26" />
+            <path id="base-arc-8"  d="M 150,270 A 100,100 0 0,1 350,270" class="rainbow-arc-base" stroke-width="26" />
+            <path id="base-arc-5"  d="M 180,270 A 70,70 0 0,1 320,270"  class="rainbow-arc-base" stroke-width="26" />
+            <path id="base-arc-7"  d="M 210,270 A 40,40 0 0,1 290,270"  class="rainbow-arc-base" stroke-width="26" />
+          </svg>
 
-          <!-- Card 1: Trial II (Ex 1.4) -->
-          <div class="carousel-8d-card pos-right" id="card8d_1" onclick="handleCardTap(1)">
-            <div class="flex flex-col items-center pointer-events-none">
-              <span class="text-[10px] font-bold uppercase tracking-wider text-orange-800 bg-orange-100 px-3 py-0.5 rounded-full">Trial II • Ex 1.4</span>
-              <h3 class="text-lg font-bold text-slate-900 mt-2 font-display">Fact Family Sealing</h3>
-              <p class="text-xs text-stone-600 mt-1">Inverse Operations & 2-Page Word Problem Binders[cite: 11]</p>
-            </div>
-            <img src="assets/naruto.png" class="shinobi-avatar-8d" alt="Naruto Uzumaki" onerror="handleImageFallback(this)"/>
-            <button type="button" onclick="switchTrial('trial14')" class="bg-gradient-to-r from-orange-600 to-amber-700 hover:from-orange-500 hover:to-amber-600 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-lg transition active:scale-95 cursor-pointer">
-              Open Scroll ➔
-            </button>
-          </div>
+          <!-- Hand-Stroking Paint Canvas -->
+          <canvas id="rainbowPaintCanvas"></canvas>
 
-          <!-- Card 2: Trial III (Ex 1.5) -->
-          <div class="carousel-8d-card pos-left" id="card8d_2" onclick="handleCardTap(2)">
-            <div class="flex flex-col items-center pointer-events-none">
-              <span class="text-[10px] font-bold uppercase tracking-wider text-purple-800 bg-purple-100 px-3 py-0.5 rounded-full">Trial III • Ex 1.5</span>
-              <h3 class="text-lg font-bold text-slate-900 mt-2 font-display">Long Division Dojo</h3>
-              <p class="text-xs text-stone-600 mt-1">Bracket Long Division, Step Math & Remainder Match[cite: 12]</p>
-            </div>
-            <img src="assets/shikamaru.png" class="shinobi-avatar-8d" alt="Shikamaru Nara" onerror="handleImageFallback(this)"/>
-            <button type="button" onclick="switchTrial('trial15')" class="bg-gradient-to-r from-purple-700 to-indigo-900 hover:from-purple-600 hover:to-indigo-800 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-lg transition active:scale-95 cursor-pointer">
-              Open Scroll ➔
-            </button>
-          </div>
+          <!-- Top Overlay: Clean Outlines & Numbers Above Coloring (No bottom line)[cite: 1] -->
+          <svg class="rainbow-svg-top" viewBox="0 0 500 280">
+            <defs>
+              <path id="path12" d="M 30,270 A 220,220 0 0,1 470,270" />
+              <path id="path6"  d="M 60,270 A 190,190 0 0,1 440,270" />
+              <path id="path3"  d="M 90,270 A 160,160 0 0,1 410,270" />
+              <path id="path4"  d="M 120,270 A 130,130 0 0,1 380,270" />
+              <path id="path8"  d="M 150,270 A 100,100 0 0,1 350,270" />
+              <path id="path5"  d="M 180,270 A 70,70 0 0,1 320,270" />
+              <path id="path7"  d="M 210,270 A 40,40 0 0,1 290,270" />
+            </defs>
 
+            <path id="top-arc-12" d="M 30,270 A 220,220 0 0,1 470,270" class="rainbow-arc-top" stroke-width="26" />
+            <path id="top-arc-6"  d="M 60,270 A 190,190 0 0,1 440,270" class="rainbow-arc-top" stroke-width="26" />
+            <path id="top-arc-3"  d="M 90,270 A 160,160 0 0,1 410,270" class="rainbow-arc-top" stroke-width="26" />
+            <path id="top-arc-4"  d="M 120,270 A 130,130 0 0,1 380,270" class="rainbow-arc-top" stroke-width="26" />
+            <path id="top-arc-8"  d="M 150,270 A 100,100 0 0,1 350,270" class="rainbow-arc-top" stroke-width="26" />
+            <path id="top-arc-5"  d="M 180,270 A 70,70 0 0,1 320,270"  class="rainbow-arc-top" stroke-width="26" />
+            <path id="top-arc-7"  d="M 210,270 A 40,40 0 0,1 290,270"  class="rainbow-arc-top" stroke-width="26" />
+
+            <text><textPath href="#path12" startOffset="50%" class="rainbow-text">12</textPath></text>
+            <text><textPath href="#path6"  startOffset="50%" class="rainbow-text">6</textPath></text>
+            <text><textPath href="#path3"  startOffset="50%" class="rainbow-text">3</textPath></text>
+            <text><textPath href="#path4"  startOffset="50%" class="rainbow-text">4</textPath></text>
+            <text><textPath href="#path8"  startOffset="50%" class="rainbow-text">8</textPath></text>
+            <text><textPath href="#path5"  startOffset="50%" class="rainbow-text">5</textPath></text>
+            <text><textPath href="#path7"  startOffset="50%" class="rainbow-text">7</textPath></text>
+          </svg>
         </div>
       </div>
 
-      <!-- Orbit Indicator Dots -->
-      <div class="flex items-center gap-2">
-        <button onclick="rotateToTrial(0)" id="dot8d_0" class="w-3 h-3 rounded-full bg-amber-400 transition-all"></button>
-        <button onclick="rotateToTrial(1)" id="dot8d_1" class="w-2.5 h-2.5 rounded-full bg-stone-600 transition-all"></button>
-        <button onclick="rotateToTrial(2)" id="dot8d_2" class="w-2.5 h-2.5 rounded-full bg-stone-600 transition-all"></button>
+      <div class="action-shelf">
+        <button class="shuffle-btn" onclick="shuffleAndReset()">
+          🔀 Reshuffle & Practice Again
+        </button>
+        <div class="score-pill" id="scorePill">
+          Rainbow Bands: <span id="coloredArcCount">0</span> / 7
+        </div>
       </div>
-    </div>
+    </section>
 
-    <!-- VIEW 2: ACTIVE 4D WORKSPACE BINDER -->
-    <div id="activeCardContainer" class="w-full hidden card-4d-wrapper">
-      <!-- Dynamically populated -->
-    </div>
+    <!-- Right: 2-Column Wide Cards & Taller Keypad -->
+    <section class="questions-pane">
+      <div class="questions-grid" id="questionsContainer"></div>
+
+      <div class="docked-keypad">
+        <div class="keypad-header">
+          <span>Number Pad</span>
+          <span id="activeTargetLabel">Active: Card 1</span>
+        </div>
+        <div class="keypad-grid">
+          <button class="key-btn" onclick="pressKey('1')">1</button>
+          <button class="key-btn" onclick="pressKey('2')">2</button>
+          <button class="key-btn" onclick="pressKey('3')">3</button>
+          <button class="key-btn" onclick="pressKey('4')">4</button>
+          <button class="key-btn" onclick="pressKey('5')">5</button>
+          <button class="key-btn action-key" onclick="pressKey('BACK')">⌫ Del</button>
+
+          <button class="key-btn" onclick="pressKey('6')">6</button>
+          <button class="key-btn" onclick="pressKey('7')">7</button>
+          <button class="key-btn" onclick="pressKey('8')">8</button>
+          <button class="key-btn" onclick="pressKey('9')">9</button>
+          <button class="key-btn" onclick="pressKey('0')">0</button>
+          <button class="key-btn ok-key" onclick="pressKey('OK')">OK ↵</button>
+        </div>
+      </div>
+    </section>
 
   </main>
 
-  <!-- FOOTER -->
-  <footer class="relative z-20 bg-stone-950 text-stone-400 py-2.5 text-center text-xs border-t border-amber-900/30 shrink-0">
-    Konoha Academy • Grade 4 & 5 Mathematics Division Examination • Humayun Edition
-  </footer>
+  <!-- Draggable Math Scratchpad -->
+  <div class="floating-gridpad" id="scratchpadWindow">
+    <div class="pad-topbar" id="padHeader">
+      <div class="pad-title">
+        <span>✥</span> Scratchpad
+      </div>
+      <button class="pad-close-btn" 
+              onpointerdown="event.stopPropagation()" 
+              onclick="event.stopPropagation(); closeScratchpad();">
+        ✕
+      </button>
+    </div>
+    <div class="pad-tools">
+      <button class="tool-btn active" id="btnPen" onclick="setPadTool('pen')">✏ Pen</button>
+      <button class="tool-btn" id="btnEraser" onclick="setPadTool('eraser')">🧹 Eraser</button>
+      
+      <span class="color-chip active-chip" id="chip-navy" style="background:#1e3a8a;" onclick="setPadColor('#1e3a8a', 'chip-navy')"></span>
+      <span class="color-chip" id="chip-red" style="background:#dc2626;" onclick="setPadColor('#dc2626', 'chip-red')"></span>
+      <span class="color-chip" id="chip-green" style="background:#16a34a;" onclick="setPadColor('#16a34a', 'chip-green')"></span>
+      <span class="color-chip" id="chip-black" style="background:#0f172a;" onclick="setPadColor('#0f172a', 'chip-black')"></span>
+
+      <button class="size-btn" id="size-fine" title="Fine" onclick="setPadSize(2, 'size-fine')">
+        <span class="size-dot" style="width:3px; height:3px;"></span>
+      </button>
+      <button class="size-btn active-size" id="size-med" title="Medium" onclick="setPadSize(4, 'size-med')">
+        <span class="size-dot" style="width:6px; height:6px;"></span>
+      </button>
+      <button class="size-btn" id="size-thick" title="Thick" onclick="setPadSize(7, 'size-thick')">
+        <span class="size-dot" style="width:10px; height:10px;"></span>
+      </button>
+
+      <button class="tool-btn" onclick="clearPad()">🗑️</button>
+      <button class="pen-palm-btn active" id="btnPalm" onclick="togglePalmRejection()">Stylus: ON</button>
+    </div>
+    <div class="gridpad-canvas-wrap" id="canvasWrapper">
+      <canvas id="mathCanvas"></canvas>
+    </div>
+  </div>
 
   <script>
-    function handleImageFallback(imgEl) {
-      imgEl.onerror = null;
-      imgEl.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><circle cx='60' cy='60' r='56' fill='%232B170C' stroke='%23D97706' stroke-width='4'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='50'>🍥</text></svg>";
+    function goToHub() {
+      if ('speechSynthesis' in window) {
+        try { window.speechSynthesis.cancel(); } catch (e) {}
+      }
+      if (typeof saveCurrentDrawing === "function") {
+        try { saveCurrentDrawing(); } catch (e) {}
+      }
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage("close-lesson-to-hub", "*");
+      } else {
+        window.location.href = "index.html";
+      }
     }
 
-    /* SCREEN DIM LEVEL CONTROL (0% TO 50%) */
-    function updateScreenDimLevel(val) {
-      const overlay = document.getElementById("screenDimOverlay");
-      overlay.style.opacity = val;
-      const pct = Math.round(val * 100);
-      document.getElementById("dimPctLabel").textContent = `${pct}%`;
-      localStorage.setItem('humayun_dim_level', val);
-    }
-
-    const savedDim = localStorage.getItem('humayun_dim_level');
-    if (savedDim !== null) {
-      document.getElementById('dimRangeSlider').value = savedDim;
-      updateScreenDimLevel(savedDim);
-    }
-
-    /* AUDIO ENGINE (WEB AUDIO SYNTHESIS) */
+    /* Web Audio Synthesizer */
+    let soundEnabled = true;
     let audioCtx = null;
+
     function getAudioContext() {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === 'suspended') audioCtx.resume();
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (AudioContextClass) audioCtx = new AudioContextClass();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
       return audioCtx;
     }
 
-    function playMagicWhoosh(isOpening = true) {
-      try {
-        const ctx = getAudioContext();
-        const t0 = ctx.currentTime;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'triangle';
-        if (isOpening) {
-          osc.frequency.setValueAtTime(220, t0);
-          osc.frequency.exponentialRampToValueAtTime(600, t0 + 0.35);
-        } else {
-          osc.frequency.setValueAtTime(550, t0);
-          osc.frequency.exponentialRampToValueAtTime(200, t0 + 0.35);
-        }
-        gain.gain.setValueAtTime(0.2, t0);
-        gain.gain.linearRampToValueAtTime(0.01, t0 + 0.4);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(t0);
-        osc.stop(t0 + 0.4);
-      } catch (e) {}
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const btn = document.getElementById("soundToggleBtn");
+      if (soundEnabled) {
+        btn.innerHTML = "🔊 Sound: ON";
+        playTone(523.25, 0.08, 'sine');
+      } else {
+        btn.innerHTML = "🔇 Sound: OFF";
+      }
     }
 
-    function playTaikoFanfare() {
+    function playTone(freq, duration, type = 'sine', gainVal = 0.15) {
+      if (!soundEnabled) return;
       try {
         const ctx = getAudioContext();
-        const t0 = ctx.currentTime;
-        [160, 240, 320, 480, 640].forEach((freq, idx) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(freq, t0 + idx * 0.08);
-          gain.gain.setValueAtTime(0.3, t0 + idx * 0.08);
-          gain.gain.exponentialRampToValueAtTime(0.001, t0 + idx * 0.08 + 1.2);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(t0 + idx * 0.08);
-          osc.stop(t0 + idx * 0.08 + 1.25);
-        });
-      } catch (e) {}
-    }
-
-    function playStoneClick() {
-      try {
-        const ctx = getAudioContext();
+        if (!ctx) return;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(480, ctx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(220, ctx.currentTime + 0.06);
-        gain.gain.setValueAtTime(0.22, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.06);
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+        gain.gain.setValueAtTime(gainVal, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+
         osc.connect(gain);
         gain.connect(ctx.destination);
+
         osc.start();
-        osc.stop(ctx.currentTime + 0.07);
+        osc.stop(ctx.currentTime + duration);
       } catch (e) {}
     }
 
-    /* INK SOUND ENGINE (PENCIL & ERASER SCRATCH)[cite: 9] */
-    const InkSound = {
-      enabled: localStorage.getItem('humayun_ink_sound') !== 'off',
-      ready: false,
-      penGain: null, penFilter: null,
-      eraseGain: null, eraseFilter: null,
-      init() {
-        if (this.ready) return;
-        const ctx = getAudioContext();
-        const len = Math.floor(ctx.sampleRate * 1.5);
-        const buf = ctx.createBuffer(1, len, ctx.sampleRate);
-        const data = buf.getChannelData(0);
-        for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
-
-        const penSrc = ctx.createBufferSource();
-        penSrc.buffer = buf; penSrc.loop = true;
-        this.penFilter = ctx.createBiquadFilter();
-        this.penFilter.type = 'bandpass';
-        this.penFilter.frequency.value = 3200;
-        this.penFilter.Q.value = 1.6;
-        this.penGain = ctx.createGain();
-        this.penGain.gain.value = 0;
-        penSrc.connect(this.penFilter);
-        this.penFilter.connect(this.penGain);
-        this.penGain.connect(ctx.destination);
-        penSrc.start();
-
-        const eraseSrc = ctx.createBufferSource();
-        eraseSrc.buffer = buf; eraseSrc.loop = true;
-        this.eraseFilter = ctx.createBiquadFilter();
-        this.eraseFilter.type = 'lowpass';
-        this.eraseFilter.frequency.value = 850;
-        this.eraseFilter.Q.value = 0.7;
-        this.eraseGain = ctx.createGain();
-        this.eraseGain.gain.value = 0;
-        eraseSrc.connect(this.eraseFilter);
-        this.eraseFilter.connect(this.eraseGain);
-        this.eraseGain.connect(ctx.destination);
-        eraseSrc.start();
-        this.ready = true;
+    const SFX = {
+      tap: () => playTone(600, 0.04, 'triangle', 0.08),
+      success: () => {
+        if (!soundEnabled) return;
+        playTone(523.25, 0.12, 'sine', 0.18);
+        setTimeout(() => playTone(659.25, 0.12, 'sine', 0.18), 90);
+        setTimeout(() => playTone(783.99, 0.25, 'sine', 0.2), 180);
       },
-      update(tool, dist) {
-        if (!this.enabled) return;
-        try {
-          this.init();
-          const t = getAudioContext().currentTime;
-          if (tool === 'pen') {
-            const vol = Math.min(0.07, 0.004 + dist * 0.004);
-            this.penFilter.frequency.setTargetAtTime(2400 + Math.random() * 1600, t, 0.02);
-            this.penGain.gain.setTargetAtTime(vol, t, 0.03);
-            this.eraseGain.gain.setTargetAtTime(0, t, 0.03);
-          } else if (tool === 'eraser') {
-            const vol = Math.min(0.10, 0.01 + dist * 0.006);
-            this.eraseFilter.frequency.setTargetAtTime(600 + Math.random() * 500, t, 0.03);
-            this.eraseGain.gain.setTargetAtTime(vol, t, 0.03);
-            this.penGain.gain.setTargetAtTime(0, t, 0.03);
-          }
-        } catch (e) {}
+      wrong: () => {
+        if (!soundEnabled) return;
+        playTone(260, 0.1, 'sawtooth', 0.1);
+        setTimeout(() => playTone(210, 0.16, 'sawtooth', 0.12), 110);
       },
-      stop() {
-        if (!this.ready) return;
-        try {
-          const t = getAudioContext().currentTime;
-          this.penGain.gain.setTargetAtTime(0, t, 0.04);
-          this.eraseGain.gain.setTargetAtTime(0, t, 0.04);
-        } catch (e) {}
+      stroke: () => {
+        playTone(880 + Math.random() * 200, 0.04, 'sine', 0.03);
       },
-      glideChime() {
-        if (!this.enabled) return;
-        try {
-          const ctx = getAudioContext();
-          const t0 = ctx.currentTime;
-          const osc = ctx.createOscillator();
-          const g = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(440, t0);
-          osc.frequency.exponentialRampToValueAtTime(1200, t0 + 0.25);
-          g.gain.setValueAtTime(0.0001, t0);
-          g.gain.exponentialRampToValueAtTime(0.12, t0 + 0.03);
-          g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.55);
-          osc.connect(g); g.connect(ctx.destination);
-          osc.start(t0); osc.stop(t0 + 0.6);
-        } catch (e) {}
+      celebration: () => {
+        if (!soundEnabled) return;
+        const notes = [523.25, 659.25, 783.99, 1046.5];
+        notes.forEach((n, i) => {
+          setTimeout(() => playTone(n, 0.22, 'triangle', 0.2), i * 110);
+        });
       }
     };
 
-    function toggleInkSound() {
-      InkSound.enabled = !InkSound.enabled;
-      localStorage.setItem('humayun_ink_sound', InkSound.enabled ? 'on' : 'off');
-      document.getElementById('inkSoundBtn').textContent = InkSound.enabled ? '🔊' : '🔇';
-      if (!InkSound.enabled) InkSound.stop();
-    }
-    if (!InkSound.enabled) document.getElementById('inkSoundBtn').textContent = '🔇';
+    const STUDENT = "humayun";
+    const SUBJECT_TOPIC = "maths_division_oct05";
+    const STORAGE_PREFIX = `ink::${STUDENT}::${SUBJECT_TOPIC}::standard`;
 
-    /* ==========================================================
-       8D HYPER-SPATIAL CAROUSEL NAVIGATION LOGIC
-    ========================================================== */
-    let activeTrialIdx = 0;
-    const trialKeys = ['trial13', 'trial14', 'trial15'];
+    // 9 Division Equations matching textbook key[cite: 1]
+    const baseQuestions = [
+      { id: "q1", num1: 45, num2: 9, answer: 5, missing: "ans", colorHex: "#3b82f6", colorName: "Dark Blue", targetArc: 5 },
+      { id: "q2", num1: 24, num2: 2, answer: 12, missing: "ans", colorHex: "#ef4444", colorName: "Red", targetArc: 12 },
+      { id: "q3", num1: 21, num2: 7, answer: 3, missing: "div", colorHex: "#eab308", colorName: "Yellow", targetArc: 3 },
+      { id: "q4", num1: 25, num2: 5, answer: 5, missing: "ans", colorHex: "#ec4899", colorName: "Hot Pink", targetArc: 5 },
+      { id: "q5", num1: 20, num2: 5, answer: 4, missing: "div", colorHex: "#84cc16", colorName: "Light Green", targetArc: 4 },
+      { id: "q6", num1: 32, num2: 4, answer: 8, missing: "ans", colorHex: "#7dd3fc", colorName: "Sky Blue", targetArc: 8 },
+      { id: "q7", num1: 18, num2: 9, answer: 2, missing: "div", colorHex: "#f472b6", colorName: "Salmon Pink", targetArc: null },
+      { id: "q8", num1: 60, num2: 10, answer: 6, missing: "ans", colorHex: "#f97316", colorName: "Orange", targetArc: 6 },
+      { id: "q9", num1: 49, num2: 7, answer: 7, missing: "ans", colorHex: "#6d28d9", colorName: "Deep Purple", targetArc: 7 }
+    ];
 
-    function rotateToTrial(newIdx) {
-      playMagicWhoosh(true);
-      activeTrialIdx = (newIdx + 3) % 3;
-      update8DCarouselDOM();
-    }
-
-    function update8DCarouselDOM() {
-      for (let i = 0; i < 3; i++) {
-        const card = document.getElementById(`card8d_${i}`);
-        const dot = document.getElementById(`dot8d_${i}`);
-        if (!card) continue;
-        card.className = 'carousel-8d-card';
-
-        const offset = (i - activeTrialIdx + 3) % 3;
-        if (offset === 0) {
-          card.classList.add('pos-center');
-          if (dot) dot.className = 'w-3 h-3 rounded-full bg-amber-400 transition-all';
-        } else if (offset === 1) {
-          card.classList.add('pos-right');
-          if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-stone-600 transition-all';
-        } else {
-          card.classList.add('pos-left');
-          if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-stone-600 transition-all';
-        }
-      }
-    }
-
-    function handleCardTap(cardIdx) {
-      if (cardIdx === activeTrialIdx) {
-        switchTrial(trialKeys[cardIdx]);
-      } else {
-        rotateToTrial(cardIdx);
-      }
-    }
-
-    (function setup8DSwipeGestures() {
-      const track = document.getElementById('carousel8DTrack');
-      let startX = 0, startY = 0, isTracking = false;
-
-      track.addEventListener('pointerdown', (e) => {
-        startX = e.clientX;
-        startY = e.clientY;
-        isTracking = true;
-      }, { passive: true });
-
-      track.addEventListener('pointerup', (e) => {
-        if (!isTracking) return;
-        isTracking = false;
-        const diffX = e.clientX - startX;
-        const diffY = e.clientY - startY;
-        if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
-          if (diffX > 0) rotateToTrial(activeTrialIdx - 1);
-          else rotateToTrial(activeTrialIdx + 1);
-        }
-      }, { passive: true });
-
-      track.addEventListener('pointercancel', () => { isTracking = false; }, { passive: true });
-    })();
-
-    /* ==========================================================
-       ALL 3 EXERCISES CONSOLIDATED DATASET (EX 1.3, 1.4, 1.5)
-    ========================================================== */
-    const curriculumData = {
-      trial13: {
-        realmName: "Trial I: Number Line Leap (Ex 1.3)",
-        pony: "Kakashi Hatake",
-        avatar: "assets/kakashi.png",
-        themeColor: "from-stone-900 to-cyan-950",
-        questions: [
-          {
-            id: "e13_q1_a",
-            label: "1.a",
-            text: "Divide using number line: 12 ÷ 3 = ?",
-            answer: "4",
-            hasNumberLine: true,
-            maxLine: 20
-          },
-          {
-            id: "e13_q1_b",
-            label: "1.b",
-            text: "Divide using number line: 14 ÷ 7 = ?",
-            answer: "2",
-            hasNumberLine: true,
-            maxLine: 20
-          },
-          {
-            id: "e13_q1_c",
-            label: "1.c",
-            text: "Divide using number line: 9 ÷ 3 = ?",
-            answer: "3",
-            hasNumberLine: true,
-            maxLine: 20
-          },
-          {
-            id: "e13_q2_a",
-            label: "2.a",
-            text: "Noor drew forward jumps up to 11. Correct it: 12 ÷ 3 = ?",
-            answer: "4",
-            hasNumberLine: true,
-            maxLine: 20
-          },
-          {
-            id: "e13_q2_b",
-            label: "2.b",
-            text: "Noor jumped forward to 10. Correct it backward: 10 ÷ 2 = ?",
-            answer: "5",
-            hasNumberLine: true,
-            maxLine: 20
-          }
-        ]
-      },
-      trial14: {
-        realmName: "Trial II: Fact Family Sealing (Ex 1.4)",
-        pony: "Naruto Uzumaki",
-        avatar: "assets/naruto.png",
-        themeColor: "from-amber-950 to-orange-950",
-        questions: [
-          { id: "e14_q1_a", label: "1.a", text: "If 30 ÷ 5 = 6, then 6 × 5 = ?", answer: "30" },
-          { id: "e14_q1_b", label: "1.b", text: "If 40 ÷ 8 = 5, then 8 × ? = 40", answer: "5" },
-          { id: "e14_q1_c", label: "1.c", text: "If 56 ÷ 7 = 8, then ? × 7 = 56", answer: "8" },
-          { id: "e14_q1_d", label: "1.d", text: "If 28 ÷ 7 = 4, then 4 × 7 = ?", answer: "28" },
-          { id: "e14_q1_e", label: "1.e", text: "If 20 ÷ 5 = 4, then 20 ÷ 4 = ?", answer: "5" },
-          { id: "e14_q1_f", label: "1.f", text: "If 50 ÷ 5 = 10, then 50 ÷ 10 = ?", answer: "5" },
-          {
-            id: "e14_q2",
-            label: "Q2",
-            text: "26 candies on 2 plates (13 each). If 13 brownies are on each of 2 plates, how many brownies total?",
-            answer: "26"
-          },
-          {
-            id: "e14_q3",
-            label: "Q3",
-            text: "Vasu gave 20 biscuits to 4 dogs (5 each). If he gives 30 biscuits to 5 dogs, how many biscuits each?",
-            answer: "6"
-          }
-        ]
-      },
-      trial15: {
-        realmName: "Trial III: Long Division Dojo (Ex 1.5)",
-        pony: "Shikamaru Nara",
-        avatar: "assets/shikamaru.png",
-        themeColor: "from-stone-950 to-purple-950",
-        questions: [
-          { id: "e15_q1_a", label: "1.a", text: "Short division: 7 ) 42 = ?", answer: "6" },
-          { id: "e15_q1_b", label: "1.b", text: "Short division: 8 ) 88 = ?", answer: "11" },
-          { id: "e15_q1_c", label: "1.c", text: "Short division: 3 ) 48 = ?", answer: "16" },
-          { id: "e15_q1_d", label: "1.d", text: "Short division: 4 ) 84 = ?", answer: "21" },
-          { id: "e15_q1_e", label: "1.e", text: "Short division: 5 ) 50 = ?", answer: "10" },
-          { id: "e15_q2_a", label: "2.a", text: "Long division: 5 ) 24 ➔ Enter Quotient,Remainder (e.g. 4,4)", answer: "4,4" },
-          { id: "e15_q2_b", label: "2.b", text: "Long division: 6 ) 76 ➔ Enter Quotient,Remainder (e.g. 12,4)", answer: "12,4" },
-          { id: "e15_q2_c", label: "2.c", text: "Long division: 7 ) 81 ➔ Enter Quotient,Remainder (e.g. 11,4)", answer: "11,4" },
-          { id: "e15_q2_d", label: "2.d", text: "Long division: 7 ) 37 ➔ Enter Quotient,Remainder (e.g. 5,2)", answer: "5,2" },
-          { id: "e15_q2_e", label: "2.e", text: "Long division: 8 ) 89 ➔ Enter Quotient,Remainder (e.g. 11,1)", answer: "11,1" },
-          { id: "e15_q3_a", label: "3.a", text: "Fill blanks: 85 ÷ 6 gives quotient and remainder (e.g. 14,1)", answer: "14,1" },
-          { id: "e15_q3_b", label: "3.b", text: "Fill blanks: 48 ÷ 9 gives quotient and remainder (e.g. 5,3)", answer: "5,3" },
-          { id: "e15_q3_c", label: "3.c", text: "Fill blanks: 26 ÷ 7 gives quotient and remainder (e.g. 3,5)", answer: "3,5" },
-          { id: "e15_q3_d", label: "3.d", text: "Fill blanks: 89 ÷ 4 gives quotient and remainder (e.g. 22,1)", answer: "22,1" },
-          { id: "e15_q3_e", label: "3.e", text: "Fill blanks: 75 ÷ 2 gives quotient and remainder (e.g. 37,1)", answer: "37,1" },
-          { id: "e15_q4_a", label: "4.a", text: "Remainder match: What is the remainder of 34 ÷ 3?", answer: "1" },
-          { id: "e15_q4_b", label: "4.b", text: "Remainder match: What is the remainder of 29 ÷ 8?", answer: "5" },
-          { id: "e15_q4_c", label: "4.c", text: "Remainder match: What is the remainder of 16 ÷ 4?", answer: "0" },
-          { id: "e15_q4_d", label: "4.d", text: "Remainder match: What is the remainder of 70 ÷ 6?", answer: "4" }
-        ]
-      }
+    const arcGeometry = {
+      12: { radius: 220, strokeWidth: 26 },
+      6:  { radius: 190, strokeWidth: 26 },
+      3:  { radius: 160, strokeWidth: 26 },
+      4:  { radius: 130, strokeWidth: 26 },
+      8:  { radius: 100, strokeWidth: 26 },
+      5:  { radius: 70,  strokeWidth: 26 },
+      7:  { radius: 40,  strokeWidth: 26 }
     };
 
-    let currentTrialKey = 'trial13';
-    let currentIndexMap = { trial13: 0, trial14: 0, trial15: 0 };
-    const activePages = {};
-    const canvasStates = {};
-    const binderOpenedMap = {};
-    let activeResizeObserver = null;
-    let currentInputTargetId = null;
+    let questions = JSON.parse(JSON.stringify(baseQuestions));
+    let userAnswers = {};
+    let attemptsCount = {};
+    let lockedCards = {};
+    let activeBrush = null;
+    let paintedArcs = {};
+    let strokeDistance = 0;
+    let activeCardIndex = 0;
 
-    function switchTrial(trialKey) {
-      playMagicWhoosh(true);
-      currentTrialKey = trialKey;
-      document.getElementById('gatewayView').classList.add('hidden');
-      document.getElementById('activeCardContainer').classList.remove('hidden');
-      document.getElementById('gatewayNavBtn').classList.remove('hidden');
-      renderActiveCard(true);
-    }
+    function renderQuestionCards() {
+      const container = document.getElementById("questionsContainer");
+      if (!container) return;
+      container.innerHTML = "";
 
-    function returnToGateway() {
-      playMagicWhoosh(false);
-      const trial = curriculumData[currentTrialKey];
-      const q = trial.questions[currentIndexMap[currentTrialKey]];
-      if (q) saveCurrentCanvasInk(q.id);
+      questions.forEach((q, idx) => {
+        const userVal = userAnswers[q.id] || "";
+        const isSolved = userVal !== "" && parseInt(userVal, 10) === q.answer;
+        const isPainted = q.targetArc ? !!paintedArcs[q.targetArc] : isSolved;
+        const isLocked = !!lockedCards[q.id];
 
-      document.getElementById('activeCardContainer').classList.add('hidden');
-      document.getElementById('gatewayNavBtn').classList.add('hidden');
-      document.getElementById('gatewayView').classList.remove('hidden');
-    }
+        const card = document.createElement("div");
+        let cardClass = "q-card";
+        if (idx === activeCardIndex) cardClass += " active-target";
 
-    function changeQuestion(direction) {
-      const trial = curriculumData[currentTrialKey];
-      const curQ = trial.questions[currentIndexMap[currentTrialKey]];
-      if (curQ) saveCurrentCanvasInk(curQ.id);
+        if (isSolved && isPainted) {
+          cardClass += " completed";
+        } else if (isSolved && !isPainted) {
+          cardClass += " ready-to-color";
+        } else if (isLocked) {
+          cardClass += " is-locked";
+        } else if (userVal !== "" && !isSolved) {
+          cardClass += " is-wrong";
+        }
 
-      let newIndex = currentIndexMap[currentTrialKey] + direction;
-      if (newIndex >= 0 && newIndex < trial.questions.length) {
-        playMagicWhoosh(true);
-        currentIndexMap[currentTrialKey] = newIndex;
-        renderActiveCard(true);
-      }
-    }
+        card.className = cardClass;
+        card.id = `card_${q.id}`;
+        card.onclick = () => selectActiveCard(idx);
 
-    function switchPageSmoothly(qId, delta) {
-      if (!activePages[qId]) activePages[qId] = 1;
-      let targetPage = activePages[qId] + delta;
-      if (targetPage >= 1 && targetPage <= 2) {
-        saveCurrentCanvasInk(qId);
-        activePages[qId] = targetPage;
-        const ind = document.getElementById(`pageIndicator_${qId}`);
-        if (ind) ind.innerText = `Pg ${targetPage} / 2`;
-        loadCanvasInk(qId, targetPage);
-      }
-    }
+        let equationHtml = "";
+        if (q.missing === "ans") {
+          equationHtml = `
+            <span>${q.num1}</span>
+            <span class="math-sym">÷</span>
+            <span>${q.num2}</span>
+            <span class="math-sym">=</span>
+            <div class="target-box" id="val_${q.id}">${userVal}</div>
+          `;
+        } else {
+          equationHtml = `
+            <span>${q.num1}</span>
+            <span class="math-sym">÷</span>
+            <div class="target-box" id="val_${q.id}">${userVal}</div>
+            <span class="math-sym">=</span>
+            <span>${q.num2}</span>
+          `;
+        }
 
-    /* RENDER UNGUIDED CHUNIN WORKBOOK BINDER WITH BUILT-IN ON-SCREEN KEYPAD */
-    function renderActiveCard(animate = false) {
-      const container = document.getElementById('activeCardContainer');
-      const trial = curriculumData[currentTrialKey];
-      const qIndex = currentIndexMap[currentTrialKey];
-      const q = trial.questions[qIndex];
-      const savedAnswer = localStorage.getItem(`humayun_ans_${q.id}`) || '';
-      
-      if (!activePages[q.id]) activePages[q.id] = 1;
-      const currentPage = activePages[q.id];
-      const isBinderOpen = !!binderOpenedMap[q.id];
-      currentInputTargetId = `ans_${q.id}`;
+        let statusTag = "";
+        if (isSolved && isPainted) {
+          statusTag = `<span class="card-status-tag" style="color:#10b981;">✓ Done</span>`;
+        } else if (isSolved && !isPainted) {
+          statusTag = `<span class="card-status-tag" style="color:#d97706;">🎨 Stroke Arc ${q.targetArc}!</span>`;
+        } else if (isLocked) {
+          statusTag = `<span class="card-status-tag" style="color:#b45309;">🔒 Locked</span>`;
+        } else if (userVal !== "" && !isSolved) {
+          statusTag = `<span class="card-status-tag" style="color:#ef4444;">Try 1/2</span>`;
+        }
 
-      container.innerHTML = `
-        <div class="bg-stone-50 rounded-2xl card-4d ${animate ? 'page-flip-anim' : ''} border-2 border-amber-900/40 overflow-hidden relative w-full">
-          <!-- Top Navigation & Question Statement -->
-          <div class="p-3.5 bg-stone-900 text-stone-100 border-b border-amber-900/40 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-            <div class="flex items-center gap-3">
-              <span class="bg-amber-600 text-white font-bold text-xs px-2.5 py-1 rounded-lg">${q.label}</span>
-              <p class="font-bold text-amber-200 text-sm md:text-base">${q.text}</p>
+        let clueHtml = "";
+        if (isLocked) {
+          clueHtml = `<div class="locked-clue">🔒 Rework on Scratchpad to Unlock</div>`;
+        }
+
+        card.innerHTML = `
+          <div class="q-swatch-header">
+            <div class="q-swatch-info">
+              <span class="q-color-dot" style="background-color: ${q.colorHex};"></span>
+              <span>${q.colorName}</span>
             </div>
-            <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-              <!-- READONLY INPUT (PREVENTS SAMSUNG TABLET VIRTUAL KEYBOARD FROM POPPING UP) -->
-              <input type="text" readonly inputmode="none" id="ans_${q.id}" value="${savedAnswer}" placeholder="Tap keypad..." 
-                class="px-3 py-1.5 rounded-lg border-2 border-amber-500/70 bg-stone-800 text-amber-300 text-sm w-36 focus:outline-none focus:ring-2 focus:ring-amber-400 font-bold text-center cursor-pointer"
-                onclick="focusTargetInput('ans_${q.id}')">
-              <button onclick="checkAnswer('${q.id}', '${q.answer}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3.5 py-1.5 rounded-lg transition shadow-md text-sm cursor-pointer">⚔️</button>
-            </div>
+            ${statusTag}
           </div>
-
-          <!-- Navigation Breadcrumb -->
-          <div class="bg-amber-100/80 px-4 py-2 border-b border-amber-300 flex justify-between items-center text-xs text-amber-950 font-bold">
-            <span>${trial.realmName} (${qIndex + 1} of ${trial.questions.length})</span>
-            <div class="flex gap-2">
-              <button onclick="changeQuestion(-1)" ${qIndex === 0 ? 'disabled' : ''} class="px-3 py-1 bg-white border border-amber-300 rounded-lg shadow-sm font-bold ${qIndex === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-amber-50 cursor-pointer'}">⬅️ Prev</button>
-              <button onclick="changeQuestion(1)" ${qIndex === trial.questions.length - 1 ? 'disabled' : ''} class="px-3 py-1 bg-white border border-amber-300 rounded-lg shadow-sm font-bold ${qIndex === trial.questions.length - 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-amber-50 cursor-pointer'}">Next ➡️</button>
-            </div>
+          <div class="equation-row">
+            ${equationHtml}
           </div>
+          ${clueHtml}
+        `;
 
-          <!-- Workspace Surface -->
-          <div class="relative workspace-h bg-stone-100 overflow-hidden flex flex-col">
-            
-            ${q.hasNumberLine ? `
-              <!-- Tree-Branch Number Line Leap Strip (Ex 1.3) -->
-              <div class="p-3 bg-stone-200 border-b-2 border-amber-800/20 shrink-0">
-                <div class="number-line-wood-bar">
-                  <div class="flex justify-between items-center text-xs font-bold text-amber-300">
-                    <span>⚔️ Tree-Branch Number Line (Draw backward jumps with pen):</span>
-                    <button type="button" class="text-[11px] underline text-amber-400" onclick="clearLineCanvas('${q.id}')">Clear Line</button>
-                  </div>
-                  <div class="line-canvas-wrapper" id="lineWrapper_${q.id}">
-                    <canvas id="lineCanvas_${q.id}" class="w-full h-full cursor-crosshair touch-none"></canvas>
-                  </div>
-                </div>
-              </div>
-            ` : ''}
-
-            <!-- Main Interactive Middle Split: Canvas on Left, Tactile Keypad on Right -->
-            <div class="flex-1 flex flex-col md:flex-row bg-white relative overflow-hidden">
-              
-              <!-- Left: Canvas Area -->
-              <div class="flex-1 flex flex-col relative h-full">
-                <!-- Toolbar -->
-                <div class="bg-stone-900 text-amber-200 p-2 flex justify-between items-center z-10 shadow-md flex-wrap gap-2 border-b border-amber-900/40 shrink-0">
-                  <div class="flex items-center gap-2">
-                    <button onclick="setTool('${q.id}', 'pen')" id="toolPen_${q.id}" class="p-1.5 rounded bg-amber-600 text-white shadow">✏️</button>
-                    <button onclick="setTool('${q.id}', 'line')" id="toolLine_${q.id}" class="p-1.5 rounded hover:bg-stone-800">📏</button>
-                    <button onclick="setTool('${q.id}', 'eraser')" id="toolEraser_${q.id}" class="p-1.5 rounded hover:bg-stone-800">🧹</button>
-                    <button onclick="undoInk('${q.id}')" title="Undo" class="p-1.5 rounded hover:bg-stone-800">↩️</button>
-                    <button onclick="clearCanvas('${q.id}')" class="p-1.5 rounded hover:bg-stone-800 text-rose-400">🗑️</button>
-                  </div>
-
-                  <!-- Page Navigation (Pg 1 / 2) -->
-                  <div class="flex items-center bg-stone-800 px-3 py-1 rounded-xl border border-amber-700/60 shadow-inner gap-3">
-                    <button onclick="switchPageSmoothly('${q.id}', -1)" class="hover:scale-110 transition text-amber-300">◀️</button>
-                    <span id="pageIndicator_${q.id}" class="text-xs font-bold tracking-wider text-amber-400">Pg ${currentPage} / 2</span>
-                    <button onclick="switchPageSmoothly('${q.id}', 1)" class="hover:scale-110 transition text-amber-300">▶️</button>
-                  </div>
-
-                  <div class="flex items-center gap-2">
-                    <div class="flex gap-1.5 ml-2 items-center">
-                      <button onclick="setColor('${q.id}', '#1e1b4b')" class="w-6 h-6 rounded-full bg-slate-900 border-2 border-white shadow"></button>
-                      <button onclick="setColor('${q.id}', '#2563eb')" class="w-6 h-6 rounded-full bg-blue-600 border-2 border-white shadow"></button>
-                      <button onclick="setColor('${q.id}', '#dc2626')" class="w-6 h-6 rounded-full bg-red-600 border-2 border-white shadow"></button>
-                    </div>
-                    <button onclick="closeBinder('${q.id}')" class="bg-amber-800 text-amber-100 text-xs px-2.5 py-1 rounded font-bold shadow ml-2 hover:bg-amber-700">📕 Cover</button>
-                  </div>
-                </div>
-
-                <!-- Graph Writing Surface -->
-                <div class="flex-1 ninja-graph-paper relative overflow-hidden select-none touch-none" id="canvasArea_${q.id}">
-                  <div class="absolute right-2 bottom-0 pointer-events-none z-10 opacity-60 hover:opacity-90 transition duration-300 flex flex-col items-end">
-                    <img src="${trial.avatar}" id="activePonyAvatar" class="w-40 h-40 md:w-52 md:h-52 object-contain filter drop-shadow-[0_20px_30px_rgba(0,0,0,0.5)] transform rotate-[-4deg]" alt="${trial.pony}" onerror="handleImageFallback(this)"/>
-                  </div>
-                  <canvas id="canvas_${q.id}" oncontextmenu="return false;" class="absolute inset-0 w-full h-full cursor-crosshair touch-none z-10"></canvas>
-                </div>
-              </div>
-
-              <!-- Right: Built-in Carved River-Stone Keypad Dock -->
-              <div class="w-full md:w-64 bg-stone-900 border-t md:border-t-0 md:border-l-2 border-amber-900/40 p-2.5 flex flex-col justify-between shrink-0">
-                <div class="keypad-stone-dock">
-                  <div class="keypad-slot-row">
-                    <span class="keypad-slot-label">Slot:</span>
-                    <div class="keypad-carved-display" id="keypadCarvedDisplay">${savedAnswer || "?"}</div>
-                  </div>
-
-                  <div class="stone-keys-grid">
-                    <button type="button" class="stone-key-btn" onclick="pressStoneKey('1')">1</button>
-                    <button type="button" class="stone-key-btn" onclick="pressStoneKey('2')">2</button>
-                    <button type="button" class="stone-key-btn" onclick="pressStoneKey('3')">3</button>
-                    <button type="button" class="stone-key-btn btn-del" onclick="pressStoneKey('DEL')">⌫</button>
-
-                    <button type="button" class="stone-key-btn" onclick="pressStoneKey('4')">4</button>
-                    <button type="button" class="stone-key-btn" onclick="pressStoneKey('5')">5</button>
-                    <button type="button" class="stone-key-btn" onclick="pressStoneKey('6')">6</button>
-                    <button type="button" class="stone-key-btn btn-qr-comma" onclick="pressStoneKey(',')">Q , R</button>
-
-                    <button type="button" class="stone-key-btn" onclick="pressStoneKey('7')">7</button>
-                    <button type="button" class="stone-key-btn" onclick="pressStoneKey('8')">8</button>
-                    <button type="button" class="stone-key-btn" onclick="pressStoneKey('9')">9</button>
-                    <button type="button" class="stone-key-btn" onclick="pressStoneKey('0')">0</button>
-
-                    <button type="button" class="stone-key-btn btn-submit" onclick="checkAnswer('${q.id}', '${q.answer}')">
-                      ⚔️ Submit
-                    </button>
-                    <button type="button" class="stone-key-btn btn-del text-xs" onclick="pressStoneKey('CLR')">Clear</button>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-            <!-- 3D Chunin Binder Cover with Wax Stamp -->
-            <div id="binderCover_${q.id}" class="binder-cover ${isBinderOpen ? 'binder-open' : ''} absolute inset-0 bg-gradient-to-br ${trial.themeColor} text-white p-8 flex flex-col justify-between shadow-2xl z-30 cursor-pointer" onclick="openBinder('${q.id}')">
-              <div class="notebook-spine-rings">
-                <div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div>
-              </div>
-
-              <div class="flex justify-between items-start ml-8 relative z-10">
-                <span class="bg-amber-500/30 border border-amber-400 text-amber-200 px-3.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase font-display">Oct 16 Exam Vault</span>
-                <span class="text-2xl">📜</span>
-              </div>
-
-              <div class="mx-auto my-auto composition-label-box text-slate-900 rounded-2xl p-4 pl-9 w-72 shadow-2xl border-4 border-amber-950">
-                <div class="absolute inset-0 border-2 border-red-500/80 rounded-xl pointer-events-none m-1"></div>
-                <div class="flex flex-col gap-1 text-left relative z-10">
-                  <div class="text-[10px] uppercase font-extrabold text-amber-950 tracking-widest border-b-2 border-amber-500 pb-0.5">Konoha Chunin Exam</div>
-                  <div class="font-hand text-lg text-amber-950 font-bold leading-tight pt-0.5">Humayun • Division</div>
-                  <div class="font-hand text-base text-rose-700 font-bold leading-tight">${trial.realmName.split(':')[0]}</div>
-                  <div class="font-hand text-xs text-amber-800 font-bold bg-amber-100 border border-amber-300 rounded px-2 py-0.5 mt-1 inline-block w-fit">Examiner: ${trial.pony}</div>
-                </div>
-              </div>
-
-              <div class="text-center flex flex-col items-center gap-2 ml-8 relative z-10">
-                <img src="${trial.avatar}" class="w-20 h-20 object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)] animate-bounce" alt="${trial.pony}" onerror="handleImageFallback(this)"/>
-                <span class="bg-amber-400 text-stone-950 font-bold px-4 py-2 rounded-xl shadow-lg text-xs uppercase tracking-widest">Tap to Open Binder ⚡</span>
-              </div>
-
-              <div class="text-center text-xs text-amber-300 ml-8 relative z-10">
-                ${q.label} • Clean Independent Workspace
-              </div>
-            </div>
-
-          </div>
-        </div>
-      `;
-
-      initCanvas(q.id, currentPage);
-      if (q.hasNumberLine) {
-        setTimeout(() => initNumberLineCanvas(q.id, q.maxLine || 20), 50);
-      }
-    }
-
-    /* KEYPAD INPUT ENGINE (NO SYSTEM VIRTUAL KEYBOARD INVOLVEMENT) */
-    function focusTargetInput(targetId) {
-      currentInputTargetId = targetId;
-      playStoneClick();
-    }
-
-    function pressStoneKey(val) {
-      playStoneClick();
-      if (!currentInputTargetId) return;
-      const target = document.getElementById(currentInputTargetId);
-      if (!target) return;
-
-      if (val === 'DEL') {
-        target.value = target.value.slice(0, -1);
-      } else if (val === 'CLR') {
-        target.value = '';
-      } else {
-        if (target.value.length < 8) target.value += val;
-      }
-
-      // Sync display & storage
-      const disp = document.getElementById('keypadCarvedDisplay');
-      if (disp) disp.textContent = target.value.length > 0 ? target.value : "?";
-
-      const qId = currentInputTargetId.replace('ans_', '');
-      saveAnswer(qId);
-    }
-
-    let lastPenSeen = 0;
-
-    function syncCanvasResolution(canvas, container, id) {
-      const dpr = Math.min(window.devicePixelRatio || 1, 3);
-      const cssW = container.clientWidth;
-      const cssH = container.clientHeight;
-      if (!cssW || !cssH) return;
-      const targetW = Math.round(cssW * dpr);
-      const targetH = Math.round(cssH * dpr);
-      if (canvas.width === targetW && canvas.height === targetH) return;
-
-      canvas.style.width = cssW + 'px';
-      canvas.style.height = cssH + 'px';
-      canvas.width = targetW;
-      canvas.height = targetH;
-      canvas.dataset.dpr = String(dpr);
-
-      const ctx = canvas.getContext('2d');
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      loadCanvasInk(id, activePages[id] || 1);
-    }
-
-    /* UNGUIDED S-PEN WRITING CANVAS */
-    function initCanvas(id, page) {
-      const canvas = document.getElementById(`canvas_${id}`);
-      const container = document.getElementById(`canvasArea_${id}`);
-      if (!canvas || !container) return;
-      const ctx = canvas.getContext('2d');
-
-      if (!canvasStates[id]) canvasStates[id] = { tool: 'pen', color: '#1e1b4b' };
-      syncCanvasResolution(canvas, container, id);
-
-      if (activeResizeObserver) activeResizeObserver.disconnect();
-      if (window.ResizeObserver) {
-        activeResizeObserver = new ResizeObserver(() => syncCanvasResolution(canvas, container, id));
-        activeResizeObserver.observe(container);
-      }
-
-      let activePointerId = null;
-      let activeType = null;
-      let strokeTool = null;
-      let lastX = 0, lastY = 0, startX = 0, startY = 0;
-      let cachedRect = null;
-      let snapshot = null;
-
-      const localXY = (e) => {
-        const r = canvas.getBoundingClientRect();
-        return [e.clientX - r.left, e.clientY - r.top];
-      };
-
-      const drawSegment = (x1, y1, x2, y2, pressure) => {
-        ctx.save();
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        if (strokeTool === 'eraser') {
-          ctx.globalCompositeOperation = 'destination-out';
-          ctx.strokeStyle = '#000';
-          ctx.lineWidth = 28;
-        } else {
-          ctx.globalCompositeOperation = 'source-over';
-          ctx.strokeStyle = canvasStates[id].color;
-          ctx.lineWidth = 2.5 * (0.8 + (pressure > 0 ? pressure : 0.5) * 0.8);
-        }
-        ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        ctx.stroke();
-        ctx.restore();
-      };
-
-      const drawDot = (x, y, pressure) => {
-        ctx.save();
-        if (strokeTool === 'eraser') {
-          ctx.globalCompositeOperation = 'destination-out';
-          ctx.fillStyle = '#000';
-          ctx.beginPath();
-          ctx.arc(x, y, 14, 0, Math.PI * 2);
-        } else {
-          ctx.fillStyle = canvasStates[id].color;
-          ctx.beginPath();
-          ctx.arc(x, y, 2.2 * (0.8 + (pressure > 0 ? pressure : 0.5) * 0.8), 0, Math.PI * 2);
-        }
-        ctx.fill();
-        ctx.restore();
-      };
-
-      const drawGlowLine = (x1, y1, x2, y2, color) => {
-        const dpr = Number(canvas.dataset.dpr) || 1;
-        ctx.save();
-        ctx.lineCap = 'round';
-        ctx.strokeStyle = color;
-        ctx.shadowColor = color;
-        ctx.shadowBlur = 14 * dpr;
-        ctx.lineWidth = 2.5;
-        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-        ctx.shadowBlur = 0;
-        ctx.globalAlpha = 0.9;
-        ctx.lineWidth = 1.2;
-        ctx.strokeStyle = '#FFFFFF';
-        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-        ctx.restore();
-      };
-
-      const endStroke = () => {
-        if (activePointerId === null) return;
-        InkSound.stop();
-        if (strokeTool === 'line' && snapshot) {
-          const len = Math.hypot(lastX - startX, lastY - startY);
-          ctx.putImageData(snapshot, 0, 0);
-          if (len > 6) {
-            drawGlowLine(startX, startY, lastX, lastY, canvasStates[id].color);
-            InkSound.glideChime();
-          }
-        }
-        snapshot = null;
-        activePointerId = null;
-        activeType = null;
-        strokeTool = null;
-        saveCurrentCanvasInk(id);
-      };
-
-      canvas.addEventListener('pointerenter', (e) => {
-        if (e.pointerType === 'pen') lastPenSeen = Date.now();
+        container.appendChild(card);
       });
 
-      // RIGID PALM REJECTION
-      canvas.addEventListener('pointerdown', (e) => {
-        if (e.pointerType === 'pen') {
-          lastPenSeen = Date.now();
-          if (activePointerId !== null && activeType === 'touch') endStroke();
+      updateActiveLabel();
+    }
+
+    function selectActiveCard(idx) {
+      activeCardIndex = idx;
+      document.querySelectorAll(".q-card").forEach((c, i) => {
+        c.classList.toggle("active-target", i === activeCardIndex);
+      });
+      updateActiveLabel();
+    }
+
+    function updateActiveLabel() {
+      if (!questions || !questions[activeCardIndex]) return;
+      const current = questions[activeCardIndex];
+      const lbl = document.getElementById("activeTargetLabel");
+      if (lbl) {
+        if (lockedCards[current.id]) {
+          lbl.innerText = `Active: ${current.colorName} (🔒 Locked - Scratchpad Required)`;
         } else {
-          const palm = Math.max(e.width || 0, e.height || 0) > 26;
-          const penBusy = Date.now() - lastPenSeen < 1200;
-          if (palm || penBusy || activePointerId !== null) return;
+          lbl.innerText = `Active: ${current.colorName}`;
         }
-        if (activePointerId !== null) return;
-
-        e.preventDefault();
-        InkSound.init();
-        activePointerId = e.pointerId;
-        activeType = e.pointerType;
-        try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
-
-        const barrelEraser = e.pointerType === 'pen' && ((e.buttons & 32) || e.button === 5);
-        strokeTool = barrelEraser ? 'eraser' : canvasStates[id].tool;
-
-        cachedRect = canvas.getBoundingClientRect();
-        const [x, y] = localXY(e);
-        startX = lastX = x;
-        startY = lastY = y;
-        if (strokeTool === 'line') {
-          snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        } else {
-          drawDot(x, y, e.pressure);
-        }
-      });
-
-      canvas.addEventListener('pointermove', (e) => {
-        if (e.pointerType === 'pen') lastPenSeen = Date.now();
-        if (e.pointerId !== activePointerId) return;
-        if (!cachedRect) cachedRect = canvas.getBoundingClientRect();
-
-        if (strokeTool === 'line') {
-          const [x, y] = localXY(e);
-          if (snapshot) ctx.putImageData(snapshot, 0, 0);
-          ctx.save();
-          ctx.lineCap = 'round';
-          ctx.strokeStyle = canvasStates[id].color;
-          ctx.lineWidth = 2.5;
-          ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(x, y); ctx.stroke();
-          ctx.restore();
-          lastX = x; lastY = y;
-          return;
-        }
-
-        const events = (e.getCoalescedEvents && e.getCoalescedEvents().length) ? e.getCoalescedEvents() : [e];
-        let total = 0;
-        for (const ev of events) {
-          const [x, y] = localXY(ev);
-          total += Math.hypot(x - lastX, y - lastY);
-          drawSegment(lastX, lastY, x, y, ev.pressure);
-          lastX = x; lastY = y;
-        }
-        InkSound.update(strokeTool === 'eraser' ? 'eraser' : 'pen', total / events.length);
-      });
-
-      canvas.addEventListener('pointerup', (e) => { if (e.pointerId === activePointerId) endStroke(); });
-      canvas.addEventListener('pointercancel', (e) => { if (e.pointerId === activePointerId) endStroke(); });
-    }
-
-    /* NUMBER LINE DRAWING ENGINE FOR EXERCISE 1.3 */
-    function initNumberLineCanvas(qId, maxTick = 20) {
-      const c = document.getElementById(`lineCanvas_${qId}`);
-      const w = document.getElementById(`lineWrapper_${qId}`);
-      if (!c || !w) return;
-      const ctx = c.getContext('2d');
-      const dpr = window.devicePixelRatio || 1;
-      const rect = w.getBoundingClientRect();
-
-      c.width = Math.floor(rect.width * dpr);
-      c.height = Math.floor(rect.height * dpr);
-      c.style.width = rect.width + 'px';
-      c.style.height = rect.height + 'px';
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-      // Draw horizontal axis & graduation numbers
-      const startX = 24;
-      const endX = rect.width - 24;
-      const yAxis = 68;
-      const step = (endX - startX) / maxTick;
-
-      ctx.strokeStyle = "#8C5727";
-      ctx.lineWidth = 2.5;
-      ctx.beginPath();
-      ctx.moveTo(startX - 8, yAxis);
-      ctx.lineTo(endX + 8, yAxis);
-      ctx.stroke();
-
-      ctx.fillStyle = "#3E2413";
-      ctx.font = "bold 11px Fredoka, sans-serif";
-      ctx.textAlign = "center";
-
-      for (let i = 0; i <= maxTick; i++) {
-        const x = startX + i * step;
-        ctx.beginPath();
-        ctx.moveTo(x, yAxis - 8);
-        ctx.lineTo(x, yAxis + 8);
-        ctx.stroke();
-        ctx.fillText(i.toString(), x, yAxis - 12);
-      }
-
-      // Restore saved arcs if present
-      const savedKey = `humayun_line_${qId}`;
-      const saved = localStorage.getItem(savedKey);
-      if (saved) {
-        const img = new Image();
-        img.onload = () => { ctx.drawImage(img, 0, 0, rect.width, rect.height); };
-        img.src = saved;
-      }
-
-      let isDrawingLine = false;
-      let lastX = 0, lastY = 0;
-
-      c.onpointerdown = (e) => {
-        isDrawingLine = true;
-        try { c.setPointerCapture(e.pointerId); } catch (_) {}
-        const r = c.getBoundingClientRect();
-        lastX = e.clientX - r.left;
-        lastY = e.clientY - r.top;
-        ctx.beginPath();
-        ctx.moveTo(lastX, lastY);
-        ctx.strokeStyle = "#DC2626";
-        ctx.lineWidth = 3;
-        ctx.lineCap = "round";
-      };
-
-      c.onpointermove = (e) => {
-        if (!isDrawingLine) return;
-        const r = c.getBoundingClientRect();
-        const x = e.clientX - r.left;
-        const y = e.clientY - r.top;
-        ctx.lineTo(x, y);
-        ctx.stroke();
-        lastX = x; lastY = y;
-      };
-
-      const stopLine = (e) => {
-        if (!isDrawingLine) return;
-        isDrawingLine = false;
-        try { c.releasePointerCapture(e.pointerId); } catch (_) {}
-        try { localStorage.setItem(savedKey, c.toDataURL()); } catch (_) {}
-      };
-
-      c.onpointerup = stopLine;
-      c.onpointercancel = stopLine;
-    }
-
-    function clearLineCanvas(qId) {
-      localStorage.removeItem(`humayun_line_${qId}`);
-      initNumberLineCanvas(qId, 20);
-    }
-
-    /* INK STORAGE & RESTORATION (EXERCISE 5.4 LOSSLESS ARCHITECTURE) */
-    function loadCanvasInk(id, page) {
-      const canvas = document.getElementById(`canvas_${id}`);
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      ctx.save();
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.restore();
-
-      const key = `humayun_ink_${id}_p${page}`;
-      const saved = localStorage.getItem(key);
-      if (!saved) return;
-      let size = null;
-      try { size = JSON.parse(localStorage.getItem(key + '_size') || 'null'); } catch (_) {}
-
-      const img = new Image();
-      img.onload = () => {
-        const sw = size ? size.w : img.width;
-        const sh = size ? size.h : img.height;
-        const s = Math.min(canvas.width / sw, canvas.height / sh);
-        ctx.save();
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.drawImage(img, 0, 0, img.width * s, img.height * s);
-        ctx.restore();
-      };
-      img.src = saved;
-    }
-
-    function saveCurrentCanvasInk(id) {
-      const canvas = document.getElementById(`canvas_${id}`);
-      if (!canvas || canvas.width <= 0 || canvas.height <= 0) return;
-      const page = activePages[id] || 1;
-      const key = `humayun_ink_${id}_p${page}`;
-      try {
-        const previous = localStorage.getItem(key) || '';
-        const next = canvas.toDataURL();
-        if (previous !== next) pushUndo(key, previous);
-        localStorage.setItem(key, next);
-        localStorage.setItem(key + '_size', JSON.stringify({ w: canvas.width, h: canvas.height }));
-      } catch (_) {}
-    }
-
-    function setTool(id, tool) {
-      canvasStates[id].tool = tool;
-      ['Pen', 'Line', 'Eraser'].forEach(t => {
-        const btn = document.getElementById(`tool${t}_${id}`);
-        if (btn) {
-          if (t.toLowerCase() === tool) {
-            btn.className = "p-1.5 rounded bg-amber-600 text-white shadow";
-          } else {
-            btn.className = "p-1.5 rounded hover:bg-stone-800 text-amber-200";
-          }
-        }
-      });
-    }
-
-    function setColor(id, color) {
-      canvasStates[id].color = color;
-      setTool(id, 'pen');
-    }
-
-    const undoStacks = {};
-    function pushUndo(key, value) {
-      const st = undoStacks[key] || (undoStacks[key] = []);
-      if (st.length && st[st.length - 1] === value) return;
-      st.push(value);
-      if (st.length > 25) st.shift();
-    }
-
-    function undoInk(id) {
-      const page = activePages[id] || 1;
-      const key = `humayun_ink_${id}_p${page}`;
-      const st = undoStacks[key] || [];
-      if (!st.length) return;
-      const previous = st.pop();
-      if (previous) localStorage.setItem(key, previous);
-      else localStorage.removeItem(key);
-      loadCanvasInk(id, page);
-    }
-
-    function clearCanvas(id) {
-      const canvas = document.getElementById(`canvas_${id}`);
-      const ctx = canvas.getContext('2d');
-      const page = activePages[id] || 1;
-      const key = `humayun_ink_${id}_p${page}`;
-      const current = localStorage.getItem(key);
-      if (current) pushUndo(key, current);
-      ctx.save();
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.restore();
-      localStorage.removeItem(key);
-      localStorage.removeItem(key + '_size');
-    }
-
-    function openBinder(id) {
-      playMagicWhoosh(true);
-      binderOpenedMap[id] = true;
-      document.getElementById(`binderCover_${id}`).classList.add('binder-open');
-    }
-
-    function closeBinder(id) {
-      playMagicWhoosh(false);
-      binderOpenedMap[id] = false;
-      saveCurrentCanvasInk(id);
-      document.getElementById(`binderCover_${id}`).classList.remove('binder-open');
-    }
-
-    function saveAnswer(id) {
-      const val = document.getElementById(`ans_${id}`).value;
-      localStorage.setItem(`humayun_ans_${id}`, val);
-    }
-
-    function answersMatch(typed, correct) {
-      const clean = (t) => String(t).replace(/q|=|r|,|\s/gi, '').trim().toLowerCase();
-      const a = clean(typed), b = clean(correct);
-      if (a === '') return false;
-      if (a === b) return true;
-      const na = Number(a), nb = Number(b);
-      return !isNaN(na) && !isNaN(nb) && Math.abs(na - nb) < 1e-7;
-    }
-
-    function checkAnswer(id, correctAnswer) {
-      const val = document.getElementById(`ans_${id}`).value;
-      saveCurrentCanvasInk(id);
-      if (answersMatch(val, correctAnswer)) {
-        triggerGrandCelebration();
-      } else {
-        alert("Chakra mismatch! Check your division steps or remainder calculations on the graph paper and try again.");
       }
     }
 
-    /* GRAND CELEBRATION STAGE */
-    const grandStage = document.getElementById("grandCelebrationStage");
-    const grandCanvas = document.getElementById("grandFinaleCanvas");
-    const grandCtx = grandCanvas.getContext("2d", { alpha: true });
-    let grandAnimRunning = false;
-    let magicConfettiStorm = [];
+    function pressKey(key) {
+      SFX.tap();
+      const current = questions[activeCardIndex];
 
-    function resizeGrandCanvas() {
-      grandCanvas.width = window.innerWidth;
-      grandCanvas.height = window.innerHeight;
-    }
-    window.addEventListener("resize", resizeGrandCanvas);
-
-    function triggerGrandCelebration() {
-      resizeGrandCanvas();
-      grandStage.style.display = 'block';
-      grandAnimRunning = true;
-
-      playTaikoFanfare();
-      document.getElementById("kanjiCenterpiece").className = 'kanji-banner-centerpiece impact';
-
-      const trial = curriculumData[currentTrialKey];
-      document.getElementById("glidingCompanionImg").src = trial.avatar;
-      document.getElementById("royalVictoryImg").src = trial.avatar;
-
-      document.getElementById("royalScrollTitle").innerText = `🌟 ${trial.pony.toUpperCase()} CERTIFIED! 🌟`;
-      document.getElementById("royalScrollBody").innerHTML = `
-        Magnificent work, Humayun!<br/>
-        Your division calculation was verified with complete precision under the Hokage's seal!
-      `;
-
-      magicConfettiStorm = [];
-      const colors = ['#F59E0B', '#DC2626', '#22C55E', '#3B82F6', '#FFFFFF'];
-      for (let i = 0; i < 70; i++) {
-        magicConfettiStorm.push({
-          x: Math.random() * window.innerWidth,
-          y: -20 - Math.random() * 200,
-          size: Math.random() * 8 + 4,
-          vx: (Math.random() - 0.5) * 2,
-          vy: Math.random() * 3 + 2,
-          color: colors[Math.floor(Math.random() * colors.length)]
-        });
-      }
-
-      setTimeout(() => {
-        document.getElementById("royalScrollLandingRight").className = 'royal-scroll-landing-right landed';
-      }, 1200);
-
-      requestAnimationFrame(renderGrandScene);
-    }
-
-    function renderGrandScene() {
-      if (!grandAnimRunning) return;
-      grandCtx.clearRect(0, 0, grandCanvas.width, grandCanvas.height);
-
-      for (let p of magicConfettiStorm) {
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.y > window.innerHeight + 20) p.y = -10;
-        grandCtx.fillStyle = p.color;
-        grandCtx.beginPath();
-        grandCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        grandCtx.fill();
-      }
-      requestAnimationFrame(renderGrandScene);
-    }
-
-    function closeGrandCelebration() {
-      grandAnimRunning = false;
-      grandStage.style.display = 'none';
-      document.getElementById("kanjiCenterpiece").className = 'kanji-banner-centerpiece';
-      document.getElementById("royalScrollLandingRight").className = 'royal-scroll-landing-right';
-      changeQuestion(1);
-    }
-
-    /* BACKGROUND PARTICLES */
-    const fxCanvas = document.getElementById("fxCanvas");
-    const fxCtx = fxCanvas.getContext("2d");
-    let fxLeaves = [];
-
-    function resizeFx() {
-      fxCanvas.width = window.innerWidth;
-      fxCanvas.height = window.innerHeight;
-      fxLeaves = [];
-      for (let i = 0; i < 45; i++) {
-        fxLeaves.push({
-          x: Math.random() * fxCanvas.width,
-          y: Math.random() * fxCanvas.height,
-          radius: Math.random() * 2.5 + 1.2,
-          vx: Math.random() * 1.2 + 0.4,
-          vy: Math.random() * 0.8 + 0.2,
-          color: ['#D97706', '#F59E0B', '#DC2626', '#FEF3C7'][Math.floor(Math.random() * 4)]
-        });
-      }
-    }
-    window.addEventListener("resize", resizeFx);
-    resizeFx();
-
-    function renderFx() {
-      fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
-      for (let l of fxLeaves) {
-        l.x += l.vx;
-        l.y += l.vy;
-        if (l.x > fxCanvas.width) l.x = -10;
-        if (l.y > fxCanvas.height) l.y = -10;
-        fxCtx.fillStyle = l.color;
-        fxCtx.beginPath();
-        fxCtx.arc(l.x, l.y, l.radius, 0, Math.PI * 2);
-        fxCtx.fill();
-      }
-      requestAnimationFrame(renderFx);
-    }
-    requestAnimationFrame(renderFx);
-
-    /* EXIT TO HUB NAVIGATION[cite: 7] */
-    let isLeavingToHub = false;
-    function goToHub(e) {
-      if (e) e.preventDefault();
-      if (isLeavingToHub) return;
-      isLeavingToHub = true;
-
-      try {
-        const trial = curriculumData[currentTrialKey];
-        const q = trial.questions[currentIndexMap[currentTrialKey]];
-        if (q) saveCurrentCanvasInk(q.id);
-      } catch (_) {}
-
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage("close-lesson-to-hub", "*");
-        setTimeout(() => { isLeavingToHub = false; }, 1500);
+      if (lockedCards[current.id]) {
+        SFX.wrong();
+        showNotice(`🔒 This question is locked! Open Scratchpad to calculate.`);
         return;
       }
 
-      setTimeout(() => { window.location.href = "index.html"; }, 60);
+      let currentVal = userAnswers[current.id] || "";
+
+      if (key === "BACK") {
+        currentVal = currentVal.slice(0, -1);
+        userAnswers[current.id] = currentVal;
+        const box = document.getElementById(`val_${current.id}`);
+        if (box) box.innerText = currentVal;
+        return;
+      }
+
+      if (key === "OK") {
+        checkAnswerWithAntiGuess(current, currentVal);
+        return;
+      }
+
+      if (currentVal.length < 2) {
+        currentVal += key;
+        userAnswers[current.id] = currentVal;
+        const box = document.getElementById(`val_${current.id}`);
+        if (box) box.innerText = currentVal;
+      }
     }
 
-    window.addEventListener('load', () => {
-      update8DCarouselDOM();
+    function checkAnswerWithAntiGuess(q, val) {
+      if (!val || val.trim() === "") return;
+
+      const numVal = parseInt(val, 10);
+
+      if (numVal === q.answer) {
+        SFX.success();
+        delete attemptsCount[q.id];
+        delete lockedCards[q.id];
+
+        if (q.targetArc) {
+          activeBrush = {
+            colorHex: q.colorHex,
+            colorName: q.colorName,
+            targetArc: q.targetArc,
+            qid: q.id
+          };
+          strokeDistance = 0;
+          updateBrushShelf();
+          highlightArcBase(q.targetArc);
+        } else {
+          triggerMiniConfetti();
+          showNotice(`⭐ Excellent! 18 ÷ 2 = 9!`);
+        }
+      } else {
+        SFX.wrong();
+        attemptsCount[q.id] = (attemptsCount[q.id] || 0) + 1;
+
+        if (attemptsCount[q.id] >= 2) {
+          lockedCards[q.id] = true;
+          userAnswers[q.id] = "";
+          showNotice(`🔒 2 tries used for ${q.colorName}. Open Scratchpad to calculate!`);
+          advanceToNextUnlocked();
+        } else {
+          userAnswers[q.id] = "";
+          showNotice(`Not quite! You have 1 more try. Check your scratchpad!`);
+        }
+      }
+
+      renderQuestionCards();
+    }
+
+    function advanceToNextUnlocked() {
+      for (let i = 1; i <= questions.length; i++) {
+        const nextIdx = (activeCardIndex + i) % questions.length;
+        const nextQ = questions[nextIdx];
+        const isSolved = userAnswers[nextQ.id] && parseInt(userAnswers[nextQ.id], 10) === nextQ.answer;
+        if (!lockedCards[nextQ.id] && !isSolved) {
+          selectActiveCard(nextIdx);
+          break;
+        }
+      }
+    }
+
+    function unlockCardFromScratchpad() {
+      const current = questions[activeCardIndex];
+      if (current && lockedCards[current.id]) {
+        delete lockedCards[current.id];
+        attemptsCount[current.id] = 1;
+        renderQuestionCards();
+        showNotice(`🔓 ${current.colorName} unlocked for a fresh calculation!`);
+      }
+    }
+
+    /* Rainbow Canvas Logic */
+    const rCanvas = document.getElementById("rainbowPaintCanvas");
+    const rCtx = rCanvas.getContext("2d");
+    const rContainer = document.getElementById("rainbowContainer");
+
+    let isColoring = false;
+    let lastColorPt = null;
+
+    function resizeRainbowCanvas() {
+      const rect = rContainer.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      rCanvas.width = rect.width * dpr;
+      rCanvas.height = rect.height * dpr;
+      rCtx.scale(dpr, dpr);
+      redrawCompletedArcs();
+    }
+
+    window.addEventListener("resize", resizeRainbowCanvas);
+
+    function getRainbowCoordinates(e) {
+      const rect = rCanvas.getBoundingClientRect();
+      const scaleX = 500 / rect.width;
+      const scaleY = 280 / rect.height;
+      return {
+        x: (e.clientX - rect.left) * scaleX,
+        y: (e.clientY - rect.top) * scaleY
+      };
+    }
+
+    function clipToArc(ctx, arcNum) {
+      const geom = arcGeometry[arcNum];
+      if (!geom) return;
+
+      const cx = 250;
+      const cy = 270;
+      const rInner = geom.radius - (geom.strokeWidth / 2);
+      const rOuter = geom.radius + (geom.strokeWidth / 2);
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, rOuter, Math.PI, 0, false);
+      ctx.arc(cx, cy, rInner, 0, Math.PI, true);
+      ctx.closePath();
+      ctx.clip();
+    }
+
+    rCanvas.addEventListener("pointerdown", (e) => {
+      if (!activeBrush) {
+        showNotice("Solve an equation on the right to unlock your brush first!");
+        return;
+      }
+
+      const pt = getRainbowCoordinates(e);
+      const hitArc = getArcAtPoint(pt.x, pt.y);
+      if (hitArc !== activeBrush.targetArc) {
+        SFX.wrong();
+        showNotice(`Use your ${activeBrush.colorName} brush on Arc ${activeBrush.targetArc}!`);
+        return;
+      }
+
+      e.preventDefault();
+      rCanvas.setPointerCapture(e.pointerId);
+      isColoring = true;
+      lastColorPt = pt;
+    });
+
+    rCanvas.addEventListener("pointermove", (e) => {
+      if (!isColoring || !activeBrush) return;
+      e.preventDefault();
+
+      const pt = getRainbowCoordinates(e);
+      const dist = Math.hypot(pt.x - lastColorPt.x, pt.y - lastColorPt.y);
+      strokeDistance += dist;
+
+      if (Math.random() < 0.25) SFX.stroke();
+
+      rCtx.save();
+      const rect = rCanvas.getBoundingClientRect();
+      rCtx.scale(rect.width / 500, rect.height / 280);
+
+      clipToArc(rCtx, activeBrush.targetArc);
+
+      rCtx.beginPath();
+      rCtx.moveTo(lastColorPt.x, lastColorPt.y);
+      rCtx.lineTo(pt.x, pt.y);
+      rCtx.lineCap = "round";
+      rCtx.lineJoin = "round";
+      rCtx.strokeStyle = activeBrush.colorHex;
+      rCtx.lineWidth = 34;
+      rCtx.stroke();
+
+      rCtx.restore();
+      lastColorPt = pt;
+
+      if (strokeDistance > 450) {
+        completeArcFill(activeBrush.targetArc, activeBrush.colorHex, activeBrush.colorName);
+        isColoring = false;
+        try { rCanvas.releasePointerCapture(e.pointerId); } catch(err) {}
+      }
+    });
+
+    rCanvas.addEventListener("pointerup", (e) => {
+      isColoring = false;
+      try { rCanvas.releasePointerCapture(e.pointerId); } catch(err) {}
+    });
+
+    function getArcAtPoint(x, y) {
+      const cx = 250;
+      const cy = 270;
+      const d = Math.hypot(x - cx, y - cy);
+      if (y > cy + 10) return null;
+
+      for (const [arcNum, geom] of Object.entries(arcGeometry)) {
+        if (Math.abs(d - geom.radius) <= (geom.strokeWidth / 2) + 6) {
+          return parseInt(arcNum, 10);
+        }
+      }
+      return null;
+    }
+
+    function completeArcFill(arcNum, colorHex, colorName) {
+      SFX.success();
+      paintedArcs[arcNum] = colorHex;
+      redrawCompletedArcs();
+      clearArcHighlights();
+      triggerMiniConfetti();
+      showNotice(`⭐ Arc ${arcNum} fully painted with ${colorName}!`);
+
+      activeBrush = null;
+      updateBrushShelf();
+      updateColoredArcCount();
+      renderQuestionCards();
+
+      activeCardIndex = (activeCardIndex + 1) % questions.length;
+      selectActiveCard(activeCardIndex);
+
+      checkFullCompletion();
+    }
+
+    function redrawCompletedArcs() {
+      const rect = rCanvas.getBoundingClientRect();
+      rCtx.clearRect(0, 0, rect.width, rect.height);
+
+      for (const [arcNum, colorHex] of Object.entries(paintedArcs)) {
+        const geom = arcGeometry[arcNum];
+        if (!geom) continue;
+
+        rCtx.save();
+        rCtx.scale(rect.width / 500, rect.height / 280);
+        rCtx.beginPath();
+        rCtx.arc(250, 270, geom.radius, Math.PI, 0, false);
+        rCtx.strokeStyle = colorHex;
+        rCtx.lineWidth = geom.strokeWidth;
+        rCtx.lineCap = "round";
+        rCtx.stroke();
+        rCtx.restore();
+      }
+    }
+
+    function highlightArcBase(arcNum) {
+      clearArcHighlights();
+      const targetEl = document.getElementById(`top-arc-${arcNum}`);
+      if (targetEl && !paintedArcs[arcNum]) {
+        targetEl.classList.add("arc-glow");
+      }
+    }
+
+    function clearArcHighlights() {
+      document.querySelectorAll(".rainbow-arc-top").forEach(a => a.classList.remove("arc-glow"));
+    }
+
+    function updateBrushShelf() {
+      const shelf = document.getElementById("brushShelf");
+      if (!shelf) return;
+      if (activeBrush) {
+        shelf.style.background = "#fffbeb";
+        shelf.style.borderColor = "#f59e0b";
+        shelf.innerHTML = `
+          <span class="brush-color-swatch" style="background-color:${activeBrush.colorHex}"></span>
+          <span><strong>${activeBrush.colorName} Active!</strong> Stroke <strong>Arc ${activeBrush.targetArc}</strong> on the rainbow!</span>
+        `;
+      } else {
+        shelf.style.background = "#ffffff";
+        shelf.style.borderColor = "#e2e8f0";
+        shelf.innerHTML = `<span>Tap a card on the right, solve the division, and stroke the rainbow!</span>`;
+      }
+    }
+
+    function showNotice(msg) {
+      const shelf = document.getElementById("brushShelf");
+      if (!shelf) return;
+      shelf.innerHTML = `<span>${msg}</span>`;
+      setTimeout(() => {
+        if (!activeBrush) {
+          shelf.innerHTML = `<span>Tap a card on the right, solve the division, and stroke the rainbow!</span>`;
+        } else {
+          updateBrushShelf();
+        }
+      }, 2500);
+    }
+
+    function updateColoredArcCount() {
+      const count = Object.keys(paintedArcs).length;
+      const el = document.getElementById("coloredArcCount");
+      if (el) el.innerText = count;
+    }
+
+    function checkFullCompletion() {
+      const totalArcsColored = Object.keys(paintedArcs).length;
+      let allSolved = true;
+      questions.forEach(q => {
+        const val = userAnswers[q.id];
+        if (!val || parseInt(val, 10) !== q.answer) allSolved = false;
+      });
+
+      if (totalArcsColored >= 7 && allSolved) {
+        SFX.celebration();
+        triggerGrandCelebration();
+        const shelf = document.getElementById("brushShelf");
+        shelf.style.background = "#f0fdf4";
+        shelf.style.borderColor = "#86efac";
+        shelf.innerHTML = `<span>🎉 <strong>All Done!</strong> Magnificent Rainbow, Humayun!</span>`;
+      }
+    }
+
+    function shuffleAndReset() {
+      for (let i = questions.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [questions[i], questions[j]] = [questions[j], questions[i]];
+      }
+
+      userAnswers = {};
+      attemptsCount = {};
+      lockedCards = {};
+      paintedArcs = {};
+      activeBrush = null;
+      strokeDistance = 0;
+      activeCardIndex = 0;
+
+      clearArcHighlights();
+      redrawCompletedArcs();
+      updateColoredArcCount();
+      updateBrushShelf();
+      renderQuestionCards();
+    }
+
+    /* Scratchpad Canvas */
+    const padWindow = document.getElementById("scratchpadWindow");
+    const padHeader = document.getElementById("padHeader");
+    const canvas = document.getElementById("mathCanvas");
+    const ctx = canvas.getContext("2d");
+    const canvasWrapper = document.getElementById("canvasWrapper");
+
+    let isDrawing = false;
+    let padTool = "pen";
+    let padColor = "#1e3a8a";
+    let padSize = 4;
+    let stylusOnly = true;
+
+    function toggleScratchpad() {
+      const isVisible = padWindow.style.display === "flex";
+      padWindow.style.display = isVisible ? "none" : "flex";
+      if (!isVisible) {
+        resizeMathCanvas();
+        unlockCardFromScratchpad();
+      }
+    }
+
+    function closeScratchpad() {
+      padWindow.style.display = "none";
+    }
+
+    let isDragging = false;
+    let dragStartX = 0;
+    let dragStartY = 0;
+
+    padHeader.addEventListener("pointerdown", (e) => {
+      if (e.target.tagName.toLowerCase() === "button") return;
+      isDragging = true;
+      dragStartX = e.clientX - padWindow.offsetLeft;
+      dragStartY = e.clientY - padWindow.offsetTop;
+      padHeader.setPointerCapture(e.pointerId);
+    });
+
+    window.addEventListener("pointermove", (e) => {
+      if (!isDragging) return;
+      let newX = e.clientX - dragStartX;
+      let newY = e.clientY - dragStartY;
+
+      newX = Math.max(10, Math.min(window.innerWidth - padWindow.offsetWidth - 10, newX));
+      newY = Math.max(60, Math.min(window.innerHeight - padWindow.offsetHeight - 10, newY));
+      padWindow.style.left = `${newX}px`;
+      padWindow.style.top = `${newY}px`;
+      padWindow.style.right = "auto";
+    });
+
+    window.addEventListener("pointerup", (e) => {
+      if (isDragging) {
+        isDragging = false;
+        try { padHeader.releasePointerCapture(e.pointerId); } catch (err) {}
+      }
+    });
+
+    function resizeMathCanvas() {
+      const rect = canvasWrapper.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+
+      const tempCanvas = document.createElement("canvas");
+      tempCanvas.width = canvas.width;
+      tempCanvas.height = canvas.height;
+      const tempCtx = tempCanvas.getContext("2d");
+      tempCtx.drawImage(canvas, 0, 0);
+
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+      ctx.drawImage(tempCanvas, 0, 0, rect.width, rect.height);
+    }
+
+    window.addEventListener("resize", () => {
+      if (padWindow.style.display === "flex") resizeMathCanvas();
+    });
+
+    canvas.addEventListener("pointerdown", (e) => {
+      if (stylusOnly && e.pointerType !== "pen") return;
+      e.preventDefault();
+      canvas.setPointerCapture(e.pointerId);
+      isDrawing = true;
+
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+
+      if (padTool === "eraser") {
+        ctx.globalCompositeOperation = "destination-out";
+        ctx.lineWidth = 22;
+      } else {
+        ctx.globalCompositeOperation = "source-over";
+        ctx.strokeStyle = padColor;
+        ctx.lineWidth = padSize;
+      }
+    });
+
+    canvas.addEventListener("pointermove", (e) => {
+      if (!isDrawing) return;
+      if (stylusOnly && e.pointerType !== "pen") return;
+      e.preventDefault();
+
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      ctx.lineTo(x, y);
+      ctx.stroke();
+    });
+
+    canvas.addEventListener("pointerup", (e) => {
+      if (!isDrawing) return;
+      isDrawing = false;
+      try { canvas.releasePointerCapture(e.pointerId); } catch(err) {}
+    });
+
+    function setPadTool(tool) {
+      padTool = tool;
+      document.getElementById("btnPen").classList.toggle("active", tool === "pen");
+      document.getElementById("btnEraser").classList.toggle("active", tool === "eraser");
+    }
+
+    function setPadColor(color, chipId) {
+      padColor = color;
+      setPadTool("pen");
+      document.querySelectorAll(".color-chip").forEach(c => c.classList.remove("active-chip"));
+      const el = document.getElementById(chipId);
+      if (el) el.classList.add("active-chip");
+    }
+
+    function setPadSize(size, sizeId) {
+      padSize = size;
+      setPadTool("pen");
+      document.querySelectorAll(".size-btn").forEach(b => b.classList.remove("active-size"));
+      const el = document.getElementById(sizeId);
+      if (el) el.classList.add("active-size");
+    }
+
+    function togglePalmRejection() {
+      stylusOnly = !stylusOnly;
+      const btn = document.getElementById("btnPalm");
+      btn.classList.toggle("active", stylusOnly);
+      btn.innerText = stylusOnly ? "Stylus: ON" : "Touch: ON";
+    }
+
+    function clearPad() {
+      const rect = canvasWrapper.getBoundingClientRect();
+      ctx.clearRect(0, 0, rect.width, rect.height);
+    }
+
+    /* Accessibility */
+    let isDimmed = false;
+    function toggleDimScreen() {
+      isDimmed = !isDimmed;
+      document.getElementById("dimOverlay").style.display = isDimmed ? "block" : "none";
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    }
+
+    /* Confetti Particle Engine */
+    const confettiCvs = document.getElementById("confettiCanvas");
+    const confettiCtx = confettiCvs.getContext("2d");
+    let confettiParticles = [];
+    let confettiAnim = null;
+
+    function resizeConfetti() {
+      confettiCvs.width = window.innerWidth;
+      confettiCvs.height = window.innerHeight;
+    }
+    window.addEventListener("resize", resizeConfetti);
+    resizeConfetti();
+
+    function triggerMiniConfetti() {
+      spawnConfetti(35, 0.4);
+    }
+
+    function triggerGrandCelebration() {
+      spawnConfetti(100, 0.5);
+      setTimeout(() => spawnConfetti(80, 0.5), 400);
+    }
+
+    function spawnConfetti(count, originY) {
+      const colors = ["#ef4444", "#3b82f6", "#eab308", "#10b981", "#ec4899", "#8b5cf6", "#f97316"];
+      for (let i = 0; i < count; i++) {
+        confettiParticles.push({
+          x: window.innerWidth * 0.5,
+          y: window.innerHeight * originY,
+          vx: (Math.random() - 0.5) * 14,
+          vy: (Math.random() - 0.75) * 14,
+          size: Math.random() * 8 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          rotSpeed: (Math.random() - 0.5) * 12
+        });
+      }
+      if (!confettiAnim) animateConfetti();
+    }
+
+    function animateConfetti() {
+      confettiCtx.clearRect(0, 0, confettiCvs.width, confettiCvs.height);
+      for (let i = confettiParticles.length - 1; i >= 0; i--) {
+        const p = confettiParticles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.35;
+        p.rotation += p.rotSpeed;
+
+        confettiCtx.save();
+        confettiCtx.translate(p.x, p.y);
+        confettiCtx.rotate((p.rotation * Math.PI) / 180);
+        confettiCtx.fillStyle = p.color;
+        confettiCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+        confettiCtx.restore();
+
+        if (p.y > window.innerHeight) confettiParticles.splice(i, 1);
+      }
+
+      if (confettiParticles.length > 0) {
+        confettiAnim = requestAnimationFrame(animateConfetti);
+      } else {
+        confettiAnim = null;
+        confettiCtx.clearRect(0, 0, confettiCvs.width, confettiCvs.height);
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      renderQuestionCards();
+      setTimeout(resizeRainbowCanvas, 100);
     });
   </script>
 </body>
