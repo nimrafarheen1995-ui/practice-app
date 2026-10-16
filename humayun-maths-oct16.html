@@ -171,7 +171,7 @@
       box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
       overflow: hidden;
       position: relative;
-      width: min(100%, 1100px);
+      width: min(100%, 1120px);
       display: flex;
       flex-direction: column;
     }
@@ -271,6 +271,7 @@
       cursor: pointer;
       border: 1.5px solid transparent;
       color: #FFF;
+      transition: all 0.15s ease;
     }
     .canvas-tool-btn.active {
       background: #EA580C;
@@ -316,13 +317,51 @@
     }
     .workspace-h { height: clamp(470px, 73vh, 920px); }
 
+    /* Fūinjutsu Sealing Circle Animation */
+    .fuin-seal-circle {
+      position: absolute;
+      width: 340px;
+      height: 340px;
+      border: 3px dashed rgba(245, 158, 11, 0.7);
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(0deg);
+      animation: spinFuin 14s linear infinite;
+      box-shadow: 0 0 40px rgba(234, 88, 12, 0.4), inset 0 0 30px rgba(245, 158, 11, 0.2);
+    }
+    @keyframes spinFuin {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    /* Long Division Step Scaffolding Overlay */
+    .division-scaffold-overlay {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 2px dashed #D97706;
+      border-radius: 12px;
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #92400E;
+      pointer-events: none;
+      z-index: 15;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+    }
+
     #grandCelebrationStage {
       position: fixed;
       inset: 0;
       z-index: 100000;
       pointer-events: none;
       display: none;
-      background: radial-gradient(circle at center, rgba(15, 23, 42, 0.7) 0%, rgba(5, 8, 15, 0.96) 100%);
+      background: radial-gradient(circle at center, rgba(15, 23, 42, 0.75) 0%, rgba(5, 8, 15, 0.96) 100%);
       backdrop-filter: blur(8px);
     }
   </style>
@@ -335,9 +374,10 @@
   <!-- CELEBRATION STAGE -->
   <div id="grandCelebrationStage">
     <canvas id="grandFinaleCanvas" class="absolute inset-0 w-full h-full"></canvas>
+    <div class="fuin-seal-circle"></div>
     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none z-20">
       <div class="font-display text-4xl md:text-6xl text-amber-300 font-extrabold tracking-widest drop-shadow-[0_0_30px_#F59E0B]">任務完了</div>
-      <div class="font-bold text-white text-xl tracking-wider mt-2">CALCULATION VERIFIED!</div>
+      <div class="font-bold text-white text-xl tracking-wider mt-2">FŪINJUTSU SEALED • VERIFIED!</div>
     </div>
     <div class="absolute bottom-10 left-1/2 -translate-x-1/2 pointer-events-auto z-30">
       <button onclick="closeGrandCelebration()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold px-8 py-3 rounded-2xl shadow-2xl text-lg cursor-pointer">
@@ -350,9 +390,15 @@
   <header class="relative z-20 bg-slate-900/90 backdrop-blur-md border-b border-white/10 text-white shadow-lg py-2 px-6 flex justify-between items-center shrink-0">
     <div class="flex items-center gap-3">
       <a href="index.html" class="icon-pill-btn" title="Exit to Hub" onclick="goToHub(event)">🍃</a>
-      <h1 class="text-base md:text-xl font-bold font-display tracking-wide text-amber-300">
-        🍥 Humayun's Ninja Maths
-      </h1>
+      <div class="flex items-center gap-2">
+        <h1 class="text-base md:text-xl font-bold font-display tracking-wide text-amber-300">
+          🍥 Humayun's Ninja Maths
+        </h1>
+        <!-- Shinobi Rank Badge -->
+        <span id="shinobiRankBadge" class="bg-amber-500/20 border border-amber-400/50 text-amber-300 text-xs px-2.5 py-0.5 rounded-full font-bold">
+          Genin 忍
+        </span>
+      </div>
     </div>
 
     <div class="flex items-center gap-3">
@@ -470,8 +516,11 @@
           <!-- NUMBER LINE -->
           <div id="numberLineWrapper" class="p-3 bg-slate-100 border-b border-slate-200 shrink-0" style="display: none;">
             <div class="flex justify-between items-center text-xs font-bold text-slate-700 mb-1">
-              <span>Number Line:</span>
-              <button type="button" class="text-xs text-amber-700 underline font-bold cursor-pointer" onclick="clearLineCanvas()">Reset Jumps</button>
+              <span>Interactive Arc Number Line:</span>
+              <div class="flex items-center gap-3">
+                <span id="jumpCountBadge" class="bg-amber-100 text-amber-800 px-2 py-0.5 rounded text-[11px] font-black">Jumps: 0</span>
+                <button type="button" class="text-xs text-amber-700 underline font-bold cursor-pointer" onclick="clearLineCanvas()">Reset Jumps</button>
+              </div>
             </div>
             <div class="w-full h-20 bg-white border-2 border-slate-300 rounded-xl overflow-hidden relative">
               <canvas id="lineCanvas" class="w-full h-full cursor-crosshair touch-none"></canvas>
@@ -481,12 +530,23 @@
           <!-- TOOLBAR -->
           <div class="bg-slate-800 text-white p-2.5 flex justify-between items-center z-10 shadow-sm flex-wrap gap-2 border-b border-slate-700 shrink-0">
             <div class="flex items-center gap-2">
-              <button onclick="selectTool('pen')" id="toolPen" class="canvas-tool-btn active">✏️</button>
-              <button onclick="selectTool('line')" id="toolLine" class="canvas-tool-btn">📏</button>
-              <button onclick="selectTool('eraser')" id="toolEraser" class="canvas-tool-btn">🧹</button>
-              <button onclick="undoInk()" class="canvas-tool-btn">↩️</button>
-              <button onclick="clearCanvas()" class="canvas-tool-btn text-rose-400">🗑️</button>
+              <button onclick="selectTool('pen')" id="toolPen" class="canvas-tool-btn active" title="Kunai Pen">✏️</button>
+              <button onclick="selectTool('line')" id="toolLine" class="canvas-tool-btn" title="Straight Line">📏</button>
+              <button onclick="selectTool('chakra')" id="toolChakra" class="canvas-tool-btn" title="Chakra Glow Highlighter">✨</button>
+              <button onclick="selectTool('eraser')" id="toolEraser" class="canvas-tool-btn" title="Eraser">🧹</button>
+              <button onclick="undoInk()" class="canvas-tool-btn" title="Undo">↩️</button>
+              <button onclick="clearCanvas()" class="canvas-tool-btn text-rose-400" title="Wood Log Replacement Clear">🗑️</button>
             </div>
+
+            <!-- Stylus Input Mode Gate -->
+            <button onclick="toggleStylusOnlyMode()" id="stylusModeBtn" class="bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-xl text-xs font-bold text-amber-300 cursor-pointer">
+              ✍️ S-Pen Only
+            </button>
+
+            <!-- Scaffolding Division Guide Toggle -->
+            <button onclick="toggleScaffoldOverlay()" id="toggleScaffoldBtn" class="bg-slate-700 border border-slate-600 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-200 cursor-pointer">
+              ⚡ Division Steps
+            </button>
 
             <div class="flex items-center bg-slate-700 px-3.5 py-1.5 rounded-xl border border-slate-600 gap-3 text-sm font-bold">
               <button onclick="switchPageSmoothly(-1)" class="cursor-pointer">◀️</button>
@@ -510,6 +570,12 @@
           <!-- CANVAS + KEYPAD -->
           <div class="flex-1 flex flex-row bg-white relative overflow-hidden" id="canvasContainerBox">
             <div class="flex-1 ninja-graph-paper relative overflow-hidden select-none touch-none h-full" id="graphArea">
+              
+              <!-- Optional Scaffolding Guide Banner -->
+              <div id="scaffoldOverlay" class="division-scaffold-overlay hidden">
+                <span>1. Divide (÷)</span> ➔ <span>2. Multiply (×)</span> ➔ <span>3. Subtract (−)</span> ➔ <span>4. Bring Down (↓)</span>
+              </div>
+
               <div class="absolute right-3 bottom-0 pointer-events-none z-10 opacity-60 flex flex-col items-end">
                 <img id="companionAvatarImg" src="assets/kakashi.png" class="w-44 h-44 md:w-60 md:h-60 object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.4)]" alt="Companion" onerror="handleImageFallback(this)"/>
               </div>
@@ -519,8 +585,8 @@
             <aside class="keypad-stone-side-dock" id="sideKeypadDock">
               <div class="flex flex-col gap-2">
                 <div class="stone-slot-header">
-                  <span class="stone-slot-label">Answer:</span>
-                  <div class="stone-carved-display" id="stoneCarvedDisplay">?</div>
+                  <span class="stone-slot-label text-amber-200 text-xs font-bold">Answer:</span>
+                  <div class="stone-carved-display text-amber-300 font-black text-2xl text-center py-2 bg-stone-900/80 rounded-xl border border-amber-900/60" id="stoneCarvedDisplay">?</div>
                 </div>
 
                 <div class="stone-keys-grid">
@@ -671,8 +737,60 @@
       } catch (e) {}
     }
 
+    function playWoodSubstitutionThud() {
+      try {
+        const ctx = getAudioContext();
+        const t0 = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(140, t0);
+        osc.frequency.exponentialRampToValueAtTime(40, t0 + 0.12);
+        gain.gain.setValueAtTime(0.35, t0);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.13);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(t0); osc.stop(t0 + 0.14);
+      } catch(e) {}
+    }
+
+    /* Tactile Audio Feedback for Stylus Drawing */
     const InkSound = {
       enabled: localStorage.getItem('humayun_ink_sound') !== 'off',
+      brushAudioCtx: null,
+      brushGain: null,
+      init() {
+        if (this.brushAudioCtx) return;
+        try {
+          const ctx = getAudioContext();
+          const bufferSize = ctx.sampleRate * 0.5;
+          const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+          const noise = ctx.createBufferSource();
+          noise.buffer = buffer; noise.loop = true;
+          const filter = ctx.createBiquadFilter();
+          filter.type = 'bandpass';
+          filter.frequency.value = 1800; filter.Q.value = 2.0;
+
+          this.brushGain = ctx.createGain();
+          this.brushGain.gain.value = 0;
+
+          noise.connect(filter); filter.connect(this.brushGain);
+          this.brushGain.connect(ctx.destination);
+          noise.start();
+          this.brushAudioCtx = ctx;
+        } catch(e) {}
+      },
+      updateStrokeSound(speed, pressure) {
+        if (!this.enabled || !this.brushGain) return;
+        const targetVol = Math.min(0.045, 0.005 + speed * 0.002 + pressure * 0.015);
+        this.brushGain.gain.setTargetAtTime(targetVol, this.brushAudioCtx.currentTime, 0.02);
+      },
+      stopStrokeSound() {
+        if (!this.brushGain) return;
+        this.brushGain.gain.setTargetAtTime(0, this.brushAudioCtx.currentTime, 0.03);
+      },
       glideChime() {
         if (!this.enabled) return;
         try {
@@ -760,6 +878,34 @@
     let currentQIndex = 0;
     let currentPage = 1;
     let isKeypadDocked = true;
+    let isStylusOnlyMode = true; // S-Pen default with touch toggle
+
+    /* SHINOBI RANK PROGRESSION SYSTEM */
+    function updateShinobiRank() {
+      let solvedCount = 0;
+      Object.values(curriculumData).forEach(ex => {
+        ex.questions.forEach(q => {
+          const val = localStorage.getItem(`humayun_ans_${q.id}`) || '';
+          const clean = (t) => String(t).replace(/q|=|r|,|\s/gi, '').trim().toLowerCase();
+          if (clean(val) === clean(q.answer)) solvedCount++;
+        });
+      });
+
+      const badge = document.getElementById('shinobiRankBadge');
+      if (solvedCount >= 20) {
+        badge.textContent = "Hokage 火影 🌟";
+        badge.className = "bg-amber-500 text-slate-950 font-black text-xs px-3 py-0.5 rounded-full shadow-md";
+      } else if (solvedCount >= 12) {
+        badge.textContent = "Jonin 上忍 ⭐";
+        badge.className = "bg-red-500/30 border border-red-400 text-red-200 text-xs px-2.5 py-0.5 rounded-full font-bold";
+      } else if (solvedCount >= 6) {
+        badge.textContent = "Chunin 中忍";
+        badge.className = "bg-blue-500/30 border border-blue-400 text-blue-200 text-xs px-2.5 py-0.5 rounded-full font-bold";
+      } else {
+        badge.textContent = "Genin 下忍";
+        badge.className = "bg-amber-500/20 border border-amber-400/50 text-amber-300 text-xs px-2.5 py-0.5 rounded-full font-bold";
+      }
+    }
 
     /* CAROUSEL LOGIC */
     let activeExerciseIdx = 0;
@@ -911,6 +1057,7 @@
 
       document.getElementById('pageIndicatorText').textContent = `Pg ${currentPage} / 2`;
       loadCanvasInk();
+      updateShinobiRank();
     }
 
     function openCover() {
@@ -922,6 +1069,21 @@
       playMagicWhoosh(false);
       saveCurrentCanvasInk();
       document.getElementById('binderCoverOverlay').classList.remove('binder-open');
+    }
+
+    function toggleStylusOnlyMode() {
+      isStylusOnlyMode = !isStylusOnlyMode;
+      const btn = document.getElementById('stylusModeBtn');
+      btn.textContent = isStylusOnlyMode ? '✍️ S-Pen Only' : '👆 Touch & Pen';
+      btn.classList.toggle('text-amber-300', isStylusOnlyMode);
+      btn.classList.toggle('text-emerald-300', !isStylusOnlyMode);
+      playStoneClick();
+    }
+
+    function toggleScaffoldOverlay() {
+      const sc = document.getElementById('scaffoldOverlay');
+      sc.classList.toggle('hidden');
+      playStoneClick();
     }
 
     /* KEYPAD */
@@ -963,6 +1125,7 @@
 
       const clean = (t) => String(t).replace(/q|=|r|,|\s/gi, '').trim().toLowerCase();
       if (clean(val) === clean(q.answer)) {
+        updateShinobiRank();
         triggerGrandCelebration();
       } else {
         playSmokePoof();
@@ -973,10 +1136,7 @@
     }
 
     /* ==========================================================
-       HARDWARE-ACCELERATED INK ENGINE (1:1 RAW SHARPNESS)
-       - No double-scaling or stretch-blurring!
-       - Continuous unbroken line rendering!
-       - Fast memory undo without toDataURL lag!
+       HARDWARE-ACCELERATED INK ENGINE (COALESCED 240Hz S-PEN)
     ========================================================== */
     const inkCanvas = document.getElementById('inkCanvas');
     const inkCtx = inkCanvas.getContext('2d', { alpha: true });
@@ -988,6 +1148,7 @@
     let lineStartX = 0, lineStartY = 0;
     let lineSnapshot = null;
     let memoryUndoStack = [];
+    let lastPoint = null;
 
     function resizeInkCanvas() {
       const box = document.getElementById('graphArea');
@@ -1000,7 +1161,6 @@
 
       if (inkCanvas.width === targetW && inkCanvas.height === targetH) return;
 
-      // Preserve existing ink crispness without scaling artifact
       let temp = null;
       if (inkCanvas.width > 0 && inkCanvas.height > 0) {
         temp = document.createElement('canvas');
@@ -1017,7 +1177,6 @@
       inkCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       if (temp) {
-        // Draw 1:1 without stretch blurring
         inkCtx.save();
         inkCtx.setTransform(1, 0, 0, 1, 0, 0);
         inkCtx.drawImage(temp, 0, 0);
@@ -1061,7 +1220,7 @@
 
     function pushMemoryUndo() {
       try {
-        if (memoryUndoStack.length >= 12) memoryUndoStack.shift();
+        if (memoryUndoStack.length >= 15) memoryUndoStack.shift();
         memoryUndoStack.push(inkCtx.getImageData(0, 0, inkCanvas.width, inkCanvas.height));
       } catch (e) {}
     }
@@ -1072,11 +1231,14 @@
         const prevSnap = memoryUndoStack[memoryUndoStack.length - 1];
         inkCtx.putImageData(prevSnap, 0, 0);
         saveCurrentCanvasInk();
+        playStoneClick();
       }
     }
 
     function clearCanvas() {
       pushMemoryUndo();
+      playWoodSubstitutionThud();
+      playSmokePoof();
       inkCtx.save();
       inkCtx.setTransform(1, 0, 0, 1, 0, 0);
       inkCtx.clearRect(0, 0, inkCanvas.width, inkCanvas.height);
@@ -1087,9 +1249,13 @@
     function selectTool(tool) {
       currentTool = tool;
       isStraightLineMode = (tool === 'line');
-      ['toolPen', 'toolLine', 'toolEraser'].forEach(id => document.getElementById(id).classList.remove('active'));
+      ['toolPen', 'toolLine', 'toolChakra', 'toolEraser'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('active');
+      });
       if (tool === 'pen') document.getElementById('toolPen').classList.add('active');
       else if (tool === 'line') document.getElementById('toolLine').classList.add('active');
+      else if (tool === 'chakra') document.getElementById('toolChakra').classList.add('active');
       else if (tool === 'eraser') document.getElementById('toolEraser').classList.add('active');
     }
 
@@ -1103,13 +1269,44 @@
       return { x: e.clientX - rect.left, y: e.clientY - rect.top };
     }
 
-    function startDraw(e) {
-      // 100% S-PEN PALM REJECTION: Drop touch/finger input immediately
-      if (e.pointerType !== 'pen') return;
+    function renderStrokePoint(pos, pressure, tool) {
+      if (!lastPoint) { lastPoint = pos; return; }
 
+      inkCtx.beginPath();
+      inkCtx.moveTo(lastPoint.x, lastPoint.y);
+      inkCtx.lineTo(pos.x, pos.y);
+      inkCtx.lineCap = 'round';
+      inkCtx.lineJoin = 'round';
+
+      if (tool === 'eraser') {
+        inkCtx.globalCompositeOperation = 'destination-out';
+        inkCtx.lineWidth = 32;
+        inkCtx.shadowBlur = 0;
+      } else if (tool === 'chakra') {
+        inkCtx.globalCompositeOperation = 'source-over';
+        inkCtx.strokeStyle = 'rgba(14, 165, 233, 0.45)'; // Translucent Rasengan Chakra Glow
+        inkCtx.shadowColor = '#0EA5E9';
+        inkCtx.shadowBlur = 12;
+        inkCtx.lineWidth = 14;
+      } else {
+        inkCtx.globalCompositeOperation = 'source-over';
+        inkCtx.strokeStyle = strokeColor;
+        inkCtx.shadowBlur = 0;
+        const p = (pressure && pressure > 0) ? pressure : 0.5;
+        inkCtx.lineWidth = strokeWidth * (p * 1.4 + 0.4);
+      }
+      inkCtx.stroke();
+      lastPoint = pos;
+    }
+
+    function startDraw(e) {
+      if (isStylusOnlyMode && e.pointerType !== 'pen') return;
+
+      InkSound.init();
       isDrawing = true;
       try { inkCanvas.setPointerCapture(e.pointerId); } catch (_) {}
       const pos = getCanvasPos(e);
+      lastPoint = pos;
 
       const barrelEraser = (e.buttons & 32) || e.button === 5;
       const activeTool = barrelEraser ? 'eraser' : currentTool;
@@ -1122,28 +1319,19 @@
         return;
       }
 
-      inkCtx.beginPath();
-      inkCtx.moveTo(pos.x, pos.y);
-      inkCtx.lineCap = 'round';
-      inkCtx.lineJoin = 'round';
-
-      if (activeTool === 'eraser') {
-        inkCtx.globalCompositeOperation = 'destination-out';
-        inkCtx.lineWidth = 32;
-      } else {
-        inkCtx.globalCompositeOperation = 'source-over';
-        inkCtx.strokeStyle = strokeColor;
-        const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
-        inkCtx.lineWidth = strokeWidth * (pressure * 1.4 + 0.4);
-      }
+      renderStrokePoint(pos, e.pressure, activeTool);
       e.preventDefault();
     }
 
     function moveDraw(e) {
-      if (!isDrawing || e.pointerType !== 'pen') return;
-      const pos = getCanvasPos(e);
+      if (!isDrawing) return;
+      if (isStylusOnlyMode && e.pointerType !== 'pen') return;
+
+      const barrelEraser = (e.buttons & 32) || e.button === 5;
+      const activeTool = barrelEraser ? 'eraser' : currentTool;
 
       if (isStraightLineMode && lineSnapshot) {
+        const pos = getCanvasPos(e);
         inkCtx.putImageData(lineSnapshot, 0, 0);
         inkCtx.save();
         inkCtx.lineCap = 'round';
@@ -1158,15 +1346,25 @@
         return;
       }
 
-      inkCtx.lineTo(pos.x, pos.y);
-      inkCtx.stroke();
+      // Handle 240Hz coalesced pointer events for zero corner faceting
+      const events = (e.getCoalescedEvents && e.getCoalescedEvents().length) ? e.getCoalescedEvents() : [e];
+      let totalDist = 0;
+      for (const ev of events) {
+        const pt = getCanvasPos(ev);
+        if (lastPoint) totalDist += Math.hypot(pt.x - lastPoint.x, pt.y - lastPoint.y);
+        renderStrokePoint(pt, ev.pressure, activeTool);
+      }
+      InkSound.updateStrokeSound(totalDist, e.pressure || 0.5);
       e.preventDefault();
     }
 
     function stopDraw(e) {
       if (!isDrawing) return;
       isDrawing = false;
+      lastPoint = null;
       try { inkCanvas.releasePointerCapture(e.pointerId); } catch (_) {}
+
+      InkSound.stopStrokeSound();
 
       if (isStraightLineMode) {
         lineSnapshot = null;
@@ -1175,7 +1373,8 @@
 
       inkCtx.closePath();
       inkCtx.globalCompositeOperation = 'source-over';
-      pushMemoryUndo(); // Instant in-memory snapshot (0ms latency)
+      pushMemoryUndo();
+      saveCurrentCanvasInk(); // Guaranteed synchronous persist
     }
 
     inkCanvas.addEventListener('pointerdown', startDraw);
@@ -1184,12 +1383,15 @@
     inkCanvas.addEventListener('pointercancel', stopDraw);
     inkCanvas.addEventListener('pointerleave', stopDraw);
 
-    /* NUMBER LINE */
+    /* INTERACTIVE ARC NUMBER LINE WITH SNAP */
     const lineCanvas = document.getElementById('lineCanvas');
     const lineCtx = lineCanvas.getContext('2d');
     let isDrawingLine = false;
+    let numberLineJumps = 0;
+    let activeLineQId = "";
 
     function initNumberLine(qId, maxTick = 20) {
+      activeLineQId = qId;
       const rect = lineCanvas.parentElement.getBoundingClientRect();
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
@@ -1223,37 +1425,70 @@
         img.src = saved;
       }
 
+      const savedJumps = parseInt(localStorage.getItem(`humayun_jumps_${qId}`) || '0', 10);
+      numberLineJumps = savedJumps;
+      document.getElementById('jumpCountBadge').textContent = `Jumps: ${numberLineJumps}`;
+
+      let arcStartX = 0, arcStartY = 0;
+
       lineCanvas.onpointerdown = (e) => {
-        if (e.pointerType !== 'pen') return;
+        if (isStylusOnlyMode && e.pointerType !== 'pen') return;
         isDrawingLine = true;
         try { lineCanvas.setPointerCapture(e.pointerId); } catch (_) {}
         const r = lineCanvas.getBoundingClientRect();
-        lineCtx.beginPath();
-        lineCtx.moveTo(e.clientX - r.left, e.clientY - r.top);
-        lineCtx.strokeStyle = "#DC2626"; lineCtx.lineWidth = 3; lineCtx.lineCap = "round";
+        arcStartX = e.clientX - r.left;
+        arcStartY = e.clientY - r.top;
       };
 
-      lineCanvas.onpointermove = (e) => {
-        if (!isDrawingLine || e.pointerType !== 'pen') return;
-        const r = lineCanvas.getBoundingClientRect();
-        lineCtx.lineTo(e.clientX - r.left, e.clientY - r.top);
-        lineCtx.stroke();
-      };
-
-      const stopL = (e) => {
+      lineCanvas.onpointerup = (e) => {
         if (!isDrawingLine) return;
         isDrawingLine = false;
         try { lineCanvas.releasePointerCapture(e.pointerId); } catch (_) {}
+        const r = lineCanvas.getBoundingClientRect();
+        const arcEndX = e.clientX - r.left;
+
+        // Auto-draw smooth quadratic arc on jump swipe
+        if (Math.abs(arcEndX - arcStartX) > 15) {
+          const midX = (arcStartX + arcEndX) / 2;
+          const peakY = Math.max(10, Math.min(arcStartY, e.clientY - r.top) - 34);
+
+          lineCtx.save();
+          lineCtx.strokeStyle = "#EA580C";
+          lineCtx.lineWidth = 3;
+          lineCtx.lineCap = "round";
+          lineCtx.beginPath();
+          lineCtx.moveTo(arcStartX, yAxis);
+          lineCtx.quadraticCurveTo(midX, peakY, arcEndX, yAxis);
+          lineCtx.stroke();
+
+          // Arrowhead
+          const dir = arcEndX > arcStartX ? 1 : -1;
+          lineCtx.fillStyle = "#EA580C";
+          lineCtx.beginPath();
+          lineCtx.moveTo(arcEndX, yAxis);
+          lineCtx.lineTo(arcEndX - dir * 7, yAxis - 5);
+          lineCtx.lineTo(arcEndX - dir * 7, yAxis + 5);
+          lineCtx.fill();
+          lineCtx.restore();
+
+          numberLineJumps++;
+          document.getElementById('jumpCountBadge').textContent = `Jumps: ${numberLineJumps}`;
+          localStorage.setItem(`humayun_jumps_${qId}`, numberLineJumps);
+          InkSound.glideChime();
+        }
+
         try { localStorage.setItem(`humayun_line_${qId}`, lineCanvas.toDataURL()); } catch (_) {}
       };
-      lineCanvas.onpointerup = stopL;
-      lineCanvas.onpointercancel = stopL;
+      lineCanvas.onpointercancel = () => { isDrawingLine = false; };
     }
 
     function clearLineCanvas() {
       const q = curriculumData[currentExerciseKey].questions[currentQIndex];
       localStorage.removeItem(`humayun_line_${q.id}`);
+      localStorage.removeItem(`humayun_jumps_${q.id}`);
+      numberLineJumps = 0;
       initNumberLine(q.id, q.maxLine || 20);
+      playStoneClick();
     }
 
     /* GRAND FINALE CELEBRATION */
@@ -1305,7 +1540,7 @@
       changeQuestion(1);
     }
 
-    /* BACKGROUND FX */
+    /* BACKGROUND PARTICLES */
     const fxCanvas = document.getElementById("fxCanvas");
     const fxCtx = fxCanvas.getContext("2d");
     let fxLeaves = [];
@@ -1355,7 +1590,6 @@
       resizeInkCanvas();
     });
 
-    // Save synchronously when closing or leaving
     window.addEventListener('beforeunload', saveCurrentCanvasInk);
     window.addEventListener('pagehide', saveCurrentCanvasInk);
 
@@ -1364,6 +1598,7 @@
       resizeFx();
       renderFx();
       resizeInkCanvas();
+      updateShinobiRank();
     });
   </script>
 </body>
