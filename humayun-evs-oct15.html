@@ -299,73 +299,136 @@
       color: #FFF;
     }
 
-    /* HUB BAY */
+    /* HUB BAY WITH 3D SWIPEABLE CAROUSEL & FLOATING AVATAR */
     .hub-bay-wrapper {
       flex: 1;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       padding: 10px 20px;
-      gap: 20px;
-      overflow-y: auto;
+      position: relative;
+      overflow: hidden;
     }
 
-    .hub-hero-header {
+    .floating-scientist-badge {
+      position: absolute;
+      left: 24px;
+      bottom: 24px;
       display: flex;
       align-items: center;
-      gap: 20px;
+      gap: 12px;
       background: rgba(255, 255, 255, 0.92);
       backdrop-filter: blur(12px);
       border: 3px solid var(--border);
-      border-radius: 26px;
-      padding: 16px 28px;
-      box-shadow: var(--shadow);
-      max-width: 820px;
-      width: 100%;
+      padding: 8px 16px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      z-index: 20;
+      pointer-events: none;
+      animation: floatBadge 3s ease-in-out infinite;
     }
-    .hub-hero-avatar {
-      width: auto;
-      height: auto;
-      max-width: 140px;
-      max-height: 140px;
+    @keyframes floatBadge {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    .floating-scientist-badge img {
+      width: 50px;
+      height: 50px;
       object-fit: contain;
-      filter: drop-shadow(0 6px 14px rgba(0,0,0,0.2));
+    }
+    .floating-scientist-badge .speech-bubble {
+      font-family: var(--font-display) !important;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--primary-dark);
     }
 
-    .portals-normal-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(260px, 1fr));
-      gap: 18px;
+    .carousel-container {
+      position: relative;
       width: 100%;
-      max-width: 1050px;
+      max-width: 900px;
+      height: 380px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      perspective: 1200px;
     }
 
     .portal-3d-card {
-      background: rgba(255, 255, 255, 0.94);
-      backdrop-filter: blur(12px);
-      border: 3.5px solid var(--border);
-      border-radius: 24px;
-      padding: 20px;
+      position: absolute;
+      width: 380px;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(16px);
+      border: 4px solid var(--border);
+      border-radius: 28px;
+      padding: 28px 24px;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      gap: 12px;
+      gap: 14px;
       cursor: pointer;
-      box-shadow: 0 14px 32px rgba(0,0,0,0.12);
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 20px 45px rgba(0,0,0,0.2);
+      transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease, filter 0.4s ease;
+      touch-action: pan-y;
     }
     .portal-3d-card:hover {
-      transform: translateY(-6px) scale(1.02);
       border-color: var(--primary);
-      box-shadow: 0 22px 42px rgba(5, 150, 105, 0.25);
     }
-    .portal-3d-card:active { transform: scale(0.98); }
+
+    /* 3D Carousel Card Positions */
+    .portal-3d-card.pos-center {
+      transform: translateX(0) translateZ(0) scale(1);
+      z-index: 10;
+      opacity: 1;
+      filter: blur(0);
+    }
+    .portal-3d-card.pos-left {
+      transform: translateX(-310px) translateZ(-200px) rotateY(18deg) scale(0.85);
+      z-index: 5;
+      opacity: 0.7;
+      filter: blur(1px);
+    }
+    .portal-3d-card.pos-right {
+      transform: translateX(310px) translateZ(-200px) rotateY(-18deg) scale(0.85);
+      z-index: 5;
+      opacity: 0.7;
+      filter: blur(1px);
+    }
+    .portal-3d-card.pos-hidden {
+      transform: translateX(0) translateZ(-400px) scale(0.6);
+      z-index: 1;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .carousel-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #FFF;
+      border: 3px solid var(--border);
+      color: var(--primary-dark);
+      font-size: 1.4rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      z-index: 30;
+      transition: transform 0.2s ease;
+    }
+    .carousel-arrow:hover { transform: translateY(-50%) scale(1.1); background: #D1FAE5; }
+    .carousel-arrow.left { left: 10px; }
+    .carousel-arrow.right { right: 10px; }
 
     .portal-icon-wrap {
-      width: 72px;
-      height: 72px;
+      width: 76px;
+      height: 76px;
       border-radius: 20px;
       background: #D1FAE5;
       border: 2.5px solid var(--border);
@@ -381,10 +444,10 @@
       color: var(--primary-dark);
     }
     .portal-desc {
-      font-size: 0.88rem;
+      font-size: 0.9rem;
       color: var(--subtext);
       font-weight: 700;
-      line-height: 1.35;
+      line-height: 1.4;
     }
 
     /* ACTIVE WORKSPACE */
@@ -1042,34 +1105,35 @@
       </nav>
     </div>
 
-    <!-- HUB BAY WITH 3D ASSETS -->
+    <!-- HUB BAY WITH 3D SWIPEABLE CAROUSEL & FLOATING SCIENTIST BADGE -->
     <main class="hub-bay-wrapper" id="hubBayView">
-      <div class="hub-hero-header">
-        <img src="assets/lab-scientist-humayun.webp" class="hub-hero-avatar" alt="Humayun Scientist" onerror="handleImgFallback(this)" />
-        <div>
-          <h2 style="font-size:1.5rem; font-weight:900; color:var(--primary-dark);">Welcome to Humayun's Science Discovery Realm!</h2>
-          <p style="font-size:1rem; color:var(--subtext); font-weight:700;">Explore solids, liquids, and gases through your interactive science stations.</p>
-        </div>
+      <div class="floating-scientist-badge">
+        <img src="assets/humayun-avatar.webp" alt="Humayun" onerror="handleImgFallback(this)"/>
+        <div class="speech-bubble">Hi Humayun! Swipe cards to explore 🧪</div>
       </div>
 
-      <div class="portals-normal-grid">
-        <div class="portal-3d-card" onclick="playClickSound(); openPortal('definitions')">
+      <div class="carousel-container" id="carouselContainer">
+        <button class="carousel-arrow left" onclick="playClickSound(); slideCarousel(-1)">❮</button>
+        
+        <div class="portal-3d-card pos-center" id="card-0" onclick="handleCardClick(0)">
           <div class="portal-icon-wrap"><img src="assets/particle-solid-icon.webp" style="width:44px; height:44px; object-fit:contain;" alt="" onerror="handleImgFallback(this)"/></div>
           <div class="portal-title">1. Definitions &amp; Examples</div>
           <div class="portal-desc">Matter, Evaporation, Condensation &amp; Freezing</div>
         </div>
 
-        <div class="portal-3d-card" onclick="playClickSound(); openPortal('qa')">
+        <div class="portal-3d-card pos-right" id="card-1" onclick="handleCardClick(1)">
           <div class="portal-icon-wrap"><img src="assets/particle-liquid-icon.webp" style="width:44px; height:44px; object-fit:contain;" alt="" onerror="handleImgFallback(this)"/></div>
           <div class="portal-title">2. Short &amp; Detailed Q&amp;A</div>
           <div class="portal-desc">Melting causes &amp; Evaporation process</div>
         </div>
 
-        <div class="portal-3d-card" onclick="playClickSound(); openPortal('workbook')">
+        <div class="portal-3d-card pos-left" id="card-2" onclick="handleCardClick(2)">
           <div class="portal-icon-wrap"><img src="assets/particle-gas-icon.webp" style="width:44px; height:44px; object-fit:contain;" alt="" onerror="handleImgFallback(this)"/></div>
           <div class="portal-title">3. Lab Workbook Exercises</div>
           <div class="portal-desc">Differences Table, Match, MCQs &amp; Concept Map</div>
         </div>
+
+        <button class="carousel-arrow right" onclick="playClickSound(); slideCarousel(1)">❯</button>
       </div>
     </main>
 
@@ -1111,6 +1175,53 @@
     let toolbarCollapsed = false;
     let dimLevelIndex = 0; // 0: off, 1: 25%, 2: 50%, 3: 70%
 
+    // 3D Carousel State
+    let currentCarouselIndex = 0;
+    const portalKeysOrder = ['definitions', 'qa', 'workbook'];
+
+    function updateCarousel() {
+      for (let i = 0; i < 3; i++) {
+        const card = document.getElementById(`card-${i}`);
+        card.className = "portal-3d-card";
+        let diff = (i - currentCarouselIndex) % 3;
+        if (diff < -1) diff += 3;
+        if (diff > 1) diff -= 3;
+
+        if (diff === 0) card.classList.add('pos-center');
+        else if (diff === 1 || diff === -2) card.classList.add('pos-right');
+        else card.classList.add('pos-left');
+      }
+    }
+
+    function slideCarousel(dir) {
+      currentCarouselIndex = (currentCarouselIndex + dir + 3) % 3;
+      updateCarousel();
+    }
+
+    function handleCardClick(idx) {
+      if (idx === currentCarouselIndex) {
+        openPortal(portalKeysOrder[idx]);
+      } else {
+        currentCarouselIndex = idx;
+        updateCarousel();
+      }
+    }
+
+    // Swipe Gesture Support for Carousel
+    let touchStartX = 0;
+    const container = document.getElementById('carouselContainer');
+    if (container) {
+      container.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, {passive: true});
+      container.addEventListener('touchend', e => {
+        let diffX = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(diffX) > 50) {
+          playClickSound();
+          if (diffX > 0) slideCarousel(-1);
+          else slideCarousel(1);
+        }
+      }, {passive: true});
+    }
+
     const activeInkCache = {};
     const binderOpenedMap = {};
     const DPR = Math.min(window.devicePixelRatio || 1, 2);
@@ -1145,7 +1256,6 @@
       const cleanWord = word.replace(/[^a-zA-Z]/g, '').toLowerCase();
       const textToSpeak = (isSyllable && SYLLABLE_MAP[cleanWord]) ? SYLLABLE_MAP[cleanWord].replace(/-/g, ' ') : word;
       const utter = new SpeechSynthesisUtterance(textToSpeak);
-      // Slower syllable rate (0.45 for syllables, 0.75 for regular words)
       utter.rate = isSyllable ? 0.45 : 0.75;
       utter.pitch = 1.1;
       speechSynth.speak(utter);
@@ -1426,10 +1536,9 @@
 
       let st = null;
       c.addEventListener('pointerdown', e => {
-        // PALM REJECTION: Filter out broad touch contacts (like resting palm) if pointerType is touch
         if (e.pointerType === 'touch') {
           if ((e.width && e.width > 25) || (e.height && e.height > 25) || (e.pressure > 0.85)) {
-            return; // Ignore accidental palm press
+            return;
           }
         }
         if (st || !size()) return;
@@ -1581,7 +1690,6 @@
             <div>${promptContent}</div>
           </div>
           <div class="full-notepad-container">
-            <!-- TOOLBAR TOGGLE BUTTON & FLOATING CANVAS TOOLBAR -->
             <button type="button" class="toolbar-toggle-btn" id="toolbarToggleBtn" onclick="toggleToolbar()" title="Toggle Toolbar">✖</button>
             <div class="canvas-overlay-toolbar ${toolbarCollapsed ? 'toolbar-collapsed' : ''}" id="canvasOverlayToolbar">
               <div class="tool-group">
@@ -1653,7 +1761,6 @@
             <div style="background:#ECFDF5; border:2px dashed #34D399; padding:8px 12px; border-radius:10px; width:100%; font-weight:800; color:#065F46; font-size:0.95rem; display:${appMode === 'learn' ? 'block' : 'none'};"><b>Answer:</b> ${ansHtml}</div>
           </div>
           <div class="full-notepad-container">
-            <!-- TOOLBAR TOGGLE BUTTON & FLOATING CANVAS TOOLBAR -->
             <button type="button" class="toolbar-toggle-btn" id="toolbarToggleBtn" onclick="toggleToolbar()" title="Toggle Toolbar">✖</button>
             <div class="canvas-overlay-toolbar ${toolbarCollapsed ? 'toolbar-collapsed' : ''}" id="canvasOverlayToolbar">
               <div class="tool-group">
