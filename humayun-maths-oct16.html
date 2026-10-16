@@ -1169,7 +1169,7 @@
       }
     }
 
-    /* RENDER CENTERED WORKBOOK WITH GLASS BINDER AND GENJUTSU UNBROKEN OVERLAY */
+    /* RENDER CENTERED WORKBOOK WITH GLASS BINDER AND ENLARGED BUTTONS/AVATARS */
     function renderActiveCard(animate = false) {
       const container = document.getElementById('activeCardContainer');
       const ex = curriculumData[currentExerciseKey];
@@ -1404,10 +1404,27 @@
       saveAnswer(qId);
     }
 
-    let lastPenSeen = 0;
+    /* STEP 1: S-PEN SENSING BARRIER & CONTACT TRACKING */
+    let penSeenAt = 0;             // last time the S-Pen was seen (hover, touch or move) anywhere on screen
+    let inkStrokeActive = false;   // true while a stroke is in progress (saving waits for it)
+    const PEN_QUIET_MS = 1500;     // fingers and palms are ignored for this long after the S-Pen was used
+    const activeTouchIds = new Set();
 
+    ['pointerdown', 'pointermove', 'pointerover'].forEach(t =>
+      document.addEventListener(t, (e) => { if (e.pointerType === 'pen') penSeenAt = Date.now(); }, true));
+    document.addEventListener('pointerdown', (e) => { if (e.pointerType === 'touch') activeTouchIds.add(e.pointerId); }, true);
+    ['pointerup', 'pointercancel'].forEach(t =>
+      document.addEventListener(t, (e) => activeTouchIds.delete(e.pointerId), true));
+
+    function fingerAllowed(e) {
+      if (Date.now() - penSeenAt < PEN_QUIET_MS) return false;      // S-Pen in use: ignore palms and fingers
+      if (activeTouchIds.size > 1) return false;                     // a second contact (a palm) joins in
+      return Math.max(e.width || 0, e.height || 0) <= 22;           // a palm's contact is far bigger than a fingertip
+    }
+
+    /* STEP 2: DPR LIMIT TO 2 FOR 2.5K SCREEN PERFORMANCE */
     function syncCanvasResolution(canvas, container, id) {
-      const dpr = Math.min(window.devicePixelRatio || 1, 3);
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const cssW = container.clientWidth;
       const cssH = container.clientHeight;
       if (!cssW || !cssH) return;
@@ -1426,14 +1443,41 @@
       loadCanvasInk(id, activePages[id] || 1);
     }
 
-    /* HARDWARE-OPTIMIZED 120HZ S-PEN CANVAS (DESYNCHRONIZED, ZERO PALM-DOTS, DEBOUNCED IO) */
     let inkDebounceTimer = null;
 
+    /* STEP 3: ASYNC IDLE SAVING VIA TOBLOB (ZERO STROKE STUTTER) */
     function scheduleDebouncedSave(id) {
       clearTimeout(inkDebounceTimer);
-      inkDebounceTimer = setTimeout(() => {
-        flushCanvasInkImmediate(id);
-      }, 700);
+      const canvas = document.getElementById(`canvas_${id}`);
+      const key = `humayun_ink_${id}_p${activePages[id] || 1}`;
+      inkDebounceTimer = setTimeout(() => saveInkWhenIdle(canvas, key), 1500);
+    }
+
+    function saveInkWhenIdle(canvas, key) {
+      if (!canvas || !canvas.width) return;
+      if (inkStrokeActive) { inkDebounceTimer = setTimeout(() => saveInkWhenIdle(canvas, key), 500); return; }
+      const write = (dataUrl) => {
+        try {
+          const previous = localStorage.getItem(key) || '';
+          if (previous !== dataUrl) pushUndo(key, previous);
+          localStorage.setItem(key, dataUrl);
+          localStorage.setItem(key + '_size', JSON.stringify({ w: canvas.width, h: canvas.height }));
+        } catch (_) {}
+      };
+      const encode = () => {
+        if (canvas.toBlob) {
+          canvas.toBlob((blob) => {
+            if (!blob) return;
+            const reader = new FileReader();
+            reader.onload = () => write(reader.result);
+            reader.readAsDataURL(blob);
+          }, 'image/png');
+        } else {
+          write(canvas.toDataURL());
+        }
+      };
+      if (window.requestIdleCallback) requestIdleCallback(encode, { timeout: 3000 });
+      else setTimeout(encode, 0);
     }
 
     function flushCanvasInkImmediate(id) {
@@ -1451,12 +1495,17 @@
       } catch (_) {}
     }
 
+    /* STEP 4: FLUSH BEFORE UNLOAD / HIDE */
+    window.addEventListener('pagehide', () => {
+      document.querySelectorAll('canvas[id^="canvas_"]').forEach(c => flushCanvasInkImmediate(c.id.slice(7)));
+    });
+
+    /* STEPS 5 & 6: HARDWARE-OPTIMIZED 120HZ S-PEN CANVAS */
     function initCanvas(id, page) {
       const canvas = document.getElementById(`canvas_${id}`);
       const container = document.getElementById(`canvasArea_${id}`);
       if (!canvas || !container) return;
 
-      // 1. DESYNCHRONIZED DIRECT GPU BUFFER CONTEXT
       const ctx = canvas.getContext('2d', { desynchronized: true, alpha: true });
 
       if (!canvasStates[id]) canvasStates[id] = { tool: 'pen', color: '#0f172a' };
@@ -1473,6 +1522,10 @@
       let points = [];
       let startX = 0, startY = 0;
       let snapshot = null;
+      let lastPt = null;
+      let touchBackup = null;
+      let strokeIsTouch = false;
+      let activeType = null;
 
       const localXY = (e) => {
         const r = canvas.getBoundingClientRect();
@@ -1495,6 +1548,59 @@
         ctx.restore();
       };
 
+      const ptOf = (ev) => {
+        const r = canvas.getBoundingClientRect();
+        return { x: ev.clientX - r.left, y: ev.clientY - r.top, p: ev.pressure > 0 ? ev.pressure : 0.5 };
+      };
+
+      // Each piece of ink is drawn the moment its sample arrives (no waiting for later samples)
+      const strokeSeg = (a, b, tool, p) => {
+        ctx.save();
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        if (tool === 'eraser') {
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.strokeStyle = '#000000';
+          ctx.lineWidth = 28;
+        } else {
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.strokeStyle = canvasStates[id].color;
+          ctx.lineWidth = 2.5 * (0.8 + p * 0.8);
+        }
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+        ctx.restore();
+      };
+
+      // A tap leaves a dot at once, so a decimal point is never lost
+      const dotAt = (p, tool) => {
+        ctx.save();
+        if (tool === 'eraser') {
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.beginPath(); ctx.arc(p.x, p.y, 14, 0, Math.PI * 2); ctx.fill();
+        } else {
+          ctx.fillStyle = canvasStates[id].color;
+          ctx.beginPath(); ctx.arc(p.x, p.y, 2.2, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.restore();
+      };
+
+      // The S-Pen took over from a finger/palm stroke: remove that stroke's marks
+      const cancelTouchStroke = () => {
+        if (touchBackup) ctx.putImageData(touchBackup, 0, 0);
+        touchBackup = null;
+        InkSound.stop();
+        activePointerId = null;
+        activeType = null;
+        strokeIsTouch = false;
+        strokeTool = null;
+        snapshot = null;
+        points = [];
+        inkStrokeActive = false;
+      };
+
       const endStroke = () => {
         if (activePointerId === null) return;
         InkSound.stop();
@@ -1508,121 +1614,77 @@
         }
         points = [];
         snapshot = null;
+        touchBackup = null;
         activePointerId = null;
+        activeType = null;
         strokeTool = null;
-        // Offload image serialization from the immediate render loop
+        strokeIsTouch = false;
+        inkStrokeActive = false;
         scheduleDebouncedSave(id);
       };
 
-      // HOVER SENSING: PRE-EMPTIVELY LOCK OUT CAPACITIVE TOUCH
-      canvas.addEventListener('pointerenter', (e) => {
-        if (e.pointerType === 'pen') lastPenSeen = Date.now();
-      });
-
-      // 2. HARDWARE STYLUS-ONLY FILTER (TRUE PALM IMMUNITY)
       canvas.addEventListener('pointerdown', (e) => {
         if (e.pointerType === 'pen') {
-          lastPenSeen = Date.now();
-        } else {
-          // Reject all touch/palm events completely when S-Pen is active or contact is broad
-          const isPalm = (e.width && e.width > 14) || (e.height && e.height > 14);
-          const penBusy = Date.now() - lastPenSeen < 1400;
-          if (isPalm || penBusy || activePointerId !== null) return;
+          penSeenAt = Date.now();
+          // The S-Pen always wins over a finger or palm stroke that started first
+          if (activePointerId !== null && strokeIsTouch) cancelTouchStroke();
+        } else if (!fingerAllowed(e)) {
+          e.preventDefault();
+          return;
         }
-
         if (activePointerId !== null) return;
 
         e.preventDefault();
         InkSound.init();
         activePointerId = e.pointerId;
+        activeType = e.pointerType;
+        strokeIsTouch = e.pointerType !== 'pen';
+        inkStrokeActive = true;
         try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
 
         const barrelEraser = e.pointerType === 'pen' && ((e.buttons & 32) || e.button === 5);
         strokeTool = barrelEraser ? 'eraser' : canvasStates[id].tool;
 
-        const pt = localXY(e);
-        startX = pt.x;
-        startY = pt.y;
-        points = [pt];
+        const p0 = ptOf(e);
+        startX = p0.x;
+        startY = p0.y;
+        lastPt = p0;
+        points = [p0];
 
-        if (strokeTool === 'line') {
-          snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        }
+        if (strokeTool === 'line') snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        // Finger/palm strokes keep a copy so the S-Pen can remove their marks if it takes over
+        touchBackup = strokeIsTouch ? ctx.getImageData(0, 0, canvas.width, canvas.height) : null;
+        if (strokeTool !== 'line') dotAt(p0, strokeTool);
       });
 
-      // 3. UNLOCK NATIVE 120HZ / 240HZ VIA COALESCED SUB-FRAME SENSING
       canvas.addEventListener('pointermove', (e) => {
-        if (e.pointerType === 'pen') lastPenSeen = Date.now();
+        if (e.pointerType === 'pen') penSeenAt = Date.now();
         if (e.pointerId !== activePointerId) return;
 
-        // Read sub-frame hardware events to eliminate corner jaggedness
-        const rawEvents = (e.getCoalescedEvents && e.getCoalescedEvents().length) ? e.getCoalescedEvents() : [e];
+        // 240Hz S-Pen: every sample the screen batched into this frame is drawn
+        const raw = (e.getCoalescedEvents && e.getCoalescedEvents().length) ? e.getCoalescedEvents() : [e];
 
-        for (const ev of rawEvents) {
-          const pt = localXY(ev);
+        if (strokeTool === 'line') {
+          const last = ptOf(raw[raw.length - 1]);
+          if (snapshot) ctx.putImageData(snapshot, 0, 0);
+          ctx.save();
+          ctx.lineCap = 'round';
+          ctx.strokeStyle = canvasStates[id].color;
+          ctx.lineWidth = 2.5;
+          ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(last.x, last.y); ctx.stroke();
+          ctx.restore();
+          points = [last];
+          return;
+        }
 
-          if (strokeTool === 'line') {
-            if (snapshot) ctx.putImageData(snapshot, 0, 0);
-            ctx.save();
-            ctx.lineCap = 'round';
-            ctx.strokeStyle = canvasStates[id].color;
-            ctx.lineWidth = 2.5;
-            ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(pt.x, pt.y); ctx.stroke();
-            ctx.restore();
-            points = [pt];
-            continue;
-          }
-
-          points.push(pt);
-
-          if (points.length >= 3) {
-            const p1 = points[points.length - 2];
-            const p2 = points[points.length - 1];
-            const midX = (p1.x + p2.x) / 2;
-            const midY = (p1.y + p2.y) / 2;
-
-            ctx.save();
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-
-            if (strokeTool === 'eraser') {
-              ctx.globalCompositeOperation = 'destination-out';
-              ctx.strokeStyle = '#000000';
-              ctx.lineWidth = 28;
-            } else {
-              ctx.globalCompositeOperation = 'source-over';
-              ctx.strokeStyle = canvasStates[id].color;
-              ctx.lineWidth = 2.5 * (0.8 + pt.p * 0.8);
-            }
-
-            ctx.beginPath();
-            ctx.moveTo(points[points.length - 3].x, points[points.length - 3].y);
-            ctx.quadraticCurveTo(p1.x, p1.y, midX, midY);
-            ctx.stroke();
-            ctx.restore();
-          }
+        for (const ev of raw) {
+          const p = ptOf(ev);
+          strokeSeg(lastPt, p, strokeTool, p.p);
+          lastPt = p;
         }
       });
 
-      canvas.addEventListener('pointerup', (e) => {
-        if (e.pointerId === activePointerId) {
-          // Single deliberate tap (no movement) renders a clean dot
-          if (points.length <= 2 && strokeTool !== 'line') {
-            const pt = points[0] || localXY(e);
-            ctx.save();
-            if (strokeTool === 'eraser') {
-              ctx.globalCompositeOperation = 'destination-out';
-              ctx.beginPath(); ctx.arc(pt.x, pt.y, 14, 0, Math.PI * 2); ctx.fill();
-            } else {
-              ctx.fillStyle = canvasStates[id].color;
-              ctx.beginPath(); ctx.arc(pt.x, pt.y, 2.2, 0, Math.PI * 2); ctx.fill();
-            }
-            ctx.restore();
-          }
-          endStroke();
-        }
-      });
-
+      canvas.addEventListener('pointerup', (e) => { if (e.pointerId === activePointerId) endStroke(); });
       canvas.addEventListener('pointercancel', (e) => { if (e.pointerId === activePointerId) endStroke(); });
     }
 
