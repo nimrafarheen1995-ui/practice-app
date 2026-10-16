@@ -110,13 +110,81 @@
       z-index: 10;
     }
 
+    /* SECRET LAB GADGET HEADER WRAPPER & TOGGLE */
+    .hud-dock-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      height: 48px;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 60;
+      width: 100%;
+    }
+
+    .hud-avatar-toggle {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 3px solid #10B981;
+      background: radial-gradient(circle at 30% 30%, #FFFFFF, #D1FAE5);
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.55), 0 6px 16px rgba(4, 120, 87, 0.3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 65;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+      padding: 2px;
+    }
+    .hud-avatar-toggle:hover {
+      transform: scale(1.08) rotate(-4deg);
+    }
+    .hud-avatar-toggle:active {
+      transform: scale(0.93);
+    }
+    .hud-avatar-toggle img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 50%;
+    }
+    .hud-avatar-toggle .gadget-status-dot {
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #FFF;
+      font-size: 0.6rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #FFF;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+    .hud-dock-wrapper.is-collapsed .hud-avatar-toggle {
+      border-color: var(--accent);
+      box-shadow: 0 0 18px rgba(245, 158, 11, 0.65), 0 6px 16px rgba(0,0,0,0.25);
+    }
+    .hud-dock-wrapper.is-collapsed .hud-avatar-toggle .gadget-status-dot {
+      background: var(--accent);
+      transform: rotate(180deg);
+    }
+
     /* STREAMLINED TOP HUD DOCK */
     .floating-hud-dock {
       display: flex;
       align-items: center;
       justify-content: space-between;
       height: 48px;
-      flex-shrink: 0;
+      flex: 1;
       background: rgba(255, 255, 255, 0.92);
       backdrop-filter: blur(12px);
       padding: 4px 16px;
@@ -124,6 +192,16 @@
       border: 2.5px solid var(--border);
       box-shadow: var(--shadow);
       z-index: 50;
+      transform-origin: left center;
+      transition: transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .floating-hud-dock.hud-collapsed {
+      transform: scaleX(0);
+      opacity: 0;
+      pointer-events: none;
     }
 
     .brand-group {
@@ -852,27 +930,34 @@
   <div id="fxToast"></div>
 
   <div class="app-container">
-    <!-- TOP HUD DOCK WITH PRACTICE & WRITE MODE SWITCH -->
-    <nav class="floating-hud-dock" id="floatingHudDock">
-      <div class="brand-group">
-        <button type="button" class="action-btn" onclick="playClickSound(); goToHub()" title="Hub">🪷</button>
-        <button type="button" class="action-btn" id="btnReturnPortals" onclick="playClickSound(); returnToHubBay()" style="display:none;" title="Portals">🏰</button>
-        <div class="brand-title">🔬 Discovery Realm <span class="grade-badge">Grade 3 EVS</span></div>
-      </div>
+    <!-- TOP HUD DOCK WITH SECRET LAB GADGET AVATAR TOGGLE -->
+    <div class="hud-dock-wrapper" id="hudDockWrapper">
+      <button type="button" class="hud-avatar-toggle" id="hudAvatarToggleBtn" onclick="toggleHudDock()" title="Toggle Lab Gadget Bar">
+        <img src="assets/humayun-avatar.webp" alt="Humayun Gadget Toggle" onerror="handleImgFallback(this)" />
+        <span class="gadget-status-dot" id="hudGadgetDot">◀</span>
+      </button>
 
-      <!-- PRACTICE VS WRITE MODE SWITCH -->
-      <div class="mode-switch-wrap">
-        <button class="mode-btn active-learn" id="btnModeLearn" onclick="playClickSound(); setAppMode('learn')">📘 Practice</button>
-        <button class="mode-btn" id="btnModeTest" onclick="playClickSound(); setAppMode('test')">✍️ Write</button>
-      </div>
+      <nav class="floating-hud-dock" id="floatingHudDock">
+        <div class="brand-group">
+          <button type="button" class="action-btn" onclick="playClickSound(); goToHub()" title="Hub">🪷</button>
+          <button type="button" class="action-btn" id="btnReturnPortals" onclick="playClickSound(); returnToHubBay()" style="display:none;" title="Portals">🏰</button>
+          <div class="brand-title">🔬 Discovery Realm <span class="grade-badge">Grade 3 EVS</span></div>
+        </div>
 
-      <!-- DOCKED LEFT ICON PILL SELECTOR FOR SECTIONS -->
-      <div class="portal-pills-row" id="portalPills" style="display:none;"></div>
+        <!-- PRACTICE VS WRITE MODE SWITCH -->
+        <div class="mode-switch-wrap">
+          <button class="mode-btn active-learn" id="btnModeLearn" onclick="playClickSound(); setAppMode('learn')">📘 Practice</button>
+          <button class="mode-btn" id="btnModeTest" onclick="playClickSound(); setAppMode('test')">✍️ Write</button>
+        </div>
 
-      <div class="header-actions">
-        <button type="button" class="action-btn" id="dimBtn" onclick="toggleScreenDim()" title="Dim Screen">💡</button>
-      </div>
-    </nav>
+        <!-- DOCKED LEFT ICON PILL SELECTOR FOR SECTIONS -->
+        <div class="portal-pills-row" id="portalPills" style="display:none;"></div>
+
+        <div class="header-actions">
+          <button type="button" class="action-btn" id="dimBtn" onclick="toggleScreenDim()" title="Dim Screen">💡</button>
+        </div>
+      </nav>
+    </div>
 
     <!-- HUB BAY WITH 3D ASSETS -->
     <main class="hub-bay-wrapper" id="hubBayView">
@@ -938,6 +1023,7 @@
     let currentWorkbookSec = 0;
     let currentNotepadPage = 1;
     let railOpen = true;
+    let hudCollapsed = false;
 
     const activeInkCache = {};
     const binderOpenedMap = {};
@@ -1043,6 +1129,15 @@
       if (!t) { t = document.createElement('div'); t.id = 'fxToast'; document.body.appendChild(t); }
       t.textContent = msg; t.style.display = 'block';
       clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 3000);
+    }
+
+    function toggleHudDock(forceCollapse) {
+      playClickSound();
+      hudCollapsed = (typeof forceCollapse === 'boolean') ? forceCollapse : !hudCollapsed;
+      const dock = document.getElementById('floatingHudDock');
+      const wrapper = document.getElementById('hudDockWrapper');
+      if (dock) dock.classList.toggle('hud-collapsed', hudCollapsed);
+      if (wrapper) wrapper.classList.toggle('is-collapsed', hudCollapsed);
     }
 
     function toggleScreenDim() {
