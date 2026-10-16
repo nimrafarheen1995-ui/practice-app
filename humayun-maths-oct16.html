@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Humayun's Ninja Maths</title>
 
-  <!-- Preload core assets -->
+  <!-- Preload Assets -->
   <link rel="preload" as="image" href="assets/naruto.png"/>
   <link rel="preload" as="image" href="assets/kakashi.png"/>
   <link rel="preload" as="image" href="assets/shikamaru.png"/>
@@ -64,6 +64,7 @@
       z-index: 1;
     }
 
+    /* CLEAN GRAPH PAPER - NO COMPOSITING FILTERS */
     .ninja-graph-paper {
       background-color: #FFFFFF;
       background-image: 
@@ -72,7 +73,7 @@
       background-size: 26px 26px;
     }
 
-    /* 8D CAROUSEL */
+    /* 8D CAROUSEL (HUB VIEW) */
     .stage-8d-wrapper {
       perspective: 1700px;
       perspective-origin: center 46%;
@@ -157,9 +158,8 @@
       pointer-events: none;
     }
 
-    /* WORKBOOK CONTAINER */
-    .card-4d-wrapper {
-      perspective: 1600px;
+    /* STATIC PERMANENT WORKSPACE - ZERO NESTED 3D FILTERS AROUND CANVAS */
+    .workspace-wrapper {
       width: 100%;
       height: 100%;
       display: flex;
@@ -167,38 +167,38 @@
       justify-content: center;
     }
 
-    .glass-binder-container {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 2px solid rgba(255, 255, 255, 0.3);
+    .clean-binder-container {
+      background: #FFFFFF;
+      border: 3px solid #D97706;
       border-radius: 24px;
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7), 0 0 30px rgba(245, 158, 11, 0.15);
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);
       overflow: hidden;
       position: relative;
       width: min(100%, 1100px);
+      display: flex;
+      flex-direction: column;
     }
 
-    .binder-cover-glass {
+    /* FROSTED COVER */
+    .binder-cover-overlay {
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.28) 0%, rgba(240, 244, 250, 0.15) 50%, rgba(15, 23, 42, 0.35) 100%);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, rgba(240, 244, 250, 0.22) 50%, rgba(15, 23, 42, 0.45) 100%);
       backdrop-filter: blur(8px) saturate(160%);
       -webkit-backdrop-filter: blur(8px) saturate(160%);
-      border: 2.5px solid rgba(255, 255, 255, 0.6);
-      z-index: 30;
+      border: 3px solid rgba(255, 255, 255, 0.7);
+      border-radius: 24px;
+      z-index: 40;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       padding: 28px 32px;
-      transition: transform 0.75s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.45s ease;
-      transform-origin: 0% 50%;
-      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.35s ease;
       cursor: pointer;
-      box-shadow: inset 0 0 60px rgba(255, 255, 255, 0.4), 0 25px 50px rgba(0, 0, 0, 0.4);
+      box-shadow: inset 0 0 60px rgba(255, 255, 255, 0.4);
     }
-    .binder-cover-glass.binder-open {
-      transform: perspective(1400px) rotateY(-118deg) rotateX(6deg) translateZ(20px);
+    .binder-cover-overlay.binder-open {
+      transform: translateY(-110%) scale(0.95);
       opacity: 0;
       pointer-events: none;
     }
@@ -220,7 +220,7 @@
       letter-spacing: 2px;
     }
 
-    /* KEYPAD DOCK */
+    /* DOCKABLE KEYPAD */
     .keypad-stone-side-dock {
       width: 270px;
       background: linear-gradient(180deg, #24140D 0%, #150B06 100%);
@@ -275,6 +275,7 @@
       font-size: 1.35rem;
       cursor: pointer;
       border: 1.5px solid transparent;
+      color: #FFF;
     }
     .canvas-tool-btn.active {
       background: #EA580C;
@@ -294,7 +295,7 @@
       opacity: 0;
       transform: scale(0.65);
       transition: all 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      background: radial-gradient(circle at center, rgba(15, 23, 42, 0.75) 0%, rgba(9, 11, 16, 0.92) 100%);
+      background: radial-gradient(circle at center, rgba(15, 23, 42, 0.85) 0%, rgba(9, 11, 16, 0.95) 100%);
       backdrop-filter: blur(4px);
     }
     .genjutsu-failure-banner.active { opacity: 1; transform: scale(1); }
@@ -367,7 +368,7 @@
         <span id="dimPctLabel" class="w-7 font-bold text-amber-300">0%</span>
       </div>
       <button class="icon-pill-btn" id="inkSoundBtn" onclick="toggleInkSound()" title="Sound on/off">🔊</button>
-      <button onclick="returnToGateway()" id="gatewayNavBtn" class="hidden bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs px-3.5 py-2 rounded-xl shadow border border-amber-400">
+      <button onclick="returnToGateway()" id="gatewayNavBtn" class="hidden bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs px-3.5 py-2 rounded-xl shadow border border-amber-400 cursor-pointer">
         📚 Exercises
       </button>
     </div>
@@ -376,7 +377,7 @@
   <!-- MAIN VIEWPORT -->
   <main class="flex-1 w-full mx-auto p-4 md:p-6 flex flex-col justify-center items-center relative z-10 overflow-hidden">
     
-    <!-- 8D SWIPEABLE HUB CAROUSEL -->
+    <!-- 8D SWIPEABLE HUB CAROUSEL (VIEW 1) -->
     <div id="gatewayView" class="w-full flex flex-col gap-4 items-center">
       <div class="text-center">
         <h2 class="text-2xl md:text-3xl font-bold font-display text-white drop-shadow-md">Choose Your Exercise</h2>
@@ -432,8 +433,160 @@
       </div>
     </div>
 
-    <!-- WORKSPACE -->
-    <div id="activeCardContainer" class="w-full card-4d-wrapper" style="display: none;"></div>
+    <!-- PERMANENT ZERO-LATENCY WORKSPACE (VIEW 2) -->
+    <div id="activeWorkspace" class="w-full workspace-wrapper" style="display: none;">
+      <div class="clean-binder-container">
+        
+        <!-- GENJUTSU UNBROKEN BANNER -->
+        <div class="genjutsu-failure-banner" id="genjutsuBanner">
+          <div class="genjutsu-kanji-title">幻術 UNBROKEN!</div>
+          <div class="text-white font-display text-2xl font-bold tracking-widest mt-2">TRY AGAIN!</div>
+        </div>
+
+        <!-- TOP BAR -->
+        <div class="p-4 bg-slate-900 text-white border-b border-slate-700/80 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <div class="flex items-center gap-3 flex-wrap">
+            <span id="questionLabelBadge" class="bg-amber-600 text-white font-bold text-sm px-3.5 py-1.5 rounded-xl font-display shadow-sm">1.a</span>
+            <div id="questionTextSlot" class="font-bold text-white text-base md:text-xl leading-relaxed flex items-center flex-wrap">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+            <input type="text" readonly inputmode="none" id="answerSlotInput" placeholder="Tap to type..." 
+              class="px-4 py-2 rounded-xl border-2 border-amber-400 bg-slate-800 text-amber-300 font-black text-lg w-40 text-center cursor-pointer"
+              onclick="focusAnswerInput()">
+            <button onclick="submitCurrentAnswer()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-5 py-2.5 rounded-xl transition shadow-md text-base cursor-pointer">✅</button>
+          </div>
+        </div>
+
+        <!-- SECONDARY BREADCRUMB -->
+        <div class="bg-slate-100 px-4 py-2.5 border-b border-slate-200 flex justify-between items-center text-xs md:text-sm text-slate-800 font-bold">
+          <span id="exerciseBreadcrumbText" class="font-display">Exercise 1.3 (1 of 5)</span>
+          <div class="flex gap-2.5 items-center">
+            <button onclick="changeQuestion(-1)" id="btnPrevQ" class="px-4 py-2 bg-white border border-slate-300 rounded-xl font-bold hover:bg-slate-50 cursor-pointer">
+              ⬅️ Prev
+            </button>
+            <button onclick="changeQuestion(1)" id="btnNextQ" class="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-xl font-black cursor-pointer">
+              Next ➡️
+            </button>
+          </div>
+        </div>
+
+        <!-- WORKSPACE AREA -->
+        <div class="relative workspace-h bg-white overflow-hidden flex flex-col">
+          
+          <!-- NUMBER LINE STRIP (DYNAMIC) -->
+          <div id="numberLineWrapper" class="p-3 bg-slate-100 border-b border-slate-200 shrink-0" style="display: none;">
+            <div class="flex justify-between items-center text-xs font-bold text-slate-700 mb-1">
+              <span>Number Line:</span>
+              <button type="button" class="text-xs text-amber-700 underline font-bold cursor-pointer" onclick="clearLineCanvas()">Reset Jumps</button>
+            </div>
+            <div class="w-full h-20 bg-white border-2 border-slate-300 rounded-xl overflow-hidden relative">
+              <canvas id="lineCanvas" class="w-full h-full cursor-crosshair touch-none"></canvas>
+            </div>
+          </div>
+
+          <!-- TOOLBAR -->
+          <div class="bg-slate-800 text-white p-2.5 flex justify-between items-center z-10 shadow-sm flex-wrap gap-2 border-b border-slate-700 shrink-0">
+            <div class="flex items-center gap-2">
+              <button onclick="selectTool('pen')" id="toolPen" class="canvas-tool-btn active">✏️</button>
+              <button onclick="selectTool('line')" id="toolLine" class="canvas-tool-btn">📏</button>
+              <button onclick="selectTool('eraser')" id="toolEraser" class="canvas-tool-btn">🧹</button>
+              <button onclick="undoInk()" class="canvas-tool-btn">↩️</button>
+              <button onclick="clearCanvas()" class="canvas-tool-btn text-rose-400">🗑️</button>
+            </div>
+
+            <div class="flex items-center bg-slate-700 px-3.5 py-1.5 rounded-xl border border-slate-600 gap-3 text-sm font-bold">
+              <button onclick="switchPageSmoothly(-1)" class="cursor-pointer">◀️</button>
+              <span id="pageIndicatorText" class="text-amber-300">Pg 1 / 2</span>
+              <button onclick="switchPageSmoothly(1)" class="cursor-pointer">▶️</button>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <div class="flex gap-2 ml-2 items-center">
+                <button onclick="setColor('#0f172a')" class="w-7 h-7 rounded-full bg-slate-900 border-2 border-white shadow cursor-pointer"></button>
+                <button onclick="setColor('#2563eb')" class="w-7 h-7 rounded-full bg-blue-600 border-2 border-white shadow cursor-pointer"></button>
+                <button onclick="setColor('#dc2626')" class="w-7 h-7 rounded-full bg-red-600 border-2 border-white shadow cursor-pointer"></button>
+              </div>
+              <button onclick="toggleKeypadDocking()" id="toggleKeypadBtn" class="bg-amber-600 text-white text-xs md:text-sm px-3.5 py-2 rounded-xl font-bold shadow ml-2 cursor-pointer">
+                📌 Undock Keypad
+              </button>
+              <button onclick="closeCover()" class="bg-slate-900 text-white text-xs md:text-sm px-3.5 py-2 rounded-xl font-bold shadow ml-1 cursor-pointer">📕 Cover</button>
+            </div>
+          </div>
+
+          <!-- SPLIT: INK CANVAS + DOCKABLE KEYPAD -->
+          <div class="flex-1 flex flex-row bg-white relative overflow-hidden" id="canvasContainerBox">
+            <div class="flex-1 ninja-graph-paper relative overflow-hidden select-none touch-none h-full" id="graphArea">
+              <div class="absolute right-3 bottom-0 pointer-events-none z-10 opacity-60 flex flex-col items-end">
+                <img id="companionAvatarImg" src="assets/kakashi.png" class="w-44 h-44 md:w-60 md:h-60 object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.4)]" alt="Companion" onerror="handleImageFallback(this)"/>
+              </div>
+              <!-- SINGLE STATIC RAW CANVAS INITIALIZED ONCE -->
+              <canvas id="inkCanvas" oncontextmenu="return false;" class="absolute inset-0 w-full h-full cursor-crosshair touch-none z-10"></canvas>
+            </div>
+
+            <aside class="keypad-stone-side-dock" id="sideKeypadDock">
+              <div class="flex flex-col gap-2">
+                <div class="stone-slot-header">
+                  <span class="stone-slot-label">Answer:</span>
+                  <div class="stone-carved-display" id="stoneCarvedDisplay">?</div>
+                </div>
+
+                <div class="stone-keys-grid">
+                  <button type="button" class="stone-key-btn" onclick="pressStoneKey('1')">1</button>
+                  <button type="button" class="stone-key-btn" onclick="pressStoneKey('2')">2</button>
+                  <button type="button" class="stone-key-btn" onclick="pressStoneKey('3')">3</button>
+                  <button type="button" class="stone-key-btn btn-del" onclick="pressStoneKey('DEL')">⌫</button>
+
+                  <button type="button" class="stone-key-btn" onclick="pressStoneKey('4')">4</button>
+                  <button type="button" class="stone-key-btn" onclick="pressStoneKey('5')">5</button>
+                  <button type="button" class="stone-key-btn" onclick="pressStoneKey('6')">6</button>
+                  <button type="button" class="stone-key-btn btn-qr-comma" onclick="pressStoneKey(',')">Q , R</button>
+
+                  <button type="button" class="stone-key-btn" onclick="pressStoneKey('7')">7</button>
+                  <button type="button" class="stone-key-btn" onclick="pressStoneKey('8')">8</button>
+                  <button type="button" class="stone-key-btn" onclick="pressStoneKey('9')">9</button>
+                  <button type="button" class="stone-key-btn" onclick="pressStoneKey('0')">0</button>
+
+                  <button type="button" class="stone-key-btn btn-submit" onclick="submitCurrentAnswer()">⚔️ Submit</button>
+                  <button type="button" class="stone-key-btn btn-del text-xs font-bold" onclick="pressStoneKey('CLR')">Clear</button>
+                </div>
+              </div>
+
+              <button type="button" onclick="toggleKeypadDocking()" class="w-full text-center text-xs text-amber-400 py-1.5 border border-amber-800/60 rounded-xl bg-stone-900 font-bold cursor-pointer">
+                ✖ Hide Keypad
+              </button>
+            </aside>
+          </div>
+
+          <!-- FROSTED COVER OVERLAY -->
+          <div id="binderCoverOverlay" class="binder-cover-overlay binder-open" onclick="openCover()">
+            <div class="flex justify-between items-start z-10">
+              <span id="coverBadgeTitle" class="bg-white/80 border border-slate-300 text-amber-800 px-4 py-1.5 rounded-full text-xs md:text-sm font-extrabold uppercase font-display">Exercise 1.3</span>
+              <span class="text-3xl">📖</span>
+            </div>
+
+            <div class="mx-auto my-auto bg-white/90 backdrop-blur-md text-slate-900 rounded-3xl p-6 md:p-8 w-80 md:w-96 shadow-2xl border-4 border-slate-800 text-center relative z-10">
+              <div class="text-xs uppercase font-extrabold text-slate-600 tracking-widest border-b pb-1.5">Mathematics Notebook</div>
+              <div class="font-display text-2xl md:text-3xl text-slate-900 font-black mt-2">Humayun</div>
+              <div id="coverExerciseTitle" class="font-extrabold text-amber-700 text-base md:text-lg mt-1">Exercise 1.3</div>
+              <div id="coverCompanionText" class="text-xs md:text-sm text-slate-600 font-bold mt-1">Host: Kakashi Hatake</div>
+            </div>
+
+            <div class="text-center flex flex-col items-center gap-3 z-10">
+              <img id="coverCompanionImg" src="assets/kakashi.png" class="w-36 h-36 md:w-48 md:h-48 object-contain drop-shadow-[0_12px_24px_rgba(245,158,11,0.6)] animate-bounce" alt="Companion" onerror="handleImageFallback(this)"/>
+              <span class="bg-amber-400 text-slate-950 font-black px-6 py-2.5 rounded-2xl shadow-xl text-xs md:text-sm uppercase tracking-widest active:scale-95">Tap to Open Binder ⚡</span>
+            </div>
+
+            <div class="text-center text-xs md:text-sm text-slate-800 font-bold z-10">
+              Clean Independent Workspace
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
   </main>
 
   <script>
@@ -556,7 +709,69 @@
     }
     if (!InkSound.enabled) document.getElementById('inkSoundBtn').textContent = '🔇';
 
-    /* CAROUSEL TRACKING */
+    /* CURRICULUM DATA */
+    const curriculumData = {
+      ex13: {
+        title: "Exercise 1.3",
+        companion: "Kakashi Hatake",
+        avatar: "assets/kakashi.png",
+        questions: [
+          { id: "e13_q1_a", label: "1.a", text: "1. Divide the following using the number line:\n12 ÷ 3 = .............", answer: "4", hasNumberLine: true, maxLine: 20 },
+          { id: "e13_q1_b", label: "1.b", text: "1. Divide the following using the number line:\n14 ÷ 7 = .............", answer: "2", hasNumberLine: true, maxLine: 20 },
+          { id: "e13_q1_c", label: "1.c", text: "1. Divide the following using the number line:\n9 ÷ 3 = .............", answer: "3", hasNumberLine: true, maxLine: 20 },
+          { id: "e13_q2_a", label: "2.a", text: "2. Noor has drawn these number lines incorrectly. Let us help her correct them below:\n12 ÷ 3 = .............", answer: "4", hasNumberLine: true, maxLine: 20 },
+          { id: "e13_q2_b", label: "2.b", text: "2. Noor has drawn these number lines incorrectly. Let us help her correct them below:\n10 ÷ 2 = .............", answer: "5", hasNumberLine: true, maxLine: 20 }
+        ]
+      },
+      ex14: {
+        title: "Exercise 1.4",
+        companion: "Naruto Uzumaki",
+        avatar: "assets/naruto.png",
+        questions: [
+          { id: "e14_q1_a", label: "1.a", text: "1. Fill in the blanks:\nIf 30 ÷ 5 = 6, then 6 × 5 = .........", answer: "30" },
+          { id: "e14_q1_b", label: "1.b", text: "1. Fill in the blanks:\nIf 40 ÷ 8 = 5, then 8 × ......... = 40", answer: "5" },
+          { id: "e14_q1_c", label: "1.c", text: "1. Fill in the blanks:\nIf 56 ÷ 7 = 8, then ......... × 7 = 56.", answer: "8" },
+          { id: "e14_q1_d", label: "1.d", text: "1. Fill in the blanks:\nIf 28 ÷ 7 = 4, then 4 × 7 = .........", answer: "28" },
+          { id: "e14_q1_e", label: "1.e", text: "1. Fill in the blanks:\nIf 20 ÷ 5 = 4, then 20 ÷ 4 = .........", answer: "5" },
+          { id: "e14_q1_f", label: "1.f", text: "1. Fill in the blanks:\nIf 50 ÷ 5 = 10, then 50 ÷ 10 = .........", answer: "5" },
+          { id: "e14_q2", label: "2", text: "2. 26 candies are placed equally on 2 plates, such that each plate has 13 candies. If 13 brownies are placed on one plate and there are two such plates, then how many brownies are there, in total?", answer: "26" },
+          { id: "e14_q3", label: "3", text: "3. Vasu gave 20 biscuits to 4 dogs to eat. Each dog got 5. If he has to give 30 biscuits to 5 dogs, then how many biscuits will each dog get?", answer: "6" }
+        ]
+      },
+      ex15: {
+        title: "Exercise 1.5",
+        companion: "Shikamaru Nara",
+        avatar: "assets/shikamaru.png",
+        questions: [
+          { id: "e15_q1_a", label: "1.a", text: "1. Divide:", answer: "6", bracket: { divisor: "7", dividend: "42" } },
+          { id: "e15_q1_b", label: "1.b", text: "1. Divide:", answer: "11", bracket: { divisor: "8", dividend: "88" } },
+          { id: "e15_q1_c", label: "1.c", text: "1. Divide:", answer: "16", bracket: { divisor: "3", dividend: "48" } },
+          { id: "e15_q1_d", label: "1.d", text: "1. Divide:", answer: "21", bracket: { divisor: "4", dividend: "84" } },
+          { id: "e15_q1_e", label: "1.e", text: "1. Divide:", answer: "10", bracket: { divisor: "5", dividend: "50" } },
+          { id: "e15_q2_a", label: "2.a", text: "2. Divide using long division:\nEnter as: Quotient,Remainder", answer: "4,4", bracket: { divisor: "5", dividend: "24" } },
+          { id: "e15_q2_b", label: "2.b", text: "2. Divide using long division:\nEnter as: Quotient,Remainder", answer: "12,4", bracket: { divisor: "6", dividend: "76" } },
+          { id: "e15_q2_c", label: "2.c", text: "2. Divide using long division:\nEnter as: Quotient,Remainder", answer: "11,4", bracket: { divisor: "7", dividend: "81" } },
+          { id: "e15_q2_d", label: "2.d", text: "2. Divide using long division:\nEnter as: Quotient,Remainder", answer: "5,2", bracket: { divisor: "7", dividend: "37" } },
+          { id: "e15_q2_e", label: "2.e", text: "2. Divide using long division:\nEnter as: Quotient,Remainder", answer: "11,1", bracket: { divisor: "8", dividend: "89" } },
+          { id: "e15_q3_a", label: "3.a", text: "3. Fill in the blanks:\n85 ÷ 6 gives quotient = ........., remainder = .........", answer: "14,1" },
+          { id: "e15_q3_b", label: "3.b", text: "3. Fill in the blanks:\n48 ÷ 9 gives quotient = ........., remainder = .........", answer: "5,3" },
+          { id: "e15_q3_c", label: "3.c", text: "3. Fill in the blanks:\n26 ÷ 7 gives quotient = ........., remainder = .........", answer: "3,5" },
+          { id: "e15_q3_d", label: "3.d", text: "3. Fill in the blanks:\n89 ÷ 4 gives quotient = ........., remainder = .........", answer: "22,1" },
+          { id: "e15_q3_e", label: "3.e", text: "3. Fill in the blanks:\n75 ÷ 2 gives quotient = ........., remainder = .........", answer: "37,1" },
+          { id: "e15_q4_a", label: "4.a", text: "4. Match with remainder:\nRemainder of 34 ÷ 3?", answer: "1" },
+          { id: "e15_q4_b", label: "4.b", text: "4. Match with remainder:\nRemainder of 29 ÷ 8?", answer: "5" },
+          { id: "e15_q4_c", label: "4.c", text: "4. Match with remainder:\nRemainder of 16 ÷ 4?", answer: "0" },
+          { id: "e15_q4_d", label: "4.d", text: "4. Match with remainder:\nRemainder of 70 ÷ 6?", answer: "4" }
+        ]
+      }
+    };
+
+    let currentExerciseKey = 'ex13';
+    let currentQIndex = 0;
+    let currentPage = 1;
+    let isKeypadDocked = true;
+
+    /* CAROUSEL LOGIC */
     let activeExerciseIdx = 0;
     const exerciseKeys = ['ex13', 'ex14', 'ex15'];
 
@@ -619,301 +834,119 @@
       stage.addEventListener('pointercancel', () => { isTracking = false; });
     })();
 
-    /* CURRICULUM */
-    const curriculumData = {
-      ex13: {
-        title: "Exercise 1.3",
-        companion: "Kakashi Hatake",
-        avatar: "assets/kakashi.png",
-        questions: [
-          { id: "e13_q1_a", label: "1.a", text: "1. Divide the following using the number line:\n12 ÷ 3 = .............", answer: "4", hasNumberLine: true, maxLine: 20 },
-          { id: "e13_q1_b", label: "1.b", text: "1. Divide the following using the number line:\n14 ÷ 7 = .............", answer: "2", hasNumberLine: true, maxLine: 20 },
-          { id: "e13_q1_c", label: "1.c", text: "1. Divide the following using the number line:\n9 ÷ 3 = .............", answer: "3", hasNumberLine: true, maxLine: 20 },
-          { id: "e13_q2_a", label: "2.a", text: "2. Noor has drawn these number lines incorrectly. Let us help her correct them below:\n12 ÷ 3 = .............", answer: "4", hasNumberLine: true, maxLine: 20 },
-          { id: "e13_q2_b", label: "2.b", text: "2. Noor has drawn these number lines incorrectly. Let us help her correct them below:\n10 ÷ 2 = .............", answer: "5", hasNumberLine: true, maxLine: 20 }
-        ]
-      },
-      ex14: {
-        title: "Exercise 1.4",
-        companion: "Naruto Uzumaki",
-        avatar: "assets/naruto.png",
-        questions: [
-          { id: "e14_q1_a", label: "1.a", text: "1. Fill in the blanks:\nIf 30 ÷ 5 = 6, then 6 × 5 = .........", answer: "30" },
-          { id: "e14_q1_b", label: "1.b", text: "1. Fill in the blanks:\nIf 40 ÷ 8 = 5, then 8 × ......... = 40", answer: "5" },
-          { id: "e14_q1_c", label: "1.c", text: "1. Fill in the blanks:\nIf 56 ÷ 7 = 8, then ......... × 7 = 56.", answer: "8" },
-          { id: "e14_q1_d", label: "1.d", text: "1. Fill in the blanks:\nIf 28 ÷ 7 = 4, then 4 × 7 = .........", answer: "28" },
-          { id: "e14_q1_e", label: "1.e", text: "1. Fill in the blanks:\nIf 20 ÷ 5 = 4, then 20 ÷ 4 = .........", answer: "5" },
-          { id: "e14_q1_f", label: "1.f", text: "1. Fill in the blanks:\nIf 50 ÷ 5 = 10, then 50 ÷ 10 = .........", answer: "5" },
-          { id: "e14_q2", label: "2", text: "2. 26 candies are placed equally on 2 plates, such that each plate has 13 candies. If 13 brownies are placed on one plate and there are two such plates, then how many brownies are there, in total?", answer: "26" },
-          { id: "e14_q3", label: "3", text: "3. Vasu gave 20 biscuits to 4 dogs to eat. Each dog got 5. If he has to give 30 biscuits to 5 dogs, then how many biscuits will each dog get?", answer: "6" }
-        ]
-      },
-      ex15: {
-        title: "Exercise 1.5",
-        companion: "Shikamaru Nara",
-        avatar: "assets/shikamaru.png",
-        questions: [
-          { id: "e15_q1_a", label: "1.a", text: "1. Divide:", answer: "6", bracket: { divisor: "7", dividend: "42" } },
-          { id: "e15_q1_b", label: "1.b", text: "1. Divide:", answer: "11", bracket: { divisor: "8", dividend: "88" } },
-          { id: "e15_q1_c", label: "1.c", text: "1. Divide:", answer: "16", bracket: { divisor: "3", dividend: "48" } },
-          { id: "e15_q1_d", label: "1.d", text: "1. Divide:", answer: "21", bracket: { divisor: "4", dividend: "84" } },
-          { id: "e15_q1_e", label: "1.e", text: "1. Divide:", answer: "10", bracket: { divisor: "5", dividend: "50" } },
-          { id: "e15_q2_a", label: "2.a", text: "2. Divide using long division:\nEnter as: Quotient,Remainder", answer: "4,4", bracket: { divisor: "5", dividend: "24" } },
-          { id: "e15_q2_b", label: "2.b", text: "2. Divide using long division:\nEnter as: Quotient,Remainder", answer: "12,4", bracket: { divisor: "6", dividend: "76" } },
-          { id: "e15_q2_c", label: "2.c", text: "2. Divide using long division:\nEnter as: Quotient,Remainder", answer: "11,4", bracket: { divisor: "7", dividend: "81" } },
-          { id: "e15_q2_d", label: "2.d", text: "2. Divide using long division:\nEnter as: Quotient,Remainder", answer: "5,2", bracket: { divisor: "7", dividend: "37" } },
-          { id: "e15_q2_e", label: "2.e", text: "2. Divide using long division:\nEnter as: Quotient,Remainder", answer: "11,1", bracket: { divisor: "8", dividend: "89" } },
-          { id: "e15_q3_a", label: "3.a", text: "3. Fill in the blanks:\n85 ÷ 6 gives quotient = ........., remainder = .........", answer: "14,1" },
-          { id: "e15_q3_b", label: "3.b", text: "3. Fill in the blanks:\n48 ÷ 9 gives quotient = ........., remainder = .........", answer: "5,3" },
-          { id: "e15_q3_c", label: "3.c", text: "3. Fill in the blanks:\n26 ÷ 7 gives quotient = ........., remainder = .........", answer: "3,5" },
-          { id: "e15_q3_d", label: "3.d", text: "3. Fill in the blanks:\n89 ÷ 4 gives quotient = ........., remainder = .........", answer: "22,1" },
-          { id: "e15_q3_e", label: "3.e", text: "3. Fill in the blanks:\n75 ÷ 2 gives quotient = ........., remainder = .........", answer: "37,1" },
-          { id: "e15_q4_a", label: "4.a", text: "4. Match with remainder:\nRemainder of 34 ÷ 3?", answer: "1" },
-          { id: "e15_q4_b", label: "4.b", text: "4. Match with remainder:\nRemainder of 29 ÷ 8?", answer: "5" },
-          { id: "e15_q4_c", label: "4.c", text: "4. Match with remainder:\nRemainder of 16 ÷ 4?", answer: "0" },
-          { id: "e15_q4_d", label: "4.d", text: "4. Match with remainder:\nRemainder of 70 ÷ 6?", answer: "4" }
-        ]
-      }
-    };
-
-    let currentExerciseKey = 'ex13';
-    let currentIndexMap = { ex13: 0, ex14: 0, ex15: 0 };
-    const activePages = {};
-    const canvasStates = {};
-    const binderOpenedMap = {};
-    let isKeypadDocked = true;
-    let activeResizeObserver = null;
-    let currentInputTargetId = null;
-
+    /* NAVIGATION BETWEEN HUB AND WORKSPACE */
     function switchExercise(exKey) {
       playMagicWhoosh(true);
       currentExerciseKey = exKey;
+      currentQIndex = 0;
+      currentPage = 1;
+
       document.getElementById('gatewayView').style.display = 'none';
-      document.getElementById('activeCardContainer').style.display = 'flex';
+      document.getElementById('activeWorkspace').style.display = 'flex';
       document.getElementById('gatewayNavBtn').classList.remove('hidden');
-      renderActiveCard(true);
+
+      loadCurrentQuestion();
+      document.getElementById('binderCoverOverlay').classList.remove('binder-open');
     }
 
     function returnToGateway() {
       playMagicWhoosh(false);
-      const ex = curriculumData[currentExerciseKey];
-      const q = ex.questions[currentIndexMap[currentExerciseKey]];
-      if (q) flushCanvasInkImmediate(q.id);
+      saveCurrentCanvasInk();
 
-      document.getElementById('activeCardContainer').style.display = 'none';
+      document.getElementById('activeWorkspace').style.display = 'none';
       document.getElementById('gatewayNavBtn').classList.add('hidden');
       document.getElementById('gatewayView').style.display = 'flex';
       update8DCarouselDOM();
     }
 
-    function changeQuestion(direction) {
+    function changeQuestion(delta) {
       const ex = curriculumData[currentExerciseKey];
-      const curQ = ex.questions[currentIndexMap[currentExerciseKey]];
-      if (curQ) flushCanvasInkImmediate(curQ.id);
-
-      let newIndex = currentIndexMap[currentExerciseKey] + direction;
-      if (newIndex >= 0 && newIndex < ex.questions.length) {
-        playMagicWhoosh(true);
-        currentIndexMap[currentExerciseKey] = newIndex;
-        renderActiveCard(true);
+      const nextIdx = currentQIndex + delta;
+      if (nextIdx >= 0 && nextIdx < ex.questions.length) {
+        saveCurrentCanvasInk();
+        currentQIndex = nextIdx;
+        currentPage = 1;
+        loadCurrentQuestion();
       }
     }
 
-    function switchPageSmoothly(qId, delta) {
-      if (!activePages[qId]) activePages[qId] = 1;
-      let targetPage = activePages[qId] + delta;
-      if (targetPage >= 1 && targetPage <= 2) {
-        flushCanvasInkImmediate(qId);
-        activePages[qId] = targetPage;
-        const ind = document.getElementById(`pageIndicator_${qId}`);
-        if (ind) ind.innerText = `Pg ${targetPage} / 2`;
-        loadCanvasInk(qId, targetPage);
+    function switchPageSmoothly(delta) {
+      const nextP = currentPage + delta;
+      if (nextP >= 1 && nextP <= 2) {
+        saveCurrentCanvasInk();
+        currentPage = nextP;
+        document.getElementById('pageIndicatorText').textContent = `Pg ${currentPage} / 2`;
+        loadCanvasInk();
       }
     }
 
-    /* RENDER CARD */
-    function renderActiveCard(animate = false) {
-      const container = document.getElementById('activeCardContainer');
+    function loadCurrentQuestion() {
       const ex = curriculumData[currentExerciseKey];
-      const qIndex = currentIndexMap[currentExerciseKey];
-      const q = ex.questions[qIndex];
-      const savedAnswer = localStorage.getItem(`humayun_ans_${q.id}`) || '';
-      
-      if (!activePages[q.id]) activePages[q.id] = 1;
-      const currentPage = activePages[q.id];
-      const isBinderOpen = !!binderOpenedMap[q.id];
-      currentInputTargetId = `ans_${q.id}`;
+      const q = ex.questions[currentQIndex];
 
-      container.innerHTML = `
-        <div class="glass-binder-container flex flex-col relative">
-          
-          <div class="genjutsu-failure-banner" id="genjutsuBanner">
-            <div class="genjutsu-kanji-title">幻術 UNBROKEN!</div>
-            <div class="text-white font-display text-2xl font-bold tracking-widest mt-2">TRY AGAIN!</div>
-          </div>
+      document.getElementById('questionLabelBadge').textContent = q.label;
+      document.getElementById('exerciseBreadcrumbText').textContent = `${ex.title} (${currentQIndex + 1} of ${ex.questions.length})`;
+      document.getElementById('companionAvatarImg').src = ex.avatar;
 
-          <div class="p-4 bg-slate-900 text-white border-b border-slate-700/80 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-            <div class="flex items-center gap-3 flex-wrap">
-              <span class="bg-amber-600 text-white font-bold text-sm px-3.5 py-1.5 rounded-xl font-display">${q.label}</span>
-              <div class="font-bold text-white text-base md:text-xl leading-relaxed flex items-center flex-wrap">
-                <span style="white-space: pre-line;">${q.text}</span>
-                ${q.bracket ? `
-                  <div class="long-division-bracket">
-                    <span class="text-amber-300 pr-1">${q.bracket.divisor}</span>
-                    <span class="radical-box text-white bg-slate-800/80">${q.bracket.dividend}</span>
-                  </div>
-                ` : ''}
-              </div>
-            </div>
+      // Cover elements
+      document.getElementById('coverBadgeTitle').textContent = ex.title;
+      document.getElementById('coverExerciseTitle').textContent = ex.title;
+      document.getElementById('coverCompanionText').textContent = `Host: ${ex.companion}`;
+      document.getElementById('coverCompanionImg').src = ex.avatar;
 
-            <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-              <input type="text" readonly inputmode="none" id="ans_${q.id}" value="${savedAnswer}" placeholder="Tap to type..." 
-                class="px-4 py-2 rounded-xl border-2 border-amber-400 bg-slate-800 text-amber-300 font-black text-lg w-40 text-center cursor-pointer"
-                onclick="focusAnswerInput()">
-              <button onclick="checkAnswer('${q.id}', '${q.answer}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-5 py-2.5 rounded-xl transition shadow-md text-base cursor-pointer">✅</button>
-            </div>
-          </div>
+      // Question Slot
+      let qHtml = `<span style="white-space: pre-line;">${q.text}</span>`;
+      if (q.bracket) {
+        qHtml += `
+          <div class="long-division-bracket">
+            <span class="text-amber-300 pr-1">${q.bracket.divisor}</span>
+            <span class="radical-box text-white bg-slate-800/80">${q.bracket.dividend}</span>
+          </div>`;
+      }
+      document.getElementById('questionTextSlot').innerHTML = qHtml;
 
-          <div class="bg-slate-100 px-4 py-2.5 border-b border-slate-200 flex justify-between items-center text-xs md:text-sm text-slate-800 font-bold">
-            <span class="font-display">${ex.title} (${qIndex + 1} of ${ex.questions.length})</span>
-            <div class="flex gap-2.5 items-center">
-              <button onclick="changeQuestion(-1)" ${qIndex === 0 ? 'disabled' : ''} class="px-4 py-2 bg-white border border-slate-300 rounded-xl font-bold ${qIndex === 0 ? 'opacity-40' : 'hover:bg-slate-50 cursor-pointer'}">
-                ⬅️ Prev
-              </button>
-              <button onclick="changeQuestion(1)" ${qIndex === ex.questions.length - 1 ? 'disabled' : ''} class="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-xl font-black ${qIndex === ex.questions.length - 1 ? 'opacity-40' : 'cursor-pointer'}">
-                Next ➡️
-              </button>
-            </div>
-          </div>
+      // Answer Slot
+      const savedAns = localStorage.getItem(`humayun_ans_${q.id}`) || '';
+      document.getElementById('answerSlotInput').value = savedAns;
+      document.getElementById('stoneCarvedDisplay').textContent = savedAns || '?';
 
-          <div class="relative workspace-h bg-white overflow-hidden flex flex-col">
-            
-            ${q.hasNumberLine ? `
-              <div class="p-3 bg-slate-100 border-b border-slate-200 shrink-0">
-                <div class="flex justify-between items-center text-xs font-bold text-slate-700 mb-1">
-                  <span>Number Line:</span>
-                  <button type="button" class="text-xs text-amber-700 underline font-bold" onclick="clearLineCanvas('${q.id}')">Reset Jumps</button>
-                </div>
-                <div class="w-full h-20 bg-white border-2 border-slate-300 rounded-xl overflow-hidden relative" id="lineWrapper_${q.id}">
-                  <canvas id="lineCanvas_${q.id}" class="w-full h-full cursor-crosshair touch-none"></canvas>
-                </div>
-              </div>
-            ` : ''}
+      // Prev/Next state
+      document.getElementById('btnPrevQ').style.opacity = currentQIndex === 0 ? '0.4' : '1';
+      document.getElementById('btnNextQ').style.opacity = currentQIndex === ex.questions.length - 1 ? '0.4' : '1';
 
-            <div class="bg-slate-800 text-white p-2.5 flex justify-between items-center z-10 shadow-sm flex-wrap gap-2 border-b border-slate-700 shrink-0">
-              <div class="flex items-center gap-2">
-                <button onclick="setTool('${q.id}', 'pen')" id="toolPen_${q.id}" class="canvas-tool-btn active">✏️</button>
-                <button onclick="setTool('${q.id}', 'line')" id="toolLine_${q.id}" class="canvas-tool-btn">📏</button>
-                <button onclick="setTool('${q.id}', 'eraser')" id="toolEraser_${q.id}" class="canvas-tool-btn">🧹</button>
-                <button onclick="undoInk('${q.id}')" class="canvas-tool-btn">↩️</button>
-                <button onclick="clearCanvas('${q.id}')" class="canvas-tool-btn text-rose-400">🗑️</button>
-              </div>
+      // Number Line Handling
+      const nlWrapper = document.getElementById('numberLineWrapper');
+      if (q.hasNumberLine) {
+        nlWrapper.style.display = 'block';
+        setTimeout(() => initNumberLine(q.id, q.maxLine || 20), 20);
+      } else {
+        nlWrapper.style.display = 'none';
+      }
 
-              <div class="flex items-center bg-slate-700 px-3.5 py-1.5 rounded-xl border border-slate-600 gap-3 text-sm font-bold">
-                <button onclick="switchPageSmoothly('${q.id}', -1)">◀️</button>
-                <span id="pageIndicator_${q.id}" class="text-amber-300">Pg ${currentPage} / 2</span>
-                <button onclick="switchPageSmoothly('${q.id}', 1)">▶️</button>
-              </div>
-
-              <div class="flex items-center gap-2">
-                <div class="flex gap-2 ml-2 items-center">
-                  <button onclick="setColor('${q.id}', '#0f172a')" class="w-7 h-7 rounded-full bg-slate-900 border-2 border-white shadow"></button>
-                  <button onclick="setColor('${q.id}', '#2563eb')" class="w-7 h-7 rounded-full bg-blue-600 border-2 border-white shadow"></button>
-                  <button onclick="setColor('${q.id}', '#dc2626')" class="w-7 h-7 rounded-full bg-red-600 border-2 border-white shadow"></button>
-                </div>
-                <button onclick="toggleKeypadDocking()" id="toggleKeypadBtn" class="bg-amber-600 text-white text-xs md:text-sm px-3.5 py-2 rounded-xl font-bold shadow ml-2">
-                  ${isKeypadDocked ? '📌 Undock Keypad' : '⌨ Dock Keypad'}
-                </button>
-                <button onclick="closeBinder('${q.id}')" class="bg-slate-900 text-white text-xs md:text-sm px-3.5 py-2 rounded-xl font-bold shadow ml-1">📕 Cover</button>
-              </div>
-            </div>
-
-            <div class="flex-1 flex flex-row bg-white relative overflow-hidden">
-              <div class="flex-1 ninja-graph-paper relative overflow-hidden select-none touch-none h-full" id="canvasArea_${q.id}">
-                <div class="absolute right-3 bottom-0 pointer-events-none z-10 opacity-60 flex flex-col items-end">
-                  <img src="${ex.avatar}" class="w-44 h-44 md:w-60 md:h-60 object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.4)]" alt="${ex.companion}" onerror="handleImageFallback(this)"/>
-                </div>
-                <canvas id="canvas_${q.id}" oncontextmenu="return false;" class="absolute inset-0 w-full h-full cursor-crosshair touch-none z-10"></canvas>
-              </div>
-
-              <aside class="keypad-stone-side-dock ${isKeypadDocked ? '' : 'undocked'}" id="sideKeypadDock">
-                <div class="flex flex-col gap-2">
-                  <div class="stone-slot-header">
-                    <span class="stone-slot-label">Answer:</span>
-                    <div class="stone-carved-display" id="stoneCarvedDisplay">${savedAnswer || "?"}</div>
-                  </div>
-
-                  <div class="stone-keys-grid">
-                    <button type="button" class="stone-key-btn" onclick="pressStoneKey('1')">1</button>
-                    <button type="button" class="stone-key-btn" onclick="pressStoneKey('2')">2</button>
-                    <button type="button" class="stone-key-btn" onclick="pressStoneKey('3')">3</button>
-                    <button type="button" class="stone-key-btn btn-del" onclick="pressStoneKey('DEL')">⌫</button>
-
-                    <button type="button" class="stone-key-btn" onclick="pressStoneKey('4')">4</button>
-                    <button type="button" class="stone-key-btn" onclick="pressStoneKey('5')">5</button>
-                    <button type="button" class="stone-key-btn" onclick="pressStoneKey('6')">6</button>
-                    <button type="button" class="stone-key-btn btn-qr-comma" onclick="pressStoneKey(',')">Q , R</button>
-
-                    <button type="button" class="stone-key-btn" onclick="pressStoneKey('7')">7</button>
-                    <button type="button" class="stone-key-btn" onclick="pressStoneKey('8')">8</button>
-                    <button type="button" class="stone-key-btn" onclick="pressStoneKey('9')">9</button>
-                    <button type="button" class="stone-key-btn" onclick="pressStoneKey('0')">0</button>
-
-                    <button type="button" class="stone-key-btn btn-submit" onclick="checkAnswer('${q.id}', '${q.answer}')">⚔️ Submit</button>
-                    <button type="button" class="stone-key-btn btn-del text-xs font-bold" onclick="pressStoneKey('CLR')">Clear</button>
-                  </div>
-                </div>
-
-                <button type="button" onclick="toggleKeypadDocking()" class="w-full text-center text-xs text-amber-400 py-1.5 border border-amber-800/60 rounded-xl bg-stone-900 font-bold">
-                  ✖ Hide Keypad
-                </button>
-              </aside>
-            </div>
-
-            <div id="binderCover_${q.id}" class="binder-cover-glass ${isBinderOpen ? 'binder-open' : ''}" onclick="openBinder('${q.id}')">
-              <div class="flex justify-between items-start z-10">
-                <span class="bg-white/80 border border-slate-300 text-amber-800 px-4 py-1.5 rounded-full text-xs md:text-sm font-extrabold uppercase font-display">${ex.title}</span>
-                <span class="text-3xl">📖</span>
-              </div>
-
-              <div class="mx-auto my-auto bg-white/90 backdrop-blur-md text-slate-900 rounded-3xl p-6 md:p-8 w-80 md:w-96 shadow-2xl border-4 border-slate-800 text-center relative z-10">
-                <div class="text-xs uppercase font-extrabold text-slate-600 tracking-widest border-b pb-1.5">Mathematics Notebook</div>
-                <div class="font-display text-2xl md:text-3xl text-slate-900 font-black mt-2">Humayun</div>
-                <div class="font-extrabold text-amber-700 text-base md:text-lg mt-1">${ex.title}</div>
-                <div class="text-xs md:text-sm text-slate-600 font-bold mt-1">Host: ${ex.companion}</div>
-              </div>
-
-              <div class="text-center flex flex-col items-center gap-3 z-10">
-                <img src="${ex.avatar}" class="w-36 h-36 md:w-48 md:h-48 object-contain drop-shadow-[0_12px_24px_rgba(245,158,11,0.6)] animate-bounce" alt="${ex.companion}" onerror="handleImageFallback(this)"/>
-                <span class="bg-amber-400 text-slate-950 font-black px-6 py-2.5 rounded-2xl shadow-xl text-xs md:text-sm uppercase tracking-widest">Tap to Open Binder ⚡</span>
-              </div>
-
-              <div class="text-center text-xs md:text-sm text-slate-800 font-bold z-10">
-                ${q.label} • Clean Independent Workspace
-              </div>
-            </div>
-
-          </div>
-        </div>
-      `;
-
-      initCanvas(q.id, currentPage);
-      if (q.hasNumberLine) setTimeout(() => initNumberLineCanvas(q.id, q.maxLine || 20), 50);
+      document.getElementById('pageIndicatorText').textContent = `Pg ${currentPage} / 2`;
+      loadCanvasInk();
     }
 
+    function openCover() {
+      playMagicWhoosh(true);
+      document.getElementById('binderCoverOverlay').classList.add('binder-open');
+    }
+
+    function closeCover() {
+      playMagicWhoosh(false);
+      saveCurrentCanvasInk();
+      document.getElementById('binderCoverOverlay').classList.remove('binder-open');
+    }
+
+    /* KEYPAD HANDLERS */
     function toggleKeypadDocking() {
       isKeypadDocked = !isKeypadDocked;
       const dock = document.getElementById('sideKeypadDock');
       const btn = document.getElementById('toggleKeypadBtn');
-      if (dock) dock.classList.toggle('undocked', !isKeypadDocked);
-      if (btn) btn.textContent = isKeypadDocked ? '📌 Undock Keypad' : '⌨ Dock Keypad';
+      dock.classList.toggle('undocked', !isKeypadDocked);
+      btn.textContent = isKeypadDocked ? '📌 Undock Keypad' : '⌨ Dock Keypad';
       playStoneClick();
-
-      const ex = curriculumData[currentExerciseKey];
-      const q = ex.questions[currentIndexMap[currentExerciseKey]];
-      const canvas = document.getElementById(`canvas_${q.id}`);
-      const container = document.getElementById(`canvasArea_${q.id}`);
-      setTimeout(() => { if (canvas && container) syncCanvasResolution(canvas, container, q.id); }, 330);
+      setTimeout(resizeInkCanvas, 320);
     }
 
     function focusAnswerInput() {
@@ -923,434 +956,340 @@
 
     function pressStoneKey(val) {
       playStoneClick();
-      if (!currentInputTargetId) return;
-      const target = document.getElementById(currentInputTargetId);
-      if (!target) return;
+      const input = document.getElementById('answerSlotInput');
+      const ex = curriculumData[currentExerciseKey];
+      const q = ex.questions[currentQIndex];
 
-      if (val === 'DEL') target.value = target.value.slice(0, -1);
-      else if (val === 'CLR') target.value = '';
-      else if (target.value.length < 8) target.value += val;
+      if (val === 'DEL') input.value = input.value.slice(0, -1);
+      else if (val === 'CLR') input.value = '';
+      else if (input.value.length < 8) input.value += val;
 
-      const disp = document.getElementById('stoneCarvedDisplay');
-      if (disp) disp.textContent = target.value.length > 0 ? target.value : "?";
-      saveAnswer(currentInputTargetId.replace('ans_', ''));
+      document.getElementById('stoneCarvedDisplay').textContent = input.value || '?';
+      localStorage.setItem(`humayun_ans_${q.id}`, input.value);
     }
 
-    /* INK ENGINE: NATIVE 120HZ WITH FAST MEMORY UNDO */
-    let inkStrokeActive = false;
-    let inkDebounceTimer = null;
-    const memoryUndoStacks = {};
+    function submitCurrentAnswer() {
+      const ex = curriculumData[currentExerciseKey];
+      const q = ex.questions[currentQIndex];
+      const val = document.getElementById('answerSlotInput').value.trim();
 
-    function syncCanvasResolution(canvas, container, id) {
+      saveCurrentCanvasInk();
+
+      const clean = (t) => String(t).replace(/q|=|r|,|\s/gi, '').trim().toLowerCase();
+      if (clean(val) === clean(q.answer)) {
+        triggerGrandCelebration();
+      } else {
+        playSmokePoof();
+        const banner = document.getElementById('genjutsuBanner');
+        banner.classList.add('active');
+        setTimeout(() => banner.classList.remove('active'), 1200);
+      }
+    }
+
+    /* ==========================================================
+       THE FAST INK CANVAS ENGINE (ADAPTED DIRECTLY FROM OCT08_2)
+       - ZERO toDataURL calls during drawing!
+       - Single continuous path: beginPath -> moveTo -> lineTo -> stroke!
+       - Strict S-Pen palm rejection!
+    ========================================================== */
+    const inkCanvas = document.getElementById('inkCanvas');
+    const inkCtx = inkCanvas.getContext('2d', { alpha: true });
+    let isDrawing = false;
+    let currentTool = 'pen';
+    let strokeColor = '#0f172a';
+    let strokeWidth = 3.5;
+    let isStraightLineMode = false;
+    let lineStartX = 0, lineStartY = 0;
+    let lineSnapshot = null;
+    let undoStack = [];
+
+    function resizeInkCanvas() {
+      const box = document.getElementById('graphArea');
+      const rect = box.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const cssW = container.clientWidth;
-      const cssH = container.clientHeight;
-      if (!cssW || !cssH) return;
-      const targetW = Math.round(cssW * dpr);
-      const targetH = Math.round(cssH * dpr);
-      if (canvas.width === targetW && canvas.height === targetH) return;
 
-      canvas.style.width = cssW + 'px';
-      canvas.style.height = cssH + 'px';
-      canvas.width = targetW;
-      canvas.height = targetH;
-      canvas.dataset.dpr = String(dpr);
-
-      const ctx = canvas.getContext('2d', { desynchronized: true, alpha: true });
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      loadCanvasInk(id, activePages[id] || 1);
-    }
-
-    function scheduleDebouncedSave(id) {
-      clearTimeout(inkDebounceTimer);
-      const canvas = document.getElementById(`canvas_${id}`);
-      const key = `humayun_ink_${id}_p${activePages[id] || 1}`;
-      inkDebounceTimer = setTimeout(() => saveInkWhenIdle(canvas, key), 1000);
-    }
-
-    function saveInkWhenIdle(canvas, key) {
-      if (!canvas || !canvas.width || inkStrokeActive) return;
-      const encode = () => {
-        if (canvas.toBlob) {
-          canvas.toBlob((blob) => {
-            if (!blob) return;
-            const reader = new FileReader();
-            reader.onload = () => {
-              try {
-                localStorage.setItem(key, reader.result);
-                localStorage.setItem(key + '_size', JSON.stringify({ w: canvas.width, h: canvas.height }));
-              } catch (_) {}
-            };
-            reader.readAsDataURL(blob);
-          }, 'image/png');
-        }
-      };
-      if (window.requestIdleCallback) requestIdleCallback(encode, { timeout: 2000 });
-      else setTimeout(encode, 0);
-    }
-
-    function flushCanvasInkImmediate(id) {
-      clearTimeout(inkDebounceTimer);
-      const canvas = document.getElementById(`canvas_${id}`);
-      if (!canvas || canvas.width <= 0) return;
-      const page = activePages[id] || 1;
-      const key = `humayun_ink_${id}_p${page}`;
-      try {
-        const next = canvas.toDataURL();
-        localStorage.setItem(key, next);
-        localStorage.setItem(key + '_size', JSON.stringify({ w: canvas.width, h: canvas.height }));
-      } catch (_) {}
-    }
-
-    window.addEventListener('pagehide', () => {
-      document.querySelectorAll('canvas[id^="canvas_"]').forEach(c => {
-        flushCanvasInkImmediate(c.id.replace('canvas_', ''));
-      });
-    });
-
-    function initCanvas(id, page) {
-      const canvas = document.getElementById(`canvas_${id}`);
-      const container = document.getElementById(`canvasArea_${id}`);
-      if (!canvas || !container) return;
-
-      const ctx = canvas.getContext('2d', { desynchronized: true, alpha: true });
-      if (!canvasStates[id]) canvasStates[id] = { tool: 'pen', color: '#0f172a' };
-      syncCanvasResolution(canvas, container, id);
-
-      if (activeResizeObserver) activeResizeObserver.disconnect();
-      if (window.ResizeObserver) {
-        activeResizeObserver = new ResizeObserver(() => syncCanvasResolution(canvas, container, id));
-        activeResizeObserver.observe(container);
+      let temp = document.createElement('canvas');
+      temp.width = inkCanvas.width;
+      temp.height = inkCanvas.height;
+      let tCtx = temp.getContext('2d');
+      if (inkCanvas.width > 0 && inkCanvas.height > 0) {
+        tCtx.drawImage(inkCanvas, 0, 0);
       }
 
-      let activePointerId = null;
-      let strokeTool = null;
-      let startX = 0, startY = 0;
-      let lastPt = null;
-      let snapshot = null;
+      inkCanvas.width = Math.floor(rect.width * dpr);
+      inkCanvas.height = Math.floor(rect.height * dpr);
+      inkCanvas.style.width = `${rect.width}px`;
+      inkCanvas.style.height = `${rect.height}px`;
 
-      const ptOf = (ev) => {
-        const r = canvas.getBoundingClientRect();
-        return { x: ev.clientX - r.left, y: ev.clientY - r.top, p: ev.pressure > 0 ? ev.pressure : 0.5 };
-      };
+      inkCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      const strokeSeg = (a, b, tool, p) => {
-        ctx.save();
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        if (tool === 'eraser') {
-          ctx.globalCompositeOperation = 'destination-out';
-          ctx.strokeStyle = '#000000';
-          ctx.lineWidth = 30;
-        } else {
-          ctx.globalCompositeOperation = 'source-over';
-          ctx.strokeStyle = canvasStates[id].color;
-          ctx.lineWidth = 2.4 * (0.75 + p * 0.75);
-        }
-        ctx.beginPath();
-        ctx.moveTo(a.x, a.y);
-        ctx.lineTo(b.x, b.y);
-        ctx.stroke();
-        ctx.restore();
-      };
-
-      const dotAt = (p, tool) => {
-        ctx.save();
-        if (tool === 'eraser') {
-          ctx.globalCompositeOperation = 'destination-out';
-          ctx.beginPath(); ctx.arc(p.x, p.y, 15, 0, Math.PI * 2); ctx.fill();
-        } else {
-          ctx.fillStyle = canvasStates[id].color;
-          ctx.beginPath(); ctx.arc(p.x, p.y, 2.2, 0, Math.PI * 2); ctx.fill();
-        }
-        ctx.restore();
-      };
-
-      const endStroke = () => {
-        if (activePointerId === null) return;
-        if (strokeTool === 'line' && snapshot && lastPt) {
-          ctx.putImageData(snapshot, 0, 0);
-          if (Math.hypot(lastPt.x - startX, lastPt.y - startY) > 6) {
-            ctx.save();
-            ctx.lineCap = 'round';
-            ctx.strokeStyle = canvasStates[id].color;
-            ctx.lineWidth = 2.5;
-            ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(lastPt.x, lastPt.y); ctx.stroke();
-            ctx.restore();
-            InkSound.glideChime();
-          }
-        }
-        activePointerId = null;
-        strokeTool = null;
-        snapshot = null;
-        lastPt = null;
-        inkStrokeActive = false;
-        scheduleDebouncedSave(id);
-      };
-
-      // FAST ZERO-LATENCY POINTERDOWN (NO toDataURL CALLS!)
-      canvas.addEventListener('pointerdown', (e) => {
-        if (e.pointerType !== 'pen' || activePointerId !== null) return;
-
-        e.preventDefault();
-        activePointerId = e.pointerId;
-        inkStrokeActive = true;
-        try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
-
-        // Memory-based fast raw snapshot for undo (zero latency)
-        const pageNum = activePages[id] || 1;
-        const key = `${id}_p${pageNum}`;
-        try {
-          const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          if (!memoryUndoStacks[key]) memoryUndoStacks[key] = [];
-          if (memoryUndoStacks[key].length > 15) memoryUndoStacks[key].shift();
-          memoryUndoStacks[key].push(imgData);
-        } catch (_) {}
-
-        const barrelEraser = (e.buttons & 32) || e.button === 5;
-        strokeTool = barrelEraser ? 'eraser' : canvasStates[id].tool;
-
-        const p0 = ptOf(e);
-        startX = p0.x;
-        startY = p0.y;
-        lastPt = p0;
-
-        if (strokeTool === 'line') snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        else dotAt(p0, strokeTool);
-      });
-
-      canvas.addEventListener('pointermove', (e) => {
-        if (e.pointerType !== 'pen' || e.pointerId !== activePointerId) return;
-
-        const raw = (e.getCoalescedEvents && e.getCoalescedEvents().length) ? e.getCoalescedEvents() : [e];
-
-        if (strokeTool === 'line') {
-          lastPt = ptOf(raw[raw.length - 1]);
-          if (snapshot) ctx.putImageData(snapshot, 0, 0);
-          ctx.save();
-          ctx.lineCap = 'round';
-          ctx.strokeStyle = canvasStates[id].color;
-          ctx.lineWidth = 2.5;
-          ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(lastPt.x, lastPt.y); ctx.stroke();
-          ctx.restore();
-          return;
-        }
-
-        for (const ev of raw) {
-          const p = ptOf(ev);
-          strokeSeg(lastPt, p, strokeTool, p.p);
-          lastPt = p;
-        }
-      });
-
-      canvas.addEventListener('pointerup', (e) => { if (e.pointerId === activePointerId) endStroke(); });
-      canvas.addEventListener('pointercancel', (e) => { if (e.pointerId === activePointerId) endStroke(); });
+      if (temp.width > 0 && temp.height > 0) {
+        inkCtx.drawImage(temp, 0, 0, rect.width, rect.height);
+      }
     }
 
-    /* NUMBER LINE */
-    function initNumberLineCanvas(qId, maxTick = 20) {
-      const c = document.getElementById(`lineCanvas_${qId}`);
-      const w = document.getElementById(`lineWrapper_${qId}`);
-      if (!c || !w) return;
-      const ctx = c.getContext('2d', { desynchronized: true });
-      const dpr = window.devicePixelRatio || 1;
-      const rect = w.getBoundingClientRect();
+    function getStorageKey() {
+      const q = curriculumData[currentExerciseKey].questions[currentQIndex];
+      return `humayun_ink_${q.id}_p${currentPage}`;
+    }
 
-      c.width = Math.floor(rect.width * dpr);
-      c.height = Math.floor(rect.height * dpr);
-      c.style.width = rect.width + 'px';
-      c.style.height = rect.height + 'px';
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    function saveCurrentCanvasInk() {
+      try {
+        const dataUrl = inkCanvas.toDataURL();
+        localStorage.setItem(getStorageKey(), dataUrl);
+      } catch (e) {}
+    }
 
-      const startX = 24, endX = rect.width - 24, yAxis = 58;
+    function loadCanvasInk() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      inkCtx.save();
+      inkCtx.setTransform(1, 0, 0, 1, 0, 0);
+      inkCtx.clearRect(0, 0, inkCanvas.width, inkCanvas.height);
+      inkCtx.restore();
+
+      undoStack = [];
+      const saved = localStorage.getItem(getStorageKey());
+      if (saved) {
+        const img = new Image();
+        img.onload = () => {
+          inkCtx.save();
+          inkCtx.setTransform(1, 0, 0, 1, 0, 0);
+          inkCtx.drawImage(img, 0, 0, inkCanvas.width, inkCanvas.height);
+          inkCtx.restore();
+          pushUndoState();
+        };
+        img.src = saved;
+      } else {
+        pushUndoState();
+      }
+    }
+
+    function pushUndoState() {
+      try {
+        undoStack.push(inkCanvas.toDataURL());
+        if (undoStack.length > 15) undoStack.shift();
+      } catch (e) {}
+    }
+
+    function undoInk() {
+      if (undoStack.length > 1) {
+        undoStack.pop();
+        const prevState = undoStack[undoStack.length - 1];
+        const img = new Image();
+        img.onload = () => {
+          inkCtx.save();
+          inkCtx.setTransform(1, 0, 0, 1, 0, 0);
+          inkCtx.clearRect(0, 0, inkCanvas.width, inkCanvas.height);
+          inkCtx.drawImage(img, 0, 0, inkCanvas.width, inkCanvas.height);
+          inkCtx.restore();
+          saveCurrentCanvasInk();
+        };
+        img.src = prevState;
+      }
+    }
+
+    function clearCanvas() {
+      inkCtx.save();
+      inkCtx.setTransform(1, 0, 0, 1, 0, 0);
+      inkCtx.clearRect(0, 0, inkCanvas.width, inkCanvas.height);
+      inkCtx.restore();
+      pushUndoState();
+      localStorage.removeItem(getStorageKey());
+    }
+
+    function selectTool(tool) {
+      currentTool = tool;
+      isStraightLineMode = (tool === 'line');
+      ['toolPen', 'toolLine', 'toolEraser'].forEach(id => document.getElementById(id).classList.remove('active'));
+      if (tool === 'pen') document.getElementById('toolPen').classList.add('active');
+      else if (tool === 'line') document.getElementById('toolLine').classList.add('active');
+      else if (tool === 'eraser') document.getElementById('toolEraser').classList.add('active');
+    }
+
+    function setColor(color) {
+      strokeColor = color;
+      selectTool('pen');
+    }
+
+    function getCanvasPos(e) {
+      const rect = inkCanvas.getBoundingClientRect();
+      return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    }
+
+    /* DIRECT HARDWARE DRAWING - MATCHING OCT08 SPEED */
+    function startDraw(e) {
+      // STRICT S-PEN PALM LOCK: Ignore capacitive touch completely!
+      if (e.pointerType !== 'pen') return;
+
+      isDrawing = true;
+      try { inkCanvas.setPointerCapture(e.pointerId); } catch (_) {}
+      const pos = getCanvasPos(e);
+
+      const barrelEraser = (e.buttons & 32) || e.button === 5;
+      const activeTool = barrelEraser ? 'eraser' : currentTool;
+
+      if (isStraightLineMode && !barrelEraser) {
+        lineStartX = pos.x;
+        lineStartY = pos.y;
+        lineSnapshot = inkCtx.getImageData(0, 0, inkCanvas.width, inkCanvas.height);
+        e.preventDefault();
+        return;
+      }
+
+      inkCtx.beginPath();
+      inkCtx.moveTo(pos.x, pos.y);
+      inkCtx.lineCap = 'round';
+      inkCtx.lineJoin = 'round';
+
+      if (activeTool === 'eraser') {
+        inkCtx.globalCompositeOperation = 'destination-out';
+        inkCtx.lineWidth = 32;
+      } else {
+        inkCtx.globalCompositeOperation = 'source-over';
+        inkCtx.strokeStyle = strokeColor;
+        const pressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
+        inkCtx.lineWidth = strokeWidth * (pressure * 1.5 + 0.35);
+      }
+      e.preventDefault();
+    }
+
+    function moveDraw(e) {
+      if (!isDrawing || e.pointerType !== 'pen') return;
+      const pos = getCanvasPos(e);
+
+      if (isStraightLineMode && lineSnapshot) {
+        inkCtx.putImageData(lineSnapshot, 0, 0);
+        inkCtx.save();
+        inkCtx.lineCap = 'round';
+        inkCtx.strokeStyle = strokeColor;
+        inkCtx.lineWidth = 2.5;
+        inkCtx.beginPath();
+        inkCtx.moveTo(lineStartX, lineStartY);
+        inkCtx.lineTo(pos.x, pos.y);
+        inkCtx.stroke();
+        inkCtx.restore();
+        e.preventDefault();
+        return;
+      }
+
+      // Continuous direct path execution
+      inkCtx.lineTo(pos.x, pos.y);
+      inkCtx.stroke();
+      e.preventDefault();
+    }
+
+    function stopDraw(e) {
+      if (!isDrawing) return;
+      isDrawing = false;
+      try { inkCanvas.releasePointerCapture(e.pointerId); } catch (_) {}
+
+      if (isStraightLineMode) {
+        lineSnapshot = null;
+        InkSound.glideChime();
+      }
+
+      inkCtx.closePath();
+      inkCtx.globalCompositeOperation = 'source-over';
+      pushUndoState();
+      saveCurrentCanvasInk();
+    }
+
+    inkCanvas.addEventListener('pointerdown', startDraw);
+    inkCanvas.addEventListener('pointermove', moveDraw);
+    inkCanvas.addEventListener('pointerup', stopDraw);
+    inkCanvas.addEventListener('pointercancel', stopDraw);
+    inkCanvas.addEventListener('pointerleave', stopDraw);
+
+    /* NUMBER LINE SUB-CANVAS */
+    const lineCanvas = document.getElementById('lineCanvas');
+    const lineCtx = lineCanvas.getContext('2d');
+    let isDrawingLine = false;
+
+    function initNumberLine(qId, maxTick = 20) {
+      const rect = lineCanvas.parentElement.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      lineCanvas.width = Math.floor(rect.width * dpr);
+      lineCanvas.height = Math.floor(rect.height * dpr);
+      lineCanvas.style.width = `${rect.width}px`;
+      lineCanvas.style.height = `${rect.height}px`;
+      lineCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const startX = 24, endX = rect.width - 24, yAxis = 56;
       const step = (endX - startX) / maxTick;
 
-      ctx.strokeStyle = "#475569";
-      ctx.lineWidth = 2.5;
-      ctx.beginPath(); ctx.moveTo(startX - 8, yAxis); ctx.lineTo(endX + 8, yAxis); ctx.stroke();
+      lineCtx.strokeStyle = "#475569";
+      lineCtx.lineWidth = 2.5;
+      lineCtx.beginPath(); lineCtx.moveTo(startX - 8, yAxis); lineCtx.lineTo(endX + 8, yAxis); lineCtx.stroke();
 
-      ctx.fillStyle = "#0F172A";
-      ctx.font = "bold 11px Nunito, sans-serif";
-      ctx.textAlign = "center";
+      lineCtx.fillStyle = "#0F172A";
+      lineCtx.font = "bold 11px Nunito, sans-serif";
+      lineCtx.textAlign = "center";
 
       for (let i = 0; i <= maxTick; i++) {
         const x = startX + i * step;
-        ctx.beginPath(); ctx.moveTo(x, yAxis - 8); ctx.lineTo(x, yAxis + 8); ctx.stroke();
-        ctx.fillText(i.toString(), x, yAxis - 12);
+        lineCtx.beginPath(); lineCtx.moveTo(x, yAxis - 8); lineCtx.lineTo(x, yAxis + 8); lineCtx.stroke();
+        lineCtx.fillText(i.toString(), x, yAxis - 12);
       }
 
       const saved = localStorage.getItem(`humayun_line_${qId}`);
       if (saved) {
         const img = new Image();
-        img.onload = () => ctx.drawImage(img, 0, 0, rect.width, rect.height);
+        img.onload = () => lineCtx.drawImage(img, 0, 0, rect.width, rect.height);
         img.src = saved;
       }
 
-      let isDrawing = false, lastX = 0, lastY = 0;
-      c.onpointerdown = (e) => {
+      lineCanvas.onpointerdown = (e) => {
         if (e.pointerType !== 'pen') return;
-        isDrawing = true;
-        try { c.setPointerCapture(e.pointerId); } catch (_) {}
-        const r = c.getBoundingClientRect();
-        lastX = e.clientX - r.left; lastY = e.clientY - r.top;
-        ctx.beginPath(); ctx.moveTo(lastX, lastY);
-        ctx.strokeStyle = "#DC2626"; ctx.lineWidth = 3; ctx.lineCap = "round";
+        isDrawingLine = true;
+        try { lineCanvas.setPointerCapture(e.pointerId); } catch (_) {}
+        const r = lineCanvas.getBoundingClientRect();
+        lineCtx.beginPath();
+        lineCtx.moveTo(e.clientX - r.left, e.clientY - r.top);
+        lineCtx.strokeStyle = "#DC2626"; lineCtx.lineWidth = 3; lineCtx.lineCap = "round";
       };
 
-      c.onpointermove = (e) => {
-        if (!isDrawing) return;
-        const r = c.getBoundingClientRect();
-        const x = e.clientX - r.left, y = e.clientY - r.top;
-        ctx.lineTo(x, y); ctx.stroke();
-        lastX = x; lastY = y;
+      lineCanvas.onpointermove = (e) => {
+        if (!isDrawingLine || e.pointerType !== 'pen') return;
+        const r = lineCanvas.getBoundingClientRect();
+        lineCtx.lineTo(e.clientX - r.left, e.clientY - r.top);
+        lineCtx.stroke();
       };
 
-      const stopLine = (e) => {
-        if (!isDrawing) return;
-        isDrawing = false;
-        try { c.releasePointerCapture(e.pointerId); } catch (_) {}
-        try { localStorage.setItem(`humayun_line_${qId}`, c.toDataURL()); } catch (_) {}
+      const stopL = (e) => {
+        if (!isDrawingLine) return;
+        isDrawingLine = false;
+        try { lineCanvas.releasePointerCapture(e.pointerId); } catch (_) {}
+        try { localStorage.setItem(`humayun_line_${qId}`, lineCanvas.toDataURL()); } catch (_) {}
       };
-      c.onpointerup = stopLine;
-      c.onpointercancel = stopLine;
+      lineCanvas.onpointerup = stopL;
+      lineCanvas.onpointercancel = stopL;
     }
 
-    function clearLineCanvas(qId) {
-      localStorage.removeItem(`humayun_line_${qId}`);
-      initNumberLineCanvas(qId, 20);
+    function clearLineCanvas() {
+      const q = curriculumData[currentExerciseKey].questions[currentQIndex];
+      localStorage.removeItem(`humayun_line_${q.id}`);
+      initNumberLine(q.id, q.maxLine || 20);
     }
 
-    /* STORAGE */
-    function loadCanvasInk(id, page) {
-      const canvas = document.getElementById(`canvas_${id}`);
-      if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      ctx.save();
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.restore();
-
-      const key = `humayun_ink_${id}_p${page}`;
-      const saved = localStorage.getItem(key);
-      if (!saved) return;
-
-      const img = new Image();
-      img.onload = () => {
-        ctx.save();
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        ctx.restore();
-      };
-      img.src = saved;
-    }
-
-    function setTool(id, tool) {
-      canvasStates[id].tool = tool;
-      ['pen', 'line', 'eraser'].forEach(t => {
-        const btn = document.getElementById(`tool${t.charAt(0).toUpperCase() + t.slice(1)}_${id}`);
-        if (btn) btn.classList.toggle('active', t === tool);
-      });
-    }
-
-    function setColor(id, color) {
-      canvasStates[id].color = color;
-      setTool(id, 'pen');
-    }
-
-    function undoInk(id) {
-      const page = activePages[id] || 1;
-      const key = `${id}_p${page}`;
-      const st = memoryUndoStacks[key] || [];
-      if (!st.length) return;
-      const lastSnap = st.pop();
-      const canvas = document.getElementById(`canvas_${id}`);
-      if (canvas && lastSnap) {
-        const ctx = canvas.getContext('2d');
-        ctx.putImageData(lastSnap, 0, 0);
-      }
-    }
-
-    function clearCanvas(id) {
-      const canvas = document.getElementById(`canvas_${id}`);
-      if (!canvas) return;
-      const page = activePages[id] || 1;
-      const ctx = canvas.getContext('2d');
-      
-      const key = `${id}_p${page}`;
-      if (!memoryUndoStacks[key]) memoryUndoStacks[key] = [];
-      memoryUndoStacks[key].push(ctx.getImageData(0, 0, canvas.width, canvas.height));
-
-      ctx.save();
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.restore();
-      localStorage.removeItem(`humayun_ink_${id}_p${page}`);
-    }
-
-    function openBinder(id) {
-      playMagicWhoosh(true);
-      binderOpenedMap[id] = true;
-      document.getElementById(`binderCover_${id}`).classList.add('binder-open');
-    }
-
-    function closeBinder(id) {
-      playMagicWhoosh(false);
-      binderOpenedMap[id] = false;
-      flushCanvasInkImmediate(id);
-      document.getElementById(`binderCover_${id}`).classList.remove('binder-open');
-    }
-
-    function saveAnswer(id) {
-      const val = document.getElementById(`ans_${id}`).value;
-      localStorage.setItem(`humayun_ans_${id}`, val);
-    }
-
-    function answersMatch(typed, correct) {
-      const clean = (t) => String(t).replace(/q|=|r|,|\s/gi, '').trim().toLowerCase();
-      const a = clean(typed), b = clean(correct);
-      if (a === '') return false;
-      if (a === b) return true;
-      const na = Number(a), nb = Number(b);
-      return !isNaN(na) && !isNaN(nb) && Math.abs(na - nb) < 1e-7;
-    }
-
-    function checkAnswer(id, correctAnswer) {
-      const val = document.getElementById(`ans_${id}`).value;
-      flushCanvasInkImmediate(id);
-      if (answersMatch(val, correctAnswer)) {
-        triggerGrandCelebration();
-      } else {
-        playSmokePoof();
-        const banner = document.getElementById('genjutsuBanner');
-        if (banner) {
-          banner.classList.add('active');
-          setTimeout(() => banner.classList.remove('active'), 1200);
-        }
-      }
-    }
-
-    /* GRAND CELEBRATION */
+    /* GRAND FINALE CELEBRATION */
     const grandStage = document.getElementById("grandCelebrationStage");
     const grandCanvas = document.getElementById("grandFinaleCanvas");
     const grandCtx = grandCanvas.getContext("2d", { alpha: true });
     let grandAnimRunning = false;
     let magicConfettiStorm = [];
 
-    function resizeGrandCanvas() {
+    function triggerGrandCelebration() {
       grandCanvas.width = window.innerWidth;
       grandCanvas.height = window.innerHeight;
-    }
-    window.addEventListener("resize", resizeGrandCanvas);
-
-    function triggerGrandCelebration() {
-      resizeGrandCanvas();
       grandStage.style.display = 'block';
       grandAnimRunning = true;
       playTaikoFanfare();
 
       magicConfettiStorm = [];
       const colors = ['#F59E0B', '#DC2626', '#22C55E', '#3B82F6', '#FFFFFF'];
-      for (let i = 0; i < 70; i++) {
+      for (let i = 0; i < 65; i++) {
         magicConfettiStorm.push({
           x: Math.random() * window.innerWidth,
           y: -20 - Math.random() * 200,
@@ -1403,8 +1342,6 @@
         });
       }
     }
-    window.addEventListener("resize", resizeFx);
-    resizeFx();
 
     function renderFx() {
       fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
@@ -1419,16 +1356,10 @@
       }
       requestAnimationFrame(renderFx);
     }
-    requestAnimationFrame(renderFx);
 
     function goToHub(e) {
       if (e) e.preventDefault();
-      try {
-        const ex = curriculumData[currentExerciseKey];
-        const q = ex.questions[currentIndexMap[currentExerciseKey]];
-        if (q) flushCanvasInkImmediate(q.id);
-      } catch (_) {}
-
+      saveCurrentCanvasInk();
       if (window.parent && window.parent !== window) {
         window.parent.postMessage("close-lesson-to-hub", "*");
         return;
@@ -1436,7 +1367,20 @@
       setTimeout(() => { window.location.href = "index.html"; }, 60);
     }
 
-    window.addEventListener('load', () => update8DCarouselDOM());
+    window.addEventListener('resize', () => {
+      resizeFx();
+      resizeInkCanvas();
+    });
+
+    window.addEventListener('beforeunload', saveCurrentCanvasInk);
+    window.addEventListener('pagehide', saveCurrentCanvasInk);
+
+    window.addEventListener('load', () => {
+      update8DCarouselDOM();
+      resizeFx();
+      renderFx();
+      resizeInkCanvas();
+    });
   </script>
 </body>
 </html>
