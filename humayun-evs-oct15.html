@@ -729,7 +729,33 @@
       border-radius: 14px;
       box-shadow: 0 6px 20px rgba(0,0,0,0.15);
       flex-wrap: wrap;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+      transform-origin: top right;
     }
+    .canvas-overlay-toolbar.toolbar-collapsed {
+      transform: scale(0);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .toolbar-toggle-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 45;
+      background: var(--primary);
+      color: #FFF;
+      border: 2px solid #FFF;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
     .tool-group { display: flex; gap: 4px; align-items: center; }
     .pad-btn {
       background: #F8FAFC;
@@ -1082,6 +1108,7 @@
     let railOpen = true;
     let workbookSidebarOpen = true;
     let hudCollapsed = false;
+    let toolbarCollapsed = false;
     let dimLevelIndex = 0; // 0: off, 1: 25%, 2: 50%, 3: 70%
 
     const activeInkCache = {};
@@ -1118,7 +1145,8 @@
       const cleanWord = word.replace(/[^a-zA-Z]/g, '').toLowerCase();
       const textToSpeak = (isSyllable && SYLLABLE_MAP[cleanWord]) ? SYLLABLE_MAP[cleanWord].replace(/-/g, ' ') : word;
       const utter = new SpeechSynthesisUtterance(textToSpeak);
-      utter.rate = isSyllable ? 0.65 : 0.9;
+      // Slower syllable rate (0.45 for syllables, 0.75 for regular words)
+      utter.rate = isSyllable ? 0.45 : 0.75;
       utter.pitch = 1.1;
       speechSynth.speak(utter);
     }
@@ -1149,7 +1177,7 @@
           speakWord(word, true);
           const origHTML = el.innerHTML;
           el.innerHTML = `<span class="syllable-split-badge">${SYLLABLE_MAP[cleanW]}</span>`;
-          setTimeout(() => { el.innerHTML = origHTML; el.classList.remove('speaking'); }, 2200);
+          setTimeout(() => { el.innerHTML = origHTML; el.classList.remove('speaking'); }, 2500);
         }
       }, 500);
     }
@@ -1268,6 +1296,15 @@
       const wrapper = document.getElementById('hudDockWrapper');
       if (dock) dock.classList.toggle('hud-collapsed', hudCollapsed);
       if (wrapper) wrapper.classList.toggle('is-collapsed', hudCollapsed);
+    }
+
+    function toggleToolbar() {
+      playClickSound();
+      toolbarCollapsed = !toolbarCollapsed;
+      const tb = document.getElementById('canvasOverlayToolbar');
+      const btn = document.getElementById('toolbarToggleBtn');
+      if (tb) tb.classList.toggle('toolbar-collapsed', toolbarCollapsed);
+      if (btn) btn.textContent = toolbarCollapsed ? '🛠️' : '✖';
     }
 
     function cycleScreenDim() {
@@ -1389,6 +1426,12 @@
 
       let st = null;
       c.addEventListener('pointerdown', e => {
+        // PALM REJECTION: Filter out broad touch contacts (like resting palm) if pointerType is touch
+        if (e.pointerType === 'touch') {
+          if ((e.width && e.width > 25) || (e.height && e.height > 25) || (e.pressure > 0.85)) {
+            return; // Ignore accidental palm press
+          }
+        }
         if (st || !size()) return;
         e.preventDefault(); try { c.setPointerCapture(e.pointerId); } catch (_) {}
         snapshot();
@@ -1538,8 +1581,9 @@
             <div>${promptContent}</div>
           </div>
           <div class="full-notepad-container">
-            <!-- FLOATING CANVAS TOOLBAR INSIDE THE CANVAS -->
-            <div class="canvas-overlay-toolbar">
+            <!-- TOOLBAR TOGGLE BUTTON & FLOATING CANVAS TOOLBAR -->
+            <button type="button" class="toolbar-toggle-btn" id="toolbarToggleBtn" onclick="toggleToolbar()" title="Toggle Toolbar">✖</button>
+            <div class="canvas-overlay-toolbar ${toolbarCollapsed ? 'toolbar-collapsed' : ''}" id="canvasOverlayToolbar">
               <div class="tool-group">
                 <button class="pad-btn active" id="btnNPPen" onclick="setNPTool('pen')" title="Pen">🖊️</button>
                 <button class="pad-btn" id="btnNPEraser" onclick="setNPTool('eraser')" title="Eraser">🧹</button>
@@ -1548,7 +1592,7 @@
               </div>
               <div class="page-nav-bar">
                 <button type="button" class="page-nav-btn" onclick="changeNotepadPage(-1)" ${currentNotepadPage === 1 ? 'disabled style="opacity:0.4;"' : ''}>◀</button>
-                <span class="page-indicator">P.${currentNotepadPage}</span>
+                <span class="page-indicator">${currentNotepadPage}/6</span>
                 <button type="button" class="page-nav-btn" onclick="changeNotepadPage(1)" ${currentNotepadPage === 6 ? 'disabled style="opacity:0.4;"' : ''}>▶</button>
                 <button type="button" class="pad-btn" style="background:#10B981; color:#FFF; height:28px; font-size:0.75rem; padding:0 6px;" onclick="changeNotepadPage(1)" title="Add Sheet">＋</button>
               </div>
@@ -1580,7 +1624,7 @@
               <div class="composition-label-box">
                 <img src="assets/humayun-avatar.webp" class="label-avatar" alt="Humayun" onerror="handleImgFallback(this)"/>
                 <div class="label-text-col">
-                  <div class="label-kicker">Explorer Classwork - Sheet ${currentNotepadPage}</div>
+                  <div class="label-kicker">Explorer Classwork - Sheet ${currentNotepadPage}/6</div>
                   <div class="label-name">Humayun • Grade 3</div>
                   <div class="label-lesson">EVS Lesson 1: Definitions</div>
                 </div>
@@ -1609,8 +1653,9 @@
             <div style="background:#ECFDF5; border:2px dashed #34D399; padding:8px 12px; border-radius:10px; width:100%; font-weight:800; color:#065F46; font-size:0.95rem; display:${appMode === 'learn' ? 'block' : 'none'};"><b>Answer:</b> ${ansHtml}</div>
           </div>
           <div class="full-notepad-container">
-            <!-- FLOATING CANVAS TOOLBAR INSIDE THE CANVAS -->
-            <div class="canvas-overlay-toolbar">
+            <!-- TOOLBAR TOGGLE BUTTON & FLOATING CANVAS TOOLBAR -->
+            <button type="button" class="toolbar-toggle-btn" id="toolbarToggleBtn" onclick="toggleToolbar()" title="Toggle Toolbar">✖</button>
+            <div class="canvas-overlay-toolbar ${toolbarCollapsed ? 'toolbar-collapsed' : ''}" id="canvasOverlayToolbar">
               <div class="tool-group">
                 <button class="pad-btn active" id="btnNPPen" onclick="setNPTool('pen')" title="Pen">🖊️</button>
                 <button class="pad-btn" id="btnNPEraser" onclick="setNPTool('eraser')" title="Eraser">🧹</button>
@@ -1619,7 +1664,7 @@
               </div>
               <div class="page-nav-bar">
                 <button type="button" class="page-nav-btn" onclick="changeNotepadPage(-1)" ${currentNotepadPage === 1 ? 'disabled style="opacity:0.4;"' : ''}>◀</button>
-                <span class="page-indicator">P.${currentNotepadPage}</span>
+                <span class="page-indicator">${currentNotepadPage}/6</span>
                 <button type="button" class="page-nav-btn" onclick="changeNotepadPage(1)" ${currentNotepadPage === 6 ? 'disabled style="opacity:0.4;"' : ''}>▶</button>
                 <button type="button" class="pad-btn" style="background:#10B981; color:#FFF; height:28px; font-size:0.75rem; padding:0 6px;" onclick="changeNotepadPage(1)" title="Add Sheet">＋</button>
               </div>
@@ -1651,7 +1696,7 @@
               <div class="composition-label-box">
                 <img src="assets/humayun-avatar.webp" class="label-avatar" alt="Humayun" onerror="handleImgFallback(this)"/>
                 <div class="label-text-col">
-                  <div class="label-kicker">Explorer Classwork - Sheet ${currentNotepadPage}</div>
+                  <div class="label-kicker">Explorer Classwork - Sheet ${currentNotepadPage}/6</div>
                   <div class="label-name">Humayun • Grade 3</div>
                   <div class="label-lesson">EVS Lesson 1: Q&amp;A</div>
                 </div>
@@ -1669,42 +1714,42 @@
         mainContent = `
           <table class="diff-table">
             <tr>
-              <th colspan="2" style="background:#065F46; color:#FFF; font-size:1.05rem; padding:10px;">Differences between Solids, Liquids and Gases</th>
+              <th colspan="2" style="background:#065F46; color:#FFF; font-size:1.05rem; padding:10px;">${makeWordsTappable("Differences between Solids, Liquids and Gases")}</th>
             </tr>
             <tr>
               <td style="width:190px; font-weight:900; background:#F0FDF4;">
                 <div class="state-row-header">
                   <img src="assets/particle-solid-icon.webp" class="state-row-img" alt="Solid" onerror="handleImgFallback(this)"/>
-                  <span>SOLIDS</span>
+                  <span>${makeWordsTappable("SOLIDS")}</span>
                 </div>
               </td>
               <td>
-                1. Have a fixed ${appMode === 'learn' ? '<span class="answer-tag">shape</span>' : inlineDualBlank('diff_s_shape', 240, 'shape')} and fixed ${appMode === 'learn' ? '<span class="answer-tag">volume</span>' : inlineDualBlank('diff_s_vol', 240, 'volume')}.
-                <div style="margin-top:6px;">2. Do not flow. Examples: ${appMode === 'learn' ? '<span class="answer-tag">chair</span>' : inlineDualBlank('diff_s_ex1', 200, 'Chair')} and ${appMode === 'learn' ? '<span class="answer-tag">book</span>' : inlineDualBlank('diff_s_ex2', 200, 'Book')}.</div>
+                1. Have a fixed ${appMode === 'learn' ? `<span class="answer-tag">${makeWordsTappable("shape")}</span>` : inlineDualBlank('diff_s_shape', 240, 'shape')} and fixed ${appMode === 'learn' ? `<span class="answer-tag">${makeWordsTappable("volume")}</span>` : inlineDualBlank('diff_s_vol', 240, 'volume')}.
+                <div style="margin-top:6px;">2. Do not flow. Examples: ${appMode === 'learn' ? `<span class="answer-tag">${makeWordsTappable("chair")}</span>` : inlineDualBlank('diff_s_ex1', 200, 'Chair')} and ${appMode === 'learn' ? `<span class="answer-tag">${makeWordsTappable("book")}</span>` : inlineDualBlank('diff_s_ex2', 200, 'Book')}.</div>
               </td>
             </tr>
             <tr>
               <td style="font-weight:900; background:#F0FDF4;">
                 <div class="state-row-header">
                   <img src="assets/particle-liquid-icon.webp" class="state-row-img" alt="Liquid" onerror="handleImgFallback(this)"/>
-                  <span>LIQUIDS</span>
+                  <span>${makeWordsTappable("LIQUIDS")}</span>
                 </div>
               </td>
               <td>
-                1. Fixed volume, no fixed ${appMode === 'learn' ? '<span class="answer-tag">shape</span>' : inlineDualBlank('diff_l_shape', 240, 'shape')}. Takes shape of ${appMode === 'learn' ? '<span class="answer-tag">container</span>' : inlineDualBlank('diff_l_cont', 240, 'container')}.
-                <div style="margin-top:6px;">2. Flow easily. Examples: ${appMode === 'learn' ? '<span class="answer-tag">water</span>' : inlineDualBlank('diff_l_ex1', 200, 'Water')} and ${appMode === 'learn' ? '<span class="answer-tag">milk</span>' : inlineDualBlank('diff_l_ex2', 200, 'Milk')}.</div>
+                1. Fixed volume, no fixed ${appMode === 'learn' ? `<span class="answer-tag">${makeWordsTappable("shape")}</span>` : inlineDualBlank('diff_l_shape', 240, 'shape')}. Takes shape of ${appMode === 'learn' ? `<span class="answer-tag">${makeWordsTappable("container")}</span>` : inlineDualBlank('diff_l_cont', 240, 'container')}.
+                <div style="margin-top:6px;">2. Flow easily. Examples: ${appMode === 'learn' ? `<span class="answer-tag">${makeWordsTappable("water")}</span>` : inlineDualBlank('diff_l_ex1', 200, 'Water')} and ${appMode === 'learn' ? `<span class="answer-tag">${makeWordsTappable("milk")}</span>` : inlineDualBlank('diff_l_ex2', 200, 'Milk')}.</div>
               </td>
             </tr>
             <tr>
               <td style="font-weight:900; background:#F0FDF4;">
                 <div class="state-row-header">
                   <img src="assets/particle-gas-icon.webp" class="state-row-img" alt="Gas" onerror="handleImgFallback(this)"/>
-                  <span>GASES</span>
+                  <span>${makeWordsTappable("GASES")}</span>
                 </div>
               </td>
               <td>
-                1. Do not have any fixed ${appMode === 'learn' ? '<span class="answer-tag">shape</span>' : inlineDualBlank('diff_g_shape', 240, 'shape')} and no fixed ${appMode === 'learn' ? '<span class="answer-tag">volume</span>' : inlineDualBlank('diff_g_vol', 240, 'volume')}.
-                <div style="margin-top:6px;">2. Flow very easily. Examples: ${appMode === 'learn' ? '<span class="answer-tag">oxygen</span>' : inlineDualBlank('diff_g_ex1', 200, 'Oxygen')} and ${appMode === 'learn' ? '<span class="answer-tag">steam</span>' : inlineDualBlank('diff_g_ex2', 200, 'Steam')}.</div>
+                1. Do not have any fixed ${appMode === 'learn' ? `<span class="answer-tag">${makeWordsTappable("shape")}</span>` : inlineDualBlank('diff_g_shape', 240, 'shape')} and no fixed ${appMode === 'learn' ? `<span class="answer-tag">${makeWordsTappable("volume")}</span>` : inlineDualBlank('diff_g_vol', 240, 'volume')}.
+                <div style="margin-top:6px;">2. Flow very easily. Examples: ${appMode === 'learn' ? `<span class="answer-tag">${makeWordsTappable("oxygen")}</span>` : inlineDualBlank('diff_g_ex1', 200, 'Oxygen')} and ${appMode === 'learn' ? `<span class="answer-tag">${makeWordsTappable("steam")}</span>` : inlineDualBlank('diff_g_ex2', 200, 'Steam')}.</div>
               </td>
             </tr>
           </table>
@@ -1717,18 +1762,18 @@
           mainContent = `
             <div class="match-columns-learn">
               <div style="display:flex; flex-direction:column; gap:8px;">
-                <button class="match-btn" data-pair="1" onclick="playClickSound(); handleMatch(this, 'left')"><img src="assets/particle-solid-icon.webp" alt=""/> 1. Solid</button>
-                <button class="match-btn" data-pair="2" onclick="playClickSound(); handleMatch(this, 'left')"><img src="assets/particle-gas-icon.webp" alt=""/> 2. Water vapour</button>
-                <button class="match-btn" data-pair="3" onclick="playClickSound(); handleMatch(this, 'left')"><img src="assets/particle-liquid-icon.webp" alt=""/> 3. Liquid</button>
-                <button class="match-btn" data-pair="4" onclick="playClickSound(); handleMatch(this, 'left')">🧪 4. Matter</button>
-                <button class="match-btn" data-pair="5" onclick="playClickSound(); handleMatch(this, 'left')"><img src="assets/ice-cube-mascot.webp" alt=""/> 5. Ice</button>
+                <button class="match-btn" data-pair="1" onclick="playClickSound(); handleMatch(this, 'left')"><img src="assets/particle-solid-icon.webp" alt=""/> ${makeWordsTappable("1. Solid")}</button>
+                <button class="match-btn" data-pair="2" onclick="playClickSound(); handleMatch(this, 'left')"><img src="assets/particle-gas-icon.webp" alt=""/> ${makeWordsTappable("2. Water vapour")}</button>
+                <button class="match-btn" data-pair="3" onclick="playClickSound(); handleMatch(this, 'left')"><img src="assets/particle-liquid-icon.webp" alt=""/> ${makeWordsTappable("3. Liquid")}</button>
+                <button class="match-btn" data-pair="4" onclick="playClickSound(); handleMatch(this, 'left')">🧪 ${makeWordsTappable("4. Matter")}</button>
+                <button class="match-btn" data-pair="5" onclick="playClickSound(); handleMatch(this, 'left')"><img src="assets/ice-cube-mascot.webp" alt=""/> ${makeWordsTappable("5. Ice")}</button>
               </div>
               <div style="display:flex; flex-direction:column; gap:8px;">
-                <button class="match-btn" data-pair="3" onclick="playClickSound(); handleMatch(this, 'right')">a. Can flow</button>
-                <button class="match-btn" data-pair="1" onclick="playClickSound(); handleMatch(this, 'right')">b. Does not change shape</button>
-                <button class="match-btn" data-pair="2" onclick="playClickSound(); handleMatch(this, 'right')">c. Gaseous state</button>
-                <button class="match-btn" data-pair="5" onclick="playClickSound(); handleMatch(this, 'right')">d. Frozen water</button>
-                <button class="match-btn" data-pair="4" onclick="playClickSound(); handleMatch(this, 'right')">e. Has mass and occupies space</button>
+                <button class="match-btn" data-pair="3" onclick="playClickSound(); handleMatch(this, 'right')">${makeWordsTappable("a. Can flow")}</button>
+                <button class="match-btn" data-pair="1" onclick="playClickSound(); handleMatch(this, 'right')">${makeWordsTappable("b. Does not change shape")}</button>
+                <button class="match-btn" data-pair="2" onclick="playClickSound(); handleMatch(this, 'right')">${makeWordsTappable("c. Gaseous state")}</button>
+                <button class="match-btn" data-pair="5" onclick="playClickSound(); handleMatch(this, 'right')">${makeWordsTappable("d. Frozen water")}</button>
+                <button class="match-btn" data-pair="4" onclick="playClickSound(); handleMatch(this, 'right')">${makeWordsTappable("e. Has mass and occupies space")}</button>
               </div>
             </div>
           `;
@@ -1745,8 +1790,8 @@
               <div style="font-weight:900; color:var(--primary-dark); font-size:1rem; margin-bottom:2px;">Match the Following (Write corresponding letter/answer in the canvas):</div>
               ${matchPairs.map((row, idx) => `
                 <div class="match-row-3col">
-                  <div style="font-weight:900;">${row.col1}</div>
-                  <div style="font-weight:800; color:#047857;">${row.col2}</div>
+                  <div style="font-weight:900;">${makeWordsTappable(row.col1)}</div>
+                  <div style="font-weight:800; color:#047857;">${makeWordsTappable(row.col2)}</div>
                   <div>${inlineDualBlank('match_ans_' + row.id, 260, 'Write match')}</div>
                 </div>
               `).join("")}
@@ -1771,13 +1816,13 @@
           ${mcqData.map(item => `
             <div class="mcq-item">
               <div class="mcq-q-row">
-                <div class="mcq-q">${item.q}</div>${appMode !== 'learn' ? `<div>${inlineDualBlank('mcq_ans_' + item.id, 200, 'Answer')}</div>` : ''}
+                <div class="mcq-q">${makeWordsTappable(item.q)}</div>${appMode !== 'learn' ? `<div>${inlineDualBlank('mcq_ans_' + item.id, 200, 'Answer')}</div>` : ''}
               </div>
               <div class="mcq-opts">
                 ${item.opts.map((optText, oIdx) => {
                   const isCorrect = (oIdx === item.correctIdx);
                   const learnClass = (appMode === 'learn' && isCorrect) ? 'correct' : '';
-                  return `<button class="mcq-opt-btn ${learnClass}" onclick="playClickSound(); checkMcq(this)">${optText}</button>`;
+                  return `<button class="mcq-opt-btn ${learnClass}" onclick="playClickSound(); checkMcq(this)">${makeWordsTappable(optText)}</button>`;
                 }).join("")}
               </div>
             </div>
@@ -1807,7 +1852,7 @@
                 return `
                   <div class="pic-card">
                     <span class="pic-ico-emoji">${it.emoji}</span>
-                    <span class="pic-name">${it.name}</span>
+                    <span class="pic-name">${makeWordsTappable(it.name)}</span>
                     <div class="chip-row">
                       <button class="state-chip ${saved === 'Solid' ? 'active-chip' : ''}" onclick="playClickSound(); selectChip('${it.id}', 'Solid')">Solid</button>
                       <button class="state-chip ${saved === 'Liquid' ? 'active-chip' : ''}" onclick="playClickSound(); selectChip('${it.id}', 'Liquid')">Liquid</button>
@@ -1819,7 +1864,7 @@
                 return `
                   <div class="pic-card">
                     <span class="pic-ico-emoji">${it.emoji}</span>
-                    <span class="pic-name">${it.name}</span>
+                    <span class="pic-name">${makeWordsTappable(it.name)}</span>
                     <div style="margin-top:4px;">${inlineDualBlank('pic_ink_' + it.id, 160, 'State')}</div>
                   </div>
                 `;
@@ -1839,20 +1884,20 @@
 
         mainContent = `
           <div class="cmap-wrapper">
-            <div class="cmap-root-card">States of Matter</div>
+            <div class="cmap-root-card">${makeWordsTappable("States of Matter")}</div>
             <div class="cmap-branch-label">Types</div>
             <div class="cmap-columns-grid">
               ${mapData.map(col => `
                 <div class="cmap-col-card">
-                  <div class="cmap-type-badge"><img src="${col.icon}" alt="" onerror="handleImgFallback(this)"/><span>${col.prompt}</span></div>${appMode !== 'learn' ? `<div style="margin-top:2px; width:100%; display:flex; justify-content:center;">${inlineDualBlank('cmap_type_' + col.id, 150, col.fullWord)}</div>` : `<div style="font-weight:900; color:var(--primary-dark); font-size:0.95rem; margin:2px 0;">➔ ${col.fullWord}</div>`}
+                  <div class="cmap-type-badge"><img src="${col.icon}" alt="" onerror="handleImgFallback(this)"/><span>${col.prompt}</span></div>${appMode !== 'learn' ? `<div style="margin-top:2px; width:100%; display:flex; justify-content:center;">${inlineDualBlank('cmap_type_' + col.id, 150, col.fullWord)}</div>` : `<div style="font-weight:900; color:var(--primary-dark); font-size:0.95rem; margin:2px 0;">➔ ${makeWordsTappable(col.fullWord)}</div>`}
                   <div class="cmap-down-arrow-wrap"><span>⬇</span> Examples</div>
                   <div class="cmap-ex-row">
                     <span class="cmap-ex-label">Example 1:</span>
-                    ${appMode !== 'learn' ? inlineDualBlank('cmap_ex1_' + col.id, 150, col.learnEx1) : `<div class="answer-tag" style="width:100%; text-align:center; padding:6px; font-size:0.9rem;">${col.learnEx1}</div>`}
+                    ${appMode !== 'learn' ? inlineDualBlank('cmap_ex1_' + col.id, 150, col.learnEx1) : `<div class="answer-tag" style="width:100%; text-align:center; padding:6px; font-size:0.9rem;">${makeWordsTappable(col.learnEx1)}</div>`}
                   </div>
                   <div class="cmap-ex-row">
                     <span class="cmap-ex-label">Example 2:</span>
-                    ${appMode !== 'learn' ? inlineDualBlank('cmap_ex2_' + col.id, 150, col.learnEx2) : `<div class="answer-tag" style="width:100%; text-align:center; padding:6px; font-size:0.9rem;">${col.learnEx2}</div>`}
+                    ${appMode !== 'learn' ? inlineDualBlank('cmap_ex2_' + col.id, 150, col.learnEx2) : `<div class="answer-tag" style="width:100%; text-align:center; padding:6px; font-size:0.9rem;">${makeWordsTappable(col.learnEx2)}</div>`}
                   </div>
                 </div>
               `).join("")}
