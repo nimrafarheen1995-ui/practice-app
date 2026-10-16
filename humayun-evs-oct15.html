@@ -66,8 +66,6 @@
       position: relative;
     }
 
-    /* Clean background without any added space shapes or floating planet overlays */
-
     .orientation-warning {
       display: none;
       position: fixed;
@@ -90,12 +88,12 @@
     }
 
     #screenDimOverlay {
-      display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0);
       pointer-events: none;
       z-index: 99999;
+      transition: background 0.3s ease;
     }
 
     .app-container {
@@ -434,7 +432,7 @@
       position: relative;
     }
 
-    /* COLLAPSIBLE QUESTION NAVIGATION RAIL */
+    /* COLLAPSIBLE QUESTION NAVIGATION RAIL & WORKBOOK SIDEBAR */
     .sec-rail {
       display: none;
       flex-direction: column;
@@ -471,6 +469,7 @@
       box-shadow: 4px 4px 14px rgba(0,0,0,0.15);
     }
     .workspace.has-rail .rail-toggle-tab { display: flex; }
+    .workspace.has-workbook-sidebar .rail-toggle-tab { display: flex; }
 
     .rail-btn {
       display: flex;
@@ -491,25 +490,25 @@
     .rail-btn.active { background: var(--primary); border-color: var(--primary-dark); color: #FFF; box-shadow: 0 4px 14px rgba(5,150,105,.3); }
     .rail-ico { width: 32px; height: 32px; object-fit: contain; }
 
-    /* AUTHENTIC 3D NOTEBOOK BINDER WITH FULL-COVER AVATAR */
+    /* CRYSTAL CLEAR GLASS BINDER COVER */
     .binder-cover {
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, rgba(6,78,59,0.92) 0%, rgba(4,120,87,0.88) 100%) !important;
-      backdrop-filter: blur(16px);
-      color: #FFF;
+      background: rgba(255, 255, 255, 0.12) !important;
+      backdrop-filter: blur(2px);
+      color: #065F46;
       padding: 24px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       border-radius: 20px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), 0 25px 50px rgba(4,120,87,0.4);
+      box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, 0.6), 0 25px 50px rgba(4,120,87,0.2);
       cursor: pointer;
       z-index: 30;
       transform-origin: 0% 50%;
       transform-style: preserve-3d;
       transition: transform 0.7s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.4s ease;
-      border: 2px solid #34D399 !important;
+      border: 2px solid rgba(52, 211, 153, 0.6) !important;
       overflow: hidden;
     }
     .binder-cover::before {
@@ -517,8 +516,8 @@
       position: absolute;
       left: 0; top: 0; bottom: 0;
       width: 32px;
-      background: linear-gradient(90deg, #022C22 0%, #064E3B 100%);
-      border-right: 2px solid rgba(255,255,255,0.4);
+      background: rgba(6, 78, 59, 0.25);
+      border-right: 2px solid rgba(255,255,255,0.5);
       z-index: 5;
     }
     .notebook-spine-rings {
@@ -553,7 +552,7 @@
       width: 320px;
       height: 320px;
       object-fit: contain;
-      opacity: 0.28;
+      opacity: 0.15;
       pointer-events: none;
       z-index: 2;
     }
@@ -566,7 +565,7 @@
       border-radius: 12px;
       border: 3.5px solid #022C22;
       color: #0F172A;
-      box-shadow: 0 16px 36px rgba(0,0,0,0.3);
+      box-shadow: 0 16px 36px rgba(0,0,0,0.25);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -589,7 +588,42 @@
     .label-kicker { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #065F46; border-bottom: 2px solid #10B981; padding-bottom: 2px; }
     .label-name { font-family: var(--font-hand) !important; font-size: 1.1rem; font-weight: 700; color: #022C22; }
     .label-lesson { font-family: var(--font-hand) !important; font-size: 0.95rem; font-weight: 700; color: #BE123C; }
-    .label-tap-hint { text-align: center; font-weight: 700; font-size: 0.82rem; background: rgba(255,255,255,0.85); color: #065F46; padding: 8px 14px; border-radius: 12px; z-index: 6; }
+    .label-tap-hint { text-align: center; font-weight: 700; font-size: 0.82rem; background: rgba(255,255,255,0.9); color: #065F46; padding: 8px 14px; border-radius: 12px; z-index: 6; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+    /* INTERACTIVE TTS WORDS & SYLLABLE STYLING */
+    .tts-word {
+      cursor: pointer;
+      display: inline-block;
+      padding: 0 2px;
+      border-radius: 4px;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .tts-word:hover {
+      background: #D1FAE5;
+      color: #065F46;
+    }
+    .tts-word.speaking {
+      background: #FEF08A;
+      color: #854D0E;
+      transform: scale(1.05);
+    }
+    .syllable-split-badge {
+      display: inline-flex;
+      align-items: center;
+      background: #FEF3C7;
+      border: 1.5px solid #F59E0B;
+      border-radius: 8px;
+      padding: 2px 6px;
+      margin: 0 2px;
+      font-weight: 900;
+      color: #92400E;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      animation: popSyllable 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes popSyllable {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
 
     /* INLINE BLANK CANVAS */
     .inline-blank-container {
@@ -653,7 +687,7 @@
     }
     .inline-clear-btn:active, .inline-undo-btn:active { background: #E2E8F0; }
 
-    /* FULL NOTEPAD SLATE & MULTI-PAGE WRITING SYSTEM */
+    /* FULL NOTEPAD SLATE & FLOATING CANVAS TOOLBAR (UP TO 6 SHEETS) */
     .full-notepad-wrapper {
       display: flex;
       flex-direction: column;
@@ -679,28 +713,35 @@
     .notepad-prompt-box b { color: var(--primary-dark); }
     body.test-mode .notepad-prompt-box .learn-ans-reveal { display: none !important; }
 
-    .notepad-toolbar {
+    /* FLOATING CANVAS TOOLBAR INSIDE THE SLATE */
+    .canvas-overlay-toolbar {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 40;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding-bottom: 4px;
-      border-bottom: 2px solid var(--border);
       gap: 6px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(8px);
+      border: 2px solid var(--border);
+      padding: 6px 10px;
+      border-radius: 14px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
       flex-wrap: wrap;
-      flex-shrink: 0;
     }
     .tool-group { display: flex; gap: 4px; align-items: center; }
     .pad-btn {
       background: #F8FAFC;
       border: 2px solid var(--border);
       border-radius: 10px;
-      padding: 4px 10px;
-      font-size: 0.9rem;
+      padding: 4px 8px;
+      font-size: 0.85rem;
       font-weight: 800;
       cursor: pointer;
       color: var(--text);
-      height: 34px;
-      min-width: 34px;
+      height: 32px;
+      min-width: 32px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -711,23 +752,23 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 6px;
       background: #F1F5F9;
       border: 2px solid var(--border);
       border-radius: 10px;
-      padding: 3px 12px;
+      padding: 2px 8px;
     }
     .page-nav-btn {
       background: #FFF;
       border: 2px solid #CBD5E1;
       border-radius: 6px;
-      padding: 2px 8px;
+      padding: 2px 6px;
       font-weight: 800;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       cursor: pointer;
       color: var(--text);
     }
-    .page-indicator { font-weight: 900; color: var(--primary-dark); font-size: 0.9rem; }
+    .page-indicator { font-weight: 900; color: var(--primary-dark); font-size: 0.85rem; }
 
     .full-notepad-container {
       position: relative;
@@ -773,8 +814,24 @@
       gap: 14px;
       flex: 1;
       min-height: 0;
+      transition: grid-template-columns 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .workbook-sidebar-stack { display: flex; flex-direction: column; gap: 8px; }
+    .workbook-layout-grid.sidebar-collapsed {
+      grid-template-columns: 0px 1fr;
+    }
+    .workbook-sidebar-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow: hidden;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    }
+    .workbook-layout-grid.sidebar-collapsed .workbook-sidebar-stack {
+      transform: translateX(-220px);
+      opacity: 0;
+      pointer-events: none;
+    }
+
     .circular-step-card {
       background: #F8FAFC;
       border: 2px solid #CBD5E1;
@@ -786,6 +843,7 @@
       cursor: pointer;
       transition: all 0.2s ease;
       box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      white-space: nowrap;
     }
     .circular-step-card.active-step {
       background: #D1FAE5;
@@ -827,7 +885,6 @@
     .match-btn.paired { background: #D1FAE5; border-color: var(--primary); color: #065F46; pointer-events: none; }
     .match-btn img { width: auto !important; height: 30px; object-fit: contain; vertical-align: middle; display: inline; }
 
-    /* RESTORED 3-COLUMN MATCHING LAYOUT FOR WRITE MODE */
     .match-three-col {
       display: flex;
       flex-direction: column;
@@ -954,7 +1011,7 @@
         <div class="portal-pills-row" id="portalPills" style="display:none;"></div>
 
         <div class="header-actions">
-          <button type="button" class="action-btn" id="dimBtn" onclick="toggleScreenDim()" title="Dim Screen">💡</button>
+          <button type="button" class="action-btn" id="dimBtn" onclick="cycleScreenDim()" title="Dim Screen">💡 Dim</button>
         </div>
       </nav>
     </div>
@@ -996,7 +1053,7 @@
         <div class="pane-title" id="paneTitle">Station Title</div>
       </div>
       <div class="pane-body">
-        <button class="rail-toggle-tab" id="railToggleBtn" onclick="playClickSound(); toggleRail()" title="Toggle Question Navigation">▶️</button>
+        <button class="rail-toggle-tab" id="railToggleBtn" onclick="playClickSound(); toggleRail()" title="Toggle Navigation">▶️</button>
         <div class="sec-rail" id="secRail"></div>
         <div id="portalExerciseContent" style="display:flex; flex-direction:column; gap:8px; flex:1; min-height:0;"></div>
       </div>
@@ -1023,11 +1080,84 @@
     let currentWorkbookSec = 0;
     let currentNotepadPage = 1;
     let railOpen = true;
+    let workbookSidebarOpen = true;
     let hudCollapsed = false;
+    let dimLevelIndex = 0; // 0: off, 1: 25%, 2: 50%, 3: 70%
 
     const activeInkCache = {};
     const binderOpenedMap = {};
     const DPR = Math.min(window.devicePixelRatio || 1, 2);
+
+    /* SYLLABLE SPLIT DICTIONARY */
+    const SYLLABLE_MAP = {
+      "anything": "an-y-thing",
+      "examples": "ex-am-ples",
+      "process": "proc-ess",
+      "evaporation": "e-vap-o-ra-tion",
+      "vapour": "va-pour",
+      "becoming": "be-com-ing",
+      "condensation": "con-den-sa-tion",
+      "droplets": "drop-lets",
+      "liquid": "liq-uid",
+      "freezing": "freez-ing",
+      "cooling": "cool-ing",
+      "freezer": "freez-er",
+      "because": "be-cause",
+      "becomes": "be-comes",
+      "outside": "out-side",
+      "heated": "heat-ed",
+      "continuously": "con-tin-u-ous-ly",
+      "boiling": "boil-ing",
+      "illustrates": "il-lus-trates"
+    };
+
+    let speechSynth = window.speechSynthesis;
+    function speakWord(word, isSyllable = false) {
+      if (!speechSynth) return;
+      speechSynth.cancel();
+      const cleanWord = word.replace(/[^a-zA-Z]/g, '').toLowerCase();
+      const textToSpeak = (isSyllable && SYLLABLE_MAP[cleanWord]) ? SYLLABLE_MAP[cleanWord].replace(/-/g, ' ') : word;
+      const utter = new SpeechSynthesisUtterance(textToSpeak);
+      utter.rate = isSyllable ? 0.65 : 0.9;
+      utter.pitch = 1.1;
+      speechSynth.speak(utter);
+    }
+
+    function makeWordsTappable(plainText, isAnswer = false) {
+      const words = plainText.split(/\s+/);
+      return words.map(w => {
+        const cleanW = w.replace(/[^a-zA-Z]/g, '').toLowerCase();
+        const hasSyllable = isAnswer && appMode === 'learn' && SYLLABLE_MAP[cleanW];
+        if (hasSyllable) {
+          return `<span class="tts-word syllable-target" data-word="${w}" data-clean="${cleanW}" onpointerdown="startSyllableTimer(event, this)" onpointerup="cancelSyllableTimer(this)" onmouseleave="cancelSyllableTimer(this)">${w}</span>`;
+        } else {
+          return `<span class="tts-word" onclick="speakWord('${w.replace(/'/g, "\\'")}')">${w}</span>`;
+        }
+      }).join(' ');
+    }
+
+    let pressTimer = null;
+    function startSyllableTimer(e, el) {
+      const word = el.getAttribute('data-word');
+      const cleanW = el.getAttribute('data-clean');
+      el.classList.add('speaking');
+      speakWord(word);
+
+      pressTimer = setTimeout(() => {
+        if (SYLLABLE_MAP[cleanW]) {
+          playClickSound();
+          speakWord(word, true);
+          const origHTML = el.innerHTML;
+          el.innerHTML = `<span class="syllable-split-badge">${SYLLABLE_MAP[cleanW]}</span>`;
+          setTimeout(() => { el.innerHTML = origHTML; el.classList.remove('speaking'); }, 2200);
+        }
+      }, 500);
+    }
+
+    function cancelSyllableTimer(el) {
+      clearTimeout(pressTimer);
+      el.classList.remove('speaking');
+    }
 
     let audioCtx = null;
     function getAudioContext() {
@@ -1140,25 +1270,30 @@
       if (wrapper) wrapper.classList.toggle('is-collapsed', hudCollapsed);
     }
 
-    function toggleScreenDim() {
+    function cycleScreenDim() {
       playClickSound();
-      const el = document.getElementById("screenDimOverlay");
+      dimLevelIndex = (dimLevelIndex + 1) % 4;
+      const overlay = document.getElementById("screenDimOverlay");
       const btn = document.getElementById("dimBtn");
-      const isDim = el.style.display === "block";
-      el.style.display = isDim ? "none" : "block";
-      btn.textContent = isDim ? "💡" : "☀️";
+      const opacities = [0, 0.25, 0.50, 0.70];
+      const labels = ["💡 Dim", "💡 25%", "💡 50%", "💡 70%"];
+      overlay.style.background = `rgba(0, 0, 0, ${opacities[dimLevelIndex]})`;
+      btn.textContent = labels[dimLevelIndex];
     }
 
     function toggleRail() {
-      railOpen = !railOpen;
-      const rail = document.getElementById('secRail');
-      const btn = document.getElementById('railToggleBtn');
-      if (railOpen) {
-        rail.classList.remove('rail-collapsed');
-        btn.textContent = '◀️';
+      if (activePortalKey === 'workbook') {
+        workbookSidebarOpen = !workbookSidebarOpen;
+        const grid = document.getElementById('workbookLayoutGrid');
+        const btn = document.getElementById('railToggleBtn');
+        if (grid) grid.classList.toggle('sidebar-collapsed', !workbookSidebarOpen);
+        if (btn) btn.textContent = workbookSidebarOpen ? '◀️' : '▶️';
       } else {
-        rail.classList.add('rail-collapsed');
-        btn.textContent = '▶️';
+        railOpen = !railOpen;
+        const rail = document.getElementById('secRail');
+        const btn = document.getElementById('railToggleBtn');
+        if (rail) rail.classList.toggle('rail-collapsed', !railOpen);
+        if (btn) btn.textContent = railOpen ? '◀️' : '▶️';
       }
     }
 
@@ -1176,6 +1311,7 @@
       document.getElementById('btnReturnPortals').style.display = 'none';
       document.getElementById('portalWorkspacePane').classList.remove('active-workspace');
       document.getElementById('portalWorkspacePane').classList.remove('has-rail');
+      document.getElementById('portalWorkspacePane').classList.remove('has-workbook-sidebar');
       document.getElementById('portalPills').style.display = 'none';
       document.getElementById('hubBayView').style.display = 'flex';
       activePortalKey = null;
@@ -1268,7 +1404,7 @@
           const x = ev.clientX - r.left, y = ev.clientY - r.top, pr = ev.pressure > 0 ? ev.pressure : 0.5;
           const mx = (st.x + x) / 2, my = (st.y + y) / 2;
           ctx.lineCap = ctx.lineJoin = 'round';
-          if (st.tool === 'eraser') { ctx.globalCompositeOperation = 'destination-out'; ctx.lineWidth = pad.width * 6; }
+          if (st.tool === 'eraser') { ctx.globalCompositeOperation = 'destination-out'; ctx.lineWidth = pad.width * 7; }
           else { ctx.globalCompositeOperation = 'source-over'; ctx.strokeStyle = kind === 'pad' ? pad.color : '#065F46'; ctx.lineWidth = (kind === 'pad' ? pad.width : 3.5) * (pr * 1.4 + 0.4); }
           ctx.beginPath(); ctx.moveTo(st.mx, st.my); ctx.quadraticCurveTo(st.x, st.y, mx, my); ctx.stroke();
           dist += Math.hypot(x - st.x, y - st.y);
@@ -1317,36 +1453,36 @@
     window.clearNPCanvas = () => { const c = document.querySelector('.full-notepad-canvas'); if (c) c._clearFn(); };
     window.undoNP = () => { const c = document.querySelector('.full-notepad-canvas'); if (c) c._undoFn(); };
     window.setNPTool = t => { playClickSound(); pad.tool = t; document.getElementById("btnNPPen").classList.toggle("active", t === 'pen'); document.getElementById("btnNPEraser").classList.toggle("active", t === 'eraser'); };
-    window.setNPWidth = w => { playClickSound(); pad.width = w; [2, 4, 7].forEach(n => { document.getElementById("npThick" + n).classList.toggle("active", n === w); }); };
+    window.setNPWidth = w => { playClickSound(); pad.width = w; [2, 4, 7].forEach(n => { const el = document.getElementById("npThick" + n); if(el) el.classList.toggle("active", n === w); }); };
     window.setNPColor = col => { playClickSound(); pad.color = col; setNPTool('pen'); };
     window.syncNotepadToolbar = () => { setNPTool(pad.tool); setNPWidth(pad.width); };
 
     function changeNotepadPage(delta) {
       playClickSound();
       saveAllCanvases();
-      currentNotepadPage = Math.max(1, currentNotepadPage + delta);
+      currentNotepadPage = Math.min(6, Math.max(1, currentNotepadPage + delta));
       openPortal(activePortalKey, true);
     }
 
     const DEFINITIONS_DATA = [
-      { id: "matter", tab: "a) Matter", mascot: "assets/particle-solid-icon.webp", prompt: `<b>a) Matter</b><br/>Anything that has mass and takes up space is matter.<br/><b>Examples:</b> Chair, Book, Car` },
-      { id: "evaporation", tab: "b) Evaporation", mascot: "assets/particle-gas-icon.webp", prompt: `<b>b) Evaporation</b><br/>The process by which water changes into water vapour.<br/><b>Examples:</b> Wet floor drying, Clothes drying in sun` },
-      { id: "condensation", tab: "c) Condensation", mascot: "assets/particle-liquid-icon.webp", prompt: `<b>c) Condensation</b><br/>The process by which water vapour changes back into water drops.<br/><b>Examples:</b> Fog on car glass, Cold water bottle droplets` },
-      { id: "freezing", tab: "d) Freezing", mascot: "assets/ice-cube-mascot.webp", prompt: `<b>d) Freezing</b><br/>The process of liquid changing into a solid on cooling.<br/><b>Examples:</b> Ice cubes in freezer, Ice cream hardening` }
+      { id: "matter", tab: "a) Matter", mascot: "assets/particle-solid-icon.webp", rawText: "Anything that has mass and takes up space is matter. Examples: Chair, Book, Car" },
+      { id: "evaporation", tab: "b) Evaporation", mascot: "assets/particle-gas-icon.webp", rawText: "The process by which water changes into water vapour. Examples: Wet floor drying, Clothes drying in sun" },
+      { id: "condensation", tab: "c) Condensation", mascot: "assets/particle-liquid-icon.webp", rawText: "The process by which water vapour changes back into water drops. Examples: Fog on car glass, Cold water bottle droplets" },
+      { id: "freezing", tab: "d) Freezing", mascot: "assets/ice-cube-mascot.webp", rawText: "The process of liquid changing into a solid on cooling. Examples: Ice cubes in freezer, Ice cream hardening" }
     ];
 
     const QA_DATA = [
       { 
         id: "qa1", 
         tab: "1. Solid Melt", 
-        q: "1. State the cause that makes a solid melt into a liquid?", 
-        answerKey: "A solid melts into a liquid because of heat. Example: Ice becomes water when kept outside." 
+        qText: "State the cause that makes a solid melt into a liquid?", 
+        answerText: "A solid melts into a liquid because of heat. Example: Ice becomes water when kept outside." 
       },
       { 
         id: "qa2", 
         tab: "2. Evaporation", 
-        q: "2. Explain the process of evaporation?", 
-        answerKey: "When water is heated continuously it starts boiling. Boiling water forms water vapour, which we see rising as steam. This process in which water changes into water vapour is called evaporation." 
+        qText: "Explain the process of evaporation?", 
+        answerText: "When water is heated continuously it starts boiling. Boiling water forms water vapour, which we see rising as steam. This process in which water changes into water vapour is called evaporation." 
       }
     ];
 
@@ -1388,9 +1524,12 @@
       const cur = DEFINITIONS_DATA[currentDefIdx];
       const isOpen = !!binderOpenedMap[`def_${cur.id}::p${currentNotepadPage}`];
       
+      const promptTitleHtml = makeWordsTappable(cur.tab);
+      const promptBodyHtml = makeWordsTappable(cur.rawText, true);
+
       const promptContent = (appMode === 'learn') 
-        ? cur.prompt 
-        : `<b>${cur.tab}</b>`;
+        ? `<b>${promptTitleHtml}</b><br/>${promptBodyHtml}` 
+        : `<b>${promptTitleHtml}</b>`;
 
       return `
         <div class="full-notepad-wrapper">
@@ -1398,30 +1537,34 @@
             <img src="${cur.mascot}" class="notepad-prompt-mascot" alt="Mascot" onerror="handleImgFallback(this)"/>
             <div>${promptContent}</div>
           </div>
-          <div class="notepad-toolbar">
-            <div class="tool-group">
-              <button class="pad-btn active" id="btnNPPen" onclick="setNPTool('pen')" title="Pen">🖊️</button>
-              <button class="pad-btn" id="btnNPEraser" onclick="setNPTool('eraser')" title="Eraser">🧹</button>
-              <button class="pad-btn" onclick="clearNPCanvas()" title="Clear">🗑️</button>
-              <button class="pad-btn" onclick="undoNP()" title="Undo">↩️</button>
-            </div>
-            <div class="page-nav-bar">
-              <button type="button" class="page-nav-btn" onclick="changeNotepadPage(-1)" ${currentNotepadPage === 1 ? 'disabled style="opacity:0.4;"' : ''}>◀ Prev</button>
-              <span class="page-indicator">Page ${currentNotepadPage}</span>
-              <button type="button" class="page-nav-btn" onclick="changeNotepadPage(1)">Next ▶</button>
-              <button type="button" class="action-btn" style="background:#10B981; color:#FFF; height:30px; font-size:0.78rem; padding:0 8px;" onclick="changeNotepadPage(1)">➕ Page</button>
-            </div>
-            <div class="tool-group">
-              <button class="pad-btn" id="npThick2" onclick="setNPWidth(2)" title="Thin">▪</button>
-              <button class="pad-btn active" id="npThick4" onclick="setNPWidth(4)" title="Medium">◼</button>
-              <button class="pad-btn" id="npThick7" onclick="setNPWidth(7)" title="Thick">⬛</button>
-              <button class="pad-btn" onclick="setNPColor('#065F46')" title="Emerald" style="background:#065F46;"></button>
-              <button class="pad-btn" onclick="setNPColor('#0284C7')" title="Blue" style="background:#0284C7;"></button>
-              <button class="pad-btn" onclick="setNPColor('#D97706')" title="Amber" style="background:#D97706;"></button>
-              <button class="pad-btn" onclick="closeBinder('def_${cur.id}')" title="Close Cover">📕</button>
-            </div>
-          </div>
           <div class="full-notepad-container">
+            <!-- FLOATING CANVAS TOOLBAR INSIDE THE CANVAS -->
+            <div class="canvas-overlay-toolbar">
+              <div class="tool-group">
+                <button class="pad-btn active" id="btnNPPen" onclick="setNPTool('pen')" title="Pen">🖊️</button>
+                <button class="pad-btn" id="btnNPEraser" onclick="setNPTool('eraser')" title="Eraser">🧹</button>
+                <button class="pad-btn" onclick="clearNPCanvas()" title="Clear">🗑️</button>
+                <button class="pad-btn" onclick="undoNP()" title="Undo">↩️</button>
+              </div>
+              <div class="page-nav-bar">
+                <button type="button" class="page-nav-btn" onclick="changeNotepadPage(-1)" ${currentNotepadPage === 1 ? 'disabled style="opacity:0.4;"' : ''}>◀</button>
+                <span class="page-indicator">P.${currentNotepadPage}</span>
+                <button type="button" class="page-nav-btn" onclick="changeNotepadPage(1)" ${currentNotepadPage === 6 ? 'disabled style="opacity:0.4;"' : ''}>▶</button>
+                <button type="button" class="pad-btn" style="background:#10B981; color:#FFF; height:28px; font-size:0.75rem; padding:0 6px;" onclick="changeNotepadPage(1)" title="Add Sheet">＋</button>
+              </div>
+              <div class="tool-group">
+                <button class="pad-btn" id="npThick2" onclick="setNPWidth(2)" title="Thin">▪</button>
+                <button class="pad-btn active" id="npThick4" onclick="setNPWidth(4)" title="Medium">◼</button>
+                <button class="pad-btn" id="npThick7" onclick="setNPWidth(7)" title="Thick">⬛</button>
+                <button class="pad-btn" onclick="setNPColor('#065F46')" title="Emerald" style="background:#065F46;"></button>
+                <button class="pad-btn" onclick="setNPColor('#DC2626')" title="Red" style="background:#DC2626;"></button>
+                <button class="pad-btn" onclick="setNPColor('#0284C7')" title="Blue" style="background:#0284C7;"></button>
+                <button class="pad-btn" onclick="setNPColor('#D97706')" title="Amber" style="background:#D97706;"></button>
+                <button class="pad-btn" onclick="setNPColor('#0F172A')" title="Black" style="background:#0F172A;"></button>
+                <button class="pad-btn" onclick="closeBinder('def_${cur.id}')" title="Close Cover">📕</button>
+              </div>
+            </div>
+
             <div class="notepad-dual-lines"></div>
             <canvas class="full-notepad-canvas" data-np-id="def_${cur.id}"></canvas>
 
@@ -1431,18 +1574,18 @@
                 <div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div>
               </div>
               <div style="display:flex; justify-content:space-between; align-items:center; z-index:6;">
-                <span style="background:rgba(255,255,255,0.3); padding:3px 10px; border-radius:999px; font-size:0.78rem; font-weight:800;">Science Lab Academy</span>
+                <span style="background:rgba(6,95,70,0.15); padding:3px 10px; border-radius:999px; font-size:0.78rem; font-weight:800; color:#065F46;">Science Lab Academy</span>
                 <span>📖</span>
               </div>
               <div class="composition-label-box">
                 <img src="assets/humayun-avatar.webp" class="label-avatar" alt="Humayun" onerror="handleImgFallback(this)"/>
                 <div class="label-text-col">
-                  <div class="label-kicker">Explorer Classwork - Page ${currentNotepadPage}</div>
+                  <div class="label-kicker">Explorer Classwork - Sheet ${currentNotepadPage}</div>
                   <div class="label-name">Humayun • Grade 3</div>
                   <div class="label-lesson">EVS Lesson 1: Definitions</div>
                 </div>
               </div>
-              <div class="label-tap-hint">⚡</div>
+              <div class="label-tap-hint">⚡ Tap glass cover to open!</div>
             </div>
           </div>
         </div>
@@ -1452,39 +1595,47 @@
     function renderQAPortal() {
       const curQ = QA_DATA[currentQIdx];
       const isOpen = !!binderOpenedMap[`${curQ.id}::p${currentNotepadPage}`];
+      
+      const qHtml = makeWordsTappable(curQ.qText);
+      const ansHtml = makeWordsTappable(curQ.answerText, true);
+
       return `
         <div class="full-notepad-wrapper">
           <div class="notepad-prompt-box" style="flex-direction:column; align-items:flex-start; gap:6px;">
             <div style="display:flex; align-items:center; gap:12px; width:100%;">
               <img src="assets/lab-scientist-humayun.webp" class="notepad-prompt-mascot" alt="Mascot" onerror="handleImgFallback(this)"/>
-              <div><b>${curQ.q}</b></div>
+              <div><b>${qHtml}</b></div>
             </div>
-            <div style="background:#ECFDF5; border:2px dashed #34D399; padding:8px 12px; border-radius:10px; width:100%; font-weight:800; color:#065F46; font-size:0.95rem; display:${appMode === 'learn' ? 'block' : 'none'};"><b>Answer:</b> ${curQ.answerKey}</div>
-          </div>
-          <div class="notepad-toolbar">
-            <div class="tool-group">
-              <button class="pad-btn active" id="btnNPPen" onclick="setNPTool('pen')" title="Pen">🖊️</button>
-              <button class="pad-btn" id="btnNPEraser" onclick="setNPTool('eraser')" title="Eraser">🧹</button>
-              <button class="pad-btn" onclick="clearNPCanvas()" title="Clear">🗑️</button>
-              <button class="pad-btn" onclick="undoNP()" title="Undo">↩️</button>
-            </div>
-            <div class="page-nav-bar">
-              <button type="button" class="page-nav-btn" onclick="changeNotepadPage(-1)" ${currentNotepadPage === 1 ? 'disabled style="opacity:0.4;"' : ''}>◀ Prev</button>
-              <span class="page-indicator">Page ${currentNotepadPage}</span>
-              <button type="button" class="page-nav-btn" onclick="changeNotepadPage(1)">Next ▶</button>
-              <button type="button" class="action-btn" style="background:#10B981; color:#FFF; height:30px; font-size:0.78rem; padding:0 8px;" onclick="changeNotepadPage(1)">➕ Page</button>
-            </div>
-            <div class="tool-group">
-              <button class="pad-btn" id="npThick2" onclick="setNPWidth(2)" title="Thin">▪</button>
-              <button class="pad-btn active" id="npThick4" onclick="setNPWidth(4)" title="Medium">◼</button>
-              <button class="pad-btn" id="npThick7" onclick="setNPWidth(7)" title="Thick">⬛</button>
-              <button class="pad-btn" onclick="setNPColor('#065F46')" title="Emerald" style="background:#065F46;"></button>
-              <button class="pad-btn" onclick="setNPColor('#0284C7')" title="Blue" style="background:#0284C7;"></button>
-              <button class="pad-btn" onclick="setNPColor('#D97706')" title="Amber" style="background:#D97706;"></button>
-              <button class="pad-btn" onclick="closeBinder('${curQ.id}')" title="Close Cover">📕</button>
-            </div>
+            <div style="background:#ECFDF5; border:2px dashed #34D399; padding:8px 12px; border-radius:10px; width:100%; font-weight:800; color:#065F46; font-size:0.95rem; display:${appMode === 'learn' ? 'block' : 'none'};"><b>Answer:</b> ${ansHtml}</div>
           </div>
           <div class="full-notepad-container">
+            <!-- FLOATING CANVAS TOOLBAR INSIDE THE CANVAS -->
+            <div class="canvas-overlay-toolbar">
+              <div class="tool-group">
+                <button class="pad-btn active" id="btnNPPen" onclick="setNPTool('pen')" title="Pen">🖊️</button>
+                <button class="pad-btn" id="btnNPEraser" onclick="setNPTool('eraser')" title="Eraser">🧹</button>
+                <button class="pad-btn" onclick="clearNPCanvas()" title="Clear">🗑️</button>
+                <button class="pad-btn" onclick="undoNP()" title="Undo">↩️</button>
+              </div>
+              <div class="page-nav-bar">
+                <button type="button" class="page-nav-btn" onclick="changeNotepadPage(-1)" ${currentNotepadPage === 1 ? 'disabled style="opacity:0.4;"' : ''}>◀</button>
+                <span class="page-indicator">P.${currentNotepadPage}</span>
+                <button type="button" class="page-nav-btn" onclick="changeNotepadPage(1)" ${currentNotepadPage === 6 ? 'disabled style="opacity:0.4;"' : ''}>▶</button>
+                <button type="button" class="pad-btn" style="background:#10B981; color:#FFF; height:28px; font-size:0.75rem; padding:0 6px;" onclick="changeNotepadPage(1)" title="Add Sheet">＋</button>
+              </div>
+              <div class="tool-group">
+                <button class="pad-btn" id="npThick2" onclick="setNPWidth(2)" title="Thin">▪</button>
+                <button class="pad-btn active" id="npThick4" onclick="setNPWidth(4)" title="Medium">◼</button>
+                <button class="pad-btn" id="npThick7" onclick="setNPWidth(7)" title="Thick">⬛</button>
+                <button class="pad-btn" onclick="setNPColor('#065F46')" title="Emerald" style="background:#065F46;"></button>
+                <button class="pad-btn" onclick="setNPColor('#DC2626')" title="Red" style="background:#DC2626;"></button>
+                <button class="pad-btn" onclick="setNPColor('#0284C7')" title="Blue" style="background:#0284C7;"></button>
+                <button class="pad-btn" onclick="setNPColor('#D97706')" title="Amber" style="background:#D97706;"></button>
+                <button class="pad-btn" onclick="setNPColor('#0F172A')" title="Black" style="background:#0F172A;"></button>
+                <button class="pad-btn" onclick="closeBinder('${curQ.id}')" title="Close Cover">📕</button>
+              </div>
+            </div>
+
             <div class="notepad-dual-lines"></div>
             <canvas class="full-notepad-canvas" data-np-id="${curQ.id}"></canvas>
 
@@ -1494,18 +1645,18 @@
                 <div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div>
               </div>
               <div style="display:flex; justify-content:space-between; align-items:center; z-index:6;">
-                <span style="background:rgba(255,255,255,0.3); padding:3px 10px; border-radius:999px; font-size:0.78rem; font-weight:800;">Q&amp;A Notebook</span>
+                <span style="background:rgba(6,95,70,0.15); padding:3px 10px; border-radius:999px; font-size:0.78rem; font-weight:800; color:#065F46;">Q&amp;A Notebook</span>
                 <span>🔥</span>
               </div>
               <div class="composition-label-box">
                 <img src="assets/humayun-avatar.webp" class="label-avatar" alt="Humayun" onerror="handleImgFallback(this)"/>
                 <div class="label-text-col">
-                  <div class="label-kicker">Explorer Classwork - Page ${currentNotepadPage}</div>
+                  <div class="label-kicker">Explorer Classwork - Sheet ${currentNotepadPage}</div>
                   <div class="label-name">Humayun • Grade 3</div>
                   <div class="label-lesson">EVS Lesson 1: Q&amp;A</div>
                 </div>
               </div>
-              <div class="label-tap-hint">⚡</div>
+              <div class="label-tap-hint">⚡ Tap glass cover to open!</div>
             </div>
           </div>
         </div>
@@ -1515,7 +1666,6 @@
     function renderWorkbookPortal() {
       let mainContent = "";
       if (currentWorkbookSec === 0) {
-        // Difference Table - Fixed: In Practice Mode, answers appear as tags. In Write Mode, they are blank canvases! No duplicate text.
         mainContent = `
           <table class="diff-table">
             <tr>
@@ -1583,7 +1733,6 @@
             </div>
           `;
         } else {
-          // RESTORED 3-COLUMN MATCHING LAYOUT FOR WRITE MODE
           const matchPairs = [
             { id: "m1", col1: "1. Solid", col2: "b. Does not change shape" },
             { id: "m2", col1: "2. Water vapour", col2: "c. Gaseous state" },
@@ -1638,7 +1787,6 @@
           </div>
         `;
       } else if (currentWorkbookSec === 3) {
-        // Updated items with much bigger, crystal clear real emoticons (emojis) as requested
         const items = [
           { id: "p1", name: "1. Ice cubes", emoji: "🧊", correct: "Solid" },
           { id: "p2", name: "2. Kerosene", emoji: "⛽", correct: "Liquid" },
@@ -1717,7 +1865,7 @@
       }
 
       return `
-        <div class="workbook-layout-grid">
+        <div class="workbook-layout-grid ${workbookSidebarOpen ? '' : 'sidebar-collapsed'}" id="workbookLayoutGrid">
           <div class="workbook-sidebar-stack">
             ${[
               { title: "1. Differences Table", idx: 0 },
@@ -1801,7 +1949,9 @@
 
     function decoratePortalUI(k) {
       const rk = (k === 'definitions' || k === 'qa');
+      const wk = (k === 'workbook');
       document.getElementById('portalWorkspacePane').classList.toggle('has-rail', rk);
+      document.getElementById('portalWorkspacePane').classList.toggle('has-workbook-sidebar', wk);
       
       const pills = document.getElementById('portalPills');
       pills.style.display = 'flex';
@@ -1809,7 +1959,10 @@
       pills.innerHTML = items.map(([pk, lbl]) => `<button type="button" class="portal-pill-sm ${pk === k ? 'active' : ''}" onclick="playClickSound(); openPortal('${pk}')">${lbl}</button>`).join('');
 
       const rail = document.getElementById('secRail');
+      const toggleBtn = document.getElementById('railToggleBtn');
       if (rk) {
+        rail.style.display = 'flex';
+        toggleBtn.style.display = 'flex';
         const data = k === 'definitions' ? DEFINITIONS_DATA : QA_DATA;
         const idx = k === 'definitions' ? currentDefIdx : currentQIdx;
         const fn = k === 'definitions' ? 'switchDefTab' : 'switchQTab';
@@ -1819,6 +1972,12 @@
             <span>${d.tab}</span>
           </button>
         `).join('');
+      } else if (wk) {
+        rail.style.display = 'none';
+        toggleBtn.style.display = 'flex';
+      } else {
+        rail.style.display = 'none';
+        toggleBtn.style.display = 'none';
       }
     }
 
