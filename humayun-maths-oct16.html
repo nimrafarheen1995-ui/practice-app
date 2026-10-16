@@ -203,28 +203,30 @@
       width: min(100%, 1100px);
     }
 
+    /* TRANSLUCENT FROSTED GLASS COVER WITH PEEK-THROUGH WRITING VISIBILITY */
     .binder-cover-glass {
       position: absolute;
       inset: 0;
-      background: linear-gradient(135deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.92) 100%);
-      backdrop-filter: blur(28px);
-      -webkit-backdrop-filter: blur(28px);
-      border: 2px solid rgba(255, 255, 255, 0.25);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.28) 0%, rgba(240, 244, 250, 0.15) 50%, rgba(15, 23, 42, 0.35) 100%);
+      backdrop-filter: blur(8px) saturate(160%);
+      -webkit-backdrop-filter: blur(8px) saturate(160%);
+      border: 2.5px solid rgba(255, 255, 255, 0.6);
       z-index: 30;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 32px;
+      padding: 28px 32px;
       transition: transform 0.75s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.45s ease;
       transform-origin: 0% 50%;
       transform-style: preserve-3d;
       cursor: pointer;
+      box-shadow: inset 0 0 60px rgba(255, 255, 255, 0.4), 0 25px 50px rgba(0, 0, 0, 0.4);
     }
     .binder-cover-glass::after {
       content: '';
       position: absolute;
       inset: 0;
-      background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.15) 45%, rgba(255, 255, 255, 0.02) 52%, transparent 70%);
+      background: linear-gradient(115deg, transparent 25%, rgba(255, 255, 255, 0.35) 45%, rgba(255, 255, 255, 0.05) 52%, transparent 70%);
       pointer-events: none;
     }
     .binder-cover-glass.binder-open {
@@ -356,6 +358,27 @@
       grid-column: span 2;
       font-size: 14px;
       box-shadow: 0 4px 0 #15803D;
+    }
+
+    /* ENLARGED TACTILE TOOLBAR TOOLS */
+    .canvas-tool-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: 1.5px solid transparent;
+    }
+    .canvas-tool-btn:hover { background: rgba(255, 255, 255, 0.15); transform: scale(1.05); }
+    .canvas-tool-btn:active { transform: scale(0.92); }
+    .canvas-tool-btn.active {
+      background: #EA580C;
+      border-color: #FCD34D;
+      box-shadow: 0 0 12px rgba(234, 88, 12, 0.7);
     }
 
     /* TOP CONTROLS */
@@ -871,14 +894,12 @@
         const diffY = e.clientY - startY;
         const elapsed = Date.now() - startTime;
 
-        // 1. SWIPE DETECTION
         if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
           if (diffX > 0) rotateToExercise(activeExerciseIdx - 1);
           else rotateToExercise(activeExerciseIdx + 1);
           return;
         }
 
-        // 2. TAP / CLICK DETECTION (IF MOVEMENT IS UNDER 12PX)
         if (Math.hypot(diffX, diffY) < 12 && elapsed < 450) {
           const card = e.target.closest('.carousel-8d-card');
           if (card) {
@@ -1084,7 +1105,7 @@
       }
     }
 
-    /* RENDER CENTERED WORKBOOK WITH GLASS BINDER AND DOCKABLE KEYPAD */
+    /* RENDER CENTERED WORKBOOK WITH GLASS BINDER AND ENLARGED BUTTONS/AVATARS */
     function renderActiveCard(animate = false) {
       const container = document.getElementById('activeCardContainer');
       const ex = curriculumData[currentExerciseKey];
@@ -1102,7 +1123,7 @@
           <!-- Top Bar: Large Font Question & Readonly Answer Slot -->
           <div class="p-4 bg-slate-900 text-white border-b border-slate-700/80 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div class="flex items-center gap-3 flex-wrap">
-              <span class="bg-amber-600 text-white font-bold text-sm px-3 py-1 rounded-lg font-display">${q.label}</span>
+              <span class="bg-amber-600 text-white font-bold text-sm px-3.5 py-1.5 rounded-xl font-display shadow-sm">${q.label}</span>
               <div class="font-bold text-white text-base md:text-xl leading-relaxed flex items-center flex-wrap">
                 <span style="white-space: pre-line;">${q.text}</span>
                 ${q.bracket ? `
@@ -1117,18 +1138,22 @@
             <!-- Readonly Answer Slot -->
             <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
               <input type="text" readonly inputmode="none" id="ans_${q.id}" value="${savedAnswer}" placeholder="Tap to type..." 
-                class="px-3 py-1.5 rounded-xl border-2 border-amber-400 bg-slate-800 text-amber-300 font-bold text-base w-36 text-center cursor-pointer shadow-inner"
+                class="px-4 py-2 rounded-xl border-2 border-amber-400 bg-slate-800 text-amber-300 font-black text-lg w-40 text-center cursor-pointer shadow-inner"
                 onclick="focusAnswerInput()">
-              <button onclick="checkAnswer('${q.id}', '${q.answer}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl transition shadow-md text-base cursor-pointer">✅</button>
+              <button onclick="checkAnswer('${q.id}', '${q.answer}')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-5 py-2.5 rounded-xl transition shadow-md text-base cursor-pointer active:scale-95">✅</button>
             </div>
           </div>
 
-          <!-- Secondary Breadcrumb Navigation -->
-          <div class="bg-slate-100 px-4 py-2 border-b border-slate-200 flex justify-between items-center text-xs text-slate-800 font-bold">
-            <span>${ex.title} (${qIndex + 1} of ${ex.questions.length})</span>
-            <div class="flex gap-2">
-              <button onclick="changeQuestion(-1)" ${qIndex === 0 ? 'disabled' : ''} class="px-3 py-1 bg-white border border-slate-300 rounded-lg shadow-sm font-bold ${qIndex === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-slate-50 cursor-pointer'}">⬅️ Prev</button>
-              <button onclick="changeQuestion(1)" ${qIndex === ex.questions.length - 1 ? 'disabled' : ''} class="px-3 py-1 bg-white border border-slate-300 rounded-lg shadow-sm font-bold ${qIndex === ex.questions.length - 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-slate-50 cursor-pointer'}">Next ➡️</button>
+          <!-- Secondary Breadcrumb Navigation with Prominent Next / Prev Buttons -->
+          <div class="bg-slate-100 px-4 py-2.5 border-b border-slate-200 flex justify-between items-center text-xs md:text-sm text-slate-800 font-bold">
+            <span class="font-display tracking-wide">${ex.title} (${qIndex + 1} of ${ex.questions.length})</span>
+            <div class="flex gap-2.5 items-center">
+              <button onclick="changeQuestion(-1)" ${qIndex === 0 ? 'disabled' : ''} class="px-4 py-2 bg-white border border-slate-300 rounded-xl shadow-sm font-bold text-slate-700 ${qIndex === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-slate-50 cursor-pointer active:scale-95'}">
+                ⬅️ Prev
+              </button>
+              <button onclick="changeQuestion(1)" ${qIndex === ex.questions.length - 1 ? 'disabled' : ''} class="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-xl shadow-md font-black text-sm ${qIndex === ex.questions.length - 1 ? 'opacity-40 cursor-not-allowed' : 'hover:from-amber-400 hover:to-orange-500 cursor-pointer active:scale-95'}">
+                Next ➡️
+              </button>
             </div>
           </div>
 
@@ -1140,7 +1165,7 @@
               <div class="p-3 bg-slate-100 border-b border-slate-200 shrink-0">
                 <div class="flex justify-between items-center text-xs font-bold text-slate-700 mb-1">
                   <span>Number Line:</span>
-                  <button type="button" class="text-xs text-amber-700 underline" onclick="clearLineCanvas('${q.id}')">Reset Jumps</button>
+                  <button type="button" class="text-xs text-amber-700 underline font-bold" onclick="clearLineCanvas('${q.id}')">Reset Jumps</button>
                 </div>
                 <div class="w-full h-20 bg-white border-2 border-slate-300 rounded-xl overflow-hidden relative" id="lineWrapper_${q.id}">
                   <canvas id="lineCanvas_${q.id}" class="w-full h-full cursor-crosshair touch-none"></canvas>
@@ -1148,34 +1173,33 @@
               </div>
             ` : ''}
 
-            <!-- Canvas Header Toolbar -->
-            <div class="bg-slate-800 text-white p-2 flex justify-between items-center z-10 shadow-sm flex-wrap gap-2 border-b border-slate-700 shrink-0">
+            <!-- Canvas Header Toolbar with Large Easy-Grab Tools -->
+            <div class="bg-slate-800 text-white p-2.5 flex justify-between items-center z-10 shadow-sm flex-wrap gap-2 border-b border-slate-700 shrink-0">
               <div class="flex items-center gap-2">
-                <button onclick="setTool('${q.id}', 'pen')" id="toolPen_${q.id}" class="p-1.5 rounded bg-amber-600 text-white shadow">✏️</button>
-                <button onclick="setTool('${q.id}', 'line')" id="toolLine_${q.id}" class="p-1.5 rounded hover:bg-slate-700">📏</button>
-                <button onclick="setTool('${q.id}', 'eraser')" id="toolEraser_${q.id}" class="p-1.5 rounded hover:bg-slate-700">🧹</button>
-                <button onclick="undoInk('${q.id}')" title="Undo" class="p-1.5 rounded hover:bg-slate-700">↩️</button>
-                <button onclick="clearCanvas('${q.id}')" class="p-1.5 rounded hover:bg-slate-700 text-rose-400">🗑️</button>
+                <button onclick="setTool('${q.id}', 'pen')" id="toolPen_${q.id}" class="canvas-tool-btn active" title="Pen">✏️</button>
+                <button onclick="setTool('${q.id}', 'line')" id="toolLine_${q.id}" class="canvas-tool-btn" title="Ruler">📏</button>
+                <button onclick="setTool('${q.id}', 'eraser')" id="toolEraser_${q.id}" class="canvas-tool-btn" title="Eraser">🧹</button>
+                <button onclick="undoInk('${q.id}')" title="Undo" class="canvas-tool-btn">↩️</button>
+                <button onclick="clearCanvas('${q.id}')" title="Clear" class="canvas-tool-btn text-rose-400">🗑️</button>
               </div>
 
               <!-- Page Switcher -->
-              <div class="flex items-center bg-slate-700 px-3 py-1 rounded-xl border border-slate-600 gap-3">
-                <button onclick="switchPageSmoothly('${q.id}', -1)" class="hover:scale-110 transition">◀️</button>
-                <span id="pageIndicator_${q.id}" class="text-xs font-bold text-amber-300">Pg ${currentPage} / 2</span>
-                <button onclick="switchPageSmoothly('${q.id}', 1)" class="hover:scale-110 transition">▶️</button>
+              <div class="flex items-center bg-slate-700 px-3.5 py-1.5 rounded-xl border border-slate-600 gap-3 text-sm font-bold">
+                <button onclick="switchPageSmoothly('${q.id}', -1)" class="hover:scale-110 transition p-1">◀️</button>
+                <span id="pageIndicator_${q.id}" class="font-bold text-amber-300">Pg ${currentPage} / 2</span>
+                <button onclick="switchPageSmoothly('${q.id}', 1)" class="hover:scale-110 transition p-1">▶️</button>
               </div>
 
               <div class="flex items-center gap-2">
-                <div class="flex gap-1.5 ml-2 items-center">
-                  <button onclick="setColor('${q.id}', '#0f172a')" class="w-6 h-6 rounded-full bg-slate-900 border-2 border-white shadow"></button>
-                  <button onclick="setColor('${q.id}', '#2563eb')" class="w-6 h-6 rounded-full bg-blue-600 border-2 border-white shadow"></button>
-                  <button onclick="setColor('${q.id}', '#dc2626')" class="w-6 h-6 rounded-full bg-red-600 border-2 border-white shadow"></button>
+                <div class="flex gap-2 ml-2 items-center">
+                  <button onclick="setColor('${q.id}', '#0f172a')" class="w-7 h-7 rounded-full bg-slate-900 border-2 border-white shadow"></button>
+                  <button onclick="setColor('${q.id}', '#2563eb')" class="w-7 h-7 rounded-full bg-blue-600 border-2 border-white shadow"></button>
+                  <button onclick="setColor('${q.id}', '#dc2626')" class="w-7 h-7 rounded-full bg-red-600 border-2 border-white shadow"></button>
                 </div>
-                <!-- Toggle Dock / Undock Keypad Button -->
-                <button onclick="toggleKeypadDocking()" id="toggleKeypadBtn" class="bg-amber-600 text-white text-xs px-2.5 py-1 rounded-lg font-bold shadow ml-2 hover:bg-amber-500">
+                <button onclick="toggleKeypadDocking()" id="toggleKeypadBtn" class="bg-amber-600 text-white text-xs md:text-sm px-3.5 py-2 rounded-xl font-bold shadow ml-2 hover:bg-amber-500 active:scale-95">
                   ${isKeypadDocked ? '📌 Undock Keypad' : '⌨ Dock Keypad'}
                 </button>
-                <button onclick="closeBinder('${q.id}')" class="bg-slate-900 text-white text-xs px-2.5 py-1 rounded-lg font-bold shadow ml-1 hover:bg-slate-700">📕 Cover</button>
+                <button onclick="closeBinder('${q.id}')" class="bg-slate-900 text-white text-xs md:text-sm px-3.5 py-2 rounded-xl font-bold shadow ml-1 hover:bg-slate-700 active:scale-95">📕 Cover</button>
               </div>
             </div>
 
@@ -1185,7 +1209,7 @@
               <!-- Left: 100% Responsive Smooth Writing Surface -->
               <div class="flex-1 ninja-graph-paper relative overflow-hidden select-none touch-none h-full" id="canvasArea_${q.id}">
                 <div class="absolute right-3 bottom-0 pointer-events-none z-10 opacity-60 hover:opacity-90 transition duration-300 flex flex-col items-end">
-                  <img src="${ex.avatar}" id="activeCompanionAvatar" class="w-40 h-40 md:w-56 md:h-56 object-contain filter drop-shadow-[0_20px_30px_rgba(0,0,0,0.4)]" alt="${ex.companion}" onerror="handleImageFallback(this)"/>
+                  <img src="${ex.avatar}" id="activeCompanionAvatar" class="w-44 h-44 md:w-60 md:h-60 object-contain filter drop-shadow-[0_20px_30px_rgba(0,0,0,0.4)]" alt="${ex.companion}" onerror="handleImageFallback(this)"/>
                 </div>
                 <canvas id="canvas_${q.id}" oncontextmenu="return false;" class="absolute inset-0 w-full h-full cursor-crosshair touch-none z-10"></canvas>
               </div>
@@ -1217,38 +1241,39 @@
                     <button type="button" class="stone-key-btn btn-submit" onclick="checkAnswer('${q.id}', '${q.answer}')">
                       ⚔️ Submit
                     </button>
-                    <button type="button" class="stone-key-btn btn-del text-xs" onclick="pressStoneKey('CLR')">Clear</button>
+                    <button type="button" class="stone-key-btn btn-del text-xs font-bold" onclick="pressStoneKey('CLR')">Clear</button>
                   </div>
                 </div>
 
-                <button type="button" onclick="toggleKeypadDocking()" class="w-full text-center text-xs text-amber-400 py-1 border border-amber-800/60 rounded bg-stone-900 hover:bg-stone-800 font-bold">
+                <button type="button" onclick="toggleKeypadDocking()" class="w-full text-center text-xs text-amber-400 py-1.5 border border-amber-800/60 rounded-xl bg-stone-900 hover:bg-stone-800 font-bold">
                   ✖ Hide Keypad
                 </button>
               </aside>
 
             </div>
 
-            <!-- Glass Binder Cover (Click to Open) -->
+            <!-- Translucent Frosted Glass Binder Cover with Peek-Through Writing Visibility & Big Avatars -->
             <div id="binderCover_${q.id}" class="binder-cover-glass ${isBinderOpen ? 'binder-open' : ''}" onclick="openBinder('${q.id}')">
-              <div class="flex justify-between items-start">
-                <span class="bg-white/20 border border-white/40 text-amber-300 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider font-display">${ex.title}</span>
-                <span class="text-3xl">📖</span>
+              <div class="flex justify-between items-start z-10">
+                <span class="bg-white/80 border border-slate-300 text-amber-800 px-4 py-1.5 rounded-full text-xs md:text-sm font-extrabold uppercase tracking-wider font-display shadow-sm">${ex.title}</span>
+                <span class="text-3xl drop-shadow">📖</span>
               </div>
 
               <!-- Composition Nameplate -->
-              <div class="mx-auto my-auto bg-white/95 text-slate-900 rounded-2xl p-6 w-80 shadow-2xl border-4 border-slate-800 text-center relative">
-                <div class="text-[11px] uppercase font-bold text-slate-600 tracking-widest border-b pb-1">Mathematics Notebook</div>
-                <div class="font-display text-xl text-slate-900 font-black mt-2">Humayun</div>
-                <div class="font-bold text-amber-700 text-sm mt-0.5">${ex.title}</div>
-                <div class="text-xs text-slate-500 font-semibold mt-1">Host: ${ex.companion}</div>
+              <div class="mx-auto my-auto bg-white/90 backdrop-blur-md text-slate-900 rounded-3xl p-6 md:p-8 w-80 md:w-96 shadow-2xl border-4 border-slate-800 text-center relative z-10">
+                <div class="text-xs uppercase font-extrabold text-slate-600 tracking-widest border-b pb-1.5">Mathematics Notebook</div>
+                <div class="font-display text-2xl md:text-3xl text-slate-900 font-black mt-2">Humayun</div>
+                <div class="font-extrabold text-amber-700 text-base md:text-lg mt-1">${ex.title}</div>
+                <div class="text-xs md:text-sm text-slate-600 font-bold mt-1">Host: ${ex.companion}</div>
               </div>
 
-              <div class="text-center flex flex-col items-center gap-2">
-                <img src="${ex.avatar}" class="w-20 h-20 object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)] animate-bounce" alt="${ex.companion}" onerror="handleImageFallback(this)"/>
-                <span class="bg-amber-400 text-slate-950 font-bold px-5 py-2 rounded-xl shadow-lg text-xs uppercase tracking-widest">Tap to Open Binder ⚡</span>
+              <!-- Big Shinobi Companion Avatar -->
+              <div class="text-center flex flex-col items-center gap-3 z-10">
+                <img src="${ex.avatar}" class="w-36 h-36 md:w-48 md:h-48 object-contain filter drop-shadow-[0_12px_24px_rgba(245,158,11,0.6)] animate-bounce" alt="${ex.companion}" onerror="handleImageFallback(this)"/>
+                <span class="bg-amber-400 text-slate-950 font-black px-6 py-2.5 rounded-2xl shadow-xl text-xs md:text-sm uppercase tracking-widest active:scale-95">Tap to Open Binder ⚡</span>
               </div>
 
-              <div class="text-center text-xs text-slate-400">
+              <div class="text-center text-xs md:text-sm text-slate-800 font-bold z-10">
                 ${q.label} • Clean Independent Workspace
               </div>
             </div>
@@ -1630,14 +1655,10 @@
 
     function setTool(id, tool) {
       canvasStates[id].tool = tool;
-      ['Pen', 'Line', 'Eraser'].forEach(t => {
-        const btn = document.getElementById(`tool${t}_${id}`);
+      ['pen', 'line', 'eraser'].forEach(t => {
+        const btn = document.getElementById(`tool${t.charAt(0).toUpperCase() + t.slice(1)}_${id}`);
         if (btn) {
-          if (t.toLowerCase() === tool) {
-            btn.className = "p-1.5 rounded bg-amber-600 text-white shadow";
-          } else {
-            btn.className = "p-1.5 rounded hover:bg-slate-700 text-slate-200";
-          }
+          btn.classList.toggle('active', t === tool);
         }
       });
     }
