@@ -1169,7 +1169,7 @@
       }
     }
 
-    /* RENDER CENTERED WORKBOOK WITH GLASS BINDER AND ENLARGED BUTTONS/AVATARS */
+    /* RENDER CENTERED WORKBOOK WITH GLASS BINDER AND GENJUTSU UNBROKEN OVERLAY */
     function renderActiveCard(animate = false) {
       const container = document.getElementById('activeCardContainer');
       const ex = curriculumData[currentExerciseKey];
@@ -1404,25 +1404,21 @@
       saveAnswer(qId);
     }
 
-    /* STEP 1: S-PEN SENSING BARRIER & CONTACT TRACKING */
     let penSeenAt = 0;             // last time the S-Pen was seen (hover, touch or move) anywhere on screen
     let inkStrokeActive = false;   // true while a stroke is in progress (saving waits for it)
     const PEN_QUIET_MS = 1500;     // fingers and palms are ignored for this long after the S-Pen was used
     const activeTouchIds = new Set();
-
     ['pointerdown', 'pointermove', 'pointerover'].forEach(t =>
       document.addEventListener(t, (e) => { if (e.pointerType === 'pen') penSeenAt = Date.now(); }, true));
     document.addEventListener('pointerdown', (e) => { if (e.pointerType === 'touch') activeTouchIds.add(e.pointerId); }, true);
     ['pointerup', 'pointercancel'].forEach(t =>
       document.addEventListener(t, (e) => activeTouchIds.delete(e.pointerId), true));
-
     function fingerAllowed(e) {
       if (Date.now() - penSeenAt < PEN_QUIET_MS) return false;      // S-Pen in use: ignore palms and fingers
       if (activeTouchIds.size > 1) return false;                     // a second contact (a palm) joins in
       return Math.max(e.width || 0, e.height || 0) <= 22;           // a palm's contact is far bigger than a fingertip
     }
 
-    /* STEP 2: DPR LIMIT TO 2 FOR 2.5K SCREEN PERFORMANCE */
     function syncCanvasResolution(canvas, container, id) {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const cssW = container.clientWidth;
@@ -1443,9 +1439,14 @@
       loadCanvasInk(id, activePages[id] || 1);
     }
 
+    window.addEventListener('pagehide', () => {
+      document.querySelectorAll('canvas[id^="canvas_"]').forEach(c => flushCanvasInkImmediate(c.id.slice(7)));
+    });
+
+    /* HARDWARE-OPTIMIZED 120HZ S-PEN CANVAS (DESYNCHRONIZED, ZERO PALM-DOTS, DEBOUNCED IO) */
     let inkDebounceTimer = null;
 
-    /* STEP 3: ASYNC IDLE SAVING VIA TOBLOB (ZERO STROKE STUTTER) */
+    // Saving happens later, in the background, and never while a stroke is in progress
     function scheduleDebouncedSave(id) {
       clearTimeout(inkDebounceTimer);
       const canvas = document.getElementById(`canvas_${id}`);
@@ -1495,17 +1496,12 @@
       } catch (_) {}
     }
 
-    /* STEP 4: FLUSH BEFORE UNLOAD / HIDE */
-    window.addEventListener('pagehide', () => {
-      document.querySelectorAll('canvas[id^="canvas_"]').forEach(c => flushCanvasInkImmediate(c.id.slice(7)));
-    });
-
-    /* STEPS 5 & 6: HARDWARE-OPTIMIZED 120HZ S-PEN CANVAS */
     function initCanvas(id, page) {
       const canvas = document.getElementById(`canvas_${id}`);
       const container = document.getElementById(`canvasArea_${id}`);
       if (!canvas || !container) return;
 
+      // 1. DESYNCHRONIZED DIRECT GPU BUFFER CONTEXT
       const ctx = canvas.getContext('2d', { desynchronized: true, alpha: true });
 
       if (!canvasStates[id]) canvasStates[id] = { tool: 'pen', color: '#0f172a' };
