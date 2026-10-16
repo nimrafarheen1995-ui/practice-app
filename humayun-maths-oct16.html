@@ -203,7 +203,7 @@
       width: min(100%, 1100px);
     }
 
-    /* TRANSLUCENT FROSTED GLASS COVER WITH PEEK-THROUGH WRITING VISIBILITY */
+    /* TRANSLUCENT FROSTED GLASS COVER WITH PEEK-THROUGH VISIBILITY */
     .binder-cover-glass {
       position: absolute;
       inset: 0;
@@ -379,6 +379,45 @@
       background: #EA580C;
       border-color: #FCD34D;
       box-shadow: 0 0 12px rgba(234, 88, 12, 0.7);
+    }
+
+    /* EXERCISE 1.2 GENJUTSU UNBROKEN OVERLAY */
+    .genjutsu-failure-banner {
+      position: absolute;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+      transform: scale(0.65);
+      transition: all 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      background: radial-gradient(circle at center, rgba(15, 23, 42, 0.75) 0%, rgba(9, 11, 16, 0.92) 100%);
+      backdrop-filter: blur(4px);
+    }
+    .genjutsu-failure-banner.active {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .genjutsu-kanji-title {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 58px;
+      font-weight: 900;
+      color: #FF4757;
+      text-shadow: 0 0 20px #FF4757, 0 0 40px #C0392B, 0 0 70px #E74C3C;
+      line-height: 1.1;
+      letter-spacing: 4px;
+    }
+    .genjutsu-subtext {
+      font-family: 'Cinzel', serif;
+      font-size: 24px;
+      font-weight: 900;
+      color: #FFF;
+      letter-spacing: 4px;
+      margin-top: 6px;
+      text-shadow: 0 0 15px #FF4757, 0 0 25px #C0392B;
     }
 
     /* TOP CONTROLS */
@@ -747,7 +786,32 @@
       } catch (e) {}
     }
 
-    /* INK SOUND ENGINE (PENCIL & ERASER SCRATCH)[cite: 3] */
+    /* EXERCISE 1.2 PROCEDURAL SMOKE POOF SOUND[cite: 2] */
+    function playSmokePoof() {
+      try {
+        const ctx = getAudioContext();
+        const bufferSize = ctx.sampleRate * 0.25;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.05));
+        }
+        const src = ctx.createBufferSource();
+        src.buffer = buffer;
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(600, ctx.currentTime);
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.35, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+        src.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+        src.start();
+      } catch (e) {}
+    }
+
+    /* INK SOUND ENGINE[cite: 3] */
     const InkSound = {
       enabled: localStorage.getItem('humayun_ink_sound') !== 'off',
       ready: false,
@@ -1072,7 +1136,7 @@
       playMagicWhoosh(false);
       const ex = curriculumData[currentExerciseKey];
       const q = ex.questions[currentIndexMap[currentExerciseKey]];
-      if (q) saveCurrentCanvasInk(q.id);
+      if (q) flushCanvasInkImmediate(q.id);
 
       document.getElementById('activeCardContainer').style.display = 'none';
       document.getElementById('gatewayNavBtn').classList.add('hidden');
@@ -1083,7 +1147,7 @@
     function changeQuestion(direction) {
       const ex = curriculumData[currentExerciseKey];
       const curQ = ex.questions[currentIndexMap[currentExerciseKey]];
-      if (curQ) saveCurrentCanvasInk(curQ.id);
+      if (curQ) flushCanvasInkImmediate(curQ.id);
 
       let newIndex = currentIndexMap[currentExerciseKey] + direction;
       if (newIndex >= 0 && newIndex < ex.questions.length) {
@@ -1097,7 +1161,7 @@
       if (!activePages[qId]) activePages[qId] = 1;
       let targetPage = activePages[qId] + delta;
       if (targetPage >= 1 && targetPage <= 2) {
-        saveCurrentCanvasInk(qId);
+        flushCanvasInkImmediate(qId);
         activePages[qId] = targetPage;
         const ind = document.getElementById(`pageIndicator_${qId}`);
         if (ind) ind.innerText = `Pg ${targetPage} / 2`;
@@ -1105,7 +1169,7 @@
       }
     }
 
-    /* RENDER CENTERED WORKBOOK WITH GLASS BINDER AND ENLARGED BUTTONS/AVATARS */
+    /* RENDER CENTERED WORKBOOK WITH GLASS BINDER AND GENJUTSU UNBROKEN OVERLAY */
     function renderActiveCard(animate = false) {
       const container = document.getElementById('activeCardContainer');
       const ex = curriculumData[currentExerciseKey];
@@ -1119,7 +1183,14 @@
       currentInputTargetId = `ans_${q.id}`;
 
       container.innerHTML = `
-        <div class="glass-binder-container flex flex-col">
+        <div class="glass-binder-container flex flex-col relative">
+          
+          <!-- EXERCISE 1.2 FAILURE STAMP: GENJUTSU UNBROKEN OVERLAY[cite: 2] -->
+          <div class="genjutsu-failure-banner" id="genjutsuBanner">
+            <div class="genjutsu-kanji-title">幻術 UNBROKEN!</div>
+            <div class="genjutsu-subtext">TRY AGAIN!</div>
+          </div>
+
           <!-- Top Bar: Large Font Question & Readonly Answer Slot -->
           <div class="p-4 bg-slate-900 text-white border-b border-slate-700/80 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div class="flex items-center gap-3 flex-wrap">
@@ -1196,6 +1267,7 @@
                   <button onclick="setColor('${q.id}', '#2563eb')" class="w-7 h-7 rounded-full bg-blue-600 border-2 border-white shadow"></button>
                   <button onclick="setColor('${q.id}', '#dc2626')" class="w-7 h-7 rounded-full bg-red-600 border-2 border-white shadow"></button>
                 </div>
+                <!-- Toggle Dock / Undock Keypad Button -->
                 <button onclick="toggleKeypadDocking()" id="toggleKeypadBtn" class="bg-amber-600 text-white text-xs md:text-sm px-3.5 py-2 rounded-xl font-bold shadow ml-2 hover:bg-amber-500 active:scale-95">
                   ${isKeypadDocked ? '📌 Undock Keypad' : '⌨ Dock Keypad'}
                 </button>
@@ -1349,17 +1421,43 @@
       canvas.height = targetH;
       canvas.dataset.dpr = String(dpr);
 
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext('2d', { desynchronized: true, alpha: true });
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       loadCanvasInk(id, activePages[id] || 1);
     }
 
-    /* SMOOTH MIDPOINT BÉZIER CANVAS ENGINE WITH STRICT S-PEN PALM FILTERING */
+    /* HARDWARE-OPTIMIZED 120HZ S-PEN CANVAS (DESYNCHRONIZED, ZERO PALM-DOTS, DEBOUNCED IO) */
+    let inkDebounceTimer = null;
+
+    function scheduleDebouncedSave(id) {
+      clearTimeout(inkDebounceTimer);
+      inkDebounceTimer = setTimeout(() => {
+        flushCanvasInkImmediate(id);
+      }, 700);
+    }
+
+    function flushCanvasInkImmediate(id) {
+      clearTimeout(inkDebounceTimer);
+      const canvas = document.getElementById(`canvas_${id}`);
+      if (!canvas || canvas.width <= 0 || canvas.height <= 0) return;
+      const page = activePages[id] || 1;
+      const key = `humayun_ink_${id}_p${page}`;
+      try {
+        const previous = localStorage.getItem(key) || '';
+        const next = canvas.toDataURL();
+        if (previous !== next) pushUndo(key, previous);
+        localStorage.setItem(key, next);
+        localStorage.setItem(key + '_size', JSON.stringify({ w: canvas.width, h: canvas.height }));
+      } catch (_) {}
+    }
+
     function initCanvas(id, page) {
       const canvas = document.getElementById(`canvas_${id}`);
       const container = document.getElementById(`canvasArea_${id}`);
       if (!canvas || !container) return;
-      const ctx = canvas.getContext('2d');
+
+      // 1. DESYNCHRONIZED DIRECT GPU BUFFER CONTEXT
+      const ctx = canvas.getContext('2d', { desynchronized: true, alpha: true });
 
       if (!canvasStates[id]) canvasStates[id] = { tool: 'pen', color: '#0f172a' };
       syncCanvasResolution(canvas, container, id);
@@ -1412,20 +1510,23 @@
         snapshot = null;
         activePointerId = null;
         strokeTool = null;
-        saveCurrentCanvasInk(id);
+        // Offload image serialization from the immediate render loop
+        scheduleDebouncedSave(id);
       };
 
+      // HOVER SENSING: PRE-EMPTIVELY LOCK OUT CAPACITIVE TOUCH
       canvas.addEventListener('pointerenter', (e) => {
         if (e.pointerType === 'pen') lastPenSeen = Date.now();
       });
 
-      // STRICT S-PEN PALM REJECTION
+      // 2. HARDWARE STYLUS-ONLY FILTER (TRUE PALM IMMUNITY)
       canvas.addEventListener('pointerdown', (e) => {
         if (e.pointerType === 'pen') {
           lastPenSeen = Date.now();
         } else {
-          const isPalm = (e.width && e.width > 16) || (e.height && e.height > 16);
-          const penBusy = Date.now() - lastPenSeen < 1200;
+          // Reject all touch/palm events completely when S-Pen is active or contact is broad
+          const isPalm = (e.width && e.width > 14) || (e.height && e.height > 14);
+          const penBusy = Date.now() - lastPenSeen < 1400;
           if (isPalm || penBusy || activePointerId !== null) return;
         }
 
@@ -1449,58 +1550,63 @@
         }
       });
 
+      // 3. UNLOCK NATIVE 120HZ / 240HZ VIA COALESCED SUB-FRAME SENSING
       canvas.addEventListener('pointermove', (e) => {
         if (e.pointerType === 'pen') lastPenSeen = Date.now();
         if (e.pointerId !== activePointerId) return;
 
-        const pt = localXY(e);
+        // Read sub-frame hardware events to eliminate corner jaggedness
+        const rawEvents = (e.getCoalescedEvents && e.getCoalescedEvents().length) ? e.getCoalescedEvents() : [e];
 
-        if (strokeTool === 'line') {
-          if (snapshot) ctx.putImageData(snapshot, 0, 0);
-          ctx.save();
-          ctx.lineCap = 'round';
-          ctx.strokeStyle = canvasStates[id].color;
-          ctx.lineWidth = 2.5;
-          ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(pt.x, pt.y); ctx.stroke();
-          ctx.restore();
-          points = [pt];
-          return;
-        }
+        for (const ev of rawEvents) {
+          const pt = localXY(ev);
 
-        points.push(pt);
-
-        if (points.length >= 3) {
-          const p1 = points[points.length - 2];
-          const p2 = points[points.length - 1];
-          const midX = (p1.x + p2.x) / 2;
-          const midY = (p1.y + p2.y) / 2;
-
-          ctx.save();
-          ctx.lineCap = 'round';
-          ctx.lineJoin = 'round';
-
-          if (strokeTool === 'eraser') {
-            ctx.globalCompositeOperation = 'destination-out';
-            ctx.strokeStyle = '#000000';
-            ctx.lineWidth = 28;
-          } else {
-            ctx.globalCompositeOperation = 'source-over';
+          if (strokeTool === 'line') {
+            if (snapshot) ctx.putImageData(snapshot, 0, 0);
+            ctx.save();
+            ctx.lineCap = 'round';
             ctx.strokeStyle = canvasStates[id].color;
-            ctx.lineWidth = 2.5 * (0.8 + pt.p * 0.8);
+            ctx.lineWidth = 2.5;
+            ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(pt.x, pt.y); ctx.stroke();
+            ctx.restore();
+            points = [pt];
+            continue;
           }
 
-          ctx.beginPath();
-          ctx.moveTo(points[points.length - 3].x, points[points.length - 3].y);
-          ctx.quadraticCurveTo(p1.x, p1.y, midX, midY);
-          ctx.stroke();
-          ctx.restore();
+          points.push(pt);
 
-          InkSound.update(strokeTool === 'eraser' ? 'eraser' : 'pen', Math.hypot(p2.x - p1.x, p2.y - p1.y));
+          if (points.length >= 3) {
+            const p1 = points[points.length - 2];
+            const p2 = points[points.length - 1];
+            const midX = (p1.x + p2.x) / 2;
+            const midY = (p1.y + p2.y) / 2;
+
+            ctx.save();
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            if (strokeTool === 'eraser') {
+              ctx.globalCompositeOperation = 'destination-out';
+              ctx.strokeStyle = '#000000';
+              ctx.lineWidth = 28;
+            } else {
+              ctx.globalCompositeOperation = 'source-over';
+              ctx.strokeStyle = canvasStates[id].color;
+              ctx.lineWidth = 2.5 * (0.8 + pt.p * 0.8);
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(points[points.length - 3].x, points[points.length - 3].y);
+            ctx.quadraticCurveTo(p1.x, p1.y, midX, midY);
+            ctx.stroke();
+            ctx.restore();
+          }
         }
       });
 
       canvas.addEventListener('pointerup', (e) => {
         if (e.pointerId === activePointerId) {
+          // Single deliberate tap (no movement) renders a clean dot
           if (points.length <= 2 && strokeTool !== 'line') {
             const pt = points[0] || localXY(e);
             ctx.save();
@@ -1525,7 +1631,7 @@
       const c = document.getElementById(`lineCanvas_${qId}`);
       const w = document.getElementById(`lineWrapper_${qId}`);
       if (!c || !w) return;
-      const ctx = c.getContext('2d');
+      const ctx = c.getContext('2d', { desynchronized: true });
       const dpr = window.devicePixelRatio || 1;
       const rect = w.getBoundingClientRect();
 
@@ -1639,20 +1745,6 @@
       img.src = saved;
     }
 
-    function saveCurrentCanvasInk(id) {
-      const canvas = document.getElementById(`canvas_${id}`);
-      if (!canvas || canvas.width <= 0 || canvas.height <= 0) return;
-      const page = activePages[id] || 1;
-      const key = `humayun_ink_${id}_p${page}`;
-      try {
-        const previous = localStorage.getItem(key) || '';
-        const next = canvas.toDataURL();
-        if (previous !== next) pushUndo(key, previous);
-        localStorage.setItem(key, next);
-        localStorage.setItem(key + '_size', JSON.stringify({ w: canvas.width, h: canvas.height }));
-      } catch (_) {}
-    }
-
     function setTool(id, tool) {
       canvasStates[id].tool = tool;
       ['pen', 'line', 'eraser'].forEach(t => {
@@ -1711,7 +1803,7 @@
     function closeBinder(id) {
       playMagicWhoosh(false);
       binderOpenedMap[id] = false;
-      saveCurrentCanvasInk(id);
+      flushCanvasInkImmediate(id);
       document.getElementById(`binderCover_${id}`).classList.remove('binder-open');
     }
 
@@ -1729,13 +1821,22 @@
       return !isNaN(na) && !isNaN(nb) && Math.abs(na - nb) < 1e-7;
     }
 
+    /* EVALUATION HANDLER: EX 1.2 "GENJUTSU UNBROKEN" SYSTEM REPLACES STATIC ALERT[cite: 2] */
     function checkAnswer(id, correctAnswer) {
       const val = document.getElementById(`ans_${id}`).value;
-      saveCurrentCanvasInk(id);
+      flushCanvasInkImmediate(id);
       if (answersMatch(val, correctAnswer)) {
         triggerGrandCelebration();
       } else {
-        alert("Not quite yet! Check your division steps or remainder calculations on the graph paper and try again.");
+        // EXERCISE 1.2 CINEMATIC FAILURE SEQUENCE[cite: 2]
+        playSmokePoof();
+        const banner = document.getElementById('genjutsuBanner');
+        if (banner) {
+          banner.classList.add('active');
+          setTimeout(() => {
+            banner.classList.remove('active');
+          }, 1300);
+        }
       }
     }
 
@@ -1861,7 +1962,7 @@
       try {
         const ex = curriculumData[currentExerciseKey];
         const q = ex.questions[currentIndexMap[currentExerciseKey]];
-        if (q) saveCurrentCanvasInk(q.id);
+        if (q) flushCanvasInkImmediate(q.id);
       } catch (_) {}
 
       if (window.parent && window.parent !== window) {
