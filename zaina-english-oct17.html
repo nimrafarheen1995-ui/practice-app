@@ -140,6 +140,18 @@
         .page-chip { background: rgba(15,23,42,0.9); color: #fde68a; font-size: 15px; font-weight: 800; padding: 8px 14px; border-radius: 999px; display: inline-flex; align-items: center; gap: 6px; }
         .heidi-emboss-br { position: absolute; right: 10px; bottom: 10px; width: 110px; height: 110px; object-fit: contain; opacity: 0.45; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.25)); pointer-events: none; z-index: 0; }
         .corner-row { display: flex; justify-content: flex-end; gap: 8px; padding-top: 4px; flex-shrink: 0; }
+        /* v8: black letters with a soft white glow */
+        .sec-wrap { color: #0F172A; text-shadow: 0 0 6px rgba(255,255,255,0.95), 0 0 14px rgba(255,255,255,0.75); }
+        .sec-head h2, .sec-sub, .row-head { color: #0F172A; }
+        .row-card { color: #0F172A; text-shadow: 0 0 6px rgba(255,255,255,0.95), 0 0 14px rgba(255,255,255,0.75); }
+        .opt-btn { color: #0F172A; text-shadow: none; background: rgba(255,255,255,0.72); border-color: rgba(255,255,255,0.9); box-shadow: 0 0 10px rgba(255,255,255,0.8); }
+        .corner-btn, .pill-btn, .top-btn { text-shadow: none; }
+        /* glow only when a writing box is tapped (gold) */
+        .inline-strip-box { transition: box-shadow 0.25s ease, border-color 0.25s ease; }
+        .inline-strip-box.glow { box-shadow: 0 0 0 3px #FACC15, 0 0 22px 6px rgba(250,204,21,0.75); border-color: #FACC15; }
+        /* tools: 🛠️ with the drawer, and Close sits below it */
+        .tools-right { flex-direction: column; align-items: flex-end; }
+        .tools-row { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
         /* GLASS BINDER: see-through, so the writing underneath stays visible */
         .binder-cover { position: absolute; inset: 0; z-index: 30; border-radius: 8px 24px 24px 8px; cursor: pointer; transition: transform 0.75s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.45s ease; transform-origin: 0% 50%; transform-style: preserve-3d; background: linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.06) 55%, rgba(255,255,255,0.16)); backdrop-filter: blur(2px) saturate(120%); -webkit-backdrop-filter: blur(2px) saturate(120%); border: 2px solid rgba(255,255,255,0.7); box-shadow: 0 20px 50px rgba(0,0,0,0.35), inset 0 0 40px rgba(255,255,255,0.12); padding: 24px 24px 24px 60px; color: #fff; display: flex; flex-direction: column; justify-content: space-between; }
         .binder-cover::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 34px; background: rgba(15,23,42,0.45); border-right: 2px solid rgba(255,255,255,0.55); z-index: 5; border-radius: 8px 0 0 8px; }
@@ -712,6 +724,7 @@
     function setModeAndRedraw(practice) {
         saveAllInkNow();
         isPracticeMode = practice;
+        writeOrders = practice ? null : makeWriteOrders();
         renderActiveCard(false);
     }
     function handleModeSelect(target) {
@@ -754,7 +767,6 @@
         const w = typeof width === 'number' ? width + 'px' : width;
         return `
           <div class="inline-strip-box two-line-canvas-wrap ${big ? 'big' : ''}" style="width:${w};">
-            <span class="inline-ghost-text" style="display:${isPracticeMode ? 'block' : 'none'};">${answer}</span>
             <canvas id="inlineCanvas_${id}" oncontextmenu="return false;" class="absolute inset-0 w-full h-full cursor-crosshair touch-none z-10"></canvas>
             <div class="absolute right-2 top-1/2 -translate-y-1/2 z-20 flex items-center gap-1">
               <button type="button" class="icon-strip" onclick="undoInlineInk('${id}')" aria-label="Undo">${ICON_UNDO}</button>
@@ -831,9 +843,48 @@
     ];
 
     /* Meanings and Opposites are bigger: one row per line, bigger text and strips */
-    const meaningsRows = (from, to) => MEANINGS.slice(from, to).map((m, i) =>
-        rowHTML('m_' + (from + i + 1), readable(from + i + 1, m[0]), m[1], m[2], 'text-emerald-900', '100%', true)).join('');
-
+    /* Write mode shuffles each list once per visit to a section (Answer in Brief is not shuffled) */
+    let writeOrders = null;
+    function shuffleIdx(n) {
+        const a = [...Array(n).keys()];
+        for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+        return a;
+    }
+    function makeWriteOrders() {
+        const o = { m1: shuffleIdx(7), m2: shuffleIdx(7), opp: shuffleIdx(6), past: shuffleIdx(5), homo: shuffleIdx(2), stem: shuffleIdx(3), mcq: shuffleIdx(3) };
+        for (let q = 0; q < 3; q++) o['mcqopt' + q] = shuffleIdx(4);
+        return o;
+    }
+    function ord(key, n) {
+        if (!isPracticeMode && writeOrders && writeOrders[key]) return writeOrders[key];
+        return [...Array(n).keys()];
+    }
+    const meaningsRows = (from, to) => {
+        const key = from === 0 ? 'm1' : 'm2';
+        const items = MEANINGS.slice(from, to);
+        return ord(key, items.length).map((oi, pos) => {
+            const m = items[oi];
+            return rowHTML('m_' + (from + oi + 1), readable(from + pos + 1, m[0]), m[1], m[2], 'text-emerald-900', '100%', true);
+        }).join('');
+    };
+    const HOMO = [
+        { n: 1, title: 'sweet / suite', a: ['Hotel has a ________ of rooms.', 'suite'], b: ['She has a ________ voice.', 'sweet'] },
+        { n: 2, title: 'aisle / isle', a: ['Remote ________ in West Indies.', 'isle'], b: ['Prefer an ________ seat?', 'aisle'] }
+    ];
+    const STEMS = [['st _ _ _', 'stone'], ['categ _ _ _', 'category'], ['fact _ _ _', 'factory']];
+    const MCQ_QS = [
+        { t: 'Grandmother was surprised that Heidi...', o: ['could not read.', 'was unable to learn the alphabet.', 'did not want to learn the alphabet.', 'had no interest in reading.'], c: 0 },
+        { t: 'Heidi had decided that she would not be able to read as...', o: ['she found it very difficult.', 'she knew she was incapable of doing so.', 'Peter had told her that it was not easy to learn to read.', 'she wanted to defy Grandmother.'], c: 2 },
+        { t: 'Grandmother promised Heidi that once she learnt to read...', o: ['she could have the large book with pictures.', 'she could read from the large book.', 'she could read to Clara.', 'she would never cry on seeing the pictures.'], c: 1 }
+    ];
+    const mcqBlock = (qi, pos) => {
+        const q = MCQ_QS[qi];
+        const oo = ord('mcqopt' + qi, 4);
+        return `<div class="row-card">
+            <p class="font-bold mb-1">${pos + 1}. ${q.t}</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">${oo.map((oi, p) => `<button onclick="pickMCQ(this, ${oi === q.c})" class="opt-btn">${'abcd'[p]}. ${q.o[oi]}</button>`).join('')}</div>
+        </div>`;
+    };
     const subStageMap = { treasury: 0, grammar: 0, words: 0 };
     function changeSubStage(key, delta) { playMagicWhoosh(true); saveVisibleInlineInk(); subStageMap[key] += delta; renderActiveCard(false); }
 
@@ -853,49 +904,38 @@
             stages: [
                 { title: 'Meanings Glossary (Part 1)', render: () => `<div class="flex flex-col gap-3">${meaningsRows(0, 7)}</div>` },
                 { title: 'Meanings Glossary (Part 2)', render: () => `<div class="flex flex-col gap-3">${meaningsRows(7, 14)}</div>` },
-                { title: 'Opposites (6 Pairs)', render: () => `<div class="flex flex-col gap-3">${OPPOSITES.map((o, i) =>
-                    rowHTML('opp_' + (i + 1), readable(i + 1, o[0], ' ↔'), o[1], o[2], 'text-rose-900', '100%', true)).join('')}</div>` }
+                { title: 'Opposites (6 Pairs)', render: () => `<div class="flex flex-col gap-3">${ord('opp', 6).map((oi, pos) => {
+                    const o = OPPOSITES[oi];
+                    return rowHTML('opp_' + (oi + 1), readable(pos + 1, o[0], ' X'), o[1], o[2], 'text-rose-900', '100%', true);
+                }).join('')}</div>` }
             ]
         },
         grammar: {
             realmName: 'Grammar & Verb Tenses',
             stages: [
-                { title: 'Story Reading MCQs', render: () => {
-                    const mcq = (text, opts, correct) => `<div class="row-card">
-                        <p class="font-bold mb-1">${text}</p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">${opts.map((o, i) => `<button onclick="pickMCQ(this, ${i === correct})" class="opt-btn">${'abcd'[i]}. ${o}</button>`).join('')}</div>
-                    </div>`;
-                    return `<div class="flex flex-col gap-3 text-sm">
-                        ${mcq('1. Grandmother was surprised that Heidi...', ['could not read.', 'was unable to learn the alphabet.', 'did not want to learn the alphabet.', 'had no interest in reading.'], 0)}
-                        ${mcq('2. Heidi had decided that she would not be able to read as...', ['she found it very difficult.', 'she knew she was incapable of doing so.', 'Peter had told her that it was not easy to learn to read.', 'she wanted to defy Grandmother.'], 2)}
-                        ${mcq('3. Grandmother promised Heidi that once she learnt to read...', ['she could have the large book with pictures.', 'she could read from the large book.', 'she could read to Clara.', 'she would never cry on seeing the pictures.'], 1)}
-                    </div>`;
-                } },
-                { title: 'Simple Past Tense Sentences', render: () => `
-                    <div class="flex flex-col gap-3 text-sm">${PAST.map((p, i) =>
-                        rowHTML('past_' + (i + 1), `${i + 1}. ${p[0]}`, p[1], p[2], 'text-indigo-900', p[3] || 450)).join('')}</div>` }
+                { title: 'Story Reading MCQs', render: () => `<div class="flex flex-col gap-3 text-sm">${ord('mcq', 3).map((qi, pos) => mcqBlock(qi, pos)).join('')}</div>` },
+                { title: 'Simple Past Tense Sentences', render: () => `<div class="flex flex-col gap-3 text-sm">${ord('past', 5).map((pi, pos) => {
+                    const p = PAST[pi];
+                    return rowHTML('past_' + (pi + 1), `${pos + 1}. ${p[0]}`, p[1], p[2], 'text-indigo-900', p[3] || 450);
+                }).join('')}</div>` }
             ]
         },
         words: {
             realmName: 'Homophone Forge & Stems',
             stages: [
                 { title: 'Homophone Pairs', render: () => {
-                    const pair = (n, title, a, b) => `
+                    const pair = (pos, h) => `
                       <div class="row-card">
-                        <span class="font-bold text-amber-900">${n}. ${title}</span>
-                        <div class="row-head"><span class="row-prompt">a. ${a[0]}</span>${holdWord(a[1], '', 'text-amber-900')}</div>
-                        ${createInlineStrip('homo_' + n + 'a', a[1], 420)}
-                        <div class="row-head mt-1"><span class="row-prompt">b. ${b[0]}</span>${holdWord(b[1], '', 'text-amber-900')}</div>
-                        ${createInlineStrip('homo_' + n + 'b', b[1], 420)}
+                        <span class="font-bold">${pos + 1}. ${h.title}</span>
+                        <div class="row-head"><span class="row-prompt">a. ${h.a[0]}</span>${holdWord(h.a[1], '', '')}</div>
+                        ${createInlineStrip('homo_' + h.n + 'a', h.a[1], 420)}
+                        <div class="row-head mt-1"><span class="row-prompt">b. ${h.b[0]}</span>${holdWord(h.b[1], '', '')}</div>
+                        ${createInlineStrip('homo_' + h.n + 'b', h.b[1], 420)}
                       </div>`;
-                    return `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        ${pair(1, 'sweet / suite', ['Hotel has a ________ of rooms.', 'suite'], ['She has a ________ voice.', 'sweet'])}
-                        ${pair(2, 'aisle / isle', ['Remote ________ in West Indies.', 'isle'], ['Prefer an ________ seat?', 'aisle'])}
-                    </div>`;
+                    return `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${ord('homo', 2).map((hi, pos) => pair(pos, HOMO[hi])).join('')}</div>`;
                 } },
-                { title: 'Meaningful Word Stems', render: () => `
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">${[['st _ _ _', 'stone'], ['categ _ _ _', 'category'], ['fact _ _ _', 'factory']].map((s, i) =>
-                        rowHTML('stem_' + (i + 1), `${i + 1}. ${s[0]}`, s[1], '', 'text-cyan-900', 260)).join('')}</div>` }
+                { title: 'Meaningful Word Stems', render: () => `<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">${ord('stem', 3).map((si, pos) =>
+                    rowHTML('stem_' + (si + 1), `${pos + 1}. ${STEMS[si][0]}`, STEMS[si][1], '', 'text-cyan-900', 260)).join('')}</div>` }
             ]
         },
         comprehension: {
@@ -919,6 +959,7 @@
     function switchRealm(key) {
         playMagicWhoosh(true);
         currentRealmKey = key;
+        writeOrders = isPracticeMode ? null : makeWriteOrders();
         document.getElementById('gatewayView').classList.add('hidden');
         document.getElementById('activeCardContainer').classList.remove('hidden');
         document.getElementById('gatewayNavBtn').classList.remove('hidden');
@@ -926,6 +967,7 @@
     }
     function returnToGateway() {
         playMagicWhoosh(false);
+        writeOrders = null;
         saveVisibleInlineInk();
         if (currentRealmKey === 'comprehension') { const q = englishCurriculum.comprehension.questions[currentQuestionIdx]; if (q) saveCurrentCanvasInk(q.id); }
         document.getElementById('activeCardContainer').classList.add('hidden');
@@ -1024,6 +1066,7 @@
                     </div>
 
                     <div class="tools-right">
+                        <div class="tools-row">
                         <div class="tool-drawer" id="toolDrawer_${q.id}">
                         <div class="page-chip">
                             <button onclick="switchPageSmoothly('${q.id}', -1)" style="background:none;border:0;color:#fde68a;cursor:pointer;font-size:18px;">◀</button>
@@ -1037,9 +1080,10 @@
                             <button class="swatch" style="background:#1e1b4b" onclick="setColor('${q.id}', '#1e1b4b')" title="Dark ink"></button>
                             <button class="swatch" style="background:#2563eb" onclick="setColor('${q.id}', '#2563eb')" title="Blue ink"></button>
                             <button class="swatch" style="background:#dc2626" onclick="setColor('${q.id}', '#dc2626')" title="Red ink"></button>
-                            <button onclick="closeBinder('${q.id}')" title="Close notebook">📕</button>
                         </div>
                         <button class="tools-toggle" id="toolsToggle_${q.id}" onclick="toggleToolDrawer('${q.id}')" title="Tools" aria-label="Tools">🛠️</button>
+                        </div>
+                        <button class="tool-chip" onclick="closeBinder('${q.id}')">📕 Close</button>
                     </div>
 
                     <div id="binderCover_${q.id}" class="binder-cover ${isBinderOpen ? 'binder-open' : ''}" onclick="openBinder('${q.id}')">
@@ -1081,6 +1125,9 @@
     }
 
     /* INLINE STRIP INK ENGINE */
+    document.addEventListener('pointerdown', e => {
+        if (!e.target.closest || !e.target.closest('.inline-strip-box')) document.querySelectorAll('.inline-strip-box.glow').forEach(b => b.classList.remove('glow'));
+    }, true);
     const inlineUndo = {};
     const inlineToken = {};
     function inlineKey(id) { return 'zaina_eng_inline_' + modeTag() + '_' + id; }
@@ -1130,6 +1177,8 @@
         const xy = e => { const r = canvas.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
 
         canvas.onpointerdown = e => {
+            document.querySelectorAll('.inline-strip-box.glow').forEach(b => b.classList.remove('glow'));
+            canvas.parentElement.classList.add('glow');
             if (drawing) return;
             if (e.pointerType !== 'pen' && !fingerAllowed(e)) return;
             if (e.pointerType === 'pen') penSeenAt = Date.now();
