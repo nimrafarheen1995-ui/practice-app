@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+    <title>Zaina's Magical English Adventure: Heidi Learns to Read</title>
+
+    <!-- Hardware Preload Links for Galaxy S-Series Tablets -->
+    <link rel="preload" as="image" href="assets/heidi-main.webp"/>
+    <link rel="preload" as="image" href="assets/heidi-reading.webp"/>
+    <link rel="preload" as="image" href="assets/heidi-alps-bg.webp"/>
+    <link rel="preload" as="image" href="assets/alps-badge.webp"/>
+    <link rel="preload" as="image" href="assets/twilight.png"/>
+    <link rel="preload" as="image" href="assets/fluttershy.png"/>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Quicksand:wght@500;700;800&family=Fredoka:wght@600;700;800&family=Kalam:wght@700&family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --twilight: #8B5CF6;
+            --pinkie: #EC4899;
+            --rainbow: #0EA5E9;
+            --celestia: #F59E0B;
+            --font-main: 'Quicksand', sans-serif;
+            --font-display: 'Fredoka', cursive, sans-serif;
+            --font-hand: 'Kalam', cursive, sans-serif;
+            --active-pen-color: #1e1b4b;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            font-family: var(--font-main);
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: #0B0F19;
+            color: #1E1B4B;
+            touch-action: pan-x pan-y;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* AMBIENT PANORAMIC BACKDROP */
+        .ambient-backdrop-wrap {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .ambient-backdrop {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.65) contrast(1.1);
+        }
+
+        #milkyWayCanvas, #confettiSnowCanvas {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+        }
+        #milkyWayCanvas { z-index: 1; }
+        #confettiSnowCanvas { z-index: 99999; }
+
+        /* GRADUATED SCREEN DIM OVERLAY (0% TO 50%) */
+        #screenDimOverlay {
+            position: fixed;
+            inset: 0;
+            background: #000000;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 99998;
+            transition: opacity 0.2s ease;
+        }
+
+        .font-display { font-family: var(--font-display); }
+        .font-hand { font-family: var(--font-hand); }
+
+        /* Ruled Lined Paper Pattern for English */
+        .lined-paper {
+            background-color: #fffef8;
+            background-image: 
+                linear-gradient(to right, transparent 58px, #ef4444 58px, #ef4444 60px, transparent 60px),
+                repeating-linear-gradient(to bottom, transparent 0px, transparent 31px, #cbd5e1 31px, #cbd5e1 32px);
+            background-size: 100% 32px;
+        }
+
+        /* ==========================================================
+           6D SWIPEABLE CAROUSEL STAGE FOR MAIN GATEWAY
+        ========================================================== */
+        .stage-6d-wrapper {
+            perspective: 1600px;
+            perspective-origin: center center;
+            width: 100%;
+            height: 380px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: visible;
+            user-select: none;
+        }
+
+        .carousel-6d-track {
+            position: relative;
+            width: 310px;
+            height: 350px;
+            transform-style: preserve-3d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .carousel-6d-card {
+            position: absolute;
+            width: 310px;
+            height: 350px;
+            border-radius: 26px;
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(18px);
+            border: 3.5px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.6);
+            transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease, filter 0.45s ease;
+            cursor: pointer;
+            will-change: transform, opacity;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        .carousel-6d-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.4) 48%, rgba(255,255,255,0.05) 54%, transparent 70%);
+            pointer-events: none;
+        }
+
+        /* 6D Positional Transforms (4 Cards Orbit) */
+        .carousel-6d-card.pos-front {
+            transform: translate3d(0, 0, 45px) rotateY(0deg) scale(1);
+            opacity: 1;
+            z-index: 20;
+            filter: drop-shadow(0 15px 30px rgba(139, 92, 246, 0.45));
+            pointer-events: auto;
+        }
+        .carousel-6d-card.pos-left {
+            transform: translate3d(-240px, 0, -220px) rotateY(32deg) scale(0.82);
+            opacity: 0.45;
+            z-index: 10;
+            filter: blur(2px) grayscale(20%);
+            pointer-events: auto;
+        }
+        .carousel-6d-card.pos-right {
+            transform: translate3d(240px, 0, -220px) rotateY(-32deg) scale(0.82);
+            opacity: 0.45;
+            z-index: 10;
+            filter: blur(2px) grayscale(20%);
+            pointer-events: auto;
+        }
+        .carousel-6d-card.pos-back {
+            transform: translate3d(0, 0, -420px) rotateY(180deg) scale(0.65);
+            opacity: 0;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .gateway-avatar-6d {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: contain;
+            border: 3.5px solid #DDD6FE;
+            background: #FFF;
+            padding: 4px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+            transition: transform 0.3s ease;
+            pointer-events: none;
+        }
+        .carousel-6d-card:hover .gateway-avatar-6d {
+            transform: scale(1.1) rotate(4deg);
+        }
+
+        /* 3D Binder Cover in Active Workspace */
+        .card-4d-wrapper { perspective: 1600px; }
+        .card-4d {
+            box-shadow: 0 25px 50px -12px rgba(30, 27, 75, 0.45), 0 0 30px rgba(139, 92, 246, 0.3);
+            transition: box-shadow 0.3s ease;
+        }
+        .page-flip-anim { animation: pageFlip4d 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
+        @keyframes pageFlip4d {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: none; }
+        }
+
+        .binder-cover {
+            transition: transform 0.75s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.45s ease;
+            transform-origin: 0% 50%;
+            transform-style: preserve-3d;
+            backdrop-filter: blur(4px);
+            background-image: linear-gradient(135deg, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0.06) 45%, rgba(255,255,255,0.18) 50%, rgba(0,0,0,0.22) 100%);
+            box-shadow: inset 0 0 50px rgba(255,255,255,0.28), 0 30px 60px -12px rgba(30, 27, 75, 0.65);
+        }
+        .binder-cover::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.22) 45%, rgba(255,255,255,0.04) 52%, transparent 65%);
+            pointer-events: none;
+            z-index: 4;
+        }
+        .binder-cover::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0; bottom: 0;
+            width: 34px;
+            background: linear-gradient(90deg, #0f172a 0%, #1f2937 55%, #374151 85%, #111827 100%);
+            border-right: 3px solid rgba(255,255,255,0.35);
+            box-shadow: inset -3px 0 6px rgba(0,0,0,0.6), 3px 0 10px rgba(0,0,0,0.35);
+            z-index: 5;
+        }
+        .notebook-spine-rings {
+            position: absolute;
+            left: 27px;
+            top: 16px;
+            bottom: 16px;
+            width: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .spiral-ring {
+            width: 18px;
+            height: 10px;
+            border-radius: 6px;
+            background: linear-gradient(135deg, #ffffff 0%, #d1d5db 45%, #6b7280 80%, #1f2937 100%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.65), inset 0 1px 2px rgba(255,255,255,0.9);
+        }
+        .binder-open {
+            transform: perspective(1400px) rotateY(-118deg) rotateX(8deg) translateZ(20px);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .composition-label-box {
+            background-color: #fffef8;
+            background-image: repeating-linear-gradient(
+                to bottom,
+                transparent 0px,
+                transparent 25px,
+                rgba(59, 130, 246, 0.28) 25px,
+                rgba(59, 130, 246, 0.28) 26px
+            );
+            position: relative;
+        }
+        .composition-label-box::before {
+            content: '';
+            position: absolute;
+            top: 0; bottom: 0; left: 26px;
+            width: 4px;
+            border-left: 1.5px solid rgba(239, 68, 68, 0.65);
+            border-right: 1.5px solid rgba(239, 68, 68, 0.65);
+            pointer-events: none;
+        }
+
+        /* EMBOSSED HEIDI WATERMARK BESIDE CANVAS TOOLS */
+        .embossed-heidi-watermark {
+            position: absolute;
+            left: 70px;
+            top: 10px;
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            opacity: 0.38;
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.18)) grayscale(15%);
+            pointer-events: none;
+            z-index: 5;
+            transition: opacity 0.3s;
+        }
+
+        /* EXPANDABLE TOOL DRAWER TOGGLE (HUMAYUN STYLE) */
+        .floating-tool-drawer {
+            display: flex;
+            align-items: center;
+            background: rgba(30, 27, 75, 0.95);
+            backdrop-filter: blur(14px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 999px;
+            padding: 4px 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            gap: 6px;
+            z-index: 30;
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .tool-drawer-collapsed .drawer-items-group {
+            display: none;
+        }
+
+        /* GRAMMAR INTERACTIVE WORD PARSER */
+        .grammar-word {
+            display: inline-block;
+            padding: 2px 6px;
+            margin: 2px 2px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s;
+            user-select: none;
+        }
+        .grammar-word:hover { background: rgba(224, 231, 255, 0.8); }
+        .grammar-word.state-aux {
+            border-bottom: 3.5px solid #F59E0B;
+            background: #FEF3C7;
+            font-weight: 800;
+            color: #B45309;
+        }
+        .grammar-word.state-main {
+            border: 2.5px solid #8B5CF6;
+            background: #F3E8FF;
+            font-weight: 800;
+            color: #6D28D9;
+            border-radius: 999px;
+        }
+
+        /* Grand Celebration Stage */
+        #grandCelebrationStage {
+            position: fixed;
+            inset: 0;
+            z-index: 100000;
+            pointer-events: none;
+            display: none;
+            overflow: hidden;
+            background: radial-gradient(circle at center, rgba(30, 27, 75, 0.65) 0%, rgba(7, 11, 20, 0.95) 100%);
+            backdrop-filter: blur(6px);
+        }
+        #grandFinaleCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+        }
+        .magic-banner-centerpiece {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 25;
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+        }
+        .magic-banner-centerpiece.impact {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+        .magic-crown-halo {
+            position: absolute;
+            width: 460px;
+            height: 460px;
+            border-radius: 50%;
+            border: 28px solid transparent;
+            border-top-color: rgba(244, 114, 182, 0.8);
+            border-right-color: rgba(192, 132, 252, 0.75);
+            border-bottom-color: rgba(56, 189, 248, 0.5);
+            border-left-color: rgba(253, 224, 71, 0.7);
+            filter: drop-shadow(0 0 35px rgba(236, 72, 153, 0.7));
+            transform: rotate(-25deg);
+        }
+        .magic-top-title {
+            font-family: var(--font-display);
+            font-size: 52px;
+            font-weight: 900;
+            color: #FDF2F8;
+            text-shadow: 0 0 25px #EC4899, 0 0 50px #8B5CF6, 0 4px 8px rgba(0,0,0,0.8);
+            letter-spacing: 4px;
+            text-align: center;
+        }
+        .magic-subtitle-sparkle {
+            font-family: 'Cinzel', serif;
+            font-size: 20px;
+            font-weight: 900;
+            color: #FEF08A;
+            letter-spacing: 5px;
+            margin-top: 8px;
+            text-shadow: 0 0 16px rgba(250, 204, 21, 0.9);
+            text-align: center;
+        }
+        .gliding-companion-rocket {
+            position: absolute;
+            width: 190px;
+            height: 190px;
+            z-index: 20;
+            pointer-events: none;
+            transform: rotate(12deg);
+            filter: drop-shadow(0 0 28px rgba(255, 255, 255, 0.9));
+        }
+        .gliding-companion-rocket img { width: 100%; height: 100%; object-fit: contain; }
+
+        .royal-scroll-landing-right {
+            position: absolute;
+            top: 50%;
+            right: 40px;
+            transform: translateY(-50%) translateX(240px);
+            width: 480px;
+            z-index: 30;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            opacity: 0;
+            transition: transform 0.65s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.5s ease;
+            pointer-events: none;
+        }
+        .royal-scroll-landing-right.landed {
+            transform: translateY(-50%) translateX(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .royal-unfurled-scroll {
+            flex: 1;
+            background: #FFFDF0;
+            border: 4px solid #F59E0B;
+            border-radius: 20px;
+            padding: 18px 22px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            color: #1E293B;
+        }
+        .royal-scroll-title {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #B45309;
+            border-bottom: 2px dashed #FCD34D;
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+        }
+        .royal-scroll-body {
+            font-size: 0.92rem;
+            font-weight: 800;
+            line-height: 1.55;
+            color: #334155;
+            margin-bottom: 12px;
+        }
+        .royal-btn-continue {
+            background: linear-gradient(135deg, #10B981, #059669);
+            border: 2px solid #86EFAC;
+            color: #FFF;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 0.92rem;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+        .royal-victory-companion {
+            width: 150px;
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .royal-victory-companion img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        .icon-pill-btn {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.35);
+            color: #FFFFFF;
+            font-size: 1.05rem;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+            text-decoration: none;
+            transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .icon-pill-btn:hover { transform: scale(1.08); background: rgba(30, 41, 59, 0.95); }
+        .icon-pill-btn:active { transform: scale(0.94); }
+
+        .workspace-h { height: clamp(450px, 74vh, 900px); }
+        @media (min-width: 900px) {
+            #activeCardContainer:not(.hidden) { display: flex; justify-content: center; }
+            #activeCardContainer > div { width: min(100%, 1120px); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col relative overflow-hidden">
+
+    <!-- PANORAMIC SWISS ALPS BACKDROP -->
+    <div class="ambient-backdrop-wrap">
+        <img src="assets/heidi-alps-bg.webp" class="ambient-backdrop" alt="Alps Background" onerror="this.style.display='none'"/>
+    </div>
+
+    <canvas id="milkyWayCanvas"></canvas>
+    <canvas id="confettiSnowCanvas"></canvas>
+    <div id="screenDimOverlay"></div>
+
+    <!-- GRAND CELEBRATION STAGE -->
+    <div id="grandCelebrationStage">
+        <canvas id="grandFinaleCanvas"></canvas>
+        <div class="magic-banner-centerpiece" id="magicCenterpiece">
+            <div class="magic-crown-halo"></div>
+            <div class="magic-top-title">✨ EXCELLENT! ✨</div>
+            <div class="magic-subtitle-sparkle">ROYAL ENGLISH SCHOLAR!</div>
+        </div>
+        <div class="gliding-companion-rocket" id="glidingCompanionRocket">
+            <img src="assets/heidi-main.webp" id="glidingCompanionImg" alt="Heidi" onerror="handleImageFallback(this)">
+        </div>
+        <div class="royal-scroll-landing-right" id="royalScrollLandingRight">
+            <div class="royal-unfurled-scroll">
+                <div class="flex items-center gap-3 border-b-2 border-amber-300 pb-2 mb-2">
+                    <img src="assets/alps-badge.webp" class="w-10 h-10 object-contain" alt="Badge" onerror="handleImageFallback(this)"/>
+                    <div class="royal-scroll-title m-0 p-0 border-0" id="royalScrollTitle">🌟 SECTION VERIFIED! 🌟</div>
+                </div>
+                <div class="royal-scroll-body" id="royalScrollBody">
+                    Outstanding work, Zaina! Your reading and grammar work is thoroughly accurate!
+                </div>
+                <button class="royal-btn-continue" onclick="closeGrandCelebration()">Continue Journey ➔</button>
+            </div>
+            <div class="royal-victory-companion">
+                <img src="assets/heidi-reading.webp" id="royalVictoryImg" alt="Victory Reading" onerror="handleImageFallback(this)">
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Header Bar -->
+    <header class="relative z-20 bg-slate-900/85 backdrop-blur-md border-b border-white/10 text-white shadow-lg py-2.5 px-6 flex justify-between items-center shrink-0">
+        <div class="flex items-center gap-3">
+            <a href="index.html" class="icon-pill-btn" title="Exit to Hub" onclick="exitToHub(event)">🏰</a>
+            <div class="flex flex-col">
+                <h1 class="text-base md:text-xl font-bold font-display tracking-wide flex items-center gap-2">
+                    ✨ Zaina's Magical English <span class="bg-rose-500/30 border border-rose-400 text-rose-200 text-xs px-2.5 py-0.5 rounded-full">Heidi Learns to Read</span>
+                </h1>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <!-- Dim Slider (0% - 50%) -->
+            <div class="flex items-center gap-2 bg-slate-800/80 border border-white/20 rounded-full px-3 py-1 text-xs">
+                <span>💡 Dim:</span>
+                <input type="range" id="dimRangeSlider" min="0" max="0.5" step="0.05" value="0" 
+                       oninput="updateScreenDimLevel(this.value)" 
+                       class="w-16 md:w-20 accent-amber-400 cursor-pointer">
+                <span id="dimPctLabel" class="w-7 font-bold text-amber-300">0%</span>
+            </div>
+
+            <button class="icon-pill-btn" id="inkSoundBtn" onclick="toggleInkSound()" title="Sound On/Off">🔊</button>
+            <button onclick="returnToGateway()" id="gatewayNavBtn" class="hidden bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs px-3.5 py-2 rounded-xl shadow transition flex items-center gap-1.5 border border-purple-400 cursor-pointer">
+                🏰 Chapter Realms
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center relative z-10 overflow-hidden">
+        
+        <!-- VIEW 1: 6D SWIPEABLE REALM CAROUSEL (4 CHAPTER TOWERS) -->
+        <div id="gatewayView" class="w-full flex flex-col items-center gap-4">
+            <div class="text-center">
+                <h2 class="text-2xl md:text-3xl font-bold font-display text-white drop-shadow-md">Heidi's Swiss Alps Academy</h2>
+                <p class="text-rose-200 text-xs md:text-sm mt-0.5">Swipe or tap a card to explore each English study realm</p>
+            </div>
+
+            <!-- 6D Carousel Stage -->
+            <div class="stage-6d-wrapper" id="carousel6DStage">
+                <div class="carousel-6d-track" id="carousel6DTrack">
+                    
+                    <!-- Card 0: Realm 1 - Vocabulary & Opposites -->
+                    <div class="carousel-6d-card pos-front" id="card6d_0" onclick="handleCardTap(0)">
+                        <div class="flex flex-col items-center pointer-events-none">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-700 bg-emerald-100 px-3 py-0.5 rounded-full">Realm I • Lexicon</span>
+                            <h3 class="text-xl font-bold text-slate-900 mt-2 font-display">Word Box & Opposites</h3>
+                            <p class="text-xs text-slate-600 mt-1">Meanings, Flashcards & 6 Opposites</p>
+                        </div>
+                        <img src="assets/heidi-main.webp" class="gateway-avatar-6d" alt="Heidi" onerror="handleImageFallback(this)"/>
+                        <button type="button" onclick="switchRealm('vocab')" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-lg transition active:scale-95 cursor-pointer">
+                            Enter Realm ➔
+                        </button>
+                    </div>
+
+                    <!-- Card 1: Realm 2 - Grammar & Tenses -->
+                    <div class="carousel-6d-card pos-right" id="card6d_1" onclick="handleCardTap(1)">
+                        <div class="flex flex-col items-center pointer-events-none">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-700 bg-indigo-100 px-3 py-0.5 rounded-full">Realm II • Grammar</span>
+                            <h3 class="text-xl font-bold text-slate-900 mt-2 font-display">Grammar & Tenses</h3>
+                            <p class="text-xs text-slate-600 mt-1">Past Tense, Present Tense & Verbs</p>
+                        </div>
+                        <img src="assets/twilight.png" class="gateway-avatar-6d" alt="Twilight" onerror="handleImageFallback(this)"/>
+                        <button type="button" onclick="switchRealm('grammar')" class="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-lg transition active:scale-95 cursor-pointer">
+                            Enter Realm ➔
+                        </button>
+                    </div>
+
+                    <!-- Card 2: Realm 3 - Homophones & Word Craft -->
+                    <div class="carousel-6d-card pos-back" id="card6d_2" onclick="handleCardTap(2)">
+                        <div class="flex flex-col items-center pointer-events-none">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-amber-700 bg-amber-100 px-3 py-0.5 rounded-full">Realm III • Word Craft</span>
+                            <h3 class="text-xl font-bold text-slate-900 mt-2 font-display">Homophones & Blanks</h3>
+                            <p class="text-xs text-slate-600 mt-1">Pair Matches & Word Stem Completion</p>
+                        </div>
+                        <img src="assets/fluttershy.png" class="gateway-avatar-6d" alt="Fluttershy" onerror="handleImageFallback(this)"/>
+                        <button type="button" onclick="switchRealm('words')" class="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-lg transition active:scale-95 cursor-pointer">
+                            Enter Realm ➔
+                        </button>
+                    </div>
+
+                    <!-- Card 3: Realm 4 - Answer in Brief & Sentences -->
+                    <div class="carousel-6d-card pos-left" id="card6d_3" onclick="handleCardTap(3)">
+                        <div class="flex flex-col items-center pointer-events-none">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-rose-700 bg-rose-100 px-3 py-0.5 rounded-full">Realm IV • S-Pen Scribe</span>
+                            <h3 class="text-xl font-bold text-slate-900 mt-2 font-display">Answer in Brief</h3>
+                            <p class="text-xs text-slate-600 mt-1">3D Notebook Binders & Frame Sentences</p>
+                        </div>
+                        <img src="assets/heidi-reading.webp" class="gateway-avatar-6d" alt="Reading" onerror="handleImageFallback(this)"/>
+                        <button type="button" onclick="switchRealm('comprehension')" class="bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-lg transition active:scale-95 cursor-pointer">
+                            Enter Realm ➔
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Indicator Dots -->
+            <div class="flex items-center gap-2 mt-2">
+                <button onclick="rotateToRealm(0)" id="dot6d_0" class="w-3 h-3 rounded-full bg-rose-400 transition-all"></button>
+                <button onclick="rotateToRealm(1)" id="dot6d_1" class="w-2.5 h-2.5 rounded-full bg-slate-600 transition-all"></button>
+                <button onclick="rotateToRealm(2)" id="dot6d_2" class="w-2.5 h-2.5 rounded-full bg-slate-600 transition-all"></button>
+                <button onclick="rotateToRealm(3)" id="dot6d_3" class="w-2.5 h-2.5 rounded-full bg-slate-600 transition-all"></button>
+            </div>
+        </div>
+
+        <!-- VIEW 2: ACTIVE 4D WORKSPACE CONTAINER -->
+        <div id="activeCardContainer" class="w-full hidden card-4d-wrapper">
+            <!-- Injected dynamically -->
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-20 bg-slate-900 text-slate-400 py-2.5 text-center text-xs border-t border-white/10 shrink-0">
+        Grade 5 English • Heidi Learns to Read • Royal Academy
+    </footer>
+
+    <script>
+        function handleImageFallback(imgEl) {
+            imgEl.onerror = null;
+            imgEl.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><circle cx='60' cy='60' r='56' fill='%23EDE9FE' stroke='%23C4B5FD' stroke-width='4'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='56'>📖</text></svg>";
+        }
+
+        /* SCREEN DIM LEVEL CONTROL */
+        function updateScreenDimLevel(val) {
+            const overlay = document.getElementById("screenDimOverlay");
+            overlay.style.opacity = val;
+            const pct = Math.round(val * 100);
+            document.getElementById("dimPctLabel").textContent = `${pct}%`;
+            localStorage.setItem('zaina_english_dim_level', val);
+        }
+
+        const savedDim = localStorage.getItem('zaina_english_dim_level');
+        if (savedDim !== null) {
+            document.getElementById('dimRangeSlider').value = savedDim;
+            updateScreenDimLevel(savedDim);
+        }
+
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        function playMagicWhoosh(isOpening = true) {
+            try {
+                const ctx = getAudioContext();
+                const t0 = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                if (isOpening) {
+                    osc.frequency.setValueAtTime(250, t0);
+                    osc.frequency.exponentialRampToValueAtTime(650, t0 + 0.35);
+                } else {
+                    osc.frequency.setValueAtTime(600, t0);
+                    osc.frequency.exponentialRampToValueAtTime(220, t0 + 0.35);
+                }
+                gain.gain.setValueAtTime(0.2, t0);
+                gain.gain.linearRampToValueAtTime(0.01, t0 + 0.4);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(t0);
+                osc.stop(t0 + 0.4);
+            } catch (e) {}
+        }
+
+        function playGrandFanfare() {
+            try {
+                const ctx = getAudioContext();
+                const t0 = ctx.currentTime;
+                [392.00, 523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(freq, t0 + idx * 0.08);
+                    gain.gain.setValueAtTime(0.25, t0 + idx * 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t0 + idx * 0.08 + 1.2);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(t0 + idx * 0.08);
+                    osc.stop(t0 + idx * 0.08 + 1.25);
+                });
+            } catch (e) {}
+        }
+
+        /* INK SOUND ENGINE (FROM 5.4 ENGINE) */
+        const InkSound = {
+            enabled: localStorage.getItem('zaina_ink_sound') !== 'off',
+            ready: false,
+            penGain: null, penFilter: null,
+            eraseGain: null, eraseFilter: null,
+            init() {
+                if (this.ready) return;
+                const ctx = getAudioContext();
+                const len = Math.floor(ctx.sampleRate * 1.5);
+                const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+                const data = buf.getChannelData(0);
+                for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+
+                const penSrc = ctx.createBufferSource();
+                penSrc.buffer = buf; penSrc.loop = true;
+                this.penFilter = ctx.createBiquadFilter();
+                this.penFilter.type = 'bandpass';
+                this.penFilter.frequency.value = 3000;
+                this.penFilter.Q.value = 1.6;
+                this.penGain = ctx.createGain();
+                this.penGain.gain.value = 0;
+                penSrc.connect(this.penFilter);
+                this.penFilter.connect(this.penGain);
+                this.penGain.connect(ctx.destination);
+                penSrc.start();
+
+                const eraseSrc = ctx.createBufferSource();
+                eraseSrc.buffer = buf; eraseSrc.loop = true;
+                this.eraseFilter = ctx.createBiquadFilter();
+                this.eraseFilter.type = 'lowpass';
+                this.eraseFilter.frequency.value = 800;
+                this.eraseFilter.Q.value = 0.7;
+                this.eraseGain = ctx.createGain();
+                this.eraseGain.gain.value = 0;
+                eraseSrc.connect(this.eraseFilter);
+                this.eraseFilter.connect(this.eraseGain);
+                this.eraseGain.connect(ctx.destination);
+                eraseSrc.start();
+                this.ready = true;
+            },
+            update(tool, dist) {
+                if (!this.enabled) return;
+                try {
+                    this.init();
+                    const t = getAudioContext().currentTime;
+                    if (tool === 'pen') {
+                        const vol = Math.min(0.07, 0.004 + dist * 0.004);
+                        this.penFilter.frequency.setTargetAtTime(2400 + Math.random() * 1600, t, 0.02);
+                        this.penGain.gain.setTargetAtTime(vol, t, 0.03);
+                        this.eraseGain.gain.setTargetAtTime(0, t, 0.03);
+                    } else if (tool === 'eraser') {
+                        const vol = Math.min(0.10, 0.01 + dist * 0.006);
+                        this.eraseFilter.frequency.setTargetAtTime(600 + Math.random() * 500, t, 0.03);
+                        this.eraseGain.gain.setTargetAtTime(vol, t, 0.03);
+                        this.penGain.gain.setTargetAtTime(0, t, 0.03);
+                    }
+                } catch (e) {}
+            },
+            stop() {
+                if (!this.ready) return;
+                try {
+                    const t = getAudioContext().currentTime;
+                    this.penGain.gain.setTargetAtTime(0, t, 0.04);
+                    this.eraseGain.gain.setTargetAtTime(0, t, 0.04);
+                } catch (e) {}
+            },
+            glideChime() {
+                if (!this.enabled) return;
+                try {
+                    const ctx = getAudioContext();
+                    const t0 = ctx.currentTime;
+                    const osc = ctx.createOscillator();
+                    const g = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, t0);
+                    osc.frequency.exponentialRampToValueAtTime(1320, t0 + 0.28);
+                    g.gain.setValueAtTime(0.0001, t0);
+                    g.gain.exponentialRampToValueAtTime(0.14, t0 + 0.03);
+                    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.6);
+                    osc.connect(g); g.connect(ctx.destination);
+                    osc.start(t0); osc.stop(t0 + 0.65);
+                } catch (e) {}
+            }
+        };
+
+        function toggleInkSound() {
+            InkSound.enabled = !InkSound.enabled;
+            localStorage.setItem('zaina_ink_sound', InkSound.enabled ? 'on' : 'off');
+            document.getElementById('inkSoundBtn').textContent = InkSound.enabled ? '🔊' : '🔇';
+            if (!InkSound.enabled) InkSound.stop();
+        }
+        if (!InkSound.enabled) document.getElementById('inkSoundBtn').textContent = '🔇';
+
+        /* 6D CAROUSEL CONTROLLER */
+        let activeRealmIndex = 0;
+        const realmKeys = ['vocab', 'grammar', 'words', 'comprehension'];
+
+        function rotateToRealm(newIndex) {
+            playMagicWhoosh(true);
+            activeRealmIndex = (newIndex + 4) % 4;
+            update6DCarouselDOM();
+        }
+
+        function update6DCarouselDOM() {
+            for (let i = 0; i < 4; i++) {
+                const card = document.getElementById(`card6d_${i}`);
+                const dot = document.getElementById(`dot6d_${i}`);
+                if (!card) continue;
+                card.className = 'carousel-6d-card';
+
+                const offset = (i - activeRealmIndex + 4) % 4;
+                if (offset === 0) {
+                    card.classList.add('pos-front');
+                    if (dot) dot.className = 'w-3 h-3 rounded-full bg-rose-400 transition-all';
+                } else if (offset === 1) {
+                    card.classList.add('pos-right');
+                    if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-slate-600 transition-all';
+                } else if (offset === 2) {
+                    card.classList.add('pos-back');
+                    if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-slate-600 transition-all';
+                } else {
+                    card.classList.add('pos-left');
+                    if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-slate-600 transition-all';
+                }
+            }
+        }
+
+        function handleCardTap(cardIdx) {
+            if (cardIdx === activeRealmIndex) {
+                switchRealm(realmKeys[cardIdx]);
+            } else {
+                rotateToRealm(cardIdx);
+            }
+        }
+
+        (function setup6DSwipeGestures() {
+            const track = document.getElementById('carousel6DTrack');
+            let startX = 0, startY = 0, isTracking = false;
+
+            track.addEventListener('pointerdown', (e) => {
+                startX = e.clientX;
+                startY = e.clientY;
+                isTracking = true;
+            }, { passive: true });
+
+            track.addEventListener('pointerup', (e) => {
+                if (!isTracking) return;
+                isTracking = false;
+                const diffX = e.clientX - startX;
+                const diffY = e.clientY - startY;
+                if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+                    if (diffX > 0) rotateToRealm(activeRealmIndex - 1);
+                    else rotateToRealm(activeRealmIndex + 1);
+                }
+            }, { passive: true });
+
+            track.addEventListener('pointercancel', () => { isTracking = false; }, { passive: true });
+        })();
+
+        /* ==========================================================
+           ENGLISH CURRICULUM ARCHITECTURE
+        ========================================================== */
+        const englishCurriculum = {
+            vocab: {
+                realmName: "Word Box & Opposites",
+                pony: "Heidi & Fluttershy",
+                avatar: "assets/heidi-main.webp",
+                type: "interactive",
+                render() {
+                    return `
+                        <div class="flex flex-col gap-5 p-4 max-h-[72vh] overflow-y-auto">
+                            <!-- Story MCQs -->
+                            <div class="bg-amber-50/90 rounded-2xl p-4 border border-amber-200">
+                                <h3 class="text-sm font-bold text-amber-900 mb-2">A. Choose the right options:</h3>
+                                <div class="flex flex-col gap-3 text-xs md:text-sm">
+                                    <div class="p-2.5 bg-white rounded-xl border border-amber-100">
+                                        <p class="font-bold text-slate-800 mb-1.5">1. Grandmother was surprised that Heidi...</p>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                            <button onclick="pickMCQ(this, 'mcq1', true)" class="mcq-btn p-2 rounded-lg border border-slate-200 text-left font-medium">a. could not read.</button>
+                                            <button onclick="pickMCQ(this, 'mcq1', false)" class="mcq-btn p-2 rounded-lg border border-slate-200 text-left font-medium">b. was unable to learn the alphabet.</button>
+                                        </div>
+                                    </div>
+                                    <div class="p-2.5 bg-white rounded-xl border border-amber-100">
+                                        <p class="font-bold text-slate-800 mb-1.5">2. Heidi had decided that she would not be able to read as...</p>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                            <button onclick="pickMCQ(this, 'mcq2', false)" class="mcq-btn p-2 rounded-lg border border-slate-200 text-left font-medium">a. she found it very difficult.</button>
+                                            <button onclick="pickMCQ(this, 'mcq2', true)" class="mcq-btn p-2 rounded-lg border border-slate-200 text-left font-medium">c. Peter had told her it was not easy.</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Opposites Matching Cards -->
+                            <div class="bg-rose-50/90 rounded-2xl p-4 border border-rose-200">
+                                <h3 class="text-sm font-bold text-rose-900 mb-2">I. Write the Opposites:</h3>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs md:text-sm">
+                                    <div class="flex items-center justify-between p-2.5 bg-white rounded-xl border border-rose-100">
+                                        <span class="font-bold text-slate-800">1. Determined ×</span>
+                                        <input type="text" data-correct="hesitant" class="w-32 px-2 py-1 rounded-lg border border-slate-300 text-center font-bold text-rose-950 uppercase" placeholder="opp...">
+                                    </div>
+                                    <div class="flex items-center justify-between p-2.5 bg-white rounded-xl border border-rose-100">
+                                        <span class="font-bold text-slate-800">2. Difficult ×</span>
+                                        <input type="text" data-correct="easy" class="w-32 px-2 py-1 rounded-lg border border-slate-300 text-center font-bold text-rose-950 uppercase" placeholder="opp...">
+                                    </div>
+                                    <div class="flex items-center justify-between p-2.5 bg-white rounded-xl border border-rose-100">
+                                        <span class="font-bold text-slate-800">3. Believe ×</span>
+                                        <input type="text" data-correct="doubt" class="w-32 px-2 py-1 rounded-lg border border-slate-300 text-center font-bold text-rose-950 uppercase" placeholder="opp...">
+                                    </div>
+                                    <div class="flex items-center justify-between p-2.5 bg-white rounded-xl border border-rose-100">
+                                        <span class="font-bold text-slate-800">4. Attention ×</span>
+                                        <input type="text" data-correct="distraction" class="w-32 px-2 py-1 rounded-lg border border-slate-300 text-center font-bold text-rose-950 uppercase" placeholder="opp...">
+                                    </div>
+                                    <div class="flex items-center justify-between p-2.5 bg-white rounded-xl border border-rose-100">
+                                        <span class="font-bold text-slate-800">5. Exciting ×</span>
+                                        <input type="text" data-correct="boring" class="w-32 px-2 py-1 rounded-lg border border-slate-300 text-center font-bold text-rose-950 uppercase" placeholder="opp...">
+                                    </div>
+                                    <div class="flex items-center justify-between p-2.5 bg-white rounded-xl border border-rose-100">
+                                        <span class="font-bold text-slate-800">6. Pleasure ×</span>
+                                        <input type="text" data-correct="displeasure" class="w-32 px-2 py-1 rounded-lg border border-slate-300 text-center font-bold text-rose-950 uppercase" placeholder="opp...">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            },
+            grammar: {
+                realmName: "Grammar Observatory",
+                pony: "Twilight Sparkle",
+                avatar: "assets/twilight.png",
+                type: "interactive",
+                render() {
+                    return `
+                        <div class="flex flex-col gap-5 p-4 max-h-[72vh] overflow-y-auto">
+                            <!-- Simple Past Tense -->
+                            <div class="bg-indigo-50/90 rounded-2xl p-4 border border-indigo-200">
+                                <h3 class="text-sm font-bold text-indigo-900 mb-2">1. Fill in the Simple Past Tense:</h3>
+                                <div class="flex flex-col gap-2.5 text-xs md:text-sm">
+                                    <div class="flex items-center flex-wrap gap-2 p-2 bg-white rounded-xl border border-indigo-100">
+                                        <span>1. The sheep</span>
+                                        <input type="text" data-correct="grazed" class="w-28 px-2 py-1 rounded border border-slate-300 font-bold text-center text-indigo-950" placeholder="graze">
+                                        <span>on the meadow.</span>
+                                    </div>
+                                    <div class="flex items-center flex-wrap gap-2 p-2 bg-white rounded-xl border border-indigo-100">
+                                        <span>2. Heidi</span>
+                                        <input type="text" data-correct="lived" class="w-28 px-2 py-1 rounded border border-slate-300 font-bold text-center text-indigo-950" placeholder="live">
+                                        <span>in the mountains of Switzerland.</span>
+                                    </div>
+                                    <div class="flex items-center flex-wrap gap-2 p-2 bg-white rounded-xl border border-indigo-100">
+                                        <span>3. Heidi</span>
+                                        <input type="text" data-correct="did not know" class="w-36 px-2 py-1 rounded border border-slate-300 font-bold text-center text-indigo-950" placeholder="not know">
+                                        <span>how to read.</span>
+                                    </div>
+                                    <div class="flex items-center flex-wrap gap-2 p-2 bg-white rounded-xl border border-indigo-100">
+                                        <span>4. The housekeeper</span>
+                                        <input type="text" data-correct="said" class="w-28 px-2 py-1 rounded border border-slate-300 font-bold text-center text-indigo-950" placeholder="say">
+                                        <span>that Heidi could not read.</span>
+                                    </div>
+                                    <div class="flex items-center flex-wrap gap-2 p-2 bg-white rounded-xl border border-indigo-100">
+                                        <span>5. The shepherd</span>
+                                        <input type="text" data-correct="slept" class="w-28 px-2 py-1 rounded border border-slate-300 font-bold text-center text-indigo-950" placeholder="sleep">
+                                        <span>next to his sheep.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Auxiliary vs Main Verbs (Interactive Word Tapper) -->
+                            <div class="bg-purple-50/90 rounded-2xl p-4 border border-purple-200">
+                                <div class="flex justify-between items-center mb-2">
+                                    <h3 class="text-sm font-bold text-purple-900">2. Tap Words: 1-Tap = <span class="text-amber-600 underline">Auxiliary</span> | 2-Taps = <span class="text-purple-600 font-extrabold border border-purple-500 rounded-full px-1">Main Verb</span></h3>
+                                </div>
+                                <div class="flex flex-col gap-2 text-xs md:text-sm bg-white p-3 rounded-xl border border-purple-100" id="grammarWordContainer">
+                                    <p>1. <span class="grammar-word" onclick="cycleGrammarWord(this)">They</span> <span class="grammar-word" data-role="aux" onclick="cycleGrammarWord(this)">have</span> <span class="grammar-word" data-role="aux" onclick="cycleGrammarWord(this)">been</span> <span class="grammar-word" data-role="main" onclick="cycleGrammarWord(this)">working</span> <span class="grammar-word" onclick="cycleGrammarWord(this)">all</span> <span class="grammar-word" onclick="cycleGrammarWord(this)">day.</span></p>
+                                    <p>2. <span class="grammar-word" onclick="cycleGrammarWord(this)">She</span> <span class="grammar-word" data-role="aux" onclick="cycleGrammarWord(this)">does</span> <span class="grammar-word" onclick="cycleGrammarWord(this)">not</span> <span class="grammar-word" data-role="main" onclick="cycleGrammarWord(this)">like</span> <span class="grammar-word" onclick="cycleGrammarWord(this)">to</span> <span class="grammar-word" onclick="cycleGrammarWord(this)">play</span> <span class="grammar-word" onclick="cycleGrammarWord(this)">badminton.</span></p>
+                                    <p>3. <span class="grammar-word" onclick="cycleGrammarWord(this)">I</span> <span class="grammar-word" data-role="aux" onclick="cycleGrammarWord(this)">am</span> <span class="grammar-word" data-role="main" onclick="cycleGrammarWord(this)">having</span> <span class="grammar-word" onclick="cycleGrammarWord(this)">tea</span> <span class="grammar-word" onclick="cycleGrammarWord(this)">with</span> <span class="grammar-word" onclick="cycleGrammarWord(this)">biscuits.</span></p>
+                                    <p>4. <span class="grammar-word" onclick="cycleGrammarWord(this)">She</span> <span class="grammar-word" data-role="aux" onclick="cycleGrammarWord(this)">is</span> <span class="grammar-word" data-role="main" onclick="cycleGrammarWord(this)">preparing</span> <span class="grammar-word" onclick="cycleGrammarWord(this)">dinner</span> <span class="grammar-word" onclick="cycleGrammarWord(this)">for</span> <span class="grammar-word" onclick="cycleGrammarWord(this)">us.</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            },
+            words: {
+                realmName: "Word Craft Arena",
+                pony: "Fluttershy",
+                avatar: "assets/fluttershy.png",
+                type: "interactive",
+                render() {
+                    return `
+                        <div class="flex flex-col gap-5 p-4 max-h-[72vh] overflow-y-auto">
+                            <!-- Homophones -->
+                            <div class="bg-amber-50/90 rounded-2xl p-4 border border-amber-200">
+                                <h3 class="text-sm font-bold text-amber-900 mb-2">1. Use the correct homophone:</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs md:text-sm">
+                                    <div class="p-2.5 bg-white rounded-xl border border-amber-100 flex flex-col gap-1.5">
+                                        <span class="text-xs font-bold text-amber-700">sweet / suite</span>
+                                        <div>a. The hotel has a <input type="text" data-correct="suite" class="w-20 px-2 py-0.5 border border-slate-300 rounded font-bold text-center"> of rooms.</div>
+                                        <div>b. She has a <input type="text" data-correct="sweet" class="w-20 px-2 py-0.5 border border-slate-300 rounded font-bold text-center"> voice.</div>
+                                    </div>
+                                    <div class="p-2.5 bg-white rounded-xl border border-amber-100 flex flex-col gap-1.5">
+                                        <span class="text-xs font-bold text-amber-700">aisle / isle</span>
+                                        <div>a. Remote <input type="text" data-correct="isle" class="w-20 px-2 py-0.5 border border-slate-300 rounded font-bold text-center"> in the West Indies.</div>
+                                        <div>b. Prefer an <input type="text" data-correct="aisle" class="w-20 px-2 py-0.5 border border-slate-300 rounded font-bold text-center"> seat?</div>
+                                    </div>
+                                    <div class="p-2.5 bg-white rounded-xl border border-amber-100 flex flex-col gap-1.5">
+                                        <span class="text-xs font-bold text-amber-700">coarse / course</span>
+                                        <div>a. The <input type="text" data-correct="coarse" class="w-20 px-2 py-0.5 border border-slate-300 rounded font-bold text-center"> sand hurt his bare feet.</div>
+                                        <div>b. Computer programming <input type="text" data-correct="course" class="w-20 px-2 py-0.5 border border-slate-300 rounded font-bold text-center">.</div>
+                                    </div>
+                                    <div class="p-2.5 bg-white rounded-xl border border-amber-100 flex flex-col gap-1.5">
+                                        <span class="text-xs font-bold text-amber-700">idle / idol</span>
+                                        <div>a. Factories stand <input type="text" data-correct="idle" class="w-20 px-2 py-0.5 border border-slate-300 rounded font-bold text-center">.</div>
+                                        <div>b. The latest teen <input type="text" data-correct="idol" class="w-20 px-2 py-0.5 border border-slate-300 rounded font-bold text-center">.</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Word Stems -->
+                            <div class="bg-cyan-50/90 rounded-2xl p-4 border border-cyan-200">
+                                <h3 class="text-sm font-bold text-cyan-900 mb-2">2. Complete the meaningful words:</h3>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs md:text-sm">
+                                    <div class="p-2 bg-white rounded-xl border border-cyan-100 flex items-center justify-between">
+                                        <span>1. st _ _ _</span>
+                                        <input type="text" data-correct="stone|storm|stand" class="w-24 px-2 py-1 border border-slate-300 rounded font-bold text-center">
+                                    </div>
+                                    <div class="p-2 bg-white rounded-xl border border-cyan-100 flex items-center justify-between">
+                                        <span>2. categ _ _ _</span>
+                                        <input type="text" data-correct="category" class="w-24 px-2 py-1 border border-slate-300 rounded font-bold text-center">
+                                    </div>
+                                    <div class="p-2 bg-white rounded-xl border border-cyan-100 flex items-center justify-between">
+                                        <span>3. fact _ _ _</span>
+                                        <input type="text" data-correct="factory|factor" class="w-24 px-2 py-1 border border-slate-300 rounded font-bold text-center">
+                                    </div>
+                                    <div class="p-2 bg-white rounded-xl border border-cyan-100 flex items-center justify-between">
+                                        <span>4. nurs _ _ _</span>
+                                        <input type="text" data-correct="nursery|nursing" class="w-24 px-2 py-1 border border-slate-300 rounded font-bold text-center">
+                                    </div>
+                                    <div class="p-2 bg-white rounded-xl border border-cyan-100 flex items-center justify-between">
+                                        <span>5. bound _ _ _</span>
+                                        <input type="text" data-correct="boundary|boundless" class="w-24 px-2 py-1 border border-slate-300 rounded font-bold text-center">
+                                    </div>
+                                    <div class="p-2 bg-white rounded-xl border border-cyan-100 flex items-center justify-between">
+                                        <span>6. batt _ _ _</span>
+                                        <input type="text" data-correct="battery|battle" class="w-24 px-2 py-1 border border-slate-300 rounded font-bold text-center">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            },
+            comprehension: {
+                realmName: "Answer in Brief (S-Pen Binder)",
+                pony: "Heidi & Grandmother",
+                avatar: "assets/heidi-reading.webp",
+                type: "binder",
+                questions: [
+                    {
+                        id: "eng_q1",
+                        label: "Q1",
+                        text: "Why did Heidi go to the city?",
+                        refAnswer: "Heidi went to the city of Frankfurt to become a companion for Clara, a rich girl who lived there. Heidi was expected to stay with Clara, keep her company, and share her lessons."
+                    },
+                    {
+                        id: "eng_q2",
+                        label: "Q2",
+                        text: "Why did Heidi feel that she could not read?",
+                        refAnswer: "Heidi felt that she could not learn to read because Peter, her friend, told her that reading was too difficult and that she would never be able to learn. She believed him and lost confidence in herself."
+                    },
+                    {
+                        id: "eng_q3",
+                        label: "Q3",
+                        text: "What did the housekeeper say about Heidi?",
+                        refAnswer: "The housekeeper said that Heidi did not even know the alphabet and that it was almost impossible to teach her. She also said that the tutor had been very patient while teaching her."
+                    }
+                ]
+            }
+        };
+
+        let currentRealmKey = 'vocab';
+        let currentQuestionIdx = 0;
+        const activePages = {};
+        const canvasStates = {};
+        const binderOpenedMap = {};
+        let activeResizeObserver = null;
+
+        function switchRealm(realmKey) {
+            playMagicWhoosh(true);
+            currentRealmKey = realmKey;
+            document.getElementById('gatewayView').classList.add('hidden');
+            document.getElementById('activeCardContainer').classList.remove('hidden');
+            document.getElementById('gatewayNavBtn').classList.remove('hidden');
+            renderActiveCard(true);
+        }
+
+        function returnToGateway() {
+            playMagicWhoosh(false);
+            if (englishCurriculum[currentRealmKey].type === 'binder') {
+                const q = englishCurriculum[currentRealmKey].questions[currentQuestionIdx];
+                if (q) saveCurrentCanvasInk(q.id);
+            }
+            document.getElementById('activeCardContainer').classList.add('hidden');
+            document.getElementById('gatewayNavBtn').classList.add('hidden');
+            document.getElementById('gatewayView').classList.remove('hidden');
+        }
+
+        function changeQuestion(delta) {
+            const realm = englishCurriculum[currentRealmKey];
+            if (realm.type !== 'binder') return;
+            const curQ = realm.questions[currentQuestionIdx];
+            if (curQ) saveCurrentCanvasInk(curQ.id);
+
+            let newIdx = currentQuestionIdx + delta;
+            if (newIdx >= 0 && newIdx < realm.questions.length) {
+                playMagicWhoosh(true);
+                currentQuestionIdx = newIdx;
+                renderActiveCard(true);
+            }
+        }
+
+        function switchPageSmoothly(qId, delta) {
+            if (!activePages[qId]) activePages[qId] = 1;
+            let targetPage = activePages[qId] + delta;
+            if (targetPage >= 1 && targetPage <= 2) {
+                saveCurrentCanvasInk(qId);
+                activePages[qId] = targetPage;
+                const ind = document.getElementById(`pageIndicator_${qId}`);
+                if (ind) ind.innerText = `Pg ${targetPage} / 2`;
+                loadCanvasInk(qId, targetPage);
+            }
+        }
+
+        function toggleToolDrawer(qId) {
+            const drawer = document.getElementById(`toolDrawer_${qId}`);
+            if (drawer) {
+                drawer.classList.toggle('tool-drawer-collapsed');
+            }
+        }
+
+        function renderActiveCard(animate = false) {
+            const container = document.getElementById('activeCardContainer');
+            const realm = englishCurriculum[currentRealmKey];
+
+            if (realm.type === 'interactive') {
+                container.innerHTML = `
+                    <div class="bg-white rounded-2xl card-4d ${animate ? 'page-flip-anim' : ''} border border-slate-200 overflow-hidden relative w-full">
+                        <div class="p-3.5 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+                            <h2 class="font-bold text-slate-800 font-display text-base md:text-lg">${realm.realmName}</h2>
+                            <button onclick="checkInteractiveAnswers()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-1.5 rounded-xl transition shadow-sm text-xs cursor-pointer">
+                                ✅ Check Section
+                            </button>
+                        </div>
+                        ${realm.render()}
+                    </div>
+                `;
+            } else {
+                // 3D S-PEN BINDER WORKSPACE (COMPREHENSION)
+                const q = realm.questions[currentQuestionIdx];
+                if (!activePages[q.id]) activePages[q.id] = 1;
+                const currentPage = activePages[q.id];
+                const isBinderOpen = !!binderOpenedMap[q.id];
+
+                container.innerHTML = `
+                    <div class="bg-white rounded-2xl card-4d ${animate ? 'page-flip-anim' : ''} border border-slate-200 overflow-hidden relative w-full">
+                        <!-- Top Question Bar -->
+                        <div class="p-3 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                            <div class="flex items-center gap-2">
+                                <span class="bg-rose-600 text-white font-bold text-xs px-2.5 py-1 rounded-lg">${q.label}</span>
+                                <p class="font-bold text-slate-800 text-sm md:text-base">${q.text}</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick="toggleTeacherSolution('${q.id}')" class="bg-amber-100 border border-amber-300 text-amber-900 font-bold px-3 py-1 rounded-lg text-xs cursor-pointer">
+                                    💡 Model Answer
+                                </button>
+                                <button onclick="triggerGrandCelebration()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3.5 py-1 rounded-lg text-xs cursor-pointer">
+                                    ✅ Finish
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Question Navigation Bar -->
+                        <div class="bg-rose-50/50 px-4 py-1.5 border-b border-rose-100 flex justify-between items-center text-xs text-rose-900 font-semibold">
+                            <span>${realm.realmName} (${currentQuestionIdx + 1} of ${realm.questions.length})</span>
+                            <div class="flex gap-2">
+                                <button onclick="changeQuestion(-1)" ${currentQuestionIdx === 0 ? 'disabled' : ''} class="px-3 py-1 bg-white border border-rose-200 rounded-lg shadow-sm font-bold ${currentQuestionIdx === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-rose-100 cursor-pointer'}">⬅️ Prev</button>
+                                <button onclick="changeQuestion(1)" ${currentQuestionIdx === realm.questions.length - 1 ? 'disabled' : ''} class="px-3 py-1 bg-white border border-rose-200 rounded-lg shadow-sm font-bold ${currentQuestionIdx === realm.questions.length - 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-rose-100 cursor-pointer'}">Next ➡️</button>
+                            </div>
+                        </div>
+
+                        <!-- Workspace Area -->
+                        <div class="relative workspace-h bg-slate-100 overflow-hidden">
+                            <!-- Opened Notebook Canvas -->
+                            <div class="absolute inset-0 flex flex-col bg-white">
+                                <!-- Expandable Floating Tool Drawer -->
+                                <div class="absolute left-4 top-3 z-30 flex items-center gap-3">
+                                    <div class="floating-tool-drawer" id="toolDrawer_${q.id}">
+                                        <button onclick="toggleToolDrawer('${q.id}')" class="text-white text-xs font-bold px-2 py-1 flex items-center gap-1 cursor-pointer">
+                                            <span>🛠️</span> <span>Tools</span>
+                                        </button>
+                                        <div class="drawer-items-group flex items-center gap-1.5 border-l border-white/20 pl-2">
+                                            <button onclick="setTool('${q.id}', 'pen')" id="toolPen_${q.id}" class="p-1 rounded bg-amber-600 text-white shadow text-xs">✏️</button>
+                                            <button onclick="setTool('${q.id}', 'line')" id="toolLine_${q.id}" class="p-1 rounded hover:bg-amber-800 text-xs">📏</button>
+                                            <button onclick="setTool('${q.id}', 'eraser')" id="toolEraser_${q.id}" class="p-1 rounded hover:bg-amber-800 text-xs">🧹</button>
+                                            <button onclick="undoInk('${q.id}')" title="Undo" class="p-1 rounded hover:bg-amber-800 text-xs">↩️</button>
+                                            <button onclick="clearCanvas('${q.id}')" class="p-1 rounded hover:bg-amber-800 text-red-300 text-xs">🗑️</button>
+                                            <div class="flex gap-1 ml-1 items-center">
+                                                <button onclick="setColor('${q.id}', '#1e1b4b')" class="w-5 h-5 rounded-full bg-slate-900 border-2 border-white shadow"></button>
+                                                <button onclick="setColor('${q.id}', '#2563eb')" class="w-5 h-5 rounded-full bg-blue-600 border-2 border-white shadow"></button>
+                                                <button onclick="setColor('${q.id}', '#dc2626')" class="w-5 h-5 rounded-full bg-red-600 border-2 border-white shadow"></button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Page Navigation -->
+                                    <div class="flex items-center bg-slate-900/90 text-white px-3 py-1 rounded-full border border-white/20 shadow text-xs gap-2">
+                                        <button onclick="switchPageSmoothly('${q.id}', -1)" class="hover:scale-110">◀️</button>
+                                        <span id="pageIndicator_${q.id}" class="font-bold text-amber-200">Pg ${currentPage} / 2</span>
+                                        <button onclick="switchPageSmoothly('${q.id}', 1)" class="hover:scale-110">▶️</button>
+                                    </div>
+                                    <button onclick="closeBinder('${q.id}')" class="bg-slate-900/90 text-white text-xs px-3 py-1 rounded-full border border-white/20 font-bold shadow">📕 Cover</button>
+                                </div>
+
+                                <!-- EMBOSSED HEIDI CHARACTER BESIDE TOOLS -->
+                                <img src="assets/heidi-main.webp" class="embossed-heidi-watermark" alt="Heidi Emboss" onerror="handleImageFallback(this)"/>
+
+                                <!-- Teacher Solution Overlay -->
+                                <div id="teacherModel_${q.id}" class="hidden absolute top-14 left-6 right-6 z-20 bg-amber-50/95 border-2 border-amber-300 rounded-xl p-4 shadow-xl">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-xs font-bold text-amber-900 uppercase">📖 Reference Model Answer</span>
+                                        <button onclick="toggleTeacherSolution('${q.id}')" class="text-xs font-bold text-amber-800">✕ Close</button>
+                                    </div>
+                                    <p class="text-xs md:text-sm font-semibold text-slate-800 leading-relaxed">${q.refAnswer}</p>
+                                </div>
+
+                                <!-- Lined Paper Canvas -->
+                                <div class="flex-1 lined-paper relative overflow-hidden select-none touch-none" id="canvasArea_${q.id}">
+                                    <canvas id="canvas_${q.id}" oncontextmenu="return false;" class="absolute inset-0 w-full h-full cursor-crosshair touch-none z-10"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- 3D Notebook Binder Cover -->
+                            <div id="binderCover_${q.id}" class="binder-cover ${isBinderOpen ? 'binder-open' : ''} absolute inset-0 bg-gradient-to-br from-rose-900 to-amber-950 text-white p-8 flex flex-col justify-between shadow-2xl z-30 cursor-pointer" onclick="openBinder('${q.id}')">
+                                <div class="notebook-spine-rings">
+                                    <div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div>
+                                </div>
+
+                                <div class="flex justify-between items-start ml-8 relative z-10">
+                                    <span class="bg-white/20 px-3.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase">English Literature</span>
+                                    <span class="text-2xl">📖</span>
+                                </div>
+
+                                <!-- Classic Composition Notebook Label Box -->
+                                <div class="mx-auto my-auto composition-label-box text-slate-900 rounded-2xl p-4 pl-9 w-72 shadow-2xl border-4 border-indigo-950">
+                                    <div class="absolute inset-0 border-2 border-red-400/80 rounded-xl pointer-events-none m-1"></div>
+                                    <div class="flex flex-col gap-1 text-left relative z-10">
+                                        <div class="text-[10px] uppercase font-extrabold text-indigo-900 tracking-widest border-b-2 border-blue-400 pb-0.5">Royal Academy Classwork</div>
+                                        <div class="font-hand text-lg text-blue-950 font-bold leading-tight pt-0.5">Zaina • Grade 5</div>
+                                        <div class="font-hand text-base text-rose-700 font-bold leading-tight">Heidi Learns to Read</div>
+                                        <div class="font-hand text-xs text-indigo-700 font-bold bg-amber-100/90 border border-amber-300 rounded px-2 py-0.5 mt-1 inline-block w-fit">Answer in Brief Notebook</div>
+                                    </div>
+                                </div>
+
+                                <div class="text-center flex flex-col items-center gap-2 ml-8 relative z-10">
+                                    <img src="assets/heidi-reading.webp" class="w-20 h-20 object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)] animate-bounce" alt="Heidi Reading" onerror="handleImageFallback(this)"/>
+                                    <span class="bg-white text-rose-950 font-bold px-4 py-2 rounded-xl shadow-lg text-xs uppercase tracking-widest">Tap to Open Binder ⚡</span>
+                                </div>
+
+                                <div class="text-center text-xs text-rose-300 ml-8 relative z-10">
+                                    ${q.label} • 240Hz S-Pen Writing Surface
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                initCanvas(q.id, currentPage);
+            }
+        }
+
+        /* INTERACTIVE EXERCISES HELPER LOGIC */
+        function pickMCQ(btn, qKey, isCorrect) {
+            const parent = btn.parentElement;
+            parent.querySelectorAll('.mcq-btn').forEach(b => b.classList.remove('bg-emerald-100', 'border-emerald-500', 'bg-rose-100', 'border-rose-500'));
+            if (isCorrect) {
+                btn.classList.add('bg-emerald-100', 'border-emerald-500');
+                btn.dataset.answered = "1";
+            } else {
+                btn.classList.add('bg-rose-100', 'border-rose-500');
+                btn.dataset.answered = "0";
+            }
+        }
+
+        function cycleGrammarWord(el) {
+            if (!el.classList.contains('state-aux') && !el.classList.contains('state-main')) {
+                el.classList.add('state-aux');
+            } else if (el.classList.contains('state-aux')) {
+                el.classList.remove('state-aux');
+                el.classList.add('state-main');
+            } else {
+                el.classList.remove('state-main');
+            }
+        }
+
+        function checkInteractiveAnswers() {
+            let allCorrect = true;
+            document.querySelectorAll('#activeCardContainer input[data-correct]').forEach(inp => {
+                const entered = inp.value.trim().toLowerCase();
+                const allowed = inp.dataset.correct.toLowerCase().split('|');
+                if (allowed.includes(entered)) {
+                    inp.classList.add('bg-emerald-100', 'border-emerald-500');
+                    inp.classList.remove('bg-rose-100', 'border-rose-500');
+                } else {
+                    inp.classList.add('bg-rose-100', 'border-rose-500');
+                    inp.classList.remove('bg-emerald-100', 'border-emerald-500');
+                    allCorrect = false;
+                }
+            });
+
+            if (allCorrect) {
+                triggerGrandCelebration();
+            } else {
+                alert("Some answers need checking! Review your highlighted blanks and try again.");
+            }
+        }
+
+        function toggleTeacherSolution(qId) {
+            const el = document.getElementById(`teacherModel_${qId}`);
+            if (el) el.classList.toggle('hidden');
+        }
+
+        /* ==========================================================
+           5.4 CANVAS INITIALIZATION & STROKE ENGINE
+        ========================================================== */
+        let lastPenSeen = 0;
+
+        function syncCanvasResolution(canvas, container, id) {
+            const dpr = Math.min(window.devicePixelRatio || 1, 3);
+            const cssW = container.clientWidth;
+            const cssH = container.clientHeight;
+            if (!cssW || !cssH) return;
+            const targetW = Math.round(cssW * dpr);
+            const targetH = Math.round(cssH * dpr);
+            if (canvas.width === targetW && canvas.height === targetH) return;
+
+            canvas.style.width = cssW + 'px';
+            canvas.style.height = cssH + 'px';
+            canvas.width = targetW;
+            canvas.height = targetH;
+            canvas.dataset.dpr = String(dpr);
+
+            const ctx = canvas.getContext('2d');
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            loadCanvasInk(id, activePages[id] || 1);
+        }
+
+        function initCanvas(id, page) {
+            const canvas = document.getElementById(`canvas_${id}`);
+            const container = document.getElementById(`canvasArea_${id}`);
+            if (!canvas || !container) return;
+            const ctx = canvas.getContext('2d');
+
+            if (!canvasStates[id]) canvasStates[id] = { tool: 'pen', color: '#1e1b4b' };
+            syncCanvasResolution(canvas, container, id);
+
+            if (activeResizeObserver) activeResizeObserver.disconnect();
+            if (window.ResizeObserver) {
+                activeResizeObserver = new ResizeObserver(() => syncCanvasResolution(canvas, container, id));
+                activeResizeObserver.observe(container);
+            }
+
+            let activePointerId = null;
+            let activeType = null;
+            let strokeTool = null;
+            let lastX = 0, lastY = 0, startX = 0, startY = 0;
+            let cachedRect = null;
+            let snapshot = null;
+
+            const localXY = (e) => {
+                const r = canvas.getBoundingClientRect();
+                return [e.clientX - r.left, e.clientY - r.top];
+            };
+
+            const drawSegment = (x1, y1, x2, y2, pressure) => {
+                ctx.save();
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                if (strokeTool === 'eraser') {
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.strokeStyle = '#000';
+                    ctx.lineWidth = 28;
+                } else {
+                    ctx.globalCompositeOperation = 'source-over';
+                    ctx.strokeStyle = canvasStates[id].color;
+                    ctx.lineWidth = 2.5 * (0.8 + (pressure > 0 ? pressure : 0.5) * 0.8);
+                }
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+                ctx.restore();
+            };
+
+            const drawDot = (x, y, pressure) => {
+                ctx.save();
+                if (strokeTool === 'eraser') {
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.fillStyle = '#000';
+                    ctx.beginPath();
+                    ctx.arc(x, y, 14, 0, Math.PI * 2);
+                } else {
+                    ctx.fillStyle = canvasStates[id].color;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 2.2 * (0.8 + (pressure > 0 ? pressure : 0.5) * 0.8), 0, Math.PI * 2);
+                }
+                ctx.fill();
+                ctx.restore();
+            };
+
+            const drawGlowLine = (x1, y1, x2, y2, color) => {
+                const dpr = Number(canvas.dataset.dpr) || 1;
+                ctx.save();
+                ctx.lineCap = 'round';
+                ctx.strokeStyle = color;
+                ctx.shadowColor = color;
+                ctx.shadowBlur = 14 * dpr;
+                ctx.lineWidth = 2.5;
+                ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+                ctx.shadowBlur = 0;
+                ctx.globalAlpha = 0.9;
+                ctx.lineWidth = 1.2;
+                ctx.strokeStyle = '#FFFFFF';
+                ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+                ctx.restore();
+            };
+
+            const endStroke = () => {
+                if (activePointerId === null) return;
+                InkSound.stop();
+                if (strokeTool === 'line' && snapshot) {
+                    const len = Math.hypot(lastX - startX, lastY - startY);
+                    ctx.putImageData(snapshot, 0, 0);
+                    if (len > 6) {
+                        drawGlowLine(startX, startY, lastX, lastY, canvasStates[id].color);
+                        InkSound.glideChime();
+                    }
+                }
+                snapshot = null;
+                activePointerId = null;
+                activeType = null;
+                strokeTool = null;
+                saveCurrentCanvasInk(id);
+            };
+
+            canvas.addEventListener('pointerenter', (e) => {
+                if (e.pointerType === 'pen') lastPenSeen = Date.now();
+            });
+
+            canvas.addEventListener('pointerdown', (e) => {
+                if (e.pointerType === 'pen') {
+                    lastPenSeen = Date.now();
+                    if (activePointerId !== null && activeType === 'touch') endStroke();
+                } else {
+                    const palm = Math.max(e.width || 0, e.height || 0) > 26;
+                    const penBusy = Date.now() - lastPenSeen < 1200;
+                    if (palm || penBusy || activePointerId !== null) return;
+                }
+                if (activePointerId !== null) return;
+
+                e.preventDefault();
+                InkSound.init();
+                activePointerId = e.pointerId;
+                activeType = e.pointerType;
+                try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+
+                const barrelEraser = e.pointerType === 'pen' && ((e.buttons & 32) || e.button === 5);
+                strokeTool = barrelEraser ? 'eraser' : canvasStates[id].tool;
+
+                cachedRect = canvas.getBoundingClientRect();
+                const [x, y] = localXY(e);
+                startX = lastX = x;
+                startY = lastY = y;
+                if (strokeTool === 'line') {
+                    snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                } else {
+                    drawDot(x, y, e.pressure);
+                }
+            });
+
+            canvas.addEventListener('pointermove', (e) => {
+                if (e.pointerType === 'pen') lastPenSeen = Date.now();
+                if (e.pointerId !== activePointerId) return;
+                if (!cachedRect) cachedRect = canvas.getBoundingClientRect();
+
+                if (strokeTool === 'line') {
+                    const [x, y] = localXY(e);
+                    if (snapshot) ctx.putImageData(snapshot, 0, 0);
+                    ctx.save();
+                    ctx.lineCap = 'round';
+                    ctx.strokeStyle = canvasStates[id].color;
+                    ctx.lineWidth = 2.5;
+                    ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(x, y); ctx.stroke();
+                    ctx.restore();
+                    lastX = x; lastY = y;
+                    return;
+                }
+
+                const events = (e.getCoalescedEvents && e.getCoalescedEvents().length) ? e.getCoalescedEvents() : [e];
+                let total = 0;
+                for (const ev of events) {
+                    const [x, y] = localXY(ev);
+                    total += Math.hypot(x - lastX, y - lastY);
+                    drawSegment(lastX, lastY, x, y, ev.pressure);
+                    lastX = x; lastY = y;
+                }
+                InkSound.update(strokeTool === 'eraser' ? 'eraser' : 'pen', total / events.length);
+            });
+
+            canvas.addEventListener('pointerup', (e) => { if (e.pointerId === activePointerId) endStroke(); });
+            canvas.addEventListener('pointercancel', (e) => { if (e.pointerId === activePointerId) endStroke(); });
+        }
+
+        function loadCanvasInk(id, page) {
+            const canvas = document.getElementById(`canvas_${id}`);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.save();
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.restore();
+
+            const key = `zaina_ink_${id}_p${page}`;
+            const saved = localStorage.getItem(key);
+            if (!saved) return;
+            let size = null;
+            try { size = JSON.parse(localStorage.getItem(key + '_size') || 'null'); } catch (_) {}
+
+            const img = new Image();
+            img.onload = () => {
+                const sw = size ? size.w : img.width;
+                const sh = size ? size.h : img.height;
+                const s = Math.min(canvas.width / sw, canvas.height / sh);
+                ctx.save();
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.drawImage(img, 0, 0, img.width * s, img.height * s);
+                ctx.restore();
+            };
+            img.src = saved;
+        }
+
+        function saveCurrentCanvasInk(id) {
+            const canvas = document.getElementById(`canvas_${id}`);
+            if (!canvas || canvas.width <= 0 || canvas.height <= 0) return;
+            const page = activePages[id] || 1;
+            const key = `zaina_ink_${id}_p${page}`;
+            try {
+                const previous = localStorage.getItem(key) || '';
+                const next = canvas.toDataURL();
+                if (previous !== next) pushUndo(key, previous);
+                localStorage.setItem(key, next);
+                localStorage.setItem(key + '_size', JSON.stringify({ w: canvas.width, h: canvas.height }));
+            } catch (_) {}
+        }
+
+        function setTool(id, tool) {
+            canvasStates[id].tool = tool;
+            ['Pen', 'Line', 'Eraser'].forEach(t => {
+                const btn = document.getElementById(`tool${t}_${id}`);
+                if (btn) {
+                    if (t.toLowerCase() === tool) {
+                        btn.className = "p-1 rounded bg-amber-600 text-white shadow text-xs";
+                    } else {
+                        btn.className = "p-1 rounded hover:bg-amber-800 text-xs";
+                    }
+                }
+            });
+        }
+
+        function setColor(id, color) {
+            canvasStates[id].color = color;
+            setTool(id, 'pen');
+        }
+
+        const undoStacks = {};
+        function pushUndo(key, value) {
+            const st = undoStacks[key] || (undoStacks[key] = []);
+            if (st.length && st[st.length - 1] === value) return;
+            st.push(value);
+            if (st.length > 25) st.shift();
+        }
+
+        function undoInk(id) {
+            const page = activePages[id] || 1;
+            const key = `zaina_ink_${id}_p${page}`;
+            const st = undoStacks[key] || [];
+            if (!st.length) return;
+            const previous = st.pop();
+            if (previous) localStorage.setItem(key, previous);
+            else localStorage.removeItem(key);
+            loadCanvasInk(id, page);
+        }
+
+        function clearCanvas(id) {
+            const canvas = document.getElementById(`canvas_${id}`);
+            const ctx = canvas.getContext('2d');
+            const page = activePages[id] || 1;
+            const key = `zaina_ink_${id}_p${page}`;
+            const current = localStorage.getItem(key);
+            if (current) pushUndo(key, current);
+            ctx.save();
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.restore();
+            localStorage.removeItem(key);
+            localStorage.removeItem(key + '_size');
+        }
+
+        function openBinder(id) {
+            playMagicWhoosh(true);
+            binderOpenedMap[id] = true;
+            document.getElementById(`binderCover_${id}`).classList.add('binder-open');
+        }
+
+        function closeBinder(id) {
+            playMagicWhoosh(false);
+            binderOpenedMap[id] = false;
+            saveCurrentCanvasInk(id);
+            document.getElementById(`binderCover_${id}`).classList.remove('binder-open');
+        }
+
+        /* GRAND CELEBRATION STAGE */
+        const grandStage = document.getElementById("grandCelebrationStage");
+        const grandCanvas = document.getElementById("grandFinaleCanvas");
+        const grandCtx = grandCanvas.getContext("2d", { alpha: true });
+        let grandAnimRunning = false;
+        let magicConfettiStorm = [];
+
+        function resizeGrandCanvas() {
+            grandCanvas.width = window.innerWidth;
+            grandCanvas.height = window.innerHeight;
+        }
+        window.addEventListener("resize", resizeGrandCanvas);
+
+        function triggerGrandCelebration() {
+            resizeGrandCanvas();
+            grandStage.style.display = 'block';
+            grandAnimRunning = true;
+
+            playGrandFanfare();
+            document.getElementById("magicCenterpiece").className = 'magic-banner-centerpiece impact';
+
+            magicConfettiStorm = [];
+            const colors = ['#EC4899', '#C084FC', '#38BDF8', '#FDE047', '#4ADE80', '#FFFFFF'];
+            for (let i = 0; i < 70; i++) {
+                magicConfettiStorm.push({
+                    x: Math.random() * window.innerWidth,
+                    y: -20 - Math.random() * 200,
+                    size: Math.random() * 8 + 4,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: Math.random() * 3 + 2,
+                    color: colors[Math.floor(Math.random() * colors.length)]
+                });
+            }
+
+            setTimeout(() => {
+                document.getElementById("royalScrollLandingRight").className = 'royal-scroll-landing-right landed';
+            }, 1200);
+
+            requestAnimationFrame(renderGrandScene);
+        }
+
+        function renderGrandScene() {
+            if (!grandAnimRunning) return;
+            grandCtx.clearRect(0, 0, grandCanvas.width, grandCanvas.height);
+
+            for (let p of magicConfettiStorm) {
+                p.x += p.vx;
+                p.y += p.vy;
+                if (p.y > window.innerHeight + 20) p.y = -10;
+                grandCtx.fillStyle = p.color;
+                grandCtx.beginPath();
+                grandCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                grandCtx.fill();
+            }
+            requestAnimationFrame(renderGrandScene);
+        }
+
+        function closeGrandCelebration() {
+            grandAnimRunning = false;
+            grandStage.style.display = 'none';
+            document.getElementById("magicCenterpiece").className = 'magic-banner-centerpiece';
+            document.getElementById("royalScrollLandingRight").className = 'royal-scroll-landing-right';
+        }
+
+        /* MILKY WAY CANVAS */
+        const mCanvas = document.getElementById("milkyWayCanvas");
+        const mCtx = mCanvas.getContext("2d");
+        let stars = [];
+
+        function resizeMilkyWay() {
+            mCanvas.width = window.innerWidth;
+            mCanvas.height = window.innerHeight;
+            stars = [];
+            for (let i = 0; i < 75; i++) {
+                stars.push({
+                    x: Math.random() * mCanvas.width,
+                    y: Math.random() * mCanvas.height,
+                    radius: Math.random() * 1.8 + 0.4,
+                    vx: (Math.random() - 0.5) * 0.2,
+                    vy: -Math.random() * 0.3 - 0.1,
+                    alpha: Math.random() * 0.7 + 0.2,
+                    color: ['#FDF2F8', '#FED7AA', '#BAE6FD', '#FDE047'][Math.floor(Math.random() * 4)]
+                });
+            }
+        }
+        window.addEventListener("resize", resizeMilkyWay);
+        resizeMilkyWay();
+
+        function renderMilkyWay() {
+            mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height);
+            for (let s of stars) {
+                s.x += s.vx;
+                s.y += s.vy;
+                if (s.y < 0) s.y = mCanvas.height;
+                if (s.x < 0) s.x = mCanvas.width;
+                if (s.x > mCanvas.width) s.x = 0;
+
+                mCtx.save();
+                mCtx.globalAlpha = s.alpha;
+                mCtx.fillStyle = s.color;
+                mCtx.beginPath();
+                mCtx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+                mCtx.fill();
+                mCtx.restore();
+            }
+            requestAnimationFrame(renderMilkyWay);
+        }
+        requestAnimationFrame(renderMilkyWay);
+
+        /* EXIT TO HUB */
+        let isLeavingToHub = false;
+        function exitToHub(e) {
+            if (e) e.preventDefault();
+            if (isLeavingToHub) return;
+            isLeavingToHub = true;
+
+            try {
+                if (englishCurriculum[currentRealmKey].type === 'binder') {
+                    const q = englishCurriculum[currentRealmKey].questions[currentQuestionIdx];
+                    if (q) saveCurrentCanvasInk(q.id);
+                }
+            } catch (_) {}
+
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage("close-lesson-to-hub", "*");
+                setTimeout(() => { isLeavingToHub = false; }, 1500);
+                return;
+            }
+
+            setTimeout(() => { window.location.href = "index.html"; }, 60);
+        }
+
+        window.addEventListener('load', () => {
+            update6DCarouselDOM();
+        });
+    </script>
+</body>
+</html>
