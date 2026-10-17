@@ -3,23 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Humayun - Islamiyath</title>
+  <title>Humayun's Islamiyath - Units 2, 5 & 10</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-cream: #fbf9f4;
-      --card-bg: #ffffff;
+      --bg-cream: #f4efe4;
       --card-border: #d4af37;
-      --green-dark: #0b4f35;
-      --green-deep: #063322;
+      --text-dark: #0e291e;
+      --emerald: #0b5136;
+      --emerald-dark: #063121;
       --gold: #d4af37;
-      --gold-soft: #f7e7b4;
-      --text-main: #14281d;
-      --text-muted: #536b5c;
-      --canvas-bg: #fffdf9;
-      --line-color: #eadfbc;
+      --gold-dark: #aa8620;
+      --gold-glow: rgba(212, 175, 55, 0.45);
+      --canvas-line: #e3d5b0;
     }
 
     * {
@@ -31,516 +29,424 @@
       touch-action: manipulation;
     }
 
-    body {
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #05140e;
       font-family: 'Quicksand', sans-serif;
-      min-height: 100vh;
-      background-color: var(--bg-cream);
-      color: var(--text-main);
-      overflow-x: hidden;
-      position: relative;
+      color: var(--text-dark);
     }
 
-    /* Dim Screen Overlay (0 to 50%) */
-    #dimOverlay {
-      position: fixed;
-      inset: 0;
-      background: #000000;
-      opacity: 0;
-      pointer-events: none;
-      z-index: 9999;
-      transition: opacity 0.15s ease;
-    }
-
-    /* Ambient Background Texture */
-    night.oasis-bg {
+    /* Vibrant Fullscreen Night Oasis Backdrop */
+    .bg-oasis-fixed {
       position: fixed;
       inset: 0;
       background: url('assets/night-oasis-bg.webp') center center / cover no-repeat;
-      opacity: 0.22;
-      pointer-events: none;
+      opacity: 0.95;
       z-index: 0;
+      pointer-events: none;
     }
 
-    .main-layout {
+    /* Smooth 0% - 50% Dim Mode Overlay */
+    #dimOverlay {
+      position: fixed;
+      inset: 0;
+      background-color: #000;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transition: opacity 0.05s linear;
+    }
+
+    /* Main Tablet Viewport Container */
+    .screen-root {
       position: relative;
       z-index: 1;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 12px 16px 40px;
+      width: 100%;
+      height: 100%;
       display: flex;
       flex-direction: column;
+      padding: 10px 16px 10px;
+      gap: 8px;
+    }
+
+    /* Top Navigation Bar with Large Companion */
+    .top-header {
+      width: 100%;
+      height: 64px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.92);
+      border: 2px solid var(--card-border);
+      border-radius: 40px;
+      padding: 4px 16px 4px 8px;
+      box-shadow: 0 6px 20px var(--gold-glow);
+      backdrop-filter: blur(10px);
+      flex-shrink: 0;
+    }
+
+    .companion-banner {
+      display: flex;
+      align-items: center;
       gap: 12px;
     }
 
-    /* Floating Pill Header & Toggle Trigger */
-    .top-controls {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      position: relative;
-      min-height: 52px;
+    /* Large Uncropped Companion Artwork */
+    .companion-avatar-large {
+      height: 58px;
+      width: auto;
+      max-width: 90px;
+      object-fit: contain;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.25));
     }
 
-    .header-pill {
+    .title-banner {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .title-banner h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--emerald-dark);
+      letter-spacing: 0.5px;
+      line-height: 1.1;
+    }
+
+    .title-banner p {
+      font-size: 0.8rem;
+      color: #3b5a4a;
+      font-weight: 700;
+    }
+
+    .header-controls {
       display: flex;
       align-items: center;
       gap: 10px;
-      background: rgba(255, 255, 255, 0.95);
-      border: 2px solid var(--gold);
-      border-radius: 50px;
-      padding: 6px 14px;
-      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.25);
-      backdrop-filter: blur(8px);
-      transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.3s ease;
     }
 
-    .header-pill.hidden {
-      transform: translateY(-80px) scale(0.9);
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .pill-btn {
-      width: 40px;
-      height: 40px;
+    .icon-action-btn {
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
-      border: 1.5px solid var(--gold);
+      border: 2px solid var(--card-border);
       background: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-      transition: transform 0.2s, background 0.2s;
+      position: relative;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
     }
 
-    .pill-btn:hover {
+    .icon-action-btn:hover {
       transform: scale(1.08);
-      background: var(--gold-soft);
+      box-shadow: 0 4px 14px var(--gold-glow);
     }
 
-    .pill-btn.active {
-      background: var(--green-dark);
+    .icon-action-btn.active {
+      background: linear-gradient(135deg, var(--emerald), var(--emerald-dark));
       border-color: var(--gold);
+      box-shadow: 0 0 14px var(--gold);
     }
 
-    .pill-btn img {
-      width: 22px;
-      height: 22px;
+    .icon-action-btn img {
+      width: 32px;
+      height: 32px;
       object-fit: contain;
     }
 
-    .pill-avatar {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      border: 2px solid var(--gold);
-      overflow: hidden;
-      background: #fff;
-    }
-
-    .pill-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    /* Floating Pill Reveal Toggle */
-    .pill-toggle-trigger {
-      position: fixed;
-      top: 12px;
-      right: 16px;
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: var(--green-dark);
-      border: 2px solid var(--gold);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
-      z-index: 100;
-      color: #fff;
-      font-size: 1.2rem;
-    }
-
-    /* Slider Container inside Pill */
+    /* Screen Dimming Slider Popover */
     .dim-slider-box {
       display: none;
+      position: absolute;
+      top: 76px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid var(--card-border);
+      border-radius: 18px;
+      padding: 12px 18px;
+      box-shadow: 0 10px 32px rgba(0,0,0,0.3);
+      z-index: 10000;
       align-items: center;
-      gap: 6px;
-      padding-left: 4px;
+      gap: 12px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--emerald-dark);
     }
 
-    .dim-slider-box.show {
+    .dim-slider-box.visible {
       display: flex;
     }
 
     .dim-slider-box input[type="range"] {
-      width: 80px;
-      accent-color: var(--gold);
+      width: 150px;
+      accent-color: var(--gold-dark);
       cursor: pointer;
     }
 
-    .dim-label {
-      font-size: 0.75rem;
-      font-weight: 700;
-      color: var(--green-dark);
-      min-width: 32px;
+    /* Main Workspace Stage */
+    .main-stage-container {
+      flex: 1;
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 14px;
+      overflow: hidden;
+      min-height: 0;
     }
 
-    /* Arch Center Header */
-    .arch-banner {
-      width: 100%;
-      height: 52px;
+    /* Left Binder & Question Card */
+    .left-binder-card {
+      background: rgba(255, 255, 255, 0.92);
+      border: 2.5px solid var(--card-border);
+      border-radius: 24px;
+      display: flex;
+      flex-direction: column;
       position: relative;
+      overflow: hidden;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.25);
+      backdrop-filter: blur(12px);
+    }
+
+    /* Arch Banner Top */
+    .binder-arch-banner-wrap {
+      width: 100%;
+      height: 60px;
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: -6px 0 2px;
+      position: relative;
+      background: linear-gradient(180deg, rgba(212, 175, 55, 0.2), transparent);
+      border-bottom: 1.5px solid rgba(212, 175, 55, 0.4);
+      flex-shrink: 0;
     }
 
-    .arch-banner img.arch-img {
+    .arch-banner-img {
       position: absolute;
-      width: 100%;
-      max-width: 520px;
+      width: 360px;
       height: 100%;
       object-fit: contain;
-      opacity: 0.88;
       pointer-events: none;
     }
 
-    .arch-banner img.star-img {
-      width: 36px;
-      height: 36px;
-      z-index: 1;
-      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
-    }
-
-    /* Question Tabs */
-    .tab-bar {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-      scrollbar-width: none;
-    }
-    .tab-bar::-webkit-scrollbar { display: none; }
-
-    .tab-button {
-      flex: 1;
-      min-width: 135px;
-      padding: 9px 12px;
-      border-radius: 12px;
-      border: 1.5px solid var(--card-border);
-      background: var(--card-bg);
-      color: var(--text-main);
-      font-weight: 700;
+    .unit-badge-tag {
+      z-index: 2;
+      font-family: 'Cinzel', serif;
       font-size: 0.85rem;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      white-space: nowrap;
+      font-weight: 800;
+      color: var(--emerald-dark);
+      background: #fff;
+      padding: 4px 18px;
+      border-radius: 20px;
+      border: 2px solid var(--gold);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
-    .tab-button.active {
-      background: linear-gradient(135deg, var(--green-dark), var(--green-deep));
-      color: #fff;
-      border-color: var(--gold);
-      box-shadow: 0 4px 14px rgba(212, 175, 55, 0.3);
-    }
-
-    /* Workspace Section */
-    .workspace-area {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 14px;
+    /* Practice Mode Question & Answer Container */
+    .binder-content-area {
+      flex: 1;
       position: relative;
-      transition: all 0.3s ease;
-    }
-
-    @media (min-width: 900px) {
-      .workspace-area {
-        grid-template-columns: 1.05fr 1fr;
-      }
-    }
-
-    /* Practice Mode Layout */
-    .practice-deck {
-      background: var(--card-bg);
-      border: 2px solid var(--card-border);
-      border-radius: 18px;
-      padding: 20px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+      overflow-y: auto;
+      padding: 16px 20px 20px;
       display: flex;
       flex-direction: column;
       gap: 14px;
     }
 
-    .unit-heading {
-      font-family: 'Cinzel', serif;
-      font-size: 0.8rem;
-      color: #92751c;
-      font-weight: 700;
-      letter-spacing: 0.8px;
-    }
-
-    .question-title {
-      font-size: 1.2rem;
-      font-weight: 700;
-      color: var(--green-dark);
-      line-height: 1.35;
-    }
-
-    .reading-content {
-      background: var(--bg-cream);
-      border: 1.5px dashed var(--gold);
-      border-radius: 14px;
-      padding: 16px;
-      font-size: 1.15rem;
-      line-height: 1.75;
-    }
-
-    /* Tap-to-Read Words */
-    .read-word {
-      display: inline-block;
-      cursor: pointer;
-      padding: 1px 3px;
-      border-radius: 4px;
-      transition: background 0.15s, transform 0.15s;
-    }
-
-    .read-word:hover {
-      background: var(--gold-soft);
-      transform: scale(1.05);
-    }
-
-    .read-word.speaking {
-      background: var(--gold);
-      color: #000;
-      font-weight: 700;
-    }
-
-    /* Syllable-break Special Words */
-    .syl-break-word {
-      display: inline-flex;
-      align-items: center;
-      background: rgba(212, 175, 55, 0.18);
-      border: 1px solid var(--gold);
-      padding: 2px 7px;
-      border-radius: 6px;
-      margin: 1px 2px;
-      cursor: pointer;
-      font-weight: 700;
-      color: var(--green-dark);
-      transition: all 0.2s ease;
-    }
-
-    .syl-break-word:hover {
-      background: rgba(212, 175, 55, 0.35);
-      transform: scale(1.04);
-    }
-
-    .syl-break-word.pressed {
-      background: var(--gold);
-      color: #000;
-    }
-
-    .point-line {
-      margin: 8px 0;
-      padding-left: 16px;
-      position: relative;
-    }
-
-    .point-line::before {
-      content: '✦';
-      position: absolute;
-      left: 0;
-      color: var(--gold);
-      font-size: 0.8rem;
-      top: 3px;
-    }
-
-    .hadith-quote {
-      background: rgba(11, 79, 53, 0.08);
-      border-left: 4px solid var(--green-dark);
+    /* Question Header */
+    .question-title-box {
+      background: #fbf7ee;
+      border-left: 5px solid var(--gold);
+      border-radius: 0 14px 14px 0;
       padding: 12px 14px;
-      border-radius: 0 12px 12px 0;
-      margin-top: 8px;
-      font-style: italic;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--emerald-dark);
+      line-height: 1.4;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
     }
 
-    /* Binder Canvas Container */
-    .canvas-binder {
-      background: var(--card-bg);
-      border: 2px solid var(--card-border);
+    /* Themed Frosted Islamic Binder Cover Flap */
+    .decorative-binder-cover {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(145deg, rgba(11, 81, 54, 0.95), rgba(4, 30, 20, 0.96));
+      border: 3px solid var(--gold);
       border-radius: 18px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-      padding: 16px 16px 16px 36px;
-      position: relative;
+      margin: 10px;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      color: #fff;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.5), inset 0 0 24px rgba(212, 175, 55, 0.3);
+      transition: transform 0.45s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.35s ease;
+      cursor: pointer;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .decorative-binder-cover.flap-open {
+      transform: translateY(-105%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .cover-star-img {
+      width: 78px;
+      height: 78px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 12px var(--gold-glow));
+    }
+
+    .cover-heading {
+      font-family: 'Cinzel', serif;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--gold);
+      letter-spacing: 1px;
+    }
+
+    .cover-caption {
+      font-size: 0.9rem;
+      color: #c9e4d5;
+      max-width: 340px;
+      line-height: 1.45;
+    }
+
+    .cover-toggle-chip {
+      background: var(--gold);
+      color: #042216;
+      font-weight: 800;
+      padding: 6px 18px;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+    }
+
+    /* Answer Details Section */
+    .answer-details-box {
+      font-size: 1.05rem;
+      line-height: 1.65;
       display: flex;
       flex-direction: column;
       gap: 10px;
-      min-height: 480px;
-      transition: all 0.35s ease;
     }
 
-    /* Leather Spine & Rings */
-    .binder-spine {
+    .bullet-point-row {
+      display: flex;
+      gap: 8px;
+      margin: 3px 0;
+    }
+
+    .bullet-point-row::before {
+      content: '✦';
+      color: var(--gold-dark);
+      flex-shrink: 0;
+      font-size: 0.9rem;
+      margin-top: 2px;
+    }
+
+    .hadith-quote-card {
+      background: rgba(11, 81, 54, 0.08);
+      border-left: 4px solid var(--emerald);
+      border-radius: 0 14px 14px 0;
+      padding: 12px 16px;
+      font-style: italic;
+      line-height: 1.65;
+    }
+
+    /* Words: Tap-to-Speak & Hold-for-Syllables */
+    .speakable-word {
+      display: inline-block;
+      cursor: pointer;
+      padding: 1px 3px;
+      margin: 1px 0;
+      border-radius: 5px;
+      transition: background-color 0.15s, transform 0.1s;
+    }
+
+    .speakable-word:active {
+      transform: scale(0.96);
+      background: rgba(212, 175, 55, 0.35);
+    }
+
+    .speakable-word.speaking-active {
+      background: var(--gold);
+      color: #000;
+      font-weight: 700;
+    }
+
+    .target-word {
+      font-weight: 700;
+      color: var(--emerald);
+      border-bottom: 2px dotted var(--gold);
+    }
+
+    /* Right Card: Full Multi-Page Binder Canvas */
+    .canvas-binder-card {
+      background: rgba(255, 255, 255, 0.94);
+      border: 2.5px solid var(--card-border);
+      border-radius: 24px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.25);
+      backdrop-filter: blur(12px);
+      padding: 10px 10px 10px 32px;
+      overflow: hidden;
+    }
+
+    /* Decorative Leather Spine */
+    .spine-rings-bar {
       position: absolute;
       left: 0;
       top: 0;
       bottom: 0;
       width: 24px;
-      background: var(--green-deep);
-      border-radius: 16px 0 0 16px;
+      background: var(--emerald-dark);
+      border-radius: 22px 0 0 22px;
       display: flex;
       flex-direction: column;
       justify-content: space-around;
       align-items: center;
-      padding: 18px 0;
+      padding: 12px 0;
     }
 
-    .ring-hole {
+    .spine-rings-bar .ring-metal {
       width: 12px;
       height: 12px;
       border-radius: 50%;
       background: #fff;
-      border: 2.5px solid var(--gold);
+      border: 2px solid var(--gold);
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
     }
 
-    /* Full-Screen Binder Cover for Write Mode */
-    .workspace-area.full-write-mode {
-      grid-template-columns: 1fr;
-    }
-
-    .workspace-area.full-write-mode .practice-deck {
-      display: none !important;
-    }
-
-    .workspace-area.full-write-mode .canvas-binder {
-      min-height: 78vh;
-    }
-
-    /* Binder Cover Overlay Banner (Displayed in Write Mode) */
-    .binder-cover-header {
-      display: none;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 16px;
-      background: linear-gradient(135deg, var(--green-dark), var(--green-deep));
-      color: #fff;
-      border-radius: 12px;
-      border: 1.5px solid var(--gold);
-    }
-
-    .workspace-area.full-write-mode .binder-cover-header {
-      display: flex;
-    }
-
-    .binder-cover-title {
-      font-family: 'Cinzel', serif;
-      font-size: 1rem;
-      color: var(--gold);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    /* Single Integrated Writing Tool Palette */
-    .canvas-tool-bar {
-      display: flex;
-      align-items: center;
-      position: relative;
-      gap: 8px;
-    }
-
-    .tool-palette-toggle {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 12px;
-      border-radius: 25px;
-      background: #fff;
-      border: 1.5px solid var(--gold);
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 0.85rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    }
-
-    .tool-drawer {
-      display: none;
-      align-items: center;
-      gap: 8px;
-      background: #fff;
-      border: 1.5px solid var(--gold);
-      border-radius: 30px;
-      padding: 4px 10px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-      animation: fadeInDrawer 0.2s ease forwards;
-    }
-
-    .tool-drawer.open {
-      display: flex;
-    }
-
-    @keyframes fadeInDrawer {
-      from { opacity: 0; transform: scale(0.92); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    .draw-btn {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: 1.5px solid var(--card-border);
-      background: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 0.95rem;
-    }
-
-    .draw-btn.active {
-      background: var(--green-dark);
-      color: #fff;
-      border-color: var(--gold);
-    }
-
-    .color-dot {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      border: 2px solid #fff;
-      box-shadow: 0 0 0 1px #ccc;
-      cursor: pointer;
-    }
-
-    .color-dot.active {
-      transform: scale(1.2);
-      box-shadow: 0 0 0 2px var(--gold);
-    }
-
-    /* Lined Writing Surface */
-    .lined-sheet {
+    /* Clean Writing Area */
+    .lined-page-viewport {
       flex: 1;
       width: 100%;
-      border-radius: 12px;
-      border: 1px solid var(--card-border);
-      background-color: var(--canvas-bg);
+      height: 100%;
+      border-radius: 18px;
+      border: 1.5px solid var(--card-border);
+      background-color: #fffdf9;
       background-image: repeating-linear-gradient(
         to bottom,
         transparent,
         transparent 31px,
-        var(--line-color) 31px,
-        var(--line-color) 32px
+        var(--canvas-line) 31px,
+        var(--canvas-line) 32px
       );
+      box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
       position: relative;
       touch-action: none;
-      min-height: 380px;
+      overflow: hidden;
     }
 
     canvas#writingCanvas {
@@ -548,407 +454,739 @@
       inset: 0;
       width: 100%;
       height: 100%;
-      border-radius: 12px;
     }
 
-    /* Syllable Floating Pop Badge */
-    .syllable-flyer {
+    /* Single Floating Pen Pill Toggle */
+    .floating-pen-pill {
+      position: absolute;
+      bottom: 18px;
+      right: 18px;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pen-bubble-toggle {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      border: 2.5px solid #fff;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.45rem;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .pen-bubble-toggle:active {
+      transform: scale(0.92);
+    }
+
+    /* Collapsible Tool Drawer */
+    .pen-expanded-palette {
+      display: none;
+      background: rgba(255, 255, 255, 0.97);
+      border: 2px solid var(--card-border);
+      border-radius: 34px;
+      padding: 6px 14px;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      animation: expandIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .pen-expanded-palette.open {
+      display: flex;
+    }
+
+    @keyframes expandIn {
+      from { opacity: 0; transform: scale(0.8) translateX(20px); }
+      to { opacity: 1; transform: scale(1) translateX(0); }
+    }
+
+    .palette-btn {
+      padding: 6px 10px;
+      border-radius: 12px;
+      border: 1.5px solid var(--card-border);
+      background: #fff;
+      color: var(--text-dark);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s;
+    }
+
+    .palette-btn.selected {
+      background: var(--emerald);
+      color: #fff;
+      border-color: var(--gold);
+    }
+
+    .color-swatch-circle {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 1.5px var(--card-border);
+      cursor: pointer;
+    }
+
+    .color-swatch-circle.selected {
+      transform: scale(1.25);
+      box-shadow: 0 0 0 2.5px var(--gold);
+    }
+
+    /* Swipeable Section Carousel */
+    .carousel-tray {
+      height: 60px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      flex-shrink: 0;
+      padding: 2px;
+    }
+    .carousel-tray::-webkit-scrollbar { display: none; }
+
+    .carousel-card-item {
+      flex: 0 0 auto;
+      width: 210px;
+      height: 52px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1.5px solid var(--card-border);
+      border-radius: 14px;
+      padding: 6px 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .carousel-card-item:hover {
+      transform: translateY(-2px);
+    }
+
+    .carousel-card-item.active-section {
+      background: linear-gradient(135deg, var(--emerald), var(--emerald-dark));
+      border-color: var(--gold);
+      color: #fff;
+      box-shadow: 0 6px 18px var(--gold-glow);
+    }
+
+    .carousel-card-item .unit-sub {
+      font-family: 'Cinzel', serif;
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: var(--gold-dark);
+      text-transform: uppercase;
+    }
+
+    .carousel-card-item.active-section .unit-sub {
+      color: var(--gold);
+    }
+
+    .carousel-card-item .lesson-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Floating Golden Syllable Flyer */
+    .syllable-flyer-badge {
       position: fixed;
       pointer-events: none;
       z-index: 10000;
-      background: linear-gradient(135deg, var(--gold), #faebc2);
-      color: #07261a;
+      background: linear-gradient(135deg, #fae292, var(--gold));
+      color: #042216;
+      font-family: 'Cinzel', serif;
       font-weight: 800;
       font-size: 1.35rem;
       letter-spacing: 2px;
-      padding: 8px 20px;
-      border-radius: 14px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      padding: 8px 22px;
+      border-radius: 18px;
+      box-shadow: 0 10px 32px rgba(0,0,0,0.4);
       border: 2px solid #fff;
       transform: translate(-50%, -50%) scale(0.6);
       opacity: 0;
       transition: transform 0.22s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.22s ease;
     }
 
-    .syllable-flyer.active {
-      transform: translate(-50%, -50%) scale(1.05);
+    .syllable-flyer-badge.show {
+      transform: translate(-50%, -50%) scale(1.1);
       opacity: 1;
+    }
+
+    /* Gold Sparkle Particle */
+    .gold-particle-sparkle {
+      position: fixed;
+      pointer-events: none;
+      z-index: 10001;
+      font-size: 1.4rem;
+      color: var(--gold);
+      animation: particleRise 1s forwards ease-out;
+    }
+
+    @keyframes particleRise {
+      0% { transform: translateY(0) scale(0.6) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(-75px) scale(1.35) rotate(40deg); opacity: 0; }
     }
   </style>
 </head>
 <body>
-  <!-- Full Screen Dimmer Layer -->
+  <!-- Fixed Vibrant Night Oasis Background -->
+  <div class="bg-oasis-fixed"></div>
   <div id="dimOverlay"></div>
 
-  <div class="oasis-bg"></div>
+  <!-- Floating Golden Syllable Flyer -->
+  <div id="syllableFlyer" class="syllable-flyer-badge">KHA · DI · JAH</div>
 
-  <!-- Hidden Header Reveal Trigger -->
-  <button class="pill-toggle-trigger" id="pillRevealBtn" title="Toggle Menu" style="display:none;">✦</button>
+  <!-- Smooth Dim Slider Window -->
+  <div id="dimSliderBox" class="dim-slider-box">
+    <span>💡 Screen Dim:</span>
+    <input type="range" id="dimRangeInput" min="0" max="50" value="0">
+    <span id="dimPercentageLabel">0%</span>
+  </div>
 
-  <div class="main-layout">
-    <!-- Top Floating Header Pill (Icon-Only Mode) -->
-    <div class="top-controls">
-      <header class="header-pill" id="headerPill">
-        <div class="pill-avatar" title="Humayun">
-          <img src="assets/humayun-scholar.webp" alt="Humayun" onerror="this.src='https://api.iconify.design/twemoji:boy.svg'">
+  <div class="screen-root">
+    <!-- Top Bar with Large Uncropped Companion -->
+    <header class="top-header">
+      <div class="companion-banner">
+        <img src="assets/humayun-scholar.webp" class="companion-avatar-large" alt="Humayun Scholar Companion">
+        <div class="title-banner">
+          <h1>Humayun's Islamiyath</h1>
+          <p id="modeStatusText">Practice Mode (Binder Open)</p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <button id="modeToggleBtn" class="icon-action-btn" title="Toggle Practice / Write Mode">
+          <img src="assets/lantern-gem.webp" alt="Lantern Mode Icon">
+        </button>
+        <button id="dimToggleBtn" class="icon-action-btn" title="Smooth Screen Dimming Slider">
+          <img src="assets/badge-crescent-star.webp" alt="Crescent Star Dim Icon">
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Tablet 16:10 Stage Workspace -->
+    <main class="main-stage-container">
+      <!-- Left Binder Card -->
+      <section class="left-binder-card">
+        <div class="binder-arch-banner-wrap">
+          <img src="assets/islamic-banner-arch.webp" class="arch-banner-img" alt="Islamic Banner Arch">
+          <span class="unit-badge-tag" id="unitBadge">Unit 2 & 10</span>
         </div>
 
-        <!-- Mode Toggle (Practice vs Full Write) -->
-        <button class="pill-btn" id="modeBtn" title="Toggle Write / Practice Mode">
-          <img src="assets/lantern-gem.webp" alt="Mode">
-        </button>
+        <div class="binder-content-area" id="binderContentArea">
+          <!-- Question Header (Always Visible) -->
+          <div class="question-title-box" id="questionBox">
+            <!-- Injected by script with clickable spans -->
+          </div>
 
-        <!-- Dimming Overlay Tool -->
-        <button class="pill-btn" id="dimBtn" title="Dim Screen Overlay (0% to 50%)">
-          <img src="assets/badge-crescent-star.webp" alt="Dimmer">
-        </button>
+          <!-- Answer Section (Populated in Practice Mode, Hidden in Write Mode) -->
+          <div class="answer-details-box" id="answerBox">
+            <!-- Injected by script with per-word spans -->
+          </div>
 
-        <!-- Dimmer Slider (0% to 50%) -->
-        <div class="dim-slider-box" id="dimSliderBox">
-          <input type="range" id="dimRange" min="0" max="50" value="0" step="5">
-          <span class="dim-label" id="dimPercent">0%</span>
-        </div>
-
-        <!-- Minimize Pill Button -->
-        <button class="pill-btn" id="hidePillBtn" title="Hide Header">
-          ✕
-        </button>
-      </header>
-    </div>
-
-    <!-- Arch Center Banner -->
-    <div class="arch-banner">
-      <img src="assets/islamic-banner-arch.webp" class="arch-img" alt="Arch" onerror="this.style.display='none'">
-      <img src="assets/badge-crescent-star.webp" class="star-img" alt="Star">
-    </div>
-
-    <!-- Question Tabs -->
-    <nav class="tab-bar">
-      <button class="tab-button active" data-q="0">Q1. Articles of Faith</button>
-      <button class="tab-button" data-q="1">Q2. Khadijah (RA)</button>
-      <button class="tab-button" data-q="2">Q3. First Woman</button>
-      <button class="tab-button" data-q="3">Q4. Good Habits</button>
-      <button class="tab-button" data-q="4">Q5. Garment Dua</button>
-    </nav>
-
-    <!-- Main Workspace -->
-    <main class="workspace-area" id="workspaceArea">
-      <!-- Practice Deck -->
-      <section class="practice-deck" id="practiceDeck">
-        <div class="unit-heading" id="unitHeading">Unit 2 & 10 • Lesson 1 & 3</div>
-        <h2 class="question-title" id="questionTitle">1. What are the articles of faith?</h2>
-        
-        <div class="reading-content" id="readingArea">
-          <!-- Filled dynamically with tap-to-read and syllable words -->
+          <!-- Themed Decorative Binder Cover/Flap (Practice Mode: Covers entire page on demand) -->
+          <div class="decorative-binder-cover flap-open" id="decorativeCover">
+            <img src="assets/badge-crescent-star.webp" class="cover-star-img" alt="Star Badge">
+            <div class="cover-heading">Islamiyath Binder Page</div>
+            <p class="cover-caption">Tap to open this page and reveal the complete lesson, question, and answer notes.</p>
+            <div class="cover-toggle-chip">✦ Tap to Open ✦</div>
+          </div>
         </div>
       </section>
 
-      <!-- Binder Canvas Section -->
-      <section class="canvas-binder" id="canvasBinder">
-        <div class="binder-spine">
-          <div class="ring-hole"></div>
-          <div class="ring-hole"></div>
-          <div class="ring-hole"></div>
-          <div class="ring-hole"></div>
-          <div class="ring-hole"></div>
+      <!-- Right Binder Card: Full Multi-Page Lined Canvas -->
+      <section class="canvas-binder-card">
+        <div class="spine-rings-bar">
+          <div class="ring-metal"></div>
+          <div class="ring-metal"></div>
+          <div class="ring-metal"></div>
+          <div class="ring-metal"></div>
+          <div class="ring-metal"></div>
         </div>
 
-        <!-- Write Mode Cover Header -->
-        <div class="binder-cover-header" id="binderCoverHeader">
-          <div class="binder-cover-title">
-            <span>📖</span>
-            <span id="binderCoverQText">Question 1 Practice Book</span>
-          </div>
-          <button class="pill-btn" id="exitWriteBtn" title="Back to Practice Mode" style="width:34px;height:34px;border:none;">
-            ✕
-          </button>
-        </div>
-
-        <!-- Single Integrated Tool Palette -->
-        <div class="canvas-tool-bar">
-          <button class="tool-palette-toggle" id="paletteToggleBtn">
-            <span>✏️ Pen Tools</span>
-            <span>▾</span>
-          </button>
-
-          <!-- Collapsible Tool Drawer -->
-          <div class="tool-drawer" id="toolDrawer">
-            <button class="draw-btn active" id="penTool" title="Pen">✏️</button>
-            <button class="draw-btn" id="eraserTool" title="Eraser">🧹</button>
-            <button class="draw-btn" id="clearBtn" title="Clear Canvas">🗑️</button>
-
-            <div class="color-dot active" data-color="#0b4f35" style="background:#0b4f35;"></div>
-            <div class="color-dot" data-color="#14281d" style="background:#14281d;"></div>
-            <div class="color-dot" data-color="#92751c" style="background:#92751c;"></div>
-            <div class="color-dot" data-color="#7c2d12" style="background:#7c2d12;"></div>
-          </div>
-        </div>
-
-        <!-- Writing Surface -->
-        <div class="lined-sheet" id="sheetWrapper">
+        <!-- Drawing Viewport with Notebook Lines -->
+        <div class="lined-page-viewport" id="canvasViewport">
           <canvas id="writingCanvas"></canvas>
+
+          <!-- Single Floating Pen Pill Toggle -->
+          <div class="floating-pen-pill">
+            <div class="pen-expanded-palette" id="penPalette">
+              <button class="palette-btn selected" id="penToolBtn">✏️ Pen</button>
+              <button class="palette-btn" id="eraserToolBtn">🧹 Eraser</button>
+              
+              <button class="palette-btn" id="size1Btn">1x</button>
+              <button class="palette-btn selected" id="size2Btn">2x</button>
+              <button class="palette-btn" id="size3Btn">3x</button>
+
+              <div class="color-swatch-circle selected" data-color="#0b5136" style="background:#0b5136;"></div>
+              <div class="color-swatch-circle" data-color="#142c3d" style="background:#142c3d;"></div>
+              <div class="color-swatch-circle" data-color="#d4af37" style="background:#d4af37;"></div>
+              <div class="color-swatch-circle" data-color="#7c2d12" style="background:#7c2d12;"></div>
+
+              <button class="palette-btn" id="prevPageBtn">◀</button>
+              <span id="pageIndicator" style="font-size:0.8rem; font-weight:800; min-width:65px; text-align:center;">Page 1/1</span>
+              <button class="palette-btn" id="nextPageBtn">▶</button>
+              <button class="palette-btn" id="addPageBtn">➕ Page</button>
+              <button class="palette-btn" id="clearPageBtn">🗑️ Clear</button>
+            </div>
+
+            <div class="pen-bubble-toggle" id="penBubbleBtn" title="Toggle Writing Palette">✏️</div>
+          </div>
         </div>
       </section>
     </main>
+
+    <!-- Bottom Carousel Card Tray -->
+    <nav class="carousel-tray" id="carouselTray">
+      <div class="carousel-card-item active-section" data-index="0">
+        <span class="unit-sub">Unit 2 & 10 • Lesson 1 & 3</span>
+        <span class="lesson-title">1. Articles of Faith</span>
+      </div>
+      <div class="carousel-card-item" data-index="1">
+        <span class="unit-sub">Unit 2 & 10 • Lesson 1 & 3</span>
+        <span class="lesson-title">2. Sayyidah Khadijah (RA)</span>
+      </div>
+      <div class="carousel-card-item" data-index="2">
+        <span class="unit-sub">Unit 2 & 10 • Lesson 1 & 3</span>
+        <span class="lesson-title">3. First Woman to Accept Islam</span>
+      </div>
+      <div class="carousel-card-item" data-index="3">
+        <span class="unit-sub">Unit 5 • Lesson 2 & 3</span>
+        <span class="lesson-title">4. Hygiene & Bathing</span>
+      </div>
+      <div class="carousel-card-item" data-index="4">
+        <span class="unit-sub">Unit 5 • Hadith (Abu Dawood)</span>
+        <span class="lesson-title">5. Dua for Garment</span>
+      </div>
+    </nav>
   </div>
 
-  <div id="flyerBadge" class="syllable-flyer">KHA · DI · JAH</div>
-
   <script>
-    // --- Syllabus Content (Units 2, 5 & 10) ---
-    const lessonData = [
+    // --- Syllabus Reference Notes (Units 2, 5 & 10) ---
+    const syllabusLessons = [
       {
         unit: "Unit 2 & 10 • Lesson 1 & 3",
-        q: "What are the articles of faith?",
+        question: "What are the articles of faith?",
         lead: "The articles of faith are:",
         items: [
           "Believe in Allah (SWT)",
-          "His [an·gels|angels]",
+          "His angels",
           "His books",
-          "His [mes·sen·gers|messengers]",
-          "The Day of [Re·sur·rec·tion|Resurrection]",
-          "[Des·ti·ny|Destiny] (Whatever Allah has [or·dained|ordained])"
-        ]
+          "His messengers",
+          "The Day of Resurrection",
+          "Destiny (Whatever Allah has ordained)"
+        ],
+        targets: {
+          "angels": "AN · GELS",
+          "messengers": "MES · SEN · GERS",
+          "Resurrection": "RE · SUR · REC · TION",
+          "Destiny": "DES · TI · NY",
+          "ordained": "OR · DAINED"
+        }
       },
       {
         unit: "Unit 2 & 10 • Lesson 1 & 3",
-        q: "Who was Khadijah (RA)?",
-        lead: "[Kha·di·jah|Khadijah] (RA) was a noble, kind, [wealth·y|wealthy] lady of Makkah. She was the wife of Prophet [Mu·ham·mad|Muhammad] (SAW).",
-        items: []
+        question: "Who was Khadijah (RA)?",
+        lead: "Khadijah (RA) was a noble, kind, wealthy lady of Makkah. She was the wife of Prophet Muhammad (SAW).",
+        items: [],
+        targets: {
+          "Khadijah": "KHA · DI · JAH",
+          "wealthy": "WEALTH · Y",
+          "Muhammad": "MU · HAM · MAD"
+        }
       },
       {
         unit: "Unit 2 & 10 • Lesson 1 & 3",
-        q: "Who was the first woman to accept Islam?",
-        lead: "[Kha·di·jah|Khadijah] (RA) was the first woman to [ac·cept|accept] Islam.",
-        items: []
+        question: "Who was the first woman to accept Islam?",
+        lead: "Khadijah (RA) was the first woman to accept Islam.",
+        items: [],
+        targets: {
+          "Khadijah": "KHA · DI · JAH",
+          "accept": "AC · CEPT"
+        }
       },
       {
         unit: "Unit 5 • Lesson 2 & 3",
-        q: "Why is bathing a good practice?",
-        lead: "Taking bath daily is a good [prac·tice|practice]. It makes a person clean and [health·y|healthy].",
-        items: []
+        question: "Why is bathing a good practice?",
+        lead: "Taking bath daily is a good practice. It makes a person clean and healthy.",
+        items: [],
+        targets: {
+          "practice": "PRAC · TICE",
+          "healthy": "HEALTH · Y"
+        }
       },
       {
         unit: "Unit 5 • Hadith (Abu Dawood)",
-        q: "What did Allah's Messenger (SAW) say about putting on a garment?",
-        lead: "Allah's Messenger (SAW) said: He who puts on a [gar·ment|garment] and says:",
-        hadith: "\"Praise be to Allah, who clothes me with this and who [pro·vid·ed|provided] me with it without any power or [a·bil·i·ty|ability] from me, his past and present sins are [for·giv·en|forgiven] for him.\" (Abu Dawood)",
-        items: []
+        question: "What did Allah's Messenger (SAW) say about putting on a garment?",
+        lead: "Allah's Messenger (SAW) said: He who puts on a garment and says:",
+        hadith: "\"Praise be to Allah, who clothes me with this and who provided me with it without any power or ability from me, his past and present sins are forgiven for him.\" (Abu Dawood)",
+        items: [],
+        targets: {
+          "garment": "GAR · MENT",
+          "provided": "PRO · VID · ED",
+          "ability": "A · BIL · I · TY",
+          "forgiven": "FOR · GIV · EN"
+        }
       }
     ];
 
-    let currentQ = 0;
+    let currentLessonIdx = 0;
     let isWriteMode = false;
+    let isCoverFlapClosed = false;
 
-    // Elements
-    const unitHeading = document.getElementById('unitHeading');
-    const questionTitle = document.getElementById('questionTitle');
-    const readingArea = document.getElementById('readingArea');
-    const flyerBadge = document.getElementById('flyerBadge');
-    const workspaceArea = document.getElementById('workspaceArea');
-    const binderCoverQText = document.getElementById('binderCoverQText');
-
-    // Header Pill Controls
-    const headerPill = document.getElementById('headerPill');
-    const pillRevealBtn = document.getElementById('pillRevealBtn');
-    const hidePillBtn = document.getElementById('hidePillBtn');
-    const modeBtn = document.getElementById('modeBtn');
-    const exitWriteBtn = document.getElementById('exitWriteBtn');
-    const dimBtn = document.getElementById('dimBtn');
-    const dimSliderBox = document.getElementById('dimSliderBox');
-    const dimRange = document.getElementById('dimRange');
-    const dimPercent = document.getElementById('dimPercent');
-    const dimOverlay = document.getElementById('dimOverlay');
-
-    // Header Pill Hide & Reveal
-    hidePillBtn.addEventListener('click', () => {
-      headerPill.classList.add('hidden');
-      pillRevealBtn.style.display = 'flex';
-    });
-
-    pillRevealBtn.addEventListener('click', () => {
-      headerPill.classList.remove('hidden');
-      pillRevealBtn.style.display = 'none';
-    });
-
-    // Dim Mode Slider (0% to 50%)
-    dimBtn.addEventListener('click', () => {
-      dimSliderBox.classList.toggle('show');
-    });
-
-    dimRange.addEventListener('input', (e) => {
-      const val = parseInt(e.target.value);
-      dimPercent.textContent = val + '%';
-      dimOverlay.style.opacity = (val / 100);
-    });
-
-    // Softer Grounded Syllable Tone Pitch (Matching EVS/English)
-    function playSoftSyllableTone() {
-      try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.frequency.value = 320; // Lowered, warm, grounded pitch
-        osc.type = 'triangle';
-        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.16);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.16);
-      } catch (err) {}
+    // --- Single Persistent Audio Context Suite ---
+    let sharedAudioCtx = null;
+    function getAudioContext() {
+      if (!sharedAudioCtx) {
+        sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (sharedAudioCtx.state === 'suspended') {
+        sharedAudioCtx.resume();
+      }
+      return sharedAudioCtx;
     }
 
-    // Tap-to-Read Single Word Speech
-    function speakWord(word, el) {
+    // Warm Harmonic Tone Generator (220 Hz - 260 Hz)
+    function playHarmonicTone(freq = 240, duration = 0.14) {
+      try {
+        const ctx = getAudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    // Pen Scribble Sound Synthesis
+    let scribbleOsc = null;
+    let scribbleGain = null;
+    function startScribbleSound() {
+      try {
+        const ctx = getAudioContext();
+        if (scribbleOsc) return;
+        scribbleOsc = ctx.createOscillator();
+        scribbleGain = ctx.createGain();
+        scribbleOsc.type = 'triangle';
+        scribbleOsc.frequency.setValueAtTime(140, ctx.currentTime);
+        scribbleGain.gain.setValueAtTime(0.02, ctx.currentTime);
+        scribbleOsc.connect(scribbleGain);
+        scribbleGain.connect(ctx.destination);
+        scribbleOsc.start();
+      } catch (e) {}
+    }
+
+    function stopScribbleSound() {
+      try {
+        if (scribbleGain && sharedAudioCtx) {
+          scribbleGain.gain.exponentialRampToValueAtTime(0.0001, sharedAudioCtx.currentTime + 0.05);
+          setTimeout(() => {
+            if (scribbleOsc) {
+              scribbleOsc.stop();
+              scribbleOsc.disconnect();
+              scribbleOsc = null;
+              scribbleGain = null;
+            }
+          }, 60);
+        }
+      } catch (e) {}
+    }
+
+    // Paper Whoosh Sound Synthesis
+    function playPaperWhoosh() {
+      try {
+        const ctx = getAudioContext();
+        const bufferSize = ctx.sampleRate * 0.16;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.35));
+        }
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(320, ctx.currentTime);
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.001, ctx.currentTime + 0.16);
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(ctx.destination);
+        noise.start();
+      } catch (e) {}
+    }
+
+    // --- DOM References ---
+    const unitBadge = document.getElementById('unitBadge');
+    const questionBox = document.getElementById('questionBox');
+    const answerBox = document.getElementById('answerBox');
+    const decorativeCover = document.getElementById('decorativeCover');
+    const modeStatusText = document.getElementById('modeStatusText');
+    const syllableFlyer = document.getElementById('syllableFlyer');
+
+    const modeToggleBtn = document.getElementById('modeToggleBtn');
+    const dimToggleBtn = document.getElementById('dimToggleBtn');
+    const dimSliderBox = document.getElementById('dimSliderBox');
+    const dimRangeInput = document.getElementById('dimRangeInput');
+    const dimOverlay = document.getElementById('dimOverlay');
+    const dimPercentageLabel = document.getElementById('dimPercentageLabel');
+
+    const carouselCards = document.querySelectorAll('.carousel-card-item');
+
+    // --- Tap-To-Read & Long-Press Syllable Parsing ---
+    function wrapTextIntoSpeakableSpans(text, targetsMap) {
+      const tokens = text.split(/(\s+)/);
+      return tokens.map(token => {
+        if (/^\s+$/.test(token)) return token;
+        const cleanWord = token.replace(/^[“"'(]+|[.,!?”"')]+$/g, '');
+        const targetSyl = targetsMap[cleanWord];
+        const isTarget = !!targetSyl;
+
+        return `<span class="speakable-word ${isTarget ? 'target-word' : ''}" data-word="${cleanWord}" ${isTarget ? `data-syl="${targetSyl}"` : ''}>${token}</span>`;
+      }).join('');
+    }
+
+    // Pronunciation replacement dictionary for honorary phrases
+    const pronunciationOverrides = {
+      "SAW": "Sallallahu Alayhi Wasallam",
+      "SWT": "Subhanahu Wa Ta'ala",
+      "RA": "Radiyallahu Anha"
+    };
+
+    function speakSingleWord(word, element) {
+      if (!word) return;
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
-        const clean = word.replace(/[(),."?:]/g, '').trim();
-        if (!clean) return;
-
-        const utter = new SpeechSynthesisUtterance(clean);
+        const spokenVersion = pronunciationOverrides[word] || word;
+        const utter = new SpeechSynthesisUtterance(spokenVersion);
         utter.rate = 0.88;
         utter.pitch = 1.0;
 
-        el.classList.add('speaking');
-        utter.onend = () => el.classList.remove('speaking');
-        utter.onerror = () => el.classList.remove('speaking');
+        element.classList.add('speaking-active');
+        utter.onend = () => element.classList.remove('speaking-active');
+        utter.onerror = () => element.classList.remove('speaking-active');
 
         window.speechSynthesis.speak(utter);
       }
+      playHarmonicTone(230, 0.08);
     }
 
-    // Render Question & Tap-to-Read Words
-    function loadQuestion(index) {
-      currentQ = index;
-      const data = lessonData[index];
-      unitHeading.textContent = data.unit;
-      questionTitle.textContent = `${index + 1}. ${data.q}`;
-      binderCoverQText.textContent = `Question ${index + 1}: Write & Practice`;
+    function showSyllableFlyer(element, sylText) {
+      const rect = element.getBoundingClientRect();
+      syllableFlyer.textContent = sylText;
+      syllableFlyer.style.left = `${rect.left + rect.width / 2}px`;
+      syllableFlyer.style.top = `${rect.top - 26}px`;
+      syllableFlyer.classList.add('show');
 
-      document.querySelectorAll('.tab-button').forEach((b, i) => {
-        b.classList.toggle('active', i === index);
-      });
+      // Sparkle
+      const sp = document.createElement('div');
+      sp.className = 'gold-particle-sparkle';
+      sp.textContent = '✦';
+      sp.style.left = `${rect.left + rect.width / 2}px`;
+      sp.style.top = `${rect.top}px`;
+      document.body.appendChild(sp);
+      setTimeout(() => sp.remove(), 1000);
 
-      // Parse text into individual interactive words & syllable breaks
-      function formatWords(sentence) {
-        return sentence.split(' ').map(token => {
-          // Check if token has syllable structure [syl|word]
-          const sylMatch = token.match(/\[([^\vert{}]+)\Vert{}([^\]]+)\]/);
-          if (sylMatch) {
-            const syl = sylMatch[1];
-            const word = sylMatch[2];
-            return `<span class="syl-break-word" data-syl="${syl}" data-word="${word}">${word}</span>`;
-          } else {
-            return `<span class="read-word">${token}</span>`;
+      setTimeout(() => syllableFlyer.classList.remove('show'), 1100);
+    }
+
+    function attachWordListeners(container) {
+      const words = container.querySelectorAll('.speakable-word');
+      words.forEach(el => {
+        let timer = null;
+        let isHold = false;
+        const rawWord = el.getAttribute('data-word');
+        const syl = el.getAttribute('data-syl');
+
+        el.addEventListener('pointerdown', () => {
+          isHold = false;
+          timer = setTimeout(() => {
+            isHold = true;
+            if (syl) {
+              showSyllableFlyer(el, syl);
+              playHarmonicTone(260, 0.16);
+            }
+          }, 400); // 400ms threshold
+        });
+
+        el.addEventListener('pointerup', () => {
+          if (timer) clearTimeout(timer);
+          if (!isHold) {
+            speakSingleWord(rawWord, el);
           }
-        }).join(' ');
-      }
-
-      let contentHtml = '';
-      if (data.lead) {
-        contentHtml += `<p style="margin-bottom:8px;">${formatWords(data.lead)}</p>`;
-      }
-
-      if (data.items && data.items.length > 0) {
-        contentHtml += `<div>`;
-        data.items.forEach(it => {
-          contentHtml += `<div class="point-line">${formatWords(it)}</div>`;
         });
-        contentHtml += `</div>`;
-      }
 
-      if (data.hadith) {
-        contentHtml += `<div class="hadith-quote">${formatWords(data.hadith)}</div>`;
-      }
-
-      readingArea.innerHTML = contentHtml;
-      attachReadingInteractions();
-    }
-
-    // Attach Click and Hold Handlers
-    function attachReadingInteractions() {
-      // Regular words -> Tap to read aloud
-      readingArea.querySelectorAll('.read-word').forEach(span => {
-        span.addEventListener('pointerdown', (e) => {
-          e.stopPropagation();
-          speakWord(span.textContent, span);
-        });
-      });
-
-      // Syllable words -> Show glowing badge + soft tone + speak
-      readingArea.querySelectorAll('.syl-break-word').forEach(span => {
-        const syl = span.getAttribute('data-syl');
-        const word = span.getAttribute('data-word');
-
-        span.addEventListener('pointerdown', (e) => {
-          e.stopPropagation();
-          const rect = span.getBoundingClientRect();
-          flyerBadge.textContent = syl.toUpperCase();
-          flyerBadge.style.left = `${rect.left + rect.width / 2}px`;
-          flyerBadge.style.top = `${rect.top - 24}px`;
-          flyerBadge.classList.add('active');
-
-          span.classList.add('pressed');
-          playSoftSyllableTone();
-          speakWord(word, span);
-
-          setTimeout(() => {
-            flyerBadge.classList.remove('active');
-            span.classList.remove('pressed');
-          }, 850);
+        el.addEventListener('pointercancel', () => {
+          if (timer) clearTimeout(timer);
         });
       });
     }
 
-    // Mode Toggle (Full Canvas Write vs Practice)
-    function setWriteMode(active) {
-      isWriteMode = active;
-      workspaceArea.classList.toggle('full-write-mode', isWriteMode);
-      modeBtn.classList.toggle('active', isWriteMode);
-      resizeCanvas();
+    // --- Load Lesson / Question View ---
+    function loadLesson(index) {
+      currentLessonIdx = index;
+      const lesson = syllabusLessons[index];
+
+      unitBadge.textContent = lesson.unit;
+
+      // Question sits at top
+      questionBox.innerHTML = wrapTextIntoSpeakableSpans(`${index + 1}. ${lesson.question}`, lesson.targets);
+      attachWordListeners(questionBox);
+
+      // Carousel Active Highlight
+      carouselCards.forEach((card, i) => {
+        card.classList.toggle('active-section', i === index);
+      });
+
+      if (!isWriteMode) {
+        // --- PRACTICE MODE STRUCTURE ---
+        // Both Question and Answer sit inside the binder under the decorative flap
+        answerBox.style.display = 'flex';
+        let ansHtml = '';
+        if (lesson.lead) {
+          ansHtml += `<p style="font-weight:600;">${wrapTextIntoSpeakableSpans(lesson.lead, lesson.targets)}</p>`;
+        }
+        if (lesson.items && lesson.items.length > 0) {
+          lesson.items.forEach(item => {
+            ansHtml += `<div class="bullet-point-row">${wrapTextIntoSpeakableSpans(item, lesson.targets)}</div>`;
+          });
+        }
+        if (lesson.hadith) {
+          ansHtml += `<div class="hadith-quote-card">${wrapTextIntoSpeakableSpans(lesson.hadith, lesson.targets)}</div>`;
+        }
+        answerBox.innerHTML = ansHtml;
+        attachWordListeners(answerBox);
+
+        // Flap is available to cover/open on demand
+        decorativeCover.style.display = 'flex';
+        decorativeCover.classList.toggle('flap-open', !isCoverFlapClosed);
+        modeStatusText.textContent = isCoverFlapClosed ? "Practice Mode (Binder Covered)" : "Practice Mode (Binder Open)";
+      } else {
+        // --- WRITE MODE STRUCTURE ---
+        // Only Question is present; Answer is not rendered or sealed inside
+        answerBox.style.display = 'none';
+        answerBox.innerHTML = '';
+        decorativeCover.style.display = 'none';
+        modeStatusText.textContent = "Write Mode (Question Only • Write on Canvas)";
+      }
     }
 
-    modeBtn.addEventListener('click', () => setWriteMode(!isWriteMode));
-    exitWriteBtn.addEventListener('click', () => setWriteMode(false));
+    // Practice Mode Cover Flap Toggle (Tap to open/close)
+    decorativeCover.addEventListener('click', () => {
+      isCoverFlapClosed = !isCoverFlapClosed;
+      decorativeCover.classList.toggle('flap-open', !isCoverFlapClosed);
+      modeStatusText.textContent = isCoverFlapClosed ? "Practice Mode (Binder Covered)" : "Practice Mode (Binder Open)";
+      playPaperWhoosh();
+    });
 
-    // Tab Button Navigation
-    document.querySelectorAll('.tab-button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const idx = parseInt(btn.getAttribute('data-q'));
-        loadQuestion(idx);
-        clearCanvas();
+    // Write Mode Toggle
+    modeToggleBtn.addEventListener('click', () => {
+      isWriteMode = !isWriteMode;
+      modeToggleBtn.classList.toggle('active', isWriteMode);
+      loadLesson(currentLessonIdx);
+      playHarmonicTone(isWriteMode ? 260 : 220, 0.12);
+    });
+
+    // Dim Slider Window Toggle
+    dimToggleBtn.addEventListener('click', () => {
+      const isVisible = dimSliderBox.classList.toggle('visible');
+      dimToggleBtn.classList.toggle('active', isVisible);
+      playHarmonicTone(240, 0.08);
+    });
+
+    // Dim Slider Action (0% to 50%)
+    dimRangeInput.addEventListener('input', (e) => {
+      const val = e.target.value;
+      dimOverlay.style.opacity = (val / 100).toString();
+      dimPercentageLabel.textContent = `${val}%`;
+    });
+
+    // Carousel Selection
+    carouselCards.forEach(c => {
+      c.addEventListener('click', () => {
+        const idx = parseInt(c.getAttribute('data-index'));
+        loadLesson(idx);
+        playHarmonicTone(250, 0.08);
       });
     });
 
-    // Single Integrated Tool Palette Toggle
-    const paletteToggleBtn = document.getElementById('paletteToggleBtn');
-    const toolDrawer = document.getElementById('toolDrawer');
-    paletteToggleBtn.addEventListener('click', () => {
-      toolDrawer.classList.toggle('open');
-    });
-
-    // Canvas Drawing Mechanics
+    // --- Multi-Page Canvas Drawing Suite with Tablet Coordinates ---
     const canvas = document.getElementById('writingCanvas');
     const ctx = canvas.getContext('2d');
-    const sheetWrapper = document.getElementById('sheetWrapper');
+    const canvasViewport = document.getElementById('canvasViewport');
+
+    let binderPages = [[]]; // Array of paths per page
+    let currentPageIdx = 0;
 
     let isDrawing = false;
-    let currentColor = '#0b4f35';
+    let penColor = '#0b5136';
+    let penWidth = 4.0;
     let isEraser = false;
 
-    function resizeCanvas() {
-      const rect = sheetWrapper.getBoundingClientRect();
+    function resizeCanvasDPR() {
+      const rect = canvasViewport.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
       canvas.width = rect.width * dpr;
       canvas.height = rect.height * dpr;
-      ctx.scale(dpr, dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
+      redrawActivePage();
     }
-    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('resize', resizeCanvasDPR);
 
-    function getPos(e) {
+    function redrawActivePage() {
+      const rect = canvasViewport.getBoundingClientRect();
+      ctx.clearRect(0, 0, rect.width, rect.height);
+
+      const paths = binderPages[currentPageIdx] || [];
+      paths.forEach(stroke => {
+        ctx.save();
+        if (stroke.isEraser) {
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.lineWidth = stroke.width;
+        } else {
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.strokeStyle = stroke.color;
+          ctx.lineWidth = stroke.width;
+        }
+
+        ctx.beginPath();
+        stroke.points.forEach((pt, i) => {
+          if (i === 0) ctx.moveTo(pt.x, pt.y);
+          else ctx.lineTo(pt.x, pt.y);
+        });
+        ctx.stroke();
+        ctx.restore();
+      });
+    }
+
+    let activeStroke = null;
+
+    function getCoords(e) {
       const rect = canvas.getBoundingClientRect();
       return {
         x: e.clientX - rect.left,
@@ -956,70 +1194,169 @@
       };
     }
 
+    // Palm & S-Pen Filtered Pointer Handlers
     canvas.addEventListener('pointerdown', (e) => {
+      // S-Pen & Palm Rejection: Filter non-primary touches
+      if (e.pointerType === 'touch' && !e.isPrimary) return;
+
       isDrawing = true;
-      const { x, y } = getPos(e);
+      startScribbleSound();
+      const pt = getCoords(e);
+
+      activeStroke = {
+        isEraser: isEraser,
+        color: penColor,
+        width: isEraser ? 24 : penWidth,
+        points: [pt]
+      };
+
+      ctx.save();
+      if (isEraser) {
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.lineWidth = 24;
+      } else {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.strokeStyle = penColor;
+        ctx.lineWidth = penWidth;
+      }
+
       ctx.beginPath();
-      ctx.moveTo(x, y);
+      ctx.moveTo(pt.x, pt.y);
       canvas.setPointerCapture(e.pointerId);
     });
 
     canvas.addEventListener('pointermove', (e) => {
-      if (!isDrawing) return;
-      const { x, y } = getPos(e);
-      ctx.strokeStyle = isEraser ? '#fffdf9' : currentColor;
-      ctx.lineWidth = isEraser ? 24 : 3.5;
-      ctx.lineTo(x, y);
+      if (!isDrawing || !activeStroke) return;
+      const pt = getCoords(e);
+      activeStroke.points.push(pt);
+      ctx.lineTo(pt.x, pt.y);
       ctx.stroke();
     });
 
-    function endDrawing() {
-      if (isDrawing) {
+    function finishStroke() {
+      if (isDrawing && activeStroke) {
         isDrawing = false;
+        stopScribbleSound();
         ctx.closePath();
+        ctx.restore();
+        binderPages[currentPageIdx].push(activeStroke);
+        activeStroke = null;
       }
     }
-    canvas.addEventListener('pointerup', endDrawing);
-    canvas.addEventListener('pointercancel', endDrawing);
 
-    // Tools Inside Drawer
-    const penTool = document.getElementById('penTool');
-    const eraserTool = document.getElementById('eraserTool');
-    const clearBtn = document.getElementById('clearBtn');
+    canvas.addEventListener('pointerup', finishStroke);
+    canvas.addEventListener('pointercancel', finishStroke);
 
-    penTool.addEventListener('click', () => {
+    // --- Single Floating Pen Pill Toggle & Controls ---
+    const penBubbleBtn = document.getElementById('penBubbleBtn');
+    const penPalette = document.getElementById('penPalette');
+    const penToolBtn = document.getElementById('penToolBtn');
+    const eraserToolBtn = document.getElementById('eraserToolBtn');
+    const clearPageBtn = document.getElementById('clearPageBtn');
+    const prevPageBtn = document.getElementById('prevPageBtn');
+    const nextPageBtn = document.getElementById('nextPageBtn');
+    const addPageBtn = document.getElementById('addPageBtn');
+    const pageIndicator = document.getElementById('pageIndicator');
+
+    penBubbleBtn.addEventListener('click', () => {
+      penPalette.classList.toggle('open');
+      playHarmonicTone(240, 0.08);
+    });
+
+    penToolBtn.addEventListener('click', () => {
       isEraser = false;
-      penTool.classList.add('active');
-      eraserTool.classList.remove('active');
+      penToolBtn.classList.add('selected');
+      eraserToolBtn.classList.remove('selected');
+      playHarmonicTone(250, 0.08);
     });
 
-    eraserTool.addEventListener('click', () => {
+    eraserToolBtn.addEventListener('click', () => {
       isEraser = true;
-      eraserTool.classList.add('active');
-      penTool.classList.remove('active');
+      eraserToolBtn.classList.add('selected');
+      penToolBtn.classList.remove('selected');
+      playHarmonicTone(220, 0.08);
     });
 
-    function clearCanvas() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-    clearBtn.addEventListener('click', clearCanvas);
+    clearPageBtn.addEventListener('click', () => {
+      binderPages[currentPageIdx] = [];
+      redrawActivePage();
+      playPaperWhoosh();
+    });
 
-    // Color Swatches Inside Drawer
-    document.querySelectorAll('.color-dot').forEach(dot => {
-      dot.addEventListener('click', () => {
+    // Pen Sizes
+    const size1Btn = document.getElementById('size1Btn');
+    const size2Btn = document.getElementById('size2Btn');
+    const size3Btn = document.getElementById('size3Btn');
+
+    size1Btn.addEventListener('click', () => {
+      penWidth = 2.0;
+      size1Btn.classList.add('selected');
+      size2Btn.classList.remove('selected');
+      size3Btn.classList.remove('selected');
+    });
+
+    size2Btn.addEventListener('click', () => {
+      penWidth = 4.0;
+      size2Btn.classList.add('selected');
+      size1Btn.classList.remove('selected');
+      size3Btn.classList.remove('selected');
+    });
+
+    size3Btn.addEventListener('click', () => {
+      penWidth = 7.0;
+      size3Btn.classList.add('selected');
+      size1Btn.classList.remove('selected');
+      size2Btn.classList.remove('selected');
+    });
+
+    // Color Swatches
+    document.querySelectorAll('.color-swatch-circle').forEach(sw => {
+      sw.addEventListener('click', () => {
         isEraser = false;
-        penTool.classList.add('active');
-        eraserTool.classList.remove('active');
-        document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
-        dot.classList.add('active');
-        currentColor = dot.getAttribute('data-color');
+        penToolBtn.classList.add('selected');
+        eraserToolBtn.classList.remove('selected');
+        document.querySelectorAll('.color-swatch-circle').forEach(s => s.classList.remove('selected'));
+        sw.classList.add('selected');
+        penColor = sw.getAttribute('data-color');
       });
     });
 
-    // Start App
+    // Multi-Page Handlers
+    function updatePageIndicator() {
+      pageIndicator.textContent = `Page ${currentPageIdx + 1}/${binderPages.length}`;
+    }
+
+    addPageBtn.addEventListener('click', () => {
+      binderPages.push([]);
+      currentPageIdx = binderPages.length - 1;
+      redrawActivePage();
+      updatePageIndicator();
+      playPaperWhoosh();
+    });
+
+    prevPageBtn.addEventListener('click', () => {
+      if (currentPageIdx > 0) {
+        currentPageIdx--;
+        redrawActivePage();
+        updatePageIndicator();
+        playPaperWhoosh();
+      }
+    });
+
+    nextPageBtn.addEventListener('click', () => {
+      if (currentPageIdx < binderPages.length - 1) {
+        currentPageIdx++;
+        redrawActivePage();
+        updatePageIndicator();
+        playPaperWhoosh();
+      }
+    });
+
+    // Initial Launch
     window.addEventListener('DOMContentLoaded', () => {
-      resizeCanvas();
-      loadQuestion(0);
+      resizeCanvasDPR();
+      loadLesson(0);
+      updatePageIndicator();
     });
   </script>
 </body>
