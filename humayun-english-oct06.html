@@ -795,7 +795,47 @@
       transform: translate(-50%, -50%) scale(1);
       opacity: 1;
     }
+    /* ===== PEN TOOLS TOGGLE (top-left, embossed avatar) ===== */
+    .pen-toggle-wrap { position: fixed; top: 86px; left: 14px; z-index: 96; display: none; flex-direction: column; align-items: center; gap: 8px; }
+    .pen-toggle-wrap.pen-visible { display: flex; }
+    body.pen-visible .stage-character-col { padding-left: 62px; }
+    .pen-avatar-btn {
+      width: 58px; height: 58px; border-radius: 50%; padding: 0; cursor: pointer;
+      border: 3px solid var(--gold-primary);
+      background: radial-gradient(circle at 30% 25%, #FFFFFF 0%, #FEF3C7 55%, #FCD34D 100%);
+      box-shadow: inset 2px 2px 4px rgba(255,255,255,0.95), inset -3px -3px 6px rgba(120,53,15,0.35), 0 5px 12px rgba(0,0,0,0.45);
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+      transition: transform 0.15s ease;
+    }
+    .pen-avatar-btn:active { transform: scale(0.94); box-shadow: inset 3px 3px 6px rgba(120,53,15,0.35), inset -2px -2px 4px rgba(255,255,255,0.8); }
+    .pen-avatar-btn img { width: 44px; height: 44px; object-fit: cover; border-radius: 50%; filter: drop-shadow(1px 1px 0 rgba(255,255,255,0.9)) drop-shadow(-1px -1px 1px rgba(120,53,15,0.55)); opacity: 0.92; pointer-events: none; }
+    .pen-panel {
+      display: none; flex-direction: column; align-items: center; gap: 6px;
+      background: rgba(255,253,246,0.96); border: 2.5px solid var(--gold-primary); border-radius: 18px;
+      padding: 8px 6px; box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+    }
+    .pen-panel.open { display: flex; }
+    .pt-btn {
+      width: 42px; height: 40px; border-radius: 12px; background: #F8FAFC; border: 1.5px solid #CBD5E1;
+      display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; color: #475569;
+    }
+    .pt-btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
+    .pt-btn.active-tool { background: #FEF08A; border-color: #D97706; color: #92400E; }
+    .pt-sep { width: 30px; height: 2px; background: rgba(217,119,6,0.4); border-radius: 2px; }
+    .pt-dot { display: block; border-radius: 50%; background: #1E3A8A; pointer-events: none; }
+
+    /* ===== WRITE MODE: ALL QUESTIONS AT ONCE ===== */
+    .batch-list { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 10px; padding: 4px 6px 14px 74px; }
+    .batch-row { display: flex; align-items: stretch; gap: 12px; background: rgba(255,253,246,0.96); border: 3px solid var(--gold-primary); border-radius: 18px; padding: 8px 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.3); flex-shrink: 0; }
+    .batch-q { width: 210px; flex-shrink: 0; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 6px; }
+    .batch-word { font-family: var(--font-story); font-size: 1.4rem; font-weight: 800; color: #92400E; cursor: pointer; line-height: 1.15; }
+    .batch-eq { color: #D97706; margin-left: 6px; }
+    .batch-sheet.notebook-sheet-viewport { flex: 1; height: 120px; min-height: 120px; border: 2px solid var(--gold-primary); border-radius: 12px; }
+    .batch-mini { position: absolute; top: 4px; right: 6px; z-index: 8; display: flex; gap: 5px; }
+    .batch-mini .pt-btn { width: 34px; height: 30px; border-radius: 9px; background: rgba(255,255,255,0.92); }
+    .batch-mini .pt-btn svg { width: 18px; height: 18px; }
   </style>
+
 </head>
 <body>
 
@@ -816,6 +856,24 @@
 
   <!-- PEEK HANDLE TO REVEAL DOCK WHEN HIDDEN -->
   <div class="dock-peek-handle" id="dockPeekHandle" onclick="showFloatingDock()">▾</div>
+
+
+  <!-- PEN TOOLS TOGGLE -->
+  <div class="pen-toggle-wrap" id="penToggleWrap">
+    <button type="button" class="pen-avatar-btn" onclick="togglePenPanel()" aria-label="Pen tools">
+      <img src="assets/humayun-avatar.webp" alt="" onerror="this.onerror=null;this.src='assets/humayun-avatar.png'" />
+    </button>
+    <div class="pen-panel" id="penPanel">
+      <button type="button" class="pt-btn active-tool" id="ptPen" onclick="selectTool('pen')"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+      <button type="button" class="pt-btn" id="ptEraser" onclick="selectTool('eraser')"><svg viewBox="0 0 24 24"><path d="M20 20H9L3.5 14.5a2 2 0 0 1 0-2.8L12 3.2a2 2 0 0 1 2.8 0l6 6a2 2 0 0 1 0 2.8L12 20"/><path d="M7 11l6 6"/></svg></button>
+      <button type="button" class="pt-btn" onclick="penUndo()"><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button>
+      <button type="button" class="pt-btn" onclick="penClear()"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 14h10l1-14"/></svg></button>
+      <div class="pt-sep"></div>
+      <button type="button" class="pt-btn" id="ptThin" onclick="selectPenSize('thin')"><span class="pt-dot" style="width:4px;height:4px;"></span></button>
+      <button type="button" class="pt-btn active-tool" id="ptMedium" onclick="selectPenSize('medium')"><span class="pt-dot" style="width:9px;height:9px;"></span></button>
+      <button type="button" class="pt-btn" id="ptThick" onclick="selectPenSize('thick')"><span class="pt-dot" style="width:15px;height:15px;"></span></button>
+    </div>
+  </div>
 
   <!-- 100% FULL-SCREEN MASTER STAGE -->
   <main class="master-scenic-stage" id="masterStageContainer">
@@ -858,7 +916,7 @@
       <div class="work-body-frame" id="workBodyFrame"></div>
 
       <div class="workspace-footer-bar">
-        <div style="display:flex; align-items:center; gap:8px;">
+        <div id="deckNav" style="display:flex; align-items:center; gap:8px;">
           <button type="button" class="icon-btn" onclick="stepItem(-1)">◀</button>
           <span style="font-family:var(--font-story); font-size:1.15rem; font-weight:800; color:#FFF; text-shadow:0 1px 3px #000; min-width:54px; text-align:center;" id="deckPagination">1 / 8</span>
           <button type="button" class="icon-btn" onclick="stepItem(1)">▶</button>
@@ -1221,6 +1279,11 @@
     let activePageNum = 1;
     let strokeUndoStack = {};
     let currentDrawingTool = 'pen';
+    let penSize = 'medium';
+    let lastActiveCanvasId = null;
+    let auditIdx = 0;
+    const PEN_SIZES = { thin: 1.0, medium: 1.9, thick: 3.4 };
+    const ERASER_RADIUS = { thin: 9, medium: 15, thick: 26 };
     let writeModeAuditStatus = {};
     let activeTextbookSlide = 1;
     let lastSlideDirection = 'next';
@@ -1274,6 +1337,7 @@
       document.getElementById('masterStageContainer').classList.remove('stage-darkened');
       document.getElementById('centralHubStage').classList.remove('hidden-hub');
       activeSection = null;
+      syncPenToggle();
       renderHubPortals();
     }
 
@@ -1301,7 +1365,7 @@
       else if (secKey === 'questions') activeDeck = [...QA_DATA];
       else if (secKey === 'textbook') activeDeck = ['ex_1', 'ex_2', 'ex_3', 'ex_4'];
 
-      if (currentMode === 'write' && secKey !== 'textbook') {
+      if (currentMode === 'write' && secKey !== 'textbook' && !isBatchWrite()) {
         activeDeck.sort(() => Math.random() - 0.5);
       }
 
@@ -1314,10 +1378,17 @@
       dismissAuditCurtain();
       clearSyllableTimers();
       const viewport = document.getElementById('workBodyFrame');
+      document.getElementById('deckNav').style.display = 'flex';
+      syncPenToggle();
 
       if (activeSection === 'textbook') {
         viewport.innerHTML = '';
         renderTextbookModule();
+        return;
+      }
+
+      if (isBatchWrite()) {
+        renderBatchWrite();
         return;
       }
 
@@ -1388,12 +1459,7 @@
 
       canvasContainer.innerHTML = `
         <div class="canvas-tools-strip">
-          <div style="display:flex; gap:6px;">
-            <button type="button" class="tool-btn ${currentDrawingTool === 'pen' ? 'active-tool' : ''}" id="btnPen" onclick="selectTool('pen')">🖊️</button>
-            <button type="button" class="tool-btn ${currentDrawingTool === 'eraser' ? 'active-tool' : ''}" id="btnEraser" onclick="selectTool('eraser')">🧹</button>
-            <button type="button" class="tool-btn" onclick="undoCanvasStroke('${canvasStorageId}')">↶</button>
-            <button type="button" class="tool-btn" onclick="clearSlateCanvas('${canvasStorageId}')">🗑️</button>
-          </div>
+          <div></div>
           <div style="display:flex; align-items:center; gap:6px;">
             <span style="font-family:var(--font-story); font-size:0.95rem; font-weight:800; color:#78350F;">${activePageNum}/2</span>
             <button type="button" class="tool-btn" onclick="flipCanvasPage()">➕</button>
@@ -1524,10 +1590,85 @@
 
     function selectTool(tool) {
       currentDrawingTool = tool;
-      const penBtn = document.getElementById('btnPen');
-      const eraBtn = document.getElementById('btnEraser');
-      if (penBtn) penBtn.classList.toggle('active-tool', tool === 'pen');
-      if (eraBtn) eraBtn.classList.toggle('active-tool', tool === 'eraser');
+      const p = document.getElementById('ptPen'), e = document.getElementById('ptEraser');
+      if (p) p.classList.toggle('active-tool', tool === 'pen');
+      if (e) e.classList.toggle('active-tool', tool === 'eraser');
+    }
+
+    function selectPenSize(sz) {
+      penSize = sz;
+      ['thin', 'medium', 'thick'].forEach(k => {
+        const b = document.getElementById('pt' + k.charAt(0).toUpperCase() + k.slice(1));
+        if (b) b.classList.toggle('active-tool', k === sz);
+      });
+    }
+
+    function togglePenPanel() {
+      document.getElementById('penPanel').classList.toggle('open');
+    }
+
+    function syncPenToggle() {
+      const show = !!activeSection && activeSection !== 'textbook';
+      document.getElementById('penToggleWrap').classList.toggle('pen-visible', show);
+      document.body.classList.toggle('pen-visible', show);
+      if (!show) document.getElementById('penPanel').classList.remove('open');
+    }
+
+    function getTargetCanvasId() {
+      if (lastActiveCanvasId && document.querySelector(`[data-canvas-id="${lastActiveCanvasId}"]`)) return lastActiveCanvasId;
+      const first = document.querySelector('.retina-ink-canvas');
+      return first ? first.getAttribute('data-canvas-id') : null;
+    }
+    function penUndo() { const id = getTargetCanvasId(); if (id) undoCanvasStroke(id); }
+    function penClear() { const id = getTargetCanvasId(); if (id) clearSlateCanvas(id); }
+
+    function isBatchWrite() {
+      return currentMode === 'write' && (activeSection === 'meanings' || activeSection === 'opposites');
+    }
+
+    /* WRITE MODE: ALL MEANINGS / OPPOSITES LISTED AT ONCE, EACH WITH ITS OWN INLINE CANVAS */
+    function renderBatchWrite() {
+      const viewport = document.getElementById('workBodyFrame');
+      document.getElementById('deckNav').style.display = 'none';
+      document.getElementById('parentReviewArea').innerHTML = '';
+      document.getElementById('bannerHeadingText').textContent = activeSection === 'meanings' ? 'Meanings' : 'Opposites';
+      viewport.className = 'work-body-frame slide-enter-next';
+      viewport.innerHTML = '';
+
+      const sign = activeSection === 'meanings' ? '=' : '↔';
+      const UND_SVG = '<svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>';
+      const CLR_SVG = '<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 14h10l1-14"/></svg>';
+      const rows = activeDeck.map((item, idx) => {
+        const cid = `slate_write_${item.id}_p1`;
+        const ok = writeModeAuditStatus[item.id] === true;
+        return `
+          <div class="batch-row">
+            <div class="batch-q">
+              <div class="batch-word" onclick="speakText('${item.q.replace(/'/g, "\\'")}')">${idx + 1}. ${item.q}<span class="batch-eq">${sign}</span></div>
+              <button type="button" class="icon-btn" id="batchLock_${item.id}" onclick="openParentAudit(${idx})" style="width:42px; height:36px; background:${ok ? '#DCFCE7' : '#FEF3C7'}; border-color:${ok ? '#16A34A' : '#D97706'};">${ok ? '✓' : '🔐'}</button>
+            </div>
+            <div class="notebook-sheet-viewport batch-sheet">
+              <div class="notebook-double-margin"></div>
+              <div class="notebook-four-lines-bg"></div>
+              <canvas class="retina-ink-canvas" data-canvas-id="${cid}"></canvas>
+              <div class="batch-mini">
+                <button type="button" class="pt-btn" onclick="undoCanvasStroke('${cid}')">${UND_SVG}</button>
+                <button type="button" class="pt-btn" onclick="clearSlateCanvas('${cid}')">${CLR_SVG}</button>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+      viewport.innerHTML = `<div class="batch-list">${rows}</div>`;
+      setTimeout(setupInkCanvases, 60);
+    }
+
+    function refreshBatchRow(item) {
+      const b = document.getElementById('batchLock_' + item.id);
+      if (!b) return;
+      const ok = writeModeAuditStatus[item.id] === true;
+      b.textContent = ok ? '✓' : '🔐';
+      b.style.background = ok ? '#DCFCE7' : '#FEF3C7';
+      b.style.borderColor = ok ? '#16A34A' : '#D97706';
     }
 
     // Palm rejection settings
@@ -1550,7 +1691,7 @@
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.clearRect(0, 0, logicalW, logicalH);
 
-        if (!strokeUndoStack[id]) strokeUndoStack[id] = [];
+        const hist = strokeUndoStack[id] || (strokeUndoStack[id] = [null]); // index 0 = blank baseline
 
         const storageKey = getStorageKey(id);
         const cached = inkMemoryCache[storageKey] || localStorage.getItem(storageKey);
@@ -1558,7 +1699,7 @@
         if (cached) {
           inkMemoryCache[storageKey] = cached;
           hasDrawnRegistry[id] = true;
-          if (strokeUndoStack[id].length === 0) strokeUndoStack[id].push(cached);
+          if (hist.length === 1 && hist[0] === null) hist[0] = cached;
           const img = new Image();
           img.onload = () => {
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -1580,8 +1721,9 @@
           activePointerId = null;
           activePointerType = null;
           try {
-            strokeUndoStack[id].push(c.toDataURL("image/png"));
-            if (strokeUndoStack[id].length > 15) strokeUndoStack[id].shift();
+            const h = strokeUndoStack[id] || (strokeUndoStack[id] = [null]);
+            h.push(c.toDataURL("image/png"));
+            if (h.length > 16) h.shift();
           } catch (_) {}
           saveCanvasBuffer(c, id);
         };
@@ -1606,6 +1748,7 @@
           isDrawing = true;
           hideFloatingDock();
           hasDrawnRegistry[id] = true;
+          lastActiveCanvasId = id;
           try { c.setPointerCapture(e.pointerId); } catch (_) {}
           cachedRect = c.getBoundingClientRect();
           lastX = e.clientX - cachedRect.left;
@@ -1629,13 +1772,14 @@
             ctx.lineJoin = "round";
             ctx.strokeStyle = "#1E3A8A";
             const rawP = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
-            ctx.lineWidth = 1.8 * (rawP * 1.35 + 0.35);
+            ctx.lineWidth = PEN_SIZES[penSize] * (rawP * 1.35 + 0.35);
             ctx.stroke();
           } else {
             ctx.globalCompositeOperation = 'destination-out';
             ctx.beginPath();
-            ctx.arc(currX, currY, 15, 0, Math.PI * 2);
+            ctx.arc(currX, currY, ERASER_RADIUS[penSize], 0, Math.PI * 2);
             ctx.fill();
+            ctx.globalCompositeOperation = 'source-over';
           }
 
           lastX = currX;
@@ -1673,27 +1817,33 @@
 
     function undoCanvasStroke(id) {
       const c = document.querySelector(`[data-canvas-id="${id}"]`);
-      if (!c || !strokeUndoStack[id] || strokeUndoStack[id].length === 0) return;
+      const hist = strokeUndoStack[id];
+      if (!c || !hist || hist.length <= 1) return;
 
       audioFX.playSnap();
-      strokeUndoStack[id].pop();
-      const prevData = strokeUndoStack[id][strokeUndoStack[id].length - 1];
+      hist.pop();
+      const prevData = hist[hist.length - 1];
 
       const ctx = c.getContext("2d");
       const dpr = window.devicePixelRatio || 1;
+      ctx.globalCompositeOperation = 'source-over';   // eraser leaves 'destination-out' behind; reset it
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, c.width / dpr, c.height / dpr);
 
       const key = getStorageKey(id);
+      const token = c._undoToken = (c._undoToken || 0) + 1;
       if (prevData) {
         const img = new Image();
         img.onload = () => {
+          if (c._undoToken !== token) return;
+          ctx.globalCompositeOperation = 'source-over';
           ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
           ctx.drawImage(img, 0, 0, c.width / dpr, c.height / dpr);
         };
         img.src = prevData;
+        hasDrawnRegistry[id] = true;
         inkMemoryCache[key] = prevData;
-        localStorage.setItem(key, prevData);
+        try { localStorage.setItem(key, prevData); } catch (_) {}
       } else {
         delete inkMemoryCache[key];
         hasDrawnRegistry[id] = false;
@@ -1705,13 +1855,14 @@
       const key = getStorageKey(canvasId);
       delete inkMemoryCache[key];
       delete hasDrawnRegistry[canvasId];
-      delete strokeUndoStack[canvasId];
+      strokeUndoStack[canvasId] = [null];   // keep a blank baseline so undo keeps working after Clear
       localStorage.removeItem(key);
 
       const c = document.querySelector(`[data-canvas-id="${canvasId}"]`);
       if (c) {
         const ctx = c.getContext("2d");
         const dpr = window.devicePixelRatio || 1;
+        ctx.globalCompositeOperation = 'source-over';
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.clearRect(0, 0, c.width / dpr, c.height / dpr);
       }
@@ -1723,8 +1874,9 @@
     }
 
     /* PARENT AUDIT */
-    function openParentAudit() {
-      const item = activeDeck[currentItemIdx];
+    function openParentAudit(idx) {
+      auditIdx = (typeof idx === 'number') ? idx : currentItemIdx;
+      const item = activeDeck[auditIdx];
       const hasInk = hasDrawnRegistry[`slate_${currentMode}_${item.id}_p1`] || 
                      hasDrawnRegistry[`slate_${currentMode}_${item.id}_p2`];
 
@@ -1745,24 +1897,26 @@
 
     function markParentAudit(isCorrect) {
       dismissAuditCurtain();
-      const item = activeDeck[currentItemIdx];
+      const item = activeDeck[auditIdx];
       writeModeAuditStatus[item.id] = isCorrect;
+      const batch = isBatchWrite();
 
       if (isCorrect) {
         audioFX.playBell();
         triggerSpriteCheer();
         const allAnswered = activeDeck.every(it => writeModeAuditStatus[it.id] === true);
+        if (batch) refreshBatchRow(item);
         if (allAnswered) {
           triggerGrandCelebration();
-        } else {
+        } else if (!batch) {
           stepItem(1);
         }
       } else {
         audioFX.playSnap();
-        speakText(`Practice Question ${currentItemIdx + 1} again!`);
+        speakText(`Practice Question ${auditIdx + 1} again!`);
         purgeStoredCanvas(`slate_${currentMode}_${item.id}_p1`);
         purgeStoredCanvas(`slate_${currentMode}_${item.id}_p2`);
-        renderCurrentDeckItem(false);
+        if (batch) refreshBatchRow(item); else renderCurrentDeckItem(false);
       }
     }
 
