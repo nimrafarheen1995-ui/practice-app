@@ -3,43 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Humayun's Islamiyath Adventure - Oct 17</title>
+  <title>Humayun - Islamiyath</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Quicksand:wght@500;600;700&family=Amiri:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-primary: #f6f3eb;
-      --card-bg: rgba(255, 255, 255, 0.94);
+      --bg-cream: #fbf9f4;
+      --card-bg: #ffffff;
       --card-border: #d4af37;
-      --text-main: #132a1e;
-      --text-muted: #4b6354;
-      --emerald: #0b4f35;
+      --green-dark: #0b4f35;
+      --green-deep: #063322;
       --gold: #d4af37;
-      --gold-dark: #997b1f;
-      --gold-glow: rgba(212, 175, 55, 0.35);
-      --binder-spine: #073523;
-      --binder-ring: #c6a02b;
+      --gold-soft: #f7e7b4;
+      --text-main: #14281d;
+      --text-muted: #536b5c;
       --canvas-bg: #fffdf9;
-      --canvas-line: #eadfbc;
-      --overlay-dim: rgba(7, 18, 13, 0.75);
-    }
-
-    body.dim-mode {
-      --bg-primary: #070f14;
-      --card-bg: rgba(13, 27, 24, 0.92);
-      --card-border: #b8912e;
-      --text-main: #f0f7f3;
-      --text-muted: #8ca395;
-      --emerald: #146142;
-      --gold: #e5c158;
-      --gold-dark: #b8912e;
-      --gold-glow: rgba(229, 193, 88, 0.45);
-      --binder-spine: #05160f;
-      --binder-ring: #e5c158;
-      --canvas-bg: #0d1e18;
-      --canvas-line: #1c382e;
-      --overlay-dim: rgba(2, 6, 4, 0.88);
+      --line-color: #eadfbc;
     }
 
     * {
@@ -54,31 +34,34 @@
     body {
       font-family: 'Quicksand', sans-serif;
       min-height: 100vh;
-      background-color: var(--bg-primary);
+      background-color: var(--bg-cream);
       color: var(--text-main);
       overflow-x: hidden;
       position: relative;
-      transition: background-color 0.4s ease, color 0.4s ease;
+    }
+
+    /* Dim Screen Overlay (0 to 50%) */
+    #dimOverlay {
+      position: fixed;
+      inset: 0;
+      background: #000000;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transition: opacity 0.15s ease;
     }
 
     /* Ambient Background Texture */
-    .bg-oasis {
+    .oasis-bg {
       position: fixed;
       inset: 0;
       background: url('assets/night-oasis-bg.webp') center center / cover no-repeat;
-      opacity: 0.18;
+      opacity: 0.22;
       pointer-events: none;
       z-index: 0;
-      transition: opacity 0.4s ease;
     }
 
-    body.dim-mode .bg-oasis {
-      opacity: 0.38;
-      filter: brightness(0.7) contrast(1.15);
-    }
-
-    /* App Shell */
-    .app-container {
+    .main-layout {
       position: relative;
       z-index: 1;
       max-width: 1200px;
@@ -86,149 +69,170 @@
       padding: 12px 16px 40px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
-    }
-
-    /* Header Nav */
-    header.top-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: var(--card-bg);
-      border: 2px solid var(--card-border);
-      border-radius: 18px;
-      padding: 10px 18px;
-      box-shadow: 0 8px 24px var(--gold-glow);
-      backdrop-filter: blur(10px);
-    }
-
-    .header-left {
-      display: flex;
-      align-items: center;
       gap: 12px;
     }
 
-    .avatar-wrap {
-      width: 58px;
-      height: 58px;
-      border-radius: 50%;
-      border: 3px solid var(--gold);
-      background: #fff;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      flex-shrink: 0;
+    /* Floating Pill Header & Toggle Trigger */
+    .top-controls {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      position: relative;
+      min-height: 52px;
     }
 
-    .avatar-wrap img {
+    .header-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid var(--gold);
+      border-radius: 50px;
+      padding: 6px 14px;
+      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.25);
+      backdrop-filter: blur(8px);
+      transition: transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.3s ease;
+    }
+
+    .header-pill.hidden {
+      transform: translateY(-80px) scale(0.9);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .pill-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1.5px solid var(--gold);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .pill-btn:hover {
+      transform: scale(1.08);
+      background: var(--gold-soft);
+    }
+
+    .pill-btn.active {
+      background: var(--green-dark);
+      border-color: var(--gold);
+    }
+
+    .pill-btn img {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+    }
+
+    .pill-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 2px solid var(--gold);
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .pill-avatar img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
 
-    .title-group h1 {
-      font-family: 'Cinzel', serif;
-      font-size: 1.45rem;
-      color: var(--emerald);
-      letter-spacing: 0.5px;
-      line-height: 1.15;
-    }
-
-    body.dim-mode .title-group h1 {
-      color: var(--gold);
-    }
-
-    .title-group p {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-
-    .controls-group {
+    /* Floating Pill Reveal Toggle */
+    .pill-toggle-trigger {
+      position: fixed;
+      top: 12px;
+      right: 16px;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--green-dark);
+      border: 2px solid var(--gold);
       display: flex;
       align-items: center;
-      gap: 10px;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+      z-index: 100;
+      color: #fff;
+      font-size: 1.2rem;
     }
 
-    .btn-toggle {
-      border: 2px solid var(--gold);
-      background: var(--card-bg);
-      color: var(--text-main);
-      padding: 8px 14px;
-      border-radius: 12px;
-      cursor: pointer;
-      font-weight: 700;
-      display: inline-flex;
+    /* Slider Container inside Pill */
+    .dim-slider-box {
+      display: none;
       align-items: center;
       gap: 6px;
-      font-size: 0.88rem;
-      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-      box-shadow: 0 3px 8px rgba(0,0,0,0.06);
+      padding-left: 4px;
     }
 
-    .btn-toggle:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 14px var(--gold-glow);
+    .dim-slider-box.show {
+      display: flex;
     }
 
-    .btn-toggle:active {
-      transform: scale(0.96);
+    .dim-slider-box input[type="range"] {
+      width: 80px;
+      accent-color: var(--gold);
+      cursor: pointer;
     }
 
-    .btn-toggle.active {
-      background: linear-gradient(135deg, var(--emerald), #083c28);
-      color: #fff;
-      border-color: var(--gold);
+    .dim-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--green-dark);
+      min-width: 32px;
     }
 
-    .icon-small {
-      width: 20px;
-      height: 20px;
-      object-fit: contain;
-    }
-
-    /* Progress & Arch Banner */
-    .banner-arch-wrap {
+    /* Arch Center Header */
+    .arch-banner {
       width: 100%;
-      height: 60px;
+      height: 52px;
       position: relative;
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: -4px 0 2px;
+      margin: -6px 0 2px;
     }
 
-    .arch-bg-img {
+    .arch-banner img.arch-img {
       position: absolute;
       width: 100%;
-      max-width: 580px;
+      max-width: 520px;
       height: 100%;
       object-fit: contain;
-      opacity: 0.85;
+      opacity: 0.88;
       pointer-events: none;
     }
 
-    .badge-star-icon {
-      width: 38px;
-      height: 38px;
+    .arch-banner img.star-img {
+      width: 36px;
+      height: 36px;
       z-index: 1;
-      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.25));
+      filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
     }
 
-    /* Lesson Navigation Carousel */
-    .tabs-bar {
+    /* Question Tabs */
+    .tab-bar {
       display: flex;
       gap: 8px;
       overflow-x: auto;
       padding-bottom: 4px;
       scrollbar-width: none;
     }
-    .tabs-bar::-webkit-scrollbar { display: none; }
+    .tab-bar::-webkit-scrollbar { display: none; }
 
-    .tab-btn {
+    .tab-button {
       flex: 1;
-      min-width: 150px;
-      padding: 10px 14px;
-      border-radius: 14px;
+      min-width: 135px;
+      padding: 9px 12px;
+      border-radius: 12px;
       border: 1.5px solid var(--card-border);
       background: var(--card-bg);
       color: var(--text-main);
@@ -236,459 +240,705 @@
       font-size: 0.85rem;
       text-align: center;
       cursor: pointer;
-      transition: all 0.25s ease;
+      transition: all 0.2s ease;
       white-space: nowrap;
     }
 
-    .tab-btn.active {
-      background: linear-gradient(135deg, var(--emerald), #062e1f);
+    .tab-button.active {
+      background: linear-gradient(135deg, var(--green-dark), var(--green-deep));
       color: #fff;
       border-color: var(--gold);
-      box-shadow: 0 4px 16px var(--gold-glow);
+      box-shadow: 0 4px 14px rgba(212, 175, 55, 0.3);
     }
 
-    /* Main Workspace Split-Deck */
-    .workspace {
+    /* Workspace Section */
+    .workspace-area {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 16px;
+      gap: 14px;
+      position: relative;
+      transition: all 0.3s ease;
     }
 
     @media (min-width: 900px) {
-      .workspace {
+      .workspace-area {
         grid-template-columns: 1.05fr 1fr;
       }
     }
 
-    /* Practice & Lesson Card */
-    .study-card {
+    /* Practice Mode Layout */
+    .practice-deck {
       background: var(--card-bg);
       border: 2px solid var(--card-border);
-      border-radius: 20px;
-      padding: 22px;
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
-      position: relative;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      backdrop-filter: blur(8px);
+      gap: 14px;
     }
 
-    .unit-tag {
+    .unit-heading {
       font-family: 'Cinzel', serif;
-      font-size: 0.85rem;
-      color: var(--gold-dark);
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    body.dim-mode .unit-tag {
-      color: var(--gold);
+      font-size: 0.8rem;
+      color: #92751c;
+      font-weight: 700;
+      letter-spacing: 0.8px;
     }
 
     .question-title {
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       font-weight: 700;
-      color: var(--text-main);
+      color: var(--green-dark);
       line-height: 1.35;
     }
 
-    /* Interactive Syllable-Break Answer Box */
-    .answer-box {
-      background: var(--bg-primary);
+    .reading-content {
+      background: var(--bg-cream);
       border: 1.5px dashed var(--gold);
-      border-radius: 16px;
+      border-radius: 14px;
       padding: 16px;
-      font-size: 1.1rem;
-      line-height: 1.65;
+      font-size: 1.15rem;
+      line-height: 1.75;
     }
 
-    .syllable-word {
+    /* Tap-to-Read Words */
+    .read-word {
+      display: inline-block;
+      cursor: pointer;
+      padding: 1px 3px;
+      border-radius: 4px;
+      transition: background 0.15s, transform 0.15s;
+    }
+
+    .read-word:hover {
+      background: var(--gold-soft);
+      transform: scale(1.05);
+    }
+
+    .read-word.speaking {
+      background: var(--gold);
+      color: #000;
+      font-weight: 700;
+    }
+
+    /* Syllable-break Special Words */
+    .syl-break-word {
       display: inline-flex;
       align-items: center;
-      background: rgba(212, 175, 55, 0.16);
+      background: rgba(212, 175, 55, 0.18);
       border: 1px solid var(--gold);
-      padding: 3px 8px;
-      border-radius: 8px;
-      margin: 2px 3px;
+      padding: 2px 7px;
+      border-radius: 6px;
+      margin: 1px 2px;
       cursor: pointer;
-      position: relative;
       font-weight: 700;
+      color: var(--green-dark);
       transition: all 0.2s ease;
-      color: var(--emerald);
     }
 
-    body.dim-mode .syllable-word {
-      background: rgba(229, 193, 88, 0.15);
-      color: var(--gold);
-    }
-
-    .syllable-word:hover {
+    .syl-break-word:hover {
+      background: rgba(212, 175, 55, 0.35);
       transform: scale(1.04);
-      background: rgba(212, 175, 55, 0.32);
     }
 
-    .syllable-word.pressed {
+    .syl-break-word.pressed {
       background: var(--gold);
       color: #000;
     }
 
-    .bullet-item {
+    .point-line {
       margin: 8px 0;
-      padding-left: 14px;
+      padding-left: 16px;
       position: relative;
     }
 
-    .bullet-item::before {
+    .point-line::before {
       content: '✦';
       position: absolute;
       left: 0;
       color: var(--gold);
-      font-size: 0.85rem;
-      top: 2px;
+      font-size: 0.8rem;
+      top: 3px;
     }
 
-    /* Dua Callout Specifics */
-    .dua-block {
+    .hadith-quote {
       background: rgba(11, 79, 53, 0.08);
-      border-left: 4px solid var(--emerald);
-      padding: 12px 16px;
-      border-radius: 0 14px 14px 0;
+      border-left: 4px solid var(--green-dark);
+      padding: 12px 14px;
+      border-radius: 0 12px 12px 0;
+      margin-top: 8px;
       font-style: italic;
     }
 
-    body.dim-mode .dua-block {
-      background: rgba(20, 97, 66, 0.2);
-      border-left-color: var(--gold);
-    }
-
-    /* Canvas / Notebook Binder Section */
-    .binder-container {
+    /* Binder Canvas Container */
+    .canvas-binder {
       background: var(--card-bg);
       border: 2px solid var(--card-border);
-      border-radius: 20px;
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.08);
-      padding: 18px 18px 18px 36px;
+      border-radius: 18px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+      padding: 16px 16px 16px 36px;
       position: relative;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       min-height: 480px;
+      transition: all 0.35s ease;
     }
 
-    /* Left Binder Rings Spine */
+    /* Leather Spine & Rings */
     .binder-spine {
       position: absolute;
       left: 0;
       top: 0;
       bottom: 0;
-      width: 26px;
-      background: var(--binder-spine);
-      border-radius: 18px 0 0 18px;
+      width: 24px;
+      background: var(--green-deep);
+      border-radius: 16px 0 0 16px;
       display: flex;
       flex-direction: column;
       justify-content: space-around;
       align-items: center;
-      padding: 16px 0;
+      padding: 18px 0;
     }
 
-    .binder-ring-hole {
-      width: 14px;
-      height: 14px;
+    .ring-hole {
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
       background: #fff;
-      border: 3px solid var(--binder-ring);
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+      border: 2.5px solid var(--gold);
     }
 
-    .canvas-tools {
-      display: flex;
+    /* Full-Screen Binder Cover for Write Mode */
+    .workspace-area.full-write-mode {
+      grid-template-columns: 1fr;
+    }
+
+    .workspace-area.full-write-mode .practice-deck {
+      display: none !important;
+    }
+
+    .workspace-area.full-write-mode .canvas-binder {
+      min-height: 78vh;
+    }
+
+    /* Binder Cover Overlay Banner (Displayed in Write Mode) */
+    .binder-cover-header {
+      display: none;
       align-items: center;
       justify-content: space-between;
-      flex-wrap: wrap;
+      padding: 10px 16px;
+      background: linear-gradient(135deg, var(--green-dark), var(--green-deep));
+      color: #fff;
+      border-radius: 12px;
+      border: 1.5px solid var(--gold);
+    }
+
+    .workspace-area.full-write-mode .binder-cover-header {
+      display: flex;
+    }
+
+    .binder-cover-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1rem;
+      color: var(--gold);
+      display: flex;
+      align-items: center;
       gap: 8px;
     }
 
-    .tool-group {
+    /* Single Integrated Writing Tool Palette */
+    .canvas-tool-bar {
       display: flex;
-      gap: 6px;
       align-items: center;
+      position: relative;
+      gap: 8px;
     }
 
-    .tool-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
+    .tool-palette-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 25px;
+      background: #fff;
+      border: 1.5px solid var(--gold);
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.85rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .tool-drawer {
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      border: 1.5px solid var(--gold);
+      border-radius: 30px;
+      padding: 4px 10px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      animation: fadeInDrawer 0.2s ease forwards;
+    }
+
+    .tool-drawer.open {
+      display: flex;
+    }
+
+    @keyframes fadeInDrawer {
+      from { opacity: 0; transform: scale(0.92); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .draw-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
       border: 1.5px solid var(--card-border);
-      background: var(--bg-primary);
-      color: var(--text-main);
+      background: #fff;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.05rem;
       cursor: pointer;
-      transition: all 0.2s;
+      font-size: 0.95rem;
     }
 
-    .tool-btn:hover {
-      transform: translateY(-2px);
-    }
-
-    .tool-btn.active {
-      background: var(--emerald);
+    .draw-btn.active {
+      background: var(--green-dark);
       color: #fff;
       border-color: var(--gold);
     }
 
-    .color-swatch {
-      width: 28px;
-      height: 28px;
+    .color-dot {
+      width: 22px;
+      height: 22px;
       border-radius: 50%;
       border: 2px solid #fff;
-      box-shadow: 0 0 0 1.5px var(--card-border);
+      box-shadow: 0 0 0 1px #ccc;
       cursor: pointer;
-      transition: transform 0.2s;
     }
 
-    .color-swatch.active {
-      transform: scale(1.22);
+    .color-dot.active {
+      transform: scale(1.2);
       box-shadow: 0 0 0 2px var(--gold);
     }
 
-    /* Lined Writing Canvas Area */
-    .canvas-wrapper {
+    /* Lined Writing Surface */
+    .lined-sheet {
       flex: 1;
       width: 100%;
-      border-radius: 14px;
+      border-radius: 12px;
       border: 1px solid var(--card-border);
       background-color: var(--canvas-bg);
       background-image: repeating-linear-gradient(
         to bottom,
         transparent,
         transparent 31px,
-        var(--canvas-line) 31px,
-        var(--canvas-line) 32px
+        var(--line-color) 31px,
+        var(--line-color) 32px
       );
       position: relative;
       touch-action: none;
-      min-height: 360px;
-      box-shadow: inset 0 2px 8px rgba(0,0,0,0.04);
+      min-height: 380px;
     }
 
-    canvas#paintCanvas {
+    canvas#writingCanvas {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
-      border-radius: 14px;
+      border-radius: 12px;
     }
 
-    /* Floating Syllable Popover */
-    .syllable-badge-flyer {
+    /* Syllable Floating Pop Badge */
+    .syllable-flyer {
       position: fixed;
       pointer-events: none;
-      z-index: 999;
-      background: linear-gradient(135deg, var(--gold), #f7df8b);
+      z-index: 10000;
+      background: linear-gradient(135deg, var(--gold), #faebc2);
       color: #07261a;
       font-weight: 800;
-      font-size: 1.4rem;
+      font-size: 1.35rem;
       letter-spacing: 2px;
-      padding: 10px 22px;
-      border-radius: 16px;
-      box-shadow: 0 10px 28px rgba(0,0,0,0.35);
+      padding: 8px 20px;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
       border: 2px solid #fff;
       transform: translate(-50%, -50%) scale(0.6);
       opacity: 0;
-      transition: transform 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.25s ease;
+      transition: transform 0.22s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.22s ease;
     }
 
-    .syllable-badge-flyer.show {
-      transform: translate(-50%, -50%) scale(1.1);
+    .syllable-flyer.active {
+      transform: translate(-50%, -50%) scale(1.05);
       opacity: 1;
-    }
-
-    /* Particles for Rewards */
-    .celebration-sparkle {
-      position: fixed;
-      pointer-events: none;
-      z-index: 1000;
-      animation: floatUp 1.2s forwards ease-out;
-      font-size: 1.5rem;
-    }
-
-    @keyframes floatUp {
-      0% { transform: translateY(0) scale(0.6) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(-90px) scale(1.3) rotate(35deg); opacity: 0; }
     }
   </style>
 </head>
 <body>
-  <div class="bg-oasis"></div>
+  <!-- Full Screen Dimmer Layer -->
+  <div id="dimOverlay"></div>
 
-  <div class="app-container">
-    <!-- Top Header -->
-    <header class="top-bar">
-      <div class="header-left">
-        <div class="avatar-wrap">
-          <img src="assets/humayun-scholar.webp" alt="Humayun Scholar Companion" onerror="this.src='https://api.iconify.design/twemoji:boy.svg'">
+  <div class="oasis-bg"></div>
+
+  <!-- Hidden Header Reveal Trigger -->
+  <button class="pill-toggle-trigger" id="pillRevealBtn" title="Toggle Menu" style="display:none;">✦</button>
+
+  <div class="main-layout">
+    <!-- Top Floating Header Pill (Icon-Only Mode) -->
+    <div class="top-controls">
+      <header class="header-pill" id="headerPill">
+        <div class="pill-avatar" title="Humayun">
+          <img src="assets/humayun-scholar.webp" alt="Humayun" onerror="this.src='https://api.iconify.design/twemoji:boy.svg'">
         </div>
-        <div class="title-group">
-          <h1>Humayun's Islamiyath</h1>
-          <p>Class 3 • Units 2, 5 & 10 Practice & Writing</p>
+
+        <!-- Mode Toggle (Practice vs Full Write) -->
+        <button class="pill-btn" id="modeBtn" title="Toggle Write / Practice Mode">
+          <img src="assets/lantern-gem.webp" alt="Mode">
+        </button>
+
+        <!-- Dimming Overlay Tool -->
+        <button class="pill-btn" id="dimBtn" title="Dim Screen Overlay (0% to 50%)">
+          <img src="assets/badge-crescent-star.webp" alt="Dimmer">
+        </button>
+
+        <!-- Dimmer Slider (0% to 50%) -->
+        <div class="dim-slider-box" id="dimSliderBox">
+          <input type="range" id="dimRange" min="0" max="50" value="0" step="5">
+          <span class="dim-label" id="dimPercent">0%</span>
         </div>
-      </div>
 
-      <div class="controls-group">
-        <button id="modeToggle" class="btn-toggle">
-          <img src="assets/lantern-gem.webp" class="icon-small" alt="Mode">
-          <span id="modeText">Practice Mode</span>
+        <!-- Minimize Pill Button -->
+        <button class="pill-btn" id="hidePillBtn" title="Hide Header">
+          ✕
         </button>
-        <button id="dimToggle" class="btn-toggle">
-          <img src="assets/badge-crescent-star.webp" class="icon-small" alt="Dim Mode">
-          <span>Dim Mode</span>
-        </button>
-      </div>
-    </header>
-
-    <!-- Arch Banner Section -->
-    <div class="banner-arch-wrap">
-      <img src="assets/islamic-banner-arch.webp" class="arch-bg-img" alt="Banner Arch" onerror="this.style.display='none'">
-      <img src="assets/badge-crescent-star.webp" class="badge-star-icon" alt="Star Badge">
+      </header>
     </div>
 
-    <!-- Question Selector Tabs -->
-    <nav class="tabs-bar">
-      <button class="tab-btn active" data-q="0">Q1. Articles of Faith</button>
-      <button class="tab-btn" data-q="1">Q2. Khadijah (RA)</button>
-      <button class="tab-btn" data-q="2">Q3. First Woman</button>
-      <button class="tab-btn" data-q="3">Q4. Good Habits (Bathing)</button>
-      <button class="tab-btn" data-q="4">Q5. Dua for Garment</button>
+    <!-- Arch Center Banner -->
+    <div class="arch-banner">
+      <img src="assets/islamic-banner-arch.webp" class="arch-img" alt="Arch" onerror="this.style.display='none'">
+      <img src="assets/badge-crescent-star.webp" class="star-img" alt="Star">
+    </div>
+
+    <!-- Question Tabs -->
+    <nav class="tab-bar">
+      <button class="tab-button active" data-q="0">Q1. Articles of Faith</button>
+      <button class="tab-button" data-q="1">Q2. Khadijah (RA)</button>
+      <button class="tab-button" data-q="2">Q3. First Woman</button>
+      <button class="tab-button" data-q="3">Q4. Good Habits</button>
+      <button class="tab-button" data-q="4">Q5. Garment Dua</button>
     </nav>
 
     <!-- Main Workspace -->
-    <main class="workspace">
-      <!-- Left Card: Lesson & Practice Content -->
-      <section class="study-card" id="studyCard">
-        <div class="unit-tag" id="unitTag">Unit 2 & 10 • Lesson 1 & 3</div>
-        <h2 class="question-title" id="questionText">1. What are the articles of faith?</h2>
+    <main class="workspace-area" id="workspaceArea">
+      <!-- Practice Deck -->
+      <section class="practice-deck" id="practiceDeck">
+        <div class="unit-heading" id="unitHeading">Unit 2 & 10 • Lesson 1 & 3</div>
+        <h2 class="question-title" id="questionTitle">1. What are the articles of faith?</h2>
         
-        <div class="answer-box" id="answerContainer">
-          <!-- Populated dynamically with syllable-hold elements -->
-        </div>
-
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-top: auto;">
-          <button class="btn-toggle" id="speakBtn">🔊 Read Aloud</button>
-          <span id="hintInfo" style="font-size:0.8rem; color:var(--text-muted); font-weight:600;">Tap or hold highlighted words to break into syllables</span>
+        <div class="reading-content" id="readingArea">
+          <!-- Filled dynamically with tap-to-read and syllable words -->
         </div>
       </section>
 
-      <!-- Right Card: Writing Binder Canvas -->
-      <section class="binder-container">
+      <!-- Binder Canvas Section -->
+      <section class="canvas-binder" id="canvasBinder">
         <div class="binder-spine">
-          <div class="binder-ring-hole"></div>
-          <div class="binder-ring-hole"></div>
-          <div class="binder-ring-hole"></div>
-          <div class="binder-ring-hole"></div>
-          <div class="binder-ring-hole"></div>
+          <div class="ring-hole"></div>
+          <div class="ring-hole"></div>
+          <div class="ring-hole"></div>
+          <div class="ring-hole"></div>
+          <div class="ring-hole"></div>
         </div>
 
-        <div class="canvas-tools">
-          <div class="tool-group">
-            <button class="tool-btn active" id="penTool" title="Pen">✏️</button>
-            <button class="tool-btn" id="eraserTool" title="Eraser">🧹</button>
-            <button class="tool-btn" id="clearCanvas" title="Clear">🗑️</button>
+        <!-- Write Mode Cover Header -->
+        <div class="binder-cover-header" id="binderCoverHeader">
+          <div class="binder-cover-title">
+            <span>📖</span>
+            <span id="binderCoverQText">Question 1 Practice Book</span>
           </div>
-          
-          <div class="tool-group" id="swatchesGroup">
-            <div class="color-swatch active" data-color="#0b4f35" style="background:#0b4f35;"></div>
-            <div class="color-swatch" data-color="#1b3a4b" style="background:#1b3a4b;"></div>
-            <div class="color-swatch" data-color="#d4af37" style="background:#d4af37;"></div>
-            <div class="color-swatch" data-color="#7c2d12" style="background:#7c2d12;"></div>
+          <button class="pill-btn" id="exitWriteBtn" title="Back to Practice Mode" style="width:34px;height:34px;border:none;">
+            ✕
+          </button>
+        </div>
+
+        <!-- Single Integrated Tool Palette -->
+        <div class="canvas-tool-bar">
+          <button class="tool-palette-toggle" id="paletteToggleBtn">
+            <span>✏️ Pen Tools</span>
+            <span>▾</span>
+          </button>
+
+          <!-- Collapsible Tool Drawer -->
+          <div class="tool-drawer" id="toolDrawer">
+            <button class="draw-btn active" id="penTool" title="Pen">✏️</button>
+            <button class="draw-btn" id="eraserTool" title="Eraser">🧹</button>
+            <button class="draw-btn" id="clearBtn" title="Clear Canvas">🗑️</button>
+
+            <div class="color-dot active" data-color="#0b4f35" style="background:#0b4f35;"></div>
+            <div class="color-dot" data-color="#14281d" style="background:#14281d;"></div>
+            <div class="color-dot" data-color="#92751c" style="background:#92751c;"></div>
+            <div class="color-dot" data-color="#7c2d12" style="background:#7c2d12;"></div>
           </div>
         </div>
 
-        <div class="canvas-wrapper" id="canvasWrapper">
-          <canvas id="paintCanvas"></canvas>
+        <!-- Writing Surface -->
+        <div class="lined-sheet" id="sheetWrapper">
+          <canvas id="writingCanvas"></canvas>
         </div>
       </section>
     </main>
   </div>
 
-  <div id="flyerBadge" class="syllable-badge-flyer">KHA · DI · JAH</div>
+  <div id="flyerBadge" class="syllable-flyer">KHA · DI · JAH</div>
 
   <script>
-    // --- Syllabus Data (Units 2, 5 & 10) ---
-    const questionsData = [
+    // --- Syllabus Content (Units 2, 5 & 10) ---
+    const lessonData = [
       {
         unit: "Unit 2 & 10 • Lesson 1 & 3",
         q: "What are the articles of faith?",
         lead: "The articles of faith are:",
         items: [
           "Believe in Allah (SWT)",
-          "His {an·gels|angels}",
+          "His [an·gels|angels]",
           "His books",
-          "His {mes·sen·gers|messengers}",
-          "The Day of {Re·sur·rec·tion|Resurrection}",
-          "{Des·ti·ny|Destiny} (Whatever Allah has {or·dained|ordained})"
+          "His [mes·sen·gers|messengers]",
+          "The Day of [Re·sur·rec·tion|Resurrection]",
+          "[Des·ti·ny|Destiny] (Whatever Allah has [or·dained|ordained])"
         ]
       },
       {
         unit: "Unit 2 & 10 • Lesson 1 & 3",
         q: "Who was Khadijah (RA)?",
-        lead: "{Kha·di·jah|Khadijah} (RA) was a noble, kind, {wealth·y|wealthy} lady of Makkah. She was the wife of Prophet {Mu·ham·mad|Muhammad} (SAW).",
+        lead: "[Kha·di·jah|Khadijah] (RA) was a noble, kind, [wealth·y|wealthy] lady of Makkah. She was the wife of Prophet [Mu·ham·mad|Muhammad] (SAW).",
         items: []
       },
       {
         unit: "Unit 2 & 10 • Lesson 1 & 3",
         q: "Who was the first woman to accept Islam?",
-        lead: "{Kha·di·jah|Khadijah} (RA) was the first woman to {ac·cept|accept} Islam.",
+        lead: "[Kha·di·jah|Khadijah] (RA) was the first woman to [ac·cept|accept] Islam.",
         items: []
       },
       {
         unit: "Unit 5 • Lesson 2 & 3",
         q: "Why is bathing a good practice?",
-        lead: "Taking bath daily is a good {prac·tice|practice}. It makes a person clean and {health·y|healthy}.",
+        lead: "Taking bath daily is a good [prac·tice|practice]. It makes a person clean and [health·y|healthy].",
         items: []
       },
       {
         unit: "Unit 5 • Hadith (Abu Dawood)",
-        q: "Fill in the blanks: What did Allah's Messenger (SAW) say about putting on a garment?",
-        lead: "Allah's Messenger (SAW) said: He who puts on a {gar·ment|garment} and says:",
-        dua: "\"Praise be to Allah, who clothes me with this and who {pro·vid·ed|provided} me with it without any power or {a·bil·i·ty|ability} from me, his past and present sins are {for·giv·en|forgiven} for him.\" (Abu Dawood)",
+        q: "What did Allah's Messenger (SAW) say about putting on a garment?",
+        lead: "Allah's Messenger (SAW) said: He who puts on a [gar·ment|garment] and says:",
+        hadith: "\"Praise be to Allah, who clothes me with this and who [pro·vid·ed|provided] me with it without any power or [a·bil·i·ty|ability] from me, his past and present sins are [for·giv·en|forgiven] for him.\" (Abu Dawood)",
         items: []
       }
     ];
 
-    let currentQIndex = 0;
+    let currentQ = 0;
     let isWriteMode = false;
-    let isDimMode = false;
 
-    // DOM Elements
-    const unitTag = document.getElementById('unitTag');
-    const questionText = document.getElementById('questionText');
-    const answerContainer = document.getElementById('answerContainer');
+    // Elements
+    const unitHeading = document.getElementById('unitHeading');
+    const questionTitle = document.getElementById('questionTitle');
+    const readingArea = document.getElementById('readingArea');
     const flyerBadge = document.getElementById('flyerBadge');
-    const modeToggle = document.getElementById('modeToggle');
-    const modeText = document.getElementById('modeText');
-    const dimToggle = document.getElementById('dimToggle');
-    const tabBtns = document.querySelectorAll('.tab-btn');
-    const speakBtn = document.getElementById('speakBtn');
+    const workspaceArea = document.getElementById('workspaceArea');
+    const binderCoverQText = document.getElementById('binderCoverQText');
 
-    // Canvas Setup
-    const canvas = document.getElementById('paintCanvas');
+    // Header Pill Controls
+    const headerPill = document.getElementById('headerPill');
+    const pillRevealBtn = document.getElementById('pillRevealBtn');
+    const hidePillBtn = document.getElementById('hidePillBtn');
+    const modeBtn = document.getElementById('modeBtn');
+    const exitWriteBtn = document.getElementById('exitWriteBtn');
+    const dimBtn = document.getElementById('dimBtn');
+    const dimSliderBox = document.getElementById('dimSliderBox');
+    const dimRange = document.getElementById('dimRange');
+    const dimPercent = document.getElementById('dimPercent');
+    const dimOverlay = document.getElementById('dimOverlay');
+
+    // Header Pill Hide & Reveal
+    hidePillBtn.addEventListener('click', () => {
+      headerPill.classList.add('hidden');
+      pillRevealBtn.style.display = 'flex';
+    });
+
+    pillRevealBtn.addEventListener('click', () => {
+      headerPill.classList.remove('hidden');
+      pillRevealBtn.style.display = 'none';
+    });
+
+    // Dim Mode Slider (0% to 50%)
+    dimBtn.addEventListener('click', () => {
+      dimSliderBox.classList.toggle('show');
+    });
+
+    dimRange.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value);
+      dimPercent.textContent = val + '%';
+      dimOverlay.style.opacity = (val / 100);
+    });
+
+    // Softer Grounded Syllable Tone Pitch (Matching EVS/English)
+    function playSoftSyllableTone() {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.frequency.value = 320; // Lowered, warm, grounded pitch
+        osc.type = 'triangle';
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.16);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.16);
+      } catch (err) {}
+    }
+
+    // Tap-to-Read Single Word Speech
+    function speakWord(word, el) {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const clean = word.replace(/[(),."?:]/g, '').trim();
+        if (!clean) return;
+
+        const utter = new SpeechSynthesisUtterance(clean);
+        utter.rate = 0.88;
+        utter.pitch = 1.0;
+
+        el.classList.add('speaking');
+        utter.onend = () => el.classList.remove('speaking');
+        utter.onerror = () => el.classList.remove('speaking');
+
+        window.speechSynthesis.speak(utter);
+      }
+    }
+
+    // Render Question & Tap-to-Read Words
+    function loadQuestion(index) {
+      currentQ = index;
+      const data = lessonData[index];
+      unitHeading.textContent = data.unit;
+      questionTitle.textContent = `${index + 1}. ${data.q}`;
+      binderCoverQText.textContent = `Question ${index + 1}: Write & Practice`;
+
+      document.querySelectorAll('.tab-button').forEach((b, i) => {
+        b.classList.toggle('active', i === index);
+      });
+
+      // Parse text into individual interactive words & syllable breaks
+      function formatWords(sentence) {
+        return sentence.split(' ').map(token => {
+          // Check if token has syllable structure [syl|word]
+          const sylMatch = token.match(/\[([^\vert{}]+)\Vert{}([^\]]+)\]/);
+          if (sylMatch) {
+            const syl = sylMatch[1];
+            const word = sylMatch[2];
+            return `<span class="syl-break-word" data-syl="${syl}" data-word="${word}">${word}</span>`;
+          } else {
+            return `<span class="read-word">${token}</span>`;
+          }
+        }).join(' ');
+      }
+
+      let contentHtml = '';
+      if (data.lead) {
+        contentHtml += `<p style="margin-bottom:8px;">${formatWords(data.lead)}</p>`;
+      }
+
+      if (data.items && data.items.length > 0) {
+        contentHtml += `<div>`;
+        data.items.forEach(it => {
+          contentHtml += `<div class="point-line">${formatWords(it)}</div>`;
+        });
+        contentHtml += `</div>`;
+      }
+
+      if (data.hadith) {
+        contentHtml += `<div class="hadith-quote">${formatWords(data.hadith)}</div>`;
+      }
+
+      readingArea.innerHTML = contentHtml;
+      attachReadingInteractions();
+    }
+
+    // Attach Click and Hold Handlers
+    function attachReadingInteractions() {
+      // Regular words -> Tap to read aloud
+      readingArea.querySelectorAll('.read-word').forEach(span => {
+        span.addEventListener('pointerdown', (e) => {
+          e.stopPropagation();
+          speakWord(span.textContent, span);
+        });
+      });
+
+      // Syllable words -> Show glowing badge + soft tone + speak
+      readingArea.querySelectorAll('.syl-break-word').forEach(span => {
+        const syl = span.getAttribute('data-syl');
+        const word = span.getAttribute('data-word');
+
+        span.addEventListener('pointerdown', (e) => {
+          e.stopPropagation();
+          const rect = span.getBoundingClientRect();
+          flyerBadge.textContent = syl.toUpperCase();
+          flyerBadge.style.left = `${rect.left + rect.width / 2}px`;
+          flyerBadge.style.top = `${rect.top - 24}px`;
+          flyerBadge.classList.add('active');
+
+          span.classList.add('pressed');
+          playSoftSyllableTone();
+          speakWord(word, span);
+
+          setTimeout(() => {
+            flyerBadge.classList.remove('active');
+            span.classList.remove('pressed');
+          }, 850);
+        });
+      });
+    }
+
+    // Mode Toggle (Full Canvas Write vs Practice)
+    function setWriteMode(active) {
+      isWriteMode = active;
+      workspaceArea.classList.toggle('full-write-mode', isWriteMode);
+      modeBtn.classList.toggle('active', isWriteMode);
+      resizeCanvas();
+    }
+
+    modeBtn.addEventListener('click', () => setWriteMode(!isWriteMode));
+    exitWriteBtn.addEventListener('click', () => setWriteMode(false));
+
+    // Tab Button Navigation
+    document.querySelectorAll('.tab-button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const idx = parseInt(btn.getAttribute('data-q'));
+        loadQuestion(idx);
+        clearCanvas();
+      });
+    });
+
+    // Single Integrated Tool Palette Toggle
+    const paletteToggleBtn = document.getElementById('paletteToggleBtn');
+    const toolDrawer = document.getElementById('toolDrawer');
+    paletteToggleBtn.addEventListener('click', () => {
+      toolDrawer.classList.toggle('open');
+    });
+
+    // Canvas Drawing Mechanics
+    const canvas = document.getElementById('writingCanvas');
     const ctx = canvas.getContext('2d');
-    const canvasWrapper = document.getElementById('canvasWrapper');
+    const sheetWrapper = document.getElementById('sheetWrapper');
+
     let isDrawing = false;
     let currentColor = '#0b4f35';
-    let currentLineWidth = 3.5;
     let isEraser = false;
 
     function resizeCanvas() {
-      const rect = canvasWrapper.getBoundingClientRect();
+      const rect = sheetWrapper.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
       canvas.width = rect.width * dpr;
       canvas.height = rect.height * dpr;
@@ -698,160 +948,7 @@
     }
     window.addEventListener('resize', resizeCanvas);
 
-    // Audio Feedback helper
-    function playAudioTone(freq = 520, duration = 0.12) {
-      try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.frequency.value = freq;
-        osc.type = 'sine';
-        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-      } catch (e) {}
-    }
-
-    // Render Question & Syllable Breaks
-    function renderQuestion(index) {
-      currentQIndex = index;
-      const data = questionsData[index];
-      unitTag.textContent = data.unit;
-      questionText.textContent = `${index + 1}. ${data.q}`;
-
-      tabBtns.forEach((btn, i) => {
-        btn.classList.toggle('active', i === index);
-      });
-
-      // Parse text and replace {syllable|word}
-      function formatSyllables(text) {
-        return text.replace(/\{([^|]+)\|([^}]+)\}/g, (match, syl, word) => {
-          return `<span class="syllable-word" data-syl="${syl}">${word}</span>`;
-        });
-      }
-
-      let html = '';
-      if (data.lead) {
-        html += `<p style="margin-bottom:8px;">${formatSyllables(data.lead)}</p>`;
-      }
-
-      if (data.items && data.items.length > 0) {
-        html += `<div>`;
-        data.items.forEach(item => {
-          html += `<div class="bullet-item">${formatSyllables(item)}</div>`;
-        });
-        html += `</div>`;
-      }
-
-      if (data.dua) {
-        html += `<div class="dua-block">${formatSyllables(data.dua)}</div>`;
-      }
-
-      answerContainer.innerHTML = html;
-      attachSyllableEvents();
-    }
-
-    // Syllable Interaction Events (Tap & Hold)
-    function attachSyllableEvents() {
-      const words = answerContainer.querySelectorAll('.syllable-word');
-      words.forEach(el => {
-        const sylText = el.getAttribute('data-syl');
-
-        function triggerSyllable(e) {
-          const rect = el.getBoundingClientRect();
-          flyerBadge.textContent = sylText.toUpperCase();
-          flyerBadge.style.left = `${rect.left + rect.width / 2}px`;
-          flyerBadge.style.top = `${rect.top - 28}px`;
-          flyerBadge.classList.add('show');
-
-          el.classList.add('pressed');
-          playAudioTone(640, 0.15);
-
-          // Spawn star sparkle
-          spawnSparkle(rect.left + rect.width / 2, rect.top);
-
-          setTimeout(() => {
-            flyerBadge.classList.remove('show');
-            el.classList.remove('pressed');
-          }, 900);
-        }
-
-        el.addEventListener('pointerdown', triggerSyllable);
-      });
-    }
-
-    function spawnSparkle(x, y) {
-      const sp = document.createElement('div');
-      sp.className = 'celebration-sparkle';
-      sp.textContent = '✦';
-      sp.style.color = 'var(--gold)';
-      sp.style.left = `${x}px`;
-      sp.style.top = `${y}px`;
-      document.body.appendChild(sp);
-      setTimeout(() => sp.remove(), 1200);
-    }
-
-    // Toggle Practice / Write Mode
-    modeToggle.addEventListener('click', () => {
-      isWriteMode = !isWriteMode;
-      modeToggle.classList.toggle('active', isWriteMode);
-      modeText.textContent = isWriteMode ? "Write Mode" : "Practice Mode";
-
-      if (isWriteMode) {
-        answerContainer.style.filter = "blur(4px)";
-        answerContainer.style.transition = "filter 0.3s ease";
-      } else {
-        answerContainer.style.filter = "none";
-      }
-      playAudioTone(480, 0.1);
-    });
-
-    // Dim Mode Toggle
-    dimToggle.addEventListener('click', () => {
-      isDimMode = !isDimMode;
-      document.body.classList.toggle('dim-mode', isDimMode);
-      dimToggle.classList.toggle('active', isDimMode);
-      
-      // Update canvas swatch colors for contrast if needed
-      if (isDimMode && currentColor === '#0b4f35') {
-        currentColor = '#e5c158';
-      } else if (!isDimMode && currentColor === '#e5c158') {
-        currentColor = '#0b4f35';
-      }
-      playAudioTone(420, 0.1);
-    });
-
-    // Read Aloud Text-to-Speech
-    speakBtn.addEventListener('click', () => {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const cleanText = (questionsData[currentQIndex].q + ". " + 
-          (questionsData[currentQIndex].lead || '') + " " +
-          (questionsData[currentQIndex].items.join(". ") || '') + " " +
-          (questionsData[currentQIndex].dua || '')
-        ).replace(/\{[^|]+\|([^}]+)\}/g, '$1');
-
-        const utter = new SpeechSynthesisUtterance(cleanText);
-        utter.rate = 0.9;
-        window.speechSynthesis.speak(utter);
-      }
-    });
-
-    // Tab Navigation
-    tabBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const qIndex = parseInt(btn.getAttribute('data-q'));
-        renderQuestion(qIndex);
-        clearCanvas();
-        playAudioTone(520, 0.08);
-      });
-    });
-
-    // Canvas Drawing Handlers
-    function getPointerPos(e) {
+    function getPos(e) {
       const rect = canvas.getBoundingClientRect();
       return {
         x: e.clientX - rect.left,
@@ -861,7 +958,7 @@
 
     canvas.addEventListener('pointerdown', (e) => {
       isDrawing = true;
-      const { x, y } = getPointerPos(e);
+      const { x, y } = getPos(e);
       ctx.beginPath();
       ctx.moveTo(x, y);
       canvas.setPointerCapture(e.pointerId);
@@ -869,26 +966,26 @@
 
     canvas.addEventListener('pointermove', (e) => {
       if (!isDrawing) return;
-      const { x, y } = getPointerPos(e);
-      ctx.strokeStyle = isEraser ? (isDimMode ? '#0d1e18' : '#fffdf9') : currentColor;
-      ctx.lineWidth = isEraser ? 22 : currentLineWidth;
+      const { x, y } = getPos(e);
+      ctx.strokeStyle = isEraser ? '#fffdf9' : currentColor;
+      ctx.lineWidth = isEraser ? 24 : 3.5;
       ctx.lineTo(x, y);
       ctx.stroke();
     });
 
-    function stopDrawing() {
+    function endDrawing() {
       if (isDrawing) {
         isDrawing = false;
         ctx.closePath();
       }
     }
-    canvas.addEventListener('pointerup', stopDrawing);
-    canvas.addEventListener('pointercancel', stopDrawing);
+    canvas.addEventListener('pointerup', endDrawing);
+    canvas.addEventListener('pointercancel', endDrawing);
 
-    // Tools
+    // Tools Inside Drawer
     const penTool = document.getElementById('penTool');
     const eraserTool = document.getElementById('eraserTool');
-    const clearBtn = document.getElementById('clearCanvas');
+    const clearBtn = document.getElementById('clearBtn');
 
     penTool.addEventListener('click', () => {
       isEraser = false;
@@ -907,23 +1004,22 @@
     }
     clearBtn.addEventListener('click', clearCanvas);
 
-    // Swatches
-    const swatches = document.querySelectorAll('.color-swatch');
-    swatches.forEach(sw => {
-      sw.addEventListener('click', () => {
+    // Color Swatches Inside Drawer
+    document.querySelectorAll('.color-dot').forEach(dot => {
+      dot.addEventListener('click', () => {
         isEraser = false;
         penTool.classList.add('active');
         eraserTool.classList.remove('active');
-        swatches.forEach(s => s.classList.remove('active'));
-        sw.classList.add('active');
-        currentColor = sw.getAttribute('data-color');
+        document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+        dot.classList.add('active');
+        currentColor = dot.getAttribute('data-color');
       });
     });
 
-    // Initial Load
+    // Start App
     window.addEventListener('DOMContentLoaded', () => {
       resizeCanvas();
-      renderQuestion(0);
+      loadQuestion(0);
     });
   </script>
 </body>
