@@ -133,10 +133,11 @@ body:not(.tools-on) .ptools{display:none}
 #win{z-index:99;background:rgba(0,0,0,.55)}#shelf{z-index:98;background:rgba(0,0,0,.5)}
 #win>div{background:var(--card);border-radius:28px;padding:26px 40px;text-align:center;max-width:520px;border:4px solid var(--acc)}
 #win img{height:auto;width:min(440px,70vw);max-height:44vh;object-fit:contain}#win h2,#shelf h2{color:var(--pri-d);margin:6px 0}
-#shelf>div{background:var(--card);border:4px solid var(--acc);border-radius:26px;padding:16px 22px;width:min(880px,94vw);text-align:center}
+#shelf>div{background:var(--card);border:4px solid var(--acc);border-radius:26px;padding:16px 22px;width:min(920px,96vw);text-align:center}
 .shelf-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.stk{width:clamp(110px,15vw,150px);padding:8px;border-radius:18px;background:linear-gradient(#fff,#FEF3C7);border:3px dashed #F59E0B;color:#3B2A1A;font-weight:900;font-size:.85rem;display:flex;flex-direction:column;align-items:center;gap:4px}
+.stk{width:clamp(96px,11vw,122px);padding:8px;border-radius:18px;background:linear-gradient(#fff,#FEF3C7);border:3px dashed #F59E0B;color:#3B2A1A;font-weight:900;font-size:.85rem;display:flex;flex-direction:column;align-items:center;gap:4px}
 .stk img{height:clamp(80px,16vh,130px);width:auto;max-width:100%;object-fit:contain}
+.stk.gold{border-color:#D69E2E;background:linear-gradient(#FFFBEB,#FDE68A)}
 .stk.lock{border-color:#CBD5E0;background:#F1F5F9}.stk.lock img{filter:brightness(0);opacity:.18}
 .stk.new{animation:pop .7s ease-out}@keyframes pop{0%{transform:scale(.3) rotate(-12deg)}70%{transform:scale(1.15) rotate(4deg)}100%{transform:scale(1)}}
 .burst{position:fixed;top:40%;left:50%;font-size:clamp(1.6rem,3vw,2.4rem);pointer-events:none;z-index:9995;animation:burstUp 2.2s ease-out forwards}
@@ -159,7 +160,7 @@ body:not(.tools-on) .ptools{display:none}
 <div id="app"></div>
 <div id="toast"></div>
 <div id="shelf" onclick="if(event.target===this)this.style.display='none'"></div>
-<div id="win"><div><img id="winImg" alt=""><h2>Journey complete!</h2><p style="font-weight:800">You visited every stop in Indian Villages. Well done, Humayun!</p><button class="btn on" onclick="$('win').style.display='none'">Keep exploring</button></div></div>
+<div id="win"><div><img id="winImg" alt=""><h2>Journey complete!</h2><p style="font-weight:800">You visited every stop in Indian Villages. Well done, Humayun!</p><button class="btn on" onclick="$('win').style.display='none';showShelf('badge')">See my badge 🏅</button></div></div>
 
 <script>
 /* ====== CONFIG ====== */
@@ -169,6 +170,7 @@ const HUB_ORIGIN=''; /* e.g. 'https://yourname.github.io'. Leave empty to use th
 document.documentElement.style.setProperty('--wm',`url(${ASSET_BASE}notebook-watermark.webp)`);
 const IMG={guide:'humayun-avatar.webp',bg:'village-celebration_1.webp',fib:'stop-time-travel.webp',mcq:'stop-village-square.webp',tf:'stop-panchayat-hall.webp',qa:'stop-story-hut.webp',think:'stop-think-tree.webp',win:'village-celebration.webp'};
 const STK={fib:['troll.webp','Cave Troll'],mcq:['humayun-avatar.webp','Explorer Humayun'],tf:['knight.webp','Brave Knight'],qa:['stop-story-hut.webp','Story Keeper'],think:['ulagam-globe.webp','World Globe']};
+const BADGE=['badge-crescent-star.webp','Village Champion']; /* bonus sticker: earned after all 5 stops */
 
 /* ====== DATA ====== */
 const STOPS=[
@@ -265,7 +267,7 @@ function reveal(id){shown.add(id);paintChk(id)}
 function tick(id,v){const c=chkAll();c[id]=v;store.set(S+'chk',JSON.stringify(c));paintChk(id)}
 
 /* ====== STICKERS, WIN, SOUND ====== */
-function showShelf(nw){const d=done();$('shelf').innerHTML=`<div><h2>🏅 Humayun's Sticker Book</h2><p style="margin:0 0 10px;font-weight:800;color:var(--sub)">${STOPS.filter(s=>d[s.id]).length} of ${STOPS.length} stickers collected</p><div class="shelf-row">${STOPS.map(s=>`<div class="stk ${d[s.id]?'':'lock'} ${s.id===nw?'new':''}">${imgTag(STK[s.id][0],s.em)}<span>${d[s.id]?STK[s.id][1]:'???'}</span></div>`).join('')}</div><button class="btn on" style="margin-top:12px" onclick="$('shelf').style.display='none'">Close</button></div>`;$('shelf').style.display='grid'}
+function showShelf(nw){const d=done(),all=STOPS.every(s=>d[s.id]),got=STOPS.filter(s=>d[s.id]).length+(all?1:0);$('shelf').innerHTML=`<div><h2>🏅 Humayun's Sticker Book</h2><p style="margin:0 0 10px;font-weight:800;color:var(--sub)">${got} of ${STOPS.length+1} stickers collected</p><div class="shelf-row">${STOPS.map(s=>`<div class="stk ${d[s.id]?'':'lock'} ${s.id===nw?'new':''}">${imgTag(STK[s.id][0],s.em)}<span>${d[s.id]?STK[s.id][1]:'???'}</span></div>`).join('')}<div class="stk gold ${all?'':'lock'} ${nw==='badge'?'new':''}">${imgTag(BADGE[0],'🏅')}<span>${all?BADGE[1]:'Finish all 5 stops'}</span></div></div><button class="btn on" style="margin-top:12px" onclick="$('shelf').style.display='none'">Close</button></div>`;$('shelf').style.display='grid'}
 function showWin(){$('winImg').src=ASSET_BASE+IMG.win;$('win').style.display='grid'}
 function markDone(id){const d=done(),was=!!d[id];d[id]=1;store.set(S+'done',JSON.stringify(d));const all=STOPS.every(s=>d[s.id]);
  if(!was){tCel=STOPS.findIndex(s=>s.id===id);speak('Well done, Humayun!');setTimeout(()=>all?showWin():showShelf(id),2800)}else if(all)showWin();
@@ -341,7 +343,7 @@ function render(){
  if(view==='map'){const d=done(),n=STOPS.filter(s=>d[s.id]).length,nx=STOPS.findIndex(s=>!d[s.id]);
   app.innerHTML=`<div class="map" id="map"><div class="sky" aria-hidden="true"><span class="c1">☁️</span><span class="c2">☁️</span><span class="c3">☁️</span><span class="b">🐦</span><span class="b" style="top:11%;animation-delay:-24s">🐦</span></div><svg class="road" viewBox="0 0 1000 500" preserveAspectRatio="none"><path id="road" d="M90,360 C190,230 250,230 290,220 S430,420 500,380 S640,240 710,220 S860,380 900,370"/><path class="d" d="M90,360 C190,230 250,230 290,220 S430,420 500,380 S640,240 710,220 S860,380 900,370"/></svg><img id="tractor" class="tractor" src="${ASSET_BASE}map-tractor-sprite.webp" alt="" onerror="this.style.display='none'">
   <div class="head">${imgTag('guide','🧑‍🎓')}<div><h2>Our Roots: Indian Villages</h2><p>Tap a stop on the trail. ${mode==='practice'?'Practice mode shows hints.':'Write mode hides hints and lets you check your own answers.'}</p></div><div class="bar"><span>${n} of ${STOPS.length} stops done</span><i><b style="width:${n/STOPS.length*100}%"></b></i></div><div class="bales">${STOPS.map(x=>`<span class="bale ${d[x.id]?'on':''}">🌾</span>`).join('')}</div></div>
-  <button class="shelfbtn" onclick="showShelf()">🏅 Stickers <b>${n}/${STOPS.length}</b></button>${STOPS.map((s,i)=>{const c=score(s);return `<button class="pin ${d[s.id]?'done':''} ${i===nx?'next':''}" style="left:${s.x}%;top:${s.y}%" onclick="openStop(${i})">${imgTag(s.id,s.em)}<b>${s.t}</b><small>${s.s}</small>${c.n?`<span class="sc">⭐ ${c.y}/${c.t}</span>`:''}${d[s.id]?'<span class="stamp">✔</span>':''}</button>`}).join('')}</div>`;
+  <button class="shelfbtn" onclick="showShelf()">🏅 Stickers <b>${n+(n===STOPS.length?1:0)}/${STOPS.length+1}</b></button>${STOPS.map((s,i)=>{const c=score(s);return `<button class="pin ${d[s.id]?'done':''} ${i===nx?'next':''}" style="left:${s.x}%;top:${s.y}%" onclick="openStop(${i})">${imgTag(s.id,s.em)}<b>${s.t}</b><small>${s.s}</small>${c.n?`<span class="sc">⭐ ${c.y}/${c.t}</span>`:''}${d[s.id]?'<span class="stamp">✔</span>':''}</button>`}).join('')}</div>`;
   const m=$('map');m.style.backgroundImage=`url(${ASSET_BASE}${IMG.bg})`;
   startTractor();
   if(!welcomed){welcomed=true;if(nx<0)setTimeout(()=>{if(view==='map')showShelf()},1500);else if(n>0)toast('👋 Welcome back, Humayun! Next stop: '+STOPS[nx].t)}
