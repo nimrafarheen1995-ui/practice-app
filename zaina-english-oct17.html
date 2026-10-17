@@ -1,1888 +1,1071 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
-    <title>Zaina's Magical English: Heidi Learns to Read</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+<title>Zaina's Magical English: Heidi Learns to Read</title>
 
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;800&family=Fredoka:wght@600;700;800&family=Kalam:wght@700&family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --font-main: 'Quicksand', sans-serif;
-            --font-display: 'Fredoka', cursive, sans-serif;
-            --font-hand: 'Kalam', cursive, sans-serif;
-        }
+<link rel="preload" as="image" href="assets/heidi-main.webp"/>
+<link rel="preload" as="image" href="assets/heidi-reading.webp"/>
+<link rel="preload" as="image" href="assets/heidi-alps-bg.webp"/>
+<link rel="preload" as="image" href="assets/alps-badge.webp"/>
 
-        *, *::before, *::after {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            font-family: var(--font-main);
-        }
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;800&family=Fredoka:wght@600;700;800&family=Kalam:wght@700&family=Cinzel:wght@700;900&display=swap" rel="stylesheet">
 
-        html, body {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background: #0f172a;
-            color: #1E1B4B;
-            touch-action: pan-x pan-y;
-        }
+<style>
+  :root { --font-main:'Quicksand',sans-serif; --font-display:'Fredoka',cursive,sans-serif; --font-hand:'Kalam',cursive,sans-serif; }
+  *,*::before,*::after { box-sizing:border-box; -webkit-tap-highlight-color:transparent; font-family:var(--font-main); }
+  html,body { width:100%; height:100%; margin:0; padding:0; overflow:hidden; background:#0B0F19; color:#1E1B4B; touch-action:pan-x pan-y; }
+  body { display:flex; flex-direction:column; }
 
-        body {
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
+  .ambient-backdrop-wrap { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+  .ambient-backdrop { width:100%; height:100%; object-fit:cover; filter:brightness(.72) contrast(1.08); }
+  #milkyWayCanvas,#confettiSnowCanvas { position:fixed; inset:0; pointer-events:none; }
+  #milkyWayCanvas { z-index:1; }
+  #confettiSnowCanvas { z-index:99999; }
+  #screenDimOverlay { position:fixed; inset:0; background:#000; opacity:0; pointer-events:none; z-index:99998; transition:opacity .2s ease; }
 
-        /* AMBIENT PANORAMIC BACKDROP WITH FALLBACK GRADIENT */
-        .ambient-backdrop-wrap {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 0;
-            background: linear-gradient(135deg, #1e1b4b 0%, #064e3b 50%, #0f172a 100%);
-            overflow: hidden;
-        }
-        .ambient-backdrop {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: brightness(0.85) contrast(1.05);
-        }
+  .font-display { font-family:var(--font-display); }
+  .font-hand { font-family:var(--font-hand); }
 
-        /* CANVASES ARE STRICTLY TRANSPARENT */
-        #milkyWayCanvas, #confettiSnowCanvas {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-        }
-        #milkyWayCanvas { z-index: 2; }
-        #confettiSnowCanvas { z-index: 99999; }
+  .glass-alpine-card { background:rgba(255,255,255,.45); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); border:2px solid rgba(255,255,255,.65); box-shadow:0 20px 50px rgba(0,0,0,.25), inset 0 0 20px rgba(255,255,255,.3); }
 
-        /* GRADUATED SCREEN DIM OVERLAY (0% TO 50%) */
-        #screenDimOverlay {
-            position: fixed;
-            inset: 0;
-            background: #000000;
-            opacity: 0;
-            pointer-events: none;
-            z-index: 99998;
-            transition: opacity 0.2s ease;
-        }
+  .two-line-canvas-wrap { background-color:rgba(255,254,248,.65); background-image:linear-gradient(to bottom,transparent 31px,#94a3b8 31px,#94a3b8 32px,transparent 32px,transparent 55px,#475569 55px,#475569 56px); background-size:100% 56px; }
 
-        .font-display { font-family: var(--font-display); }
-        .font-hand { font-family: var(--font-hand); }
+  /* 6D CAROUSEL */
+  .stage-6d-wrapper { perspective:1600px; width:100%; height:380px; position:relative; display:flex; align-items:center; justify-content:center; overflow:visible; user-select:none; }
+  .carousel-6d-track { position:relative; width:310px; height:350px; transform-style:preserve-3d; display:flex; align-items:center; justify-content:center; }
+  .carousel-6d-card { position:absolute; width:310px; height:350px; border-radius:26px; padding:24px 20px; display:flex; flex-direction:column; align-items:center; text-align:center; justify-content:space-between; background:rgba(255,255,255,.72); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:2.5px solid rgba(255,255,255,.85); box-shadow:0 25px 60px rgba(0,0,0,.4); transition:transform .45s cubic-bezier(.22,1,.36,1), opacity .45s ease, filter .45s ease; cursor:pointer; will-change:transform,opacity; overflow:hidden; touch-action:manipulation; }
+  .carousel-6d-card.pos-front { transform:translate3d(0,0,45px) rotateY(0) scale(1); opacity:1; z-index:20; filter:drop-shadow(0 15px 30px rgba(225,29,72,.35)); }
+  .carousel-6d-card.pos-left { transform:translate3d(-240px,0,-220px) rotateY(32deg) scale(.82); opacity:.45; z-index:10; filter:blur(2px); }
+  .carousel-6d-card.pos-right { transform:translate3d(240px,0,-220px) rotateY(-32deg) scale(.82); opacity:.45; z-index:10; filter:blur(2px); }
+  .carousel-6d-card.pos-back { transform:translate3d(0,0,-420px) rotateY(180deg) scale(.65); opacity:0; z-index:5; pointer-events:none; }
+  .gateway-avatar-6d { width:95px; height:95px; border-radius:50%; object-fit:contain; border:3.5px solid #FEF08A; background:rgba(255,255,255,.85); padding:4px; box-shadow:0 8px 24px rgba(0,0,0,.25); pointer-events:none; }
 
-        /* ULTRA-TRANSLUCENT ALPINE GLASS FINISH */
-        .glass-alpine-card {
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 2px solid rgba(255, 255, 255, 0.85);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
-        }
+  .card-4d-wrapper { perspective:1600px; }
+  .card-4d { box-shadow:0 25px 50px -12px rgba(30,27,75,.45); border-radius:24px; overflow:hidden; }
+  .page-flip-anim { animation:pageFlip4d .4s cubic-bezier(.22,1,.36,1); }
+  @keyframes pageFlip4d { 0% { opacity:0; transform:translateY(10px); } 100% { opacity:1; transform:none; } }
 
-        /* TWO-LINE RULED PAPER PATTERN (BASELINE + MIDLINE) */
-        .two-line-canvas-wrap {
-            background-color: rgba(255, 254, 248, 0.92);
-            background-image: 
-                linear-gradient(to bottom, transparent 31px, #94a3b8 31px, #94a3b8 32px, transparent 32px, transparent 55px, #475569 55px, #475569 56px);
-            background-size: 100% 56px;
-        }
+  .binder-cover { transition:transform .75s cubic-bezier(.18,.89,.32,1.28), opacity .45s ease; transform-origin:0% 50%; transform-style:preserve-3d; backdrop-filter:blur(4px); background-image:linear-gradient(135deg,rgba(255,255,255,.32) 0%,rgba(255,255,255,.06) 45%,rgba(255,255,255,.18) 50%,rgba(0,0,0,.22) 100%); box-shadow:inset 0 0 50px rgba(255,255,255,.28), 0 30px 60px -12px rgba(30,27,75,.65); }
+  .binder-cover::before { content:''; position:absolute; left:0; top:0; bottom:0; width:34px; background:linear-gradient(90deg,#0f172a 0%,#1f2937 55%,#374151 85%,#111827 100%); border-right:3px solid rgba(255,255,255,.35); z-index:5; }
+  .notebook-spine-rings { position:absolute; left:27px; top:16px; bottom:16px; width:16px; display:flex; flex-direction:column; justify-content:space-between; pointer-events:none; z-index:10; }
+  .spiral-ring { width:18px; height:10px; border-radius:6px; background:linear-gradient(135deg,#fff 0%,#d1d5db 45%,#6b7280 80%,#1f2937 100%); box-shadow:0 2px 4px rgba(0,0,0,.65); }
+  .binder-open { transform:perspective(1400px) rotateY(-118deg) rotateX(8deg) translateZ(20px); opacity:0; pointer-events:none; }
 
-        /* 6D CAROUSEL STAGE FOR MAIN GATEWAY */
-        .stage-6d-wrapper {
-            perspective: 1600px;
-            perspective-origin: center center;
-            width: 100%;
-            height: 380px;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: visible;
-            user-select: none;
-            z-index: 10;
-        }
+  .heidi-emboss-topright { position:absolute; right:18px; top:14px; width:110px; height:110px; object-fit:contain; opacity:.35; filter:drop-shadow(0 8px 16px rgba(0,0,0,.25)); pointer-events:none; z-index:5; }
+  .floating-tool-drawer-right { display:flex; align-items:center; background:rgba(15,23,42,.9); backdrop-filter:blur(14px); border:2px solid rgba(255,255,255,.3); border-radius:999px; padding:4px 8px; box-shadow:0 10px 25px rgba(0,0,0,.35); gap:6px; z-index:30; }
+  .tool-drawer-collapsed .drawer-items-group { display:none; }
 
-        .carousel-6d-track {
-            position: relative;
-            width: 310px;
-            height: 350px;
-            transform-style: preserve-3d;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+  /* INLINE WRITING STRIP */
+  .inline-strip-box { position:relative; height:68px; max-width:100%; border-radius:14px; border:1.5px solid #94a3b8; overflow:hidden; display:block; }
+  .inline-ghost-text { position:absolute; left:14px; top:50%; transform:translateY(-50%); font-family:var(--font-hand); font-size:26px; font-weight:700; color:rgba(71,85,105,.4); pointer-events:none; user-select:none; z-index:2; letter-spacing:1px; white-space:nowrap; }
 
-        .carousel-6d-card {
-            position: absolute;
-            width: 310px;
-            height: 350px;
-            border-radius: 26px;
-            padding: 24px 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            justify-content: space-between;
-            background: rgba(255, 255, 255, 0.88);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            border: 2.5px solid rgba(255, 255, 255, 0.95);
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
-            transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease, filter 0.45s ease;
-            cursor: pointer;
-            will-change: transform, opacity;
-            overflow: hidden;
-            touch-action: manipulation;
-        }
+  /* PLAIN ICONS: no box, no background */
+  .strip-icon { background:none !important; border:0 !important; box-shadow:none !important; padding:3px; margin:0; cursor:pointer; line-height:0; color:#334155; opacity:.8; transition:transform .15s, opacity .15s; }
+  .strip-icon:active { transform:scale(1.2); opacity:1; }
+  .strip-icon svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; pointer-events:none; }
+  .strip-icon.clear-icon { color:#be123c; }
 
-        .carousel-6d-card.pos-front {
-            transform: translate3d(0, 0, 45px) rotateY(0deg) scale(1);
-            opacity: 1;
-            z-index: 20;
-            filter: drop-shadow(0 15px 30px rgba(225, 29, 72, 0.4));
-            pointer-events: auto;
-        }
-        .carousel-6d-card.pos-left {
-            transform: translate3d(-240px, 0, -220px) rotateY(32deg) scale(0.82);
-            opacity: 0.55;
-            z-index: 10;
-            filter: blur(1.5px);
-            pointer-events: auto;
-        }
-        .carousel-6d-card.pos-right {
-            transform: translate3d(240px, 0, -220px) rotateY(-32deg) scale(0.82);
-            opacity: 0.55;
-            z-index: 10;
-            filter: blur(1.5px);
-            pointer-events: auto;
-        }
-        .carousel-6d-card.pos-back {
-            transform: translate3d(0, 0, -420px) rotateY(180deg) scale(0.65);
-            opacity: 0;
-            z-index: 5;
-            pointer-events: none;
-        }
+  .icon-action-btn { background:transparent; border:none; padding:2px; cursor:pointer; transition:transform .15s, opacity .15s; }
+  .read-word { display:inline-block; cursor:pointer; border-radius:4px; padding:0 2px; transition:background .15s; }
+  .read-word:hover { background:rgba(253,224,71,.45); }
+  .tap-split-word { display:inline-block; cursor:pointer; user-select:none; transition:all .2s; }
+  .tap-split-word.is-split { letter-spacing:5px; color:#B45309; font-weight:800; }
 
-        .gateway-avatar-6d {
-            width: 95px;
-            height: 95px;
-            border-radius: 50%;
-            object-fit: contain;
-            border: 3.5px solid #FEF08A;
-            background: #ffffff;
-            padding: 4px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-            pointer-events: none;
-        }
+  .workspace-h { height:clamp(450px,74vh,900px); }
+  @media (min-width:900px) {
+    #activeCardContainer:not(.hidden) { display:flex; justify-content:center; }
+    #activeCardContainer > div { width:min(100%,1120px); }
+  }
 
-        .card-4d-wrapper { perspective: 1600px; z-index: 10; position: relative; }
-        .card-4d {
-            box-shadow: 0 25px 50px -12px rgba(30, 27, 75, 0.45);
-            border-radius: 24px;
-            overflow: hidden;
-        }
-        .page-flip-anim { animation: pageFlip4d 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
-        @keyframes pageFlip4d {
-            0% { opacity: 0; transform: translateY(10px); }
-            100% { opacity: 1; transform: none; }
-        }
-
-        .binder-cover {
-            transition: transform 0.75s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.45s ease;
-            transform-origin: 0% 50%;
-            transform-style: preserve-3d;
-            backdrop-filter: blur(4px);
-            background-image: linear-gradient(135deg, rgba(255,255,255,0.32) 0%, rgba(255,255,255,0.06) 45%, rgba(255,255,255,0.18) 50%, rgba(0,0,0,0.22) 100%);
-            box-shadow: inset 0 0 50px rgba(255,255,255,0.28), 0 30px 60px -12px rgba(30, 27, 75, 0.65);
-        }
-        .binder-cover::before {
-            content: '';
-            position: absolute;
-            left: 0; top: 0; bottom: 0;
-            width: 34px;
-            background: linear-gradient(90deg, #0f172a 0%, #1f2937 55%, #374151 85%, #111827 100%);
-            border-right: 3px solid rgba(255,255,255,0.35);
-            z-index: 5;
-        }
-        .notebook-spine-rings {
-            position: absolute;
-            left: 27px;
-            top: 16px;
-            bottom: 16px;
-            width: 16px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            pointer-events: none;
-            z-index: 10;
-        }
-        .spiral-ring {
-            width: 18px;
-            height: 10px;
-            border-radius: 6px;
-            background: linear-gradient(135deg, #ffffff 0%, #d1d5db 45%, #6b7280 80%, #1f2937 100%);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.65);
-        }
-        .binder-open {
-            transform: perspective(1400px) rotateY(-118deg) rotateX(8deg) translateZ(20px);
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .heidi-emboss-topright {
-            position: absolute;
-            right: 18px;
-            top: 14px;
-            width: 110px;
-            height: 110px;
-            object-fit: contain;
-            opacity: 0.35;
-            filter: drop-shadow(0 8px 16px rgba(0,0,0,0.25));
-            pointer-events: none;
-            z-index: 5;
-        }
-
-        .floating-tool-drawer-right {
-            display: flex;
-            align-items: center;
-            background: rgba(15, 23, 42, 0.92);
-            backdrop-filter: blur(14px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 999px;
-            padding: 4px 8px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.35);
-            gap: 6px;
-            z-index: 30;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .tool-drawer-collapsed .drawer-items-group { display: none; }
-
-        .inline-strip-box {
-            position: relative;
-            height: 68px;
-            border-radius: 14px;
-            border: 1.5px solid #94a3b8;
-            overflow: hidden;
-            display: inline-flex;
-            align-items: center;
-            vertical-align: middle;
-        }
-        .inline-ghost-text {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-family: var(--font-hand);
-            font-size: 26px;
-            font-weight: 700;
-            color: rgba(71, 85, 105, 0.4);
-            pointer-events: none;
-            user-select: none;
-            z-index: 2;
-            letter-spacing: 1px;
-            white-space: nowrap;
-        }
-
-        .icon-action-btn {
-            background: transparent;
-            border: none;
-            padding: 2px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: transform 0.15s, opacity 0.15s;
-            opacity: 0.75;
-        }
-        .icon-action-btn:hover {
-            transform: scale(1.2);
-            opacity: 1;
-        }
-
-        .read-word {
-            display: inline-block;
-            cursor: pointer;
-            border-radius: 4px;
-            padding: 0 2px;
-            transition: background 0.15s;
-        }
-        .read-word:hover { background: rgba(253, 224, 71, 0.45); }
-
-        .tap-split-word {
-            display: inline-block;
-            cursor: pointer;
-            user-select: none;
-            transition: all 0.2s;
-        }
-        .tap-split-word.is-split {
-            letter-spacing: 5px;
-            color: #B45309;
-            font-weight: 800;
-        }
-
-        .workspace-h { height: clamp(450px, 74vh, 900px); }
-        @media (min-width: 900px) {
-            #activeCardContainer:not(.hidden) { display: flex; justify-content: center; }
-            #activeCardContainer > div { width: min(100%, 1120px); }
-        }
-    </style>
+  /* CELEBRATION STAGE */
+  #grandCelebrationStage { display:none; position:fixed; inset:0; z-index:100000; background:rgba(2,6,23,.78); overflow:hidden; }
+  #grandFinaleCanvas { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+  .magic-banner-centerpiece { position:absolute; left:50%; top:24%; transform:translate(-50%,-50%) scale(.4); opacity:0; text-align:center; transition:transform .6s cubic-bezier(.175,.885,.32,1.275), opacity .4s ease; }
+  .magic-banner-centerpiece.impact { transform:translate(-50%,-50%) scale(1); opacity:1; }
+  .magic-top-title { font-family:var(--font-display); font-weight:800; font-size:clamp(2rem,6vw,4rem); color:#FDE047; text-shadow:0 4px 0 #92400E, 0 0 30px rgba(253,224,71,.6); }
+  .magic-subtitle-sparkle { font-family:var(--font-display); font-weight:700; font-size:clamp(1.1rem,3vw,1.8rem); color:#fff; letter-spacing:3px; margin-top:6px; }
+  .magic-crown-halo { width:120px; height:30px; margin:0 auto 6px; border-radius:50%; background:radial-gradient(ellipse,rgba(253,224,71,.8),transparent 70%); }
+  .gliding-companion-rocket { position:absolute; bottom:14%; left:-220px; width:150px; animation:glideAcross 3.2s ease-in-out .3s forwards; }
+  .gliding-companion-rocket img { width:100%; object-fit:contain; filter:drop-shadow(0 10px 20px rgba(0,0,0,.6)); }
+  @keyframes glideAcross { 0% { left:-220px; transform:translateY(0); } 50% { transform:translateY(-40px); } 100% { left:34%; transform:translateY(0); } }
+  .royal-scroll-landing-right { position:absolute; right:-520px; top:54%; transform:translateY(-50%); display:flex; align-items:flex-end; gap:10px; transition:right .8s cubic-bezier(.22,1,.36,1); }
+  .royal-scroll-landing-right.landed { right:3%; }
+  .royal-unfurled-scroll { width:340px; background:#FFFBEB; border:4px solid #D97706; border-radius:22px; padding:16px; box-shadow:0 20px 50px rgba(0,0,0,.6); display:flex; flex-direction:column; gap:8px; }
+  .royal-scroll-title { font-family:var(--font-display); font-weight:800; font-size:1.15rem; color:#92400E; }
+  .royal-scroll-body { font-size:.9rem; font-weight:700; color:#78350F; }
+  .royal-btn-continue { background:linear-gradient(135deg,#059669,#0d9488); color:#fff; font-weight:800; font-size:.85rem; padding:10px 14px; border:0; border-radius:12px; cursor:pointer; }
+  .royal-victory-companion img { width:120px; object-fit:contain; filter:drop-shadow(0 10px 20px rgba(0,0,0,.6)); }
+</style>
 </head>
 <body class="min-h-screen flex flex-col relative overflow-hidden">
 
-    <!-- PANORAMIC SWISS ALPS BACKDROP-->
-    <div class="ambient-backdrop-wrap">
-        <img src="assets/heidi-alps-bg.webp" class="ambient-backdrop" alt="Alps Background" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'1920\' height=\'1080\'><defs><linearGradient id=\'g\' x1=\'0\' y1=\'0\' x2=\'0\' y2=\'1\'><stop offset=\'0%25\' stop-color=\'%230284c7\'/><stop offset=\'60%25\' stop-color=\'%2338bdf8\'/><stop offset=\'100%25\' stop-color=\'%2315803d\'/></linearGradient></defs><rect width=\'100%25\' height=\'100%25\' fill=\'url(%23g)\'/></svg>'"/>
+<div class="ambient-backdrop-wrap">
+  <img src="assets/heidi-alps-bg.webp" class="ambient-backdrop" alt="" onerror="this.style.display='none'"/>
+</div>
+<canvas id="milkyWayCanvas"></canvas>
+<canvas id="confettiSnowCanvas"></canvas>
+<div id="screenDimOverlay"></div>
+
+<!-- TEACHER PIN LOCK MODAL (1995) -->
+<div id="pinLockModal" style="display:none;" class="fixed inset-0 z-[100050] bg-slate-950/80 backdrop-blur-md items-center justify-center p-4">
+  <div class="bg-white rounded-3xl p-6 w-80 text-center shadow-2xl border-2 border-rose-300 flex flex-col items-center gap-3">
+    <span class="text-3xl">🔐</span>
+    <h3 class="font-bold text-slate-800 text-base">Teacher & Parent PIN</h3>
+    <p class="text-xs text-slate-500">Enter PIN to return to Practice Mode & Answers</p>
+    <input type="password" inputmode="numeric" id="pinInput" maxlength="4" class="w-36 text-center text-2xl font-bold tracking-widest px-3 py-1.5 border-2 border-rose-400 rounded-xl focus:outline-none" placeholder="••••"/>
+    <div class="flex gap-2 w-full mt-2">
+      <button onclick="closePinModal()" class="flex-1 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs">Cancel</button>
+      <button onclick="verifyPinCode()" class="flex-1 py-2 bg-rose-600 text-white font-bold rounded-xl text-xs">Unlock</button>
     </div>
+    <p id="pinErrorMsg" class="text-rose-600 text-[11px] font-bold hidden">Incorrect PIN! Try again.</p>
+  </div>
+</div>
 
-    <!-- STARFIELD & EFFECTS OVERLAY -->
-    <canvas id="milkyWayCanvas"></canvas>
-    <canvas id="confettiSnowCanvas"></canvas>
-    <div id="screenDimOverlay"></div>
-
-    <!-- TEACHER PIN LOCK MODAL (1995) -->
-    <div id="pinLockModal" class="fixed inset-0 z-[100050] bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl p-6 w-80 text-center shadow-2xl border-2 border-rose-300 flex flex-col items-center gap-3">
-            <span class="text-3xl">🔐</span>
-            <h3 class="font-bold text-slate-800 text-base">Teacher & Parent PIN</h3>
-            <p class="text-xs text-slate-500">Enter PIN to return to Practice Mode & Answers</p>
-            <input type="password" id="pinInput" maxlength="4" class="w-36 text-center text-2xl font-bold tracking-widest px-3 py-1.5 border-2 border-rose-400 rounded-xl focus:outline-none" placeholder="••••"/>
-            <div class="flex gap-2 w-full mt-2">
-                <button onclick="closePinModal()" class="flex-1 py-2 bg-slate-200 text-slate-700 font-bold rounded-xl text-xs cursor-pointer">Cancel</button>
-                <button onclick="verifyPinCode()" class="flex-1 py-2 bg-rose-600 text-white font-bold rounded-xl text-xs cursor-pointer">Unlock</button>
-            </div>
-            <p id="pinErrorMsg" class="text-rose-600 text-[11px] font-bold hidden">Incorrect PIN! Try again.</p>
-        </div>
+<!-- GRAND CELEBRATION STAGE -->
+<div id="grandCelebrationStage">
+  <canvas id="grandFinaleCanvas"></canvas>
+  <div class="magic-banner-centerpiece" id="magicCenterpiece">
+    <div class="magic-crown-halo"></div>
+    <div class="magic-top-title">✨ EXCELLENT! ✨</div>
+    <div class="magic-subtitle-sparkle">ALPS ACADEMY SCHOLAR!</div>
+  </div>
+  <div class="gliding-companion-rocket" id="glidingCompanionRocket">
+    <img src="assets/heidi-main.webp" alt="Heidi" onerror="handleImageFallback(this)">
+  </div>
+  <div class="royal-scroll-landing-right" id="royalScrollLandingRight">
+    <div class="royal-unfurled-scroll">
+      <div class="flex items-center gap-3 border-b-2 border-amber-300 pb-2 mb-2">
+        <img src="assets/alps-badge.webp" class="w-10 h-10 object-contain" alt="Badge" onerror="handleImageFallback(this)"/>
+        <div class="royal-scroll-title">🌟 SECTION MASTERED! 🌟</div>
+      </div>
+      <div class="royal-scroll-body">Outstanding writing, Zaina! Your English exercises are completed with brilliance!</div>
+      <button class="royal-btn-continue" onclick="closeGrandCelebration()">Continue Journey ➔</button>
     </div>
-
-    <!-- GRAND CELEBRATION STAGE[cite: 6]-->
-    <div id="grandCelebrationStage">
-        <canvas id="grandFinaleCanvas"></canvas>
-        <div class="magic-banner-centerpiece" id="magicCenterpiece">
-            <div class="magic-crown-halo"></div>
-            <div class="magic-top-title">✨ EXCELLENT! ✨</div>
-            <div class="magic-subtitle-sparkle">ALPS ACADEMY SCHOLAR!</div>
-        </div>
-        <div class="gliding-companion-rocket" id="glidingCompanionRocket">
-            <img src="assets/heidi-main.webp" id="glidingCompanionImg" alt="Heidi" onerror="handleImageFallback(this)">
-        </div>
-        <div class="royal-scroll-landing-right" id="royalScrollLandingRight">
-            <div class="royal-unfurled-scroll">
-                <div class="flex items-center gap-3 border-b-2 border-amber-300 pb-2 mb-2">
-                    <img src="assets/alps-badge.webp" class="w-10 h-10 object-contain" alt="Badge" onerror="handleImageFallback(this)"/>
-                    <div class="royal-scroll-title m-0 p-0" id="royalScrollTitle">🌟 SECTION MASTERED! 🌟</div>
-                </div>
-                <div class="royal-scroll-body" id="royalScrollBody">
-                    Outstanding writing, Zaina! Your English exercises are completed with brilliance!
-                </div>
-                <button class="royal-btn-continue" onclick="closeGrandCelebration()">Continue Journey ➔</button>
-            </div>
-            <div class="royal-victory-companion">
-                <img src="assets/heidi-reading.webp" id="royalVictoryImg" alt="Victory Reading" onerror="handleImageFallback(this)">
-            </div>
-        </div>
+    <div class="royal-victory-companion">
+      <img src="assets/heidi-reading.webp" alt="Heidi Reading" onerror="handleImageFallback(this)">
     </div>
+  </div>
+</div>
 
-    <!-- Top Header Bar[cite: 6]-->
-    <header class="relative z-20 bg-slate-900/85 backdrop-blur-md border-b border-white/10 text-white shadow-lg py-2.5 px-6 flex justify-between items-center shrink-0">
-        <div class="flex items-center gap-3">
-            <a href="index.html" class="w-9 h-9 rounded-full bg-slate-800/80 border border-white/30 flex items-center justify-center text-sm shadow hover:scale-105 transition" title="Exit to Hub" onclick="exitToHub(event)">🏰</a>
-            <div class="flex flex-col">
-                <h1 class="text-base md:text-xl font-bold font-display tracking-wide flex items-center gap-2">
-                    ✨ Zaina's English <span class="bg-rose-500/30 border border-rose-400 text-rose-200 text-xs px-2.5 py-0.5 rounded-full">Heidi Learns to Read</span>
-                </h1>
-            </div>
+<!-- Header -->
+<header class="relative z-20 bg-slate-900/85 backdrop-blur-md border-b border-white/10 text-white shadow-lg py-2.5 px-6 flex justify-between items-center shrink-0">
+  <div class="flex items-center gap-3">
+    <a href="index.html" class="w-9 h-9 rounded-full bg-slate-800/80 border border-white/30 flex items-center justify-center text-sm shadow hover:scale-105 transition" title="Exit to Hub" onclick="exitToHub(event)">🏰</a>
+    <h1 class="text-base md:text-xl font-bold font-display tracking-wide flex items-center gap-2">
+      ✨ Zaina's English <span class="bg-rose-500/30 border border-rose-400 text-rose-200 text-xs px-2.5 py-0.5 rounded-full">Heidi Learns to Read</span>
+    </h1>
+  </div>
+  <div class="flex items-center gap-3">
+    <div class="flex items-center gap-2 bg-slate-800/80 border border-white/20 rounded-full px-3 py-1 text-xs">
+      <span>💡 Dim:</span>
+      <input type="range" id="dimRangeSlider" min="0" max="0.5" step="0.05" value="0" oninput="updateScreenDimLevel(this.value)" class="w-16 md:w-20 accent-amber-400 cursor-pointer">
+      <span id="dimPctLabel" class="w-7 font-bold text-amber-300">0%</span>
+    </div>
+    <button class="w-9 h-9 rounded-full bg-slate-800/80 border border-white/30 flex items-center justify-center text-sm shadow hover:scale-105 transition cursor-pointer" id="inkSoundBtn" onclick="toggleInkSound()" title="Sound On/Off">🔊</button>
+    <button onclick="returnToGateway()" id="gatewayNavBtn" style="display:none;" class="bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs px-3.5 py-2 rounded-xl shadow transition border border-rose-400 cursor-pointer">🏰 Realms</button>
+  </div>
+</header>
+
+<main class="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center relative z-10 overflow-y-auto overflow-x-hidden">
+
+  <!-- GATEWAY -->
+  <div id="gatewayView" class="w-full flex flex-col items-center gap-4">
+    <div class="text-center">
+      <h2 class="text-2xl md:text-3xl font-bold font-display text-white drop-shadow-md">Heidi's Swiss Alps Academy</h2>
+      <p class="text-rose-200 text-xs md:text-sm mt-0.5">Swipe horizontally or tap any realm to enter</p>
+    </div>
+    <div class="stage-6d-wrapper" id="carousel6DStage">
+      <div class="carousel-6d-track" id="carousel6DTrack">
+        <div class="carousel-6d-card pos-front" id="card6d_0" onclick="handleCardTap(0)">
+          <div class="flex items-center justify-between w-full"><span class="text-[10px] font-bold uppercase tracking-widest text-emerald-800 bg-emerald-100 px-3 py-0.5 rounded-full">Realm I</span><img src="assets/alps-badge.webp" class="w-6 h-6 object-contain" alt="" onerror="handleImageFallback(this)"/></div>
+          <div class="flex flex-col items-center pointer-events-none"><h3 class="text-xl font-bold text-slate-900 font-display">Word Treasury</h3><p class="text-xs text-slate-700 mt-1">14 Meanings & 6 Opposites</p></div>
+          <img src="assets/heidi-main.webp" class="gateway-avatar-6d" alt="Heidi" onerror="handleImageFallback(this)"/>
+          <button type="button" onclick="event.stopPropagation(); switchRealm('treasury')" class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-lg active:scale-95 cursor-pointer">Enter Treasury ➔</button>
         </div>
-
-        <div class="flex items-center gap-3">
-            <!-- Dim Slider (0% - 50%)[cite: 6]-->
-            <div class="flex items-center gap-2 bg-slate-800/80 border border-white/20 rounded-full px-3 py-1 text-xs">
-                <span>💡 Dim:</span>
-                <input type="range" id="dimRangeSlider" min="0" max="0.5" step="0.05" value="0" 
-                       oninput="updateScreenDimLevel(this.value)" 
-                       class="w-16 md:w-20 accent-amber-400 cursor-pointer">
-                <span id="dimPctLabel" class="w-7 font-bold text-amber-300">0%</span>
-            </div>
-
-            <button class="w-9 h-9 rounded-full bg-slate-800/80 border border-white/30 flex items-center justify-center text-sm shadow hover:scale-105 transition cursor-pointer" id="inkSoundBtn" onclick="toggleInkSound()" title="Sound On/Off">🔊</button>
-            <button onclick="returnToGateway()" id="gatewayNavBtn" class="hidden bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs px-3.5 py-2 rounded-xl shadow transition flex items-center gap-1.5 border border-rose-400 cursor-pointer">
-                🏰 Realms
-            </button>
+        <div class="carousel-6d-card pos-right" id="card6d_1" onclick="handleCardTap(1)">
+          <div class="flex items-center justify-between w-full"><span class="text-[10px] font-bold uppercase tracking-widest text-indigo-800 bg-indigo-100 px-3 py-0.5 rounded-full">Realm II</span><img src="assets/alps-badge.webp" class="w-6 h-6 object-contain" alt="" onerror="handleImageFallback(this)"/></div>
+          <div class="flex flex-col items-center pointer-events-none"><h3 class="text-xl font-bold text-slate-900 font-display">Grammar & Tenses</h3><p class="text-xs text-slate-700 mt-1">MCQs, Past Tense & Verbs</p></div>
+          <img src="assets/heidi-reading.webp" class="gateway-avatar-6d" alt="Grammar" onerror="handleImageFallback(this)"/>
+          <button type="button" onclick="event.stopPropagation(); switchRealm('grammar')" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-lg active:scale-95 cursor-pointer">Enter Grammar ➔</button>
         </div>
-    </header>
+        <div class="carousel-6d-card pos-back" id="card6d_2" onclick="handleCardTap(2)">
+          <div class="flex items-center justify-between w-full"><span class="text-[10px] font-bold uppercase tracking-widest text-amber-800 bg-amber-100 px-3 py-0.5 rounded-full">Realm III</span><img src="assets/alps-badge.webp" class="w-6 h-6 object-contain" alt="" onerror="handleImageFallback(this)"/></div>
+          <div class="flex flex-col items-center pointer-events-none"><h3 class="text-xl font-bold text-slate-900 font-display">Homophones & Stems</h3><p class="text-xs text-slate-700 mt-1">Homophone Pairs & Stems</p></div>
+          <img src="assets/heidi-main.webp" class="gateway-avatar-6d" alt="Words" onerror="handleImageFallback(this)"/>
+          <button type="button" onclick="event.stopPropagation(); switchRealm('words')" class="bg-gradient-to-r from-amber-600 to-orange-600 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-lg active:scale-95 cursor-pointer">Enter Stems ➔</button>
+        </div>
+        <div class="carousel-6d-card pos-left" id="card6d_3" onclick="handleCardTap(3)">
+          <div class="flex items-center justify-between w-full"><span class="text-[10px] font-bold uppercase tracking-widest text-rose-800 bg-rose-100 px-3 py-0.5 rounded-full">Realm IV</span><img src="assets/alps-badge.webp" class="w-6 h-6 object-contain" alt="" onerror="handleImageFallback(this)"/></div>
+          <div class="flex flex-col items-center pointer-events-none"><h3 class="text-xl font-bold text-slate-900 font-display">Answer in Brief</h3><p class="text-xs text-slate-700 mt-1">3D Composition Notebooks</p></div>
+          <img src="assets/heidi-reading.webp" class="gateway-avatar-6d" alt="Reading" onerror="handleImageFallback(this)"/>
+          <button type="button" onclick="event.stopPropagation(); switchRealm('comprehension')" class="bg-gradient-to-r from-rose-600 to-pink-600 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-lg active:scale-95 cursor-pointer">Enter Scribe ➔</button>
+        </div>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 mt-2">
+      <button onclick="rotateToRealm(0)" id="dot6d_0" class="w-3 h-3 rounded-full bg-rose-400 transition-all"></button>
+      <button onclick="rotateToRealm(1)" id="dot6d_1" class="w-2.5 h-2.5 rounded-full bg-slate-600 transition-all"></button>
+      <button onclick="rotateToRealm(2)" id="dot6d_2" class="w-2.5 h-2.5 rounded-full bg-slate-600 transition-all"></button>
+      <button onclick="rotateToRealm(3)" id="dot6d_3" class="w-2.5 h-2.5 rounded-full bg-slate-600 transition-all"></button>
+    </div>
+  </div>
 
-    <!-- Main Workspace Container -->
-    <main class="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center relative z-10 overflow-hidden">
-        
-        <!-- VIEW 1: 6D SWIPEABLE CAROUSEL GATEWAY (4 REALMS)[cite: 6]-->
-        <div id="gatewayView" class="w-full flex flex-col items-center gap-4">
-            <div class="text-center">
-                <h2 class="text-2xl md:text-3xl font-bold font-display text-white drop-shadow-md">Heidi's Swiss Alps Academy</h2>
-                <p class="text-rose-200 text-xs md:text-sm mt-0.5">Swipe horizontally or tap any realm to enter</p>
-            </div>
+  <!-- ACTIVE WORKSPACE -->
+  <div id="activeCardContainer" class="w-full hidden card-4d-wrapper"></div>
+</main>
 
-            <!-- 6D Carousel Stage -->
-            <div class="stage-6d-wrapper" id="carousel6DStage">
-                <div class="carousel-6d-track" id="carousel6DTrack">
-                    
-                    <!-- Card 0: Realm 1 - Meanings & Opposites -->
-                    <div class="carousel-6d-card pos-front" id="card6d_0" onclick="handleCardTap(0)">
-                        <div class="flex items-center justify-between w-full">
-                            <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-800 bg-emerald-100 px-3 py-0.5 rounded-full">Realm I</span>
-                            <img src="assets/alps-badge.webp" class="w-6 h-6 object-contain" alt="Badge" onerror="handleImageFallback(this)"/>
-                        </div>
-                        <div class="flex flex-col items-center pointer-events-none">
-                            <h3 class="text-xl font-bold text-slate-900 font-display">Word Treasury</h3>
-                            <p class="text-xs text-slate-700 mt-1">14 Meanings & 6 Opposites</p>
-                        </div>
-                        <img src="assets/heidi-main.webp" class="gateway-avatar-6d" alt="Heidi" onerror="handleImageFallback(this)"/>
-                        <button type="button" onclick="switchRealm('treasury')" class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-lg transition active:scale-95 cursor-pointer">
-                            Enter Treasury ➔
-                        </button>
-                    </div>
+<footer class="relative z-20 bg-slate-900 text-slate-400 py-2.5 text-center text-xs border-t border-white/10 shrink-0">
+  Grade 5 English • Heidi Learns to Read • Royal Academy
+</footer>
 
-                    <!-- Card 1: Realm 2 - Grammar & Tenses -->
-                    <div class="carousel-6d-card pos-right" id="card6d_1" onclick="handleCardTap(1)">
-                        <div class="flex items-center justify-between w-full">
-                            <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-800 bg-indigo-100 px-3 py-0.5 rounded-full">Realm II</span>
-                            <img src="assets/alps-badge.webp" class="w-6 h-6 object-contain" alt="Badge" onerror="handleImageFallback(this)"/>
-                        </div>
-                        <div class="flex flex-col items-center pointer-events-none">
-                            <h3 class="text-xl font-bold text-slate-900 font-display">Grammar & Tenses</h3>
-                            <p class="text-xs text-slate-700 mt-1">MCQs, Past Tense & Verbs</p>
-                        </div>
-                        <img src="assets/heidi-reading.webp" class="gateway-avatar-6d" alt="Grammar" onerror="handleImageFallback(this)"/>
-                        <button type="button" onclick="switchRealm('grammar')" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-lg transition active:scale-95 cursor-pointer">
-                            Enter Grammar ➔
-                        </button>
-                    </div>
+<script>
+  function handleImageFallback(imgEl) {
+    imgEl.onerror = null;
+    imgEl.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><circle cx='60' cy='60' r='56' fill='%23EDE9FE' stroke='%23C4B5FD' stroke-width='4'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='56'>📖</text></svg>";
+  }
 
-                    <!-- Card 2: Realm 3 - Homophones & Word Stems -->
-                    <div class="carousel-6d-card pos-back" id="card6d_2" onclick="handleCardTap(2)">
-                        <div class="flex items-center justify-between w-full">
-                            <span class="text-[10px] font-bold uppercase tracking-widest text-amber-800 bg-amber-100 px-3 py-0.5 rounded-full">Realm III</span>
-                            <img src="assets/alps-badge.webp" class="w-6 h-6 object-contain" alt="Badge" onerror="handleImageFallback(this)"/>
-                        </div>
-                        <div class="flex flex-col items-center pointer-events-none">
-                            <h3 class="text-xl font-bold text-slate-900 font-display">Homophones & Stems</h3>
-                            <p class="text-xs text-slate-700 mt-1">Homophone Pairs & Stems</p>
-                        </div>
-                        <img src="assets/heidi-main.webp" class="gateway-avatar-6d" alt="Words" onerror="handleImageFallback(this)"/>
-                        <button type="button" onclick="switchRealm('words')" class="bg-gradient-to-r from-amber-600 to-orange-600 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-lg transition active:scale-95 cursor-pointer">
-                            Enter Stems ➔
-                        </button>
-                    </div>
+  /* DIM */
+  function updateScreenDimLevel(val) {
+    document.getElementById("screenDimOverlay").style.opacity = val;
+    document.getElementById("dimPctLabel").textContent = Math.round(val * 100) + "%";
+    localStorage.setItem('zaina_english_dim_level', val);
+  }
+  const savedDim = localStorage.getItem('zaina_english_dim_level');
+  if (savedDim !== null) { document.getElementById('dimRangeSlider').value = savedDim; updateScreenDimLevel(savedDim); }
 
-                    <!-- Card 3: Realm 4 - Answer in Brief & Sentences -->
-                    <div class="carousel-6d-card pos-left" id="card6d_3" onclick="handleCardTap(3)">
-                        <div class="flex items-center justify-between w-full">
-                            <span class="text-[10px] font-bold uppercase tracking-widest text-rose-800 bg-rose-100 px-3 py-0.5 rounded-full">Realm IV</span>
-                            <img src="assets/alps-badge.webp" class="w-6 h-6 object-contain" alt="Badge" onerror="handleImageFallback(this)"/>
-                        </div>
-                        <div class="flex flex-col items-center pointer-events-none">
-                            <h3 class="text-xl font-bold text-slate-900 font-display">Answer in Brief</h3>
-                            <p class="text-xs text-slate-700 mt-1">3D Composition Notebooks</p>
-                        </div>
-                        <img src="assets/heidi-reading.webp" class="gateway-avatar-6d" alt="Reading" onerror="handleImageFallback(this)"/>
-                        <button type="button" onclick="switchRealm('comprehension')" class="bg-gradient-to-r from-rose-600 to-pink-600 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-lg transition active:scale-95 cursor-pointer">
-                            Enter Scribe ➔
-                        </button>
-                    </div>
+  /* SPEECH */
+  function speakWord(el, customText = null, rate = 1.0) {
+    try {
+      window.speechSynthesis.cancel();
+      const text = customText || el.innerText.replace(/[^a-zA-Z\s]/g, '').trim();
+      const u = new SpeechSynthesisUtterance(text);
+      u.rate = rate; u.pitch = 1.05;
+      window.speechSynthesis.speak(u);
+    } catch (_) {}
+  }
+  function speakSentence(text) {
+    try { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.rate = 0.95; window.speechSynthesis.speak(u); } catch (_) {}
+  }
+  function toggleSplit(el) {
+    const normal = el.dataset.n, split = el.dataset.s || el.dataset.n;
+    if (el.classList.contains('is-split')) {
+      el.classList.remove('is-split'); el.innerText = normal; speakWord(el, normal, 1.0);
+    } else {
+      el.classList.add('is-split'); el.innerText = split; speakWord(el, normal, 0.65);
+    }
+  }
 
+  /* AUDIO */
+  let audioCtx = null;
+  function getAudioContext() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }
+  function playMagicWhoosh(isOpening = true) {
+    try {
+      const ctx = getAudioContext(), t0 = ctx.currentTime;
+      const osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.type = 'triangle';
+      if (isOpening) { osc.frequency.setValueAtTime(250, t0); osc.frequency.exponentialRampToValueAtTime(650, t0 + .35); }
+      else { osc.frequency.setValueAtTime(600, t0); osc.frequency.exponentialRampToValueAtTime(220, t0 + .35); }
+      gain.gain.setValueAtTime(.2, t0); gain.gain.linearRampToValueAtTime(.01, t0 + .4);
+      osc.connect(gain); gain.connect(ctx.destination); osc.start(t0); osc.stop(t0 + .4);
+    } catch (e) {}
+  }
+  function playGrandFanfare() {
+    try {
+      const ctx = getAudioContext(), t0 = ctx.currentTime;
+      [392.00, 523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+        const osc = ctx.createOscillator(), gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, t0 + idx * .08);
+        gain.gain.setValueAtTime(.25, t0 + idx * .08);
+        gain.gain.exponentialRampToValueAtTime(.001, t0 + idx * .08 + 1.2);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(t0 + idx * .08); osc.stop(t0 + idx * .08 + 1.25);
+      });
+    } catch (e) {}
+  }
+
+  const InkSound = {
+    enabled: localStorage.getItem('zaina_ink_sound') !== 'off',
+    ready: false, penGain: null, penFilter: null, eraseGain: null, eraseFilter: null,
+    init() {
+      if (this.ready) return;
+      const ctx = getAudioContext();
+      const len = Math.floor(ctx.sampleRate * 1.5);
+      const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+
+      const penSrc = ctx.createBufferSource(); penSrc.buffer = buf; penSrc.loop = true;
+      this.penFilter = ctx.createBiquadFilter(); this.penFilter.type = 'bandpass'; this.penFilter.frequency.value = 3000; this.penFilter.Q.value = 1.6;
+      this.penGain = ctx.createGain(); this.penGain.gain.value = 0;
+      penSrc.connect(this.penFilter); this.penFilter.connect(this.penGain); this.penGain.connect(ctx.destination); penSrc.start();
+
+      const eraseSrc = ctx.createBufferSource(); eraseSrc.buffer = buf; eraseSrc.loop = true;
+      this.eraseFilter = ctx.createBiquadFilter(); this.eraseFilter.type = 'lowpass'; this.eraseFilter.frequency.value = 800; this.eraseFilter.Q.value = .7;
+      this.eraseGain = ctx.createGain(); this.eraseGain.gain.value = 0;
+      eraseSrc.connect(this.eraseFilter); this.eraseFilter.connect(this.eraseGain); this.eraseGain.connect(ctx.destination); eraseSrc.start();
+      this.ready = true;
+    },
+    update(tool, dist) {
+      if (!this.enabled) return;
+      try {
+        this.init();
+        const t = getAudioContext().currentTime;
+        if (tool === 'pen') {
+          this.penFilter.frequency.setTargetAtTime(2400 + Math.random() * 1600, t, .02);
+          this.penGain.gain.setTargetAtTime(Math.min(.07, .004 + dist * .004), t, .03);
+          this.eraseGain.gain.setTargetAtTime(0, t, .03);
+        } else if (tool === 'eraser') {
+          this.eraseFilter.frequency.setTargetAtTime(600 + Math.random() * 500, t, .03);
+          this.eraseGain.gain.setTargetAtTime(Math.min(.10, .01 + dist * .006), t, .03);
+          this.penGain.gain.setTargetAtTime(0, t, .03);
+        }
+      } catch (e) {}
+    },
+    stop() {
+      if (!this.ready) return;
+      try { const t = getAudioContext().currentTime; this.penGain.gain.setTargetAtTime(0, t, .04); this.eraseGain.gain.setTargetAtTime(0, t, .04); } catch (e) {}
+    },
+    glideChime() {
+      if (!this.enabled) return;
+      try {
+        const ctx = getAudioContext(), t0 = ctx.currentTime;
+        const osc = ctx.createOscillator(), g = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(440, t0); osc.frequency.exponentialRampToValueAtTime(1320, t0 + .28);
+        g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(.14, t0 + .03); g.gain.exponentialRampToValueAtTime(.0001, t0 + .6);
+        osc.connect(g); g.connect(ctx.destination); osc.start(t0); osc.stop(t0 + .65);
+      } catch (e) {}
+    }
+  };
+  function toggleInkSound() {
+    InkSound.enabled = !InkSound.enabled;
+    localStorage.setItem('zaina_ink_sound', InkSound.enabled ? 'on' : 'off');
+    document.getElementById('inkSoundBtn').textContent = InkSound.enabled ? '🔊' : '🔇';
+    if (!InkSound.enabled) InkSound.stop();
+  }
+  if (!InkSound.enabled) document.getElementById('inkSoundBtn').textContent = '🔇';
+
+  /* CAROUSEL */
+  let activeRealmIndex = 0;
+  const realmKeys = ['treasury', 'grammar', 'words', 'comprehension'];
+  function rotateToRealm(i) { playMagicWhoosh(true); activeRealmIndex = (i + 4) % 4; update6DCarouselDOM(); }
+  function update6DCarouselDOM() {
+    for (let i = 0; i < 4; i++) {
+      const card = document.getElementById('card6d_' + i), dot = document.getElementById('dot6d_' + i);
+      if (!card) continue;
+      card.className = 'carousel-6d-card';
+      const offset = (i - activeRealmIndex + 4) % 4;
+      card.classList.add(['pos-front', 'pos-right', 'pos-back', 'pos-left'][offset]);
+      if (dot) dot.className = offset === 0 ? 'w-3 h-3 rounded-full bg-rose-400 transition-all' : 'w-2.5 h-2.5 rounded-full bg-slate-600 transition-all';
+    }
+  }
+  function handleCardTap(i) { if (i === activeRealmIndex) switchRealm(realmKeys[i]); else rotateToRealm(i); }
+  (function () {
+    const track = document.getElementById('carousel6DTrack');
+    let sx = 0, sy = 0, tracking = false;
+    track.addEventListener('pointerdown', e => { sx = e.clientX; sy = e.clientY; tracking = true; }, { passive: true });
+    track.addEventListener('pointerup', e => {
+      if (!tracking) return; tracking = false;
+      const dx = e.clientX - sx, dy = e.clientY - sy;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) rotateToRealm(dx > 0 ? activeRealmIndex - 1 : activeRealmIndex + 1);
+    }, { passive: true });
+    track.addEventListener('pointercancel', () => { tracking = false; }, { passive: true });
+  })();
+
+  /* ==========================================================
+     MODE SWITCH (icons only) + TEACHER PIN (1995)
+     Practice = answers + ghost shadow visible. Independent = nothing shown.
+  ========================================================== */
+  let isPracticeMode = true;
+
+  function handleModeSelect(target) {
+    if (target === 'write') { isPracticeMode = false; applyModeStyles(); return; }
+    if (!isPracticeMode) openPinModal(); else { isPracticeMode = true; applyModeStyles(); }
+  }
+  function openPinModal() {
+    document.getElementById('pinInput').value = '';
+    document.getElementById('pinErrorMsg').classList.add('hidden');
+    document.getElementById('pinLockModal').style.display = 'flex';
+    document.getElementById('pinInput').focus();
+  }
+  function closePinModal() { document.getElementById('pinLockModal').style.display = 'none'; }
+  function verifyPinCode() {
+    if (document.getElementById('pinInput').value === '1995') { isPracticeMode = true; closePinModal(); applyModeStyles(); }
+    else document.getElementById('pinErrorMsg').classList.remove('hidden');
+  }
+  function applyModeStyles() {
+    const pr = document.getElementById('modePracticeBtn'), wr = document.getElementById('modeWriteBtn');
+    if (pr && wr) {
+      pr.className = 'icon-action-btn text-lg ' + (isPracticeMode ? 'scale-125 opacity-100' : 'opacity-40');
+      wr.className = 'icon-action-btn text-lg ' + (!isPracticeMode ? 'scale-125 opacity-100' : 'opacity-40');
+    }
+    // Answers, hints and ghost shadows only exist in Practice Mode
+    document.querySelectorAll('.inline-ghost-text').forEach(el => { el.style.display = isPracticeMode ? 'block' : 'none'; });
+    document.querySelectorAll('.practice-helper-box').forEach(el => { el.style.display = isPracticeMode ? 'inline-block' : 'none'; });
+  }
+  const modeSwitcherHTML = () => `
+    <div class="flex items-center gap-3 bg-slate-900/10 px-3 py-1 rounded-full border border-slate-400/30">
+      <button onclick="handleModeSelect('practice')" id="modePracticeBtn" class="icon-action-btn text-lg ${isPracticeMode ? 'scale-125 opacity-100' : 'opacity-40'}" title="Practice Lab">🎯</button>
+      <button onclick="handleModeSelect('write')" id="modeWriteBtn" class="icon-action-btn text-lg ${!isPracticeMode ? 'scale-125 opacity-100' : 'opacity-40'}" title="Independent">✍️</button>
+    </div>`;
+
+  /* ==========================================================
+     INLINE WRITING STRIPS (icon-only undo + clear, no boxes)
+  ========================================================== */
+  const ICON_UNDO = '<svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>';
+  const ICON_CLEAR = '<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 14h10l1-14"/></svg>';
+
+  function createInlineStrip(id, answer, widthPx = 450) {
+    return `
+      <div class="inline-strip-box two-line-canvas-wrap" style="width:${widthPx}px;">
+        <span class="inline-ghost-text" style="display:${isPracticeMode ? 'block' : 'none'};">${answer}</span>
+        <canvas id="inlineCanvas_${id}" oncontextmenu="return false;" class="absolute inset-0 w-full h-full cursor-crosshair touch-none z-10"></canvas>
+        <div class="absolute right-2 top-1/2 -translate-y-1/2 z-20 flex items-center gap-1">
+          <button type="button" class="strip-icon" onclick="undoInlineInk('${id}')" aria-label="Undo">${ICON_UNDO}</button>
+          <button type="button" class="strip-icon clear-icon" onclick="clearInlineCanvas('${id}')" aria-label="Clear">${ICON_CLEAR}</button>
+        </div>
+      </div>`;
+  }
+
+  // One row = prompt on the left, answer hint (Practice only), inline canvas underneath.
+  function hintHTML(ans, split, cls) {
+    const s = split ? ` data-s="${split}"` : '';
+    return `<span class="practice-helper-box tap-split-word ${cls} font-bold" style="display:${isPracticeMode ? 'inline-block' : 'none'};" data-n="${ans}"${s} onclick="toggleSplit(this)">${ans}</span>`;
+  }
+  function rowHTML(id, promptHTML, ans, split, hintCls, width) {
+    return `
+      <div class="p-3 bg-white/60 rounded-xl border border-slate-200 flex flex-col gap-1.5">
+        <div class="flex justify-between items-center text-xs font-bold text-slate-900 gap-2">
+          <span>${promptHTML}</span>${hintHTML(ans, split, hintCls)}
+        </div>
+        ${createInlineStrip(id, ans, width)}
+      </div>`;
+  }
+  const readable = (n, w, tail = ':') => `<span class="read-word" onclick="speakWord(this, '${w}')">${n}. ${w}</span>${tail}`;
+
+  const MEANINGS = [
+    ['Frau', 'German for Mrs', 'Ger · man for Mrs'], ['Fraulein', 'German for Miss', 'Ger · man for Miss'],
+    ['depicted', 'showed'], ['flock', 'group of goats'], ['pasture', 'grazing grass field', 'graz · ing grass field'],
+    ['keen', 'eager and interested', 'ea · ger and in · ter · est · ed'], ['homesick', 'missing home', 'mis · sing home'],
+    ['summits', 'top of mountains', 'top of moun · tains'], ['sobbing', 'crying noisily', 'cry · ing noi · si · ly'],
+    ['sighing', 'breathing out slowly', 'breath · ing out slow · ly'], ['resignation', 'accepting sad reality', 'ac · cept · ing sad re · al · i · ty'],
+    ['pitifully', 'making people feel sorry', 'mak · ing peo · ple feel sor · ry'], ['miracles', 'surprising lucky events', 'sur · pris · ing luck · y e · vents'],
+    ['assured', 'promised', 'prom · ised']
+  ];
+  const OPPOSITES = [
+    ['Determined', 'Hesitant', 'He · si · tant'], ['Difficult', 'Easy', 'Ea · sy'], ['Believe', 'Doubt'],
+    ['Attention', 'Distraction', 'Dis · trac · tion'], ['Exciting', 'Boring', 'Bor · ing'], ['Pleasure', 'Displeasure', 'Dis · pleas · ure']
+  ];
+  const PAST = [
+    ['The sheep ________ (graze) on the meadow.', 'grazed'], ['Heidi ________ (live) in the mountains.', 'lived'],
+    ['Heidi ________ (not know) how to read.', 'did not know', 'did · not · know', 560],
+    ['The housekeeper ________ (say) Heidi could not read.', 'said'], ['The shepherd ________ (sleep) next to his sheep.', 'slept']
+  ];
+
+  const meaningsRows = (from, to) => MEANINGS.slice(from, to).map((m, i) =>
+    rowHTML('m_' + (from + i + 1), readable(from + i + 1, m[0]), m[1], m[2], 'text-emerald-900', 430)).join('');
+
+  /* ==========================================================
+     CURRICULUM
+  ========================================================== */
+  const subStageMap = { treasury: 0, grammar: 0, words: 0 };
+  function changeSubStage(key, delta) { playMagicWhoosh(true); saveVisibleInlineInk(); subStageMap[key] += delta; renderActiveCard(false); }
+
+  const englishCurriculum = {
+    treasury: {
+      realmName: 'Word Treasury: Meanings & Opposites',
+      stages: [
+        { title: 'Meanings Glossary (Part 1)', render: () => `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${meaningsRows(0, 7)}</div>` },
+        { title: 'Meanings Glossary (Part 2)', render: () => `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${meaningsRows(7, 14)}</div>` },
+        { title: 'Opposites (6 Pairs)', render: () => `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${OPPOSITES.map((o, i) =>
+            rowHTML('opp_' + (i + 1), readable(i + 1, o[0], ' ↔'), o[1], o[2], 'text-rose-900', 430)).join('')}</div>` }
+      ]
+    },
+    grammar: {
+      realmName: 'Grammar & Verb Tenses',
+      stages: [
+        { title: 'Story Reading MCQs', render: () => `
+            <div class="flex flex-col gap-3 text-xs md:text-sm">
+              <div class="p-3 bg-white/60 rounded-xl border border-slate-200">
+                <p class="font-bold text-slate-800 mb-2">1. Grandmother was surprised that Heidi...</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <button onclick="pickMCQ(this, true)" class="mcq-btn p-2 rounded-lg border border-slate-300 text-left font-medium bg-white/80">a. could not read.</button>
+                  <button onclick="pickMCQ(this, false)" class="mcq-btn p-2 rounded-lg border border-slate-300 text-left font-medium bg-white/80">b. was unable to learn the alphabet.</button>
                 </div>
-            </div>
-
-            <!-- Indicator Dots -->
-            <div class="flex items-center gap-2 mt-2">
-                <button onclick="rotateToRealm(0)" id="dot6d_0" class="w-3 h-3 rounded-full bg-rose-400 transition-all"></button>
-                <button onclick="rotateToRealm(1)" id="dot6d_1" class="w-2.5 h-2.5 rounded-full bg-slate-600 transition-all"></button>
-                <button onclick="rotateToRealm(2)" id="dot6d_2" class="w-2.5 h-2.5 rounded-full bg-slate-600 transition-all"></button>
-                <button onclick="rotateToRealm(3)" id="dot6d_3" class="w-2.5 h-2.5 rounded-full bg-slate-600 transition-all"></button>
-            </div>
-        </div>
-
-        <!-- VIEW 2: ACTIVE WORKSPACE CONTAINER[cite: 6]-->
-        <div id="activeCardContainer" class="w-full hidden card-4d-wrapper">
-            <!-- Dynamically injected -->
-        </div>
-
-    </main>
-
-    <script>
-        function handleImageFallback(imgEl) {
-            imgEl.onerror = null;
-            imgEl.src = "data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'120\' height=\'120\'><circle cx=\'60\' cy=\'60\' r=\'56\' fill=\'%23EDE9FE\' stroke=\'%23C4B5FD\' stroke-width=\'4\'/><text x=\'50%25\' y=\'54%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'56\'>📖</text></svg>";
-        }
-
-        /* SCREEN DIM LEVEL CONTROL[cite: 6]*/
-        function updateScreenDimLevel(val) {
-            const overlay = document.getElementById("screenDimOverlay");
-            overlay.style.opacity = val;
-            const pct = Math.round(val * 100);
-            document.getElementById("dimPctLabel").textContent = `${pct}%`;
-            localStorage.setItem('zaina_english_dim_level', val);
-        }
-
-        const savedDim = localStorage.getItem('zaina_english_dim_level');
-        if (savedDim !== null) {
-            document.getElementById('dimRangeSlider').value = savedDim;
-            updateScreenDimLevel(savedDim);
-        }
-
-        /* TEXT-TO-SPEECH (NATURAL TAP TO READ) */
-        function speakWord(el, customText = null, rate = 1.0) {
-            try {
-                window.speechSynthesis.cancel();
-                const text = customText || el.innerText.replace(/[^a-zA-Z\s]/g, '').trim();
-                const u = new SpeechSynthesisUtterance(text);
-                u.rate = rate;
-                u.pitch = 1.05;
-                window.speechSynthesis.speak(u);
-            } catch (_) {}
-        }
-
-        function speakSentence(text) {
-            try {
-                window.speechSynthesis.cancel();
-                const u = new SpeechSynthesisUtterance(text);
-                u.rate = 0.95;
-                window.speechSynthesis.speak(u);
-            } catch (_) {}
-        }
-
-        /* TAP-TO-SPLIT PHONICS LOGIC (ANSWERS ONLY) */
-        function toggleSplit(el, normalWord, splitWord) {
-            if (el.classList.contains('is-split')) {
-                el.classList.remove('is-split');
-                el.innerText = normalWord;
-                speakWord(el, normalWord, 1.0);
-            } else {
-                el.classList.add('is-split');
-                el.innerText = splitWord;
-                speakWord(el, normalWord, 0.65);
-            }
-        }
-
-        /* PROCEDURAL AUDIO SYNTHESIZER[cite: 6]*/
-        let audioCtx = null;
-        function getAudioContext() {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            return audioCtx;
-        }
-
-        function playMagicWhoosh(isOpening = true) {
-            try {
-                const ctx = getAudioContext();
-                const t0 = ctx.currentTime;
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.type = 'triangle';
-                if (isOpening) {
-                    osc.frequency.setValueAtTime(250, t0);
-                    osc.frequency.exponentialRampToValueAtTime(650, t0 + 0.35);
-                } else {
-                    osc.frequency.setValueAtTime(600, t0);
-                    osc.frequency.exponentialRampToValueAtTime(220, t0 + 0.35);
-                }
-                gain.gain.setValueAtTime(0.2, t0);
-                gain.gain.linearRampToValueAtTime(0.01, t0 + 0.4);
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start(t0);
-                osc.stop(t0 + 0.4);
-            } catch (e) {}
-        }
-
-        function playGrandFanfare() {
-            try {
-                const ctx = getAudioContext();
-                const t0 = ctx.currentTime;
-                [392.00, 523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(freq, t0 + idx * 0.08);
-                    gain.gain.setValueAtTime(0.25, t0 + idx * 0.08);
-                    gain.gain.exponentialRampToValueAtTime(0.001, t0 + idx * 0.08 + 1.2);
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc.start(t0 + idx * 0.08);
-                    osc.stop(t0 + idx * 0.08 + 1.25);
-                });
-            } catch (e) {}
-        }
-
-        const InkSound = {
-            enabled: localStorage.getItem('zaina_ink_sound') !== 'off',
-            ready: false,
-            penGain: null, penFilter: null,
-            eraseGain: null, eraseFilter: null,
-            init() {
-                if (this.ready) return;
-                const ctx = getAudioContext();
-                const len = Math.floor(ctx.sampleRate * 1.5);
-                const buf = ctx.createBuffer(1, len, ctx.sampleRate);
-                const data = buf.getChannelData(0);
-                for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
-
-                const penSrc = ctx.createBufferSource();
-                penSrc.buffer = buf; penSrc.loop = true;
-                this.penFilter = ctx.createBiquadFilter();
-                this.penFilter.type = 'bandpass';
-                this.penFilter.frequency.value = 3000;
-                this.penFilter.Q.value = 1.6;
-                this.penGain = ctx.createGain();
-                this.penGain.gain.value = 0;
-                penSrc.connect(this.penFilter);
-                this.penFilter.connect(this.penGain);
-                this.penGain.connect(ctx.destination);
-                penSrc.start();
-
-                const eraseSrc = ctx.createBufferSource();
-                eraseSrc.buffer = buf; eraseSrc.loop = true;
-                this.eraseFilter = ctx.createBiquadFilter();
-                this.eraseFilter.type = 'lowpass';
-                this.eraseFilter.frequency.value = 800;
-                this.eraseFilter.Q.value = 0.7;
-                this.eraseGain = ctx.createGain();
-                this.eraseGain.gain.value = 0;
-                eraseSrc.connect(this.eraseFilter);
-                this.eraseFilter.connect(this.eraseGain);
-                this.eraseGain.connect(ctx.destination);
-                eraseSrc.start();
-                this.ready = true;
-            },
-            update(tool, dist) {
-                if (!this.enabled) return;
-                try {
-                    this.init();
-                    const t = getAudioContext().currentTime;
-                    if (tool === 'pen') {
-                        const vol = Math.min(0.07, 0.004 + dist * 0.004);
-                        this.penFilter.frequency.setTargetAtTime(2400 + Math.random() * 1600, t, 0.02);
-                        this.penGain.gain.setTargetAtTime(vol, t, 0.03);
-                        this.eraseGain.gain.setTargetAtTime(0, t, 0.03);
-                    } else if (tool === 'eraser') {
-                        const vol = Math.min(0.10, 0.01 + dist * 0.006);
-                        this.eraseFilter.frequency.setTargetAtTime(600 + Math.random() * 500, t, 0.03);
-                        this.eraseGain.gain.setTargetAtTime(vol, t, 0.03);
-                        this.penGain.gain.setTargetAtTime(0, t, 0.03);
-                    }
-                } catch (e) {}
-            },
-            stop() {
-                if (!this.ready) return;
-                try {
-                    const t = getAudioContext().currentTime;
-                    this.penGain.gain.setTargetAtTime(0, t, 0.04);
-                    this.eraseGain.gain.setTargetAtTime(0, t, 0.04);
-                } catch (e) {}
-            },
-            glideChime() {
-                if (!this.enabled) return;
-                try {
-                    const ctx = getAudioContext();
-                    const t0 = ctx.currentTime;
-                    const osc = ctx.createOscillator();
-                    const g = ctx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(440, t0);
-                    osc.frequency.exponentialRampToValueAtTime(1320, t0 + 0.28);
-                    g.gain.setValueAtTime(0.0001, t0);
-                    g.gain.exponentialRampToValueAtTime(0.14, t0 + 0.03);
-                    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.6);
-                    osc.connect(g); g.connect(ctx.destination);
-                    osc.start(t0); osc.stop(t0 + 0.65);
-                } catch (e) {}
-            }
-        };
-
-        function toggleInkSound() {
-            InkSound.enabled = !InkSound.enabled;
-            localStorage.setItem('zaina_ink_sound', InkSound.enabled ? 'on' : 'off');
-            document.getElementById('inkSoundBtn').textContent = InkSound.enabled ? '🔊' : '🔇';
-            if (!InkSound.enabled) InkSound.stop();
-        }
-        if (!InkSound.enabled) document.getElementById('inkSoundBtn').textContent = '🔇';
-
-        /* 6D CAROUSEL CONTROLLER[cite: 6]*/
-        let activeRealmIndex = 0;
-        const realmKeys = ['treasury', 'grammar', 'words', 'comprehension'];
-
-        function rotateToRealm(newIndex) {
-            playMagicWhoosh(true);
-            activeRealmIndex = (newIndex + 4) % 4;
-            update6DCarouselDOM();
-        }
-
-        function update6DCarouselDOM() {
-            for (let i = 0; i < 4; i++) {
-                const card = document.getElementById(`card6d_${i}`);
-                const dot = document.getElementById(`dot6d_${i}`);
-                if (!card) continue;
-                card.className = 'carousel-6d-card';
-
-                const offset = (i - activeRealmIndex + 4) % 4;
-                if (offset === 0) {
-                    card.classList.add('pos-front');
-                    if (dot) dot.className = 'w-3 h-3 rounded-full bg-rose-400 transition-all';
-                } else if (offset === 1) {
-                    card.classList.add('pos-right');
-                    if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-slate-600 transition-all';
-                } else if (offset === 2) {
-                    card.classList.add('pos-back');
-                    if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-slate-600 transition-all';
-                } else {
-                    card.classList.add('pos-left');
-                    if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-slate-600 transition-all';
-                }
-            }
-        }
-
-        function handleCardTap(cardIdx) {
-            if (cardIdx === activeRealmIndex) {
-                switchRealm(realmKeys[cardIdx]);
-            } else {
-                rotateToRealm(cardIdx);
-            }
-        }
-
-        (function setup6DSwipeGestures() {
-            const track = document.getElementById('carousel6DTrack');
-            let startX = 0, startY = 0, isTracking = false;
-
-            track.addEventListener('pointerdown', (e) => {
-                startX = e.clientX;
-                startY = e.clientY;
-                isTracking = true;
-            }, { passive: true });
-
-            track.addEventListener('pointerup', (e) => {
-                if (!isTracking) return;
-                isTracking = false;
-                const diffX = e.clientX - startX;
-                const diffY = e.clientY - startY;
-                if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
-                    if (diffX > 0) rotateToRealm(activeRealmIndex - 1);
-                    else rotateToRealm(activeRealmIndex + 1);
-                }
-            }, { passive: true });
-
-            track.addEventListener('pointercancel', () => { isTracking = false; }, { passive: true });
-        })();
-
-        /* ==========================================================
-           LEARNING MODE & TEACHER PIN (1995) CONTROLLER
-        ========================================================== */
-        let isPracticeMode = true;
-
-        function handleModeSelect(targetMode) {
-            if (targetMode === 'write') {
-                isPracticeMode = false;
-                applyModeStyles();
-            } else {
-                if (!isPracticeMode) {
-                    openPinModal();
-                } else {
-                    isPracticeMode = true;
-                    applyModeStyles();
-                }
-            }
-        }
-
-        function openPinModal() {
-            document.getElementById('pinInput').value = '';
-            document.getElementById('pinErrorMsg').classList.add('hidden');
-            document.getElementById('pinLockModal').classList.remove('hidden');
-            document.getElementById('pinInput').focus();
-        }
-
-        function closePinModal() {
-            document.getElementById('pinLockModal').classList.add('hidden');
-        }
-
-        function verifyPinCode() {
-            const entered = document.getElementById('pinInput').value;
-            if (entered === '1995') {
-                isPracticeMode = true;
-                closePinModal();
-                applyModeStyles();
-            } else {
-                document.getElementById('pinErrorMsg').classList.remove('hidden');
-            }
-        }
-
-        function applyModeStyles() {
-            const prBtn = document.getElementById('modePracticeBtn');
-            const wrBtn = document.getElementById('modeWriteBtn');
-            if (prBtn && wrBtn) {
-                if (isPracticeMode) {
-                    prBtn.className = "icon-action-btn scale-125 opacity-100 text-lg";
-                    wrBtn.className = "icon-action-btn opacity-40 text-lg";
-                } else {
-                    wrBtn.className = "icon-action-btn scale-125 opacity-100 text-lg";
-                    prBtn.className = "icon-action-btn opacity-40 text-lg";
-                }
-            }
-            document.querySelectorAll('.inline-ghost-text').forEach(el => {
-                el.style.display = isPracticeMode ? 'block' : 'none';
-            });
-            document.querySelectorAll('.practice-helper-box').forEach(el => {
-                el.style.display = isPracticeMode ? 'inline-block' : 'none';
-            });
-        }
-
-        /* INLINE STRIP COMPONENT (CLEAN NO-BOX ICONS) */
-        function createInlineStrip(id, expectedAnswer, widthPx = 450) {
-            return `
-                <div class="inline-strip-box two-line-canvas-wrap" style="width: ${widthPx}px;">
-                    <span class="inline-ghost-text" id="ghost_${id}" style="${isPracticeMode ? '' : 'display: none;'}">${expectedAnswer}</span>
-                    <canvas id="inlineCanvas_${id}" oncontextmenu="return false;" class="absolute inset-0 w-full h-full cursor-crosshair touch-none z-10"></canvas>
-                    <div class="absolute right-2 top-1/2 -translate-y-1/2 z-20 flex items-center gap-1.5">
-                        <button onclick="undoInlineInk('${id}')" class="icon-action-btn text-slate-700" title="Undo">↩️</button>
-                        <button onclick="clearInlineCanvas('${id}')" class="icon-action-btn text-rose-700" title="Clear">🗑️</button>
-                    </div>
+              </div>
+              <div class="p-3 bg-white/60 rounded-xl border border-slate-200">
+                <p class="font-bold text-slate-800 mb-2">2. Heidi had decided that she would not be able to read as...</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <button onclick="pickMCQ(this, false)" class="mcq-btn p-2 rounded-lg border border-slate-300 text-left font-medium bg-white/80">a. she found it very difficult.</button>
+                  <button onclick="pickMCQ(this, true)" class="mcq-btn p-2 rounded-lg border border-slate-300 text-left font-medium bg-white/80">c. Peter had told her it was not easy.</button>
                 </div>
-            `;
-        }
-
-        /* PAGINATED SUB-SECTIONS (NO SCROLLING) */
-        const subStageMap = { treasury: 0, grammar: 0, words: 0 };
-
-        function changeSubStage(realmKey, delta) {
-            playMagicWhoosh(true);
-            subStageMap[realmKey] += delta;
-            renderActiveCard(false);
-        }
-
-        const englishCurriculum = {
-            treasury: {
-                realmName: "Word Treasury: Meanings & Opposites",
-                stages: [
-                    {
-                        title: "Meanings Glossary (Part 1)",
-                        render() {
-                            return `
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1.5">
-                                        <div class="flex justify-between items-center text-xs font-bold text-slate-900">
-                                            <span><span class="read-word" onclick="speakWord(this)">1. Frau</span>:</span>
-                                            <span class="tap-split-word practice-helper-box text-emerald-900 font-bold" onclick="toggleSplit(this, 'German for Mrs', 'Ger · man for Mrs')">German for Mrs</span>
-                                        </div>
-                                        ${createInlineStrip('m_1', 'German for Mrs', 430)}
-                                    </div>
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1.5">
-                                        <div class="flex justify-between items-center text-xs font-bold text-slate-900">
-                                            <span><span class="read-word" onclick="speakWord(this)">2. Fraulein</span>:</span>
-                                            <span class="tap-split-word practice-helper-box text-emerald-900 font-bold" onclick="toggleSplit(this, 'German for Miss', 'Ger · man for Miss')">German for Miss</span>
-                                        </div>
-                                        ${createInlineStrip('m_2', 'German for Miss', 430)}
-                                    </div>
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1.5">
-                                        <div class="flex justify-between items-center text-xs font-bold text-slate-900">
-                                            <span><span class="read-word" onclick="speakWord(this)">3. depicted</span>:</span>
-                                            <span class="tap-split-word practice-helper-box text-emerald-900 font-bold" onclick="toggleSplit(this, 'showed', 'showed')">showed</span>
-                                        </div>
-                                        ${createInlineStrip('m_3', 'showed', 430)}
-                                    </div>
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1.5">
-                                        <div class="flex justify-between items-center text-xs font-bold text-slate-900">
-                                            <span><span class="read-word" onclick="speakWord(this)">4. flock</span>:</span>
-                                            <span class="tap-split-word practice-helper-box text-emerald-900 font-bold" onclick="toggleSplit(this, 'group of goats', 'group of goats')">group of goats</span>
-                                        </div>
-                                        ${createInlineStrip('m_4', 'group of goats', 430)}
-                                    </div>
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1.5">
-                                        <div class="flex justify-between items-center text-xs font-bold text-slate-900">
-                                            <span><span class="read-word" onclick="speakWord(this)">5. pasture</span>:</span>
-                                            <span class="tap-split-word practice-helper-box text-emerald-900 font-bold" onclick="toggleSplit(this, 'grazing grass field', 'graz · ing grass field')">grazing grass field</span>
-                                        </div>
-                                        ${createInlineStrip('m_5', 'grazing grass field', 430)}
-                                    </div>
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1.5">
-                                        <div class="flex justify-between items-center text-xs font-bold text-slate-900">
-                                            <span><span class="read-word" onclick="speakWord(this)">6. keen</span>:</span>
-                                            <span class="tap-split-word practice-helper-box text-emerald-900 font-bold" onclick="toggleSplit(this, 'eager and interested', 'ea · ger and in · ter · est · ed')">eager and interested</span>
-                                        </div>
-                                        ${createInlineStrip('m_6', 'eager and interested', 430)}
-                                    </div>
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1.5">
-                                        <div class="flex justify-between items-center text-xs font-bold text-slate-900">
-                                            <span><span class="read-word" onclick="speakWord(this)">7. homesick</span>:</span>
-                                            <span class="tap-split-word practice-helper-box text-emerald-900 font-bold" onclick="toggleSplit(this, 'missing home', 'mis · sing home')">missing home</span>
-                                        </div>
-                                        ${createInlineStrip('m_7', 'missing home', 430)}
-                                    </div>
-                                </div>
-                            `;
-                        }
-                    },
-                    {
-                        title: "Meanings Glossary (Part 2)",
-                        render() {
-                            return `
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1.5">
-                                        <div class="flex justify-between items-center text-xs font-bold text-slate-900">
-                                            <span><span class="read-word" onclick="speakWord(this)">8. summits</span>:</span>
-                                            <span class="tap-split-word practice-helper-box text-emerald-900 font-bold" onclick="toggleSplit(this, 'top of mountains', 'top of moun · tains')">top of mountains</span>
-                                        </div>
-                                        ${createInlineStrip('m_8', 'top of mountains', 430)}
-                                    </div>
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1.5">
-                                        <div class="flex justify-between items-center text-xs font-bold text-slate-900">
-                                            <span><span class="read-word" onclick="speakWord(this)">9. sobbing</span>:</span>
-                                            <span class="tap-split-word practice-helper-box text-emerald-900 font-bold" onclick="toggleSplit(this, 'crying noisily', 'cry · ing noi · si · ly')">crying noisily</span>
-                                        </div>
-                                        ${createInlineStrip('m_9', 'crying noisily', 430)}
-                                    </div>
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1.5">
-                                        <div class="flex justify-between items-center text-xs font-bold text-slate-900">
-                                            <span><span class="read-word" onclick="speakWord(this)">10. sighing</span>:</span>
-                                            <span class="tap-split-word practice-helper-box text-emerald-900 font-bold" onclick="toggleSplit(this, 'breathing out slowly', 'breath · ing out slow · ly')">breathing out slowly</span>
-                                        </div>
-                                        ${createInlineStrip('m_10', 'breathing out slowly', 430)}
-                                    </div>
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1.5">
-                                        <div class="flex justify-between items-center text-xs font-bold text-slate-900">
-                                            <span><span class="read-word" onclick="speakWord(this)">11. resignation</span>:</span>
-                                            <span class="tap-split-word practice-helper-box text-emerald-900 font-bold" onclick="toggleSplit(this, 'accepting sad reality', 'ac · cept · ing sad re · al · i · ty')">accepting sad reality</span>
-                                        </div>
-                                        ${createInlineStrip('m_11', 'accepting sad reality', 430)}
-                                    </div>
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1.5">
-                                        <div class="flex justify-between items-center text-xs font-bold text-slate-900">
-                                            <span><span class="read-word" onclick="speakWord(this)">12. pitifully</span>:</span>
-                                            <span class="tap-split-word practice-helper-box text-emerald-900 font-bold" onclick="toggleSplit(this, 'making people feel sorry', 'mak · ing peo · ple feel sor · ry')">making people feel sorry</span>
-                                        </div>
-                                        ${createInlineStrip('m_12', 'making people feel sorry', 430)}
-                                    </div>
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1.5">
-                                        <div class="flex justify-between items-center text-xs font-bold text-slate-900">
-                                            <span><span class="read-word" onclick="speakWord(this)">13. miracles</span>:</span>
-                                            <span class="tap-split-word practice-helper-box text-emerald-900 font-bold" onclick="toggleSplit(this, 'surprising lucky events', 'sur · pris · ing luck · y e · vents')">surprising lucky events</span>
-                                        </div>
-                                        ${createInlineStrip('m_13', 'surprising lucky events', 430)}
-                                    </div>
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1.5">
-                                        <div class="flex justify-between items-center text-xs font-bold text-slate-900">
-                                            <span><span class="read-word" onclick="speakWord(this)">14. assured</span>:</span>
-                                            <span class="tap-split-word practice-helper-box text-emerald-900 font-bold" onclick="toggleSplit(this, 'promised', 'prom · ised')">promised</span>
-                                        </div>
-                                        ${createInlineStrip('m_14', 'promised', 430)}
-                                    </div>
-                                </div>
-                            `;
-                        }
-                    },
-                    {
-                        title: "Opposites (6 Pairs)",
-                        render() {
-                            return `
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1.5">
-                                        <div class="flex justify-between items-center text-xs font-bold text-slate-900">
-                                            <span><span class="read-word" onclick="speakWord(this)">1. Determined</span> ×:</span>
-                                            <span class="tap-split-word practice-helper-box text-rose-900 font-bold" onclick="toggleSplit(this, 'Hesitant', 'He · si · tant')">Hesitant</span>
-                                        </div>
-                                        ${createInlineStrip('opp_1', 'Hesitant', 430)}
-                                    </div>
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1.5">
-                                        <div class="flex justify-between items-center text-xs font-bold text-slate-900">
-                                            <span><span class="read-word" onclick="speakWord(this)">2. Difficult</span> ×:</span>
-                                            <span class="tap-split-word practice-helper-box text-rose-900 font-bold" onclick="toggleSplit(this, 'Easy', 'Ea · sy')">Easy</span>
-                                        </div>
-                                        ${createInlineStrip('opp_2', 'Easy', 430)}
-                                    </div>
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1.5">
-                                        <div class="flex justify-between items-center text-xs font-bold text-slate-900">
-                                            <span><span class="read-word" onclick="speakWord(this)">3. Believe</span> ×:</span>
-                                            <span class="tap-split-word practice-helper-box text-rose-900 font-bold" onclick="toggleSplit(this, 'Doubt', 'Doubt')">Doubt</span>
-                                        </div>
-                                        ${createInlineStrip('opp_3', 'Doubt', 430)}
-                                    </div>
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1.5">
-                                        <div class="flex justify-between items-center text-xs font-bold text-slate-900">
-                                            <span><span class="read-word" onclick="speakWord(this)">4. Attention</span> ×:</span>
-                                            <span class="tap-split-word practice-helper-box text-rose-900 font-bold" onclick="toggleSplit(this, 'Distraction', 'Dis · trac · tion')">Distraction</span>
-                                        </div>
-                                        ${createInlineStrip('opp_4', 'Distraction', 430)}
-                                    </div>
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1.5">
-                                        <div class="flex justify-between items-center text-xs font-bold text-slate-900">
-                                            <span><span class="read-word" onclick="speakWord(this)">5. Exciting</span> ×:</span>
-                                            <span class="tap-split-word practice-helper-box text-rose-900 font-bold" onclick="toggleSplit(this, 'Boring', 'Bor · ing')">Boring</span>
-                                        </div>
-                                        ${createInlineStrip('opp_5', 'Boring', 430)}
-                                    </div>
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1.5">
-                                        <div class="flex justify-between items-center text-xs font-bold text-slate-900">
-                                            <span><span class="read-word" onclick="speakWord(this)">6. Pleasure</span> ×:</span>
-                                            <span class="tap-split-word practice-helper-box text-rose-900 font-bold" onclick="toggleSplit(this, 'Displeasure', 'Dis · pleas · ure')">Displeasure</span>
-                                        </div>
-                                        ${createInlineStrip('opp_6', 'Displeasure', 430)}
-                                    </div>
-                                </div>
-                            `;
-                        }
-                    }
-                ]
-            },
-            grammar: {
-                realmName: "Grammar & Verb Tenses",
-                stages: [
-                    {
-                        title: "Story Reading MCQs",
-                        render() {
-                            return `
-                                <div class="flex flex-col gap-3 text-xs md:text-sm">
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300">
-                                        <p class="font-bold text-slate-800 mb-2">1. Grandmother was surprised that Heidi...</p>
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                            <button onclick="pickMCQ(this, true)" class="mcq-btn p-2 rounded-lg border border-slate-300 text-left font-medium bg-white/80">a. could not read.</button>
-                                            <button onclick="pickMCQ(this, false)" class="mcq-btn p-2 rounded-lg border border-slate-300 text-left font-medium bg-white/80">b. was unable to learn the alphabet.</button>
-                                        </div>
-                                    </div>
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300">
-                                        <p class="font-bold text-slate-800 mb-2">2. Heidi had decided that she would not be able to read as...</p>
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                            <button onclick="pickMCQ(this, false)" class="mcq-btn p-2 rounded-lg border border-slate-300 text-left font-medium bg-white/80">a. she found it very difficult.</button>
-                                            <button onclick="pickMCQ(this, true)" class="mcq-btn p-2 rounded-lg border border-slate-300 text-left font-medium bg-white/80">c. Peter had told her it was not easy.</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                        }
-                    },
-                    {
-                        title: "Simple Past Tense Sentences",
-                        render() {
-                            return `
-                                <div class="flex flex-col gap-3 text-xs md:text-sm">
-                                    <div class="p-2.5 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1">
-                                        <div class="flex justify-between font-bold text-slate-800">
-                                            <span>1. The sheep ________ (graze) on the meadow.</span>
-                                            <span class="practice-helper-box text-indigo-900 font-bold tap-split-word" onclick="toggleSplit(this, 'grazed', 'grazed')">grazed</span>
-                                        </div>
-                                        ${createInlineStrip('past_1', 'grazed', 450)}
-                                    </div>
-                                    <div class="p-2.5 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1">
-                                        <div class="flex justify-between font-bold text-slate-800">
-                                            <span>2. Heidi ________ (live) in the mountains.</span>
-                                            <span class="practice-helper-box text-indigo-900 font-bold tap-split-word" onclick="toggleSplit(this, 'lived', 'lived')">lived</span>
-                                        </div>
-                                        ${createInlineStrip('past_2', 'lived', 450)}
-                                    </div>
-                                    <div class="p-2.5 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1">
-                                        <div class="flex justify-between font-bold text-slate-800">
-                                            <span>3. Heidi ________ (not know) how to read.</span>
-                                            <span class="practice-helper-box text-indigo-900 font-bold tap-split-word" onclick="toggleSplit(this, 'did not know', 'did · not · know')">did not know</span>
-                                        </div>
-                                        ${createInlineStrip('past_3', 'did not know', 560)}
-                                    </div>
-                                    <div class="p-2.5 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1">
-                                        <div class="flex justify-between font-bold text-slate-800">
-                                            <span>4. The housekeeper ________ (say) Heidi could not read.</span>
-                                            <span class="practice-helper-box text-indigo-900 font-bold tap-split-word" onclick="toggleSplit(this, 'said', 'said')">said</span>
-                                        </div>
-                                        ${createInlineStrip('past_4', 'said', 450)}
-                                    </div>
-                                    <div class="p-2.5 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1">
-                                        <div class="flex justify-between font-bold text-slate-800">
-                                            <span>5. The shepherd ________ (sleep) next to his sheep.</span>
-                                            <span class="practice-helper-box text-indigo-900 font-bold tap-split-word" onclick="toggleSplit(this, 'slept', 'slept')">slept</span>
-                                        </div>
-                                        ${createInlineStrip('past_5', 'slept', 450)}
-                                    </div>
-                                </div>
-                            `;
-                        }
-                    }
-                ]
-            },
-            words: {
-                realmName: "Homophone Forge & Stems",
-                stages: [
-                    {
-                        title: "Homophone Pairs",
-                        render() {
-                            return `
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs md:text-sm">
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1.5">
-                                        <span class="font-bold text-amber-900">1. sweet / suite</span>
-                                        <div class="flex justify-between"><span>a. Hotel has a ________ of rooms.</span><span class="practice-helper-box text-amber-900 font-bold">suite</span></div>
-                                        ${createInlineStrip('homo_1a', 'suite', 420)}
-                                        <div class="flex justify-between mt-1"><span>b. She has a ________ voice.</span><span class="practice-helper-box text-amber-900 font-bold">sweet</span></div>
-                                        ${createInlineStrip('homo_1b', 'sweet', 420)}
-                                    </div>
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1.5">
-                                        <span class="font-bold text-amber-900">2. aisle / isle</span>
-                                        <div class="flex justify-between"><span>a. Remote ________ in West Indies.</span><span class="practice-helper-box text-amber-900 font-bold">isle</span></div>
-                                        ${createInlineStrip('homo_2a', 'isle', 420)}
-                                        <div class="flex justify-between mt-1"><span>b. Prefer an ________ seat?</span><span class="practice-helper-box text-amber-900 font-bold">aisle</span></div>
-                                        ${createInlineStrip('homo_2b', 'aisle', 420)}
-                                    </div>
-                                </div>
-                            `;
-                        }
-                    },
-                    {
-                        title: "Meaningful Word Stems",
-                        render() {
-                            return `
-                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs md:text-sm">
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1">
-                                        <div class="flex justify-between font-bold"><span>1. st _ _ _</span><span class="practice-helper-box text-cyan-900 font-bold">stone</span></div>
-                                        ${createInlineStrip('stem_1', 'stone', 260)}
-                                    </div>
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1">
-                                        <div class="flex justify-between font-bold"><span>2. categ _ _ _</span><span class="practice-helper-box text-cyan-900 font-bold">category</span></div>
-                                        ${createInlineStrip('stem_2', 'category', 260)}
-                                    </div>
-                                    <div class="p-3 bg-white/70 rounded-xl border border-slate-300 flex flex-col gap-1">
-                                        <div class="flex justify-between font-bold"><span>3. fact _ _ _</span><span class="practice-helper-box text-cyan-900 font-bold">factory</span></div>
-                                        ${createInlineStrip('stem_3', 'factory', 260)}
-                                    </div>
-                                </div>
-                            `;
-                        }
-                    }
-                ]
-            },
-            comprehension: {
-                realmName: "Answer in Brief Notebooks",
-                questions: [
-                    {
-                        id: "brief_q1",
-                        label: "Q1",
-                        text: "Why did Heidi go to the city?",
-                        refAnswer: "Heidi went to the city of Frankfurt to become a companion for Clara, a rich girl who lived there. Heidi was expected to stay with Clara, keep her company, and share her lessons."
-                    },
-                    {
-                        id: "brief_q2",
-                        label: "Q2",
-                        text: "Why did Heidi feel that she could not read?",
-                        refAnswer: "Heidi felt that she could not learn to read because Peter, her friend, told her that reading was too difficult and that she would never be able to learn. She believed him and lost confidence in herself."
-                    },
-                    {
-                        id: "brief_q3",
-                        label: "Q3",
-                        text: "What did the housekeeper say about Heidi?",
-                        refAnswer: "The housekeeper said that Heidi did not even know the alphabet and that it was almost impossible to teach her. She also said that the tutor had been very patient while teaching her."
-                    }
-                ]
-            }
-        };
-
-        let currentRealmKey = 'treasury';
-        let currentQuestionIdx = 0;
-        const activePages = {};
-        const canvasStates = {};
-        const binderOpenedMap = {};
-        let activeResizeObserver = null;
-
-        function switchRealm(realmKey) {
-            playMagicWhoosh(true);
-            currentRealmKey = realmKey;
-            document.getElementById('gatewayView').classList.add('hidden');
-            document.getElementById('activeCardContainer').classList.remove('hidden');
-            document.getElementById('gatewayNavBtn').classList.remove('hidden');
-            renderActiveCard(true);
-        }
-
-        function returnToGateway() {
-            playMagicWhoosh(false);
-            if (currentRealmKey === 'comprehension') {
-                const q = englishCurriculum.comprehension.questions[currentQuestionIdx];
-                if (q) saveCurrentCanvasInk(q.id);
-            }
-            document.getElementById('activeCardContainer').classList.add('hidden');
-            document.getElementById('gatewayNavBtn').classList.add('hidden');
-            document.getElementById('gatewayView').classList.remove('hidden');
-        }
-
-        function changeQuestion(delta) {
-            if (currentRealmKey !== 'comprehension') return;
-            const q = englishCurriculum.comprehension.questions[currentQuestionIdx];
-            if (q) saveCurrentCanvasInk(q.id);
-
-            let newIdx = currentQuestionIdx + delta;
-            if (newIdx >= 0 && newIdx < englishCurriculum.comprehension.questions.length) {
-                playMagicWhoosh(true);
-                currentQuestionIdx = newIdx;
-                renderActiveCard(true);
-            }
-        }
-
-        function switchPageSmoothly(qId, delta) {
-            if (!activePages[qId]) activePages[qId] = 1;
-            let targetPage = activePages[qId] + delta;
-            if (targetPage >= 1 && targetPage <= 2) {
-                saveCurrentCanvasInk(qId);
-                activePages[qId] = targetPage;
-                const ind = document.getElementById(`pageIndicator_${qId}`);
-                if (ind) ind.innerText = `Pg ${targetPage} / 2`;
-                loadCanvasInk(qId, targetPage);
-            }
-        }
-
-        function toggleToolDrawer(qId) {
-            const drawer = document.getElementById(`toolDrawer_${qId}`);
-            if (drawer) drawer.classList.toggle('tool-drawer-collapsed');
-        }
-
-        function renderActiveCard(animate = false) {
-            const container = document.getElementById('activeCardContainer');
-            const realm = englishCurriculum[currentRealmKey];
-
-            if (currentRealmKey !== 'comprehension') {
-                const stageIdx = subStageMap[currentRealmKey] || 0;
-                const curStage = realm.stages[stageIdx];
-                const totalStages = realm.stages.length;
-
-                container.innerHTML = `
-                    <div class="glass-alpine-card card-4d ${animate ? 'page-flip-anim' : ''} p-5 relative w-full flex flex-col gap-4">
-                        <div class="flex justify-between items-center border-b border-slate-300/40 pb-3">
-                            <div>
-                                <h2 class="font-bold text-slate-900 font-display text-lg">${realm.realmName}</h2>
-                                <span class="text-xs text-slate-700 font-bold">${curStage.title} (${stageIdx + 1}/${totalStages})</span>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <div class="flex items-center gap-2 bg-slate-900/10 px-3 py-1 rounded-full border border-slate-400/30">
-                                    <button onclick="handleModeSelect('practice')" id="modePracticeBtn" class="icon-action-btn ${isPracticeMode ? 'scale-125 opacity-100' : 'opacity-40'} text-lg" title="Practice Lab (Answers & Shadow)">🎯</button>
-                                    <button onclick="handleModeSelect('write')" id="modeWriteBtn" class="icon-action-btn ${!isPracticeMode ? 'scale-125 opacity-100' : 'opacity-40'} text-lg" title="Independent Mode (No Hints)">✍️</button>
-                                </div>
-                                <button onclick="triggerGrandCelebration()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-1.5 rounded-full shadow text-xs cursor-pointer">
-                                    ✅ Finish
-                                </button>
-                            </div>
-                        </div>
-
-                        ${curStage.render()}
-
-                        <div class="flex justify-between items-center border-t border-slate-300/40 pt-3 mt-2 text-xs font-bold">
-                            <button onclick="changeSubStage('${currentRealmKey}', -1)" ${stageIdx === 0 ? 'disabled' : ''} class="px-4 py-1.5 rounded-xl bg-white/70 border border-slate-300 shadow-sm ${stageIdx === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-white cursor-pointer'}">
-                                ⬅️ Previous Part
-                            </button>
-                            <button onclick="changeSubStage('${currentRealmKey}', 1)" ${stageIdx === totalStages - 1 ? 'disabled' : ''} class="px-4 py-1.5 rounded-xl bg-white/70 border border-slate-300 shadow-sm ${stageIdx === totalStages - 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-white cursor-pointer'}">
-                                Next Part ➔
-                            </button>
-                        </div>
-                    </div>
-                `;
-                setTimeout(() => { initAllInlineCanvases(); }, 50);
-            } else {
-                const q = realm.questions[currentQuestionIdx];
-                if (!activePages[q.id]) activePages[q.id] = 1;
-                const currentPage = activePages[q.id];
-                const isBinderOpen = !!binderOpenedMap[q.id];
-
-                container.innerHTML = `
-                    <div class="glass-alpine-card card-4d ${animate ? 'page-flip-anim' : ''} overflow-hidden relative w-full">
-                        <div class="p-3 bg-white/60 border-b border-slate-300/40 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                            <div class="flex items-center gap-2">
-                                <span class="bg-rose-600 text-white font-bold text-xs px-2.5 py-1 rounded-lg">${q.label}</span>
-                                <p class="font-bold text-slate-900 text-sm md:text-base">${q.text}</p>
-                                <button onclick="speakSentence('${q.text.replace(/'/g, "\\'")}')" class="text-xs bg-white/60 text-slate-700 px-2 py-0.5 rounded-full font-bold">🔊</button>
-                            </div>
-                            <div class="flex items-center gap-3">
-                                <div class="flex items-center gap-2 bg-slate-900/10 px-3 py-1 rounded-full border border-slate-400/30">
-                                    <button onclick="handleModeSelect('practice')" id="modePracticeBtn" class="icon-action-btn ${isPracticeMode ? 'scale-125 opacity-100' : 'opacity-40'} text-lg" title="Practice Lab">🎯</button>
-                                    <button onclick="handleModeSelect('write')" id="modeWriteBtn" class="icon-action-btn ${!isPracticeMode ? 'scale-125 opacity-100' : 'opacity-40'} text-lg" title="Independent Mode">✍️</button>
-                                </div>
-                                <button onclick="triggerGrandCelebration()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3.5 py-1.5 rounded-full text-xs cursor-pointer">
-                                    ✅ Finish
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="bg-rose-50/40 px-4 py-1.5 border-b border-rose-200/40 flex justify-between items-center text-xs text-rose-950 font-semibold">
-                            <span>${realm.realmName} (${currentQuestionIdx + 1} of ${realm.questions.length})</span>
-                            <div class="flex gap-2">
-                                <button onclick="changeQuestion(-1)" ${currentQuestionIdx === 0 ? 'disabled' : ''} class="px-3 py-1 bg-white/70 border border-rose-300 rounded-lg shadow-sm font-bold ${currentQuestionIdx === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-white cursor-pointer'}">⬅️ Prev</button>
-                                <button onclick="changeQuestion(1)" ${currentQuestionIdx === realm.questions.length - 1 ? 'disabled' : ''} class="px-3 py-1 bg-white/70 border border-rose-300 rounded-lg shadow-sm font-bold ${currentQuestionIdx === realm.questions.length - 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-white cursor-pointer'}">Next ➡️</button>
-                            </div>
-                        </div>
-
-                        <div class="relative workspace-h bg-slate-100 overflow-hidden">
-                            <div class="absolute inset-0 flex flex-col bg-white">
-                                <div class="absolute right-4 top-3 z-30 flex items-center gap-3">
-                                    <button onclick="closeBinder('${q.id}')" class="bg-slate-900/90 text-white text-xs px-3 py-1.5 rounded-full border border-white/20 font-bold shadow">📕 Cover</button>
-                                    <div class="flex items-center bg-slate-900/90 text-white px-3 py-1.5 rounded-full border border-white/20 shadow text-xs gap-2">
-                                        <button onclick="switchPageSmoothly('${q.id}', -1)" class="hover:scale-110">◀️</button>
-                                        <span id="pageIndicator_${q.id}" class="font-bold text-amber-200">Pg ${currentPage} / 2</span>
-                                        <button onclick="switchPageSmoothly('${q.id}', 1)" class="hover:scale-110">▶️</button>
-                                    </div>
-                                    <div class="floating-tool-drawer-right" id="toolDrawer_${q.id}">
-                                        <button onclick="toggleToolDrawer('${q.id}')" class="text-white text-xs font-bold px-2 py-1 flex items-center gap-1 cursor-pointer">
-                                            <span>🛠️</span> <span>Tools</span>
-                                        </button>
-                                        <div class="drawer-items-group flex items-center gap-1.5 border-l border-white/20 pl-2">
-                                            <button onclick="setTool('${q.id}', 'pen')" id="toolPen_${q.id}" class="p-1 rounded bg-amber-600 text-white shadow text-xs">✏️</button>
-                                            <button onclick="setTool('${q.id}', 'line')" id="toolLine_${q.id}" class="p-1 rounded hover:bg-amber-800 text-xs">📏</button>
-                                            <button onclick="setTool('${q.id}', 'eraser')" id="toolEraser_${q.id}" class="p-1 rounded hover:bg-amber-800 text-xs">🧹</button>
-                                            <button onclick="undoInk('${q.id}')" title="Undo" class="p-1 rounded hover:bg-amber-800 text-xs">↩️</button>
-                                            <button onclick="clearCanvas('${q.id}')" class="p-1 rounded hover:bg-amber-800 text-red-300 text-xs">🗑️</button>
-                                            <div class="flex gap-1 ml-1 items-center">
-                                                <button onclick="setColor('${q.id}', '#1e1b4b')" class="w-5 h-5 rounded-full bg-slate-900 border-2 border-white shadow"></button>
-                                                <button onclick="setColor('${q.id}', '#2563eb')" class="w-5 h-5 rounded-full bg-blue-600 border-2 border-white shadow"></button>
-                                                <button onclick="setColor('${q.id}', '#dc2626')" class="w-5 h-5 rounded-full bg-red-600 border-2 border-white shadow"></button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <img src="assets/heidi-main.webp" class="heidi-emboss-topright" alt="Heidi Emboss" onerror="handleImageFallback(this)"/>
-
-                                <div id="ghostNotebook_${q.id}" class="inline-ghost-text" style="left: 64px; top: 120px; max-width: 760px; white-space: normal; line-height: 56px; ${isPracticeMode ? '' : 'display: none;'}">
-                                    ${q.refAnswer}
-                                </div>
-
-                                <div class="flex-1 two-line-canvas-wrap relative overflow-hidden select-none touch-none" id="canvasArea_${q.id}">
-                                    <canvas id="canvas_${q.id}" oncontextmenu="return false;" class="absolute inset-0 w-full h-full cursor-crosshair touch-none z-10"></canvas>
-                                </div>
-                            </div>
-
-                            <div id="binderCover_${q.id}" class="binder-cover ${isBinderOpen ? 'binder-open' : ''} absolute inset-0 bg-gradient-to-br from-rose-900 to-amber-950 text-white p-8 flex flex-col justify-between shadow-2xl z-30 cursor-pointer" onclick="openBinder('${q.id}')">
-                                <div class="notebook-spine-rings">
-                                    <div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div><div class="spiral-ring"></div>
-                                </div>
-
-                                <div class="flex justify-between items-start ml-8 relative z-10">
-                                    <span class="bg-white/20 px-3.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase">English Literature</span>
-                                    <img src="assets/alps-badge.webp" class="w-8 h-8 object-contain" alt="Badge" onerror="handleImageFallback(this)"/>
-                                </div>
-
-                                <div class="mx-auto my-auto bg-white/95 text-slate-900 rounded-2xl p-4 pl-9 w-72 shadow-2xl border-4 border-amber-900 relative">
-                                    <div class="flex flex-col gap-1 text-left relative z-10">
-                                        <div class="text-[10px] uppercase font-extrabold text-indigo-900 tracking-widest border-b pb-0.5">Swiss Alps Academy</div>
-                                        <div class="font-hand text-lg text-blue-950 font-bold leading-tight pt-0.5">Zaina • Grade 5</div>
-                                        <div class="font-hand text-base text-rose-700 font-bold leading-tight">Heidi Learns to Read</div>
-                                        <div class="font-hand text-xs text-indigo-700 font-bold bg-amber-100 rounded px-2 py-0.5 mt-1 inline-block w-fit">Answer in Brief Notebook</div>
-                                    </div>
-                                </div>
-
-                                <div class="text-center flex flex-col items-center gap-2 ml-8 relative z-10">
-                                    <img src="assets/heidi-reading.webp" class="w-20 h-20 object-contain filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.6)] animate-bounce" alt="Heidi Reading" onerror="handleImageFallback(this)"/>
-                                    <span class="bg-white text-rose-950 font-bold px-4 py-2 rounded-xl shadow-lg text-xs uppercase tracking-widest">Tap to Open Binder ⚡</span>
-                                </div>
-
-                                <div class="text-center text-xs text-rose-300 ml-8 relative z-10">
-                                    ${q.label} • Two-Line S-Pen Surface
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                initCanvas(q.id, currentPage);
-            }
-        }
-
-        /* INLINE STRIP STROKE ENGINE */
-        const inlineCanvases = {};
-        const inlineUndo = {};
-
-        function initAllInlineCanvases() {
-            document.querySelectorAll('canvas[id^="inlineCanvas_"]').forEach(c => {
-                const id = c.id.replace('inlineCanvas_', '');
-                initInlineStripCanvas(id);
-            });
-        }
-
-        function initInlineStripCanvas(id) {
-            const canvas = document.getElementById(`inlineCanvas_${id}`);
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
-
-            canvas.width = canvas.parentElement.clientWidth * dpr;
-            canvas.height = canvas.parentElement.clientHeight * dpr;
-            ctx.scale(dpr, dpr);
-
-            const saved = localStorage.getItem(`zaina_eng_inline_${id}`);
-            if (saved) {
-                const img = new Image();
-                img.onload = () => ctx.drawImage(img, 0, 0, canvas.width / dpr, canvas.height / dpr);
-                img.src = saved;
-            }
-
-            let drawing = false, lastX = 0, lastY = 0;
-
-            const getXY = (e) => {
-                const r = canvas.getBoundingClientRect();
-                return [e.clientX - r.left, e.clientY - r.top];
-            };
-
-            canvas.onpointerdown = (e) => {
-                e.preventDefault();
-                drawing = true;
-                [lastX, lastY] = getXY(e);
-                InkSound.init();
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                ctx.strokeStyle = '#1e1b4b';
-                ctx.lineWidth = 2.4;
-            };
-
-            canvas.onpointermove = (e) => {
-                if (!drawing) return;
-                const [x, y] = getXY(e);
-                ctx.beginPath();
-                ctx.moveTo(lastX, lastY);
-                ctx.lineTo(x, y);
-                ctx.stroke();
-                InkSound.update('pen', Math.hypot(x - lastX, y - lastY));
-                [lastX, lastY] = getXY(e);
-            };
-
-            const stopDrawing = () => {
-                if (!drawing) return;
-                drawing = false;
-                InkSound.stop();
-                try {
-                    const data = canvas.toDataURL();
-                    const st = inlineUndo[id] || (inlineUndo[id] = []);
-                    st.push(data);
-                    if (st.length > 15) st.shift();
-                    localStorage.setItem(`zaina_eng_inline_${id}`, data);
-                } catch (_) {}
-            };
-
-            canvas.onpointerup = stopDrawing;
-            canvas.onpointercancel = stopDrawing;
-        }
-
-        function undoInlineInk(id) {
-            const canvas = document.getElementById(`inlineCanvas_${id}`);
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            const st = inlineUndo[id] || [];
-            if (!st.length) return;
-            st.pop();
-            const prev = st[st.length - 1];
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            if (prev) {
-                const img = new Image();
-                img.onload = () => ctx.drawImage(img, 0, 0);
-                img.src = prev;
-                localStorage.setItem(`zaina_eng_inline_${id}`, prev);
-            } else {
-                localStorage.removeItem(`zaina_eng_inline_${id}`);
-            }
-        }
-
-        function clearInlineCanvas(id) {
-            const canvas = document.getElementById(`inlineCanvas_${id}`);
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            localStorage.removeItem(`zaina_eng_inline_${id}`);
-        }
-
-        /* 5.4 CANVAS NOTEBOOK BINDER ENGINE[cite: 6]*/
-        let lastPenSeen = 0;
-
-        function syncCanvasResolution(canvas, container, id) {
-            const dpr = Math.min(window.devicePixelRatio || 1, 3);
-            const cssW = container.clientWidth;
-            const cssH = container.clientHeight;
-            if (!cssW || !cssH) return;
-            const targetW = Math.round(cssW * dpr);
-            const targetH = Math.round(cssH * dpr);
-            if (canvas.width === targetW && canvas.height === targetH) return;
-
-            canvas.style.width = cssW + 'px';
-            canvas.style.height = cssH + 'px';
-            canvas.width = targetW;
-            canvas.height = targetH;
-            canvas.dataset.dpr = String(dpr);
-
-            const ctx = canvas.getContext('2d');
-            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            loadCanvasInk(id, activePages[id] || 1);
-        }
-
-        function initCanvas(id, page) {
-            const canvas = document.getElementById(`canvas_${id}`);
-            const container = document.getElementById(`canvasArea_${id}`);
-            if (!canvas || !container) return;
-            const ctx = canvas.getContext('2d');
-
-            if (!canvasStates[id]) canvasStates[id] = { tool: 'pen', color: '#1e1b4b' };
-            syncCanvasResolution(canvas, container, id);
-
-            if (activeResizeObserver) activeResizeObserver.disconnect();
-            if (window.ResizeObserver) {
-                activeResizeObserver = new ResizeObserver(() => syncCanvasResolution(canvas, container, id));
-                activeResizeObserver.observe(container);
-            }
-
-            let activePointerId = null, activeType = null, strokeTool = null;
-            let lastX = 0, lastY = 0, startX = 0, startY = 0;
-            let cachedRect = null, snapshot = null;
-
-            const localXY = (e) => {
-                const r = canvas.getBoundingClientRect();
-                return [e.clientX - r.left, e.clientY - r.top];
-            };
-
-            const drawSegment = (x1, y1, x2, y2, pressure) => {
-                ctx.save();
-                ctx.lineCap = 'round';
-                ctx.lineJoin = 'round';
-                if (strokeTool === 'eraser') {
-                    ctx.globalCompositeOperation = 'destination-out';
-                    ctx.strokeStyle = '#000';
-                    ctx.lineWidth = 28;
-                } else {
-                    ctx.globalCompositeOperation = 'source-over';
-                    ctx.strokeStyle = canvasStates[id].color;
-                    ctx.lineWidth = 2.5 * (0.8 + (pressure > 0 ? pressure : 0.5) * 0.8);
-                }
-                ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-                ctx.restore();
-            };
-
-            const drawDot = (x, y, pressure) => {
-                ctx.save();
-                if (strokeTool === 'eraser') {
-                    ctx.globalCompositeOperation = 'destination-out';
-                    ctx.fillStyle = '#000';
-                    ctx.beginPath(); ctx.arc(x, y, 14, 0, Math.PI * 2);
-                } else {
-                    ctx.fillStyle = canvasStates[id].color;
-                    ctx.beginPath(); ctx.arc(x, y, 2.2 * (0.8 + (pressure > 0 ? pressure : 0.5) * 0.8), 0, Math.PI * 2);
-                }
-                ctx.fill();
-                ctx.restore();
-            };
-
-            const drawGlowLine = (x1, y1, x2, y2, color) => {
-                const dpr = Number(canvas.dataset.dpr) || 1;
-                ctx.save(); ctx.lineCap = 'round'; ctx.strokeStyle = color; ctx.shadowColor = color; ctx.shadowBlur = 14 * dpr;
-                ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-                ctx.shadowBlur = 0; ctx.globalAlpha = 0.9; ctx.lineWidth = 1.2; ctx.strokeStyle = '#FFFFFF';
-                ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-                ctx.restore();
-            };
-
-            const endStroke = () => {
-                if (activePointerId === null) return;
-                InkSound.stop();
-                if (strokeTool === 'line' && snapshot) {
-                    const len = Math.hypot(lastX - startX, lastY - startY);
-                    ctx.putImageData(snapshot, 0, 0);
-                    if (len > 6) {
-                        drawGlowLine(startX, startY, lastX, lastY, canvasStates[id].color);
-                        InkSound.glideChime();
-                    }
-                }
-                snapshot = null; activePointerId = null; activeType = null; strokeTool = null;
-                saveCurrentCanvasInk(id);
-            };
-
-            canvas.addEventListener('pointerenter', (e) => { if (e.pointerType === 'pen') lastPenSeen = Date.now(); });
-
-            canvas.addEventListener('pointerdown', (e) => {
-                if (e.pointerType === 'pen') {
-                    lastPenSeen = Date.now();
-                    if (activePointerId !== null && activeType === 'touch') endStroke();
-                } else {
-                    const palm = Math.max(e.width || 0, e.height || 0) > 26;
-                    const penBusy = Date.now() - lastPenSeen < 1200;
-                    if (palm || penBusy || activePointerId !== null) return;
-                }
-                if (activePointerId !== null) return;
-
-                e.preventDefault();
-                InkSound.init();
-                activePointerId = e.pointerId;
-                activeType = e.pointerType;
-                try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
-
-                const barrelEraser = e.pointerType === 'pen' && ((e.buttons & 32) || e.button === 5);
-                strokeTool = barrelEraser ? 'eraser' : canvasStates[id].tool;
-
-                cachedRect = canvas.getBoundingClientRect();
-                const [x, y] = localXY(e);
-                startX = lastX = x; startY = lastY = y;
-                if (strokeTool === 'line') snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                else drawDot(x, y, e.pressure);
-            });
-
-            canvas.addEventListener('pointermove', (e) => {
-                if (e.pointerType === 'pen') lastPenSeen = Date.now();
-                if (e.pointerId !== activePointerId) return;
-                if (!cachedRect) cachedRect = canvas.getBoundingClientRect();
-
-                if (strokeTool === 'line') {
-                    const [x, y] = localXY(e);
-                    if (snapshot) ctx.putImageData(snapshot, 0, 0);
-                    ctx.save(); ctx.lineCap = 'round'; ctx.strokeStyle = canvasStates[id].color; ctx.lineWidth = 2.5;
-                    ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(x, y); ctx.stroke();
-                    ctx.restore(); lastX = x; lastY = y;
-                    return;
-                }
-
-                const events = (e.getCoalescedEvents && e.getCoalescedEvents().length) ? e.getCoalescedEvents() : [e];
-                let total = 0;
-                for (const ev of events) {
-                    const [x, y] = localXY(ev);
-                    total += Math.hypot(x - lastX, y - lastY);
-                    drawSegment(lastX, lastY, x, y, ev.pressure);
-                    lastX = x; lastY = y;
-                }
-                InkSound.update(strokeTool === 'eraser' ? 'eraser' : 'pen', total / events.length);
-            });
-
-            canvas.addEventListener('pointerup', (e) => { if (e.pointerId === activePointerId) endStroke(); });
-            canvas.addEventListener('pointercancel', (e) => { if (e.pointerId === activePointerId) endStroke(); });
-        }
-
-        function loadCanvasInk(id, page) {
-            const canvas = document.getElementById(`canvas_${id}`);
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.restore();
-
-            const key = `zaina_eng_ink_${id}_p${page}`;
-            const saved = localStorage.getItem(key);
-            if (!saved) return;
-            let size = null;
-            try { size = JSON.parse(localStorage.getItem(key + '_size') || 'null'); } catch (_) {}
-
-            const img = new Image();
-            img.onload = () => {
-                const sw = size ? size.w : img.width;
-                const sh = size ? size.h : img.height;
-                const s = Math.min(canvas.width / sw, canvas.height / sh);
-                ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
-                ctx.drawImage(img, 0, 0, img.width * s, img.height * s);
-                ctx.restore();
-            };
-            img.src = saved;
-        }
-
-        function saveCurrentCanvasInk(id) {
-            const canvas = document.getElementById(`canvas_${id}`);
-            if (!canvas || canvas.width <= 0 || canvas.height <= 0) return;
-            const page = activePages[id] || 1;
-            const key = `zaina_eng_ink_${id}_p${page}`;
-            try {
-                const previous = localStorage.getItem(key) || '';
-                const next = canvas.toDataURL();
-                if (previous !== next) pushUndo(key, previous);
-                localStorage.setItem(key, next);
-                localStorage.setItem(key + '_size', JSON.stringify({ w: canvas.width, h: canvas.height }));
-            } catch (_) {}
-        }
-
-        function setTool(id, tool) {
-            canvasStates[id].tool = tool;
-            ['Pen', 'Line', 'Eraser'].forEach(t => {
-                const btn = document.getElementById(`tool${t}_${id}`);
-                if (btn) {
-                    btn.className = (t.toLowerCase() === tool) 
-                        ? "p-1 rounded bg-amber-600 text-white shadow text-xs" 
-                        : "p-1 rounded hover:bg-amber-800 text-xs";
-                }
-            });
-        }
-
-        function setColor(id, color) {
-            canvasStates[id].color = color;
-            setTool(id, 'pen');
-        }
-
-        const undoStacks = {};
-        function pushUndo(key, value) {
-            const st = undoStacks[key] || (undoStacks[key] = []);
-            if (st.length && st[st.length - 1] === value) return;
-            st.push(value);
-            if (st.length > 25) st.shift();
-        }
-
-        function undoInk(id) {
-            const page = activePages[id] || 1;
-            const key = `zaina_eng_ink_${id}_p${page}`;
-            const st = undoStacks[key] || [];
-            if (!st.length) return;
-            const previous = st.pop();
-            if (previous) localStorage.setItem(key, previous);
-            else localStorage.removeItem(key);
-            loadCanvasInk(id, page);
-        }
-
-        function clearCanvas(id) {
-            const canvas = document.getElementById(`canvas_${id}`);
-            const ctx = canvas.getContext('2d');
-            const page = activePages[id] || 1;
-            const key = `zaina_eng_ink_${id}_p${page}`;
-            const current = localStorage.getItem(key);
-            if (current) pushUndo(key, current);
-            ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.restore();
-            localStorage.removeItem(key);
-            localStorage.removeItem(key + '_size');
-        }
-
-        function openBinder(id) {
-            playMagicWhoosh(true);
-            binderOpenedMap[id] = true;
-            document.getElementById(`binderCover_${id}`).classList.add('binder-open');
-        }
-
-        function closeBinder(id) {
-            playMagicWhoosh(false);
-            binderOpenedMap[id] = false;
-            saveCurrentCanvasInk(id);
-            document.getElementById(`binderCover_${id}`).classList.remove('binder-open');
-        }
-
-        /* CELEBRATION STAGE[cite: 6]*/
-        const grandStage = document.getElementById("grandCelebrationStage");
-        const grandCanvas = document.getElementById("grandFinaleCanvas");
-        const grandCtx = grandCanvas.getContext("2d", { alpha: true });
-        let grandAnimRunning = false;
-        let magicConfettiStorm = [];
-
-        function resizeGrandCanvas() {
-            grandCanvas.width = window.innerWidth;
-            grandCanvas.height = window.innerHeight;
-        }
-        window.addEventListener("resize", resizeGrandCanvas);
-
-        function triggerGrandCelebration() {
-            resizeGrandCanvas();
-            grandStage.style.display = 'block';
-            grandAnimRunning = true;
-
-            playGrandFanfare();
-            document.getElementById("magicCenterpiece").className = 'magic-banner-centerpiece impact';
-
-            magicConfettiStorm = [];
-            const colors = ['#EC4899', '#C084FC', '#38BDF8', '#FDE047', '#4ADE80', '#FFFFFF'];
-            for (let i = 0; i < 70; i++) {
-                magicConfettiStorm.push({
-                    x: Math.random() * window.innerWidth,
-                    y: -20 - Math.random() * 200,
-                    size: Math.random() * 8 + 4,
-                    vx: (Math.random() - 0.5) * 2,
-                    vy: Math.random() * 3 + 2,
-                    color: colors[Math.floor(Math.random() * colors.length)]
-                });
-            }
-
-            setTimeout(() => {
-                document.getElementById("royalScrollLandingRight").className = 'royal-scroll-landing-right landed';
-            }, 1100);
-
-            requestAnimationFrame(renderGrandScene);
-        }
-
-        function renderGrandScene() {
-            if (!grandAnimRunning) return;
-            grandCtx.clearRect(0, 0, grandCanvas.width, grandCanvas.height);
-
-            for (let p of magicConfettiStorm) {
-                p.x += p.vx;
-                p.y += p.vy;
-                if (p.y > window.innerHeight + 20) p.y = -10;
-                grandCtx.fillStyle = p.color;
-                grandCtx.beginPath();
-                grandCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                grandCtx.fill();
-            }
-            requestAnimationFrame(renderGrandScene);
-        }
-
-        function closeGrandCelebration() {
-            grandAnimRunning = false;
-            grandStage.style.display = 'none';
-            document.getElementById("magicCenterpiece").className = 'magic-banner-centerpiece';
-            document.getElementById("royalScrollLandingRight").className = 'royal-scroll-landing-right';
-        }
-
-        /* BACKGROUND STARFIELD[cite: 6]*/
-        const mCanvas = document.getElementById("milkyWayCanvas");
-        const mCtx = mCanvas.getContext("2d");
-        let stars = [];
-
-        function resizeMilkyWay() {
-            mCanvas.width = window.innerWidth;
-            mCanvas.height = window.innerHeight;
-            stars = [];
-            for (let i = 0; i < 65; i++) {
-                stars.push({
-                    x: Math.random() * mCanvas.width,
-                    y: Math.random() * mCanvas.height,
-                    radius: Math.random() * 1.8 + 0.4,
-                    vx: (Math.random() - 0.5) * 0.2,
-                    vy: -Math.random() * 0.3 - 0.1,
-                    alpha: Math.random() * 0.7 + 0.2,
-                    color: ['#FDF2F8', '#FED7AA', '#BAE6FD', '#FDE047'][Math.floor(Math.random() * 4)]
-                });
-            }
-        }
-        window.addEventListener("resize", resizeMilkyWay);
-        resizeMilkyWay();
-
-        function renderMilkyWay() {
-            // STRICTLY TRANSPARENT CLEAR - DOES NOT OVERPAINT THE ALPS
-            mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height);
-            for (let s of stars) {
-                s.x += s.vx; s.y += s.vy;
-                if (s.y < 0) s.y = mCanvas.height;
-                if (s.x < 0) s.x = mCanvas.width;
-                if (s.x > mCanvas.width) s.x = 0;
-
-                mCtx.save();
-                mCtx.globalAlpha = s.alpha;
-                mCtx.fillStyle = s.color;
-                mCtx.beginPath();
-                mCtx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
-                mCtx.fill();
-                mCtx.restore();
-            }
-            requestAnimationFrame(renderMilkyWay);
-        }
-        requestAnimationFrame(renderMilkyWay);
-
-        /* EXIT TO HUB */
-        let isLeavingToHub = false;
-        function exitToHub(e) {
-            if (e) e.preventDefault();
-            if (isLeavingToHub) return;
-            isLeavingToHub = true;
-
-            try {
-                if (currentRealmKey === 'comprehension') {
-                    const q = englishCurriculum.comprehension.questions[currentQuestionIdx];
-                    if (q) saveCurrentCanvasInk(q.id);
-                }
-            } catch (_) {}
-
-            if (window.parent && window.parent !== window) {
-                window.parent.postMessage("close-lesson-to-hub", "*");
-                setTimeout(() => { isLeavingToHub = false; }, 1500);
-                return;
-            }
-            setTimeout(() => { window.location.href = "index.html"; }, 60);
-        }
-
-        window.addEventListener('load', () => {
-            update6DCarouselDOM();
-        });
-    </script>
+              </div>
+            </div>` },
+        { title: 'Simple Past Tense Sentences', render: () => `
+            <div class="flex flex-col gap-3 text-xs md:text-sm">${PAST.map((p, i) =>
+              rowHTML('past_' + (i + 1), `${i + 1}. ${p[0]}`, p[1], p[2], 'text-indigo-900', p[3] || 450)).join('')}</div>` }
+      ]
+    },
+    words: {
+      realmName: 'Homophone Forge & Stems',
+      stages: [
+        { title: 'Homophone Pairs', render: () => {
+            const pair = (n, title, a, b) => `
+              <div class="p-3 bg-white/60 rounded-xl border border-slate-200 flex flex-col gap-1.5">
+                <span class="font-bold text-amber-900">${n}. ${title}</span>
+                <div class="flex justify-between text-xs font-bold gap-2"><span>a. ${a[0]}</span>${hintHTML(a[1], '', 'text-amber-900')}</div>
+                ${createInlineStrip('homo_' + n + 'a', a[1], 420)}
+                <div class="flex justify-between text-xs font-bold gap-2 mt-1"><span>b. ${b[0]}</span>${hintHTML(b[1], '', 'text-amber-900')}</div>
+                ${createInlineStrip('homo_' + n + 'b', b[1], 420)}
+              </div>`;
+            return `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              ${pair(1, 'sweet / suite', ['Hotel has a ________ of rooms.', 'suite'], ['She has a ________ voice.', 'sweet'])}
+              ${pair(2, 'aisle / isle', ['Remote ________ in West Indies.', 'isle'], ['Prefer an ________ seat?', 'aisle'])}
+            </div>`;
+          } },
+        { title: 'Meaningful Word Stems', render: () => `
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">${[['st _ _ _', 'stone'], ['categ _ _ _', 'category'], ['fact _ _ _', 'factory']].map((s, i) =>
+              rowHTML('stem_' + (i + 1), `${i + 1}. ${s[0]}`, s[1], '', 'text-cyan-900', 260)).join('')}</div>` }
+      ]
+    },
+    comprehension: {
+      realmName: 'Answer in Brief Notebooks',
+      questions: [
+        { id: 'brief_q1', label: 'Q1', text: 'Why did Heidi go to the city?',
+          refAnswer: 'Heidi went to the city of Frankfurt to become a companion for Clara, a rich girl who lived there. Heidi was expected to stay with Clara, keep her company, and share her lessons.' },
+        { id: 'brief_q2', label: 'Q2', text: 'Why did Heidi feel that she could not read?',
+          refAnswer: 'Heidi felt that she could not learn to read because Peter, her friend, told her that reading was too difficult and that she would never be able to learn. She believed him and lost confidence in herself.' },
+        { id: 'brief_q3', label: 'Q3', text: 'What did the housekeeper say about Heidi?',
+          refAnswer: 'The housekeeper said that Heidi did not even know the alphabet and that it was almost impossible to teach her. She also said that the tutor had been very patient while teaching her.' }
+      ]
+    }
+  };
+
+  let currentRealmKey = 'treasury';
+  let currentQuestionIdx = 0;
+  const activePages = {}, canvasStates = {}, binderOpenedMap = {};
+  let activeResizeObserver = null;
+
+  function switchRealm(key) {
+    playMagicWhoosh(true);
+    currentRealmKey = key;
+    document.getElementById('gatewayView').classList.add('hidden');
+    document.getElementById('activeCardContainer').classList.remove('hidden');
+    document.getElementById('gatewayNavBtn').style.display = 'inline-block';
+    renderActiveCard(true);
+  }
+  function returnToGateway() {
+    playMagicWhoosh(false);
+    saveVisibleInlineInk();
+    if (currentRealmKey === 'comprehension') { const q = englishCurriculum.comprehension.questions[currentQuestionIdx]; if (q) saveCurrentCanvasInk(q.id); }
+    document.getElementById('activeCardContainer').classList.add('hidden');
+    document.getElementById('gatewayNavBtn').style.display = 'none';
+    document.getElementById('gatewayView').classList.remove('hidden');
+  }
+  function changeQuestion(delta) {
+    if (currentRealmKey !== 'comprehension') return;
+    const q = englishCurriculum.comprehension.questions[currentQuestionIdx];
+    if (q) saveCurrentCanvasInk(q.id);
+    const n = currentQuestionIdx + delta;
+    if (n >= 0 && n < englishCurriculum.comprehension.questions.length) { playMagicWhoosh(true); currentQuestionIdx = n; renderActiveCard(true); }
+  }
+  function switchPageSmoothly(qId, delta) {
+    if (!activePages[qId]) activePages[qId] = 1;
+    const target = activePages[qId] + delta;
+    if (target >= 1 && target <= 2) {
+      saveCurrentCanvasInk(qId);
+      activePages[qId] = target;
+      const ind = document.getElementById('pageIndicator_' + qId);
+      if (ind) ind.innerText = `Pg ${target} / 2`;
+      loadCanvasInk(qId, target);
+    }
+  }
+  function toggleToolDrawer(qId) { const d = document.getElementById('toolDrawer_' + qId); if (d) d.classList.toggle('tool-drawer-collapsed'); }
+
+  function renderActiveCard(animate = false) {
+    const container = document.getElementById('activeCardContainer');
+    const realm = englishCurriculum[currentRealmKey];
+
+    if (currentRealmKey !== 'comprehension') {
+      const stageIdx = subStageMap[currentRealmKey] || 0;
+      const cur = realm.stages[stageIdx], total = realm.stages.length;
+      container.innerHTML = `
+        <div class="glass-alpine-card card-4d ${animate ? 'page-flip-anim' : ''} p-5 relative w-full flex flex-col gap-4">
+          <div class="flex justify-between items-center border-b border-slate-300/40 pb-3">
+            <div>
+              <h2 class="font-bold text-slate-900 font-display text-lg">${realm.realmName}</h2>
+              <span class="text-xs text-slate-600 font-bold">${cur.title} (${stageIdx + 1}/${total})</span>
+            </div>
+            <div class="flex items-center gap-3">
+              ${modeSwitcherHTML()}
+              <button onclick="triggerGrandCelebration()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-1.5 rounded-full shadow text-xs cursor-pointer">✅ Finish</button>
+            </div>
+          </div>
+          ${cur.render()}
+          <div class="flex justify-between items-center border-t border-slate-300/40 pt-3 mt-2 text-xs font-bold">
+            <button onclick="changeSubStage('${currentRealmKey}', -1)" ${stageIdx === 0 ? 'disabled' : ''} class="px-4 py-1.5 rounded-xl bg-white/70 border border-slate-300 shadow-sm ${stageIdx === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-white cursor-pointer'}">⬅️ Previous Part</button>
+            <button onclick="changeSubStage('${currentRealmKey}', 1)" ${stageIdx === total - 1 ? 'disabled' : ''} class="px-4 py-1.5 rounded-xl bg-white/70 border border-slate-300 shadow-sm ${stageIdx === total - 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-white cursor-pointer'}">Next Part ➔</button>
+          </div>
+        </div>`;
+      applyModeStyles();
+      setTimeout(initAllInlineCanvases, 50);
+      return;
+    }
+
+    const q = realm.questions[currentQuestionIdx];
+    if (!activePages[q.id]) activePages[q.id] = 1;
+    const currentPage = activePages[q.id];
+    const isBinderOpen = !!binderOpenedMap[q.id];
+
+    container.innerHTML = `
+      <div class="glass-alpine-card card-4d ${animate ? 'page-flip-anim' : ''} overflow-hidden relative w-full">
+        <div class="p-3 bg-white/40 border-b border-slate-300/40 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <div class="flex items-center gap-2">
+            <span class="bg-rose-600 text-white font-bold text-xs px-2.5 py-1 rounded-lg">${q.label}</span>
+            <p class="font-bold text-slate-900 text-sm md:text-base">${q.text}</p>
+            <button onclick="speakSentence('${q.text.replace(/'/g, "\\'")}')" class="text-xs bg-white/60 text-slate-700 px-2 py-0.5 rounded-full font-bold">🔊</button>
+          </div>
+          <div class="flex items-center gap-3">
+            ${modeSwitcherHTML()}
+            <button onclick="triggerGrandCelebration()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3.5 py-1.5 rounded-full text-xs cursor-pointer">✅ Finish</button>
+          </div>
+        </div>
+        <div class="bg-rose-50/30 px-4 py-1.5 border-b border-rose-200/40 flex justify-between items-center text-xs text-rose-950 font-semibold">
+          <span>${realm.realmName} (${currentQuestionIdx + 1} of ${realm.questions.length})</span>
+          <div class="flex gap-2">
+            <button onclick="changeQuestion(-1)" ${currentQuestionIdx === 0 ? 'disabled' : ''} class="px-3 py-1 bg-white/70 border border-rose-300 rounded-lg shadow-sm font-bold ${currentQuestionIdx === 0 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-white cursor-pointer'}">⬅️ Prev</button>
+            <button onclick="changeQuestion(1)" ${currentQuestionIdx === realm.questions.length - 1 ? 'disabled' : ''} class="px-3 py-1 bg-white/70 border border-rose-300 rounded-lg shadow-sm font-bold ${currentQuestionIdx === realm.questions.length - 1 ? 'opacity-40 cursor-not-allowed' : 'hover:bg-white cursor-pointer'}">Next ➡️</button>
+          </div>
+        </div>
+
+        <div class="relative workspace-h bg-slate-100 overflow-hidden">
+          <div class="absolute inset-0 flex flex-col bg-white">
+            <div class="absolute right-4 top-3 z-30 flex items-center gap-3">
+              <button onclick="closeBinder('${q.id}')" class="bg-slate-900/90 text-white text-xs px-3 py-1.5 rounded-full border border-white/20 font-bold shadow">📕 Cover</button>
+              <div class="flex items-center bg-slate-900/90 text-white px-3 py-1.5 rounded-full border border-white/20 shadow text-xs gap-2">
+                <button onclick="switchPageSmoothly('${q.id}', -1)">◀️</button>
+                <span id="pageIndicator_${q.id}" class="font-bold text-amber-200">Pg ${currentPage} / 2</span>
+                <button onclick="switchPageSmoothly('${q.id}', 1)">▶️</button>
+              </div>
+              <div class="floating-tool-drawer-right" id="toolDrawer_${q.id}">
+                <button onclick="toggleToolDrawer('${q.id}')" class="text-white text-xs font-bold px-2 py-1 flex items-center gap-1 cursor-pointer"><span>🛠️</span> <span>Tools</span></button>
+                <div class="drawer-items-group flex items-center gap-1.5 border-l border-white/20 pl-2">
+                  <button onclick="setTool('${q.id}', 'pen')" id="toolPen_${q.id}" class="p-1 rounded bg-amber-600 text-white shadow text-xs">✏️</button>
+                  <button onclick="setTool('${q.id}', 'line')" id="toolLine_${q.id}" class="p-1 rounded hover:bg-amber-800 text-xs">📏</button>
+                  <button onclick="setTool('${q.id}', 'eraser')" id="toolEraser_${q.id}" class="p-1 rounded hover:bg-amber-800 text-xs">🧹</button>
+                  <button onclick="undoInk('${q.id}')" title="Undo" class="p-1 rounded hover:bg-amber-800 text-xs">↩️</button>
+                  <button onclick="clearCanvas('${q.id}')" class="p-1 rounded hover:bg-amber-800 text-red-300 text-xs">🗑️</button>
+                  <div class="flex gap-1 ml-1 items-center">
+                    <button onclick="setColor('${q.id}', '#1e1b4b')" class="w-5 h-5 rounded-full bg-slate-900 border-2 border-white shadow"></button>
+                    <button onclick="setColor('${q.id}', '#2563eb')" class="w-5 h-5 rounded-full bg-blue-600 border-2 border-white shadow"></button>
+                    <button onclick="setColor('${q.id}', '#dc2626')" class="w-5 h-5 rounded-full bg-red-600 border-2 border-white shadow"></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <img src="assets/heidi-main.webp" class="heidi-emboss-topright" alt="" onerror="handleImageFallback(this)"/>
+
+            <div id="ghostNotebook_${q.id}" class="inline-ghost-text" style="left:64px; top:120px; transform:none; max-width:760px; white-space:normal; line-height:56px; display:${isPracticeMode ? 'block' : 'none'};">${q.refAnswer}</div>
+
+            <div class="flex-1 two-line-canvas-wrap relative overflow-hidden select-none touch-none" id="canvasArea_${q.id}">
+              <canvas id="canvas_${q.id}" oncontextmenu="return false;" class="absolute inset-0 w-full h-full cursor-crosshair touch-none z-10"></canvas>
+            </div>
+          </div>
+
+          <div id="binderCover_${q.id}" class="binder-cover ${isBinderOpen ? 'binder-open' : ''} absolute inset-0 bg-gradient-to-br from-rose-900 to-amber-950 text-white p-8 flex flex-col justify-between shadow-2xl z-30 cursor-pointer" onclick="openBinder('${q.id}')">
+            <div class="notebook-spine-rings">${'<div class="spiral-ring"></div>'.repeat(8)}</div>
+            <div class="flex justify-between items-start ml-8 relative z-10">
+              <span class="bg-white/20 px-3.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase">English Literature</span>
+              <img src="assets/alps-badge.webp" class="w-8 h-8 object-contain" alt="" onerror="handleImageFallback(this)"/>
+            </div>
+            <div class="mx-auto my-auto bg-white/95 text-slate-900 rounded-2xl p-4 pl-9 w-72 shadow-2xl border-4 border-amber-900 relative">
+              <div class="flex flex-col gap-1 text-left relative z-10">
+                <div class="text-[10px] uppercase font-extrabold text-indigo-900 tracking-widest border-b pb-0.5">Swiss Alps Academy</div>
+                <div class="font-hand text-lg text-blue-950 font-bold leading-tight pt-0.5">Zaina • Grade 5</div>
+                <div class="font-hand text-base text-rose-700 font-bold leading-tight">Heidi Learns to Read</div>
+                <div class="font-hand text-xs text-indigo-700 font-bold bg-amber-100 rounded px-2 py-0.5 mt-1 inline-block w-fit">Answer in Brief Notebook</div>
+              </div>
+            </div>
+            <div class="text-center flex flex-col items-center gap-2 ml-8 relative z-10">
+              <img src="assets/heidi-reading.webp" class="w-20 h-20 object-contain animate-bounce" alt="" onerror="handleImageFallback(this)"/>
+              <span class="bg-white text-rose-950 font-bold px-4 py-2 rounded-xl shadow-lg text-xs uppercase tracking-widest">Tap to Open Binder ⚡</span>
+            </div>
+            <div class="text-center text-xs text-rose-300 ml-8 relative z-10">${q.label} • Two-Line S-Pen Surface</div>
+          </div>
+        </div>
+      </div>`;
+    initCanvas(q.id, currentPage);
+  }
+
+  function pickMCQ(btn, isCorrect) {
+    btn.parentElement.querySelectorAll('.mcq-btn').forEach(b => b.classList.remove('bg-emerald-100', 'border-emerald-500', 'bg-rose-100', 'border-rose-500'));
+    btn.classList.add(...(isCorrect ? ['bg-emerald-100', 'border-emerald-500'] : ['bg-rose-100', 'border-rose-500']));
+  }
+
+  /* ==========================================================
+     INLINE STRIP INK ENGINE  (undo fixed: baseline + DPR + eraser-safe)
+  ========================================================== */
+  const inlineUndo = {};          // id -> [baseline(null|dataURL), ...snapshots]
+  const inlineToken = {};         // guards async image loads
+
+  function inlineKey(id) { return 'zaina_eng_inline_' + id; }
+
+  function initAllInlineCanvases() {
+    document.querySelectorAll('canvas[id^="inlineCanvas_"]').forEach(c => initInlineStripCanvas(c.id.replace('inlineCanvas_', '')));
+  }
+  function saveVisibleInlineInk() {
+    document.querySelectorAll('canvas[id^="inlineCanvas_"]').forEach(c => {
+      const id = c.id.replace('inlineCanvas_', '');
+      if (inlineUndo[id] && inlineUndo[id].length > 1) { try { localStorage.setItem(inlineKey(id), c.toDataURL()); } catch (_) {} }
+    });
+  }
+
+  function paintInline(canvas, dataUrl, token, id) {
+    const ctx = canvas.getContext('2d');
+    const dpr = Number(canvas.dataset.dpr) || 1;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+    if (!dataUrl) return;
+    const img = new Image();
+    img.onload = () => {
+      if (inlineToken[id] !== token) return;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.drawImage(img, 0, 0, canvas.width / dpr, canvas.height / dpr);
+    };
+    img.src = dataUrl;
+  }
+
+  function initInlineStripCanvas(id) {
+    const canvas = document.getElementById('inlineCanvas_' + id);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+    const w = canvas.parentElement.clientWidth, h = canvas.parentElement.clientHeight;
+    canvas.width = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
+    canvas.dataset.dpr = String(dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    const saved = localStorage.getItem(inlineKey(id));
+    if (!inlineUndo[id]) inlineUndo[id] = [saved || null];
+    else if (inlineUndo[id].length === 1) inlineUndo[id][0] = saved || null;
+    inlineToken[id] = (inlineToken[id] || 0) + 1;
+    paintInline(canvas, saved, inlineToken[id], id);
+
+    let drawing = false, pid = null, lastX = 0, lastY = 0;
+    const xy = e => { const r = canvas.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+
+    canvas.onpointerdown = e => {
+      if (drawing) return;
+      e.preventDefault();
+      drawing = true; pid = e.pointerId;
+      try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+      [lastX, lastY] = xy(e);
+      InkSound.init();
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#1e1b4b'; ctx.lineWidth = 2.4;
+      // a tap leaves a dot
+      ctx.beginPath(); ctx.arc(lastX, lastY, 1.2, 0, Math.PI * 2); ctx.fillStyle = '#1e1b4b'; ctx.fill();
+    };
+    canvas.onpointermove = e => {
+      if (!drawing || e.pointerId !== pid) return;
+      const [x, y] = xy(e);
+      ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.stroke();
+      InkSound.update('pen', Math.hypot(x - lastX, y - lastY));
+      lastX = x; lastY = y;
+    };
+    const stop = e => {
+      if (!drawing || (e && e.pointerId !== pid)) return;
+      drawing = false; pid = null;
+      InkSound.stop();
+      try {
+        const data = canvas.toDataURL();
+        const st = inlineUndo[id] || (inlineUndo[id] = [null]);
+        st.push(data);
+        if (st.length > 16) st.shift();
+        localStorage.setItem(inlineKey(id), data);
+      } catch (_) {}
+    };
+    canvas.onpointerup = stop;
+    canvas.onpointercancel = stop;
+  }
+
+  function undoInlineInk(id) {
+    const canvas = document.getElementById('inlineCanvas_' + id);
+    const st = inlineUndo[id];
+    if (!canvas || !st || st.length <= 1) return;
+    st.pop();
+    const prev = st[st.length - 1];
+    inlineToken[id] = (inlineToken[id] || 0) + 1;
+    paintInline(canvas, prev, inlineToken[id], id);
+    if (prev) localStorage.setItem(inlineKey(id), prev); else localStorage.removeItem(inlineKey(id));
+  }
+
+  function clearInlineCanvas(id) {
+    const canvas = document.getElementById('inlineCanvas_' + id);
+    if (!canvas) return;
+    inlineUndo[id] = [null];                 // keep a blank baseline so undo keeps working after Clear
+    inlineToken[id] = (inlineToken[id] || 0) + 1;
+    paintInline(canvas, null, inlineToken[id], id);
+    localStorage.removeItem(inlineKey(id));
+  }
+
+  /* ==========================================================
+     NOTEBOOK BINDER ENGINE (Realm IV)
+  ========================================================== */
+  let lastPenSeen = 0;
+
+  function syncCanvasResolution(canvas, container, id) {
+    const dpr = Math.min(window.devicePixelRatio || 1, 3);
+    const cssW = container.clientWidth, cssH = container.clientHeight;
+    if (!cssW || !cssH) return;
+    const tw = Math.round(cssW * dpr), th = Math.round(cssH * dpr);
+    if (canvas.width === tw && canvas.height === th) return;
+    canvas.style.width = cssW + 'px'; canvas.style.height = cssH + 'px';
+    canvas.width = tw; canvas.height = th;
+    canvas.dataset.dpr = String(dpr);
+    canvas.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0);
+    loadCanvasInk(id, activePages[id] || 1);
+  }
+
+  function initCanvas(id, page) {
+    const canvas = document.getElementById('canvas_' + id);
+    const container = document.getElementById('canvasArea_' + id);
+    if (!canvas || !container) return;
+    const ctx = canvas.getContext('2d');
+    if (!canvasStates[id]) canvasStates[id] = { tool: 'pen', color: '#1e1b4b' };
+    syncCanvasResolution(canvas, container, id);
+
+    if (activeResizeObserver) activeResizeObserver.disconnect();
+    if (window.ResizeObserver) { activeResizeObserver = new ResizeObserver(() => syncCanvasResolution(canvas, container, id)); activeResizeObserver.observe(container); }
+
+    let activePointerId = null, activeType = null, strokeTool = null;
+    let lastX = 0, lastY = 0, startX = 0, startY = 0, snapshot = null;
+    const localXY = e => { const r = canvas.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+
+    const drawSegment = (x1, y1, x2, y2, p) => {
+      ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      if (strokeTool === 'eraser') { ctx.globalCompositeOperation = 'destination-out'; ctx.strokeStyle = '#000'; ctx.lineWidth = 28; }
+      else { ctx.globalCompositeOperation = 'source-over'; ctx.strokeStyle = canvasStates[id].color; ctx.lineWidth = 2.5 * (.8 + (p > 0 ? p : .5) * .8); }
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.restore();
+    };
+    const drawDot = (x, y, p) => {
+      ctx.save();
+      if (strokeTool === 'eraser') { ctx.globalCompositeOperation = 'destination-out'; ctx.fillStyle = '#000'; ctx.beginPath(); ctx.arc(x, y, 14, 0, Math.PI * 2); }
+      else { ctx.fillStyle = canvasStates[id].color; ctx.beginPath(); ctx.arc(x, y, 2.2 * (.8 + (p > 0 ? p : .5) * .8), 0, Math.PI * 2); }
+      ctx.fill(); ctx.restore();
+    };
+    const drawGlowLine = (x1, y1, x2, y2, color) => {
+      const dpr = Number(canvas.dataset.dpr) || 1;
+      ctx.save(); ctx.lineCap = 'round'; ctx.strokeStyle = color; ctx.shadowColor = color; ctx.shadowBlur = 14 * dpr; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+      ctx.shadowBlur = 0; ctx.globalAlpha = .9; ctx.lineWidth = 1.2; ctx.strokeStyle = '#FFF';
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.restore();
+    };
+    const endStroke = () => {
+      if (activePointerId === null) return;
+      InkSound.stop();
+      if (strokeTool === 'line' && snapshot) {
+        const len = Math.hypot(lastX - startX, lastY - startY);
+        ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.putImageData(snapshot, 0, 0); ctx.restore();
+        if (len > 6) { drawGlowLine(startX, startY, lastX, lastY, canvasStates[id].color); InkSound.glideChime(); }
+      }
+      snapshot = null; activePointerId = null; activeType = null; strokeTool = null;
+      saveCurrentCanvasInk(id);
+    };
+
+    canvas.addEventListener('pointerenter', e => { if (e.pointerType === 'pen') lastPenSeen = Date.now(); });
+    canvas.addEventListener('pointerdown', e => {
+      if (e.pointerType === 'pen') { lastPenSeen = Date.now(); if (activePointerId !== null && activeType === 'touch') endStroke(); }
+      else {
+        const palm = Math.max(e.width || 0, e.height || 0) > 26;
+        const penBusy = Date.now() - lastPenSeen < 1200;
+        if (palm || penBusy || activePointerId !== null) return;
+      }
+      if (activePointerId !== null) return;
+      e.preventDefault();
+      InkSound.init();
+      activePointerId = e.pointerId; activeType = e.pointerType;
+      try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+      const barrel = e.pointerType === 'pen' && ((e.buttons & 32) || e.button === 5);
+      strokeTool = barrel ? 'eraser' : canvasStates[id].tool;
+      const [x, y] = localXY(e);
+      startX = lastX = x; startY = lastY = y;
+      if (strokeTool === 'line') { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height); ctx.restore(); }
+      else drawDot(x, y, e.pressure);
+    });
+    canvas.addEventListener('pointermove', e => {
+      if (e.pointerType === 'pen') lastPenSeen = Date.now();
+      if (e.pointerId !== activePointerId) return;
+      if (strokeTool === 'line') {
+        const [x, y] = localXY(e);
+        if (snapshot) { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.putImageData(snapshot, 0, 0); ctx.restore(); }
+        ctx.save(); ctx.lineCap = 'round'; ctx.strokeStyle = canvasStates[id].color; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(x, y); ctx.stroke(); ctx.restore();
+        lastX = x; lastY = y; return;
+      }
+      const events = (e.getCoalescedEvents && e.getCoalescedEvents().length) ? e.getCoalescedEvents() : [e];
+      let total = 0;
+      for (const ev of events) { const [x, y] = localXY(ev); total += Math.hypot(x - lastX, y - lastY); drawSegment(lastX, lastY, x, y, ev.pressure); lastX = x; lastY = y; }
+      InkSound.update(strokeTool === 'eraser' ? 'eraser' : 'pen', total / events.length);
+    });
+    canvas.addEventListener('pointerup', e => { if (e.pointerId === activePointerId) endStroke(); });
+    canvas.addEventListener('pointercancel', e => { if (e.pointerId === activePointerId) endStroke(); });
+  }
+
+  function loadCanvasInk(id, page) {
+    const canvas = document.getElementById('canvas_' + id);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = 'source-over'; ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.restore();
+    const key = `zaina_eng_ink_${id}_p${page}`;
+    const saved = localStorage.getItem(key);
+    if (!saved) return;
+    let size = null;
+    try { size = JSON.parse(localStorage.getItem(key + '_size') || 'null'); } catch (_) {}
+    const img = new Image();
+    img.onload = () => {
+      const sw = size ? size.w : img.width, sh = size ? size.h : img.height;
+      const s = Math.min(canvas.width / sw, canvas.height / sh);
+      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = 'source-over';
+      ctx.drawImage(img, 0, 0, img.width * s, img.height * s); ctx.restore();
+    };
+    img.src = saved;
+  }
+  function saveCurrentCanvasInk(id) {
+    const canvas = document.getElementById('canvas_' + id);
+    if (!canvas || canvas.width <= 0 || canvas.height <= 0) return;
+    const key = `zaina_eng_ink_${id}_p${activePages[id] || 1}`;
+    try {
+      const previous = localStorage.getItem(key) || '';
+      const next = canvas.toDataURL();
+      if (previous !== next) pushUndo(key, previous);
+      localStorage.setItem(key, next);
+      localStorage.setItem(key + '_size', JSON.stringify({ w: canvas.width, h: canvas.height }));
+    } catch (_) {}
+  }
+  function setTool(id, tool) {
+    canvasStates[id].tool = tool;
+    ['Pen', 'Line', 'Eraser'].forEach(t => {
+      const b = document.getElementById(`tool${t}_${id}`);
+      if (b) b.className = t.toLowerCase() === tool ? 'p-1 rounded bg-amber-600 text-white shadow text-xs' : 'p-1 rounded hover:bg-amber-800 text-xs';
+    });
+  }
+  function setColor(id, color) { canvasStates[id].color = color; setTool(id, 'pen'); }
+
+  const undoStacks = {};
+  function pushUndo(key, value) {
+    const st = undoStacks[key] || (undoStacks[key] = []);
+    if (st.length && st[st.length - 1] === value) return;
+    st.push(value); if (st.length > 25) st.shift();
+  }
+  function undoInk(id) {
+    const page = activePages[id] || 1, key = `zaina_eng_ink_${id}_p${page}`;
+    const st = undoStacks[key] || [];
+    if (!st.length) return;
+    const previous = st.pop();
+    if (previous) localStorage.setItem(key, previous); else localStorage.removeItem(key);
+    loadCanvasInk(id, page);
+  }
+  function clearCanvas(id) {
+    const canvas = document.getElementById('canvas_' + id);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const key = `zaina_eng_ink_${id}_p${activePages[id] || 1}`;
+    const current = localStorage.getItem(key);
+    if (current) pushUndo(key, current);
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.restore();
+    localStorage.removeItem(key); localStorage.removeItem(key + '_size');
+  }
+  function openBinder(id) { playMagicWhoosh(true); binderOpenedMap[id] = true; document.getElementById('binderCover_' + id).classList.add('binder-open'); }
+  function closeBinder(id) { playMagicWhoosh(false); binderOpenedMap[id] = false; saveCurrentCanvasInk(id); document.getElementById('binderCover_' + id).classList.remove('binder-open'); }
+
+  /* ==========================================================
+     CELEBRATION
+  ========================================================== */
+  const grandStage = document.getElementById('grandCelebrationStage');
+  const grandCanvas = document.getElementById('grandFinaleCanvas');
+  const grandCtx = grandCanvas.getContext('2d', { alpha: true });
+  let grandAnimRunning = false, magicConfettiStorm = [];
+  function resizeGrandCanvas() { grandCanvas.width = window.innerWidth; grandCanvas.height = window.innerHeight; }
+  window.addEventListener('resize', resizeGrandCanvas);
+
+  function triggerGrandCelebration() {
+    saveVisibleInlineInk();
+    resizeGrandCanvas();
+    grandStage.style.display = 'block';
+    grandAnimRunning = true;
+    playGrandFanfare();
+    document.getElementById('magicCenterpiece').className = 'magic-banner-centerpiece impact';
+    magicConfettiStorm = [];
+    const colors = ['#EC4899', '#C084FC', '#38BDF8', '#FDE047', '#4ADE80', '#FFFFFF'];
+    for (let i = 0; i < 70; i++) magicConfettiStorm.push({ x: Math.random() * innerWidth, y: -20 - Math.random() * 200, size: Math.random() * 8 + 4, vx: (Math.random() - .5) * 2, vy: Math.random() * 3 + 2, color: colors[Math.floor(Math.random() * colors.length)] });
+    setTimeout(() => { document.getElementById('royalScrollLandingRight').className = 'royal-scroll-landing-right landed'; }, 1100);
+    requestAnimationFrame(renderGrandScene);
+  }
+  function renderGrandScene() {
+    if (!grandAnimRunning) return;
+    grandCtx.clearRect(0, 0, grandCanvas.width, grandCanvas.height);
+    for (const p of magicConfettiStorm) {
+      p.x += p.vx; p.y += p.vy;
+      if (p.y > innerHeight + 20) p.y = -10;
+      grandCtx.fillStyle = p.color; grandCtx.beginPath(); grandCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2); grandCtx.fill();
+    }
+    requestAnimationFrame(renderGrandScene);
+  }
+  function closeGrandCelebration() {
+    grandAnimRunning = false;
+    grandStage.style.display = 'none';
+    document.getElementById('magicCenterpiece').className = 'magic-banner-centerpiece';
+    document.getElementById('royalScrollLandingRight').className = 'royal-scroll-landing-right';
+  }
+
+  /* STARFIELD */
+  const mCanvas = document.getElementById('milkyWayCanvas'), mCtx = mCanvas.getContext('2d');
+  let stars = [];
+  function resizeMilkyWay() {
+    mCanvas.width = innerWidth; mCanvas.height = innerHeight; stars = [];
+    for (let i = 0; i < 75; i++) stars.push({ x: Math.random() * mCanvas.width, y: Math.random() * mCanvas.height, radius: Math.random() * 1.8 + .4, vx: (Math.random() - .5) * .2, vy: -Math.random() * .3 - .1, alpha: Math.random() * .7 + .2, color: ['#FDF2F8', '#FED7AA', '#BAE6FD', '#FDE047'][Math.floor(Math.random() * 4)] });
+  }
+  window.addEventListener('resize', resizeMilkyWay);
+  resizeMilkyWay();
+  (function renderMilkyWay() {
+    mCtx.clearRect(0, 0, mCanvas.width, mCanvas.height);
+    for (const s of stars) {
+      s.x += s.vx; s.y += s.vy;
+      if (s.y < 0) s.y = mCanvas.height; if (s.x < 0) s.x = mCanvas.width; if (s.x > mCanvas.width) s.x = 0;
+      mCtx.globalAlpha = s.alpha; mCtx.fillStyle = s.color; mCtx.beginPath(); mCtx.arc(s.x, s.y, s.radius, 0, Math.PI * 2); mCtx.fill();
+    }
+    mCtx.globalAlpha = 1;
+    requestAnimationFrame(renderMilkyWay);
+  })();
+
+  /* EXIT */
+  let isLeavingToHub = false;
+  function exitToHub(e) {
+    if (e) e.preventDefault();
+    if (isLeavingToHub) return;
+    isLeavingToHub = true;
+    try {
+      saveVisibleInlineInk();
+      if (currentRealmKey === 'comprehension') { const q = englishCurriculum.comprehension.questions[currentQuestionIdx]; if (q) saveCurrentCanvasInk(q.id); }
+    } catch (_) {}
+    if (window.parent && window.parent !== window) { window.parent.postMessage('close-lesson-to-hub', '*'); setTimeout(() => { isLeavingToHub = false; }, 1500); return; }
+    setTimeout(() => { window.location.href = 'index.html'; }, 60);
+  }
+  window.addEventListener('pagehide', () => { try { saveVisibleInlineInk(); } catch (_) {} });
+  window.addEventListener('load', update6DCarouselDOM);
+</script>
 </body>
 </html>
