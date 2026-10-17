@@ -796,11 +796,11 @@
       opacity: 1;
     }
     /* ===== PEN TOOLS TOGGLE (top-left, embossed avatar) ===== */
-    .pen-toggle-wrap { position: fixed; top: 86px; left: 14px; z-index: 96; display: none; flex-direction: column; align-items: center; gap: 8px; }
+    .pen-toggle-wrap { position: fixed; top: 84px; left: 12px; z-index: 96; display: none; flex-direction: column; align-items: center; gap: 8px; }
     .pen-toggle-wrap.pen-visible { display: flex; }
-    body.pen-visible .stage-character-col { padding-left: 62px; }
+    body.pen-visible .stage-character-col { padding-left: 94px; }
     .pen-avatar-btn {
-      width: 58px; height: 58px; border-radius: 50%; padding: 0; cursor: pointer;
+      width: 88px; height: 88px; border-radius: 50%; padding: 0; cursor: pointer;
       border: 3px solid var(--gold-primary);
       background: radial-gradient(circle at 30% 25%, #FFFFFF 0%, #FEF3C7 55%, #FCD34D 100%);
       box-shadow: inset 2px 2px 4px rgba(255,255,255,0.95), inset -3px -3px 6px rgba(120,53,15,0.35), 0 5px 12px rgba(0,0,0,0.45);
@@ -808,7 +808,7 @@
       transition: transform 0.15s ease;
     }
     .pen-avatar-btn:active { transform: scale(0.94); box-shadow: inset 3px 3px 6px rgba(120,53,15,0.35), inset -2px -2px 4px rgba(255,255,255,0.8); }
-    .pen-avatar-btn img { width: 44px; height: 44px; object-fit: cover; border-radius: 50%; filter: drop-shadow(1px 1px 0 rgba(255,255,255,0.9)) drop-shadow(-1px -1px 1px rgba(120,53,15,0.55)); opacity: 0.92; pointer-events: none; }
+    .pen-avatar-btn img { width: 72px; height: 72px; object-fit: cover; border-radius: 50%; filter: drop-shadow(1px 1px 0 rgba(255,255,255,0.9)) drop-shadow(-1px -1px 1px rgba(120,53,15,0.55)); opacity: 0.92; pointer-events: none; }
     .pen-panel {
       display: none; flex-direction: column; align-items: center; gap: 6px;
       background: rgba(255,253,246,0.96); border: 2.5px solid var(--gold-primary); border-radius: 18px;
@@ -825,7 +825,7 @@
     .pt-dot { display: block; border-radius: 50%; background: #1E3A8A; pointer-events: none; }
 
     /* ===== WRITE MODE: ALL QUESTIONS AT ONCE ===== */
-    .batch-list { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 10px; padding: 4px 6px 14px 74px; }
+    .batch-list { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; display: flex; flex-direction: column; gap: 10px; padding: 4px 6px 14px 108px; }
     .batch-row { display: flex; align-items: stretch; gap: 12px; background: rgba(255,253,246,0.96); border: 3px solid var(--gold-primary); border-radius: 18px; padding: 8px 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.3); flex-shrink: 0; }
     .batch-q { width: 210px; flex-shrink: 0; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 6px; }
     .batch-word { font-family: var(--font-story); font-size: 1.4rem; font-weight: 800; color: #92400E; cursor: pointer; line-height: 1.15; }
@@ -866,6 +866,7 @@
     <div class="pen-panel" id="penPanel">
       <button type="button" class="pt-btn active-tool" id="ptPen" onclick="selectTool('pen')"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
       <button type="button" class="pt-btn" id="ptEraser" onclick="selectTool('eraser')"><svg viewBox="0 0 24 24"><path d="M20 20H9L3.5 14.5a2 2 0 0 1 0-2.8L12 3.2a2 2 0 0 1 2.8 0l6 6a2 2 0 0 1 0 2.8L12 20"/><path d="M7 11l6 6"/></svg></button>
+      <button type="button" class="pt-btn" id="ptScroll" style="display:none;" onclick="selectTool('scroll')"><svg viewBox="0 0 24 24"><path d="M18 11V6a2 2 0 0 0-4 0"/><path d="M14 10V4a2 2 0 0 0-4 0v2"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg></button>
       <button type="button" class="pt-btn" onclick="penUndo()"><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button>
       <button type="button" class="pt-btn" onclick="penClear()"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 14h10l1-14"/></svg></button>
       <div class="pt-sep"></div>
@@ -1391,6 +1392,8 @@
         renderBatchWrite();
         return;
       }
+      document.getElementById('ptScroll').style.display = 'none';
+      if (currentDrawingTool === 'scroll') selectTool('pen');
 
       const item = activeDeck[currentItemIdx];
       document.getElementById('deckPagination').textContent = `${currentItemIdx + 1} / ${activeDeck.length}`;
@@ -1593,6 +1596,9 @@
       const p = document.getElementById('ptPen'), e = document.getElementById('ptEraser');
       if (p) p.classList.toggle('active-tool', tool === 'pen');
       if (e) e.classList.toggle('active-tool', tool === 'eraser');
+      const h = document.getElementById('ptScroll');
+      if (h) h.classList.toggle('active-tool', tool === 'scroll');
+      document.querySelectorAll('.retina-ink-canvas').forEach(c => { c.style.cursor = tool === 'scroll' ? 'grab' : 'crosshair'; });
     }
 
     function selectPenSize(sz) {
@@ -1634,6 +1640,7 @@
       document.getElementById('bannerHeadingText').textContent = activeSection === 'meanings' ? 'Meanings' : 'Opposites';
       viewport.className = 'work-body-frame slide-enter-next';
       viewport.innerHTML = '';
+      document.getElementById('ptScroll').style.display = 'inline-flex';
 
       const sign = activeSection === 'meanings' ? '=' : '↔';
       const UND_SVG = '<svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>';
@@ -1728,8 +1735,19 @@
           saveCanvasBuffer(c, id);
         };
 
+        let scrolling = false;
+
         c.onpointerdown = (e) => {
           e.preventDefault();
+          if (currentDrawingTool === 'scroll') {
+            // Hand tool: dragging (pen or finger) scrolls the list instead of drawing
+            if (!document.querySelector('.batch-list') || isDrawing) return;
+            scrolling = true;
+            activePointerId = e.pointerId;
+            lastY = e.clientY;
+            try { c.setPointerCapture(e.pointerId); } catch (_) {}
+            return;
+          }
           if (e.pointerType === 'pen') {
             lastPenTime = Date.now();
             // A pen always takes over from a finger or palm stroke in progress
@@ -1756,6 +1774,14 @@
         };
 
         c.onpointermove = (e) => {
+          if (scrolling) {
+            if (e.pointerId !== activePointerId) return;
+            const list = document.querySelector('.batch-list');
+            if (list) list.scrollTop -= (e.clientY - lastY);
+            lastY = e.clientY;
+            e.preventDefault();
+            return;
+          }
           if (!isDrawing || !cachedRect || e.pointerId !== activePointerId) return;
 
           const currX = e.clientX - cachedRect.left;
@@ -1789,6 +1815,12 @@
 
         const stopStroke = (e) => {
           if (e.pointerId !== activePointerId) return;
+          if (scrolling) {
+            scrolling = false;
+            activePointerId = null;
+            try { c.releasePointerCapture(e.pointerId); } catch (_) {}
+            return;
+          }
           try { c.releasePointerCapture(e.pointerId); } catch (_) {}
           finishStroke();
         };
