@@ -23,6 +23,7 @@ button{font-family:inherit;cursor:pointer}
 .ib.c{width:48px;padding:0;border-radius:50%;font-size:22px}.ib.on{background:var(--gold);color:#000;border-color:#fff}
 .ib:active{transform:scale(.94)}
 .ib img{width:28px;height:32px;object-fit:contain;filter:drop-shadow(0 0 6px var(--glow))}
+.ib.dn::after{content:'✔';position:absolute;left:-3px;top:-3px;width:18px;height:18px;border-radius:9px;background:#10b981;color:#fff;font-size:11px;display:grid;place-items:center}
 .jn{position:absolute;right:-3px;bottom:-3px;min-width:18px;height:18px;border-radius:9px;background:var(--gold);color:#000;font-size:11px;display:grid;place-items:center}
 .seg{display:flex;border:1.5px solid rgba(251,191,36,.5);border-radius:999px;overflow:hidden}
 .seg button{height:48px;padding:0 14px;border:0;background:transparent;color:#fef08a;font-size:20px;display:flex;align-items:center;gap:6px}
@@ -200,7 +201,9 @@ function loop(){fc.clearRect(0,0,fx.width,fx.height);let on=0;
  raf=on?requestAnimationFrame(loop):0}
 
 /* ===== SPEECH + SYLLABLES ===== */
-function speak(t,pitch=1,rate=.9){if(!sound||!window.speechSynthesis)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.pitch=pitch;u.rate=rate;u.lang='en-IN';speechSynthesis.speak(u)}
+const HON={SWT:"Subhanahu wa Ta'ala",SAW:'sallallahu alayhi wasallam',RA:'radi Allahu anha'};
+const sayable=t=>/^\(.*\)\W*$/.test(t.trim())&&HON[t.replace(/[^A-Za-z]/g,'').toUpperCase()]||t;
+function speak(t,pitch=1,rate=.9){if(!sound||!window.speechSynthesis)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(sayable(t));u.pitch=pitch;u.rate=rate;u.lang='en-IN';speechSynthesis.speak(u)}
 let held=false,lp=null;
 function wordSpan(w){const k=w.toLowerCase().replace(/[^a-z]/g,''),s=document.createElement('span');s.className='sw';s.textContent=w+' ';
  s.addEventListener('click',e=>{e.stopPropagation();if(held){held=false;return}speak(w)});
@@ -225,7 +228,8 @@ function setMode(w){write=w;$('mP').classList.toggle('on',!w);$('mW').classList.
 
 /* ===== CAROUSEL ===== */
 $('track').innerHTML=ST.map((s,i)=>`<div class="card" id="c${i}" onclick="cardTap(${i})"><img class="lan" src="assets/lantern-gem.webp" alt=""><div><div class="ct">${s.title}</div><div class="tag">${s.tag}</div></div><button class="go" onclick="openStation(${s.id});event.stopPropagation()">Start Quest</button></div>`).join('');
-function place(){$('track').style.transform=`rotateY(${-idx*90}deg)`;const n=((idx%4)+4)%4;
+function syncLanterns(){document.querySelectorAll('#jumps [data-j]').forEach(b=>{const n=+b.dataset.j;b.classList.toggle('dn',done.has(n));b.classList.toggle('on',$('ws').style.display==='block'&&n===cur)})}
+function place(){syncLanterns();$('track').style.transform=`rotateY(${-idx*90}deg)`;const n=((idx%4)+4)%4;
  ST.forEach((s,i)=>{const c=$('c'+i);c.style.transform=`rotateY(${i*90}deg) translateZ(250px)`;c.classList.toggle('act',i===n);c.classList.toggle('done',done.has(s.id))})}
 function rot(d){idx+=d;place()}
 function cardTap(i){const n=((idx%4)+4)%4;if(i===n)openStation(i+1);else{idx+=i-n;place()}}
@@ -233,7 +237,7 @@ let sx=0;$('stage').addEventListener('pointerdown',e=>sx=e.clientX);
 $('stage').addEventListener('pointerup',e=>{const d=e.clientX-sx;if(Math.abs(d)>40)rot(d>0?-1:1)});
 
 /* ===== STATIONS ===== */
-function openStation(id){saveInk();cur=id;const d=stById(id);
+function openStation(id){saveInk();cur=id;const d=stById(id);setTimeout(syncLanterns,0);
  $('hub').style.display='none';$('ws').style.display='block';$('ws').scrollTop=0;
  $('moon').classList.add('on');showStars();
  $('qlabel').textContent='STATION '+id+': '+d.title.toUpperCase();words($('qtext'),d.q);
@@ -244,14 +248,14 @@ function body(){const id=cur,a=$('atext');
  if(write){a.innerHTML=`<button class="go" onclick="$('chk').style.display='block';this.remove()">🔍 Check my answer</button><div id="chk" style="display:none"><div>${answerHTML(id)}</div><div style="display:flex;gap:10px;margin-top:10px"><button class="go" onclick="markDone(${id})">✔ I got it right</button><button class="pb" onclick="body()">✘ Practise again</button></div></div>`}
  else if(id===1){$('p1').style.display='block';pillars();a.innerHTML=`<button class="pb" onclick="this.nextElementSibling.innerHTML=answerHTML(1);wrapWords(this.nextElementSibling);this.remove()">💡 Show answer</button><div></div>`}
  else if(id!==4){words(a,answerHTML(id))}}
-function markDone(id){done.add(id);save();place();
- if(done.size===ST.length)setTimeout(()=>$('cel').style.display='flex',1000);else pop('MashaAllah, Humayun!')}
-function pop(t){$('popt').textContent=t;$('pop').style.display='flex';speak(t);setTimeout(()=>$('pop').style.display='none',3400)}
+function markDone(id){const had=done.size===ST.length;done.add(id);save();place();syncLanterns();
+ if(done.size===ST.length&&!had)setTimeout(()=>$('cel').style.display='flex',1000);else pop('MashaAllah, Humayun!')}
+let popT=0;function pop(t){$('popt').textContent=t;$('pop').style.display='flex';speak(t);clearTimeout(popT);popT=setTimeout(()=>$('pop').style.display='none',3400)}
 function closeCel(){$('cel').style.display='none';$('home').click()}
 
 /* Station 1: put the six articles in order. Tap a placed card to take it back. */
 let up=[];
-function pillars(){const P=stById(1).pillars,order=[...P].sort(()=>Math.random()-.5);up=Array(6).fill(null);
+function pillars(){const P=stById(1).pillars,order=shuf(P,true);up=Array(6).fill(null);
  const draw=()=>{const used=new Set(up.filter(Boolean));$('bank').innerHTML='';$('slots').innerHTML='';
   order.filter(p=>!used.has(p)).forEach(p=>{const c=document.createElement('span');c.className='chip';c.textContent=p;
    c.onclick=()=>{const i=up.indexOf(null);if(i<0)return;up[i]=p;draw();if(up.every((v,j)=>v===P[j]))markDone(1)};$('bank').appendChild(c)});
@@ -259,8 +263,9 @@ function pillars(){const P=stById(1).pillars,order=[...P].sort(()=>Math.random()
    if(p)s.onclick=()=>{up[i]=null;draw()};$('slots').appendChild(s)})};draw()}
 
 /* Station 4: Practice = tap a numbered blank, then the word that fits. Write = write the words in the notebook. */
+function shuf(a,notSame){let r;do{r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]]}}while(notSame&&r.every((v,i)=>v===a[i]));return r}
 let s4={sel:0,placed:new Set(),order:[]};
-function buildS4(){const W=stById(4).words;s4={sel:0,placed:new Set(),order:[...W].sort(()=>Math.random()-.5)};
+function buildS4(){const W=stById(4).words;s4={sel:0,placed:new Set(),order:shuf(W)};
  const t=S4.map(p=>typeof p==='string'?p:write?`<span class="blank wb" id="b${p}">${p+1}</span>`:`<span class="blank" id="b${p}" onclick="pick(${p})">${p+1}</span>`).join('');
  $('p4').innerHTML=`<div class="v4" id="v4">${t}</div>`+(write?`<p style="margin-top:10px;color:#cbd5e1">✍️ Write the 6 missing words in your notebook. Number them 1 to 6.</p>`:`<div id="s4b" style="margin-top:12px"></div>`);
  wrapWords($('v4'));if(!write){bank4();pick(0)}}
@@ -279,32 +284,40 @@ function toggleCover(){cover.classList.contains('open')?closeCover():openCover()
 
 /* ===== INK ===== */
 const cv=$('ink'),ctx=cv.getContext('2d'),DPR=Math.min(devicePixelRatio||1,2),KEY='isl::ink::',cache={};
-let color='#0f172a',size=6,tool='pen',stroke=null,ustack=[],penSeen=0;
+let color='#0f172a',size=6,tool='pen',stroke=null,ustack=[],penSeen=0,inkFor=null,dirty=false;
 const COLS=['#0f172a','#1d4ed8','#059669','#d97706'];
 $('cols').innerHTML=COLS.map((c,i)=>`<button class="col ${i?'':'on'}" style="background:${c}" data-c="${c}" aria-label="Ink colour"></button>`).join('');
 $('cols').onclick=e=>{const b=e.target.closest('[data-c]');if(!b)return;color=b.dataset.c;setTool('pen');document.querySelectorAll('.col').forEach(x=>x.classList.toggle('on',x===b))};
 function setTool(t){tool=t;$('tHl').classList.toggle('on',t==='hl');$('tEr').classList.toggle('on',t==='eraser');if(t==='hl')color='#fde047'}
 function wipe(){ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,cv.width,cv.height);ctx.restore()}
-function saveInk(){if(cv.width<2)return;try{const d=cv.toDataURL('image/webp',.7);cache[cur]=d;store.set(KEY+cur,d)}catch(e){}}
-function loadInk(id){wipe();const d=cache[id]||store.get(KEY+id);if(!d)return;const im=new Image();
- im.onload=()=>{ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;ctx.drawImage(im,0,0,cv.width,cv.height);ctx.restore()};im.src=d}
-function resizeInk(){const v=$('vp'),w=v.clientWidth,h=v.clientHeight;if(w<2||h<2)return;cv.width=Math.round(w*DPR);cv.height=Math.round(h*DPR);ctx.setTransform(DPR,0,0,DPR,0,0);ustack=[];loadInk(cur)}
+function saveInk(){if(cv.width<2||inkFor===null||!dirty)return;try{const d=cv.toDataURL('image/webp',.7);cache[inkFor]=d;store.set(KEY+inkFor,d);dirty=false}catch(e){}}
+function loadInk(id){wipe();inkFor=id;dirty=false;const d=cache[id]||store.get(KEY+id);if(!d)return;const im=new Image();
+ im.onload=()=>{if(inkFor!==id)return;const k=Math.min(cv.width/im.width,cv.height/im.height);ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.globalCompositeOperation='source-over';ctx.globalAlpha=1;ctx.drawImage(im,0,0,im.width*k,im.height*k);ctx.restore()};im.src=d}
+function resizeInk(){const v=$('vp'),w=v.clientWidth,h=v.clientHeight;if(w<2||h<2)return;saveInk();cv.width=Math.round(w*DPR);cv.height=Math.round(h*DPR);ctx.setTransform(DPR,0,0,DPR,0,0);ustack=[];loadInk(cur)}
 addEventListener('resize',resizeInk);
 document.addEventListener('pointerdown',e=>{if(e.pointerType==='pen')penSeen=performance.now()},true);
 const palm=e=>e.pointerType==='touch'&&(performance.now()-penSeen<1800||Math.max(e.width||0,e.height||0)>34);
 const pt=e=>{const r=cv.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top,p:e.pressure>0?e.pressure:.5}};
 function snap(){ustack.push(ctx.getImageData(0,0,cv.width,cv.height));if(ustack.length>8)ustack.shift();return ustack[ustack.length-1]}
-cv.addEventListener('pointerdown',e=>{if(!cover.classList.contains('open')||stroke||palm(e))return;e.preventDefault();
- try{cv.setPointerCapture(e.pointerId)}catch(_){}const p=pt(e);stroke={id:e.pointerId,pts:[p],last:p,base:snap()};noise(tool==='eraser'?'eraser':'pen')});
-cv.addEventListener('pointermove',e=>{if(!stroke||e.pointerId!==stroke.id)return;e.preventDefault();
+let fp=null;
+function beginStroke(e){const p=pt(e);stroke={id:e.pointerId,pts:[p],last:p,base:snap()};noise(tool==='eraser'?'eraser':'pen')}
+cv.addEventListener('pointerdown',e=>{if(!cover.classList.contains('open')||stroke||fp||palm(e))return;e.preventDefault();
+ try{cv.setPointerCapture(e.pointerId)}catch(_){}
+ if(e.pointerType==='touch')fp={id:e.pointerId,x:e.clientX,y:e.clientY,my:e.clientY,mode:null,ev:e};else beginStroke(e)});
+function fingerMove(e){if(!fp||e.pointerId!==fp.id)return false;
+ if(!fp.mode){const dx=e.clientX-fp.x,dy=e.clientY-fp.y;if(Math.hypot(dx,dy)<8)return true;const ws=$('ws');
+  if(Math.abs(dy)>Math.abs(dx)*1.2&&ws.scrollHeight>ws.clientHeight+2){fp.mode='scroll';fp.my=e.clientY}else{fp.mode='draw';beginStroke(fp.ev);fp=Object.assign(fp,{});return false}}
+ if(fp.mode==='scroll'){$('ws').scrollTop-=e.clientY-fp.my;fp.my=e.clientY;return true}return false}
+cv.addEventListener('pointermove',e=>{if(fingerMove(e))return;if(!stroke||e.pointerId!==stroke.id)return;e.preventDefault();
  const evs=(e.getCoalescedEvents&&e.getCoalescedEvents().length)?e.getCoalescedEvents():[e];
  for(const v of evs){const p=pt(v);stroke.pts.push(p);ctx.save();ctx.lineCap=ctx.lineJoin='round';
   if(tool==='hl'){ctx.putImageData(stroke.base,0,0);ctx.globalAlpha=.4;ctx.strokeStyle=color;ctx.lineWidth=size*2.5;ctx.beginPath();stroke.pts.forEach((q,i)=>i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y));ctx.stroke()}
   else{ctx.globalCompositeOperation=tool==='eraser'?'destination-out':'source-over';ctx.strokeStyle=color;ctx.lineWidth=tool==='eraser'?size*4+8:size*(p.p*1.4+.4);ctx.beginPath();ctx.moveTo(stroke.last.x,stroke.last.y);ctx.lineTo(p.x,p.y);ctx.stroke()}
   ctx.restore();stroke.last=p}});
-['pointerup','pointercancel','lostpointercapture'].forEach(n=>cv.addEventListener(n,e=>{if(!stroke||e.pointerId!==stroke.id)return;stroke=null;stop();saveInk()}));
-function undo(){const s=ustack.pop();if(!s)return;ctx.putImageData(s,0,0);saveInk()}
-function clearInk(){snap();wipe();saveInk();noise('eraser');setTimeout(stop,250)}
+['pointerup','pointercancel','lostpointercapture'].forEach(n=>cv.addEventListener(n,e=>{if(fp&&e.pointerId===fp.id){const tap=!fp.mode&&n==='pointerup';const ev=fp.ev;fp=null;if(tap){beginStroke(ev);stroke.pts.push(pt(e));stroke=null;stop();ctx.save();ctx.fillStyle=tool==='hl'?'rgba(253,224,71,.4)':color;ctx.beginPath();ctx.arc(pt(e).x,pt(e).y,size/2,0,7);ctx.fill();ctx.restore();dirty=true;saveInk();return}if(!stroke)return}
+ if(!stroke||e.pointerId!==stroke.id)return;stroke=null;stop();dirty=true;saveInk()}));
+function undo(){const s=ustack.pop();if(!s)return;ctx.putImageData(s,0,0);dirty=true;saveInk()}
+function clearInk(){snap();wipe();dirty=true;saveInk();noise('eraser');setTimeout(stop,250)}
 addEventListener('pagehide',saveInk);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveInk()});
 
 /* ===== START ===== */
