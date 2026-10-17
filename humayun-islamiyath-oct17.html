@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Humayun's Islamiyath Notebook • Units 2, 5 & 10</title>
+  <title>Humayun's Islamiyath Notebook</title>
   <style>
     :root {
       --gold-primary: #f59e0b;
@@ -23,7 +23,6 @@
       user-select: none;
     }
 
-    /* Fixed persistent background across the entire app */
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Comic Sans MS", sans-serif;
       background: #0a1128 url('assets/night-oasis-bg.webp') center center / cover no-repeat fixed;
@@ -33,7 +32,6 @@
       position: relative;
     }
 
-    /* Ambient Dim Overlay (0% to 50%) */
     #ambient-dim-screen {
       position: fixed;
       inset: 0;
@@ -84,7 +82,7 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
       cursor: pointer;
       text-decoration: none;
@@ -108,6 +106,13 @@
       background: var(--gold-primary);
       color: #000;
       border-color: #fff;
+    }
+
+    .pillar-mini-icon {
+      width: 22px;
+      height: 26px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 4px var(--gold-glow));
     }
 
     .dim-slider-box {
@@ -266,7 +271,7 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
 
-    /* 2. STATION WORKSPACE WITH TRANSLUCENT GLASS (OASIS SHOWS THROUGH) */
+    /* 2. STATION WORKSPACE */
     #station-workspace {
       display: none;
       position: fixed;
@@ -307,7 +312,15 @@
       background: rgba(30, 41, 59, 0.85);
       border: 2px solid rgba(251, 191, 36, 0.5);
       border-radius: 16px;
-      padding: 12px 18px;
+      padding: 14px 18px;
+      position: relative;
+    }
+
+    .question-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
     }
 
     .question-label {
@@ -316,10 +329,9 @@
       letter-spacing: 1.2px;
       color: var(--gold-glow);
       font-weight: 800;
-      margin-bottom: 4px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      gap: 10px;
     }
 
     .mode-badge {
@@ -331,6 +343,27 @@
       font-weight: 700;
     }
 
+    /* Binder Toggle Button Placed Right Next to Question */
+    .question-binder-toggle-btn {
+      background: linear-gradient(135deg, var(--gold-glow), var(--gold-primary));
+      color: #000;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.5);
+      transition: all 0.2s ease;
+    }
+
+    .question-binder-toggle-btn:hover {
+      transform: scale(1.05);
+    }
+
     .question-text {
       font-size: 18px;
       font-weight: 700;
@@ -338,12 +371,14 @@
       line-height: 1.45;
     }
 
-    /* Words for Speech and Syllable Splitting */
+    /* Words - NO UNDERLINES */
     .speak-word {
       cursor: pointer;
       display: inline-block;
       padding: 1px 3px;
       border-radius: 4px;
+      text-decoration: none !important;
+      border-bottom: none !important;
       transition: background 0.15s ease;
     }
 
@@ -351,14 +386,12 @@
       background: rgba(245, 158, 11, 0.4);
     }
 
-    .speak-word.hard-word {
-      border-bottom: 2px dashed rgba(251, 191, 36, 0.8);
-    }
-
     .syllable-span {
       font-weight: 800;
       padding: 0 2px;
       border-radius: 3px;
+      text-decoration: none !important;
+      border-bottom: none !important;
     }
     .syl-1 { color: #f43f5e; background: rgba(244, 63, 94, 0.15); }
     .syl-2 { color: #3b82f6; background: rgba(59, 130, 246, 0.15); }
@@ -370,16 +403,7 @@
       background: rgba(15, 23, 42, 0.85);
       border: 2px solid rgba(16, 185, 129, 0.4);
       border-radius: 16px;
-      padding: 12px 18px;
-    }
-
-    .answer-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1.2px;
-      color: #34d399;
-      font-weight: 800;
-      margin-bottom: 6px;
+      padding: 14px 18px;
     }
 
     .answer-content {
@@ -544,7 +568,21 @@
       z-index: 10;
     }
 
-    /* Cover covers only the canvas and opens from left to right */
+    /* Embedded Humayun Avatar in Canvas Right Corner */
+    .canvas-embedded-avatar {
+      position: absolute;
+      top: 14px;
+      right: 70px; /* Sits cleanly next to the pen toggle */
+      width: 75px;
+      height: 110px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+      z-index: 25;
+      pointer-events: none;
+      opacity: 0.95;
+    }
+
+    /* Frosted Cover Covers Only Canvas & Swings Left to Right */
     #binderCoverShield {
       position: absolute;
       top: 0;
@@ -631,7 +669,7 @@
       box-shadow: 0 6px 18px rgba(245, 158, 11, 0.6);
     }
 
-    /* Pen tools ribbon situated at the top-right of canvas */
+    /* Pen Tools Situated at Top-Right of Canvas */
     .pen-controls-float {
       position: absolute;
       top: 14px;
@@ -779,6 +817,7 @@
       .question-text { font-size: 16px; }
       .canvas-viewport { height: 380px; }
       .top-icon-bar { right: 6px; top: 6px; }
+      .canvas-embedded-avatar { width: 55px; height: 85px; right: 60px; }
     }
   </style>
 </head>
@@ -787,23 +826,38 @@
   <!-- Ambient Dim Overlay (0% to 50%) -->
   <div id="ambient-dim-screen"></div>
 
-  <!-- Top Minimal Icon Bar with All-Subjects Hub Link -->
+  <!-- Top Minimal Icon Bar -->
   <header class="top-icon-bar" id="topIconBar">
     <div class="bar-content" id="barControls">
-      <!-- MAIN HUB LINK: Jumps to other subjects dashboard -->
-      <a href="index.html" class="icon-btn" title="Main Subjects Hub" id="btnSubjectsHub">
+      <!-- Main Hub Link -->
+      <a href="index.html" class="icon-btn" title="All Subjects Hub" id="btnSubjectsHub">
         📚 <span>Hub</span>
       </a>
 
-      <!-- Current Oasis Hub -->
-      <button class="icon-btn circle-btn" id="btnHome" title="Desert Oasis Lessons">🕌</button>
-      <button class="icon-btn circle-btn" id="btnJump1" title="Station 1">1️⃣</button>
-      <button class="icon-btn circle-btn" id="btnJump2" title="Station 2">2️⃣</button>
-      <button class="icon-btn circle-btn" id="btnJump3" title="Station 3">3️⃣</button>
-      <button class="icon-btn circle-btn" id="btnJump4" title="Station 4">4️⃣</button>
-      <button class="icon-btn circle-btn" id="btnCoverToggle" title="Open/Close Binder Flap">📕</button>
+      <!-- Desert Oasis Lessons Hub -->
+      <button class="icon-btn circle-btn" id="btnHome" title="Oasis Lessons">🕌</button>
+
+      <!-- Station Jump Icons with Pillar Image -->
+      <button class="icon-btn circle-btn" id="btnJump1" title="Station 1">
+        <img src="assets/islamic-banner-arch.webp" class="pillar-mini-icon" alt="Pillar 1" />
+      </button>
+      <button class="icon-btn circle-btn" id="btnJump2" title="Station 2">
+        <img src="assets/islamic-banner-arch.webp" class="pillar-mini-icon" alt="Pillar 2" />
+      </button>
+      <button class="icon-btn circle-btn" id="btnJump3" title="Station 3">
+        <img src="assets/islamic-banner-arch.webp" class="pillar-mini-icon" alt="Pillar 3" />
+      </button>
+      <button class="icon-btn circle-btn" id="btnJump4" title="Station 4">
+        <img src="assets/islamic-banner-arch.webp" class="pillar-mini-icon" alt="Pillar 4" />
+      </button>
+
+      <!-- Practice/Write Mode Toggle -->
       <button class="icon-btn circle-btn" id="btnModeToggle" title="Toggle Practice / Write Mode">📖</button>
+      
+      <!-- Audio Toggle -->
       <button class="icon-btn circle-btn active" id="btnSpeechToggle" title="Audio Sound">🔊</button>
+      
+      <!-- Night Dimmer Slider -->
       <div class="dim-slider-box" title="Night Dimmer (0% to 50%)">
         <span style="font-size: 14px;">🌙</span>
         <input type="range" id="dimRange" min="0" max="0.5" step="0.01" value="0" />
@@ -816,10 +870,9 @@
   <main id="oasis-hub">
     <div class="hub-title-card">
       <h1>Humayun's Islamiyath Journey</h1>
-      <p>Class 3 • Units 2, 5 & 10[cite: 7, 8]| Swipe the 3D lantern cards to choose your lesson!</p>
+      <p>Class 3 • Units 2, 5 & 10 | Swipe the 3D lantern cards to choose your lesson!</p>
     </div>
 
-    <!-- 3D Carousel Viewport -->
     <div class="carousel-stage" id="carouselStage">
       <div class="carousel-track" id="carouselTrack">
         <!-- Station 1 -->
@@ -827,7 +880,7 @@
           <img src="assets/lantern-gem.webp" alt="Lantern 1" class="station-lantern-img" />
           <div>
             <div class="station-title">Articles of Faith</div>
-            <div class="station-unit-tag">Unit 2 & 10 • Pillars[cite: 7]</div>
+            <div class="station-unit-tag">Unit 2 & 10 • Pillars</div>
           </div>
           <button class="station-open-btn" onclick="openStation(1); event.stopPropagation();">Start Quest</button>
         </div>
@@ -837,7 +890,7 @@
           <img src="assets/lantern-gem.webp" alt="Lantern 2" class="station-lantern-img" />
           <div>
             <div class="station-title">Sayyidah Khadijah (RA)</div>
-            <div class="station-unit-tag">Unit 2 • Lady of Makkah[cite: 8]</div>
+            <div class="station-unit-tag">Unit 2 • Lady of Makkah</div>
           </div>
           <button class="station-open-btn" onclick="openStation(2); event.stopPropagation();">Start Quest</button>
         </div>
@@ -847,7 +900,7 @@
           <img src="assets/lantern-gem.webp" alt="Lantern 3" class="station-lantern-img" />
           <div>
             <div class="station-title">Cleanliness & Bathing</div>
-            <div class="station-unit-tag">Unit 5 • Health & Sunnah[cite: 8]</div>
+            <div class="station-unit-tag">Unit 5 • Health & Sunnah</div>
           </div>
           <button class="station-open-btn" onclick="openStation(3); event.stopPropagation();">Start Quest</button>
         </div>
@@ -857,7 +910,7 @@
           <img src="assets/lantern-gem.webp" alt="Lantern 4" class="station-lantern-img" />
           <div>
             <div class="station-title">Dua for Garment</div>
-            <div class="station-unit-tag">Unit 5 • Abu Dawood[cite: 8, 9]</div>
+            <div class="station-unit-tag">Unit 5 • Abu Dawood</div>
           </div>
           <button class="station-open-btn" onclick="openStation(4); event.stopPropagation();">Start Quest</button>
         </div>
@@ -870,29 +923,35 @@
     </div>
   </main>
 
-  <!-- 2. STATION WORKSPACE (DESK SPLIT VIEW) -->
+  <!-- 2. STATION WORKSPACE -->
   <section id="station-workspace">
     <div class="workspace-wrapper">
 
       <!-- TOP PROMPT & STUDY AREA (PERMANENTLY VISIBLE) -->
       <div id="studyPromptArea">
         <div class="question-card">
-          <div class="question-label">
-            <span id="stationHeaderLabel">STATION 1</span>
-            <span class="mode-badge" id="modeBadgeIndicator">PRACTICE MODE</span>
+          <div class="question-header-row">
+            <div class="question-label">
+              <span id="stationHeaderLabel">STATION 1</span>
+              <span class="mode-badge" id="modeBadgeIndicator">PRACTICE MODE</span>
+            </div>
+
+            <!-- Binder Open/Close Button Next to Question on Right End -->
+            <button class="question-binder-toggle-btn" id="btnQuestionBinderToggle" onclick="toggleBinderCover()">
+              <span id="binderToggleIcon">📕</span> <span id="binderToggleText">Close Binder</span>
+            </button>
           </div>
           <div class="question-text" id="questionTextBox"></div>
         </div>
 
         <!-- Reference Answer Card -->
         <div class="answer-card" id="answerCardBox">
-          <div class="answer-label">REFERENCE STUDY GUIDE (Tap word to speak, hold to split)</div>
           <div class="answer-content" id="answerTextBox"></div>
 
           <!-- Station 1 Ordering Puzzle Container -->
           <div id="station1PuzzleBox" class="pillars-minigame" style="display:none;">
             <div style="font-size:13px; font-weight:700; color:var(--gold-glow); margin-bottom:8px;">
-              Arrange in Order: The 6 Articles of Faith[cite: 7]
+              Arrange in Order: The 6 Articles of Faith
             </div>
             <div id="pillarsBank"></div>
             <div class="pillar-dropzones" id="pillarDropzones"></div>
@@ -919,14 +978,17 @@
         <div class="canvas-viewport" id="canvasViewport">
           <canvas id="mainBinderCanvas"></canvas>
 
-          <!-- FROSTED GLASS BINDER COVER: COVERS ONLY THE CANVAS & SWINGS LEFT-TO-RIGHT -->
+          <!-- Humayun Avatar Embedded on Right Corner of Canvas -->
+          <img src="assets/humayun-scholar.webp" alt="Humayun Scholar" class="canvas-embedded-avatar" />
+
+          <!-- FROSTED GLASS BINDER COVER: COVERS ONLY CANVAS & SWINGS LEFT-TO-RIGHT -->
           <div id="binderCoverShield" onclick="openBinderCover()">
             <div class="arch-pillar-stage">
               <img src="assets/islamic-banner-arch.webp" alt="Islamic Banner Arch" class="banner-arch-bg" />
               <img src="assets/humayun-scholar.webp" alt="Scholar Humayun" class="humayun-avatar-inside-arch" />
             </div>
             <div class="cover-title-text">Humayun's Writing Canvas</div>
-            <div class="cover-sub-text">Class 3 • Islamiyath Notebook[cite: 7, 8]</div>
+            <div class="cover-sub-text">Class 3 • Islamiyath Notebook</div>
             <button class="cover-toggle-btn" onclick="openBinderCover(); event.stopPropagation();">
               📖 Flip Open to Write
             </button>
@@ -972,7 +1034,7 @@
       <img src="assets/badge-crescent-star.webp" alt="Mastery Badge" class="celebration-badge-img" />
       <div style="font-size:24px; font-weight:800; color:var(--gold-glow); margin-top:14px;">MashaAllah!</div>
       <p style="color:#cbd5e1; font-size:15px; margin:12px 0 20px; line-height:1.5;">
-        Humayun has completed all Islamiyath lessons with excellence![cite: 7, 8, 9]
+        Humayun has completed all Islamiyath lessons with excellence!
       </p>
       <button class="station-open-btn" onclick="closeCelebration()">🌟 Return to Oasis</button>
     </div>
@@ -980,7 +1042,7 @@
 
   <script>
     /* =====================================================================
-       DATA & SYLLABLE DICTIONARY
+       DATA & SYLLABLES
        ===================================================================== */
     const STATIONS = [
       {
@@ -1043,17 +1105,17 @@
       "healthy": ["Health", "y"]
     };
 
-    /* App State & Per-Station Ink State Retention */
+    /* App State & Per-Station Canvas Memory */
     let currentStationId = 1;
     let carouselIndex = 0;
     let isWriteMode = false;
     let isSpeechEnabled = true;
     let longPressTimer = null;
     let completedStations = new Set();
-    const stationCanvasStates = {}; // Holds persistent drawing per station
+    const stationCanvasStates = {};
 
     /* =====================================================================
-       1. 3D CAROUSEL (SWIPE & ROTATE)
+       1. 3D CAROUSEL
        ===================================================================== */
     const totalCards = 4;
     const carouselTrack = document.getElementById('carouselTrack');
@@ -1086,7 +1148,6 @@
       }
     }
 
-    // Touch Swipe Logic
     let touchStartX = 0;
     const stage = document.getElementById('carouselStage');
     stage.addEventListener('touchstart', (e) => {
@@ -1105,7 +1166,7 @@
     updateCarouselPosition();
 
     /* =====================================================================
-       2. TOP BAR & DIMMER
+       2. TOP BAR & CONTROLS
        ===================================================================== */
     const dimScreen = document.getElementById('ambient-dim-screen');
     document.getElementById('dimRange').addEventListener('input', (e) => {
@@ -1130,13 +1191,6 @@
     document.getElementById('btnJump2').addEventListener('click', () => switchStation(2));
     document.getElementById('btnJump3').addEventListener('click', () => switchStation(3));
     document.getElementById('btnJump4').addEventListener('click', () => switchStation(4));
-
-    const btnCoverToggle = document.getElementById('btnCoverToggle');
-    btnCoverToggle.addEventListener('click', () => {
-      const shield = document.getElementById('binderCoverShield');
-      if (shield.classList.contains('opened')) closeBinderCover();
-      else openBinderCover();
-    });
 
     const btnModeToggle = document.getElementById('btnModeToggle');
     btnModeToggle.addEventListener('click', () => {
@@ -1173,7 +1227,7 @@
     }
 
     /* =====================================================================
-       3. TEXT-TO-SPEECH & SYLLABLES
+       3. TEXT-TO-SPEECH & SYLLABLES (NO UNDERLINES)
        ===================================================================== */
     function speakText(text, pitch = 1.0, rate = 0.9) {
       if (!isSpeechEnabled || !window.speechSynthesis) return;
@@ -1187,7 +1241,7 @@
     function createWordSpan(word) {
       const clean = word.toLowerCase().replace(/[^a-z]/g, '');
       const span = document.createElement('span');
-      span.className = 'speak-word' + (SYLLABLE_DICT[clean] ? ' hard-word' : '');
+      span.className = 'speak-word';
       span.textContent = word + ' ';
 
       span.addEventListener('click', (e) => {
@@ -1226,7 +1280,7 @@
     }
 
     /* =====================================================================
-       4. STATION RENDERER & LOGIC
+       4. STATION CONTROLLER
        ===================================================================== */
     function switchStation(id) {
       saveActiveStationInk();
@@ -1254,14 +1308,14 @@
 
       if (id === 1) {
         ansBox.innerHTML = `
-          <div>The articles of faith are:[cite: 7]</div>
+          <div>The articles of faith are:</div>
           <ol>
-            <li>Believe in Allah (SWT)[cite: 7]</li>
-            <li>His angels[cite: 7]</li>
-            <li>His books[cite: 7]</li>
-            <li>His messengers[cite: 7]</li>
-            <li>The Day of Resurrection[cite: 7]</li>
-            <li>Destiny (Whatever Allah has ordained)[cite: 7]</li>
+            <li>Believe in Allah (SWT)</li>
+            <li>His angels</li>
+            <li>His books</li>
+            <li>His messengers</li>
+            <li>The Day of Resurrection</li>
+            <li>Destiny (Whatever Allah has ordained)</li>
           </ol>
         `;
         wrapWords(ansBox);
@@ -1296,7 +1350,7 @@
       });
     }
 
-    /* Station 1 Puzzle */
+    /* Station 1 Ordering Puzzle */
     let userPillars = [];
     function initPillarsPuzzle() {
       const bank = document.getElementById('pillarsBank');
@@ -1339,7 +1393,7 @@
       }
     }
 
-    /* Station 4: Village Code Style Fill-in-the-Blanks */
+    /* Station 4: Village Code Fill-in-the-Blanks */
     const miniCanvases = {};
     function renderVillageDuaBlanks(container, data) {
       container.innerHTML = '';
@@ -1348,13 +1402,13 @@
 
       if (!isWriteMode) {
         textWrap.innerHTML = `
-          <strong>Allah's messenger (SAW) said:</strong> He who puts on a[cite: 8]
-          <span class="blank-slot" id="blank-garment">[ ___ ]</span> and says:[cite: 8]
-          Praise be to Allah, who <span class="blank-slot" id="blank-clothes">[ ___ ]</span> me with this[cite: 8]
-          and who provides me with it <span class="blank-slot" id="blank-without">[ ___ ]</span>[cite: 8, 9]
-          any <span class="blank-slot" id="blank-power">[ ___ ]</span>[cite: 9]
-          or <span class="blank-slot" id="blank-ability">[ ___ ]</span> from me,[cite: 9]
-          his past and present sins are <span class="blank-slot" id="blank-forgiven">[ ___ ]</span> for him. (Abu Dawood)[cite: 9]
+          <strong>Allah's messenger (SAW) said:</strong> He who puts on a 
+          <span class="blank-slot" id="blank-garment">[ ___ ]</span> and says: 
+          Praise be to Allah, who <span class="blank-slot" id="blank-clothes">[ ___ ]</span> me with this 
+          and who provides me with it <span class="blank-slot" id="blank-without">[ ___ ]</span> 
+          any <span class="blank-slot" id="blank-power">[ ___ ]</span> 
+          or <span class="blank-slot" id="blank-ability">[ ___ ]</span> from me, 
+          his past and present sins are <span class="blank-slot" id="blank-forgiven">[ ___ ]</span> for him. (Abu Dawood)
         `;
         container.appendChild(textWrap);
 
@@ -1377,31 +1431,31 @@
         container.appendChild(bank);
       } else {
         textWrap.innerHTML = `
-          <strong>Allah's messenger (SAW) said:</strong> He who puts on a[cite: 8]
+          <strong>Allah's messenger (SAW) said:</strong> He who puts on a 
           <span class="inline-blank-canvas-wrap">
             <canvas class="mini-canvas" id="mc-garment" width="85" height="32"></canvas>
             <button class="pen-btn" style="padding:1px 5px; font-size:9px;" onclick="clearMini('mc-garment')">Clear</button>
-          </span> and says: Praise be to Allah, who[cite: 8]
+          </span> and says: Praise be to Allah, who 
           <span class="inline-blank-canvas-wrap">
             <canvas class="mini-canvas" id="mc-clothes" width="85" height="32"></canvas>
             <button class="pen-btn" style="padding:1px 5px; font-size:9px;" onclick="clearMini('mc-clothes')">Clear</button>
-          </span> me with this and who provides me with it[cite: 8]
+          </span> me with this and who provides me with it 
           <span class="inline-blank-canvas-wrap">
             <canvas class="mini-canvas" id="mc-without" width="85" height="32"></canvas>
             <button class="pen-btn" style="padding:1px 5px; font-size:9px;" onclick="clearMini('mc-without')">Clear</button>
-          </span> any[cite: 9]
+          </span> any 
           <span class="inline-blank-canvas-wrap">
             <canvas class="mini-canvas" id="mc-power" width="70" height="32"></canvas>
             <button class="pen-btn" style="padding:1px 5px; font-size:9px;" onclick="clearMini('mc-power')">Clear</button>
-          </span> or[cite: 9]
+          </span> or 
           <span class="inline-blank-canvas-wrap">
             <canvas class="mini-canvas" id="mc-ability" width="85" height="32"></canvas>
             <button class="pen-btn" style="padding:1px 5px; font-size:9px;" onclick="clearMini('mc-ability')">Clear</button>
-          </span> from me, his past and present sins are[cite: 9]
+          </span> from me, his past and present sins are 
           <span class="inline-blank-canvas-wrap">
             <canvas class="mini-canvas" id="mc-forgiven" width="95" height="32"></canvas>
             <button class="pen-btn" style="padding:1px 5px; font-size:9px;" onclick="clearMini('mc-forgiven')">Clear</button>
-          </span> for him.[cite: 9]
+          </span> for him.
         `;
         container.appendChild(textWrap);
 
@@ -1447,17 +1501,27 @@
     }
 
     /* =====================================================================
-       5. BINDER COVER & ISOLATED CANVAS INK PERSISTENCE
+       5. BINDER COVER & ISOLATED CANVAS MEMORY
        ===================================================================== */
     const binderCoverShield = document.getElementById('binderCoverShield');
+    const binderToggleIcon = document.getElementById('binderToggleIcon');
+    const binderToggleText = document.getElementById('binderToggleText');
+
     function openBinderCover() {
       binderCoverShield.classList.add('opened');
-      btnCoverToggle.textContent = '📖';
+      binderToggleIcon.textContent = '📕';
+      binderToggleText.textContent = 'Close Binder';
     }
 
     function closeBinderCover() {
       binderCoverShield.classList.remove('opened');
-      btnCoverToggle.textContent = '📕';
+      binderToggleIcon.textContent = '📖';
+      binderToggleText.textContent = 'Open Binder';
+    }
+
+    function toggleBinderCover() {
+      if (binderCoverShield.classList.contains('opened')) closeBinderCover();
+      else openBinderCover();
     }
 
     const mainBinderCanvas = document.getElementById('mainBinderCanvas');
@@ -1468,14 +1532,12 @@
     let isHighlighter = false;
     let isEraser = false;
 
-    // Save ink of the station being left
     function saveActiveStationInk() {
       if (mainBinderCanvas.width > 0 && mainBinderCanvas.height > 0) {
         stationCanvasStates[currentStationId] = mainBinderCanvas.toDataURL();
       }
     }
 
-    // Restore ink of the station being entered
     function restoreStationInk(id) {
       mainCtx.clearRect(0, 0, mainBinderCanvas.width, mainBinderCanvas.height);
       if (stationCanvasStates[id]) {
@@ -1579,7 +1641,6 @@
       delete stationCanvasStates[currentStationId];
     }
 
-    /* Submit in Write Mode */
     function submitWriteSection() {
       triggerMashaAllah("MashaAllah, Humayun! You completed this section!");
       completedStations.add(currentStationId);
