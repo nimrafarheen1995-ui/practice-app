@@ -27,6 +27,9 @@
 
         .ambient-backdrop-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
         .ambient-backdrop { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7) contrast(1.08); }
+        .ambient-backdrop-wrap::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(2,6,23,0.62) 0%, rgba(2,6,23,0.22) 38%, rgba(2,6,23,0.22) 62%, rgba(2,6,23,0.7) 100%); }
+        body { color: #FFFFFF; }
+        .shadow-text { text-shadow: 0 2px 4px rgba(0,0,0,0.85), 0 0 14px rgba(0,0,0,0.55); }
 
         #milkyWayCanvas, #confettiSnowCanvas { position: fixed; inset: 0; pointer-events: none; }
         #milkyWayCanvas { z-index: 1; }
@@ -39,6 +42,8 @@
 
         /* ---------- TOP BAR (toggle) ---------- */
         #topHeader { position: relative; z-index: 20; flex-shrink: 0; }
+        .top-btn { background: rgba(15,23,42,0.8); border: 1.5px solid rgba(255,255,255,0.55); color: #fff; font-weight: 800; font-size: 0.9rem; min-width: 38px; height: 38px; padding: 0 10px; border-radius: 12px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        .top-btn:hover { background: rgba(30,41,59,0.95); }
         #topBar { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.1); color: #fff; box-shadow: 0 4px 14px rgba(0,0,0,0.3); padding: 10px 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
         #topHeader.collapsed { height: 0; }
         #topHeader.collapsed #topBar { display: none; }
@@ -59,12 +64,16 @@
 
         /* ---------- SECTIONS (no panel: text sits on the Alps picture) ---------- */
         #activeCardContainer { width: 100%; }
-        .sec-wrap { width: 100%; height: min(calc(100dvh - 150px), 900px); min-height: 360px; display: flex; flex-direction: column; gap: 10px; }
-        .sec-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; flex-shrink: 0; padding: 4px 4px 8px; border-bottom: 1px solid rgba(255,255,255,0.35); text-shadow: 0 2px 8px rgba(0,0,0,0.85); }
-        .sec-head h2 { font-family: var(--font-display); font-size: 1.25rem; font-weight: 700; margin: 0; }
-        .sec-sub { font-size: 0.85rem; font-weight: 800; opacity: 0.95; }
+        .sec-wrap { width: 100%; height: min(calc(100dvh - 150px), 900px); min-height: 360px; display: flex; flex-direction: column; gap: 10px; position: relative; }
+        .sec-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; flex-shrink: 0; padding: 4px 4px 8px; border-bottom: 1px solid rgba(255,255,255,0.45); text-shadow: 0 2px 6px rgba(0,0,0,0.95), 0 0 12px rgba(0,0,0,0.6); }
+        .sec-head h2 { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; margin: 0; color: #fff; }
+        .sec-sub { font-size: 0.9rem; font-weight: 800; color: #FEF3C7; }
+        .corner-nav { position: absolute; right: 6px; bottom: 6px; display: flex; gap: 8px; z-index: 40; }
+        .corner-btn { width: 44px; height: 44px; border-radius: 50%; background: rgba(15,23,42,0.8); border: 2px solid rgba(255,255,255,0.75); color: #fff; font-size: 20px; font-weight: 800; cursor: pointer; box-shadow: 0 6px 16px rgba(0,0,0,0.45); display: inline-flex; align-items: center; justify-content: center; }
+        .corner-btn:hover { background: rgba(5,150,105,0.9); }
+        .corner-btn:disabled { opacity: 0.3; cursor: not-allowed; }
         .sec-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .sec-body { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; padding: 4px 8px 4px 2px; display: flex; flex-direction: column; gap: 14px; text-shadow: 0 2px 6px rgba(0,0,0,0.9); }
+        .sec-body { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; padding: 4px 8px 60px 2px; display: flex; flex-direction: column; gap: 14px; }
         .sec-body::-webkit-scrollbar { width: 6px; }
         .sec-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.4); border-radius: 6px; }
         .sec-foot { flex-shrink: 0; }
@@ -80,9 +89,9 @@
         .icon-action-btn.on { opacity: 1; transform: scale(1.15); }
 
         /* ---------- ROWS + INLINE ANSWER STRIPS ---------- */
-        .row-card { padding: 12px; background: rgba(255,255,255,0.6); border-radius: 14px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 6px; }
+        .row-card { padding: 12px; background: rgba(255,255,255,0.86); border-radius: 16px; border: 1px solid rgba(255,255,255,0.9); box-shadow: 0 8px 20px rgba(0,0,0,0.28); display: flex; flex-direction: column; gap: 6px; color: #0f172a; }
         .row-card.big-row { padding: 16px 18px; gap: 10px; }
-        .row-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-weight: 800; color: #0f172a; font-size: 0.8rem; }
+        .row-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-weight: 800; color: #0f172a; font-size: 0.85rem; }
         .row-card.big-row .row-head { font-size: 1.2rem; }
         .row-prompt { flex: 1; min-width: 0; }
         .read-word { display: inline-block; cursor: pointer; border-radius: 4px; padding: 0 2px; transition: background 0.15s; }
@@ -94,7 +103,7 @@
         .inline-strip-box.big .inline-ghost-text { font-size: 32px; left: 18px; }
 
         /* Tap = hear the word. Tap and hold = split it into parts and hear them slowly */
-        .hold-word { display: inline-block; cursor: pointer; border-radius: 8px; padding: 2px 8px; background: #FEF3C7; color: #92400E; font-weight: 800; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: manipulation; transition: background 0.2s, letter-spacing 0.2s; }
+        .hold-word { display: inline-block; cursor: pointer; border-radius: 8px; padding: 2px 8px; background: #FEF3C7; color: #78350F; font-weight: 800; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: manipulation; transition: background 0.2s, letter-spacing 0.2s; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
         .hold-word.is-split { letter-spacing: 4px; background: #FDE68A; color: #B45309; }
         .hold-word.big-hint { font-size: 1.1rem; }
         .model-line { background: rgba(255,255,255,0.92); padding: 10px 14px; font-size: 1.05rem; font-weight: 700; color: #1e1b4b; line-height: 1.9; border-bottom: 1.5px solid #cbd5e1; }
@@ -105,7 +114,7 @@
         .icon-strip svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none; }
         .icon-strip.clear-icon { color: #be123c; }
 
-        .opt-btn { text-align: left; padding: 8px 12px; border-radius: 10px; border: 1.5px solid #cbd5e1; background: rgba(255,255,255,0.85); color: #0f172a; font-weight: 700; cursor: pointer; }
+        .opt-btn { text-align: left; padding: 8px 12px; border-radius: 10px; border: 1.5px solid #cbd5e1; background: rgba(255,255,255,0.92); color: #0f172a; font-weight: 700; cursor: pointer; }
         .opt-btn.ok { background: #d1fae5; border-color: #10b981; }
         .opt-btn.bad { background: #ffe4e6; border-color: #f43f5e; }
 
@@ -115,17 +124,24 @@
         .bind-ruled { position: relative; flex: 1; min-height: 0; background-color: rgba(255,254,248,0.65); background-image: linear-gradient(to bottom, transparent 31px, #94a3b8 31px, #94a3b8 32px, transparent 32px, transparent 55px, #475569 55px, #475569 56px); background-size: 100% 56px; }
         .bind-ruled canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
         .ghost-watermark { position: absolute; left: 64px; top: 16px; right: 40px; max-width: 760px; font-family: var(--font-hand); font-size: 22px; line-height: 56px; color: rgba(71,85,105,0.35); pointer-events: none; z-index: 1; }
-        .tools-right { position: absolute; right: 12px; top: 12px; z-index: 30; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-        .tool-chip { background: rgba(15,23,42,0.9); color: #fff; font-size: 12px; font-weight: 800; padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.25); cursor: pointer; }
-        .tool-drawer { display: flex; align-items: center; gap: 6px; background: rgba(15,23,42,0.9); border: 1.5px solid rgba(255,255,255,0.3); border-radius: 999px; padding: 4px 8px; }
-        .tool-drawer button { background: transparent; border: 0; color: #fff; font-size: 15px; padding: 4px 6px; border-radius: 8px; cursor: pointer; }
+        .tools-right { position: absolute; right: 12px; top: 10px; z-index: 30; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; max-width: calc(100% - 24px); }
+        .tool-chip { background: rgba(15,23,42,0.9); color: #fff; font-size: 15px; font-weight: 800; padding: 8px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.35); cursor: pointer; }
+        .tools-toggle { width: 52px; height: 52px; border-radius: 50%; background: rgba(15,23,42,0.92); border: 2px solid rgba(255,255,255,0.6); font-size: 26px; cursor: pointer; box-shadow: 0 6px 16px rgba(0,0,0,0.4); display: inline-flex; align-items: center; justify-content: center; }
+        .tools-toggle.open { background: #b45309; }
+        .tool-drawer { display: none; align-items: center; gap: 8px; background: rgba(15,23,42,0.92); border: 1.5px solid rgba(255,255,255,0.35); border-radius: 999px; padding: 6px 10px; flex-wrap: wrap; }
+        .tool-drawer.open { display: flex; }
+        .tool-drawer button { background: transparent; border: 0; color: #fff; font-size: 26px; min-width: 48px; min-height: 48px; padding: 4px; border-radius: 12px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
         .tool-drawer button.on, .tool-drawer button:hover { background: #b45309; }
-        .tool-drawer .swatch { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #fff; padding: 0; }
-        .page-chip { background: rgba(15,23,42,0.9); color: #fde68a; font-size: 12px; font-weight: 800; padding: 6px 12px; border-radius: 999px; }
-        .heidi-emboss-topright { position: absolute; right: 18px; top: 60px; width: 96px; height: 96px; object-fit: contain; opacity: 0.4; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.25)); pointer-events: none; z-index: 5; }
-        .binder-cover { position: absolute; inset: 0; z-index: 30; border-radius: 8px 24px 24px 8px; cursor: pointer; transition: transform 0.75s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.45s ease; transform-origin: 0% 50%; transform-style: preserve-3d; background: linear-gradient(135deg, #881337, #78350f); box-shadow: inset 0 0 50px rgba(255,255,255,0.2), 0 30px 60px -12px rgba(30,27,75,0.65); padding: 24px 24px 24px 60px; color: #fff; display: flex; flex-direction: column; justify-content: space-between; }
-        .binder-cover::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 34px; background: linear-gradient(90deg, #0f172a 0%, #1f2937 55%, #374151 85%, #111827 100%); border-right: 3px solid rgba(255,255,255,0.35); z-index: 5; border-radius: 8px 0 0 8px; }
+        .tool-drawer .swatch { width: 28px; height: 28px; min-width: 28px; min-height: 28px; border-radius: 50%; border: 3px solid #fff; padding: 0; }
+        .page-chip { background: rgba(15,23,42,0.9); color: #fde68a; font-size: 15px; font-weight: 800; padding: 8px 14px; border-radius: 999px; display: inline-flex; align-items: center; gap: 6px; }
+        .heidi-emboss-br { position: absolute; right: 10px; bottom: 10px; width: 110px; height: 110px; object-fit: contain; opacity: 0.45; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.25)); pointer-events: none; z-index: 0; }
+        .corner-row { display: flex; justify-content: flex-end; gap: 8px; padding-top: 4px; flex-shrink: 0; }
+        /* GLASS BINDER: see-through, so the writing underneath stays visible */
+        .binder-cover { position: absolute; inset: 0; z-index: 30; border-radius: 8px 24px 24px 8px; cursor: pointer; transition: transform 0.75s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.45s ease; transform-origin: 0% 50%; transform-style: preserve-3d; background: linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.06) 55%, rgba(255,255,255,0.16)); backdrop-filter: blur(2px) saturate(120%); -webkit-backdrop-filter: blur(2px) saturate(120%); border: 2px solid rgba(255,255,255,0.7); box-shadow: 0 20px 50px rgba(0,0,0,0.35), inset 0 0 40px rgba(255,255,255,0.12); padding: 24px 24px 24px 60px; color: #fff; display: flex; flex-direction: column; justify-content: space-between; }
+        .binder-cover::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 34px; background: rgba(15,23,42,0.45); border-right: 2px solid rgba(255,255,255,0.55); z-index: 5; border-radius: 8px 0 0 8px; }
+        .binder-heidi { width: 170px; height: 170px; object-fit: contain; filter: drop-shadow(0 10px 18px rgba(0,0,0,0.5)); align-self: center; }
         .notebook-spine-rings { position: absolute; left: 27px; top: 16px; bottom: 16px; width: 16px; display: flex; flex-direction: column; justify-content: space-between; pointer-events: none; z-index: 10; }
+        .spiral-ring { opacity: 0.85; }
         .spiral-ring { width: 18px; height: 10px; border-radius: 6px; background: linear-gradient(135deg, #ffffff 0%, #d1d5db 45%, #6b7280 80%, #1f2937 100%); box-shadow: 0 2px 4px rgba(0,0,0,0.65); }
         .binder-cover.binder-open { transform: perspective(1400px) rotateY(-118deg) rotateX(8deg) translateZ(20px); opacity: 0; pointer-events: none; }
 
@@ -149,6 +165,35 @@
         .royal-victory-companion img { max-width: 100%; max-height: 100%; object-fit: contain; }
 
         .hidden { display: none !important; }
+
+        /* STAR MAP */
+        #starMap { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; max-width: 900px; }
+        .trail-pill { background: rgba(15,23,42,0.75); border: 1.5px solid rgba(255,255,255,0.45); border-radius: 999px; padding: 6px 14px; font-weight: 800; font-size: 0.9rem; color: #fff; display: inline-flex; gap: 8px; align-items: center; }
+        .trail-pill .stars { color: #FDE047; letter-spacing: 2px; }
+
+        /* HEIDI SAYS */
+        #heidiToast { position: fixed; left: 16px; bottom: 16px; z-index: 200; display: none; align-items: flex-end; gap: 10px; max-width: min(460px, 80vw); pointer-events: none; }
+        #heidiToast.show { display: flex; animation: heidiIn .45s cubic-bezier(.2,.9,.3,1.2); }
+        #heidiToastImg { width: 110px; height: 110px; object-fit: contain; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.5)); }
+        #heidiToastImg.bounce { animation: heidiBounce .8s ease-in-out 2; }
+        #heidiBubble { background: #FFFBEB; color: #1E293B; border: 3px solid #F59E0B; border-radius: 18px; padding: 10px 14px; font-weight: 800; font-size: 1rem; box-shadow: 0 10px 24px rgba(0,0,0,0.4); }
+        @keyframes heidiIn { from { transform: translateY(30px) scale(.8); opacity: 0; } to { transform: none; opacity: 1; } }
+        @keyframes heidiBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+
+        /* MY WORDS */
+        #wordBookPanel { position: fixed; inset: 0; z-index: 100040; background: rgba(2,6,23,0.7); display: none; align-items: center; justify-content: center; padding: 16px; }
+        #wordBookPanel.open { display: flex; }
+        .wb-card { background: #FFFBEB; color: #1E293B; border-radius: 22px; border: 4px solid #F59E0B; width: min(520px, 94vw); max-height: 80vh; display: flex; flex-direction: column; padding: 18px; gap: 10px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
+        .wb-list { overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .wb-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: #fff; border: 1.5px solid #FCD34D; border-radius: 12px; padding: 8px 12px; font-weight: 800; }
+        .wb-item button { background: none; border: 0; cursor: pointer; font-size: 18px; }
+
+        /* TEXT SIZE CHOICE */
+        .size-btn { font-weight: 900; }
+
+        /* MCQ answers */
+        .opt-btn.ok::after { content: ' ✔'; }
+        .opt-btn.bad::after { content: ' ✖'; }
         @media (orientation: portrait) {
             body::after { content: "Please rotate your tablet to landscape"; position: fixed; inset: 0; background: #1E1B4B; color: #fff; display: grid; place-items: center; font-size: 1.6rem; font-weight: 900; z-index: 99999; }
         }
@@ -197,7 +242,7 @@
                     <img src="assets/alps-badge.webp" class="w-10 h-10 object-contain" alt="" onerror="handleImageFallback(this)"/>
                     <div class="royal-scroll-title m-0 p-0">🌟 SECTION MASTERED! 🌟</div>
                 </div>
-                <div class="royal-scroll-body">Outstanding writing, Zaina! Your English exercises are completed with brilliance!</div>
+                <div class="royal-scroll-body" id="celebrateLine">Outstanding writing, Zaina! Your English exercises are completed with brilliance!</div>
                 <button class="royal-btn-continue" onclick="closeGrandCelebration()">Continue Journey ➔</button>
             </div>
             <div class="royal-victory-companion">
@@ -227,7 +272,9 @@
                     <input type="range" id="dimRangeSlider" min="0" max="0.5" step="0.05" value="0" oninput="updateScreenDimLevel(this.value)" class="w-16 md:w-20 accent-amber-400 cursor-pointer">
                     <span id="dimPctLabel" class="w-7 font-bold text-amber-300">0%</span>
                 </div>
-                <button onclick="returnToGateway()" id="gatewayNavBtn" class="hidden bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs px-3.5 py-2 rounded-xl shadow border border-rose-400 cursor-pointer">🏰 Realms</button>
+                <button class="top-btn" id="sizeBtn" onclick="cycleTextSize()" title="Bigger or smaller text">Aa</button>
+                <button class="top-btn" onclick="openWordBook()" title="My Words">📒</button>
+                <button onclick="returnToGateway()" id="gatewayNavBtn" class="hidden top-btn" style="background:#be123c;border-color:#fda4af;">🧭 Trails</button>
             </div>
         </div>
         <button id="headerToggle" onclick="toggleHeader()" title="Show or hide the top bar" aria-label="Show or hide the top bar">▴</button>
@@ -238,31 +285,32 @@
         <!-- GATEWAY -->
         <div id="gatewayView" class="w-full flex flex-col items-center gap-4">
             <div class="text-center">
-                <h2 class="text-2xl md:text-3xl font-bold font-display text-white drop-shadow-md">Heidi's Swiss Alps Academy</h2>
-                <p class="text-rose-200 text-xs md:text-sm mt-0.5">Swipe horizontally or tap any realm to enter</p>
+                <h2 class="text-2xl md:text-3xl font-bold font-display text-white shadow-text">Heidi's Swiss Alps Academy</h2>
+                <p class="text-amber-100 text-xs md:text-sm mt-0.5 shadow-text">Swipe horizontally or tap any trail to enter</p>
             </div>
+            <div id="starMap"></div>
             <div class="stage-6d-wrapper" id="carousel6DStage">
                 <div class="carousel-6d-track" id="carousel6DTrack">
                     <div class="carousel-6d-card pos-front" id="card6d_0" onclick="handleCardTap(0)">
-                        <div class="flex items-center justify-between w-full"><span class="text-[10px] font-bold uppercase tracking-widest text-emerald-800 bg-emerald-100 px-3 py-0.5 rounded-full">Realm I</span><img src="assets/alps-badge.webp" class="w-6 h-6 object-contain" alt="" onerror="handleImageFallback(this)"/></div>
+                        <div class="flex items-center justify-between w-full"><span class="text-[10px] font-bold uppercase tracking-widest text-emerald-800 bg-emerald-100 px-3 py-0.5 rounded-full">Trail I</span><img src="assets/alps-badge.webp" class="w-6 h-6 object-contain" alt="" onerror="handleImageFallback(this)"/></div>
                         <div class="flex flex-col items-center pointer-events-none"><h3 class="text-xl font-bold text-slate-900 font-display">Word Treasury</h3><p class="text-xs text-slate-700 mt-1">Meanings &amp; Opposites</p></div>
                         <img src="assets/heidi-main.webp" class="gateway-avatar-6d" alt="Heidi" onerror="handleImageFallback(this)"/>
                         <button type="button" onclick="event.stopPropagation(); switchRealm('treasury')" class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-lg active:scale-95 cursor-pointer">Enter Treasury ➔</button>
                     </div>
                     <div class="carousel-6d-card pos-right" id="card6d_1" onclick="handleCardTap(1)">
-                        <div class="flex items-center justify-between w-full"><span class="text-[10px] font-bold uppercase tracking-widest text-indigo-800 bg-indigo-100 px-3 py-0.5 rounded-full">Realm II</span><img src="assets/alps-badge.webp" class="w-6 h-6 object-contain" alt="" onerror="handleImageFallback(this)"/></div>
+                        <div class="flex items-center justify-between w-full"><span class="text-[10px] font-bold uppercase tracking-widest text-indigo-800 bg-indigo-100 px-3 py-0.5 rounded-full">Trail II</span><img src="assets/alps-badge.webp" class="w-6 h-6 object-contain" alt="" onerror="handleImageFallback(this)"/></div>
                         <div class="flex flex-col items-center pointer-events-none"><h3 class="text-xl font-bold text-slate-900 font-display">Grammar &amp; Tenses</h3><p class="text-xs text-slate-700 mt-1">MCQs &amp; Past Tense</p></div>
                         <img src="assets/heidi-reading.webp" class="gateway-avatar-6d" alt="Grammar" onerror="handleImageFallback(this)"/>
                         <button type="button" onclick="event.stopPropagation(); switchRealm('grammar')" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-lg active:scale-95 cursor-pointer">Enter Grammar ➔</button>
                     </div>
                     <div class="carousel-6d-card pos-back" id="card6d_2" onclick="handleCardTap(2)">
-                        <div class="flex items-center justify-between w-full"><span class="text-[10px] font-bold uppercase tracking-widest text-amber-800 bg-amber-100 px-3 py-0.5 rounded-full">Realm III</span><img src="assets/alps-badge.webp" class="w-6 h-6 object-contain" alt="" onerror="handleImageFallback(this)"/></div>
+                        <div class="flex items-center justify-between w-full"><span class="text-[10px] font-bold uppercase tracking-widest text-amber-800 bg-amber-100 px-3 py-0.5 rounded-full">Trail III</span><img src="assets/alps-badge.webp" class="w-6 h-6 object-contain" alt="" onerror="handleImageFallback(this)"/></div>
                         <div class="flex flex-col items-center pointer-events-none"><h3 class="text-xl font-bold text-slate-900 font-display">Homophones &amp; Stems</h3><p class="text-xs text-slate-700 mt-1">Pairs &amp; Word Stems</p></div>
                         <img src="assets/heidi-main.webp" class="gateway-avatar-6d" alt="Words" onerror="handleImageFallback(this)"/>
                         <button type="button" onclick="event.stopPropagation(); switchRealm('words')" class="bg-gradient-to-r from-amber-600 to-orange-600 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-lg active:scale-95 cursor-pointer">Enter Stems ➔</button>
                     </div>
                     <div class="carousel-6d-card pos-left" id="card6d_3" onclick="handleCardTap(3)">
-                        <div class="flex items-center justify-between w-full"><span class="text-[10px] font-bold uppercase tracking-widest text-rose-800 bg-rose-100 px-3 py-0.5 rounded-full">Realm IV</span><img src="assets/alps-badge.webp" class="w-6 h-6 object-contain" alt="" onerror="handleImageFallback(this)"/></div>
+                        <div class="flex items-center justify-between w-full"><span class="text-[10px] font-bold uppercase tracking-widest text-rose-800 bg-rose-100 px-3 py-0.5 rounded-full">Trail IV</span><img src="assets/alps-badge.webp" class="w-6 h-6 object-contain" alt="" onerror="handleImageFallback(this)"/></div>
                         <div class="flex flex-col items-center pointer-events-none"><h3 class="text-xl font-bold text-slate-900 font-display">Answer in Brief</h3><p class="text-xs text-slate-700 mt-1">Writing Notebooks</p></div>
                         <img src="assets/heidi-reading.webp" class="gateway-avatar-6d" alt="Reading" onerror="handleImageFallback(this)"/>
                         <button type="button" onclick="event.stopPropagation(); switchRealm('comprehension')" class="bg-gradient-to-r from-rose-600 to-pink-600 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-lg active:scale-95 cursor-pointer">Enter Notebook ➔</button>
@@ -280,6 +328,24 @@
         <!-- SECTION VIEW -->
         <div id="activeCardContainer" class="w-full hidden"></div>
     </main>
+
+    <!-- HEIDI SAYS -->
+    <div id="heidiToast">
+        <img id="heidiToastImg" src="assets/heidi-main.webp" alt="" onerror="handleImageFallback(this)"/>
+        <div id="heidiBubble"></div>
+    </div>
+
+    <!-- MY WORDS -->
+    <div id="wordBookPanel" onclick="if(event.target===this) closeWordBook()">
+        <div class="wb-card">
+            <div class="flex items-center justify-between">
+                <h3 class="font-bold text-lg" style="font-family:var(--font-display)">📒 My Words</h3>
+                <button onclick="closeWordBook()" class="font-bold text-xl">✕</button>
+            </div>
+            <p class="text-sm font-bold text-slate-600">Hold a word for about one second to save it here. Tap a word to hear it again.</p>
+            <div id="wordBookList" class="wb-list"></div>
+        </div>
+    </div>
 
     <footer class="relative z-20 bg-slate-900 text-slate-400 py-2.5 text-center text-xs border-t border-white/10 shrink-0">
         Grade 5 English • Heidi Learns to Read • Royal Academy
@@ -358,13 +424,13 @@
             window.speechSynthesis.speak(w);
         } catch (_) {}
     }
-    let holdTimer = null, holdFired = false, holdEl = null;
-    const HOLD_MS = 450;
+    let holdTimer = null, saveTimer = null, holdFired = false, holdEl = null;
+    const HOLD_MS = 450, SAVE_MS = 1100;
     document.addEventListener('pointerdown', e => {
         const el = e.target.closest && e.target.closest('.hold-word');
         if (!el) return;
         holdEl = el; holdFired = false;
-        clearTimeout(holdTimer);
+        clearTimeout(holdTimer); clearTimeout(saveTimer);
         holdTimer = setTimeout(() => {
             holdFired = true;
             const normal = el.dataset.n, split = el.dataset.s || normal;
@@ -372,11 +438,18 @@
             el.innerText = split;
             speakParts(normal, split);
         }, HOLD_MS);
+        saveTimer = setTimeout(() => {
+            saveWord(el.dataset.n, el.dataset.s || el.dataset.n);
+            el.classList.remove('is-split');
+            el.innerText = el.dataset.n;
+            holdEl = null;
+            holdFired = true;
+        }, SAVE_MS);
     }, true);
     document.addEventListener('pointerup', e => {
         const el = holdEl;
         if (!el) return;
-        clearTimeout(holdTimer);
+        clearTimeout(holdTimer); clearTimeout(saveTimer);
         if (!holdFired) {
             // quick tap: hear the word; a second tap while split puts it back
             if (el.classList.contains('is-split')) {
@@ -387,7 +460,7 @@
         }
         holdEl = null;
     }, true);
-    ['pointercancel', 'pointerleave'].forEach(t => document.addEventListener(t, () => { clearTimeout(holdTimer); holdEl = null; }, true));
+    ['pointercancel', 'pointerleave'].forEach(t => document.addEventListener(t, () => { clearTimeout(holdTimer); clearTimeout(saveTimer); holdEl = null; }, true));
     document.addEventListener('contextmenu', e => { if (e.target.closest && e.target.closest('.hold-word')) e.preventDefault(); });
 
     /* SOUND (writing sounds stay on; no sound button) */
@@ -491,6 +564,96 @@
         if (activeTouchIds.size > 1) return false;
         return Math.max(e.width || 0, e.height || 0) <= 22;
     }
+
+    /* ===== TRAILS, STAR MAP, HEIDI, MY WORDS, TEXT SIZE ===== */
+    const TRAILS = {
+        treasury:      { name: 'Word Treasury',       parts: 3 },
+        grammar:       { name: 'Grammar & Tenses',    parts: 2 },
+        words:         { name: 'Homophones & Stems',  parts: 2 },
+        comprehension: { name: 'Answer in Brief',     parts: 3 }
+    };
+    const PRAISE = [
+        'Brilliant work, Zaina! I am so proud of you!',
+        'You are a true Alps scholar. Keep shining!',
+        'Wonderful! The mountains are cheering for you!',
+        'Excellent writing! You learned so much today!'
+    ];
+    function getStars() { try { return JSON.parse(localStorage.getItem('zaina_stars') || '{}'); } catch (_) { return {}; } }
+    function renderStarMap() {
+        const stars = getStars();
+        let total = 0, all = 0;
+        document.getElementById('starMap').innerHTML = Object.keys(TRAILS).map(k => {
+            const t = TRAILS[k], got = (stars[k] || []).length;
+            total += got; all += t.parts;
+            const row = Array.from({ length: t.parts }, (_, i) => i < got ? '★' : '☆').join('');
+            return `<span class="trail-pill">${t.name} <span class="stars">${row}</span></span>`;
+        }).join('') + `<span class="trail-pill">Total stars <span class="stars">${total} / ${all}</span></span>`;
+    }
+    function heidiSay(text, pose = 'heidi-main.webp', bounce = false) {
+        const toast = document.getElementById('heidiToast');
+        const img = document.getElementById('heidiToastImg');
+        img.src = 'assets/' + pose;
+        img.classList.remove('bounce');
+        void img.offsetWidth;
+        if (bounce) img.classList.add('bounce');
+        document.getElementById('heidiBubble').textContent = text;
+        toast.classList.add('show');
+        clearTimeout(heidiSay._t);
+        heidiSay._t = setTimeout(() => toast.classList.remove('show'), 3800);
+        try { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.rate = 0.95; window.speechSynthesis.speak(u); } catch (_) {}
+    }
+    function currentPartIndex() {
+        return currentRealmKey === 'comprehension' ? currentQuestionIdx : (subStageMap[currentRealmKey] || 0);
+    }
+    function finishPart() {
+        const stars = getStars();
+        const list = stars[currentRealmKey] || [];
+        const idx = currentPartIndex();
+        if (!list.includes(idx)) list.push(idx);
+        stars[currentRealmKey] = list;
+        localStorage.setItem('zaina_stars', JSON.stringify(stars));
+        saveVisibleInlineInk();
+        if (currentRealmKey === 'comprehension') { const q = englishCurriculum.comprehension.questions[currentQuestionIdx]; if (q) saveCurrentCanvasInk(q.id); }
+        const line = PRAISE[Math.floor(Math.random() * PRAISE.length)];
+        document.getElementById('celebrateLine').textContent = line;
+        triggerGrandCelebration();
+    }
+    function getWordBook() { try { return JSON.parse(localStorage.getItem('zaina_word_book') || '[]'); } catch (_) { return []; } }
+    function saveWord(word, split) {
+        const list = getWordBook();
+        if (!list.some(x => x.w.toLowerCase() === word.toLowerCase())) {
+            list.push({ w: word, s: split, from: TRAILS[currentRealmKey] ? TRAILS[currentRealmKey].name : '' });
+            localStorage.setItem('zaina_word_book', JSON.stringify(list));
+        }
+        heidiSay('Saved to My Words: ' + word, 'heidi-reading.webp', true);
+    }
+    function openWordBook() { renderWordBook(); document.getElementById('wordBookPanel').classList.add('open'); }
+    function closeWordBook() { document.getElementById('wordBookPanel').classList.remove('open'); }
+    function renderWordBook() {
+        const list = getWordBook();
+        const box = document.getElementById('wordBookList');
+        if (!list.length) { box.innerHTML = '<p class="font-bold text-slate-600">No words yet.</p>'; return; }
+        box.innerHTML = list.map((x, i) => `
+            <div class="wb-item">
+                <button onclick="speakWord(null, '${escAttr(x.w).replace(/'/g, "\\'")}', 0.85)" title="Hear it">🔊 ${x.w}</button>
+                <span class="text-xs text-slate-500">${x.from}</span>
+                <button onclick="removeWord(${i})" title="Remove">✕</button>
+            </div>`).join('');
+    }
+    function removeWord(i) { const list = getWordBook(); list.splice(i, 1); localStorage.setItem('zaina_word_book', JSON.stringify(list)); renderWordBook(); }
+
+    const TEXT_SIZES = [16, 19, 22];
+    function applyTextSize() {
+        const i = Number(localStorage.getItem('zaina_text_size') || 0) % TEXT_SIZES.length;
+        document.documentElement.style.fontSize = TEXT_SIZES[i] + 'px';
+        document.getElementById('sizeBtn').title = 'Text size: ' + ['normal', 'large', 'extra large'][i];
+    }
+    function cycleTextSize() {
+        const i = (Number(localStorage.getItem('zaina_text_size') || 0) + 1) % TEXT_SIZES.length;
+        localStorage.setItem('zaina_text_size', String(i));
+        applyTextSize();
+    }
+    applyTextSize();
 
     /* CAROUSEL */
     let activeRealmIndex = 0;
@@ -714,6 +877,7 @@
         document.getElementById('activeCardContainer').classList.add('hidden');
         document.getElementById('gatewayNavBtn').classList.add('hidden');
         document.getElementById('gatewayView').classList.remove('hidden');
+        renderStarMap();
     }
     function changeQuestion(delta) {
         if (currentRealmKey !== 'comprehension') return;
@@ -733,7 +897,13 @@
             loadCanvasInk(qId, target);
         }
     }
-    function toggleToolDrawer(qId) { const d = document.getElementById('toolDrawer_' + qId); if (d) d.classList.toggle('hidden'); }
+    function toggleToolDrawer(qId) {
+        const d = document.getElementById('toolDrawer_' + qId), b = document.getElementById('toolsToggle_' + qId);
+        if (!d) return;
+        const open = !d.classList.contains('open');
+        d.classList.toggle('open', open);
+        if (b) b.classList.toggle('open', open);
+    }
 
     function renderActiveCard(animate = false) {
         const container = document.getElementById('activeCardContainer');
@@ -751,14 +921,15 @@
                         </div>
                         <div class="sec-actions">
                             ${modeSwitcherHTML()}
-                            <button onclick="triggerGrandCelebration()" class="pill-btn finish">✅ Finish</button>
+                            <button onclick="finishPart()" class="pill-btn finish">✅ Finish</button>
                         </div>
                     </div>
                     <div class="sec-body">${cur.render()}</div>
-                    <div class="sec-foot">
+                    <div class="corner-nav">
+                        <button class="corner-btn" onclick="changeSubStage('${currentRealmKey}', -1)" ${stageIdx === 0 ? 'disabled' : ''} title="Previous part">◀</button>
                         ${stageIdx < total - 1
-                            ? `<button class="big-next" onclick="changeSubStage('${currentRealmKey}', 1)">Next: ${realm.stages[stageIdx + 1].title} ➔</button>`
-                            : `<button class="big-next finish" onclick="triggerGrandCelebration()">✅ Finish Section</button>`}
+                            ? `<button class="corner-btn" onclick="changeSubStage('${currentRealmKey}', 1)" title="Next part">▶</button>`
+                            : `<button class="corner-btn" onclick="finishPart()" title="Finish">✔</button>`}
                     </div>
                 </div>`;
             applyModeStyles();
@@ -781,7 +952,7 @@
                     </div>
                     <div class="sec-actions">
                         ${modeSwitcherHTML()}
-                        <button onclick="triggerGrandCelebration()" class="pill-btn finish">✅ Finish</button>
+                        <button onclick="finishPart()" class="pill-btn finish">✅ Finish</button>
                     </div>
                 </div>
 
@@ -792,17 +963,17 @@
                             ${modelWords(q.refAnswer)}
                         </div>
                         <div class="bind-ruled" id="canvasArea_${q.id}">
+                            <img src="assets/heidi-main.webp" class="heidi-emboss-br" alt="" onerror="handleImageFallback(this)"/>
                             <div class="ghost-watermark" style="display:${isPracticeMode ? 'block' : 'none'};">${q.refAnswer}</div>
                             <canvas id="canvas_${q.id}" oncontextmenu="return false;"></canvas>
                         </div>
                     </div>
 
                     <div class="tools-right">
-                        <button class="tool-chip" onclick="closeBinder('${q.id}')">📕 Close</button>
                         <div class="page-chip">
-                            <button onclick="switchPageSmoothly('${q.id}', -1)" style="background:none;border:0;color:#fde68a;cursor:pointer;">◀</button>
+                            <button onclick="switchPageSmoothly('${q.id}', -1)" style="background:none;border:0;color:#fde68a;cursor:pointer;font-size:18px;">◀</button>
                             <span id="pageIndicator_${q.id}">Page ${currentPage} of 2</span>
-                            <button onclick="switchPageSmoothly('${q.id}', 1)" style="background:none;border:0;color:#fde68a;cursor:pointer;">▶</button>
+                            <button onclick="switchPageSmoothly('${q.id}', 1)" style="background:none;border:0;color:#fde68a;cursor:pointer;font-size:18px;">▶</button>
                         </div>
                         <div class="tool-drawer" id="toolDrawer_${q.id}">
                             <button onclick="setTool('${q.id}', 'pen')" id="toolPen_${q.id}" title="Pen">✏️</button>
@@ -813,10 +984,10 @@
                             <button class="swatch" style="background:#1e1b4b" onclick="setColor('${q.id}', '#1e1b4b')" title="Dark ink"></button>
                             <button class="swatch" style="background:#2563eb" onclick="setColor('${q.id}', '#2563eb')" title="Blue ink"></button>
                             <button class="swatch" style="background:#dc2626" onclick="setColor('${q.id}', '#dc2626')" title="Red ink"></button>
+                            <button onclick="closeBinder('${q.id}')" title="Close notebook">📕</button>
                         </div>
+                        <button class="tools-toggle" id="toolsToggle_${q.id}" onclick="toggleToolDrawer('${q.id}')" title="Tools" aria-label="Tools">🛠️</button>
                     </div>
-
-                    <img src="assets/heidi-main.webp" class="heidi-emboss-topright" alt="" onerror="handleImageFallback(this)"/>
 
                     <div id="binderCover_${q.id}" class="binder-cover ${isBinderOpen ? 'binder-open' : ''}" onclick="openBinder('${q.id}')">
                         <div class="notebook-spine-rings">${'<div class="spiral-ring"></div>'.repeat(8)}</div>
@@ -830,14 +1001,16 @@
                             <div class="font-bold text-base text-rose-700 leading-tight">Heidi Learns to Read</div>
                             <div class="text-xs text-indigo-700 font-bold bg-amber-100 rounded px-2 py-0.5 mt-1 inline-block w-fit">Answer in Brief</div>
                         </div>
-                        <div class="text-center relative z-10"><span class="bg-white text-rose-950 font-bold px-4 py-2 rounded-xl shadow-lg text-xs uppercase tracking-widest">Tap to open ⚡</span></div>
+                        <img src="assets/heidi-main.webp" class="binder-heidi relative z-10" alt="Heidi" onerror="handleImageFallback(this)"/>
+                        <div class="text-center relative z-10"><span class="bg-white/90 text-rose-950 font-bold px-4 py-2 rounded-xl shadow-lg text-xs uppercase tracking-widest">Tap to open ⚡</span></div>
                     </div>
                 </div>
 
-                <div class="sec-foot">
+                <div class="corner-row">
+                    <button class="corner-btn" onclick="changeQuestion(-1)" ${currentQuestionIdx === 0 ? 'disabled' : ''} title="Previous question">◀</button>
                     ${currentQuestionIdx < n - 1
-                        ? `<button class="big-next" onclick="changeQuestion(1)">Next question ➔</button>`
-                        : `<button class="big-next finish" onclick="triggerGrandCelebration()">✅ Finish Section</button>`}
+                        ? `<button class="corner-btn" onclick="changeQuestion(1)" title="Next question">▶</button>`
+                        : `<button class="corner-btn" onclick="finishPart()" title="Finish">✔</button>`}
                 </div>
             </div>`;
         applyModeStyles();
@@ -848,6 +1021,8 @@
     function pickMCQ(btn, isCorrect) {
         btn.parentElement.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('ok', 'bad'));
         btn.classList.add(isCorrect ? 'ok' : 'bad');
+        if (isCorrect) heidiSay('Yes! That is right. Well done!', 'heidi-reading.webp', true);
+        else heidiSay('Almost! Look at the story again.', 'heidi-main.webp');
     }
 
     /* INLINE STRIP INK ENGINE */
@@ -1212,7 +1387,8 @@
         setTimeout(() => { window.location.href = 'index.html'; }, 60);
     }
     window.addEventListener('pagehide', () => { try { saveVisibleInlineInk(); } catch (_) {} });
-    window.addEventListener('load', update6DCarouselDOM);
+    window.addEventListener('load', () => { update6DCarouselDOM(); renderStarMap(); });
+    renderStarMap();
 </script>
 </body>
 </html>
