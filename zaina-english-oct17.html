@@ -182,10 +182,6 @@
 
         .hidden { display: none !important; }
 
-        /* STAR MAP */
-        .trail-pill { background: rgba(15,23,42,0.75); border: 1.5px solid rgba(255,255,255,0.45); border-radius: 999px; padding: 6px 14px; font-weight: 800; font-size: 0.9rem; color: #fff; display: inline-flex; gap: 8px; align-items: center; }
-        .trail-pill .stars { color: #FDE047; letter-spacing: 2px; }
-
         /* HEIDI SAYS */
         #heidiToast { position: fixed; left: 16px; bottom: 16px; z-index: 200; display: none; align-items: flex-end; gap: 10px; max-width: min(460px, 80vw); pointer-events: none; }
         #heidiToast.show { display: flex; animation: heidiIn .45s cubic-bezier(.2,.9,.3,1.2); }
@@ -231,12 +227,45 @@
         .zc-wrap { position: relative; display:flex; align-items:center; justify-content:center; }
         .zc-glow { position:absolute; width:min(62vh,560px); height:min(62vh,560px); border-radius:50%; background: conic-gradient(from 0deg, #f472b6, #c084fc, #38bdf8, #fde047, #4ade80, #f472b6); filter: blur(34px); opacity:.55; animation: zcSpin 7s linear infinite; }
         .zc-img { position:relative; height:min(52vh,520px); width:auto; max-width:90vw; object-fit:contain; filter: drop-shadow(0 12px 28px rgba(0,0,0,.6)); animation: zcBounce 1.6s ease-in-out infinite; }
-        .magic-top-title { font-size: clamp(26px, 5.2vh, 52px); }
+        .magic-top-title { font-size: clamp(22px, 4.6vh, 48px); white-space: nowrap; }
+        .zc-img { border-radius: 26px; border: 5px solid #FDE68A; box-shadow: 0 0 40px rgba(253,224,71,.55); }
         .magic-subtitle-sparkle { font-size: clamp(13px, 2.4vh, 20px); margin-top: 2px; }
         #celebrateLine { color:#fff; font-weight:800; font-size: clamp(.85rem, 2.3vh, 1.05rem); text-align:center; margin: 4px 0; text-shadow:0 2px 6px rgba(0,0,0,.9); max-width:min(90vw,640px); }
         .magic-banner-centerpiece .royal-btn-continue { pointer-events:auto; margin-top:6px; }
         @keyframes zcBounce { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-12px) scale(1.03); } }
         @keyframes zcSpin { to { transform: rotate(360deg); } }
+
+        /* ===== v10 additions ===== */
+        /* frosted-glass writing strips */
+        .inline-strip-box { background: linear-gradient(135deg, rgba(15,23,42,0.42), rgba(15,23,42,0.24)); backdrop-filter: blur(4px) saturate(120%); -webkit-backdrop-filter: blur(4px) saturate(120%); border: 1.5px solid rgba(255,255,255,0.6); box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 4px 14px rgba(0,0,0,0.25); }
+        .inline-strip-box.glow { box-shadow: 0 0 0 2px var(--pen-glow, #FACC15), 0 0 18px 4px var(--pen-glow, #FACC15); border-color: var(--pen-glow, #FACC15); }
+        .inline-strip-box.row-done { border-color: #34D399; }
+        .inline-strip-box.done-pulse { animation: donePulse 1.4s ease-out 1; }
+        @keyframes donePulse { 0% { box-shadow: 0 0 0 0 rgba(52,211,153,.95); } 100% { box-shadow: 0 0 0 18px rgba(52,211,153,0); } }
+        /* ghost answer: handwriting font, fades in when she starts writing */
+        .inline-ghost-text { color: rgba(255,255,255,0.42) !important; opacity: 0; transition: opacity .7s ease; max-width: calc(100% - 100px); overflow: hidden; text-overflow: ellipsis; text-shadow: none; }
+        .inline-strip-box.ghost-on .inline-ghost-text { opacity: 1; }
+        .pen-dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #fff; padding: 0; cursor: pointer; opacity: .6; transition: transform .15s, opacity .15s; }
+        .pen-dot.on { opacity: 1; transform: scale(1.22); box-shadow: 0 0 10px 2px rgba(255,255,255,.7); }
+        /* scene motion */
+        .scene-motion { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+        .cloud { position: absolute; left: -320px; width: 300px; height: 80px; border-radius: 50%; background: radial-gradient(ellipse at center, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 70%); filter: blur(8px); animation: cloudDrift 80s linear infinite; }
+        .cloud.c1 { top: 8%; } .cloud.c2 { top: 24%; width: 380px; height: 100px; animation-duration: 120s; animation-delay: -45s; opacity: .8; } .cloud.c3 { top: 14%; animation-duration: 100s; animation-delay: -80s; opacity: .65; }
+        @keyframes cloudDrift { from { transform: translateX(0); } to { transform: translateX(calc(100vw + 700px)); } }
+        .bird { position: absolute; left: -60px; width: 34px; opacity: .7; animation: birdFly 42s linear infinite; }
+        .bird.b1 { top: 12%; } .bird.b2 { top: 19%; width: 24px; animation-duration: 56s; animation-delay: -22s; opacity: .55; }
+        @keyframes birdFly { from { transform: translate(0, 0) scaleY(1); } 25% { transform: translate(28vw, -14px) scaleY(.7); } 50% { transform: translate(55vw, 4px) scaleY(1); } 75% { transform: translate(80vw, -10px) scaleY(.7); } to { transform: translate(calc(100vw + 80px), 0) scaleY(1); } }
+        @media (prefers-reduced-motion: reduce) { .cloud, .bird { animation: none; } }
+        /* parallax */
+        .ambient-backdrop { transform: translate3d(0, var(--par-y, 0px), 0) scale(1.06); transition: transform .15s linear; will-change: transform; }
+        .sec-body { padding-top: 18px; }
+        /* sparkles + Heidi peek */
+        #sparkleCanvas { position: fixed; inset: 0; pointer-events: none; z-index: 60; }
+        #heidiPeek { position: fixed; bottom: 0; z-index: 150; pointer-events: none; display: flex; flex-direction: column; align-items: center; transform: translateY(110%); transition: transform .45s cubic-bezier(.2,.9,.3,1.2); }
+        #heidiPeek.show { transform: translateY(0); }
+        #heidiPeek[data-pos="a"] { right: 90px; } #heidiPeek[data-pos="b"] { right: 240px; } #heidiPeek[data-pos="c"] { right: 390px; }
+        #heidiPeekImg { width: 120px; height: 120px; object-fit: contain; filter: drop-shadow(0 6px 12px rgba(0,0,0,.5)); }
+        #heidiPeekBubble { background: #FFFBEB; color: #1E293B; border: 2.5px solid #F59E0B; border-radius: 14px; padding: 4px 12px; font-weight: 800; font-size: .9rem; margin-bottom: -6px; position: relative; z-index: 1; text-shadow: none; }
         #parentModal { position: fixed; inset: 0; z-index: 100050; background: rgba(2,6,23,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; padding: 16px; }
         #parentModal.open { display: flex; }
         #pinLockModal { position: fixed; inset: 0; z-index: 100050; background: rgba(2,6,23,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; padding: 16px; }
@@ -251,6 +280,13 @@
     <canvas id="milkyWayCanvas"></canvas>
     <canvas id="confettiSnowCanvas"></canvas>
     <div id="screenDimOverlay"></div>
+    <div class="scene-motion" aria-hidden="true">
+        <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+        <svg class="bird b1" viewBox="0 0 40 20"><path d="M2 14 Q10 2 20 12 Q30 2 38 14" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>
+        <svg class="bird b2" viewBox="0 0 40 20"><path d="M2 14 Q10 2 20 12 Q30 2 38 14" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg>
+    </div>
+    <canvas id="sparkleCanvas"></canvas>
+    <div id="heidiPeek" data-pos="a"><div id="heidiPeekBubble"></div><img id="heidiPeekImg" src="assets/heidi-reading.webp" alt="" onerror="handleImageFallback(this)"></div>
 
     <!-- TEACHER PIN (1995) -->
     <div id="pinLockModal">
@@ -394,6 +430,24 @@
 
 
 <script>
+    /* SAFE STORAGE: never throws; keeps a session copy if the browser refuses to save */
+    const LS = (() => {
+        const mem = {}; let ok = true, lastWarn = 0;
+        try { window.localStorage.setItem('__zt', '1'); window.localStorage.removeItem('__zt'); } catch (_) { ok = false; }
+        const warn = () => {
+            const n = Date.now(); if (n - lastWarn < 30000) return; lastWarn = n;
+            try { heidiSay(ok ? 'My notebook is full! Please ask a grown-up to clear old work.' : 'Saving is switched off in this browser, so your work will not be kept.', 'heidi-main.webp'); } catch (_) {}
+        };
+        return {
+            get(k) { if (Object.prototype.hasOwnProperty.call(mem, k)) return mem[k]; try { return ok ? window.localStorage.getItem(k) : null; } catch (_) { return null; } },
+            set(k, v) {
+                v = String(v);
+                if (ok) { try { window.localStorage.setItem(k, v); delete mem[k]; return true; } catch (_) {} }
+                mem[k] = v; warn(); return false;
+            },
+            remove(k) { delete mem[k]; try { if (ok) window.localStorage.removeItem(k); } catch (_) {} }
+        };
+    })();
     function handleImageFallback(imgEl) {
         imgEl.onerror = null;
         imgEl.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><circle cx='60' cy='60' r='56' fill='%23EDE9FE' stroke='%23C4B5FD' stroke-width='4'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='56'>📖</text></svg>";
@@ -401,14 +455,14 @@
     function escAttr(s) { return String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;'); }
 
     /* TOP BAR TOGGLE (remembers your choice) */
-    let headerOpen = localStorage.getItem('zaina_header_open') !== 'no';
+    let headerOpen = LS.get('zaina_header_open') !== 'no';
     function applyHeader() {
         document.getElementById('topHeader').classList.toggle('collapsed', !headerOpen);
         document.getElementById('headerToggle').textContent = headerOpen ? '▴' : '▾';
     }
     function toggleHeader() {
         headerOpen = !headerOpen;
-        localStorage.setItem('zaina_header_open', headerOpen ? 'yes' : 'no');
+        LS.set('zaina_header_open', headerOpen ? 'yes' : 'no');
         applyHeader();
     }
     applyHeader();
@@ -417,9 +471,9 @@
     function updateScreenDimLevel(val) {
         document.getElementById('screenDimOverlay').style.opacity = val;
         document.getElementById('dimPctLabel').textContent = Math.round(val * 100) + '%';
-        localStorage.setItem('zaina_english_dim_level', val);
+        LS.set('zaina_english_dim_level', val);
     }
-    const savedDim = localStorage.getItem('zaina_english_dim_level');
+    const savedDim = LS.get('zaina_english_dim_level');
     if (savedDim !== null) { document.getElementById('dimRangeSlider').value = savedDim; updateScreenDimLevel(savedDim); }
 
     /* SPEECH */
@@ -578,17 +632,6 @@
         stop() {
             if (!this.ready) return;
             try { const t = getAudioContext().currentTime; this.penGain.gain.setTargetAtTime(0, t, .04); this.eraseGain.gain.setTargetAtTime(0, t, .04); } catch (e) {}
-        },
-        glideChime() {
-            if (!this.enabled) return;
-            try {
-                const ctx = getAudioContext(), t0 = ctx.currentTime;
-                const osc = ctx.createOscillator(), g = ctx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(440, t0); osc.frequency.exponentialRampToValueAtTime(1320, t0 + .28);
-                g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(.14, t0 + .03); g.gain.exponentialRampToValueAtTime(.0001, t0 + .6);
-                osc.connect(g); g.connect(ctx.destination); osc.start(t0); osc.stop(t0 + .65);
-            } catch (e) {}
         }
     };
 
@@ -607,7 +650,7 @@
         return Math.max(e.width || 0, e.height || 0) <= 22;
     }
 
-    /* ===== TRAILS, STAR MAP, HEIDI, MY WORDS, TEXT SIZE ===== */
+    /* ===== TRAILS, HEIDI, MY WORDS, TEXT SIZE ===== */
     const TRAILS = {
         treasury:      { name: 'Word Treasury',       parts: 3 },
         grammar:       { name: 'Grammar & Tenses',    parts: 4 },
@@ -620,8 +663,6 @@
         'Wonderful! The mountains are cheering for you!',
         'Excellent writing! You learned so much today!'
     ];
-    function getStars() { try { return JSON.parse(localStorage.getItem('zaina_stars') || '{}'); } catch (_) { return {}; } }
-    function renderStarMap() {}
 
     function heidiSay(text, pose = 'heidi-main.webp', bounce = false) {
         const toast = document.getElementById('heidiToast');
@@ -644,6 +685,7 @@
         if (currentRealmKey === 'comprehension') { const q = englishCurriculum.comprehension.questions[currentQuestionIdx]; if (q) saveCurrentCanvasInk(q.id); }
     }
     function finishPart() {
+        if (grandAnimRunning) return;
         if (isPracticeMode) {
             saveAllInkNow();
             document.getElementById('celebrateLine').textContent = 'Great practice, Zaina! Your work is saved.';
@@ -653,6 +695,7 @@
         openParentModal();
     }
     function celebrateAfterReview() {
+        if (grandAnimRunning) { closeParentModal(); return; }
         closeParentModal();
         saveAllInkNow();
         document.getElementById('celebrateLine').textContent = PRAISE[Math.floor(Math.random() * PRAISE.length)];
@@ -669,12 +712,12 @@
         if (document.getElementById('parentPinInput').value === '1995') celebrateAfterReview();
         else document.getElementById('parentErrorMsg').classList.remove('hidden');
     }
-    function getWordBook() { try { return JSON.parse(localStorage.getItem('zaina_word_book') || '[]'); } catch (_) { return []; } }
+    function getWordBook() { try { return JSON.parse(LS.get('zaina_word_book') || '[]'); } catch (_) { return []; } }
     function saveWord(word, split) {
         const list = getWordBook();
         if (!list.some(x => x.w.toLowerCase() === word.toLowerCase())) {
             list.push({ w: word, s: split, from: TRAILS[currentRealmKey] ? TRAILS[currentRealmKey].name : '' });
-            localStorage.setItem('zaina_word_book', JSON.stringify(list));
+            LS.set('zaina_word_book', JSON.stringify(list));
         }
         heidiSay('Saved to My Words: ' + word, 'heidi-reading.webp', true);
     }
@@ -691,17 +734,17 @@
                 <button onclick="removeWord(${i})" title="Remove">✕</button>
             </div>`).join('');
     }
-    function removeWord(i) { const list = getWordBook(); list.splice(i, 1); localStorage.setItem('zaina_word_book', JSON.stringify(list)); renderWordBook(); }
+    function removeWord(i) { const list = getWordBook(); list.splice(i, 1); LS.set('zaina_word_book', JSON.stringify(list)); renderWordBook(); }
 
     const TEXT_SIZES = [16, 19, 22];
     function applyTextSize() {
-        const i = Number(localStorage.getItem('zaina_text_size') || 0) % TEXT_SIZES.length;
+        const i = Number(LS.get('zaina_text_size') || 0) % TEXT_SIZES.length;
         document.documentElement.style.fontSize = TEXT_SIZES[i] + 'px';
         document.getElementById('sizeBtn').title = 'Text size: ' + ['normal', 'large', 'extra large'][i];
     }
     function cycleTextSize() {
-        const i = (Number(localStorage.getItem('zaina_text_size') || 0) + 1) % TEXT_SIZES.length;
-        localStorage.setItem('zaina_text_size', String(i));
+        const i = (Number(LS.get('zaina_text_size') || 0) + 1) % TEXT_SIZES.length;
+        LS.set('zaina_text_size', String(i));
         applyTextSize();
     }
     applyTextSize();
@@ -775,13 +818,24 @@
         </div>`;
 
     /* INLINE ANSWER STRIPS (icons only, no boxes) */
+    const PENS = { gold: ['#FFF6C9', '#FACC15'], mint: ['#D1FAE5', '#34D399'], sky: ['#E0F2FE', '#38BDF8'] };
+    let penName = PENS[LS.get('zaina_pen')] ? LS.get('zaina_pen') : 'gold';
+    function applyPenVars() { document.documentElement.style.setProperty('--pen-glow', PENS[penName][1]); }
+    applyPenVars();
+    function setPen(n) {
+        if (!PENS[n]) return;
+        penName = n; LS.set('zaina_pen', n); applyPenVars();
+        document.querySelectorAll('.pen-dot').forEach(b => b.classList.toggle('on', b.dataset.pen === n));
+    }
+    const penPickerHTML = () => `<div class="mode-switch" title="Pen colour">${Object.keys(PENS).map(n => `<button type="button" class="pen-dot ${n === penName ? 'on' : ''}" data-pen="${n}" onclick="setPen('${n}')" style="background:${PENS[n][1]}" aria-label="${n} pen"></button>`).join('')}</div>`;
     const ICON_UNDO = '<svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>';
     const ICON_CLEAR = '<svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 14h10l1-14"/></svg>';
 
     function createInlineStrip(id, answer, width, big = false) {
         const w = typeof width === 'number' ? width + 'px' : width;
         return `
-          <div class="inline-strip-box two-line-canvas-wrap ${big ? 'big' : ''}" style="width:${w};">
+          <div class="inline-strip-box two-line-canvas-wrap ${big ? 'big' : ''}" style="width:${w};" data-len="${(answer || '').length}">
+            ${answer ? `<div class="inline-ghost-text" style="display:${isPracticeMode ? '' : 'none'};">${escAttr(answer)}</div>` : ''}
             <canvas id="inlineCanvas_${id}" oncontextmenu="return false;" class="absolute inset-0 w-full h-full cursor-crosshair touch-none z-10"></canvas>
             <div class="absolute right-2 top-1/2 -translate-y-1/2 z-20 flex items-center gap-1">
               <button type="button" class="icon-strip" onclick="undoInlineInk('${id}')" aria-label="Undo">${ICON_UNDO}</button>
@@ -898,7 +952,7 @@
         const oo = ord('mcqopt' + qi, 4);
         return `<div class="row-card">
             <p class="font-bold mb-1">${pos + 1}. ${q.t}</p>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">${oo.map((oi, p) => `<button onclick="pickMCQ(this, ${oi === q.c})" class="opt-btn">${'abcd'[p]}. ${q.o[oi]}</button>`).join('')}</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">${oo.map((oi, p) => `<button onclick="pickMCQ(this, ${oi === q.c})" data-ok="${oi === q.c}" class="opt-btn">${'abcd'[p]}. ${q.o[oi]}</button>`).join('')}</div>
         </div>`;
     };
 
@@ -928,8 +982,8 @@
         return `<div class="row-card">
             <p class="font-bold">${pos + 1}. ${p[0]}</p>
             <div class="tick-row">
-                <button onclick="pickMCQ(this, ${p[1]})" class="opt-btn">✔ Simple present</button>
-                <button onclick="pickMCQ(this, ${!p[1]})" class="opt-btn">✖ Not simple present</button>
+                <button onclick="pickMCQ(this, ${p[1]})" data-ok="${p[1]}" class="opt-btn">✔ Simple present</button>
+                <button onclick="pickMCQ(this, ${!p[1]})" data-ok="${!p[1]}" class="opt-btn">✖ Not simple present</button>
             </div>
             ${p[2] ? `<span class="practice-only tick-note" style="display:${isPracticeMode ? '' : 'none'};">${p[2]}</span>` : ''}
         </div>`;
@@ -1072,6 +1126,7 @@
                             <div class="sec-sub">${cur.title} · part ${stageIdx + 1} of ${total}</div>
                         </div>
                         <div class="sec-actions">
+                            ${penPickerHTML()}
                             ${modeSwitcherHTML()}
                             <button onclick="finishPart()" class="finish-icon" title="Finish" aria-label="Finish">✔</button>
                         </div>
@@ -1086,7 +1141,8 @@
                 </div>`;
             wrapSpeakable(container);
             applyModeStyles();
-            setTimeout(initAllInlineCanvases, 50);
+            document.documentElement.style.setProperty('--par-y', '0px');
+            setTimeout(() => { initAllInlineCanvases(); updateEdgeFade(container.querySelector('.sec-body')); }, 50);
             return;
         }
 
@@ -1174,12 +1230,108 @@
     }
 
     function pickMCQ(btn, isCorrect) {
-        btn.parentElement.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('ok', 'bad'));
+        const group = btn.parentElement;
+        group.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('ok', 'bad'));
         btn.classList.add(isCorrect ? 'ok' : 'bad');
-        speakWord(null, btn.textContent.replace(/^[a-d]\.\s*/, ''), 0.9);
-        if (isCorrect) heidiSay('Yes! That is right. Well done!', 'heidi-reading.webp', true);
-        else heidiSay('Almost! Look at the story again.', 'heidi-main.webp');
+        if (isCorrect) { group.dataset.wrong = '0'; speakWord(null, btn.textContent.replace(/^[a-d]\.\s*/, ''), 0.9); heidiSay('Yes! That is right. Well done!', 'heidi-reading.webp', true); return; }
+        const n = (Number(group.dataset.wrong) || 0) + 1;
+        group.dataset.wrong = String(n);
+        if (n >= 2) {
+            const right = group.querySelector('.opt-btn[data-ok="true"]');
+            if (right) { right.classList.add('ok'); heidiSay('This is the right answer. Read it and remember it!', 'heidi-reading.webp', true); return; }
+        }
+        heidiSay('Almost! Look at the story again.', 'heidi-main.webp');
     }
+
+    /* ---- LIVELY EXTRAS: sparkles, Heidi peek, row-done pulse, parallax, edge fade ---- */
+    const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const spCanvas = document.getElementById('sparkleCanvas'), spCtx = spCanvas.getContext('2d');
+    let sparks = [], spRun = false;
+    function sizeSparkCanvas() { spCanvas.width = innerWidth; spCanvas.height = innerHeight; }
+    window.addEventListener('resize', sizeSparkCanvas); sizeSparkCanvas();
+    function emitSparkle(x, y, color) {
+        if (reduceMotion || Math.random() < 0.45) return;
+        for (let i = 0; i < 2; i++) sparks.push({ x: x + (Math.random() - .5) * 6, y: y + (Math.random() - .5) * 6, vx: (Math.random() - .5) * 1.4, vy: -Math.random() * 1.2 - .2, life: 1, r: Math.random() * 2.2 + 1.2, color });
+        if (sparks.length > 120) sparks.splice(0, sparks.length - 120);
+        if (!spRun) { spRun = true; requestAnimationFrame(sparkLoop); }
+    }
+    function sparkLoop() {
+        spCtx.clearRect(0, 0, spCanvas.width, spCanvas.height);
+        for (const p of sparks) {
+            p.x += p.vx; p.y += p.vy; p.vy += 0.02; p.life -= 0.035;
+            if (p.life <= 0) continue;
+            spCtx.globalAlpha = p.life; spCtx.strokeStyle = p.color; spCtx.lineWidth = 1.4;
+            spCtx.beginPath(); spCtx.moveTo(p.x - p.r, p.y); spCtx.lineTo(p.x + p.r, p.y); spCtx.moveTo(p.x, p.y - p.r); spCtx.lineTo(p.x, p.y + p.r); spCtx.stroke();
+        }
+        spCtx.globalAlpha = 1;
+        sparks = sparks.filter(p => p.life > 0);
+        if (sparks.length) requestAnimationFrame(sparkLoop); else { spRun = false; spCtx.clearRect(0, 0, spCanvas.width, spCanvas.height); }
+    }
+
+    const doneSet = {}, rowTimers = {};
+    function clearRowDone(id) {
+        delete doneSet[modeTag() + id];
+        const c = document.getElementById('inlineCanvas_' + id);
+        if (c) c.parentElement.classList.remove('row-done', 'done-pulse');
+    }
+    function inkSpan(canvas) {
+        const w = canvas.width, h = canvas.height;
+        if (!w || !h) return 0;
+        let d; try { d = canvas.getContext('2d').getImageData(0, 0, w, h).data; } catch (_) { return 0; }
+        let min = w, max = -1;
+        for (let x = 0; x < w; x += 2) for (let y = 0; y < h; y += 3) if (d[(y * w + x) * 4 + 3] > 40) { if (x < min) min = x; if (x > max) max = x; break; }
+        return max < 0 ? 0 : (max - min) / (Number(canvas.dataset.dpr) || 1);
+    }
+    /* a row counts as finished when she lifts the pen for a moment and the writing is about as long as the answer */
+    function scheduleRowCheck(id, canvas) {
+        clearTimeout(rowTimers[id]);
+        rowTimers[id] = setTimeout(() => {
+            if (!document.body.contains(canvas)) return;
+            const key = modeTag() + id;
+            if (doneSet[key]) return;
+            const box = canvas.parentElement, len = Number(box.dataset.len) || 14;
+            const need = Math.max(50, Math.min(len * 10 * 0.55, box.clientWidth * 0.7));
+            if (inkSpan(canvas) >= need) {
+                doneSet[key] = true;
+                box.classList.add('row-done', 'done-pulse');
+                setTimeout(() => box.classList.remove('done-pulse'), 1500);
+                heidiPeekShow();
+            }
+        }, 1400);
+    }
+    /* only two Heidi pictures exist, so the trails differ by pose, spot on screen and message */
+    const PEEK = { treasury: ['heidi-reading.webp', 'Lovely writing! ✨', 'a'], grammar: ['heidi-main.webp', 'Great effort! ⭐', 'b'], words: ['heidi-reading.webp', 'Well written! 🌟', 'c'] };
+    let peekTimer = null;
+    function heidiPeekShow() {
+        const cfg = PEEK[currentRealmKey]; if (!cfg) return;
+        const el = document.getElementById('heidiPeek');
+        document.getElementById('heidiPeekImg').src = 'assets/' + cfg[0];
+        document.getElementById('heidiPeekBubble').textContent = cfg[1];
+        el.dataset.pos = cfg[2];
+        el.classList.add('show');
+        clearTimeout(peekTimer);
+        peekTimer = setTimeout(() => el.classList.remove('show'), 2300);
+    }
+
+    /* rows fade at the top and bottom of the scroll area (done per row so the frosted strips keep their blur) */
+    function updateEdgeFade(body) {
+        if (!body) return;
+        const br = body.getBoundingClientRect(), F = 70;
+        body.querySelectorAll('.row-card').forEach(r => {
+            const rr = r.getBoundingClientRect();
+            const o = Math.max(0, Math.min(1, Math.min(rr.bottom - br.top, br.bottom - rr.top) / F));
+            r.style.opacity = o >= 0.98 ? '' : String(o);
+        });
+    }
+    document.addEventListener('scroll', e => {
+        const t = e.target;
+        if (!t || !t.classList || !t.classList.contains('sec-body')) return;
+        updateEdgeFade(t);
+        if (reduceMotion) return;
+        const max = t.scrollHeight - t.clientHeight;
+        document.documentElement.style.setProperty('--par-y', (-(max > 0 ? t.scrollTop / max : 0) * 16).toFixed(1) + 'px');
+    }, true);
+    window.addEventListener('resize', () => updateEdgeFade(document.querySelector('.sec-body')));
 
     /* INLINE STRIP INK ENGINE */
     document.addEventListener('pointerdown', e => {
@@ -1195,7 +1347,7 @@
     function saveVisibleInlineInk() {
         document.querySelectorAll('canvas[id^="inlineCanvas_"]').forEach(c => {
             const id = c.id.replace('inlineCanvas_', '');
-            if (inlineUndo[modeTag() + id] && inlineUndo[modeTag() + id].length > 1) { try { localStorage.setItem(inlineKey(id), c.toDataURL()); } catch (_) {} }
+            if (inlineUndo[modeTag() + id] && inlineUndo[modeTag() + id].length > 1) { try { LS.set(inlineKey(id), c.toDataURL()); } catch (_) {} }
         });
     }
     function paintInline(canvas, dataUrl, token, id) {
@@ -1224,18 +1376,21 @@
         canvas.dataset.dpr = String(dpr);
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-        const saved = localStorage.getItem(inlineKey(id));
+        const saved = LS.get(inlineKey(id));
         if (!inlineUndo[modeTag() + id]) inlineUndo[modeTag() + id] = [saved || null];
         else if (inlineUndo[modeTag() + id].length === 1) inlineUndo[modeTag() + id][0] = saved || null;
         inlineToken[modeTag() + id] = (inlineToken[modeTag() + id] || 0) + 1;
         paintInline(canvas, saved, inlineToken[modeTag() + id], id);
+        if (saved) canvas.parentElement.classList.add('ghost-on');
+        if (doneSet[modeTag() + id]) canvas.parentElement.classList.add('row-done');
 
         let drawing = false, pid = null, lastX = 0, lastY = 0;
         const xy = e => { const r = canvas.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
 
-        const INK = '#FFF6C9', GLOW = '#FACC15';
+        const curPen = () => PENS[penName] || PENS.gold;
         let pending = false, mode = null, sx = 0, sy = 0, lastClientY = 0, scroller = null;
         const setupInk = () => {
+            const [INK, GLOW] = curPen();
             ctx.globalCompositeOperation = 'source-over'; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
             ctx.strokeStyle = INK; ctx.fillStyle = INK; ctx.lineWidth = 2.6;
             ctx.shadowColor = GLOW; ctx.shadowBlur = 10 * dpr; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0;
@@ -1247,7 +1402,7 @@
 
         canvas.onpointerdown = e => {
             document.querySelectorAll('.inline-strip-box.glow').forEach(b => b.classList.remove('glow'));
-            canvas.parentElement.classList.add('glow');
+            canvas.parentElement.classList.add('glow', 'ghost-on');
             if (drawing || pending) return;
             const isPen = e.pointerType === 'pen';
             if (!isPen && !fingerAllowed(e)) return;
@@ -1285,6 +1440,7 @@
                 lastX = x; lastY = y;
             }
             InkSound.update('pen', dist / evs.length);
+            emitSparkle(e.clientX, e.clientY, curPen()[1]);
         };
         const stop = e => {
             if (e && e.pointerId !== pid) return;
@@ -1299,8 +1455,9 @@
                 const st = inlineUndo[modeTag() + id] || (inlineUndo[modeTag() + id] = [null]);
                 st.push(data);
                 if (st.length > 16) st.shift();
-                localStorage.setItem(inlineKey(id), data);
+                LS.set(inlineKey(id), data);
             } catch (_) {}
+            scheduleRowCheck(id, canvas);
         };
         canvas.onpointerup = stop;
         canvas.onpointercancel = stop;
@@ -1313,15 +1470,16 @@
         const prev = st[st.length - 1];
         inlineToken[modeTag() + id] = (inlineToken[modeTag() + id] || 0) + 1;
         paintInline(canvas, prev, inlineToken[modeTag() + id], id);
-        if (prev) localStorage.setItem(inlineKey(id), prev); else localStorage.removeItem(inlineKey(id));
+        if (prev) LS.set(inlineKey(id), prev); else LS.remove(inlineKey(id));
     }
     function clearInlineCanvas(id) {
         const canvas = document.getElementById('inlineCanvas_' + id);
         if (!canvas) return;
+        clearRowDone(id);
         inlineUndo[modeTag() + id] = [null];
         inlineToken[modeTag() + id] = (inlineToken[modeTag() + id] || 0) + 1;
         paintInline(canvas, null, inlineToken[modeTag() + id], id);
-        localStorage.removeItem(inlineKey(id));
+        LS.remove(inlineKey(id));
     }
 
     /* BINDER WRITING PAGE ENGINE */
@@ -1356,7 +1514,7 @@
         if (window.ResizeObserver) { activeResizeObserver = new ResizeObserver(() => syncCanvasResolution(canvas, container, id)); activeResizeObserver.observe(container); }
 
         let activePointerId = null, activeType = null, strokeTool = null;
-        let lastX = 0, lastY = 0, startX = 0, startY = 0, snapshot = null, touchBackup = null;
+        let lastX = 0, lastY = 0, touchBackup = null;
         const localXY = e => { const r = canvas.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
 
         const drawSegment = (x1, y1, x2, y2, p) => {
@@ -1371,16 +1529,9 @@
             else { ctx.fillStyle = canvasStates[id].color; ctx.beginPath(); ctx.arc(x, y, 2.2 * (.8 + (p > 0 ? p : .5) * .8), 0, Math.PI * 2); }
             ctx.fill(); ctx.restore();
         };
-        const drawGlowLine = (x1, y1, x2, y2, color) => {
-            const dpr = Number(canvas.dataset.dpr) || 1;
-            ctx.save(); ctx.lineCap = 'round'; ctx.strokeStyle = color; ctx.shadowColor = color; ctx.shadowBlur = 14 * dpr; ctx.lineWidth = 2.5;
-            ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
-            ctx.shadowBlur = 0; ctx.globalAlpha = .9; ctx.lineWidth = 1.2; ctx.strokeStyle = '#FFF';
-            ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); ctx.restore();
-        };
         const cancelTouchStroke = () => {
             if (touchBackup) ctx.putImageData(touchBackup, 0, 0);
-            touchBackup = null; snapshot = null;
+            touchBackup = null;
             InkSound.stop();
             activePointerId = null; activeType = null; strokeTool = null;
             inkStrokeActive = false;
@@ -1388,12 +1539,7 @@
         const endStroke = () => {
             if (activePointerId === null) return;
             InkSound.stop();
-            if (strokeTool === 'line' && snapshot) {
-                const len = Math.hypot(lastX - startX, lastY - startY);
-                ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.putImageData(snapshot, 0, 0); ctx.restore();
-                if (len > 6) { drawGlowLine(startX, startY, lastX, lastY, canvasStates[id].color); InkSound.glideChime(); }
-            }
-            snapshot = null; touchBackup = null;
+            touchBackup = null;
             activePointerId = null; activeType = null; strokeTool = null;
             inkStrokeActive = false;
             saveCurrentCanvasInk(id);
@@ -1412,23 +1558,13 @@
             const barrel = e.pointerType === 'pen' && ((e.buttons & 32) || e.button === 5);
             strokeTool = barrel ? 'eraser' : canvasStates[id].tool;
             const [x, y] = localXY(e);
-            startX = lastX = x; startY = lastY = y;
-            if (strokeTool === 'line') { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height); ctx.restore(); }
-            else {
-                touchBackup = activeType !== 'pen' ? (() => { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); const b = ctx.getImageData(0, 0, canvas.width, canvas.height); ctx.restore(); return b; })() : null;
-                drawDot(x, y, e.pressure);
-            }
+            lastX = x; lastY = y;
+            touchBackup = activeType !== 'pen' ? (() => { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); const b = ctx.getImageData(0, 0, canvas.width, canvas.height); ctx.restore(); return b; })() : null;
+            drawDot(x, y, e.pressure);
         });
         canvas.addEventListener('pointermove', e => {
             if (e.pointerType === 'pen') penSeenAt = Date.now();
             if (e.pointerId !== activePointerId) return;
-            if (strokeTool === 'line') {
-                const [x, y] = localXY(e);
-                if (snapshot) { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.putImageData(snapshot, 0, 0); ctx.restore(); }
-                ctx.save(); ctx.lineCap = 'round'; ctx.strokeStyle = canvasStates[id].color; ctx.lineWidth = 2.5;
-                ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(x, y); ctx.stroke(); ctx.restore();
-                lastX = x; lastY = y; return;
-            }
             const events = (e.getCoalescedEvents && e.getCoalescedEvents().length) ? e.getCoalescedEvents() : [e];
             let total = 0;
             for (const ev of events) { const [x, y] = localXY(ev); total += Math.hypot(x - lastX, y - lastY); drawSegment(lastX, lastY, x, y, ev.pressure); lastX = x; lastY = y; }
@@ -1445,10 +1581,10 @@
         ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = 'source-over'; ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.restore();
         const key = `zaina_eng_ink_${modeTag()}_${id}_p${page}`;
         const legacy = 'zaina_eng_ink_' + id + '_p' + page;
-        const saved = localStorage.getItem(key) || (isPracticeMode ? localStorage.getItem(legacy) : null);
+        const saved = LS.get(key) || (isPracticeMode ? LS.get(legacy) : null);
         if (!saved) return;
         let size = null;
-        try { size = JSON.parse(localStorage.getItem(key + '_size') || 'null'); } catch (_) {}
+        try { size = JSON.parse(LS.get(key + '_size') || 'null'); } catch (_) {}
         const img = new Image();
         img.onload = () => {
             const sw = size ? size.w : img.width, sh = size ? size.h : img.height;
@@ -1463,17 +1599,17 @@
         if (!canvas || canvas.width <= 0 || canvas.height <= 0) return;
         const key = `zaina_eng_ink_${modeTag()}_${id}_p${activePages[id] || 1}`;
         try {
-            const previous = localStorage.getItem(key) || '';
+            const previous = LS.get(key) || '';
             const next = canvas.toDataURL();
             if (previous !== next) pushUndo(key, previous);
-            localStorage.setItem(key, next);
-            localStorage.setItem(key + '_size', JSON.stringify({ w: canvas.width, h: canvas.height }));
+            LS.set(key, next);
+            LS.set(key + '_size', JSON.stringify({ w: canvas.width, h: canvas.height }));
         } catch (_) {}
     }
     function setTool(id, tool) {
         if (!canvasStates[id]) canvasStates[id] = { tool: 'pen', color: '#1e1b4b' };
         canvasStates[id].tool = tool;
-        ['Pen', 'Line', 'Eraser'].forEach(t => {
+        ['Pen', 'Eraser'].forEach(t => {
             const b = document.getElementById(`tool${t}_${id}`);
             if (b) b.classList.toggle('on', t.toLowerCase() === tool);
         });
@@ -1491,18 +1627,18 @@
         const st = undoStacks[key] || [];
         if (!st.length) return;
         const previous = st.pop();
-        if (previous) localStorage.setItem(key, previous); else localStorage.removeItem(key);
+        if (previous) LS.set(key, previous); else LS.remove(key);
         loadCanvasInk(id, page);
     }
     function clearCanvas(id) {
         const canvas = document.getElementById('canvas_' + id);
         if (!canvas) return;
         const key = `zaina_eng_ink_${modeTag()}_${id}_p${activePages[id] || 1}`;
-        const current = localStorage.getItem(key);
+        const current = LS.get(key);
         if (current) pushUndo(key, current);
         const ctx = canvas.getContext('2d');
         ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.restore();
-        localStorage.removeItem(key); localStorage.removeItem(key + '_size');
+        LS.remove(key); LS.remove(key + '_size');
     }
     function openBinder(id) { playMagicWhoosh(true); binderOpenedMap[id] = true; document.getElementById('binderCover_' + id).classList.add('binder-open'); }
     function closeBinder(id) { playMagicWhoosh(false); binderOpenedMap[id] = false; saveCurrentCanvasInk(id); document.getElementById('binderCover_' + id).classList.remove('binder-open'); }
@@ -1524,6 +1660,7 @@
         for (let i = 0; i < 26; i++) { const a = (i / 26) * Math.PI * 2, v = 2 + Math.random() * 3; fireworks.push({ x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1, color: col }); }
     }
     function triggerGrandCelebration() {
+        if (grandAnimRunning) return;
         saveVisibleInlineInk();
         resizeGrandCanvas();
         grandStage.style.display = 'block';
@@ -1602,7 +1739,10 @@
         setTimeout(() => { window.location.href = 'index.html'; }, 60);
     }
     window.addEventListener('pagehide', () => { try { saveVisibleInlineInk(); } catch (_) {} });
-    window.addEventListener('load', () => { update6DCarouselDOM(); });
+    window.addEventListener('load', () => {
+        update6DCarouselDOM();
+        if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
 </script>
 </body>
 </html>
