@@ -212,6 +212,31 @@
         @media (orientation: portrait) {
             body::after { content: "Please rotate your tablet to landscape"; position: fixed; inset: 0; background: #1E1B4B; color: #fff; display: grid; place-items: center; font-size: 1.6rem; font-weight: 900; z-index: 99999; }
         }
+
+        /* ===== v9 additions ===== */
+        /* section topic + part line: bold white */
+        .sec-head h2, .sec-head .sec-sub { color:#fff !important; font-weight:800 !important; text-shadow:0 2px 6px rgba(0,0,0,.95), 0 0 14px rgba(0,0,0,.6) !important; }
+        /* writing strips: faint tint so glowing ink reads on the picture */
+        .inline-strip-box { background: rgba(2,6,23,0.22); }
+        /* grammar helpers */
+        .aux-u { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+        .main-c { border: 2px solid currentColor; border-radius: 999px; padding: 0 7px; }
+        .aux-hint { display:inline-block; align-self:flex-start; background:#FEF3C7; color:#78350F; font-weight:800; border-radius:10px; padding:4px 12px; text-shadow:none; box-shadow:0 2px 6px rgba(0,0,0,.3); }
+        .aux-hint .say-word { text-shadow:none; }
+        .tick-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+        .tick-note { font-size:.8rem; font-weight:800; color:#7C2D12; background:rgba(255,255,255,.8); border-radius:8px; padding:2px 10px; align-self:flex-start; text-shadow:none; }
+        /* celebration: Zaina centre stage */
+        #grandCelebrationStage { pointer-events: auto; background: radial-gradient(circle at center, rgba(88,28,135,0.55) 0%, rgba(7,11,20,0.93) 100%); }
+        .magic-banner-centerpiece { gap: 4px; max-height: 98vh; }
+        .zc-wrap { position: relative; display:flex; align-items:center; justify-content:center; }
+        .zc-glow { position:absolute; width:min(62vh,560px); height:min(62vh,560px); border-radius:50%; background: conic-gradient(from 0deg, #f472b6, #c084fc, #38bdf8, #fde047, #4ade80, #f472b6); filter: blur(34px); opacity:.55; animation: zcSpin 7s linear infinite; }
+        .zc-img { position:relative; height:min(52vh,520px); width:auto; max-width:90vw; object-fit:contain; filter: drop-shadow(0 12px 28px rgba(0,0,0,.6)); animation: zcBounce 1.6s ease-in-out infinite; }
+        .magic-top-title { font-size: clamp(26px, 5.2vh, 52px); }
+        .magic-subtitle-sparkle { font-size: clamp(13px, 2.4vh, 20px); margin-top: 2px; }
+        #celebrateLine { color:#fff; font-weight:800; font-size: clamp(.85rem, 2.3vh, 1.05rem); text-align:center; margin: 4px 0; text-shadow:0 2px 6px rgba(0,0,0,.9); max-width:min(90vw,640px); }
+        .magic-banner-centerpiece .royal-btn-continue { pointer-events:auto; margin-top:6px; }
+        @keyframes zcBounce { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-12px) scale(1.03); } }
+        @keyframes zcSpin { to { transform: rotate(360deg); } }
         #parentModal { position: fixed; inset: 0; z-index: 100050; background: rgba(2,6,23,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; padding: 16px; }
         #parentModal.open { display: flex; }
         #pinLockModal { position: fixed; inset: 0; z-index: 100050; background: rgba(2,6,23,0.8); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; padding: 16px; }
@@ -261,25 +286,14 @@
     <div id="grandCelebrationStage">
         <canvas id="grandFinaleCanvas"></canvas>
         <div class="magic-banner-centerpiece" id="magicCenterpiece">
-            <div class="magic-crown-halo"></div>
-            <div class="magic-top-title">✨ EXCELLENT! ✨</div>
+            <div class="zc-wrap">
+                <div class="zc-glow"></div>
+                <img class="zc-img" src="assets/zaina-avatar.png" alt="Zaina" onerror="handleImageFallback(this)">
+            </div>
+            <div class="magic-top-title">🎉 GREAT WORK, ZAINA! 🎉</div>
             <div class="magic-subtitle-sparkle">ALPS ACADEMY SCHOLAR!</div>
-        </div>
-        <div class="gliding-companion-rocket" id="glidingCompanionRocket">
-            <img src="assets/heidi-main.webp" alt="Heidi" onerror="handleImageFallback(this)">
-        </div>
-        <div class="royal-scroll-landing-right" id="royalScrollLandingRight">
-            <div class="royal-unfurled-scroll">
-                <div class="flex items-center gap-3 border-b-2 border-amber-300 pb-2 mb-2">
-                    <img src="assets/alps-badge.webp" class="w-10 h-10 object-contain" alt="" onerror="handleImageFallback(this)"/>
-                    <div class="royal-scroll-title m-0 p-0">🌟 SECTION MASTERED! 🌟</div>
-                </div>
-                <div class="royal-scroll-body" id="celebrateLine">Outstanding writing, Zaina! Your English exercises are completed with brilliance!</div>
-                <button class="royal-btn-continue" onclick="closeGrandCelebration()">Continue Journey ➔</button>
-            </div>
-            <div class="royal-victory-companion">
-                <img src="assets/heidi-reading.webp" alt="" onerror="handleImageFallback(this)">
-            </div>
+            <div id="celebrateLine">Outstanding writing, Zaina! Your English exercises are completed with brilliance!</div>
+            <button class="royal-btn-continue" onclick="closeGrandCelebration()">Continue Journey ➔</button>
         </div>
     </div>
 
@@ -330,7 +344,7 @@
                     </div>
                     <div class="carousel-6d-card pos-right" id="card6d_1" onclick="handleCardTap(1)">
                         <div class="flex items-center justify-between w-full"><span class="text-[10px] font-bold uppercase tracking-widest text-indigo-800 bg-indigo-100 px-3 py-0.5 rounded-full">Trail II</span><img src="assets/alps-badge.webp" class="w-6 h-6 object-contain" alt="" onerror="handleImageFallback(this)"/></div>
-                        <div class="flex flex-col items-center pointer-events-none"><h3 class="text-xl font-bold text-slate-900 font-display">Grammar &amp; Tenses</h3><p class="text-xs text-slate-700 mt-1">MCQs &amp; Past Tense</p></div>
+                        <div class="flex flex-col items-center pointer-events-none"><h3 class="text-xl font-bold text-slate-900 font-display">Grammar &amp; Tenses</h3><p class="text-xs text-slate-700 mt-1">MCQs, Tenses &amp; Verbs</p></div>
                         <img src="assets/heidi-reading.webp" class="gateway-avatar-6d" alt="Grammar" onerror="handleImageFallback(this)"/>
                         <button type="button" onclick="event.stopPropagation(); switchRealm('grammar')" class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-lg active:scale-95 cursor-pointer">Enter Grammar ➔</button>
                     </div>
@@ -432,7 +446,7 @@
         'depicted':'de · pict · ed','pasture':'pas · ture','homesick':'home · sick','summits':'sum · mits','sobbing':'sob · bing',
         'sighing':'sigh · ing','resignation':'res · ig · na · tion','pitifully':'pit · i · ful · ly','miracles':'mir · a · cles',
         'assured':'as · sured','determined':'de · ter · mined','believe':'be · lieve','attention':'at · ten · tion','exciting':'ex · cit · ing',
-        'pleasure':'plea · sure','frau':'Frau','fraulein':'Frau · lein'
+        'pleasure':'plea · sure','flushed':'flushed','frau':'Frau','fraulein':'Frau · lein'
     };
     const splitFor = w => SYL[String(w).toLowerCase().replace(/[^a-z]/g, '')] || String(w);
 
@@ -596,7 +610,7 @@
     /* ===== TRAILS, STAR MAP, HEIDI, MY WORDS, TEXT SIZE ===== */
     const TRAILS = {
         treasury:      { name: 'Word Treasury',       parts: 3 },
-        grammar:       { name: 'Grammar & Tenses',    parts: 2 },
+        grammar:       { name: 'Grammar & Tenses',    parts: 4 },
         words:         { name: 'Homophones & Stems',  parts: 2 },
         comprehension: { name: 'Answer in Brief',     parts: 3 }
     };
@@ -632,7 +646,8 @@
     function finishPart() {
         if (isPracticeMode) {
             saveAllInkNow();
-            heidiSay('Great practice, Zaina! Your work is saved.', 'heidi-reading.webp');
+            document.getElementById('celebrateLine').textContent = 'Great practice, Zaina! Your work is saved.';
+            triggerGrandCelebration();
             return;
         }
         openParentModal();
@@ -826,11 +841,12 @@
     const MEANINGS = [
         ['Frau', 'German for Mrs', 'Ger · man for Mrs'], ['Fraulein', 'German for Miss', 'Ger · man for Miss'],
         ['depicted', 'showed', 'showed'], ['flock', 'group of goats', 'group of goats'],
-        ['pasture', 'grazing grass field', 'graz · ing grass field'], ['keen', 'eager and interested', 'ea · ger and in · ter · est · ed'],
-        ['homesick', 'missing home', 'mis · sing home'], ['summits', 'top of mountains', 'top of moun · tains'],
-        ['sobbing', 'crying noisily', 'cry · ing noi · si · ly'], ['sighing', 'breathing out slowly', 'breath · ing out slow · ly'],
-        ['resignation', 'accepting sad reality', 'ac · cept · ing sad re · al · i · ty'], ['pitifully', 'making people feel sorry', 'mak · ing peo · ple feel sor · ry'],
-        ['miracles', 'surprising lucky events', 'sur · pris · ing luck · y e · vents'], ['assured', 'promised', 'prom · ised']
+        ['pasture', 'field of grass for grazing', ''], ['keen', 'very interested, eager', ''],
+        ['homesick', 'missing being at home', ''], ['summits', 'topmost parts of mountains', ''],
+        ['sobbing', 'crying noisily, taking deep breaths', ''], ['sighing', 'breathing out slowly and calmly', ''],
+        ['resignation', 'sad feeling of accepting what you cannot change', ''], ['pitifully', 'in a way that makes people feel sorry', ''],
+        ['miracles', 'very lucky events, surprising and unexpected', ''], ['assured', 'promised', 'prom · ised'],
+        ['flushed', 'red in the face', 'red in the face']
     ];
     const OPPOSITES = [
         ['Determined', 'Hesitant', 'He · si · tant'], ['Difficult', 'Easy', 'Ea · sy'], ['Believe', 'Doubt', 'Doubt'],
@@ -851,7 +867,7 @@
         return a;
     }
     function makeWriteOrders() {
-        const o = { m1: shuffleIdx(7), m2: shuffleIdx(7), opp: shuffleIdx(6), past: shuffleIdx(5), homo: shuffleIdx(2), stem: shuffleIdx(3), mcq: shuffleIdx(3) };
+        const o = { m1: shuffleIdx(7), m2: shuffleIdx(8), opp: shuffleIdx(6), past: shuffleIdx(5), homo: shuffleIdx(2), stem: shuffleIdx(6), pres: shuffleIdx(5), aux: shuffleIdx(10), mcq: shuffleIdx(3) };
         for (let q = 0; q < 3; q++) o['mcqopt' + q] = shuffleIdx(4);
         return o;
     }
@@ -871,11 +887,11 @@
         { n: 1, title: 'sweet / suite', a: ['Hotel has a ________ of rooms.', 'suite'], b: ['She has a ________ voice.', 'sweet'] },
         { n: 2, title: 'aisle / isle', a: ['Remote ________ in West Indies.', 'isle'], b: ['Prefer an ________ seat?', 'aisle'] }
     ];
-    const STEMS = [['st _ _ _', 'stone'], ['categ _ _ _', 'category'], ['fact _ _ _', 'factory']];
+    const STEMS = [['st _ _ _', 'story'], ['categ _ _ _', 'category'], ['fact _ _ _', 'factory'], ['nurs _ _ _', 'nursery'], ['bound _ _ _', 'boundary'], ['batt _ _ _', 'battery']];
     const MCQ_QS = [
-        { t: 'Grandmother was surprised that Heidi...', o: ['could not read.', 'was unable to learn the alphabet.', 'did not want to learn the alphabet.', 'had no interest in reading.'], c: 0 },
+        { t: 'Grandmother was surprised that Heidi...', o: ['could not read.', 'was unable to learn the alphabet.', 'did not want to learn the alphabet.', 'had no interest in reading.'], c: 1 },
         { t: 'Heidi had decided that she would not be able to read as...', o: ['she found it very difficult.', 'she knew she was incapable of doing so.', 'Peter had told her that it was not easy to learn to read.', 'she wanted to defy Grandmother.'], c: 2 },
-        { t: 'Grandmother promised Heidi that once she learnt to read...', o: ['she could have the large book with pictures.', 'she could read from the large book.', 'she could read to Clara.', 'she would never cry on seeing the pictures.'], c: 1 }
+        { t: 'Grandmother promised Heidi that once she learnt to read...', o: ['she could have the large book with pictures.', 'she could read from the large book.', 'she could read to Clara.', 'she would never cry on seeing the pictures.'], c: 0 }
     ];
     const mcqBlock = (qi, pos) => {
         const q = MCQ_QS[qi];
@@ -885,6 +901,45 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2">${oo.map((oi, p) => `<button onclick="pickMCQ(this, ${oi === q.c})" class="opt-btn">${'abcd'[p]}. ${q.o[oi]}</button>`).join('')}</div>
         </div>`;
     };
+
+    const PRES = [
+        ['Grandmother likes to read.', true, ''],
+        ['Heidi walks to the fields every day.', true, ''],
+        ['The train reaches this station at 1 p.m.', true, ''],
+        ['The children read the best stories yesterday.', false, 'Past tense: "yesterday"'],
+        ['The boy is running up the mountain.', false, 'Present continuous: "is running"']
+    ];
+    const AUXS = [
+        'They [[have been]] ((working)) all day.',
+        'She [[does]] not ((like)) to play badminton.',
+        'I [[am]] ((having)) tea with biscuits.',
+        'She [[is]] ((preparing)) dinner for us.',
+        'They [[did]] not ((meet)) the minister.',
+        '[[Do]] you ((want)) to have another slice of cake?',
+        '[[Did]] he ((finish)) his dinner?',
+        'I [[have been]] ((listening)) to your speech.',
+        'I [[do]] not ((know)) who ((broke)) the vase.',
+        'We [[have]] ((done)) a lot so far.'
+    ];
+    const auxPlain = t => t.replace(/\[\[(.+?)\]\]/g, '$1').replace(/\(\((.+?)\)\)/g, '$1');
+    const auxMarked = t => t.replace(/\[\[(.+?)\]\]/g, '<u class="aux-u">$1</u>').replace(/\(\((.+?)\)\)/g, '<span class="main-c">$1</span>');
+    const presBlock = (pi, pos) => {
+        const p = PRES[pi];
+        return `<div class="row-card">
+            <p class="font-bold">${pos + 1}. ${p[0]}</p>
+            <div class="tick-row">
+                <button onclick="pickMCQ(this, ${p[1]})" class="opt-btn">✔ Simple present</button>
+                <button onclick="pickMCQ(this, ${!p[1]})" class="opt-btn">✖ Not simple present</button>
+            </div>
+            ${p[2] ? `<span class="practice-only tick-note" style="display:${isPracticeMode ? '' : 'none'};">${p[2]}</span>` : ''}
+        </div>`;
+    };
+    const auxBlock = (ai, pos) => `<div class="row-card">
+        <p class="font-bold">${pos + 1}. ${auxPlain(AUXS[ai])}</p>
+        <span class="practice-only aux-hint" style="display:${isPracticeMode ? '' : 'none'};">${auxMarked(AUXS[ai])}</span>
+        <div class="text-xs font-bold opacity-90">Write the helping (auxiliary) verb, then the main verb.</div>
+        ${createInlineStrip('aux_' + (ai + 1), '', '100%')}
+    </div>`;
     const subStageMap = { treasury: 0, grammar: 0, words: 0 };
     function changeSubStage(key, delta) { playMagicWhoosh(true); saveVisibleInlineInk(); subStageMap[key] += delta; renderActiveCard(false); }
 
@@ -903,7 +958,7 @@
             realmName: 'Word Treasury: Meanings & Opposites',
             stages: [
                 { title: 'Meanings Glossary (Part 1)', render: () => `<div class="flex flex-col gap-3">${meaningsRows(0, 7)}</div>` },
-                { title: 'Meanings Glossary (Part 2)', render: () => `<div class="flex flex-col gap-3">${meaningsRows(7, 14)}</div>` },
+                { title: 'Meanings Glossary (Part 2)', render: () => `<div class="flex flex-col gap-3">${meaningsRows(7, 15)}</div>` },
                 { title: 'Opposites (6 Pairs)', render: () => `<div class="flex flex-col gap-3">${ord('opp', 6).map((oi, pos) => {
                     const o = OPPOSITES[oi];
                     return rowHTML('opp_' + (oi + 1), readable(pos + 1, o[0], ' X'), o[1], o[2], 'text-rose-900', '100%', true);
@@ -914,6 +969,8 @@
             realmName: 'Grammar & Verb Tenses',
             stages: [
                 { title: 'Story Reading MCQs', render: () => `<div class="flex flex-col gap-3 text-sm">${ord('mcq', 3).map((qi, pos) => mcqBlock(qi, pos)).join('')}</div>` },
+                { title: 'Simple Present Tense (Tick ✔)', render: () => `<div class="flex flex-col gap-3 text-sm">${ord('pres', 5).map((pi, pos) => presBlock(pi, pos)).join('')}</div>` },
+                { title: 'Auxiliary & Main Verbs', render: () => `<div class="flex flex-col gap-3 text-sm">${ord('aux', 10).map((ai, pos) => auxBlock(ai, pos)).join('')}</div>` },
                 { title: 'Simple Past Tense Sentences', render: () => `<div class="flex flex-col gap-3 text-sm">${ord('past', 5).map((pi, pos) => {
                     const p = PAST[pi];
                     return rowHTML('past_' + (pi + 1), `${pos + 1}. ${p[0]}`, p[1], p[2], 'text-indigo-900', p[3] || 450);
@@ -934,7 +991,7 @@
                       </div>`;
                     return `<div class="grid grid-cols-1 md:grid-cols-2 gap-4">${ord('homo', 2).map((hi, pos) => pair(pos, HOMO[hi])).join('')}</div>`;
                 } },
-                { title: 'Meaningful Word Stems', render: () => `<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">${ord('stem', 3).map((si, pos) =>
+                { title: 'Spelling (ary, ery, ory)', render: () => `<p class="font-bold text-lg">Fill in the blanks to make meaningful words: <b>ary · ery · ory</b></p><div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">${ord('stem', 6).map((si, pos) =>
                     rowHTML('stem_' + (si + 1), `${pos + 1}. ${STEMS[si][0]}`, STEMS[si][1], '', 'text-cyan-900', 260)).join('')}</div>` }
             ]
         },
@@ -1176,37 +1233,66 @@
         let drawing = false, pid = null, lastX = 0, lastY = 0;
         const xy = e => { const r = canvas.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
 
+        const INK = '#FFF6C9', GLOW = '#FACC15';
+        let pending = false, mode = null, sx = 0, sy = 0, lastClientY = 0, scroller = null;
+        const setupInk = () => {
+            ctx.globalCompositeOperation = 'source-over'; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+            ctx.strokeStyle = INK; ctx.fillStyle = INK; ctx.lineWidth = 2.6;
+            ctx.shadowColor = GLOW; ctx.shadowBlur = 10 * dpr; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0;
+        };
+        const dotAt = (x, y) => { setupInk(); ctx.beginPath(); ctx.arc(x, y, 1.4, 0, Math.PI * 2); ctx.fill(); };
+        const segTo = (x1, y1, x2, y2) => { setupInk(); ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); };
+        const startDraw = () => { drawing = true; inkStrokeActive = true; InkSound.init(); dotAt(lastX, lastY); };
+        const canScroll = () => scroller && scroller.scrollHeight > scroller.clientHeight + 2;
+
         canvas.onpointerdown = e => {
             document.querySelectorAll('.inline-strip-box.glow').forEach(b => b.classList.remove('glow'));
             canvas.parentElement.classList.add('glow');
-            if (drawing) return;
-            if (e.pointerType !== 'pen' && !fingerAllowed(e)) return;
-            if (e.pointerType === 'pen') penSeenAt = Date.now();
+            if (drawing || pending) return;
+            const isPen = e.pointerType === 'pen';
+            if (!isPen && !fingerAllowed(e)) return;
+            if (isPen) penSeenAt = Date.now();
             e.preventDefault();
-            drawing = true; pid = e.pointerId; inkStrokeActive = true;
+            pid = e.pointerId; mode = null;
             try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
             [lastX, lastY] = xy(e);
-            InkSound.init();
-            ctx.globalCompositeOperation = 'source-over';
-            ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = '#1e1b4b'; ctx.lineWidth = 2.4;
-            ctx.beginPath(); ctx.arc(lastX, lastY, 1.2, 0, Math.PI * 2); ctx.fillStyle = '#1e1b4b'; ctx.fill();
+            sx = e.clientX; sy = e.clientY; lastClientY = e.clientY;
+            if (e.pointerType === 'touch') { pending = true; scroller = canvas.closest('.sec-body'); }
+            else startDraw();
         };
         canvas.onpointermove = e => {
             if (e.pointerType === 'pen') penSeenAt = Date.now();
-            if (!drawing || e.pointerId !== pid) return;
+            if (e.pointerId !== pid) return;
+            if (pending) {
+                const dx = e.clientX - sx, dy = e.clientY - sy;
+                if (Math.hypot(dx, dy) < 8) return;
+                pending = false;
+                if (Math.abs(dy) > Math.abs(dx) * 1.2 && canScroll()) { mode = 'scroll'; lastClientY = e.clientY; }
+                else {
+                    mode = 'draw'; startDraw();
+                    const [x, y] = xy(e); segTo(lastX, lastY, x, y); lastX = x; lastY = y;
+                    return;
+                }
+            }
+            if (mode === 'scroll') { scroller.scrollTop -= (e.clientY - lastClientY); lastClientY = e.clientY; return; }
+            if (!drawing) return;
             const evs = (e.getCoalescedEvents && e.getCoalescedEvents().length) ? e.getCoalescedEvents() : [e];
             let dist = 0;
             for (const ev of evs) {
                 const [x, y] = xy(ev);
-                ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(x, y); ctx.stroke();
+                segTo(lastX, lastY, x, y);
                 dist += Math.hypot(x - lastX, y - lastY);
                 lastX = x; lastY = y;
             }
             InkSound.update('pen', dist / evs.length);
         };
         const stop = e => {
-            if (!drawing || (e && e.pointerId !== pid)) return;
-            drawing = false; pid = null; inkStrokeActive = false;
+            if (e && e.pointerId !== pid) return;
+            if (pending && e && e.type === 'pointerup') startDraw();   // a quick tap leaves a dot
+            pending = false;
+            if (!drawing) { pid = null; mode = null; return; }
+            drawing = false; pid = null; mode = null; inkStrokeActive = false;
+            ctx.shadowBlur = 0;
             InkSound.stop();
             try {
                 const data = canvas.toDataURL();
@@ -1428,34 +1514,58 @@
     let grandAnimRunning = false, magicConfettiStorm = [];
     function resizeGrandCanvas() { grandCanvas.width = window.innerWidth; grandCanvas.height = window.innerHeight; }
     window.addEventListener('resize', resizeGrandCanvas);
+    function zainaCheer() {
+        try { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance('Great work, Zaina!'); u.rate = 0.95; u.pitch = 1.1; window.speechSynthesis.speak(u); } catch (_) {}
+    }
+    let fireworks = [], fwTimer = null;
+    function addBurst() {
+        const cx = Math.random() * innerWidth, cy = Math.random() * innerHeight * 0.6 + 30;
+        const col = ['#EC4899', '#C084FC', '#38BDF8', '#FDE047', '#4ADE80'][Math.floor(Math.random() * 5)];
+        for (let i = 0; i < 26; i++) { const a = (i / 26) * Math.PI * 2, v = 2 + Math.random() * 3; fireworks.push({ x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1, color: col }); }
+    }
     function triggerGrandCelebration() {
         saveVisibleInlineInk();
         resizeGrandCanvas();
         grandStage.style.display = 'block';
         grandAnimRunning = true;
         playGrandFanfare();
-        document.getElementById('magicCenterpiece').className = 'magic-banner-centerpiece impact';
-        magicConfettiStorm = [];
-        const colors = ['#EC4899', '#C084FC', '#38BDF8', '#FDE047', '#4ADE80', '#FFFFFF'];
-        for (let i = 0; i < 70; i++) magicConfettiStorm.push({ x: Math.random() * innerWidth, y: -20 - Math.random() * 200, size: Math.random() * 8 + 4, vx: (Math.random() - .5) * 2, vy: Math.random() * 3 + 2, color: colors[Math.floor(Math.random() * colors.length)] });
-        setTimeout(() => { document.getElementById('royalScrollLandingRight').className = 'royal-scroll-landing-right landed'; }, 1100);
+        zainaCheer();
+        const cp = document.getElementById('magicCenterpiece');
+        cp.className = 'magic-banner-centerpiece';
+        void cp.offsetWidth;
+        cp.className = 'magic-banner-centerpiece impact';
+        magicConfettiStorm = []; fireworks = [];
+        const colors = ['#EC4899', '#C084FC', '#38BDF8', '#FDE047', '#4ADE80', '#FFFFFF', '#FB923C'];
+        for (let i = 0; i < 150; i++) magicConfettiStorm.push({ x: Math.random() * innerWidth, y: -20 - Math.random() * innerHeight, w: Math.random() * 8 + 5, h: Math.random() * 5 + 3, rot: Math.random() * 6, vr: (Math.random() - .5) * .2, vx: (Math.random() - .5) * 2, vy: Math.random() * 3 + 2, color: colors[Math.floor(Math.random() * colors.length)] });
+        addBurst(); addBurst();
+        clearInterval(fwTimer); fwTimer = setInterval(addBurst, 700);
         requestAnimationFrame(renderGrandScene);
     }
     function renderGrandScene() {
         if (!grandAnimRunning) return;
         grandCtx.clearRect(0, 0, grandCanvas.width, grandCanvas.height);
         for (const p of magicConfettiStorm) {
-            p.x += p.vx; p.y += p.vy;
-            if (p.y > innerHeight + 20) p.y = -10;
-            grandCtx.fillStyle = p.color; grandCtx.beginPath(); grandCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2); grandCtx.fill();
+            p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+            if (p.y > innerHeight + 20) { p.y = -10; p.x = Math.random() * innerWidth; }
+            grandCtx.save(); grandCtx.translate(p.x, p.y); grandCtx.rotate(p.rot);
+            grandCtx.fillStyle = p.color; grandCtx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); grandCtx.restore();
         }
+        for (const f of fireworks) {
+            f.x += f.vx; f.y += f.vy; f.vy += 0.04; f.life -= 0.014;
+            if (f.life <= 0) continue;
+            grandCtx.globalAlpha = Math.max(f.life, 0); grandCtx.fillStyle = f.color;
+            grandCtx.beginPath(); grandCtx.arc(f.x, f.y, 2.6, 0, Math.PI * 2); grandCtx.fill();
+        }
+        grandCtx.globalAlpha = 1;
+        fireworks = fireworks.filter(f => f.life > 0);
         requestAnimationFrame(renderGrandScene);
     }
     function closeGrandCelebration() {
         grandAnimRunning = false;
+        clearInterval(fwTimer);
+        try { window.speechSynthesis.cancel(); } catch (_) {}
         grandStage.style.display = 'none';
         document.getElementById('magicCenterpiece').className = 'magic-banner-centerpiece';
-        document.getElementById('royalScrollLandingRight').className = 'royal-scroll-landing-right';
     }
 
     /* STARFIELD */
