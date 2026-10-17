@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Humayun's Learning Quest: Islamiyath</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Fredoka:wght@600;700;800&family=Quicksand:wght@600;700;800&family=Kalam:wght@700&family=Amiri:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --font-display: 'Fredoka', cursive, sans-serif;
+      --font-body: 'Quicksand', sans-serif;
+      --font-hand: 'Kalam', cursive, sans-serif;
+      --font-arabic: 'Amiri', serif;
+      --color-emerald-deep: #064E3B;
+      --color-emerald-light: #10B981;
+      --color-gold: #F59E0B;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      font-family: var(--font-body);
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #061A14;
+      color: #F8FAFC;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    #starfieldCanvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    #screenDimOverlay {
+      position: fixed;
+      inset: 0;
+      background: #000000;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 99998;
+      transition: opacity 0.2s ease;
+    }
+
+    .font-display { font-family: var(--font-display); }
+    .font-hand { font-family: var(--font-hand); }
+    .font-arabic { font-family: var(--font-arabic); }
+
+    /* Syllable Pill Badges */
+    .syllable-badge {
+      display: inline-flex;
+      align-items: center;
+      background: #ECFDF5;
+      border: 1.5px solid #A7F3D0;
+      color: #065F46;
+      font-weight: 800;
+      padding: 2px 8px;
+      margin: 2px 3px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .syllable-badge:hover {
+      background: #D1FAE5;
+      transform: scale(1.05);
+      border-color: #34D399;
+    }
+
+    /* Clean Graph Box Grid Paper Pattern for Writing Canvas */
+    .graph-paper {
+      background-color: #FFFFFF;
+      background-image: 
+        linear-gradient(to right, #E2E8F0 1px, transparent 1px),
+        linear-gradient(to bottom, #E2E8F0 1px, transparent 1px);
+      background-size: 26px 26px;
+    }
+
+    .icon-pill-btn {
+      background: rgba(6, 78, 59, 0.85);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      color: #FFFFFF;
+      font-size: 1.05rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+      transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .icon-pill-btn:hover { transform: scale(1.08); background: rgba(4, 120, 87, 0.95); }
+    .icon-pill-btn:active { transform: scale(0.94); }
+
+    /* Interactive 6-Pillar Shield Card */
+    .pillar-shield {
+      background: rgba(6, 78, 59, 0.7);
+      border: 2px solid rgba(253, 230, 138, 0.4);
+      border-radius: 18px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+    }
+    .pillar-shield:hover {
+      transform: translateY(-2px) scale(1.02);
+      border-color: #FCD34D;
+      background: rgba(6, 95, 70, 0.85);
+    }
+    .pillar-num {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #F59E0B, #D97706);
+      color: #FFF;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .dua-word-tile {
+      background: #FEF3C7;
+      border: 2px solid #FCD34D;
+      color: #92400E;
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+    }
+    .dua-word-tile:hover { transform: scale(1.06); background: #FDE68A; }
+    .dua-word-tile.used { opacity: 0.35; pointer-events: none; filter: grayscale(50%); }
+
+    /* Modal Celebration */
+    #celebrationModal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 99999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .celebration-box {
+      background: #064E3B;
+      border: 3.5px solid #F59E0B;
+      border-radius: 28px;
+      padding: 28px 24px;
+      text-align: center;
+      max-width: 480px;
+      width: 100%;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.6);
+      animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes popIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col relative overflow-hidden">
+
+  <canvas id="starfieldCanvas"></canvas>
+  <div id="screenDimOverlay"></div>
+
+  <!-- TOP HEADER -->
+  <header class="relative z-20 bg-emerald-950/90 backdrop-blur-md border-b border-emerald-500/20 text-white shadow-lg py-2.5 px-6 flex justify-between items-center shrink-0">
+    <div class="flex items-center gap-3">
+      <a href="index.html" class="icon-pill-btn" title="Exit to Hub" onclick="exitToHub(event)">🏰</a>
+      <div class="flex flex-col">
+        <h1 class="text-base md:text-xl font-bold font-display tracking-wide flex items-center gap-2">
+          🌙 Islamiyath Quest <span class="bg-emerald-700/60 border border-emerald-400/40 text-emerald-200 text-xs px-2.5 py-0.5 rounded-full">Unit 2, 5 & 10</span>
+        </h1>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <!-- Dim Screen Slider (0% - 50%) -->
+      <div class="flex items-center gap-2 bg-emerald-900/80 border border-emerald-400/30 rounded-full px-3 py-1 text-xs">
+        <span>💡 Dim:</span>
+        <input type="range" id="dimRangeSlider" min="0" max="0.5" step="0.05" value="0" 
+               oninput="updateScreenDimLevel(this.value)" 
+               class="w-16 md:w-20 accent-amber-400 cursor-pointer">
+        <span id="dimPctLabel" class="w-7 font-bold text-amber-300">0%</span>
+      </div>
+
+      <button class="icon-pill-btn" id="soundBtn" onclick="toggleSound()" title="Audio Toggle">🔊</button>
+      
+      <!-- MODE SWITCHER (PRACTICE VS WRITE) -->
+      <div class="flex bg-emerald-900 p-1 rounded-xl border border-emerald-600/40">
+        <button id="btnModePractice" onclick="setMode('practice')" class="px-3 py-1 rounded-lg text-xs font-bold transition bg-emerald-600 text-white shadow cursor-pointer">📖 Practice</button>
+        <button id="btnModeWrite" onclick="setMode('write')" class="px-3 py-1 rounded-lg text-xs font-bold transition text-emerald-200 hover:text-white cursor-pointer">✍️ Write</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN QUEST CONTENT -->
+  <main class="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 flex flex-col justify-start relative z-10 overflow-y-auto">
+
+    <!-- QUEST TABS -->
+    <div class="flex gap-2 pb-3 overflow-x-auto w-full no-scrollbar border-b border-emerald-800/60 mb-4 shrink-0">
+      <button onclick="switchQuest(0)" id="tab_0" class="px-4 py-2 rounded-xl text-xs font-bold transition border border-amber-400/60 bg-amber-500/20 text-amber-200 shadow cursor-pointer">
+        ✨ 1. Articles of Faith
+      </button>
+      <button onclick="switchQuest(1)" id="tab_1" class="px-4 py-2 rounded-xl text-xs font-bold transition border border-emerald-600/30 bg-emerald-900/40 text-emerald-300 hover:bg-emerald-800/50 cursor-pointer">
+        🌹 2. Khadijah (RA)
+      </button>
+      <button onclick="switchQuest(2)" id="tab_2" class="px-4 py-2 rounded-xl text-xs font-bold transition border border-emerald-600/30 bg-emerald-900/40 text-emerald-300 hover:bg-emerald-800/50 cursor-pointer">
+        💧 3. Bathing Practice
+      </button>
+      <button onclick="switchQuest(3)" id="tab_3" class="px-4 py-2 rounded-xl text-xs font-bold transition border border-emerald-600/30 bg-emerald-900/40 text-emerald-300 hover:bg-emerald-800/50 cursor-pointer">
+        🥼 4. Garment Dua
+      </button>
+    </div>
+
+    <!-- QUEST CONTAINER -->
+    <div id="questContainer" class="flex-1 flex flex-col">
+      <!-- Injected dynamically -->
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="relative z-20 bg-emerald-950 text-emerald-400/70 py-2.5 text-center text-xs border-t border-emerald-800/50 shrink-0">
+    Islamiyath • Class 3 Unit 2, 5 & 10 • Royal Quest Academy
+  </footer>
+
+  <!-- CELEBRATION MODAL -->
+  <div id="celebrationModal" onclick="closeCelebration()">
+    <div class="celebration-box" onclick="event.stopPropagation()">
+      <div class="text-4xl mb-2">🌟 MashaAllah! 🌟</div>
+      <h3 class="text-xl font-bold font-display text-amber-300 mb-2" id="celebTitle">Quest Complete!</h3>
+      <p class="text-emerald-100 text-sm mb-6 leading-relaxed" id="celebDesc">
+        Well done, Humayun! You learned and verified this lesson with excellence!
+      </p>
+      <button onclick="closeCelebration()" class="bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-slate-950 font-bold px-6 py-2.5 rounded-xl shadow-lg transition active:scale-95 cursor-pointer">
+        Continue Learning ➔
+      </button>
+    </div>
+  </div>
+
+  <script>
+    let activeQuestIdx = 0;
+    let currentMode = 'practice'; // 'practice' or 'write'
+
+    /* LESSONS CURRICULUM FROM HUMAYUN'S NOTEBOOK */
+    const QUESTS = [
+      /* QUEST 0: Articles of Faith (Unit 2, 10 - Lesson 1, 3) */
+      {
+        id: "q_faith",
+        title: "Articles of Faith (Arkan al-Iman)",
+        unit: "Unit 2, 10 • Lesson 1, 3",
+        question: "What are the articles of faith?",
+        answerText: "The articles of faith are: 1) Believe in Allah (SWT), 2) His angels, 3) His books, 4) His messengers, 5) The Day of Resurrection, 6) Destiny (Whatever Allah has ordained).",
+        // Syllable breaker for answer parts
+        syllableSections: [
+          { label: "1) Believe in Allah (SWT)", syllables: ["Be·lieve", "in", "Al·lah"] },
+          { label: "2) His angels", syllables: ["His", "an·gels"] },
+          { label: "3) His books", syllables: ["His", "books"] },
+          { label: "4) His messengers", syllables: ["His", "mes·sen·gers"] },
+          { label: "5) The Day of Resurrection", syllables: ["The", "Day", "of", "Re·sur·rec·tion"] },
+          { label: "6) Destiny (Whatever Allah has ordained)", syllables: ["Des·ti·ny", "(What·ev·er", "Al·lah", "has", "or·dained)"] }
+        ],
+        pillars: [
+          "Believe in Allah (SWT)",
+          "His Angels",
+          "His Books",
+          "His Messengers",
+          "The Day of Resurrection",
+          "Destiny (Whatever Allah has ordained)"
+        ]
+      },
+
+      /* QUEST 1: Sayyidah Khadijah (RA) (Unit 10 - Lesson 3) */
+      {
+        id: "q_khadijah",
+        title: "Sayyidah Khadijah (RA)",
+        unit: "Unit 10 • Lesson 3",
+        question: "Who was Khadijah (RA)? Who was the first woman to accept Islam?",
+        answerText: "Khadijah (RA) was a noble, kind, wealthy lady of Makkah. She was the wife of Prophet Muhammad (SAW). She was the first woman to accept Islam.",
+        syllableSections: [
+          { label: "Answer Part 1:", syllables: ["Kha·di·jah", "(RA)", "was", "a", "no·ble,", "kind,", "wealth·y", "la·dy", "of", "Mak·kah."] },
+          { label: "Answer Part 2:", syllables: ["She", "was", "the", "wife", "of", "Proph·et", "Mu·ham·mad", "(SAW)."] },
+          { label: "Answer Part 3:", syllables: ["Kha·di·jah", "(RA)", "was", "the", "first", "wom·an", "to", "ac·cept", "Is·lam."] }
+        ]
+      },
+
+      /* QUEST 2: Bathing Practice (Unit 5 - Lesson 2 & 3) */
+      {
+        id: "q_bathing",
+        title: "Hygiene & Cleanliness (Taharah)",
+        unit: "Unit 5 • Lesson 2 & 3",
+        question: "Why is bathing good practice?",
+        answerText: "Taking bath daily is a good practice. It makes a person clean and healthy.",
+        syllableSections: [
+          { label: "Answer Sentence:", syllables: ["Tak·ing", "bath", "dai·ly", "is", "a", "good", "prac·tice.", "It", "makes", "a", "per·son", "clean", "and", "health·y."] }
+        ]
+      },
+
+      /* QUEST 3: Garment Dua (Unit 5 - Lesson 2 & 3) */
+      {
+        id: "q_garment",
+        title: "Garment Sunnah Dua (Abu Dawood)",
+        unit: "Unit 5 • Lesson 2 & 3",
+        question: "Fill in the blanks / Recite the Garment Dua:",
+        hadithText: "Allah's Messenger (SAW) said: He who puts on a garment and says: 'Praise be to Allah, who clothes me with this and who provided me with it without any power or ability from me', his past and present sins are forgiven for him. (Abu Dawood)",
+        syllableSections: [
+          { label: "Garment Dua Meaning:", syllables: ["Praise", "be", "to", "Al·lah,", "who", "clothes", "me", "with", "this", "and", "who", "pro·vid·ed", "me", "with", "it", "with·out", "an·y", "pow·er", "or", "a·bil·i·ty", "from", "me,"] },
+          { label: "Reward & Virtues:", syllables: ["his", "past", "and", "pres·ent", "sins", "are", "for·giv·en", "for", "him.", "(A·bu", "Da·wood)"] }
+        ],
+        wordsForBuilder: ["Praise", "be", "to", "Allah,", "who", "clothes", "me", "with", "this", "without", "any", "power", "or", "ability", "from", "me"]
+      }
+    ];
+
+    /* AUDIO SYNTHESIZER (Pure Web Audio API) */
+    let audioCtx = null;
+    let soundEnabled = true;
+
+    function getAudioContext() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('soundBtn').textContent = soundEnabled ? '🔊' : '🔇';
+    }
+
+    function playSoftChime() {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        [523.25, 659.25, 783.99].forEach((f, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(f, ctx.currentTime + idx * 0.07);
+          gain.gain.setValueAtTime(0.12, ctx.currentTime + idx * 0.07);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.07 + 0.35);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + idx * 0.07);
+          osc.stop(ctx.currentTime + idx * 0.07 + 0.4);
+        });
+      } catch (_) {}
+    }
+
+    function playCelebrationFanfare() {
+      if (!soundEnabled) return;
+      try {
+        const ctx = getAudioContext();
+        const chord = [392.00, 523.25, 659.25, 783.99, 1046.50];
+        chord.forEach((f, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(f, ctx.currentTime + idx * 0.08);
+          gain.gain.setValueAtTime(0.18, ctx.currentTime + idx * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + idx * 0.08 + 1.2);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + idx * 0.08);
+          osc.stop(ctx.currentTime + idx * 0.08 + 1.25);
+        });
+      } catch (_) {}
+    }
+
+    /* SCREEN DIM CONTROLLER */
+    function updateScreenDimLevel(val) {
+      document.getElementById("screenDimOverlay").style.opacity = val;
+      document.getElementById("dimPctLabel").textContent = `${Math.round(val * 100)}%`;
+      localStorage.setItem('humayun_dim_islam', val);
+    }
+    const savedDim = localStorage.getItem('humayun_dim_islam');
+    if (savedDim !== null) {
+      document.getElementById('dimRangeSlider').value = savedDim;
+      updateScreenDimLevel(savedDim);
+    }
+
+    /* MODE CONTROLLER */
+    function setMode(mode) {
+      currentMode = mode;
+      document.getElementById('btnModePractice').className = mode === 'practice' 
+        ? 'px-3 py-1 rounded-lg text-xs font-bold transition bg-emerald-600 text-white shadow cursor-pointer' 
+        : 'px-3 py-1 rounded-lg text-xs font-bold transition text-emerald-200 hover:text-white cursor-pointer';
+      document.getElementById('btnModeWrite').className = mode === 'write' 
+        ? 'px-3 py-1 rounded-lg text-xs font-bold transition bg-emerald-600 text-white shadow cursor-pointer' 
+        : 'px-3 py-1 rounded-lg text-xs font-bold transition text-emerald-200 hover:text-white cursor-pointer';
+      
+      playSoftChime();
+      renderCurrentQuest();
+    }
+
+    function switchQuest(idx) {
+      saveCurrentInk();
+      activeQuestIdx = idx;
+      for (let i = 0; i < QUESTS.length; i++) {
+        const tab = document.getElementById(`tab_${i}`);
+        if (i === idx) {
+          tab.className = "px-4 py-2 rounded-xl text-xs font-bold transition border border-amber-400/60 bg-amber-500/20 text-amber-200 shadow cursor-pointer";
+        } else {
+          tab.className = "px-4 py-2 rounded-xl text-xs font-bold transition border border-emerald-600/30 bg-emerald-900/40 text-emerald-300 hover:bg-emerald-800/50 cursor-pointer";
+        }
+      }
+      playSoftChime();
+      renderCurrentQuest();
+    }
+
+    /* RENDER CONTENT */
+    function renderCurrentQuest() {
+      const q = QUESTS[activeQuestIdx];
+      const container = document.getElementById('questContainer');
+
+      if (currentMode === 'practice') {
+        // PRACTICE MODE: Question, Syllable Badges for answer, and Interactive Tool
+        container.innerHTML = `
+          <div class="bg-emerald-900/70 border-2 border-emerald-500/30 rounded-2xl p-5 md:p-6 shadow-xl flex flex-col gap-4">
+            
+            <div class="flex justify-between items-center border-b border-emerald-700/50 pb-3">
+              <div>
+                <span class="text-xs font-bold text-amber-300 uppercase tracking-widest">${q.unit}</span>
+                <h2 class="text-xl md:text-2xl font-bold font-display text-white mt-0.5">${q.title}</h2>
+              </div>
+              <span class="bg-emerald-800 border border-emerald-400/30 text-emerald-200 text-xs px-3 py-1 rounded-full font-bold">📖 Practice Phonics</span>
+            </div>
+
+            <!-- Question Box -->
+            <div class="bg-emerald-950/80 border border-emerald-600/40 rounded-xl p-4">
+              <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Question:</span>
+              <p class="text-base md:text-lg font-bold text-white mt-1">${q.question}</p>
+            </div>
+
+            <!-- Syllable Breaker for Answer -->
+            <div class="bg-white rounded-xl p-4 text-slate-900 shadow-md">
+              <div class="flex justify-between items-center mb-2 border-b border-slate-200 pb-1.5">
+                <span class="text-xs font-bold text-emerald-800 uppercase tracking-wider">Answer (Syllable Breakdown):</span>
+                <span class="text-[11px] font-bold text-slate-500">Tap syllables to read aloud 🗣️</span>
+              </div>
+              
+              <div class="flex flex-col gap-2.5">
+                ${q.syllableSections.map(sec => `
+                  <div>
+                    <div class="text-xs font-bold text-emerald-900 mb-1">${sec.label}</div>
+                    <div class="flex flex-wrap items-center">
+                      ${sec.syllables.map(syl => `
+                        <span class="syllable-badge" onclick="playSoftChime()">${syl}</span>
+                      `).join('')}
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Interactive Study Widgets -->
+            ${renderInteractiveStudyWidget(q)}
+
+            <div class="flex justify-end pt-2">
+              <button onclick="setMode('write')" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm px-5 py-2.5 rounded-xl shadow-md transition active:scale-95 cursor-pointer flex items-center gap-2">
+                <span>Switch to S-Pen Writing Test ✍️</span>
+              </button>
+            </div>
+          </div>
+        `;
+      } else {
+        // WRITE MODE: Blank clean notebook canvas with S-Pen Palm Rejection & Toolbar
+        container.innerHTML = `
+          <div class="bg-white rounded-2xl border-2 border-slate-300 shadow-2xl flex flex-col overflow-hidden text-slate-900">
+            <!-- Header Bar -->
+            <div class="bg-slate-100 p-3.5 border-b border-slate-300 flex justify-between items-center">
+              <div>
+                <span class="bg-emerald-700 text-white text-xs font-bold px-2.5 py-0.5 rounded-md">${q.unit}</span>
+                <p class="font-bold text-slate-800 text-sm md:text-base mt-1">${q.question}</p>
+              </div>
+              <button onclick="triggerQuestCelebration()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition shadow cursor-pointer">
+                ✅ Complete
+              </button>
+            </div>
+
+            <!-- Canvas Ink Toolbar -->
+            <div class="bg-emerald-950 text-emerald-100 p-2.5 flex justify-between items-center flex-wrap gap-2">
+              <div class="flex items-center gap-2">
+                <button onclick="setTool('pen')" id="toolPen" class="p-1.5 rounded bg-emerald-600 text-white shadow">✏️</button>
+                <button onclick="setTool('line')" id="toolLine" class="p-1.5 rounded hover:bg-emerald-800">📏</button>
+                <button onclick="setTool('eraser')" id="toolEraser" class="p-1.5 rounded hover:bg-emerald-800">🧹</button>
+                <button onclick="undoInk()" class="p-1.5 rounded hover:bg-emerald-800">↩️</button>
+                <button onclick="clearInkCanvas()" class="p-1.5 rounded hover:bg-emerald-800 text-red-300">🗑️</button>
+              </div>
+
+              <!-- Color Palette -->
+              <div class="flex items-center gap-2">
+                <button onclick="setColor('#064E3B')" class="w-6 h-6 rounded-full bg-emerald-900 border-2 border-white shadow"></button>
+                <button onclick="setColor('#1E3A8A')" class="w-6 h-6 rounded-full bg-blue-900 border-2 border-white shadow"></button>
+                <button onclick="setColor('#0F172A')" class="w-6 h-6 rounded-full bg-slate-900 border-2 border-white shadow"></button>
+                <button onclick="setColor('#B91C1C')" class="w-6 h-6 rounded-full bg-red-700 border-2 border-white shadow"></button>
+              </div>
+            </div>
+
+            <!-- Graph Writing Surface -->
+            <div class="relative w-full h-[460px] graph-paper overflow-hidden select-none touch-none" id="canvasArea">
+              <canvas id="writeCanvas" oncontextmenu="return false;" class="absolute inset-0 w-full h-full cursor-crosshair touch-none"></canvas>
+            </div>
+          </div>
+        `;
+        setTimeout(initWriteCanvas, 50);
+      }
+    }
+
+    function renderInteractiveStudyWidget(q) {
+      if (q.id === "q_faith") {
+        return `
+          <div class="bg-emerald-950/70 border border-emerald-600/30 rounded-xl p-4">
+            <div class="text-xs font-bold text-amber-300 uppercase tracking-widest mb-3">⭐ Tap to Explore the 6 Articles of Faith:</div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              ${q.pillars.map((pil, idx) => `
+                <div class="pillar-shield" onclick="playSoftChime()">
+                  <div class="pillar-num">${idx + 1}</div>
+                  <div class="text-sm font-bold text-white">${pil}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      } else if (q.id === "q_garment") {
+        return `
+          <div class="bg-emerald-950/70 border border-emerald-600/30 rounded-xl p-4">
+            <div class="text-xs font-bold text-amber-300 uppercase tracking-widest mb-2">📜 Sunnah Garment Dua (Abu Dawood):</div>
+            <div class="text-xs text-emerald-200 font-medium mb-3">"${q.hadithText}"</div>
+            <div class="flex flex-wrap gap-2" id="garmentTilesTray">
+              ${q.wordsForBuilder.map(w => `
+                <span class="dua-word-tile" onclick="playSoftChime()">${w}</span>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+      return "";
+    }
+
+    /* INK CANVAS ENGINE (240Hz, S-Pen Palm Rejection, Pressure Sensitive) */
+    let canvasEl = null, ctx = null;
+    let drawing = false, tool = 'pen', color = '#064E3B';
+    let lastX = 0, lastY = 0, startX = 0, startY = 0;
+    let activePointerId = null, activeType = null, snapshot = null;
+    let undoStack = [];
+
+    function storageKey() {
+      return `humayun_islam_ink_${QUESTS[activeQuestIdx].id}`;
+    }
+
+    function initWriteCanvas() {
+      canvasEl = document.getElementById("writeCanvas");
+      const container = document.getElementById("canvasArea");
+      if (!canvasEl || !container) return;
+      ctx = canvasEl.getContext("2d");
+
+      const rect = container.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 3);
+      canvasEl.width = Math.round(rect.width * dpr);
+      canvasEl.height = Math.round(rect.height * dpr);
+      canvasEl.style.width = rect.width + "px";
+      canvasEl.style.height = rect.height + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      loadSavedInk();
+      setupPointerEvents();
+    }
+
+    function setupPointerEvents() {
+      let lastPenSeen = 0;
+
+      canvasEl.addEventListener('pointerenter', (e) => {
+        if (e.pointerType === 'pen') lastPenSeen = Date.now();
+      });
+
+      canvasEl.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'pen') {
+          lastPenSeen = Date.now();
+        } else {
+          const palm = Math.max(e.width || 0, e.height || 0) > 26;
+          const penBusy = Date.now() - lastPenSeen < 1200;
+          if (palm || penBusy || activePointerId !== null) return;
+        }
+
+        e.preventDefault();
+        drawing = true;
+        activePointerId = e.pointerId;
+        activeType = e.pointerType;
+        try { canvasEl.setPointerCapture(e.pointerId); } catch(_) {}
+
+        const rect = canvasEl.getBoundingClientRect();
+        startX = lastX = e.clientX - rect.left;
+        startY = lastY = e.clientY - rect.top;
+
+        if (tool === 'line') {
+          snapshot = ctx.getImageData(0, 0, canvasEl.width, canvasEl.height);
+        } else {
+          drawDot(lastX, lastY, e.pressure);
+        }
+      });
+
+      canvasEl.addEventListener('pointermove', (e) => {
+        if (!drawing || e.pointerId !== activePointerId) return;
+        const rect = canvasEl.getBoundingClientRect();
+        const curX = e.clientX - rect.left;
+        const curY = e.clientY - rect.top;
+
+        if (tool === 'line') {
+          if (snapshot) ctx.putImageData(snapshot, 0, 0);
+          ctx.save();
+          ctx.lineCap = 'round';
+          ctx.strokeStyle = color;
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          ctx.moveTo(startX, startY);
+          ctx.lineTo(curX, curY);
+          ctx.stroke();
+          ctx.restore();
+          lastX = curX; lastY = curY;
+          return;
+        }
+
+        const events = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
+        for (let ev of events) {
+          const x = ev.clientX - rect.left;
+          const y = ev.clientY - rect.top;
+          drawSegment(lastX, lastY, x, y, ev.pressure);
+          lastX = x; lastY = y;
+        }
+      });
+
+      const stop = (e) => {
+        if (drawing && e.pointerId === activePointerId) {
+          drawing = false;
+          activePointerId = null;
+          snapshot = null;
+          saveCurrentInk();
+        }
+      };
+      canvasEl.addEventListener('pointerup', stop);
+      canvasEl.addEventListener('pointercancel', stop);
+    }
+
+    function drawSegment(x1, y1, x2, y2, pressure) {
+      ctx.save();
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      if (tool === 'eraser') {
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.lineWidth = 26;
+      } else {
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.strokeStyle = color;
+        const p = pressure && pressure > 0 ? pressure : 0.5;
+        ctx.lineWidth = 2.4 * (0.8 + p * 0.8);
+      }
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    function drawDot(x, y, pressure) {
+      ctx.save();
+      if (tool === 'eraser') {
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.beginPath();
+        ctx.arc(x, y, 14, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.fillStyle = color;
+        const p = pressure && pressure > 0 ? pressure : 0.5;
+        ctx.beginPath();
+        ctx.arc(x, y, 2.0 * (0.8 + p * 0.8), 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    function setTool(t) {
+      tool = t;
+      ['pen', 'line', 'eraser'].forEach(name => {
+        const btn = document.getElementById(`tool${name.charAt(0).toUpperCase() + name.slice(1)}`);
+        if (btn) btn.className = t === name ? "p-1.5 rounded bg-emerald-600 text-white shadow" : "p-1.5 rounded hover:bg-emerald-800";
+      });
+    }
+
+    function setColor(c) {
+      color = c;
+      setTool('pen');
+    }
+
+    function saveCurrentInk() {
+      if (!canvasEl || canvasEl.width <= 0) return;
+      try {
+        const data = canvasEl.toDataURL();
+        localStorage.setItem(storageKey(), data);
+      } catch(_) {}
+    }
+
+    function loadSavedInk() {
+      const data = localStorage.getItem(storageKey());
+      if (data && canvasEl) {
+        const img = new Image();
+        img.onload = () => {
+          ctx.save();
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
+          ctx.drawImage(img, 0, 0);
+          ctx.restore();
+        };
+        img.src = data;
+      }
+    }
+
+    function clearInkCanvas() {
+      if (!canvasEl || !ctx) return;
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+      ctx.restore();
+      localStorage.removeItem(storageKey());
+      playSoftChime();
+    }
+
+    function undoInk() {
+      clearInkCanvas();
+    }
+
+    /* CELEBRATION MODAL */
+    function triggerQuestCelebration() {
+      saveCurrentInk();
+      playCelebrationFanfare();
+      document.getElementById('celebTitle').textContent = `MashaAllah! ${QUESTS[activeQuestIdx].title}`;
+      document.getElementById('celebrationModal').style.display = 'flex';
+    }
+
+    function closeCelebration() {
+      document.getElementById('celebrationModal').style.display = 'none';
+      if (activeQuestIdx < QUESTS.length - 1) {
+        switchQuest(activeQuestIdx + 1);
+      }
+    }
+
+    /* BACKGROUND STARS */
+    const starCanvas = document.getElementById("starfieldCanvas");
+    const starCtx = starCanvas.getContext("2d");
+    let stars = [];
+
+    function resizeStarfield() {
+      starCanvas.width = window.innerWidth;
+      starCanvas.height = window.innerHeight;
+      stars = [];
+      for (let i = 0; i < 85; i++) {
+        stars.push({
+          x: Math.random() * starCanvas.width,
+          y: Math.random() * starCanvas.height,
+          r: Math.random() * 1.8 + 0.4,
+          a: Math.random() * 0.7 + 0.3,
+          da: (Math.random() - 0.5) * 0.012
+        });
+      }
+    }
+    window.addEventListener("resize", resizeStarfield);
+    resizeStarfield();
+
+    function renderStarfield() {
+      starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+      for (let s of stars) {
+        s.a += s.da;
+        if (s.a > 0.95 || s.a < 0.25) s.da = -s.da;
+        starCtx.fillStyle = `rgba(253, 230, 138, ${s.a * 0.6})`;
+        starCtx.beginPath();
+        starCtx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        starCtx.fill();
+      }
+      requestAnimationFrame(renderStarfield);
+    }
+    renderStarfield();
+
+    /* EXIT TO HUB */
+    function exitToHub(e) {
+      if (e) e.preventDefault();
+      saveCurrentInk();
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage("close-lesson-to-hub", "*");
+        return;
+      }
+      window.location.href = "index.html";
+    }
+
+    window.addEventListener('load', () => {
+      renderCurrentQuest();
+    });
+  </script>
+</body>
+</html>
