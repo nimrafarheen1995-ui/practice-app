@@ -9,7 +9,9 @@ const CORE = [
   'index.html',
   'manifest.json',
   'lessons.json',
-  'shared/safe-storage.js'
+  'shared/safe-storage.js',
+  'shared/notebook.css',
+  'shared/notebook.js'
 ];
 
 const CDN = [
