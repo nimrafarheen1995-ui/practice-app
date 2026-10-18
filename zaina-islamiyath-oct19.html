@@ -116,14 +116,13 @@
         .say-word:hover, .say-word:active { background: #FDE047 !important; color: #78350F !important; transform: scale(1.06); }
         .say-word.speaking { background: #FDE047 !important; color: #78350F !important; transform: scale(1.08); }
 
-        /* ---------- BINDER (Full Page Notebook - Humayun Style Integration) ---------- */
+        /* ---------- BINDER (Full Page Notebook) ---------- */
         .bind-stage { position: relative; height: clamp(400px, 64vh, 680px); background: #FFF; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .bind-writing { position: absolute; inset: 0; display: flex; flex-direction: column; background: #FFF; }
         .bind-ruled { position: relative; flex: 1; min-height: 0; background-color: #fffefb; background-image: linear-gradient(90deg, transparent 58px, var(--margin-red) 58px, var(--margin-red) 60px, transparent 60px), linear-gradient(var(--ruled-line) 1px, transparent 1px); background-size: 100% 100%, 100% 30px; background-position: 0 0, 0 18px; }
         .bind-ruled canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; z-index: 10; }
         .bind-header-prompt { background: rgba(255,255,255,0.95); padding: 10px 16px; border-bottom: 1.5px solid #CBD5E1; color: #0F172A; }
 
-        /* Tall Scholar Embossed Watermark Inside Canvas */
         .canvas-embossed-scholar {
             position: absolute;
             right: 16px;
@@ -146,9 +145,8 @@
         .tool-drawer button { background: transparent; border: 0; color: #FFF; font-size: 22px; width: 40px; height: 40px; border-radius: 10px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
         .tool-drawer button.on { background: #B45309; }
         .swatch { width: 24px; height: 24px; border-radius: 50%; border: 2.5px solid #FFF; padding: 0 !important; }
-        .page-chip { background: rgba(15,23,42,0.9); color: #FDE68A; font-size: 14px; font-weight: 800; padding: 6px 12px; border-radius: 999px; display: inline-flex; align-items: center; gap: 6px; }
 
-        /* GLASS BINDER COVER WITH SPIRAL RINGS & ARCH */
+        /* GLASS BINDER COVER */
         .binder-cover { position: absolute; inset: 0; z-index: 35; border-radius: 8px 24px 24px 8px; cursor: pointer; transition: transform 0.75s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.45s ease; transform-origin: 0% 50%; transform-style: preserve-3d; background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.06) 55%, rgba(255,255,255,0.18)); backdrop-filter: blur(4px) saturate(130%); -webkit-backdrop-filter: blur(4px) saturate(130%); border: 2px solid rgba(255,255,255,0.7); box-shadow: 0 20px 50px rgba(0,0,0,0.4); padding: 24px 24px 24px 48px; color: #FFF; display: flex; flex-direction: column; justify-content: space-between; align-items: center; }
         .notebook-spine-rings { position: absolute; left: 6px; top: 16px; bottom: 16px; width: 24px; display: flex; flex-direction: column; justify-content: space-between; pointer-events: none; z-index: 10; }
         .spiral-ring { display: block; width: 24px; height: 12px; border-radius: 8px; background: linear-gradient(180deg, #ffffff 0%, #9ca3af 50%, #334155 100%); box-shadow: 0 2px 3px rgba(0,0,0,0.4); }
@@ -288,7 +286,7 @@
 
 <script>
     /* ==========================================================================
-        CURRICULUM SPECIFICATION (Exact Document Match)
+        CURRICULUM SPECIFICATION
         ========================================================================== */
     const CURRICULUM = {
         unit4: {
@@ -365,10 +363,10 @@
                 },
                 {
                     title: "Section 2: Islamic Greetings & Meanings",
-                    type: "greetings_multipage",
+                    type: "greetings_combined",
                     coverTitle: "Islamic Greetings",
                     coverSubtitle: "Greetings & Sacred Replies",
-                    pages: [
+                    greetings: [
                         {
                             ar: "السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ",
                             trans: "Assalamu Alaikum wa Rahmatullahi wa Barakatuhu.",
@@ -712,7 +710,7 @@
         else if (sec.type === 'fill_inline') renderFillSection(sec, bodyEl);
         else if (sec.type === 'full_binder') renderFullBinderSection(sec, bodyEl);
         else if (sec.type === 'hadith_multipage') renderHadithMultiPage(sec, bodyEl);
-        else if (sec.type === 'greetings_multipage') renderGreetingsMultiPage(sec, bodyEl);
+        else if (sec.type === 'greetings_combined') renderGreetingsCombinedSection(sec, bodyEl);
     }
 
     /* 1. Vocab Section Template */
@@ -894,64 +892,40 @@
         setTimeout(() => mountFullCanvas(qId), 15);
     }
 
-    /* 5. Greetings Multi-Page (Unit 5 Section 2) - Includes both Assalamu Alaikum & Wa Alaikumus Salam pages */
-    function renderGreetingsMultiPage(sec, container) {
-        const qId = `${activeUnitKey}_s${currentSecIdx}_p${currentSubPage}`;
-        const item = sec.pages[currentSubPage];
-        const isOpen = !!binderOpenState[qId];
-
-        container.innerHTML = `
-            <div class="bind-stage">
-                <div class="bind-writing">
-                    <div class="bind-header-prompt text-center">
-                        <div class="font-arabic text-3xl text-emerald-900 mb-1 leading-relaxed cursor-pointer" onclick="speakFullArabic('${item.ar.replace(/'/g, "\\'")}')" title="Tap to hear greeting">${tokenize(item.ar, 'ar')}</div>
-                        <div class="font-bold text-sm text-amber-800" style="display: ${isPracticeMode ? 'block' : 'none'};">${item.trans}</div>
-                        <div class="text-xs text-slate-600 mt-0.5" style="display: ${isPracticeMode ? 'block' : 'none'};">Meaning: "${item.mean}"</div>
+    /* 5. Greetings Combined Section (Unit 5 Section 2) - Shows both greeting and reply together as clear cards */
+    function renderGreetingsCombinedSection(sec, container) {
+        sec.greetings.forEach((item, idx) => {
+            const qId = `${activeUnitKey}_s${currentSecIdx}_q${idx}`;
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            card.innerHTML = `
+                <div class="flex flex-col gap-2 w-full">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold text-teal-800 uppercase tracking-wider">${idx === 0 ? '1. Greeting' : '2. Reply'}</span>
+                        <button onclick="speakFullArabic('${item.ar.replace(/'/g, "\\'")}')" class="top-btn" style="height:28px; font-size:12px; background:#047857; border-color:#6EE7B7;">🔊 Listen</button>
                     </div>
-                    <div class="bind-ruled" id="area_${qId}">
-                        <img src="assets/islamic-scholar-girl.webp" class="canvas-embossed-scholar" alt="Zaina Scholar" onerror="handleImageFallback(this)"/>
-                        <canvas id="cv_${qId}"></canvas>
+                    <div class="font-arabic text-2xl md:text-3xl text-emerald-900 text-center py-2 bg-emerald-50 rounded-xl border border-emerald-200">
+                        ${tokenize(item.ar, 'ar')}
                     </div>
-                </div>
-
-                <div class="tools-right">
-                    <div class="tool-drawer" id="drawer_${qId}">
-                        <div class="page-chip">
-                            <button onclick="flipSubPage(0)" class="${currentSubPage===0?'font-extrabold text-white':''}">Greeting</button>
-                            <span>|</span>
-                            <button onclick="flipSubPage(1)" class="${currentSubPage===1?'font-extrabold text-white':''}">Reply</button>
+                    <div style="display: ${isPracticeMode ? 'block' : 'none'};" class="text-center">
+                        <div class="font-bold text-sm text-amber-800">${item.trans}</div>
+                        <div class="text-xs text-slate-600 mt-0.5">Meaning: "${item.mean}"</div>
+                    </div>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="text-xs font-bold text-slate-500">Practice Writing:</span>
+                        <div class="inline-strip-box flex-1">
+                            <canvas id="cv_${qId}"></canvas>
+                            <div class="strip-actions">
+                                <button class="mini-btn" onclick="undoCanvas('${qId}')" title="Undo">↶</button>
+                                <button class="mini-btn del" onclick="clearCanvas('${qId}')" title="Clear">🗑️</button>
+                            </div>
                         </div>
-                        <button onclick="setGlobalTool('pen')" id="btnPen_${qId}" class="on">✏️</button>
-                        <button onclick="setGlobalTool('eraser')" id="btnErase_${qId}">🧹</button>
-                        <button onclick="undoCanvas('${qId}')">↶</button>
-                        <button onclick="clearCanvas('${qId}')" style="color:#FCA5A5">🗑️</button>
-                        <button class="swatch" style="background:#1E3A8A" onclick="setGlobalColor('#1E3A8A')"></button>
-                        <button class="swatch" style="background:#065F46" onclick="setGlobalColor('#065F46')"></button>
                     </div>
-                    <button class="tools-toggle" onclick="toggleDrawer('${qId}')">🛠️</button>
-                    <button class="top-btn" onclick="toggleBinderCover('${qId}')" style="background:#1E293B">📕 Cover</button>
                 </div>
-
-                <div id="cover_${qId}" class="binder-cover ${isOpen ? 'binder-open' : ''}" onclick="openBinderCover('${qId}')">
-                    <div class="notebook-spine-rings">
-                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-                    </div>
-                    <div class="flex justify-between items-start w-full relative z-10">
-                        <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Islamic Studies</span>
-                        <img src="assets/lantern-gem.webp" class="w-8 h-8 object-contain" alt="" onerror="handleImageFallback(this)"/>
-                    </div>
-                    <div class="cv-arch my-auto"><img class="cv-scholar" src="assets/islamic-scholar-girl.webp" alt="Zaina" onerror="this.style.display='none'"></div>
-                    <div class="cv-label relative z-10">
-                        <div>Name: <b>Zaina</b></div>
-                        <div>Class: <b>Grade 5</b></div>
-                        <div>Subject: <b>Islamic Studies</b></div>
-                        <div>Lesson: <b>${sec.coverTitle} (${currentSubPage === 0 ? 'Assalamu Alaikum' : 'Wa Alaikumus Salam'})</b></div>
-                    </div>
-                    <div class="text-center relative z-10"><span class="bg-white/90 text-slate-900 font-bold px-4 py-2 rounded-xl shadow-lg text-xs uppercase tracking-widest">Tap to Open Binder ⚡</span></div>
-                </div>
-            </div>
-        `;
-        setTimeout(() => mountFullCanvas(qId), 15);
+            `;
+            container.appendChild(card);
+            setTimeout(() => mountInlineCanvas(qId), 10);
+        });
     }
 
     function flipSubPage(idx) {
@@ -986,7 +960,7 @@
     }
 
     /* ==========================================================================
-        CANVAS INK ENGINE
+        CANVAS INK ENGINE (FIXED PRACTICE & WRITE MODE STORAGE SEPARATION)
         ========================================================================== */
     const activeCanvases = {};
     const undoStacks = {};
@@ -1006,7 +980,7 @@
     }
 
     function storageKey(qId) {
-        return `zaina_isl_${modeKey()}_${qId}`;
+        return `zaina_isl_${modeKey()}_${activeUnitKey}_${currentSecIdx}_${qId}`;
     }
 
     function mountInlineCanvas(qId) {
