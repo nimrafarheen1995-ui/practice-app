@@ -25,11 +25,13 @@
             --font-display: 'Fredoka', cursive, sans-serif;
             --font-hand: 'Kalam', cursive, sans-serif;
             --font-arabic: 'Amiri', serif;
-            --margin-red: #F87171;
-            --ruled-line: #94A3B8;
+            --margin-red: rgba(220, 38, 38, 0.35);
+            --ruled-line: rgba(74, 85, 104, 0.22);
+            --gold: #f59e0b;
+            --glow: #fbbf24;
         }
         *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: var(--font-main); }
-        html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background: #0B0F19; color: #FFFFFF; touch-action: pan-x pan-y; }
+        html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background: #0a1128; color: #FFFFFF; touch-action: pan-x pan-y; }
         body { display: flex; flex-direction: column; }
 
         .ambient-backdrop-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
@@ -114,31 +116,30 @@
         .say-word:hover, .say-word:active { background: #FDE047 !important; color: #78350F !important; transform: scale(1.06); }
         .say-word.speaking { background: #FDE047 !important; color: #78350F !important; transform: scale(1.08); }
 
-        /* ---------- BINDER (Full Page Notebook) ---------- */
+        /* ---------- BINDER (Full Page Notebook - Humayun Style Integration) ---------- */
         .bind-stage { position: relative; height: clamp(400px, 64vh, 680px); background: #FFF; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         .bind-writing { position: absolute; inset: 0; display: flex; flex-direction: column; background: #FFF; }
-        .bind-ruled { position: relative; flex: 1; min-height: 0; background-color: rgba(255,254,248,0.7); background-image: linear-gradient(90deg, transparent 58px, var(--margin-red) 58px, var(--margin-red) 60px, transparent 60px), linear-gradient(to bottom, transparent 33px, #94a3b8 33px, #94a3b8 34px, transparent 34px, transparent 55px, #475569 55px, #475569 56px); background-size: 100% 100%, 100% 56px; }
+        .bind-ruled { position: relative; flex: 1; min-height: 0; background-color: #fffefb; background-image: linear-gradient(90deg, transparent 58px, var(--margin-red) 58px, var(--margin-red) 60px, transparent 60px), linear-gradient(var(--ruled-line) 1px, transparent 1px); background-size: 100% 100%, 100% 30px; background-position: 0 0, 0 18px; }
         .bind-ruled canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; z-index: 10; }
         .bind-header-prompt { background: rgba(255,255,255,0.95); padding: 10px 16px; border-bottom: 1.5px solid #CBD5E1; color: #0F172A; }
 
-        /* Embossed Avatar Watermark Inside Canvas */
-        .canvas-embossed-watermark {
+        /* Tall Scholar Embossed Watermark Inside Canvas */
+        .canvas-embossed-scholar {
             position: absolute;
-            right: 14px;
-            bottom: 14px;
-            width: 90px;
-            height: 90px;
-            object-fit: cover;
-            border-radius: 50%;
-            opacity: 0.35;
-            border: 2px solid #0D9488;
-            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.25));
+            right: 16px;
+            bottom: 8px;
+            width: 130px;
+            height: auto;
+            max-height: 80%;
+            object-fit: contain;
+            opacity: 0.22;
             pointer-events: none;
-            z-index: 1;
+            z-index: 5;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
         }
 
         .tools-right { position: absolute; right: 12px; top: 10px; z-index: 30; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
-        .tools-toggle { width: 50px; height: 50px; border-radius: 50%; background: rgba(15,23,42,0.92); border: 2px solid rgba(255,255,255,0.6); font-size: 24px; cursor: pointer; box-shadow: 0 6px 16px rgba(0,0,0,0.4); display: inline-flex; align-items: center; justify-content: center; }
+        .tools-toggle { width: 50px; height: 50px; border-radius: 50%; background: #1f6f4e; border: 2px solid rgba(255,255,255,0.6); font-size: 24px; cursor: pointer; box-shadow: 0 6px 16px rgba(0,0,0,0.4); display: inline-flex; align-items: center; justify-content: center; color: #fff; }
         .tools-toggle.open { background: #B45309; }
         .tool-drawer { display: none; align-items: center; gap: 8px; background: rgba(15,23,42,0.94); border: 1.5px solid rgba(255,255,255,0.35); border-radius: 999px; padding: 6px 12px; flex-wrap: wrap; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
         .tool-drawer.open { display: flex; }
@@ -147,12 +148,16 @@
         .swatch { width: 24px; height: 24px; border-radius: 50%; border: 2.5px solid #FFF; padding: 0 !important; }
         .page-chip { background: rgba(15,23,42,0.9); color: #FDE68A; font-size: 14px; font-weight: 800; padding: 6px 12px; border-radius: 999px; display: inline-flex; align-items: center; gap: 6px; }
 
-        /* GLASS BINDER COVER */
-        .binder-cover { position: absolute; inset: 0; z-index: 35; border-radius: 8px 24px 24px 8px; cursor: pointer; transition: transform 0.75s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.45s ease; transform-origin: 0% 50%; transform-style: preserve-3d; background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.06) 55%, rgba(255,255,255,0.18)); backdrop-filter: blur(4px) saturate(130%); -webkit-backdrop-filter: blur(4px) saturate(130%); border: 2px solid rgba(255,255,255,0.7); box-shadow: 0 20px 50px rgba(0,0,0,0.4); padding: 24px 24px 24px 60px; color: #FFF; display: flex; flex-direction: column; justify-content: space-between; }
-        .binder-cover::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 34px; background: rgba(15,23,42,0.45); border-right: 2px solid rgba(255,255,255,0.55); border-radius: 8px 0 0 8px; }
-        .notebook-spine-rings { position: absolute; left: 27px; top: 16px; bottom: 16px; width: 16px; display: flex; flex-direction: column; justify-content: space-between; pointer-events: none; z-index: 10; }
-        .spiral-ring { width: 18px; height: 10px; border-radius: 6px; background: linear-gradient(135deg, #FFF 0%, #D1D5DB 45%, #6B7280 80%, #1F2937 100%); box-shadow: 0 2px 4px rgba(0,0,0,0.65); }
+        /* GLASS BINDER COVER WITH SPIRAL RINGS & ARCH */
+        .binder-cover { position: absolute; inset: 0; z-index: 35; border-radius: 8px 24px 24px 8px; cursor: pointer; transition: transform 0.75s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.45s ease; transform-origin: 0% 50%; transform-style: preserve-3d; background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.06) 55%, rgba(255,255,255,0.18)); backdrop-filter: blur(4px) saturate(130%); -webkit-backdrop-filter: blur(4px) saturate(130%); border: 2px solid rgba(255,255,255,0.7); box-shadow: 0 20px 50px rgba(0,0,0,0.4); padding: 24px 24px 24px 48px; color: #FFF; display: flex; flex-direction: column; justify-content: space-between; align-items: center; }
+        .notebook-spine-rings { position: absolute; left: 6px; top: 16px; bottom: 16px; width: 24px; display: flex; flex-direction: column; justify-content: space-between; pointer-events: none; z-index: 10; }
+        .spiral-ring { display: block; width: 24px; height: 12px; border-radius: 8px; background: linear-gradient(180deg, #ffffff 0%, #9ca3af 50%, #334155 100%); box-shadow: 0 2px 3px rgba(0,0,0,0.4); }
         .binder-cover.binder-open { transform: perspective(1400px) rotateY(-118deg) rotateX(8deg) translateZ(20px); opacity: 0; pointer-events: none; }
+
+        .cv-arch { width: min(200px, 55%); aspect-ratio: 0.82; background: url('assets/islamic-banner-arch.webp') center / contain no-repeat; display: flex; align-items: flex-end; justify-content: center; }
+        .cv-scholar { width: 75%; height: auto; max-height: 90%; object-fit: contain; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.4)); }
+        .cv-label { position: relative; width: min(320px, 92%); margin-top: 6px; padding: 6px 12px 6px 38px; background: #fffdf0 repeating-linear-gradient(transparent 0 23px, #93c5fd 23px 24px); border: 2px solid #1e1b4b; border-radius: 8px; box-shadow: 0 6px 16px rgba(0,0,0,0.35); font-family: var(--font-hand); font-size: 14px; line-height: 24px; color: #1e3a8a; text-align: left; }
+        .cv-label::before { content: ""; position: absolute; left: 28px; top: 0; bottom: 0; border-left: 2px solid #ef4444; }
 
         /* ---------- CELEBRATION MODAL ---------- */
         #celebrationModal { position: fixed; inset: 0; z-index: 100000; display: none; align-items: center; justify-content: center; background: rgba(2,6,23,0.85); backdrop-filter: blur(8px); }
@@ -182,8 +187,8 @@
     <header id="topHeader">
         <div id="topBar">
             <div class="flex items-center gap-3">
-                <a href="index.html" class="top-btn" title="Back to Hub">
-                    <img src="assets/mosque-dome-silhouette.webp" class="w-5 h-5 object-contain" alt="🕌" onerror="this.outerHTML='🕌'"/> <span>Hub</span>
+                <a href="index.html" class="top-btn" title="Main Hub">
+                    <img src="assets/mosque-dome-silhouette.webp" class="w-6 h-6 object-contain" alt="🕌" onerror="this.outerHTML='🕌'"/>
                 </a>
                 <span class="text-xs md:text-sm font-bold font-display tracking-wide flex items-center gap-2">
                     Zaina's Islamic Studies <span class="bg-teal-500/30 border border-teal-400 text-teal-200 text-xs px-2.5 py-0.5 rounded-full">Grade 5</span>
@@ -261,7 +266,7 @@
             <span class="text-4xl">🌟</span>
             <h2 id="celebrationPhrase" class="text-2xl md:text-3xl font-bold text-teal-800 font-display mt-2">Masha'Allah!</h2>
             <p class="text-sm font-bold text-slate-600 mt-1">Outstanding progress, Zaina!</p>
-            <img src="assets/islamic-scholar-girl.webp" class="w-16 h-16 rounded-full object-cover mx-auto my-3 border-2 border-amber-500" alt="" onerror="handleImageFallback(this)"/>
+            <img src="assets/islamic-scholar-girl.webp" class="w-24 h-32 object-contain mx-auto my-3" alt="" onerror="handleImageFallback(this)"/>
             <button onclick="closeCelebration()" class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-xs px-6 py-2 rounded-xl">Continue ➔</button>
         </div>
     </div>
@@ -514,7 +519,6 @@
         window.speechSynthesis.speak(utterance);
     }
 
-    /* SCOPED TO ISLAMIC GREETINGS */
     function speakFullArabic(text) {
         if (isAudioMuted) return;
         playPop();
@@ -784,7 +788,7 @@
                         <div style="font-size:0.9rem; font-weight:800; color:#991B1B;">WRITE FROM MEMORY: Translate Verses 1 to 8 into English.</div>
                     </div>
                     <div class="bind-ruled" id="area_${qId}">
-                        <img src="assets/islamic-scholar-girl.webp" class="canvas-embossed-watermark" alt="Zaina Avatar" onerror="handleImageFallback(this)"/>
+                        <img src="assets/islamic-scholar-girl.webp" class="canvas-embossed-scholar" alt="Zaina Scholar" onerror="handleImageFallback(this)"/>
                         <canvas id="cv_${qId}"></canvas>
                     </div>
                 </div>
@@ -804,17 +808,19 @@
                 </div>
 
                 <div id="cover_${qId}" class="binder-cover ${isOpen ? 'binder-open' : ''}" onclick="openBinderCover('${qId}')">
-                    <div class="notebook-spine-rings">${'<div class="spiral-ring"></div>'.repeat(8)}</div>
-                    <div class="flex justify-between items-start ml-6 relative z-10">
+                    <div class="notebook-spine-rings">
+                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                    </div>
+                    <div class="flex justify-between items-start w-full relative z-10">
                         <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Islamic Studies</span>
                         <img src="assets/lantern-gem.webp" class="w-8 h-8 object-contain" alt="" onerror="handleImageFallback(this)"/>
                     </div>
-                    <div class="mx-auto my-auto bg-white/95 text-slate-900 rounded-2xl p-4 pl-8 w-80 shadow-2xl border-4 border-amber-900 text-center relative z-10">
-                        <img src="assets/islamic-scholar-girl.webp" class="w-12 h-12 rounded-full object-cover mx-auto mb-1 border border-amber-500" alt="" onerror="handleImageFallback(this)"/>
-                        <div class="text-[10px] uppercase font-extrabold text-teal-800 tracking-widest border-b pb-0.5">Alps Academy</div>
-                        <div class="font-bold text-lg text-slate-900 pt-0.5">${sec.coverTitle}</div>
-                        <div class="font-bold text-sm text-teal-700">${sec.coverSubtitle}</div>
-                        <div class="text-xs text-amber-700 font-bold bg-amber-100 rounded px-2 py-0.5 mt-1.5 inline-block">Zaina • Grade 5</div>
+                    <div class="cv-arch my-auto"><img class="cv-scholar" src="assets/islamic-scholar-girl.webp" alt="Zaina" onerror="this.style.display='none'"></div>
+                    <div class="cv-label relative z-10">
+                        <div>Name: <b>Zaina</b></div>
+                        <div>Class: <b>Grade 5</b></div>
+                        <div>Subject: <b>Islamic Studies</b></div>
+                        <div>Lesson: <b>${sec.coverTitle}</b></div>
                     </div>
                     <div class="text-center relative z-10"><span class="bg-white/90 text-slate-900 font-bold px-4 py-2 rounded-xl shadow-lg text-xs uppercase tracking-widest">Tap to Open Binder ⚡</span></div>
                 </div>
@@ -843,7 +849,7 @@
                         </div>
                     </div>
                     <div class="bind-ruled" id="area_${qId}">
-                        <img src="assets/islamic-scholar-girl.webp" class="canvas-embossed-watermark" alt="Zaina Avatar" onerror="handleImageFallback(this)"/>
+                        <img src="assets/islamic-scholar-girl.webp" class="canvas-embossed-scholar" alt="Zaina Scholar" onerror="handleImageFallback(this)"/>
                         <canvas id="cv_${qId}"></canvas>
                     </div>
                 </div>
@@ -867,21 +873,28 @@
                 </div>
 
                 <div id="cover_${qId}" class="binder-cover ${isOpen ? 'binder-open' : ''}" onclick="openBinderCover('${qId}')">
-                    <div class="notebook-spine-rings">${'<div class="spiral-ring"></div>'.repeat(8)}</div>
-                    <div class="mx-auto my-auto bg-white/95 text-slate-900 rounded-2xl p-4 pl-8 w-80 shadow-2xl border-4 border-amber-900 text-center relative z-10">
-                        <img src="assets/islamic-scholar-girl.webp" class="w-12 h-12 rounded-full object-cover mx-auto mb-1 border border-amber-500" alt="" onerror="handleImageFallback(this)"/>
-                        <div class="font-bold text-lg">${sec.coverTitle}</div>
-                        <div class="font-bold text-sm text-indigo-700">${sec.coverSubtitle}</div>
-                        <div class="text-xs text-amber-700 font-bold mt-1">Question ${currentSubPage + 1} of 2</div>
+                    <div class="notebook-spine-rings">
+                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
                     </div>
-                    <div class="text-center relative z-10"><span class="bg-white/90 text-slate-900 font-bold px-4 py-2 rounded-xl text-xs uppercase">Tap to Open Binder ⚡</span></div>
+                    <div class="flex justify-between items-start w-full relative z-10">
+                        <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Islamic Studies</span>
+                        <img src="assets/lantern-gem.webp" class="w-8 h-8 object-contain" alt="" onerror="handleImageFallback(this)"/>
+                    </div>
+                    <div class="cv-arch my-auto"><img class="cv-scholar" src="assets/islamic-scholar-girl.webp" alt="Zaina" onerror="this.style.display='none'"></div>
+                    <div class="cv-label relative z-10">
+                        <div>Name: <b>Zaina</b></div>
+                        <div>Class: <b>Grade 5</b></div>
+                        <div>Subject: <b>Islamic Studies</b></div>
+                        <div>Lesson: <b>${sec.coverTitle} (Q${currentSubPage + 1})</b></div>
+                    </div>
+                    <div class="text-center relative z-10"><span class="bg-white/90 text-slate-900 font-bold px-4 py-2 rounded-xl shadow-lg text-xs uppercase tracking-widest">Tap to Open Binder ⚡</span></div>
                 </div>
             </div>
         `;
         setTimeout(() => mountFullCanvas(qId), 15);
     }
 
-    /* 5. Greetings Multi-Page (Unit 5 Section 2) */
+    /* 5. Greetings Multi-Page (Unit 5 Section 2) - Includes both Assalamu Alaikum & Wa Alaikumus Salam pages */
     function renderGreetingsMultiPage(sec, container) {
         const qId = `${activeUnitKey}_s${currentSecIdx}_p${currentSubPage}`;
         const item = sec.pages[currentSubPage];
@@ -896,7 +909,7 @@
                         <div class="text-xs text-slate-600 mt-0.5" style="display: ${isPracticeMode ? 'block' : 'none'};">Meaning: "${item.mean}"</div>
                     </div>
                     <div class="bind-ruled" id="area_${qId}">
-                        <img src="assets/islamic-scholar-girl.webp" class="canvas-embossed-watermark" alt="Zaina Avatar" onerror="handleImageFallback(this)"/>
+                        <img src="assets/islamic-scholar-girl.webp" class="canvas-embossed-scholar" alt="Zaina Scholar" onerror="handleImageFallback(this)"/>
                         <canvas id="cv_${qId}"></canvas>
                     </div>
                 </div>
@@ -920,13 +933,21 @@
                 </div>
 
                 <div id="cover_${qId}" class="binder-cover ${isOpen ? 'binder-open' : ''}" onclick="openBinderCover('${qId}')">
-                    <div class="notebook-spine-rings">${'<div class="spiral-ring"></div>'.repeat(8)}</div>
-                    <div class="mx-auto my-auto bg-white/95 text-slate-900 rounded-2xl p-4 pl-8 w-80 shadow-2xl border-4 border-amber-900 text-center relative z-10">
-                        <img src="assets/islamic-scholar-girl.webp" class="w-12 h-12 rounded-full object-cover mx-auto mb-1 border border-amber-500" alt="" onerror="handleImageFallback(this)"/>
-                        <div class="font-bold text-lg">${sec.coverTitle}</div>
-                        <div class="font-bold text-sm text-emerald-800">${currentSubPage === 0 ? 'Assalamu Alaikum' : 'Wa Alaikumus Salam'}</div>
+                    <div class="notebook-spine-rings">
+                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
                     </div>
-                    <div class="text-center relative z-10"><span class="bg-white/90 text-slate-900 font-bold px-4 py-2 rounded-xl text-xs uppercase">Tap to Open Binder ⚡</span></div>
+                    <div class="flex justify-between items-start w-full relative z-10">
+                        <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Islamic Studies</span>
+                        <img src="assets/lantern-gem.webp" class="w-8 h-8 object-contain" alt="" onerror="handleImageFallback(this)"/>
+                    </div>
+                    <div class="cv-arch my-auto"><img class="cv-scholar" src="assets/islamic-scholar-girl.webp" alt="Zaina" onerror="this.style.display='none'"></div>
+                    <div class="cv-label relative z-10">
+                        <div>Name: <b>Zaina</b></div>
+                        <div>Class: <b>Grade 5</b></div>
+                        <div>Subject: <b>Islamic Studies</b></div>
+                        <div>Lesson: <b>${sec.coverTitle} (${currentSubPage === 0 ? 'Assalamu Alaikum' : 'Wa Alaikumus Salam'})</b></div>
+                    </div>
+                    <div class="text-center relative z-10"><span class="bg-white/90 text-slate-900 font-bold px-4 py-2 rounded-xl shadow-lg text-xs uppercase tracking-widest">Tap to Open Binder ⚡</span></div>
                 </div>
             </div>
         `;
