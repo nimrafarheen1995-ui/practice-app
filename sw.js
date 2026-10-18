@@ -3,9 +3,10 @@
    - Pages use network-first with offline fallback.
    - Assets use cache-first with stale-while-revalidate.
    Bump VER whenever you update lessons or code to force a refresh. */
-const VER = 'learning-hub-v2';
+const VER = 'learning-hub-v3';
 
 const CORE = [
+  './',
   'index.html',
   'manifest.json',
   'lessons.json',
@@ -18,16 +19,14 @@ const CDN = [
   'https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4'
 ];
 
-// Helper to safely cache a URL
+// Helper to safely cache a URL without breaking installation if one is missing
 async function safeCacheAdd(cache, url) {
   try {
     const res = await fetch(url, { cache: 'no-cache' });
-    if (res.ok) {
+    if (res && (res.ok || res.type === 'opaque')) {
       await cache.put(url, res);
     }
-  } catch (_) {
-    // Skip failed files without crashing the whole installation
-  }
+  } catch (_) {}
 }
 
 self.addEventListener('install', e => {
@@ -40,7 +39,7 @@ self.addEventListener('install', e => {
     // 2. Fetch lessons.json and pre-cache all lessons and images
     try {
       const res = await fetch('lessons.json', { cache: 'no-cache' });
-      if (res.ok) {
+      if (res && res.ok) {
         const list = await res.json();
         const urls = [...(list.lessons || []), ...(list.assets || [])];
         await Promise.allSettled(urls.map(u => safeCacheAdd(c, u)));
@@ -52,7 +51,7 @@ self.addEventListener('install', e => {
       try {
         const req = new Request(u, { mode: 'no-cors' });
         const r = await fetch(req);
-        await c.put(u, r);
+        if (r) await c.put(u, r);
       } catch (_) {}
     }));
 
@@ -62,7 +61,7 @@ self.addEventListener('install', e => {
 
 self.addEventListener('activate', e => {
   e.waitUntil((async () => {
-    // Delete old cache versions
+    // Delete any old cache versions
     const keys = await caches.keys();
     await Promise.all(keys.filter(k => k !== VER).map(k => caches.delete(k)));
     await self.clients.claim();
@@ -75,7 +74,11 @@ self.addEventListener('fetch', e => {
 
   const url = new URL(req.url);
   const isPage = req.mode === 'navigate' || 
-                 (url.origin === location.origin && (url.pathname.endsWith('.html') || url.pathname.endsWith('lessons.json') || url.pathname.endsWith('/')));
+                 (url.origin === location.origin && (
+                   url.pathname.endsWith('.html') || 
+                   url.pathname.endsWith('lessons.json') || 
+                   url.pathname.endsWith('/')
+                 ));
 
   // Strategy A: Pages & Manifests (Network First, Cache Fallback)
   if (isPage) {
@@ -91,14 +94,14 @@ self.addEventListener('fetch', e => {
         const cached = await caches.match(req, { ignoreSearch: true });
         if (cached) return cached;
 
-        const fallbackIndex = await caches.match('index.html');
+        const fallbackIndex = (await caches.match('./')) || (await caches.match('index.html'));
         return fallbackIndex || Response.error();
       }
     })());
     return;
   }
 
-  // Strategy B: Assets, Fonts, & Images (Cache First, Background Update)
+  // Strategy B: Assets & Images (Cache First, Background Update)
   e.respondWith((async () => {
     const c = await caches.open(VER);
     const hit = await c.match(req, { ignoreSearch: true });
