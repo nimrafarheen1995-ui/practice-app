@@ -12,6 +12,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#38BDF8" />
   
+  <!-- Safety Storage Helper -->
+  <script src="shared/safe-storage.js"></script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -409,8 +412,18 @@
     <iframe id="activeLessonFrame" src="about:blank" allow="autoplay; fullscreen"></iframe>
   </div>
 
+  <!-- BACKUP & RESTORE FLOATING BAR -->
+  <div style="position: fixed; bottom: 16px; right: 16px; z-index: 1000; display: flex; gap: 8px;">
+    <button onclick="HubBackup.export()" style="background: #0284c7; color: white; border: none; padding: 8px 14px; border-radius: 20px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+      💾 Backup
+    </button>
+    <label style="background: #f8fafc; color: #334155; border: 1px solid #cbd5e1; padding: 8px 14px; border-radius: 20px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+      📥 Restore
+      <input type="file" accept=".json" onchange="HubBackup.import(this.files[0])" style="display: none;">
+    </label>
+  </div>
+
   <script>
-    const GITHUB_REPO = "nimrafarheen1995-ui/practice-app";
     let lessonsCache = null;
 
     const SUBJECT_CONFIG = {
@@ -458,7 +471,6 @@
         }
       }
 
-      // Extract optional date or chapter label (e.g. oct06, oct09)
       const dateMatch = remainder.match(/(oct\d+|nov\d+|dec\d+|jan\d+|feb\d+|ch\d+|part\d+|\d+)/i);
       const chapterLabel = dateMatch ? dateMatch[0].toUpperCase() : "Today's Lesson";
 
@@ -476,21 +488,19 @@
       if (lessonsCache && !forceRefresh) return lessonsCache;
 
       try {
-        const res = await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/?t=${Date.now()}`, {
-          cache: "no-store",
-          headers: { "Accept": "application/vnd.github.v3+json" }
-        });
+        const res = await fetch(`lessons.json?t=${Date.now()}`, { cache: "no-store" });
+        if (!res.ok) throw new Error("Could not load lessons.json");
         
-        if (!res.ok) throw new Error("API call error");
-        const files = await res.json();
-        
-        lessonsCache = files
-          .filter(f => f.name.endsWith(".html") && f.name !== "index.html")
-          .map(f => parseFileName(f.name))
+        const data = await res.json();
+        const fileNames = data.lessons || [];
+
+        lessonsCache = fileNames
+          .map(name => parseFileName(name))
           .filter(Boolean);
 
         return lessonsCache;
       } catch (err) {
+        console.warn("Falling back to embedded lesson list:", err);
         return [
           { student: "humayun", fileName: "humayun-english-oct07.html", subjectKey: "english", subjectTitle: "📖 English", colorClass: "btn-english", chapterLabel: "OCT07" },
           { student: "humayun", fileName: "humayun-evs-oct07.html", subjectKey: "evs", subjectTitle: "🌱 EVS", colorClass: "btn-evs", chapterLabel: "OCT07" },
@@ -533,7 +543,6 @@
         return;
       }
 
-      // Group by canonical subject key
       activeStudentGroupedLessons = {};
       studentFiles.forEach(file => {
         if (!activeStudentGroupedLessons[file.subjectKey]) {
@@ -547,9 +556,7 @@
         activeStudentGroupedLessons[file.subjectKey].files.push(file);
       });
 
-      // Render ONE button per subject
       Object.values(activeStudentGroupedLessons).forEach(subjectGroup => {
-        // Sort files newest date first
         subjectGroup.files.sort((a, b) => b.fileName.localeCompare(a.fileName));
 
         const countBadge = subjectGroup.files.length > 1 ? `<span class="badge-count">${subjectGroup.files.length} Chapters</span>` : '';
