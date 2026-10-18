@@ -539,8 +539,11 @@
         playPop();
         if (!('speechSynthesis' in window)) return;
         window.speechSynthesis.cancel();
-        const clean = word.replace(/[\u064B-\u065F\u0670]/g, '').replace(/[^a-zA-Z\u0600-\u06FF\s]/g, '').trim();
-        const utterance = new SpeechSynthesisUtterance(clean || word);
+        const expanded = word.replace(/\uFDFA/g, ' sallallahu alayhi wasallam ');
+        const clean = expanded.replace(/[\u064B-\u065F\u0670]/g, '').replace(/[^a-zA-Z0-9\u0600-\u06FF\s]/g, '').trim();
+        const finalText = (clean === 'RA') ? 'radiyallahu anhu' : clean;
+        const utterance = new SpeechSynthesisUtterance(finalText || word);
+        window._utt = utterance;   // keeps the utterance alive so onend always fires
         if (lang === 'ar') {
             utterance.lang = 'ar-SA';
             utterance.rate = 0.75;
@@ -834,7 +837,7 @@
                 <div style="font-size:0.95rem; line-height:1.7;">${sec.verses.map(v => `<p style="margin:2px 0;">${tokenize(v, 'en')}</p>`).join('')}</div>
             </div>
             <div class="bind-header-prompt" style="display: ${!isPracticeMode ? 'block' : 'none'};">
-                <div style="font-size:0.9rem; font-weight:800; color:#991B1B;">WRITE FROM MEMORY: Translate Verses 1 to 8 into English.</div>
+                <div style="font-size:0.9rem; font-weight:800; color:#991B1B;">${tokenize('WRITE FROM MEMORY: Translate Verses 1 to 8 into English.', 'en')}</div>
             </div>`;
         container.innerHTML = binderShell(qId, header, sec.coverTitle);
         mountBinder(qId, false, 1);
@@ -849,8 +852,8 @@
                     <span class="text-xs font-extrabold text-teal-700 uppercase">Hadith of the Prophet (ﷺ):</span>
                     <div class="text-xs md:text-sm font-semibold text-slate-700 mt-0.5">${tokenize(sec.hadith, 'en')}</div>
                 </div>
-                <div class="font-bold text-base text-slate-900">${pageData.q}</div>
-                <div class="text-sm font-bold text-teal-700 mt-1" style="display: ${isPracticeMode ? 'block' : 'none'};">Answer: ${pageData.a}</div>
+                <div class="font-bold text-base text-slate-900">${tokenize(pageData.q, 'en')}</div>
+                <div class="text-sm font-bold text-teal-700 mt-1" style="display: ${isPracticeMode ? 'block' : 'none'};">Answer: ${tokenize(pageData.a, 'en')}</div>
             </div>`;
         container.innerHTML = binderShell(qId, header, `${sec.coverTitle} (Q${currentSubPage + 1})`);
         mountBinder(qId, true, sec.pages.length);
@@ -865,8 +868,8 @@
                     <button onclick="speakFullArabic('${item.ar.replace(/'/g, "\\'")}')" class="top-btn" style="height:28px; font-size:12px; background:#047857; border-color:#6EE7B7;">🔊 Listen</button>
                 </div>
                 <div class="font-arabic text-3xl text-emerald-900 mb-1 leading-relaxed">${tokenize(item.ar, 'ar')}</div>
-                <div class="font-bold text-sm text-amber-800" style="display: ${isPracticeMode ? 'block' : 'none'};">${item.trans}</div>
-                <div class="text-xs text-slate-600 mt-0.5" style="display: ${isPracticeMode ? 'block' : 'none'};">Meaning: "${item.mean}"</div>
+                <div class="font-bold text-sm text-amber-800" style="display: ${isPracticeMode ? 'block' : 'none'};">${tokenize(item.trans, 'en')}</div>
+                <div class="text-xs text-slate-600 mt-0.5" style="display: ${isPracticeMode ? 'block' : 'none'};">Meaning: "${tokenize(item.mean, 'en')}"</div>
             </div>`;
         container.innerHTML = binderShell(qId, header, sec.coverTitle);
         mountBinder(qId, false, 1);
