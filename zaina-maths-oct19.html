@@ -40,24 +40,32 @@
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background: #0f0720;
-      color: #1e1b4b;
       font-family: var(--font-main);
       touch-action: manipulation;
     }
 
-    body { display: flex; flex-direction: column; }
+    body {
+      display: flex;
+      flex-direction: column;
+      background: #0f0720;
+      color: #1e1b4b;
+      transition: background 0.4s ease;
+    }
+    body.mode-practice {
+      background: #f3eefc;
+    }
 
     .font-display { font-family: var(--font-display); }
     .font-hand { font-family: var(--font-hand); }
 
-    /* Background stars */
     #starCanvas {
       position: fixed;
       inset: 0;
       pointer-events: none;
       z-index: 0;
+      transition: opacity 0.4s ease;
     }
+    body.mode-practice #starCanvas { opacity: 0; }
 
     #screenDimOverlay {
       position: fixed;
@@ -76,7 +84,6 @@
       z-index: 99999;
     }
 
-    /* Graph paper inside binder */
     .graph-paper {
       background-color: #fffef8;
       background-image:
@@ -85,7 +92,7 @@
       background-size: 22px 22px;
     }
 
-    /* Binder cover flip */
+    /* 5.5-style binder cover */
     .binder-cover {
       transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease;
       transform-origin: left center;
@@ -95,80 +102,120 @@
       opacity: 0;
       pointer-events: none;
     }
+    .notebook-spine-rings {
+      position: absolute;
+      left: 10px;
+      top: 18px;
+      bottom: 18px;
+      width: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .notebook-spine-rings i {
+      display: block;
+      width: 22px;
+      height: 11px;
+      border-radius: 8px;
+      background: linear-gradient(180deg, #ffffff 0%, #9ca3af 50%, #334155 100%);
+      box-shadow: 0 2px 3px rgba(0,0,0,0.35);
+    }
+    .composition-label-box {
+      background: #fefce8;
+      border: 4px solid #1e1b4b;
+      border-radius: 1rem;
+      padding: 0.85rem 1rem 0.85rem 1.75rem;
+      width: 17rem;
+      max-width: 90%;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.25);
+      position: relative;
+    }
+    .composition-label-box::before {
+      content: '';
+      position: absolute;
+      left: 0.55rem;
+      top: 0.6rem;
+      bottom: 0.6rem;
+      width: 4px;
+      border-radius: 2px;
+      background: repeating-linear-gradient(
+        to bottom,
+        #6366f1 0px, #6366f1 6px,
+        transparent 6px, transparent 12px
+      );
+    }
 
-    /* Place-value strip */
+    /* Place-value / dancer cells */
     .pv-cell {
-      min-width: 2.4rem;
-      height: 2.6rem;
+      min-width: 2.35rem;
+      height: 2.55rem;
       display: flex;
       align-items: center;
       justify-content: center;
       font-family: var(--font-display);
       font-weight: 800;
-      font-size: 1.15rem;
-      border-radius: 0.55rem;
+      font-size: 1.2rem;
+      border-radius: 0.5rem;
       border: 2px solid #c4b5fd;
       background: #f5f3ff;
       color: #4c1d95;
       position: relative;
     }
     .pv-cell.decimal-dot {
-      min-width: 1.1rem;
+      min-width: 1.05rem;
       background: transparent;
       border: none;
       color: #ec4899;
-      font-size: 1.6rem;
-      padding-bottom: 0.35rem;
+      font-size: 1.7rem;
+      padding-bottom: 0.3rem;
     }
     .pv-label {
       position: absolute;
-      bottom: -1.15rem;
+      bottom: -1.1rem;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 0.55rem;
+      font-size: 0.52rem;
       font-weight: 700;
       color: #7c3aed;
       white-space: nowrap;
-      letter-spacing: 0.02em;
     }
 
-    /* Question list cards */
     .q-card {
       background: linear-gradient(145deg, #1e1b4b 0%, #312e81 100%);
       border: 1px solid rgba(196, 181, 253, 0.35);
       border-radius: 1.1rem;
       padding: 0.85rem 1rem;
       cursor: pointer;
-      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s;
+      transition: transform 0.15s ease, border-color 0.15s;
       display: flex;
       align-items: center;
       gap: 0.75rem;
+    }
+    body.mode-practice .q-card {
+      background: linear-gradient(145deg, #4c1d95 0%, #5b21b6 100%);
+      box-shadow: 0 4px 12px rgba(76, 29, 149, 0.15);
     }
     .q-card:active { transform: scale(0.97); }
     .q-card.done {
       border-color: #34d399;
       background: linear-gradient(145deg, #064e3b 0%, #065f46 100%);
     }
-    .q-card.active-q {
-      border-color: #f472b6;
-      box-shadow: 0 0 0 2px rgba(244, 114, 182, 0.4);
-    }
 
-    /* Stage panels */
     .stage { display: none; flex: 1; flex-direction: column; min-height: 0; position: relative; z-index: 10; }
     .stage.active { display: flex; }
 
-    /* Header */
-    header {
-      flex-shrink: 0;
-      z-index: 20;
+    header { flex-shrink: 0; z-index: 20; }
+    body:not(.mode-practice) header {
       background: linear-gradient(180deg, #1e1035 0%, transparent 100%);
     }
+    body.mode-practice header {
+      background: linear-gradient(180deg, #ede9fe 0%, transparent 100%);
+    }
 
-    /* Scroll areas */
     .scroll-y { overflow-y: auto; -webkit-overflow-scrolling: touch; }
 
-    /* Tool buttons */
     .tool-btn {
       width: 2.1rem;
       height: 2.1rem;
@@ -187,7 +234,6 @@
       border-color: #6d28d9;
     }
 
-    /* Dance animation for decimal point */
     @keyframes bounceDot {
       0%, 100% { transform: translateY(0); }
       50% { transform: translateY(-6px); }
@@ -199,6 +245,34 @@
       to { opacity: 1; transform: translateX(0); }
     }
     .slide-in { animation: slideInRight 0.35s ease forwards; }
+
+    @keyframes shakeX {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+    .shake-wrong { animation: shakeX 0.4s ease; }
+
+    /* Dancer controls */
+    .dance-btn {
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: 0.85rem;
+      border: 2px solid #c4b5fd;
+      background: #fff;
+      color: #5b21b6;
+      font-size: 1.25rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(91, 33, 182, 0.12);
+    }
+    .dance-btn:active { transform: scale(0.94); background: #ede9fe; }
+    .dance-btn:disabled { opacity: 0.35; cursor: not-allowed; }
   </style>
 </head>
 <body>
@@ -207,21 +281,22 @@
   <canvas id="confettiCanvas"></canvas>
   <div id="screenDimOverlay"></div>
 
-  <!-- ========== HEADER ========== -->
+  <!-- HEADER -->
   <header class="px-4 pt-3 pb-2 flex items-center justify-between gap-3">
     <div class="flex items-center gap-2.5 min-w-0">
-      <button type="button" onclick="goHub()" class="shrink-0 bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-xl border border-white/20">
+      <button type="button" onclick="goHub()" id="hubBtn"
+              class="shrink-0 text-xs font-bold px-3 py-1.5 rounded-xl border">
         ← Hub
       </button>
       <div class="min-w-0">
-        <h1 class="font-display text-white text-base md:text-lg font-bold leading-tight truncate">
+        <h1 id="headerTitle" class="font-display text-base md:text-lg font-bold leading-tight truncate text-white">
           Decimal Point Dance
         </h1>
-        <p class="text-purple-200 text-[11px] font-semibold">Exercise 5.6 · Place Value · Zaina</p>
+        <p id="headerSub" class="text-[11px] font-semibold text-purple-200">Exercise 5.6 · Place Value · Zaina</p>
       </div>
     </div>
     <div class="flex items-center gap-2 shrink-0">
-      <label class="flex items-center gap-1.5 text-purple-200 text-[10px] font-bold">
+      <label id="dimLabel" class="flex items-center gap-1.5 text-[10px] font-bold text-purple-200">
         Dim
         <input type="range" id="dimSlider" min="0" max="50" value="0" class="w-16 accent-purple-400"
                oninput="setDim(this.value)" />
@@ -231,11 +306,10 @@
     </div>
   </header>
 
-  <!-- ========== STAGE 1: INTRO / TEACH ========== -->
+  <!-- ========== STAGE 1: TEACH ========== -->
   <section id="stageTeach" class="stage active px-4 pb-4">
     <div class="flex-1 scroll-y max-w-2xl mx-auto w-full flex flex-col gap-4 justify-center">
 
-      <!-- Twilight intro card -->
       <div class="bg-gradient-to-br from-violet-900/90 to-indigo-950/90 border border-violet-400/30 rounded-3xl p-5 flex flex-col sm:flex-row items-center gap-4 shadow-2xl">
         <img src="assets/twilight.png" alt="Twilight Sparkle" class="w-28 h-28 sm:w-36 sm:h-36 object-contain drop-shadow-2xl shrink-0"
              onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22><circle cx=%2260%22 cy=%2260%22 r=%2256%22 fill=%22%23EDE9FE%22/><text x=%2250%%22 y=%2255%%22 text-anchor=%22middle%22 font-size=%2248%22>🦄</text></svg>'" />
@@ -247,12 +321,11 @@
           <p class="text-purple-100 text-sm leading-relaxed">
             When we multiply by <b class="text-yellow-300">10</b>, <b class="text-yellow-300">100</b> or <b class="text-yellow-300">1000</b>,
             the decimal point simply <b class="text-pink-300">moves to the right</b>.
-            No hard multiplying — just count the zeros and dance the point!
+            Watch the demo, then try the questions yourself.
           </p>
         </div>
       </div>
 
-      <!-- Dance rules -->
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div class="bg-white/10 border border-white/15 rounded-2xl p-4 text-center">
           <div class="text-3xl mb-1">①</div>
@@ -274,11 +347,12 @@
         </div>
       </div>
 
-      <!-- Live demo strip -->
       <div class="bg-slate-900/80 border border-violet-500/40 rounded-2xl p-4">
-        <p class="text-center text-purple-200 text-xs font-bold mb-3 uppercase tracking-wider">Watch the point dance</p>
-        <div id="demoStrip" class="flex justify-center items-end gap-1.5 flex-wrap min-h-[3.5rem]"></div>
-        <div class="flex justify-center gap-2 mt-4">
+        <p class="text-center text-purple-200 text-xs font-bold mb-1 uppercase tracking-wider">Watch the decimal point dance</p>
+        <p class="text-center text-purple-300/80 text-[11px] mb-3">Example: <b class="text-white">23.5</b></p>
+        <div id="demoStrip" class="flex justify-center items-end gap-1.5 flex-wrap min-h-[4.2rem]"></div>
+        <p id="demoResultLabel" class="text-center text-pink-300 font-hand text-sm mt-3 min-h-[1.25rem]"></p>
+        <div class="flex justify-center gap-2 mt-3 flex-wrap">
           <button type="button" onclick="runDemo(10)" class="bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg">× 10</button>
           <button type="button" onclick="runDemo(100)" class="bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg">× 100</button>
           <button type="button" onclick="runDemo(1000)" class="bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg">× 1000</button>
@@ -293,35 +367,35 @@
     </div>
   </section>
 
-  <!-- ========== STAGE 2: PRACTICE LIST ========== -->
+  <!-- ========== STAGE 2: LIST ========== -->
   <section id="stageList" class="stage px-4 pb-4">
     <div class="flex-1 scroll-y max-w-lg mx-auto w-full flex flex-col gap-3 pt-1">
       <div class="flex items-center justify-between mb-1">
-        <button type="button" onclick="showTeach()" class="text-purple-200 text-xs font-bold hover:text-white">← Lesson</button>
-        <p class="text-purple-200 text-xs font-bold" id="progressLabel">0 / 10 done</p>
+        <button type="button" onclick="showTeach()" class="text-violet-600 text-xs font-bold hover:text-violet-800">← Lesson</button>
+        <p class="text-violet-600 text-xs font-bold" id="progressLabel">0 / 10 done</p>
       </div>
-
       <div id="questionList" class="flex flex-col gap-2.5"></div>
     </div>
   </section>
 
-  <!-- ========== STAGE 3: BINDER WORKSPACE ========== -->
-  <section id="stageBinder" class="stage px-3 pb-3">
+  <!-- ========== STAGE 3: WORKSPACE ========== -->
+  <section id="stageWork" class="stage px-3 pb-3">
     <div class="flex-1 flex flex-col max-w-3xl mx-auto w-full min-h-0">
 
-      <!-- Top bar -->
       <div class="flex items-center justify-between gap-2 mb-2 shrink-0">
-        <button type="button" onclick="backToList()" class="bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-xl border border-white/20">
+        <button type="button" onclick="backToList()"
+                class="bg-violet-100 hover:bg-violet-200 text-violet-800 text-xs font-bold px-3 py-1.5 rounded-xl border border-violet-200">
           ← All questions
         </button>
         <div class="flex items-center gap-2">
-          <button type="button" id="btnPrev" onclick="navQuestion(-1)" class="bg-white/10 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg disabled:opacity-30">◀</button>
-          <span id="qCounter" class="text-purple-200 text-xs font-bold min-w-[3.5rem] text-center">1 / 10</span>
-          <button type="button" id="btnNext" onclick="navQuestion(1)" class="bg-white/10 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg disabled:opacity-30">▶</button>
+          <button type="button" id="btnPrev" onclick="navQuestion(-1)"
+                  class="bg-violet-100 text-violet-800 text-xs font-bold px-2.5 py-1.5 rounded-lg disabled:opacity-30 border border-violet-200">◀</button>
+          <span id="qCounter" class="text-violet-700 text-xs font-bold min-w-[3.5rem] text-center">1 / 10</span>
+          <button type="button" id="btnNext" onclick="navQuestion(1)"
+                  class="bg-violet-100 text-violet-800 text-xs font-bold px-2.5 py-1.5 rounded-lg disabled:opacity-30 border border-violet-200">▶</button>
         </div>
       </div>
 
-      <!-- Question + place-value helper -->
       <div class="bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col flex-1 min-h-0 border border-violet-200">
 
         <!-- Question header -->
@@ -331,82 +405,105 @@
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-2 flex-wrap mb-0.5">
                 <span id="qLabel" class="bg-violet-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">1.a</span>
-                <span id="qShift" class="bg-pink-100 text-pink-700 text-[10px] font-bold px-2 py-0.5 rounded-md">× 100 → 2 places</span>
               </div>
-              <p id="qText" class="font-semibold text-slate-800 text-sm md:text-base leading-snug">23.5 × 100 = ?</p>
-            </div>
-          </div>
-
-          <!-- Live place-value strip for this question -->
-          <div class="mt-3 flex justify-center">
-            <div id="pvStrip" class="flex items-end gap-1 flex-wrap justify-center"></div>
-          </div>
-          <p class="text-center text-[10px] text-violet-500 font-bold mt-4 mb-0.5">Tip: count the zeros, then move the pink dot</p>
-        </div>
-
-        <!-- Answer row -->
-        <div class="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center gap-2 shrink-0 flex-wrap">
-          <span class="text-slate-500 text-xs font-bold">Answer</span>
-          <input type="text" inputmode="decimal" id="answerInput" placeholder="Type here…"
-                 class="flex-1 min-w-[6rem] px-3 py-1.5 rounded-lg border border-slate-300 text-sm font-bold text-center focus:outline-none focus:ring-2 focus:ring-violet-500"
-                 oninput="saveAnswer()" onkeydown="if(event.key==='Enter') checkAnswer()" />
-          <button type="button" onclick="checkAnswer()"
-                  class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm px-4 py-1.5 rounded-lg shadow-sm">
-            ✅ Check
-          </button>
-        </div>
-
-        <!-- Binder workspace -->
-        <div class="relative flex-1 min-h-[200px] flex flex-col">
-          <!-- Binder cover (closed state) -->
-          <div id="binderCover" class="binder-cover absolute inset-0 z-20 flex flex-col items-center justify-center cursor-pointer"
-               style="background: linear-gradient(145deg, #5b21b6 0%, #4c1d95 40%, #312e81 100%);"
-               onclick="openBinder()">
-            <div class="absolute left-3 top-4 bottom-4 w-3 flex flex-col justify-between pointer-events-none">
-              <i class="block w-3 h-2.5 rounded-full bg-white/40"></i>
-              <i class="block w-3 h-2.5 rounded-full bg-white/40"></i>
-              <i class="block w-3 h-2.5 rounded-full bg-white/40"></i>
-              <i class="block w-3 h-2.5 rounded-full bg-white/40"></i>
-              <i class="block w-3 h-2.5 rounded-full bg-white/40"></i>
-              <i class="block w-3 h-2.5 rounded-full bg-white/40"></i>
-            </div>
-            <img id="coverPony" src="assets/twilight.png" alt="" class="w-24 h-24 object-contain drop-shadow-xl mb-2" onerror="this.style.display='none'" />
-            <p class="font-display text-white text-lg font-bold">Open Notebook</p>
-            <p class="text-violet-200 text-xs mt-0.5">Tap to write your working</p>
-          </div>
-
-          <!-- Open notebook -->
-          <div class="flex-1 flex flex-col min-h-0">
-            <!-- Tools -->
-            <div class="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 border-b border-amber-100 shrink-0">
-              <button type="button" class="tool-btn active" id="toolPen" onclick="setTool('pen')" title="Pen">✏️</button>
-              <button type="button" class="tool-btn" id="toolEraser" onclick="setTool('eraser')" title="Eraser">🧽</button>
-              <span class="w-px h-5 bg-amber-200 mx-0.5"></span>
-              <button type="button" class="tool-btn" style="background:#1e1b4b" onclick="setColor('#1e1b4b')"></button>
-              <button type="button" class="tool-btn" style="background:#dc2626" onclick="setColor('#dc2626')"></button>
-              <button type="button" class="tool-btn" style="background:#2563eb" onclick="setColor('#2563eb')"></button>
-              <button type="button" class="tool-btn" style="background:#16a34a" onclick="setColor('#16a34a')"></button>
-              <span class="flex-1"></span>
-              <button type="button" class="tool-btn" onclick="undoInk()" title="Undo">↩️</button>
-              <button type="button" class="tool-btn" onclick="clearCanvas()" title="Clear">🗑️</button>
-              <button type="button" class="tool-btn" onclick="closeBinder()" title="Close">📕</button>
-            </div>
-            <!-- Canvas -->
-            <div class="flex-1 relative graph-paper overflow-hidden select-none touch-none" id="canvasArea">
-              <canvas id="inkCanvas" class="absolute inset-0 w-full h-full cursor-crosshair touch-none" oncontextmenu="return false;"></canvas>
+              <p id="qText" class="font-semibold text-slate-800 text-sm md:text-base leading-snug">23.5 × 100 = .............</p>
             </div>
           </div>
         </div>
+
+        <!-- ===== MODE A: DANCER (1a–h) ===== -->
+        <div id="modeDancer" class="flex-1 flex flex-col min-h-0 px-4 py-4 gap-4">
+          <p class="text-center text-violet-500 text-[11px] font-bold uppercase tracking-wider">Move the decimal point yourself</p>
+
+          <div id="dancerStrip" class="flex justify-center items-end gap-1.5 flex-wrap min-h-[3.2rem]"></div>
+
+          <div class="flex justify-center items-center gap-3">
+            <button type="button" class="dance-btn" id="btnDanceLeft" onclick="danceMove(-1)" title="Move point left">◀</button>
+            <span id="danceMultBadge" class="font-display text-violet-700 text-lg font-bold px-3 py-1 bg-violet-100 rounded-xl border border-violet-200">× 100</span>
+            <button type="button" class="dance-btn" id="btnDanceRight" onclick="danceMove(1)" title="Move point right">▶</button>
+          </div>
+          <p class="text-center text-slate-400 text-[11px]">Tap the arrows to move the pink decimal point</p>
+
+          <div class="mt-auto pt-2 border-t border-slate-100">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-slate-500 text-xs font-bold">Your answer</span>
+              <input type="text" inputmode="decimal" id="answerInputDancer" placeholder="Type result…"
+                     class="flex-1 min-w-[7rem] px-3 py-2 rounded-lg border border-slate-300 text-sm font-bold text-center focus:outline-none focus:ring-2 focus:ring-violet-500"
+                     oninput="saveAnswer()" onkeydown="if(event.key==='Enter') checkAnswer()" />
+              <button type="button" onclick="checkAnswer()"
+                      class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm px-4 py-2 rounded-lg shadow-sm">
+                ✅ Check
+              </button>
+            </div>
+            <p id="wrongMsgDancer" class="text-red-500 text-xs font-bold text-center mt-2 min-h-[1.1rem]"></p>
+          </div>
+        </div>
+
+        <!-- ===== MODE B: BINDER (Q2 & Q3) ===== -->
+        <div id="modeBinder" class="flex-1 flex flex-col min-h-0 hidden">
+          <!-- Answer row -->
+          <div class="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center gap-2 shrink-0 flex-wrap">
+            <span class="text-slate-500 text-xs font-bold">Answer</span>
+            <input type="text" inputmode="decimal" id="answerInputBinder" placeholder="Type here…"
+                   class="flex-1 min-w-[6rem] px-3 py-1.5 rounded-lg border border-slate-300 text-sm font-bold text-center focus:outline-none focus:ring-2 focus:ring-violet-500"
+                   oninput="saveAnswer()" onkeydown="if(event.key==='Enter') checkAnswer()" />
+            <button type="button" onclick="checkAnswer()"
+                    class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm px-4 py-1.5 rounded-lg shadow-sm">
+              ✅ Check
+            </button>
+          </div>
+          <p id="wrongMsgBinder" class="text-red-500 text-xs font-bold text-center px-4 min-h-[1.1rem]"></p>
+
+          <!-- Binder area -->
+          <div class="relative flex-1 min-h-[200px] flex flex-col">
+            <div id="binderCover" class="binder-cover absolute inset-0 z-20 flex flex-col justify-between p-6 cursor-pointer text-white"
+                 onclick="openBinder()">
+              <div class="notebook-spine-rings">
+                <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+              </div>
+              <div class="flex-1 flex flex-col items-center justify-center gap-3 ml-4">
+                <div class="composition-label-box text-slate-900">
+                  <div class="text-[10px] uppercase font-extrabold text-indigo-900 tracking-widest border-b-2 border-blue-400 pb-0.5">Royal Academy Classwork</div>
+                  <div class="font-hand text-lg text-blue-950 font-bold leading-tight pt-0.5">Zaina • Grade 5</div>
+                  <div class="font-hand text-base text-rose-700 font-bold leading-tight">Exercise 5.6 — Place Value</div>
+                  <div id="coverHost" class="font-hand text-xs text-indigo-700 font-bold bg-amber-100/90 border border-amber-300 rounded px-2 py-0.5 mt-1 inline-block w-fit">Host: Applejack</div>
+                </div>
+                <img id="coverPony" src="assets/applejack.png" alt="" class="w-20 h-20 object-contain drop-shadow-xl" onerror="this.style.display='none'" />
+                <span class="bg-white text-indigo-900 font-bold px-4 py-2 rounded-xl text-sm shadow">Tap to open notebook</span>
+              </div>
+            </div>
+
+            <div class="flex-1 flex flex-col min-h-0">
+              <div class="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 border-b border-amber-100 shrink-0">
+                <button type="button" class="tool-btn active" id="toolPen" onclick="setTool('pen')" title="Pen">✏️</button>
+                <button type="button" class="tool-btn" id="toolEraser" onclick="setTool('eraser')" title="Eraser">🧽</button>
+                <span class="w-px h-5 bg-amber-200 mx-0.5"></span>
+                <button type="button" class="tool-btn" style="background:#1e1b4b" onclick="setColor('#1e1b4b')"></button>
+                <button type="button" class="tool-btn" style="background:#dc2626" onclick="setColor('#dc2626')"></button>
+                <button type="button" class="tool-btn" style="background:#2563eb" onclick="setColor('#2563eb')"></button>
+                <button type="button" class="tool-btn" style="background:#16a34a" onclick="setColor('#16a34a')"></button>
+                <span class="flex-1"></span>
+                <button type="button" class="tool-btn" onclick="undoInk()" title="Undo">↩️</button>
+                <button type="button" class="tool-btn" onclick="clearCanvas()" title="Clear">🗑️</button>
+                <button type="button" class="tool-btn" onclick="closeBinder()" title="Close">📕</button>
+              </div>
+              <div class="flex-1 relative graph-paper overflow-hidden select-none touch-none" id="canvasArea">
+                <canvas id="inkCanvas" class="absolute inset-0 w-full h-full cursor-crosshair touch-none" oncontextmenu="return false;"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
 
-  <!-- Celebration overlay -->
-  <div id="celebrateOverlay" class="fixed inset-0 z-[100000] hidden items-center justify-center bg-black/50" style="display:none">
+  <!-- Celebration -->
+  <div id="celebrateOverlay" class="fixed inset-0 z-[100000] items-center justify-center bg-black/50" style="display:none">
     <div class="bg-white rounded-3xl p-6 max-w-sm mx-4 text-center shadow-2xl slide-in">
       <img id="celebPony" src="assets/twilight.png" alt="" class="w-28 h-28 mx-auto object-contain mb-2" />
       <h3 id="celebTitle" class="font-display text-2xl font-bold text-violet-800 mb-1">Perfect!</h3>
-      <p id="celebBody" class="text-slate-600 text-sm mb-4">The decimal point danced exactly the right number of places.</p>
+      <p id="celebBody" class="text-slate-600 text-sm mb-4">Great work — you got it right!</p>
       <div class="flex gap-2 justify-center">
         <button type="button" onclick="closeCelebrate()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm px-4 py-2 rounded-xl">Close</button>
         <button type="button" onclick="closeCelebrate(); navQuestion(1)" class="bg-violet-600 hover:bg-violet-500 text-white font-bold text-sm px-4 py-2 rounded-xl">Next ▶</button>
@@ -415,85 +512,73 @@
   </div>
 
   <script>
-    /* ================================================================
-       DATA — Exercise 5.6
-       ================================================================ */
     const QUESTIONS = [
-      {
-        id: 'e56_1a', label: '1.a',
-        text: '23.5 × 100 = ?',
-        num: '23.5', mult: 100, places: 2,
-        answer: '2350',
-        pony: 'Fluttershy', avatar: 'assets/fluttershy.png'
-      },
-      {
-        id: 'e56_1b', label: '1.b',
-        text: '1.15 × 100 = ?',
-        num: '1.15', mult: 100, places: 2,
-        answer: '115',
-        pony: 'Rarity', avatar: 'assets/rarity.png'
-      },
-      {
-        id: 'e56_1c', label: '1.c',
-        text: '4.97 × 10 = ?',
-        num: '4.97', mult: 10, places: 1,
-        answer: '49.7',
-        pony: 'Pinkie Pie', avatar: 'assets/pinkie.png'
-      },
-      {
-        id: 'e56_1d', label: '1.d',
-        text: '69.8 × 1000 = ?',
-        num: '69.8', mult: 1000, places: 3,
-        answer: '69800',
-        pony: 'Princess Luna', avatar: 'assets/luna.png'
-      },
-      {
-        id: 'e56_1e', label: '1.e',
-        text: '0.12 × 1000 = ?',
-        num: '0.12', mult: 1000, places: 3,
-        answer: '120',
-        pony: 'Twilight Sparkle', avatar: 'assets/twilight.png'
-      },
-      {
-        id: 'e56_1f', label: '1.f',
-        text: '0.28 × 10 = ?',
-        num: '0.28', mult: 10, places: 1,
-        answer: '2.8',
-        pony: 'Princess Celestia', avatar: 'assets/celestia.png'
-      },
-      {
-        id: 'e56_1g', label: '1.g',
-        text: '24.4 × 10 = ?',
-        num: '24.4', mult: 10, places: 1,
-        answer: '244',
-        pony: 'Rainbow Dash', avatar: 'assets/rainbow.png'
-      },
-      {
-        id: 'e56_1h', label: '1.h',
-        text: '5.08 × 100 = ?',
-        num: '5.08', mult: 100, places: 2,
-        answer: '508',
-        pony: 'Applejack', avatar: 'assets/applejack.png'
-      },
-      {
-        id: 'e56_q2', label: 'Q2',
-        text: 'A coin is 2.8 cm wide. Manoj lined up 10 coins across his desk. What is the width of the desk?',
-        num: '2.8', mult: 10, places: 1,
-        answer: '28',
-        unit: 'cm',
-        pony: 'Applejack', avatar: 'assets/applejack.png',
-        word: true
-      },
-      {
-        id: 'e56_q3', label: 'Q3',
-        text: 'One page is 0.4 mm thick. A book has 300 pages. How thick is the book?',
-        num: '0.4', mult: 300, places: null,
-        answer: '120',
-        unit: 'mm',
-        pony: 'Rarity', avatar: 'assets/rarity.png',
-        word: true
-      }
+      { id: 'e56_1a', label: '1.a', text: '23.5 × 100 = .............', num: '23.5', mult: 100, answer: '2350', pony: 'Fluttershy', avatar: 'assets/fluttershy.png', theme: 'from-emerald-800 to-teal-950', mode: 'dancer' },
+      { id: 'e56_1b', label: '1.b', text: '1.15 × 100 = .............', num: '1.15', mult: 100, answer: '115', pony: 'Rarity', avatar: 'assets/rarity.png', theme: 'from-purple-900 to-fuchsia-950', mode: 'dancer' },
+      { id: 'e56_1c', label: '1.c', text: '4.97 × 10 = .............', num: '4.97', mult: 10, answer: '49.7', pony: 'Pinkie Pie', avatar: 'assets/pinkie.png', theme: 'from-pink-800 to-rose-950', mode: 'dancer' },
+      { id: 'e56_1d', label: '1.d', text: '69.8 × 1000 = .............', num: '69.8', mult: 1000, answer: '69800', pony: 'Princess Luna', avatar: 'assets/luna.png', theme: 'from-slate-900 to-blue-950', mode: 'dancer' },
+      { id: 'e56_1e', label: '1.e', text: '0.12 × 1000 = .............', num: '0.12', mult: 1000, answer: '120', pony: 'Twilight Sparkle', avatar: 'assets/twilight.png', theme: 'from-purple-950 to-indigo-950', mode: 'dancer' },
+      { id: 'e56_1f', label: '1.f', text: '0.28 × 10 = .............', num: '0.28', mult: 10, answer: '2.8', pony: 'Princess Celestia', avatar: 'assets/celestia.png', theme: 'from-amber-700 to-yellow-950', mode: 'dancer' },
+      { id: 'e56_1g', label: '1.g', text: '24.4 × 10 = .............', num: '24.4', mult: 10, answer: '244', pony: 'Rainbow Dash', avatar: 'assets/rainbow.png', theme: 'from-sky-800 to-blue-950', mode: 'dancer' },
+      { id: 'e56_1h', label: '1.h', text: '5.08 × 100 = .............', num: '5.08', mult: 100, answer: '508', pony: 'Applejack', avatar: 'assets/applejack.png', theme: 'from-orange-800 to-amber-950', mode: 'dancer' },
+      { id: 'e56_q2', label: 'Q2', text: 'The diameter of a coin is 2.8 cm. Manoj lined up 10 coins from the left end of his desk to the right end of his desk. What is the width of his desk?', num: '2.8', mult: 10, answer: '28', pony: 'Applejack', avatar: 'assets/applejack.png', theme: 'from-amber-800 to-orange-950', mode: 'binder' },
+      { id: 'e56_q3', label: 'Q3', text: 'The thickness of one page is 0.4 mm. A book has 300 pages. How thick will the book be?', num: '0.4', mult: 300, answer: '120', pony: 'Rarity', avatar: 'assets/rarity.png', theme: 'from-fuchsia-800 to-purple-950', mode: 'binder' }
     ];
+
+    /* ---------- Sound ---------- */
+    let audioCtx = null;
+    function getAudio() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+    function playTone(freq, dur, type, vol) {
+      try {
+        const ctx = getAudio();
+        const t0 = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type || 'sine';
+        osc.frequency.setValueAtTime(freq, t0);
+        gain.gain.setValueAtTime(vol || 0.08, t0);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + (dur || 0.12));
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(t0); osc.stop(t0 + (dur || 0.12) + 0.02);
+      } catch (_) {}
+    }
+    function playWhoosh() {
+      try {
+        const ctx = getAudio();
+        const t0 = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(280, t0);
+        osc.frequency.exponentialRampToValueAtTime(720, t0 + 0.28);
+        gain.gain.setValueAtTime(0.12, t0);
+        gain.gain.linearRampToValueAtTime(0.01, t0 + 0.3);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.start(t0); osc.stop(t0 + 0.32);
+      } catch (_) {}
+    }
+    function playSuccess() {
+      try {
+        const ctx = getAudio();
+        const t0 = ctx.currentTime;
+        [392, 523, 659, 784].forEach((f, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(f, t0 + i * 0.07);
+          gain.gain.setValueAtTime(0.14, t0 + i * 0.07);
+          gain.gain.exponentialRampToValueAtTime(0.001, t0 + i * 0.07 + 0.45);
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.start(t0 + i * 0.07); osc.stop(t0 + i * 0.07 + 0.5);
+        });
+      } catch (_) {}
+    }
+    function playTap() { playTone(480, 0.05, 'sine', 0.05); }
+    function playError() { playTone(180, 0.15, 'sawtooth', 0.06); }
 
     let currentIndex = 0;
     let binderOpen = false;
@@ -501,13 +586,47 @@
     let penTool = 'pen';
     const undoStack = [];
 
-    /* ---------- Navigation between stages ---------- */
+    /* Dancer state: digits as string without decimal, and decimal index */
+    let danceDigits = [];
+    let danceDotIndex = 0; // position of decimal (after this many digits from left)
+
+    /* ---------- Stages ---------- */
+    function setPracticeMode(on) {
+      document.body.classList.toggle('mode-practice', on);
+      const title = document.getElementById('headerTitle');
+      const sub = document.getElementById('headerSub');
+      const hub = document.getElementById('hubBtn');
+      const dim = document.getElementById('dimLabel');
+      if (on) {
+        title.classList.remove('text-white');
+        title.classList.add('text-violet-900');
+        sub.classList.remove('text-purple-200');
+        sub.classList.add('text-violet-500');
+        hub.className = 'shrink-0 text-xs font-bold px-3 py-1.5 rounded-xl border bg-white text-violet-800 border-violet-200';
+        dim.classList.remove('text-purple-200');
+        dim.classList.add('text-violet-500');
+      } else {
+        title.classList.add('text-white');
+        title.classList.remove('text-violet-900');
+        sub.classList.add('text-purple-200');
+        sub.classList.remove('text-violet-500');
+        hub.className = 'shrink-0 text-xs font-bold px-3 py-1.5 rounded-xl border bg-white/10 text-white border-white/20';
+        dim.classList.add('text-purple-200');
+        dim.classList.remove('text-violet-500');
+      }
+    }
+
     function showStage(id) {
       document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
     }
-    function showTeach() { showStage('stageTeach'); }
+    function showTeach() {
+      setPracticeMode(false);
+      showStage('stageTeach');
+    }
     function showPractice() {
+      playTap();
+      setPracticeMode(true);
       renderList();
       showStage('stageList');
     }
@@ -522,40 +641,38 @@
     }
 
     /* ---------- Progress ---------- */
-    function isDone(id) {
-      return localStorage.getItem('zaina_e56_done_' + id) === '1';
-    }
-    function markDone(id) {
-      localStorage.setItem('zaina_e56_done_' + id, '1');
-    }
-    function progressCount() {
-      return QUESTIONS.filter(q => isDone(q.id)).length;
-    }
+    function isDone(id) { return localStorage.getItem('zaina_e56_done_' + id) === '1'; }
+    function markDone(id) { localStorage.setItem('zaina_e56_done_' + id, '1'); }
+    function progressCount() { return QUESTIONS.filter(q => isDone(q.id)).length; }
 
-    /* ---------- Question list ---------- */
     function renderList() {
       const box = document.getElementById('questionList');
       document.getElementById('progressLabel').textContent = progressCount() + ' / ' + QUESTIONS.length + ' done';
-      box.innerHTML = QUESTIONS.map((q, i) => {
+      let html = '';
+      QUESTIONS.forEach((q, i) => {
+        if (i === 0) html += `<p class="text-violet-600 text-[11px] font-bold uppercase tracking-wider mt-1 mb-1 px-1">1. Find the product</p>`;
+        if (i === 8) html += `<p class="text-violet-600 text-[11px] font-bold uppercase tracking-wider mt-3 mb-1 px-1">2. Word problem</p>`;
+        if (i === 9) html += `<p class="text-violet-600 text-[11px] font-bold uppercase tracking-wider mt-3 mb-1 px-1">3. Word problem</p>`;
         const done = isDone(q.id);
-        return `
+        html += `
           <button type="button" class="q-card ${done ? 'done' : ''}" onclick="openQuestion(${i})">
             <img src="${q.avatar}" alt="" class="w-10 h-10 object-contain shrink-0" onerror="this.style.display='none'" />
             <div class="text-left min-w-0 flex-1">
               <div class="flex items-center gap-1.5 mb-0.5">
                 <span class="text-[10px] font-bold ${done ? 'text-emerald-300' : 'text-pink-300'}">${q.label}</span>
                 ${done ? '<span class="text-[10px] text-emerald-300 font-bold">✓</span>' : ''}
-                ${q.word ? '<span class="text-[9px] bg-white/10 text-purple-200 px-1.5 py-0.5 rounded">Word</span>' : ''}
               </div>
               <p class="text-white text-xs font-semibold truncate">${q.text}</p>
             </div>
             <span class="text-purple-300 text-lg shrink-0">›</span>
           </button>`;
-      }).join('');
+      });
+      box.innerHTML = html;
     }
 
-    /* ---------- Open a question ---------- */
+    /* ---------- Open question ---------- */
     function openQuestion(index) {
+      playTap();
       currentIndex = index;
       binderOpen = false;
       const q = QUESTIONS[index];
@@ -563,33 +680,36 @@
       document.getElementById('qLabel').textContent = q.label;
       document.getElementById('qText').textContent = q.text;
       document.getElementById('qPony').src = q.avatar;
-      document.getElementById('coverPony').src = q.avatar;
       document.getElementById('qCounter').textContent = (index + 1) + ' / ' + QUESTIONS.length;
-
-      if (q.places != null) {
-        document.getElementById('qShift').textContent = `× ${q.mult} → ${q.places} place${q.places > 1 ? 's' : ''}`;
-        document.getElementById('qShift').style.display = '';
-      } else {
-        document.getElementById('qShift').textContent = `× ${q.mult}`;
-        document.getElementById('qShift').style.display = '';
-      }
-
-      document.getElementById('answerInput').value = localStorage.getItem('zaina_ans_' + q.id) || '';
       document.getElementById('btnPrev').disabled = index === 0;
       document.getElementById('btnNext').disabled = index === QUESTIONS.length - 1;
 
-      // Reset binder cover
-      const cover = document.getElementById('binderCover');
-      cover.classList.remove('binder-open');
+      clearWrongMsgs();
 
-      buildPlaceValueStrip(q);
-      showStage('stageBinder');
+      const dancer = document.getElementById('modeDancer');
+      const binder = document.getElementById('modeBinder');
 
-      // Init canvas after layout
-      requestAnimationFrame(() => {
-        syncCanvas();
-        loadInk();
-      });
+      if (q.mode === 'dancer') {
+        dancer.classList.remove('hidden');
+        binder.classList.add('hidden');
+        document.getElementById('answerInputDancer').value = localStorage.getItem('zaina_ans_' + q.id) || '';
+        document.getElementById('danceMultBadge').textContent = '× ' + q.mult;
+        initDancer(q.num);
+      } else {
+        dancer.classList.add('hidden');
+        binder.classList.remove('hidden');
+        document.getElementById('answerInputBinder').value = localStorage.getItem('zaina_ans_' + q.id) || '';
+        document.getElementById('coverPony').src = q.avatar;
+        document.getElementById('coverHost').textContent = 'Host: ' + q.pony;
+        const cover = document.getElementById('binderCover');
+        cover.className = 'binder-cover absolute inset-0 z-20 flex flex-col justify-between p-6 cursor-pointer text-white bg-gradient-to-br ' + q.theme;
+        cover.classList.remove('binder-open');
+        showStage('stageWork');
+        requestAnimationFrame(() => { syncCanvas(); loadInk(); });
+        return;
+      }
+
+      showStage('stageWork');
     }
 
     function navQuestion(dir) {
@@ -600,82 +720,118 @@
       }
     }
 
-    /* ---------- Place-value strip ---------- */
-    function buildPlaceValueStrip(q) {
-      const strip = document.getElementById('pvStrip');
-      if (q.word && q.places == null) {
-        // For ×300 just show the number
-        strip.innerHTML = `<div class="text-violet-700 text-sm font-bold font-hand">${q.num} × ${q.mult} = ?</div>`;
-        return;
-      }
-
-      const parts = String(q.num).split('.');
+    /* ---------- Dancer ---------- */
+    function initDancer(numStr) {
+      const parts = String(numStr).split('.');
       const whole = parts[0] || '0';
       const frac = parts[1] || '';
+      danceDigits = (whole + frac).split('');
+      danceDotIndex = whole.length;
+      renderDancer();
+    }
 
-      // Build digit cells: some leading blanks for shifts, then digits, then trailing blanks
-      const lead = 1;
-      const trail = Math.max(q.places || 0, 2);
+    function renderDancer() {
+      const strip = document.getElementById('dancerStrip');
       let html = '';
-
-      // Leading empty (for visual balance)
-      for (let i = 0; i < lead; i++) {
-        html += `<div class="pv-cell" style="opacity:0.35"> </div>`;
+      for (let i = 0; i <= danceDigits.length; i++) {
+        if (i === danceDotIndex) {
+          html += `<div class="pv-cell decimal-dot dot-dance">.</div>`;
+        }
+        if (i < danceDigits.length) {
+          html += `<div class="pv-cell">${danceDigits[i]}</div>`;
+        }
       }
-
-      // Whole-number digits
-      for (let i = 0; i < whole.length; i++) {
-        const placeNames = ['Ones', 'Tens', 'Hundreds', 'Thousands', 'Ten Thousands'];
-        const placeIdx = whole.length - 1 - i;
-        const label = placeIdx < placeNames.length ? placeNames[placeIdx] : '';
-        html += `<div class="pv-cell">${whole[i]}${label ? `<span class="pv-label">${label}</span>` : ''}</div>`;
-      }
-
-      // Decimal point
-      html += `<div class="pv-cell decimal-dot dot-dance">.</div>`;
-
-      // Fractional digits
-      const fracLabels = ['Tenths', 'Hundredths', 'Thousandths'];
-      for (let i = 0; i < Math.max(frac.length, trail); i++) {
-        const dig = frac[i] || '0';
-        const label = fracLabels[i] || '';
-        const faded = i >= frac.length ? 'opacity:0.35' : '';
-        html += `<div class="pv-cell" style="${faded}">${dig}${label ? `<span class="pv-label">${label}</span>` : ''}</div>`;
-      }
-
+      // Allow trailing zeros after moving right past end
       strip.innerHTML = html;
     }
 
-    /* ---------- Demo on teach screen ---------- */
+    function danceMove(dir) {
+      // dir +1 = move decimal right (multiply by 10 direction)
+      // dir -1 = move decimal left
+      if (dir > 0) {
+        if (danceDotIndex >= danceDigits.length) {
+          danceDigits.push('0');
+        }
+        danceDotIndex++;
+      } else {
+        if (danceDotIndex <= 0) {
+          danceDigits.unshift('0');
+          danceDotIndex = 1;
+        } else {
+          danceDotIndex--;
+        }
+      }
+      playTap();
+      renderDancer();
+      // Auto-fill answer box with current dancer value (she can still edit)
+      const val = dancerValue();
+      document.getElementById('answerInputDancer').value = val;
+      saveAnswer();
+    }
+
+    function dancerValue() {
+      let whole = danceDigits.slice(0, danceDotIndex).join('') || '0';
+      let frac = danceDigits.slice(danceDotIndex).join('');
+      // Strip leading zeros from whole (keep one zero if empty)
+      whole = whole.replace(/^0+(?=\d)/, '') || '0';
+      // Strip trailing zeros from frac for display of answer
+      frac = frac.replace(/0+$/, '');
+      if (!frac) return whole;
+      return whole + '.' + frac;
+    }
+
+    /* ---------- Demo (teach) ---------- */
     const DEMO_NUM = '23.5';
-    function renderDemoCells(numStr, highlightDot = true) {
+    const PLACE_W = ['Ones', 'Tens', 'Hundreds', 'Thousands', 'Ten Th.'];
+    const PLACE_F = ['Tenths', 'Hundredths', 'Thousandths'];
+
+    function renderDemoCells(numStr) {
       const parts = String(numStr).split('.');
       const whole = parts[0] || '0';
       const frac = parts[1] || '';
       let html = '';
-      for (const d of whole) html += `<div class="pv-cell">${d}</div>`;
-      html += `<div class="pv-cell decimal-dot ${highlightDot ? 'dot-dance' : ''}">.</div>`;
-      for (const d of frac) html += `<div class="pv-cell">${d}</div>`;
-      if (!frac) html += `<div class="pv-cell" style="opacity:0.3">0</div>`;
+      for (let i = 0; i < whole.length; i++) {
+        const pi = whole.length - 1 - i;
+        const label = pi < PLACE_W.length ? PLACE_W[pi] : '';
+        html += `<div class="pv-cell">${whole[i]}${label ? `<span class="pv-label">${label}</span>` : ''}</div>`;
+      }
+      html += `<div class="pv-cell decimal-dot dot-dance">.</div>`;
+      const show = frac || '0';
+      for (let i = 0; i < show.length; i++) {
+        const dig = frac[i] || '0';
+        const label = i < PLACE_F.length ? PLACE_F[i] : '';
+        const faded = !frac[i] ? 'opacity:0.35' : '';
+        html += `<div class="pv-cell" style="${faded}">${dig}${label ? `<span class="pv-label">${label}</span>` : ''}</div>`;
+      }
       document.getElementById('demoStrip').innerHTML = html;
     }
-    function resetDemo() { renderDemoCells(DEMO_NUM); }
+    function resetDemo() {
+      renderDemoCells(DEMO_NUM);
+      document.getElementById('demoResultLabel').textContent = '';
+      playTone(320, 0.08, 'sine', 0.06);
+    }
     function runDemo(mult) {
       const n = parseFloat(DEMO_NUM);
       const result = n * mult;
-      // Format nicely
-      let s = String(result);
-      if (Number.isInteger(result)) s = String(result);
-      renderDemoCells(s, true);
+      let s = Math.abs(result - Math.round(result)) < 1e-9 ? String(Math.round(result)) : String(result);
+      renderDemoCells(s);
+      const places = String(mult).length - 1;
+      document.getElementById('demoResultLabel').textContent =
+        `23.5 × ${mult} = ${s}  (point moved ${places} place${places > 1 ? 's' : ''})`;
+      playWhoosh();
+      setTimeout(() => playTone(520, 0.12, 'triangle', 0.1), 120);
     }
     resetDemo();
 
-    /* ---------- Answer handling ---------- */
+    /* ---------- Answers ---------- */
+    function currentAnswerInput() {
+      const q = QUESTIONS[currentIndex];
+      return document.getElementById(q.mode === 'dancer' ? 'answerInputDancer' : 'answerInputBinder');
+    }
     function saveAnswer() {
       const q = QUESTIONS[currentIndex];
-      localStorage.setItem('zaina_ans_' + q.id, document.getElementById('answerInput').value);
+      localStorage.setItem('zaina_ans_' + q.id, currentAnswerInput().value);
     }
-
     function answersMatch(typed, correct) {
       const clean = t => String(t).replace(/₹|cm|mm|,|\s/gi, '').trim();
       const a = clean(typed), b = clean(correct);
@@ -684,75 +840,77 @@
       const na = Number(a), nb = Number(b);
       return !isNaN(na) && !isNaN(nb) && Math.abs(na - nb) < 1e-6;
     }
-
+    function clearWrongMsgs() {
+      document.getElementById('wrongMsgDancer').textContent = '';
+      document.getElementById('wrongMsgBinder').textContent = '';
+      document.getElementById('answerInputDancer').classList.remove('shake-wrong');
+      document.getElementById('answerInputBinder').classList.remove('shake-wrong');
+    }
     function checkAnswer() {
       saveInk();
       saveAnswer();
+      clearWrongMsgs();
       const q = QUESTIONS[currentIndex];
-      const val = document.getElementById('answerInput').value;
+      const input = currentAnswerInput();
+      const val = input.value;
       if (answersMatch(val, q.answer)) {
         markDone(q.id);
+        playSuccess();
         celebrate(q);
       } else {
-        alert('Not quite! Count the zeros in the multiplier and move the decimal point that many places to the right. Try again.');
+        playError();
+        input.classList.remove('shake-wrong');
+        void input.offsetWidth;
+        input.classList.add('shake-wrong');
+        const msg = q.mode === 'dancer' ? 'wrongMsgDancer' : 'wrongMsgBinder';
+        document.getElementById(msg).textContent = 'Not quite — try again';
       }
     }
-
     function celebrate(q) {
       document.getElementById('celebPony').src = q.avatar;
       document.getElementById('celebTitle').textContent = q.pony + ' says: Perfect!';
-      const placesMsg = q.places != null
-        ? `You moved the decimal point ${q.places} place${q.places > 1 ? 's' : ''} to the right.`
-        : `You multiplied correctly — the decimal point danced into place.`;
-      document.getElementById('celebBody').textContent = placesMsg;
-      const ov = document.getElementById('celebrateOverlay');
-      ov.style.display = 'flex';
+      document.getElementById('celebBody').textContent = 'Great work — you got it right!';
+      document.getElementById('celebrateOverlay').style.display = 'flex';
       spawnConfetti();
     }
     function closeCelebrate() {
       document.getElementById('celebrateOverlay').style.display = 'none';
     }
 
-    /* ---------- Binder open / close ---------- */
+    /* ---------- Binder ---------- */
     function openBinder() {
+      playWhoosh();
       binderOpen = true;
       document.getElementById('binderCover').classList.add('binder-open');
       requestAnimationFrame(() => { syncCanvas(); loadInk(); });
     }
     function closeBinder() {
+      playTap();
       saveInk();
       binderOpen = false;
       document.getElementById('binderCover').classList.remove('binder-open');
     }
 
-    /* ---------- Canvas ink ---------- */
+    /* ---------- Canvas ---------- */
     const canvas = () => document.getElementById('inkCanvas');
     const area = () => document.getElementById('canvasArea');
-
-    function inkKey() {
-      return 'zaina_ink_' + QUESTIONS[currentIndex].id;
-    }
+    function inkKey() { return 'zaina_ink_' + QUESTIONS[currentIndex].id; }
 
     function syncCanvas() {
       const c = canvas();
       const a = area();
       if (!c || !a) return;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const w = a.clientWidth;
-      const h = a.clientHeight;
+      const w = a.clientWidth, h = a.clientHeight;
       if (!w || !h) return;
-      const tw = Math.round(w * dpr);
-      const th = Math.round(h * dpr);
+      const tw = Math.round(w * dpr), th = Math.round(h * dpr);
       if (c.width === tw && c.height === th) return;
       c.style.width = w + 'px';
       c.style.height = h + 'px';
-      c.width = tw;
-      c.height = th;
+      c.width = tw; c.height = th;
       c.dataset.dpr = String(dpr);
-      const ctx = c.getContext('2d');
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      c.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0);
     }
-
     function loadInk() {
       const c = canvas();
       if (!c) return;
@@ -770,39 +928,28 @@
       };
       img.src = raw;
     }
-
     function saveInk() {
       const c = canvas();
       if (!c || !c.width) return;
       try {
         const prev = localStorage.getItem(inkKey());
-        if (prev) {
-          undoStack.push(prev);
-          if (undoStack.length > 20) undoStack.shift();
-        }
+        if (prev) { undoStack.push(prev); if (undoStack.length > 20) undoStack.shift(); }
         localStorage.setItem(inkKey(), c.toDataURL('image/png'));
       } catch (_) {}
     }
-
     function setTool(t) {
       penTool = t;
       document.getElementById('toolPen').classList.toggle('active', t === 'pen');
       document.getElementById('toolEraser').classList.toggle('active', t === 'eraser');
     }
-    function setColor(c) {
-      penColor = c;
-      setTool('pen');
-    }
+    function setColor(c) { penColor = c; setTool('pen'); }
     function clearCanvas() {
       const c = canvas();
       if (!c) return;
       const prev = localStorage.getItem(inkKey());
       if (prev) undoStack.push(prev);
       const ctx = c.getContext('2d');
-      ctx.save();
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.clearRect(0, 0, c.width, c.height);
-      ctx.restore();
+      ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,c.width,c.height); ctx.restore();
       localStorage.removeItem(inkKey());
     }
     function undoInk() {
@@ -813,17 +960,13 @@
       loadInk();
     }
 
-    // Pointer drawing
     (function setupDrawing() {
-      let drawing = false;
-      let lastX = 0, lastY = 0;
-
+      let drawing = false, lastX = 0, lastY = 0;
       function pos(e) {
         const c = canvas();
         const r = c.getBoundingClientRect();
-        return [(e.clientX - r.left), (e.clientY - r.top)];
+        return [e.clientX - r.left, e.clientY - r.top];
       }
-
       document.addEventListener('pointerdown', (e) => {
         if (!binderOpen) return;
         const c = canvas();
@@ -849,7 +992,6 @@
         ctx.lineTo(x + 0.01, y);
         ctx.stroke();
       }, { passive: false });
-
       document.addEventListener('pointermove', (e) => {
         if (!drawing) return;
         const c = canvas();
@@ -873,8 +1015,7 @@
         ctx.stroke();
         lastX = x; lastY = y;
       }, { passive: false });
-
-      function endDraw(e) {
+      function endDraw() {
         if (!drawing) return;
         drawing = false;
         saveInk();
@@ -884,7 +1025,8 @@
     })();
 
     window.addEventListener('resize', () => {
-      if (document.getElementById('stageBinder').classList.contains('active')) {
+      if (document.getElementById('stageWork').classList.contains('active') &&
+          QUESTIONS[currentIndex] && QUESTIONS[currentIndex].mode === 'binder') {
         syncCanvas();
         loadInk();
       }
@@ -903,7 +1045,7 @@
       }
     })();
 
-    /* ---------- Stars background ---------- */
+    /* ---------- Stars ---------- */
     (function stars() {
       const c = document.getElementById('starCanvas');
       const ctx = c.getContext('2d');
@@ -912,10 +1054,8 @@
         w = c.width = window.innerWidth;
         h = c.height = window.innerHeight;
         pts = Array.from({ length: 60 }, () => ({
-          x: Math.random() * w,
-          y: Math.random() * h,
-          r: Math.random() * 1.4 + 0.3,
-          a: Math.random()
+          x: Math.random() * w, y: Math.random() * h,
+          r: Math.random() * 1.4 + 0.3, a: Math.random()
         }));
       }
       function draw() {
@@ -954,10 +1094,7 @@
       function tick() {
         ctx.clearRect(0, 0, c.width, c.height);
         bits.forEach(b => {
-          b.x += b.vx;
-          b.y += b.vy;
-          b.vy += 0.06;
-          b.r += 4;
+          b.x += b.vx; b.y += b.vy; b.vy += 0.06; b.r += 4;
           ctx.save();
           ctx.translate(b.x, b.y);
           ctx.rotate(b.r * Math.PI / 180);
@@ -971,6 +1108,9 @@
       }
       tick();
     }
+
+    // Init header style for teach mode
+    setPracticeMode(false);
   </script>
 </body>
 </html>
