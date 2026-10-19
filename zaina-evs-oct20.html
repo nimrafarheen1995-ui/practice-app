@@ -3,107 +3,45 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>Zaina - EVS: Pollution </title>
+<title>Zaina - EVS: Pollution Patrol HQ - FIXED</title>
 <script src="shared/safe-storage.js"></script>
 <link rel="preload" as="image" href="assets/nature-bg.webp" />
 <link rel="preload" as="image" href="assets/earth-patrol-hero.webp" />
 <link rel="preload" as="image" href="assets/earth-globe.webp" />
-<link rel="preload" as="image" href="assets/pollution-air.webp" />
-<link rel="preload" as="image" href="assets/pollution-water.webp" />
-<link rel="preload" as="image" href="assets/pollution-land.webp" />
-<link rel="preload" as="image" href="assets/pollution-noise.webp" />
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800&family=Nunito:wght@700;800;900&family=Kalam:wght@700&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 <style>
-:root{
- --ink:#1e293b;
- --earth:#15803d;
- --sky:#0ea5e9;
- --font-main:'Nunito',sans-serif;
- --font-display:'Fredoka',sans-serif;
- --font-hand:'Kalam',cursive;
-}
+:root{--ink:#1e293b;--earth:#15803d}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{width:100vw;height:100vh;height:100dvh;overflow:hidden;margin:0;background:#0B1A0F;color:var(--ink);font-family:var(--font-main)}
+html,body{width:100vw;height:100vh;height:100dvh;overflow:hidden;margin:0;background:#0B1A0F;color:var(--ink);font-family:'Nunito',sans-serif}
 body{display:flex;flex-direction:column;padding:6px;position:relative}
-/* Floating HUD Dock - like your english file */
-.floating-hud-dock{
- position:fixed;top:10px;left:12px;z-index:95;display:flex;align-items:center;gap:8px;
- background:rgba(255,253,246,0.96);backdrop-filter:blur(10px);border:2.5px solid #16a34a;border-radius:22px;padding:5px 10px;
- box-shadow:0 8px 24px rgba(0,0,0,0.45);transition:transform .35s cubic-bezier(.16,1,.3,1),opacity .35s
-}
-.floating-hud-dock.dock-minimized{transform:translate3d(0,-70px,0);opacity:0;pointer-events:none}
-.dock-peek{position:fixed;top:6px;left:24px;z-index:94;background:rgba(255,253,246,.9);border:2px solid #16a34a;border-radius:0 0 14px 14px;padding:2px 14px;font-size:1rem;cursor:pointer;opacity:0;pointer-events:none;transition:.3s}
+.floating-hud-dock{position:fixed;top:10px;left:12px;z-index:95;display:flex;align-items:center;gap:8px;background:rgba(255,253,246,.96);backdrop-filter:blur(10px);border:2.5px solid #16a34a;border-radius:22px;padding:5px 10px;box-shadow:0 8px 24px rgba(0,0,0,.45);transition:transform .35s,opacity .35s}
+.floating-hud-dock.min{transform:translate3d(0,-70px,0);opacity:0;pointer-events:none}
+.dock-peek{position:fixed;top:6px;left:24px;z-index:94;background:rgba(255,253,246,.9);border:2px solid #16a34a;border-radius:0 0 14px 14px;padding:2px 14px;cursor:pointer;opacity:0;pointer-events:none;transition:.3s}
 .dock-peek.show{opacity:.9;pointer-events:auto}
-.icon-btn{background:#fff;border:2px solid #16a34a;color:#14532d;width:42px;height:42px;border-radius:14px;font-size:1.2rem;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,.2)}
-.icon-btn:active{transform:scale(.92)}
+.icon-btn{background:#fff;border:2px solid #16a34a;color:#14532d;width:42px;height:42px;border-radius:14px;font-size:1.2rem;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
 .mode-pill{display:flex;background:#dcfce7;border:2px solid #16a34a;border-radius:16px;padding:2px;gap:3px}
 .mode-icon{border:0;background:transparent;width:42px;height:36px;border-radius:12px;font-size:.78rem;font-weight:800;cursor:pointer}
-.mode-icon.active{background:linear-gradient(180deg,#22c55e,#15803d);color:#fff;box-shadow:0 2px 6px rgba(21,128,61,.4)}
-/* Master Scenic Stage */
-.master-scenic-stage{
- flex:1;width:100%;position:relative;border:3.5px solid #5A3C22;border-radius:22px;overflow:hidden;background:#0B1A0F;
- box-shadow:0 16px 45px rgba(0,0,0,.85);display:flex;min-height:0;z-index:10
-}
-.scenic-bg-layer{
- position:absolute;inset:0;background:url('assets/nature-bg.webp') no-repeat center center;background-size:cover;
- transform:scale(1);transition:transform .6s cubic-bezier(.16,1,.3,1);will-change:transform;z-index:0
-}
-.master-scenic-stage.stage-darkened .scenic-bg-layer{transform:scale(1.08)}
-.scenic-ambient-dimmer{
- position:absolute;inset:0;pointer-events:none;z-index:1;
- background:radial-gradient(circle at 20% 30%, rgba(34,197,94,.22) 0%, rgba(15,40,20,.38) 45%, rgba(10,20,10,.68) 100%);
- animation:flicker 4s infinite alternate ease-in-out
-}
-@keyframes flicker{0%{opacity:.88}50%{opacity:.96}100%{opacity:.9}}
-.master-scenic-stage.stage-darkened .scenic-ambient-dimmer{background:rgba(12,20,10,.74);animation:none;opacity:.92}
-/* Pollution Fog that clears */
-.pollution-fog{
- position:absolute;inset:0;z-index:2;pointer-events:none;opacity:.65;transition:opacity 1.2s ease;
- background:
-  radial-gradient(circle at 15% 20%, rgba(100,100,110,.35) 0%, transparent 40%),
-  radial-gradient(circle at 80% 30%, rgba(120,120,130,.3) 0%, transparent 35%),
-  radial-gradient(circle at 60% 80%, rgba(80,140,110,.25) 0%, transparent 45%);
- filter:blur(8px)
-}
-/* Dust particles canvas */
+.mode-icon.active{background:linear-gradient(180deg,#22c55e,#15803d);color:#fff}
+.master-scenic-stage{flex:1;width:100%;position:relative;border:3.5px solid #5A3C22;border-radius:22px;overflow:hidden;background:#0B1A0F;box-shadow:0 16px 45px rgba(0,0,0,.85);display:flex;min-height:0;z-index:10}
+.scenic-bg-layer{position:absolute;inset:0;background:url('assets/nature-bg.webp') no-repeat center center;background-size:cover;z-index:0}
+.scenic-ambient-dimmer{position:absolute;inset:0;pointer-events:none;z-index:1;background:radial-gradient(circle at 20% 30%, rgba(34,197,94,.22) 0%, rgba(15,40,20,.38) 45%, rgba(10,20,10,.68) 100%)}
+.pollution-fog{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:.65;transition:opacity 1.2s ease;background:radial-gradient(circle at 15% 20%, rgba(100,100,110,.35) 0%, transparent 40%),radial-gradient(circle at 80% 30%, rgba(120,120,130,.3) 0%, transparent 35%),radial-gradient(circle at 60% 80%, rgba(80,140,110,.25) 0%, transparent 45%);filter:blur(8px)}
 #dustCanvas{position:absolute;inset:0;z-index:3;pointer-events:none}
-/* Binder Cover - Recycled Cardboard style */
-.binder-cover{
- position:absolute;inset:0;z-index:8;display:flex;flex-direction:column;align-items:center;justify-content:center;
- background:linear-gradient(135deg,#E7D3A3 0%,#D4B896 50%,#C19A6B 100%);
- transition:transform .75s cubic-bezier(.18,.89,.32,1.28),opacity .45s ease;
- transform-origin:0% 50%;transform-style:preserve-3d;backdrop-filter:blur(2px);
- box-shadow:inset 0 0 50px rgba(255,255,255,.25), 0 30px 60px -12px rgba(0,0,0,.6);
- cursor:pointer
-}
-.binder-cover::after{
- content:'';position:absolute;inset:0;
- background:linear-gradient(115deg, transparent 30%, rgba(255,255,255,.22) 45%, rgba(255,255,255,.04) 52%, transparent 65%);
- pointer-events:none;z-index:4
-}
-.binder-cover::before{
- content:'';position:absolute;left:0;top:0;bottom:0;width:34px;
- background:linear-gradient(90deg,#3f2a14 0%,#5a3c22 55%,#8b5a2b 85%,#3f2a14 100%);
- border-right:3px solid rgba(255,255,255,.25);box-shadow:inset -3px 0 6px rgba(0,0,0,.6), 3px 0 10px rgba(0,0,0,.35);z-index:5
-}
-.spine-rings{position:absolute;left:27px;top:16px;bottom:16px;width:16px;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none;z-index:10}
-.spiral{width:18px;height:10px;border-radius:6px;background:linear-gradient(135deg,#fff 0%,#d1d5db 45%,#6b7280 80%,#1f2937 100%);box-shadow:0 2px 4px rgba(0,0,0,.65), inset 0 1px 2px rgba(255,255,255,.9)}
+.binder-cover{position:absolute;inset:0;z-index:8;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#E7D3A3 0%,#D4B896 50%,#C19A6B 100%);transition:transform .75s cubic-bezier(.18,.89,.32,1.28),opacity .45s;transform-origin:0% 50%;transform-style:preserve-3d;cursor:pointer}
+.binder-cover::after{content:'';position:absolute;inset:0;background:linear-gradient(115deg, transparent 30%, rgba(255,255,255,.22) 45%, rgba(255,255,255,.04) 52%, transparent 65%);pointer-events:none;z-index:4}
+.binder-cover::before{content:'';position:absolute;left:0;top:0;bottom:0;width:34px;background:linear-gradient(90deg,#3f2a14 0%,#5a3c22 55%,#8b5a2b 85%,#3f2a14 100%);border-right:3px solid rgba(255,255,255,.25);z-index:5}
+.spine-rings{position:absolute;left:27px;top:16px;bottom:16px;width:16px;display:flex;flex-direction:column;justify-content:space-between;z-index:10}
+.spiral{width:18px;height:10px;border-radius:6px;background:linear-gradient(135deg,#fff 0%,#d1d5db 45%,#6b7280 80%,#1f2937 100%)}
 .binder-open{transform:perspective(1400px) rotateY(-118deg) rotateX(8deg) translateZ(20px);opacity:0;pointer-events:none}
-/* Content inside */
-.content-scroll{
- position:relative;z-index:7;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:76px 14px 18px 14px;
- display:flex;flex-direction:column;gap:12px
-}
-.hero-card{
- display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.94);border:2.5px solid #16a34a;border-radius:20px;box-shadow:0 8px 20px rgba(0,0,0,.25);position:relative;overflow:hidden
-}
-.hero-img{width:68px;height:68px;object-fit:contain;animation:floatH 3s ease-in-out infinite;z-index:1}
+.content-scroll{position:relative;z-index:7;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:76px 14px 18px 14px;display:flex;flex-direction:column;gap:12px}
+.hero-card{display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.94);border:2.5px solid #16a34a;border-radius:20px;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+.hero-img{width:68px;height:68px;object-fit:contain;animation:floatH 3s ease-in-out infinite;cursor:pointer}
 @keyframes floatH{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 .globe{width:44px;height:44px;animation:spinS 14s linear infinite}
 @keyframes spinS{from{transform:rotate(0)}to{transform:rotate(360deg)}}
 .garden-strip{display:flex;gap:6px;flex-wrap:wrap;align-items:center;min-height:34px;padding:8px 12px;background:rgba(255,255,255,.92);border:1.5px dashed #16a34a;border-radius:14px}
-.garden-item{width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:#dcfce7;border-radius:50%;font-size:18px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1);box-shadow:0 2px 6px rgba(0,0,0,.15)}
+.garden-item{width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:#dcfce7;border-radius:50%;font-size:18px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1)}
 @keyframes popIn{0%{transform:scale(0) rotate(-20deg)}100%{transform:scale(1) rotate(0)}}
 .card{background:rgba(255,255,255,.97);border:1.5px solid #e7dcc0;border-radius:18px;padding:12px;box-shadow:0 8px 20px rgba(0,0,0,.18)}
 .q-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px 10px;border:1.5px dashed #e7dcc0;border-radius:16px;margin-bottom:10px;background:linear-gradient(to bottom,#fffffe,#fefcf3);line-height:1.7}
@@ -120,14 +58,13 @@ body{display:flex;flex-direction:column;padding:6px;position:relative}
 .tool-btn{flex:1;display:flex;align-items:center;justify-content:center;border:0;background:transparent;cursor:pointer}
 .tool-btn:first-child{border-bottom:1px solid #e7dcc0}
 .tool-btn svg{width:16px;height:16px;stroke-width:2.2;stroke:currentColor;fill:none}
-/* Match - FIXED cross-line */
 .match-wrap{position:relative}
 .match-item{display:grid;grid-template-columns:28px 1fr 28px 1fr;gap:8px;align-items:center;padding:10px;border:1.5px solid #e0f2fe;border-radius:16px;background:linear-gradient(135deg,#f8fafc,#f0fdfa);margin-bottom:10px;position:relative;z-index:2}
 .match-item.write-mode{grid-template-columns:28px 1fr 28px 1fr minmax(120px,450px)}
 .dot{width:28px;height:28px;border-radius:50%;background:#fff;border:2.5px solid #94a3b8;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.7rem;cursor:grab;touch-action:none;transition:.18s}
 .dot.a-dot{border-color:#0ea5e9;color:#0ea5e9}
 .dot.b-dot{border-color:#f59e0b;color:#f59e0b}
-.dot.dragging{transform:scale(1.35);box-shadow:0 0 0 6px rgba(14,165,233,.2);z-index:10}
+.dot.dragging{transform:scale(1.35);box-shadow:0 0 0 6px rgba(14,165,233,.2)}
 .dot.connected{border-color:#22c55e;background:#dcfce7;color:#15803d}
 .dot.wrong{border-color:#ef4444;background:#fee2e2;animation:shake .4s ease}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
@@ -135,16 +72,14 @@ body{display:flex;flex-direction:column;padding:6px;position:relative}
 .icon-box img{width:100%;height:100%;object-fit:contain}
 .svg-layer{position:absolute;inset:0;pointer-events:none;z-index:1;overflow:visible}
 .path-drag{fill:none;stroke:#0ea5e9;stroke-width:3.5;stroke-dasharray:8 8;stroke-linecap:round}
-.path-ok{fill:none;stroke:#22c55e;stroke-width:3.5;stroke-linecap:round;animation:drawLine .5s ease}
-@keyframes drawLine{from{stroke-dasharray:0 1000}to{stroke-dasharray:1000 0}}
-/* Cleaning */
+.path-ok{fill:none;stroke:#22c55e;stroke-width:3.5;stroke-linecap:round}
 .clean-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:700px){.clean-grid{grid-template-columns:1fr}}
 .clean-card{position:relative;border:2px solid #bbf7d0;border-radius:18px;overflow:hidden;background:#fff;box-shadow:0 6px 16px rgba(0,0,0,.12)}
 .clean-card.cleaned{border-color:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.15)}
 .clean-img{width:100%;height:140px;object-fit:contain;background:linear-gradient(135deg,#f0fdf4,#ecfeff);padding:10px}
 .clean-canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair;z-index:2}
-.clean-label{position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,.92);padding:8px 10px;display:flex;justify-content:space-between;align-items:center;z-index:3;backdrop-filter:blur(6px)}
+.clean-label{position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,.92);padding:8px 10px;display:flex;justify-content:space-between;align-items:center;z-index:3}
 .progress{height:6px;background:#e5e7eb;border-radius:999px;overflow:hidden;flex:1;margin:0 8px}
 .progress-fill{height:100%;width:100%;background:#22c55e;transition:width .3s}
 .confetti{position:absolute;width:8px;height:8px;border-radius:50%;pointer-events:none;animation:popC .9s ease-out forwards;z-index:20}
@@ -154,54 +89,70 @@ body{display:flex;flex-direction:column;padding:6px;position:relative}
 #penPanel.open{transform:scale(1);opacity:1;pointer-events:auto}
 .pen-row{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
 .pen-tool{width:38px;height:38px;border-radius:12px;border:2px solid #e2e8f0;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:.15s}
-.pen-tool.on{border-color:#0ea5e9;background:#e0f2fe;transform:scale(1.08)}
+.pen-tool.on{border-color:#0ea5e9;background:#e0f2fe}
 .color-dot{width:28px;height:28px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 0 0 1.5px #cbd5e1;cursor:pointer}
 .color-dot.on{box-shadow:0 0 0 2.5px #0ea5e9}
 .size-slider{width:100%;accent-color:#0ea5e9}
 #dimLayer{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:60;transition:opacity .25s}
+#pinModal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center}
+#pinModal.show{display:flex}
+.pin-box{background:#fff;border:3px solid #16a34a;border-radius:20px;padding:20px;width:min(300px,90vw);text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.pin-input{width:100%;padding:12px;border:2px solid #cbd5e1;border-radius:12px;font-size:1.2rem;font-weight:800;text-align:center;margin:12px 0;letter-spacing:6px}
 </style>
 </head>
 <body>
 <div id="dimLayer"></div>
+<div id="pinModal">
+<div class="pin-box">
+<div style="font-weight:900;font-size:1.1rem;color:#14532d">🔒 Parent PIN Required</div>
+<div style="font-size:.8rem;color:#64748b;margin-top:6px">Zaina is in Write Mode. Enter PIN to go back to Practice.</div>
+<input type="password" id="pinInput" class="pin-input" placeholder="••••" maxlength="4" />
+<div style="display:flex;gap:8px;margin-top:8px">
+<button class="icon-btn" type="button" onclick="closePin()" style="flex:1;background:#f1f5f9;border-color:#cbd5e1">Cancel</button>
+<button class="icon-btn" type="button" onclick="checkPin()" style="flex:1;background:#15803d;color:#fff;border-color:#15803d">Unlock</button>
+</div>
+<div id="pinError" style="color:#dc2626;font-size:.75rem;font-weight:800;margin-top:8px;display:none">Wrong PIN! Try 1995</div>
+</div>
+</div>
 <div class="floating-hud-dock" id="hudDock">
 <button class="icon-btn" type="button" onclick="goHub()">←</button>
-<span class="badge" style="background:linear-gradient(135deg,#22c55e,#0ea5e9);color:#fff;font-weight:900;font-size:.7rem;padding:4px 9px;border-radius:999px">Zaina</span>
+<span style="background:linear-gradient(135deg,#22c55e,#0ea5e9);color:#fff;font-weight:900;font-size:.7rem;padding:4px 9px;border-radius:999px">Zaina</span>
 <img src="assets/earth-globe.webp" alt="" class="globe" id="headerGlobe" style="width:32px;height:32px" onerror="this.style.display='none'"/>
 <div class="mode-pill">
-<button class="mode-icon active" id="btnPractice" type="button" onclick="setMode('practice')">📖</button>
-<button class="mode-icon" id="btnWrite" type="button" onclick="setMode('write')">✍️</button>
+<button class="mode-icon active" id="btnPractice" type="button" onclick="requestMode('practice')">📖</button>
+<button class="mode-icon" id="btnWrite" type="button" onclick="requestMode('write')">✍️</button>
 </div>
 <button class="icon-btn" type="button" onclick="toggleDock()" style="font-size:.9rem">—</button>
 </div>
 <div class="dock-peek" id="dockPeek" onclick="toggleDock()">👧🌍</div>
 <div class="master-scenic-stage" id="masterStage">
-<div class="scenic-bg-layer" id="scenicBg"></div>
+<div class="scenic-bg-layer"></div>
 <div class="scenic-ambient-dimmer"></div>
 <div class="pollution-fog" id="pollutionFog"></div>
 <canvas id="dustCanvas"></canvas>
 <div class="binder-cover" id="binderCover" onclick="openBinder()">
 <div class="spine-rings"><div class="spiral"></div><div class="spiral"></div><div class="spiral"></div><div class="spiral"></div><div class="spiral"></div></div>
 <div style="text-align:center;z-index:6;padding:20px">
-<img src="assets/earth-patrol-hero.webp" alt="" style="width:110px;height:110px;object-fit:contain;animation:floatH 3s ease-in-out infinite" onerror="this.style.display='none'"/>
-<div style="font-family:var(--font-display);font-weight:800;font-size:1.8rem;color:#3f2a14;margin-top:12px;text-shadow:0 2px 0 rgba(255,255,255,.6)">EARTH PATROL HQ</div>
+<img src="assets/earth-patrol-hero.webp" alt="" style="width:110px;height:110px;object-fit:contain;animation:floatH 3s ease-in-out infinite" onerror="this.src='assets/earth-globe.webp'"/>
+<div style="font-family:'Fredoka',sans-serif;font-weight:800;font-size:1.7rem;color:#3f2a14;margin-top:12px;text-shadow:0 2px 0 rgba(255,255,255,.6)">EARTH PATROL HQ</div>
 <div style="font-weight:800;color:#5a3c22;margin-top:6px">Pollution - Class Work</div>
 <div style="margin-top:18px;background:#3f2a14;color:#fff;padding:8px 18px;border-radius:12px;font-weight:800;display:inline-block">Tap to Open Binder 📒</div>
-<div style="margin-top:12px;font-size:.8rem;color:#5a3c22;font-weight:700">Your garden grows as you clean the earth 🌱</div>
+<div style="margin-top:12px;font-size:.8rem;color:#5a3c22;font-weight:700">Fog clears as garden grows 🌱</div>
 </div>
 </div>
 <div class="content-scroll" id="contentScroll">
 <div class="hero-card">
-<img src="assets/earth-patrol-hero.webp" class="hero-img" alt="" onerror="this.src='assets/earth-globe.webp'"/>
+<img src="assets/earth-patrol-hero.webp" class="hero-img" id="heroPatrol" alt="" title="Tap me for a hint!" onerror="this.src='assets/earth-globe.webp'"/>
 <div style="flex:1">
-<div style="font-family:var(--font-display);font-weight:800;color:#14532d;font-size:1.05rem">Pollution Patrol</div>
-<div style="font-size:.7rem;font-weight:700;color:#475569;margin-top:2px" id="gardenCount">Garden: 0 plants • Fog: 65% cleared</div>
+<div style="font-family:'Fredoka',sans-serif;font-weight:800;color:#14532d;font-size:1.05rem">Pollution Patrol</div>
+<div style="font-size:.7rem;font-weight:700;color:#475569;margin-top:2px" id="gardenCount">Garden: 0 • Fog: 65% • Tap hero for hint</div>
 <div style="height:7px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin-top:6px;width:120px"><div id="earthFill" style="height:100%;width:0%;background:linear-gradient(90deg,#22c55e,#0ea5e9);transition:width .6s"></div></div>
 </div>
 <img src="assets/earth-globe.webp" style="width:46px;height:46px;object-fit:contain;animation:spinS 14s linear infinite" alt="" onerror="this.style.display='none'"/>
 </div>
 <div class="garden-strip" id="garden"></div>
 <div style="display:flex;gap:6px;flex-wrap:wrap">
-<button class="icon-btn" id="tabA" type="button" onclick="setTab('A')" style="width:auto;padding:0 12px;font-size:.75rem" >A · Fill</button>
+<button class="icon-btn" id="tabA" type="button" onclick="setTab('A')" style="width:auto;padding:0 12px;font-size:.75rem">A · Fill</button>
 <button class="icon-btn" id="tabB" type="button" onclick="setTab('B')" style="width:auto;padding:0 12px;font-size:.75rem">B · Match</button>
 <button class="icon-btn" id="tabC" type="button" onclick="setTab('C')" style="width:auto;padding:0 12px;font-size:.75rem">C · T/F</button>
 <button class="icon-btn" id="tabD" type="button" onclick="setTab('D')" style="width:auto;padding:0 12px;font-size:.75rem">D · Clean 🌍</button>
@@ -240,7 +191,7 @@ body{display:flex;flex-direction:column;padding:6px;position:relative}
 </div>
 </div>
 <script>
-const STORE='zaina_poll_hq_v2_';
+const STORE='zaina_poll_hq_v3_';
 const FILLS=[
 {id:'f1', pre:'', suf:' damages our environment.', ans:'Pollution'},
 {id:'f2', pre:'Pollutants are of two types: ', mid:' and ', suf:'.', ans1:'natural', ans2:'human-made', double:true, id2:'f2b'},
@@ -253,11 +204,11 @@ const MATCH_DATA=[
 {id:'a2', text:'Uranium leak', icon:'assets/earth-globe.webp', correct:'b5'},
 {id:'a3', text:'Rock concerts', icon:'assets/pollution-noise.webp', correct:'b4'},
 {id:'a4', text:'Chlorofluorocarbons', icon:'assets/pollution-air.webp', correct:'b1'},
-{id:'a5', text:'Oil spill', icon:'assets/pollution-water.webp', correct:'b2'},
+{id:'a5', text:'Oil spill', icon:'assets/oil_spill_icon.png', correct:'b2'},
 ];
 const MATCH_B=[
 {id:'b1', text:'Air Pollution', icon:'assets/pollution-air.webp'},
-{id:'b2', text:'Water Pollution', icon:'assets/pollution-water.webp'},
+{id:'b2', text:'Water Pollution', icon:'assets/oil_spill_icon.png'},
 {id:'b3', text:'Land Pollution', icon:'assets/pollution-land.webp'},
 {id:'b4', text:'Noise Pollution', icon:'assets/pollution-noise.webp'},
 {id:'b5', text:'Radioactive Pollution', icon:'assets/earth-globe.webp'},
@@ -270,18 +221,19 @@ const TF=[
 ];
 const CLEAN=[
 {id:'c1', title:'Clean Air', icon:'assets/pollution-air.webp', pollution:'smoke', color:'rgba(100,100,110,0.88)'},
-{id:'c2', title:'Clean Water', icon:'assets/pollution-water.webp', pollution:'oil', color:'rgba(60,130,100,0.88)'},
+{id:'c2', title:'Clean Water - Oil Spill', icon:'assets/oil_spill_icon.png', pollution:'oil', color:'rgba(30,30,35,0.88)'},
 {id:'c3', title:'Clean Land', icon:'assets/pollution-land.webp', pollution:'garbage', color:'rgba(180,170,160,0.9)'},
 {id:'c4', title:'Quiet Zone', icon:'assets/pollution-noise.webp', pollution:'sound', color:'rgba(251,146,60,0.85)'},
 ];
 let mode='practice', tab='A';
 let fillOrder=FILLS.map((_,i)=>i), tfOrder=TF.map((_,i)=>i);
-let bOrder=shuffle(MATCH_B.map((_,i)=>i)); // FIXED: B shuffled, not same row
+let bOrder=shuffle(MATCH_B.map((_,i)=>i));
 let connections={}, dragState=null;
 let currentPen={type:'pen', color:'#0f172a', size:2.6, stamp:'🍃'};
 let rainbowHue=0;
 const historyMap={}; let penActive=false,lastPenTime=0;
 let garden=JSON.parse(localStorage.getItem(STORE+'garden')||'[]');
+let pendingMode=null;
 let ukVoice=null;
 function loadVoice(){const v=speechSynthesis.getVoices(); ukVoice=v.find(x=>x.lang==='en-GB')||v[0]||null;}
 speechSynthesis.onvoiceschanged=loadVoice; loadVoice();
@@ -291,14 +243,36 @@ function goHub(){try{window.parent.postMessage('close-lesson-to-hub','*');}catch
 function setDim(v){document.getElementById('dimLayer').style.opacity=(Number(v)/100).toFixed(2); localStorage.setItem(STORE+'dim',v);}
 (function(){const s=localStorage.getItem(STORE+'dim'); if(s){document.getElementById('dimSlider').value=s; setDim(s);}})();
 function shuffle(a){const b=a.slice(); for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]} return b;}
-function toggleDock(){document.getElementById('hudDock').classList.toggle('dock-minimized'); document.getElementById('dockPeek').classList.toggle('show');}
-function openBinder(){document.getElementById('binderCover').classList.add('binder-open'); document.getElementById('masterStage').classList.add('stage-darkened');}
-function closeBinder(){document.getElementById('binderCover').classList.remove('binder-open'); document.getElementById('masterStage').classList.remove('stage-darkened');}
+function toggleDock(){document.getElementById('hudDock').classList.toggle('min'); document.getElementById('dockPeek').classList.toggle('show');}
+function openBinder(){document.getElementById('binderCover').classList.add('binder-open');}
+function closeBinder(){document.getElementById('binderCover').classList.remove('binder-open');}
+// PIN LOCK LOGIC
+function requestMode(newMode){
+ if(mode==='write' && newMode==='practice'){
+  pendingMode=newMode;
+  document.getElementById('pinModal').classList.add('show');
+  document.getElementById('pinInput').value=''; document.getElementById('pinError').style.display='none';
+  setTimeout(()=>document.getElementById('pinInput').focus(),100);
+  return;
+ }
+ setMode(newMode);
+}
+function closePin(){document.getElementById('pinModal').classList.remove('show'); pendingMode=null;}
+function checkPin(){
+ const v=document.getElementById('pinInput').value;
+ if(v==='1995'){
+  document.getElementById('pinModal').classList.remove('show');
+  if(pendingMode) setMode(pendingMode);
+  pendingMode=null;
+ } else {
+  document.getElementById('pinError').style.display='block';
+  if(navigator.vibrate) navigator.vibrate([50,50,50]);
+ }
+}
 function setMode(m){
  flushAllInk(); mode=m;
  if(m==='write'){fillOrder=shuffle(FILLS.map((_,i)=>i)); tfOrder=shuffle(TF.map((_,i)=>i)); bOrder=shuffle(MATCH_B.map((_,i)=>i));}
  else {fillOrder=FILLS.map((_,i)=>i); tfOrder=TF.map((_,i)=>i); bOrder=shuffle(MATCH_B.map((_,i)=>i));}
- // ensure B not same row as correct in write mode
  if(m==='write'){
   let attempts=0;
   while(attempts<10){
@@ -312,18 +286,12 @@ function setMode(m){
  document.getElementById('btnWrite').classList.toggle('active',m==='write');
  connections={}; render();
 }
-function setTab(t){
- flushAllInk(); tab=t;
- ['A','B','C','D'].forEach(k=>{document.getElementById('tab'+k)?.classList.remove('on');});
- document.getElementById('tab'+t)?.classList.add('on');
- document.getElementById('contentScroll').scrollTo({top:0,behavior:'smooth'});
- render();
-}
+function setTab(t){flushAllInk(); tab=t; ['A','B','C','D'].forEach(k=>{document.getElementById('tab'+k)?.classList.remove('on');}); document.getElementById('tab'+t)?.classList.add('on'); document.getElementById('contentScroll').scrollTo({top:0,behavior:'smooth'}); render();}
 function inkKey(id){return STORE+'ink_'+mode+'_'+id;}
 function flushAllInk(){document.querySelectorAll('canvas[data-ink-id]').forEach(c=>{try{if(c.width) localStorage.setItem(inkKey(c.dataset.inkId), c.toDataURL('image/png'));}catch(_){}});}
 function pushHist(id,can){if(!historyMap[id]) historyMap[id]=[]; try{historyMap[id].push(can.toDataURL('image/png')); if(historyMap[id].length>24) historyMap[id].shift();}catch(_){}}
 function mountStrip(canvas){
- const id=canvas.dataset.inkId; const p=canvas.parentElement; const dpr=Math.min(window.devicePixelRatio||1,2);
+ const id=canvas.dataset.inkId; const p=canvas.parentElement; const dpr=Math.min(devicePixelRatio||1,2);
  const rw=p.clientWidth, rh=p.clientHeight; canvas.width=Math.round(rw*dpr); canvas.height=Math.round(rh*dpr); canvas.style.width=rw+'px'; canvas.style.height=rh+'px';
  const ctx=canvas.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,rw,rh);
  const raw=localStorage.getItem(inkKey(id)); if(raw){const img=new Image(); img.onload=()=>{ctx.drawImage(img,0,0,rw,rh); p.classList.add('has-ink'); if(!historyMap[id]?.length) historyMap[id]=[raw];}; img.src=raw;} else historyMap[id]=[];
@@ -336,11 +304,11 @@ function stripHTML(id){return `<div class="inline-strip" id="wrap_${id}"><canvas
 function confettiAt(x,y){for(let i=0;i<7;i++){const d=document.createElement('div'); d.className='confetti'; d.style.left=(x+(Math.random()*30-15))+'px'; d.style.top=(y+(Math.random()*10-5))+'px'; d.style.background=['#22c55e','#0ea5e9','#f59e0b','#a78bfa'][i%4]; d.style.animationDelay=(i*0.05)+'s'; document.body.appendChild(d); setTimeout(()=>d.remove(),900);} const g=document.getElementById('headerGlobe'); if(g){g.style.animation='spinS .5s ease 4'; setTimeout(()=>g.style.animation='spinS 14s linear infinite',2000);} if(navigator.vibrate) navigator.vibrate(40);}
 function addPlant(type){garden.push({type, t:Date.now()}); localStorage.setItem(STORE+'garden', JSON.stringify(garden)); updateGardenUI(); confettiAt(window.innerWidth/2, 200);}
 function updateGardenUI(){
- const el=document.getElementById('garden'); el.innerHTML=garden.slice(-18).map(p=>`<div class="garden-item">${p.type}</div>`).join('') || '<div style="font-size:.75rem;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.8)">Garden empty - clean pollution to grow 🌱</div>';
+ const el=document.getElementById('garden'); el.innerHTML=garden.slice(-18).map(p=>`<div class="garden-item">${p.type}</div>`).join('') || '<div style="font-size:.75rem;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.8)">Garden empty - clean to grow 🌱 Fog 65%</div>';
  const fog=document.getElementById('pollutionFog');
  const cleared=Math.min(85, garden.length*8);
  if(fog) fog.style.opacity=((100-cleared)/100*0.65).toFixed(2);
- document.getElementById('gardenCount').textContent=`Garden: ${garden.length} plants • Fog: ${Math.max(15,100-cleared)}% cleared`;
+ document.getElementById('gardenCount').textContent=`Garden: ${garden.length} • Fog: ${Math.max(15,100-cleared)}% cleared • Tap hero for hint`;
  let filled=0; document.querySelectorAll('canvas[data-ink-id]').forEach(c=>{if(localStorage.getItem(inkKey(c.dataset.inkId))) filled++;});
  const pct=Math.min(100,Math.round((filled+garden.length+Object.keys(connections).length)/(FILLS.length+MATCH_DATA.length+TF.length+CLEAN.length+5)*100));
  document.getElementById('earthFill').style.width=pct+'%';
@@ -361,26 +329,26 @@ function renderTF(){
  }).join('');
 }
 function renderMatch(){
- // FIXED: B is shuffled, not same row
  let html=`<div class="match-wrap" id="matchWrap"><svg class="svg-layer" id="svgLayer"></svg><div id="matchGrid">`;
  MATCH_DATA.forEach((a,i)=>{
   const bIdx=bOrder[i];
   const bItem=MATCH_B[bIdx];
+  const showIcon = mode==='practice'; // FIX: hide images in write mode
   html+=`<div class="match-item ${mode==='write'?'write-mode':''}" data-a="${a.id}">
    <div class="dot a-dot" data-a="${a.id}" data-type="a">${i+1}</div>
    <div style="display:flex;align-items:center;gap:8px"><div class="icon-box"><img src="${a.icon}" alt="" onerror="this.style.display='none'"/></div><div style="font-weight:800">${makeSpeakable(a.text)}</div></div>
    <div class="dot b-dot" data-b="${bItem.id}" data-type="b">${String.fromCharCode(65+bIdx)}</div>
-   <div style="display:flex;align-items:center;gap:8px"><div class="icon-box"><img src="${bItem.icon}" alt="" onerror="this.style.display='none'"/></div><div style="font-weight:800;color:#0e7490">${makeSpeakable(bItem.text)}</div></div>
+   <div style="display:flex;align-items:center;gap:8px">${showIcon?`<div class="icon-box"><img src="${bItem.icon}" alt="" onerror="this.style.display='none'"/></div>`:''}<div style="font-weight:800;color:#0e7490">${makeSpeakable(bItem.text)}</div></div>
    ${mode==='write'?stripHTML('m_'+a.id):''}
   </div>`;
  });
  html+=`</div></div>`;
- if(mode==='practice') html+=`<div style="text-align:center;margin-top:8px"><div style="font-size:.72rem;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.8)">Practice: drag A ● to B ● across rows - instant feedback ✨</div></div>`;
- else html+=`<div style="text-align:center;margin-top:10px"><button class="btn" type="button" onclick="checkWriteMatch()" style="background:#15803d;color:#fff;border-color:#15803d;padding:8px 16px;border-radius:12px;font-weight:800">✅ Check All</button><div style="font-size:.7rem;color:#fff;margin-top:6px;text-shadow:0 1px 3px rgba(0,0,0,.8)">Write mode: B is shuffled, not same row. Drag across, then check.</div></div>`;
+ if(mode==='practice') html+=`<div style="text-align:center;margin-top:8px"><div style="font-size:.72rem;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.8)">Practice: drag across rows - instant feedback ✨ Images help</div></div>`;
+ else html+=`<div style="text-align:center;margin-top:10px"><button class="btn" type="button" onclick="checkWriteMatch()" style="background:#15803d;color:#fff;border-color:#15803d;padding:8px 16px;border-radius:12px;font-weight:800">✅ Check All</button><div style="font-size:.7rem;color:#fff;margin-top:6px;text-shadow:0 1px 3px rgba(0,0,0,.8)">Write: B shuffled, no images, drag across, then check + write letters</div></div>`;
  return html;
 }
 function renderClean(){
- let html=`<div class="card"><div style="font-weight:900;color:#14532d;margin-bottom:8px">🌍 Eraser Cleaning - Erase pollution with 🧽</div><div style="font-size:.76rem;color:#475569;margin-bottom:10px">Use eraser in pen bubble. Erase 70% to clean and grow garden + clear fog.</div><div class="clean-grid">`;
+ let html=`<div class="card"><div style="font-weight:900;color:#14532d;margin-bottom:8px">🌍 Eraser Cleaning - Erase pollution with 🧽</div><div style="font-size:.76rem;color:#475569;margin-bottom:10px">Tap hero for hint. Use eraser. Erase 70% to clean, grow garden, clear fog. Oil spill icon is new!</div><div class="clean-grid">`;
  CLEAN.forEach(c=>{
   html+=`<div class="clean-card" id="clean_${c.id}">
    <img src="${c.icon}" class="clean-img" alt="${c.title}"/>
@@ -412,7 +380,6 @@ function checkWriteMatch(){
  alert(`You got ${correct}/${MATCH_DATA.length} correct! Garden +${correct} 🌱 Fog clears!`);
  updateGardenUI();
 }
-// MATCH DRAG - FIXED cross-line
 function initMatchDrag(){
  const wrap=document.getElementById('matchWrap'); const svg=document.getElementById('svgLayer');
  if(!wrap||!svg) return;
@@ -464,7 +431,6 @@ function initMatchDrag(){
  wrap.addEventListener('pointerup', endDrag);
  wrap.addEventListener('pointercancel', ()=>{if(dragState){dragState.path.remove(); dragState.aDot.classList.remove('dragging'); dragState=null;}});
 }
-// CLEANING
 function initCleanCanvases(){
  document.querySelectorAll('canvas[data-clean-id]').forEach(can=>{
   const dpr=Math.min(devicePixelRatio||1,2);
@@ -519,7 +485,7 @@ function checkCleanProgress(can){
   }
  }catch(_){}
 }
-// Dust particles
+// Dust
 (function(){
  const canvas=document.getElementById('dustCanvas'); const ctx=canvas.getContext('2d'); let particles=[];
  function resize(){canvas.width=canvas.clientWidth*devicePixelRatio; canvas.height=canvas.clientHeight*devicePixelRatio; particles=[]; for(let i=0;i<40;i++){particles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*2+0.5,vx:(Math.random()-.5)*0.3,vy:(Math.random()-.5)*0.3,alpha:Math.random()*0.4+0.1})}}
@@ -545,7 +511,7 @@ function checkCleanProgress(can){
  document.getElementById('sizeSlider').addEventListener('input',e=>{currentPen.size=parseFloat(e.target.value);});
  document.addEventListener('click',e=>{if(!panel.contains(e.target)&&!bubble.contains(e.target)) panel.classList.remove('open');});
 })();
-// DRAW for inline strips
+// DRAW
 (function(){
  let drawing=false,lx=0,ly=0,active=null,started=false;
  function pos(e,c){const r=c.getBoundingClientRect(); return [e.clientX-r.left, e.clientY-r.top];}
@@ -580,7 +546,6 @@ function checkCleanProgress(can){
  },{passive:false});
  function end(e){if(!drawing||!active) return; drawing=false; if(started){pushHist(active.dataset.inkId, active); try{localStorage.setItem(inkKey(active.dataset.inkId), active.toDataURL('image/png')); active.parentElement.classList.add('has-ink'); if(Math.random()>0.5) addPlant('🌱'); updateGardenUI();}catch(_){}} started=false; active=null; if(e&&e.pointerType==='pen') lastPenTime=Date.now();}
  document.addEventListener('pointerup', end); document.addEventListener('pointercancel', end);
- // swipe
  let sx=0;
  document.getElementById('contentScroll').addEventListener('touchstart', e=>{sx=e.touches[0].clientX},{passive:true});
  document.getElementById('contentScroll').addEventListener('touchend', e=>{
@@ -590,6 +555,15 @@ function checkCleanProgress(can){
   }
  },{passive:true});
 })();
+// Hero hint
+document.getElementById('heroPatrol').addEventListener('click', ()=>{
+ const hints=['Oil spill causes water pollution! 🛢️','CFCs damage air - use eraser to clean smoke! 💨','Tap B dots to see? No! In Write mode, no images so you think! 🧠','Erasing 70% cleans the earth and clears fog! 🌍','Your garden grows across all lessons! 🌱'];
+ const h=hints[Math.floor(Math.random()*hints.length)];
+ speak(h);
+ const el=document.getElementById('gardenCount');
+ const old=el.textContent; el.textContent=h; setTimeout(()=>{el.textContent=document.getElementById('gardenCount').dataset?.old||old; updateGardenUI();},3000);
+ el.dataset.old=old;
+});
 window.addEventListener('beforeunload', flushAllInk); window.addEventListener('pagehide', flushAllInk);
 setMode('practice'); setTab('A'); updateGardenUI();
 </script>
