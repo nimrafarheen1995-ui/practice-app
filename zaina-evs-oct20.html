@@ -3,35 +3,109 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>Pollution - Living Garden</title>
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+<title>Zaina - EVS: Pollution </title>
 <script src="shared/safe-storage.js"></script>
+<link rel="preload" as="image" href="assets/nature-bg.webp" />
+<link rel="preload" as="image" href="assets/earth-patrol-hero.webp" />
+<link rel="preload" as="image" href="assets/earth-globe.webp" />
+<link rel="preload" as="image" href="assets/pollution-air.webp" />
+<link rel="preload" as="image" href="assets/pollution-water.webp" />
+<link rel="preload" as="image" href="assets/pollution-land.webp" />
+<link rel="preload" as="image" href="assets/pollution-noise.webp" />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800&family=Nunito:wght@700;800;900&family=Kalam:wght@700&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 <style>
+:root{
+ --ink:#1e293b;
+ --earth:#15803d;
+ --sky:#0ea5e9;
+ --font-main:'Nunito',sans-serif;
+ --font-display:'Fredoka',sans-serif;
+ --font-hand:'Kalam',cursive;
+}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;overflow:hidden;font-family:'Nunito',sans-serif;background:#f0fdf4;color:#1e293b}
-body{display:flex;flex-direction:column}
-.bg{position:fixed;inset:0;z-index:0;pointer-events:none}
-.bg img{width:100%;height:100%;object-fit:cover;opacity:.26}
-header,.tabs,main,#bottomNav{position:relative;z-index:2}
-header{height:54px;background:rgba(255,255,255,.92);border-bottom:2px solid #bbf7d0;display:flex;align-items:center;justify-content:space-between;padding:0 10px;backdrop-filter:blur(12px);flex-shrink:0}
-.btn{border:1.5px solid #86efac;background:#fff;color:#166534;font-weight:800;font-size:.76rem;padding:6px 11px;border-radius:11px;cursor:pointer}
-.btn.on{background:#15803d;color:#fff;border-color:#15803d}
-.badge{background:linear-gradient(135deg,#22c55e,#0ea5e9);color:#fff;font-weight:900;font-size:.7rem;padding:4px 9px;border-radius:999px}
-.tabs{display:flex;gap:6px;padding:8px 10px;background:rgba(255,255,255,.8);border-bottom:1px solid #bbf7d0;overflow-x:auto;flex-shrink:0;scrollbar-width:none}
-.tabs::-webkit-scrollbar{display:none}
-.tab{border:1.5px solid #86efac;background:#fff;color:#166534;font-weight:800;font-size:.75rem;padding:7px 12px;border-radius:999px;white-space:nowrap;cursor:pointer;transition:.2s}
-.tab.on{background:#15803d;color:#fff;box-shadow:0 4px 12px rgba(21,128,61,.2)}
-main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px}
-.hero{display:flex;align-items:center;gap:10px;padding:12px;background:linear-gradient(135deg,#fff,#ecfdf5);border:2px solid #86efac;border-radius:18px;margin-bottom:10px;position:relative;overflow:hidden}
-.hero-img{width:62px;height:62px;object-fit:contain;animation:floatH 3s ease-in-out infinite;z-index:1}
-@keyframes floatH{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-.globe{width:42px;height:42px;animation:spinS 12s linear infinite}
+html,body{width:100vw;height:100vh;height:100dvh;overflow:hidden;margin:0;background:#0B1A0F;color:var(--ink);font-family:var(--font-main)}
+body{display:flex;flex-direction:column;padding:6px;position:relative}
+/* Floating HUD Dock - like your english file */
+.floating-hud-dock{
+ position:fixed;top:10px;left:12px;z-index:95;display:flex;align-items:center;gap:8px;
+ background:rgba(255,253,246,0.96);backdrop-filter:blur(10px);border:2.5px solid #16a34a;border-radius:22px;padding:5px 10px;
+ box-shadow:0 8px 24px rgba(0,0,0,0.45);transition:transform .35s cubic-bezier(.16,1,.3,1),opacity .35s
+}
+.floating-hud-dock.dock-minimized{transform:translate3d(0,-70px,0);opacity:0;pointer-events:none}
+.dock-peek{position:fixed;top:6px;left:24px;z-index:94;background:rgba(255,253,246,.9);border:2px solid #16a34a;border-radius:0 0 14px 14px;padding:2px 14px;font-size:1rem;cursor:pointer;opacity:0;pointer-events:none;transition:.3s}
+.dock-peek.show{opacity:.9;pointer-events:auto}
+.icon-btn{background:#fff;border:2px solid #16a34a;color:#14532d;width:42px;height:42px;border-radius:14px;font-size:1.2rem;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,.2)}
+.icon-btn:active{transform:scale(.92)}
+.mode-pill{display:flex;background:#dcfce7;border:2px solid #16a34a;border-radius:16px;padding:2px;gap:3px}
+.mode-icon{border:0;background:transparent;width:42px;height:36px;border-radius:12px;font-size:.78rem;font-weight:800;cursor:pointer}
+.mode-icon.active{background:linear-gradient(180deg,#22c55e,#15803d);color:#fff;box-shadow:0 2px 6px rgba(21,128,61,.4)}
+/* Master Scenic Stage */
+.master-scenic-stage{
+ flex:1;width:100%;position:relative;border:3.5px solid #5A3C22;border-radius:22px;overflow:hidden;background:#0B1A0F;
+ box-shadow:0 16px 45px rgba(0,0,0,.85);display:flex;min-height:0;z-index:10
+}
+.scenic-bg-layer{
+ position:absolute;inset:0;background:url('assets/nature-bg.webp') no-repeat center center;background-size:cover;
+ transform:scale(1);transition:transform .6s cubic-bezier(.16,1,.3,1);will-change:transform;z-index:0
+}
+.master-scenic-stage.stage-darkened .scenic-bg-layer{transform:scale(1.08)}
+.scenic-ambient-dimmer{
+ position:absolute;inset:0;pointer-events:none;z-index:1;
+ background:radial-gradient(circle at 20% 30%, rgba(34,197,94,.22) 0%, rgba(15,40,20,.38) 45%, rgba(10,20,10,.68) 100%);
+ animation:flicker 4s infinite alternate ease-in-out
+}
+@keyframes flicker{0%{opacity:.88}50%{opacity:.96}100%{opacity:.9}}
+.master-scenic-stage.stage-darkened .scenic-ambient-dimmer{background:rgba(12,20,10,.74);animation:none;opacity:.92}
+/* Pollution Fog that clears */
+.pollution-fog{
+ position:absolute;inset:0;z-index:2;pointer-events:none;opacity:.65;transition:opacity 1.2s ease;
+ background:
+  radial-gradient(circle at 15% 20%, rgba(100,100,110,.35) 0%, transparent 40%),
+  radial-gradient(circle at 80% 30%, rgba(120,120,130,.3) 0%, transparent 35%),
+  radial-gradient(circle at 60% 80%, rgba(80,140,110,.25) 0%, transparent 45%);
+ filter:blur(8px)
+}
+/* Dust particles canvas */
+#dustCanvas{position:absolute;inset:0;z-index:3;pointer-events:none}
+/* Binder Cover - Recycled Cardboard style */
+.binder-cover{
+ position:absolute;inset:0;z-index:8;display:flex;flex-direction:column;align-items:center;justify-content:center;
+ background:linear-gradient(135deg,#E7D3A3 0%,#D4B896 50%,#C19A6B 100%);
+ transition:transform .75s cubic-bezier(.18,.89,.32,1.28),opacity .45s ease;
+ transform-origin:0% 50%;transform-style:preserve-3d;backdrop-filter:blur(2px);
+ box-shadow:inset 0 0 50px rgba(255,255,255,.25), 0 30px 60px -12px rgba(0,0,0,.6);
+ cursor:pointer
+}
+.binder-cover::after{
+ content:'';position:absolute;inset:0;
+ background:linear-gradient(115deg, transparent 30%, rgba(255,255,255,.22) 45%, rgba(255,255,255,.04) 52%, transparent 65%);
+ pointer-events:none;z-index:4
+}
+.binder-cover::before{
+ content:'';position:absolute;left:0;top:0;bottom:0;width:34px;
+ background:linear-gradient(90deg,#3f2a14 0%,#5a3c22 55%,#8b5a2b 85%,#3f2a14 100%);
+ border-right:3px solid rgba(255,255,255,.25);box-shadow:inset -3px 0 6px rgba(0,0,0,.6), 3px 0 10px rgba(0,0,0,.35);z-index:5
+}
+.spine-rings{position:absolute;left:27px;top:16px;bottom:16px;width:16px;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none;z-index:10}
+.spiral{width:18px;height:10px;border-radius:6px;background:linear-gradient(135deg,#fff 0%,#d1d5db 45%,#6b7280 80%,#1f2937 100%);box-shadow:0 2px 4px rgba(0,0,0,.65), inset 0 1px 2px rgba(255,255,255,.9)}
+.binder-open{transform:perspective(1400px) rotateY(-118deg) rotateX(8deg) translateZ(20px);opacity:0;pointer-events:none}
+/* Content inside */
+.content-scroll{
+ position:relative;z-index:7;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:76px 14px 18px 14px;
+ display:flex;flex-direction:column;gap:12px
+}
+.hero-card{
+ display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.94);border:2.5px solid #16a34a;border-radius:20px;box-shadow:0 8px 20px rgba(0,0,0,.25);position:relative;overflow:hidden
+}
+.hero-img{width:68px;height:68px;object-fit:contain;animation:floatH 3s ease-in-out infinite;z-index:1}
+@keyframes floatH{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.globe{width:44px;height:44px;animation:spinS 14s linear infinite}
 @keyframes spinS{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-.garden{display:flex;gap:6px;flex-wrap:wrap;align-items:center;min-height:32px;padding:6px 10px;background:rgba(255,255,255,.9);border:1.5px dashed #86efac;border-radius:14px;margin-bottom:10px}
-.garden-item{width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:#dcfce7;border-radius:50%;font-size:18px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1);box-shadow:0 2px 6px rgba(0,0,0,.1)}
+.garden-strip{display:flex;gap:6px;flex-wrap:wrap;align-items:center;min-height:34px;padding:8px 12px;background:rgba(255,255,255,.92);border:1.5px dashed #16a34a;border-radius:14px}
+.garden-item{width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:#dcfce7;border-radius:50%;font-size:18px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1);box-shadow:0 2px 6px rgba(0,0,0,.15)}
 @keyframes popIn{0%{transform:scale(0) rotate(-20deg)}100%{transform:scale(1) rotate(0)}}
-.card{background:rgba(255,255,255,.97);border:1.5px solid #e7dcc0;border-radius:18px;padding:12px;margin-bottom:10px;box-shadow:0 8px 20px rgba(15,118,110,.08)}
+.card{background:rgba(255,255,255,.97);border:1.5px solid #e7dcc0;border-radius:18px;padding:12px;box-shadow:0 8px 20px rgba(0,0,0,.18)}
 .q-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px 10px;border:1.5px dashed #e7dcc0;border-radius:16px;margin-bottom:10px;background:linear-gradient(to bottom,#fffffe,#fefcf3);line-height:1.7}
 .q-num{color:#c2410c;font-weight:900;min-width:22px}
 .q-text{font-weight:800;font-size:1rem;flex:1 1 auto}
@@ -46,14 +120,14 @@ main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px}
 .tool-btn{flex:1;display:flex;align-items:center;justify-content:center;border:0;background:transparent;cursor:pointer}
 .tool-btn:first-child{border-bottom:1px solid #e7dcc0}
 .tool-btn svg{width:16px;height:16px;stroke-width:2.2;stroke:currentColor;fill:none}
-/* Match */
+/* Match - FIXED cross-line */
 .match-wrap{position:relative}
-.match-item{display:grid;grid-template-columns:28px 1fr 28px 1fr;gap:8px;align-items:center;padding:10px;border:1.5px solid #e0f2fe;border-radius:16px;background:linear-gradient(135deg,#f8fafc,#f0fdfa);margin-bottom:10px;transition:.2s}
+.match-item{display:grid;grid-template-columns:28px 1fr 28px 1fr;gap:8px;align-items:center;padding:10px;border:1.5px solid #e0f2fe;border-radius:16px;background:linear-gradient(135deg,#f8fafc,#f0fdfa);margin-bottom:10px;position:relative;z-index:2}
 .match-item.write-mode{grid-template-columns:28px 1fr 28px 1fr minmax(120px,450px)}
-.dot{width:26px;height:26px;border-radius:50%;background:#fff;border:2.5px solid #94a3b8;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.7rem;cursor:grab;touch-action:none;transition:.18s}
+.dot{width:28px;height:28px;border-radius:50%;background:#fff;border:2.5px solid #94a3b8;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.7rem;cursor:grab;touch-action:none;transition:.18s}
 .dot.a-dot{border-color:#0ea5e9;color:#0ea5e9}
 .dot.b-dot{border-color:#f59e0b;color:#f59e0b}
-.dot.dragging{transform:scale(1.35);box-shadow:0 0 0 6px rgba(14,165,233,.2)}
+.dot.dragging{transform:scale(1.35);box-shadow:0 0 0 6px rgba(14,165,233,.2);z-index:10}
 .dot.connected{border-color:#22c55e;background:#dcfce7;color:#15803d}
 .dot.wrong{border-color:#ef4444;background:#fee2e2;animation:shake .4s ease}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
@@ -63,74 +137,78 @@ main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px}
 .path-drag{fill:none;stroke:#0ea5e9;stroke-width:3.5;stroke-dasharray:8 8;stroke-linecap:round}
 .path-ok{fill:none;stroke:#22c55e;stroke-width:3.5;stroke-linecap:round;animation:drawLine .5s ease}
 @keyframes drawLine{from{stroke-dasharray:0 1000}to{stroke-dasharray:1000 0}}
-/* Eraser cleaning */
+/* Cleaning */
 .clean-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:700px){.clean-grid{grid-template-columns:1fr}}
-.clean-card{position:relative;border:2px solid #bbf7d0;border-radius:18px;overflow:hidden;background:#fff;box-shadow:0 6px 16px rgba(0,0,0,.08);transition:.2s}
+.clean-card{position:relative;border:2px solid #bbf7d0;border-radius:18px;overflow:hidden;background:#fff;box-shadow:0 6px 16px rgba(0,0,0,.12)}
 .clean-card.cleaned{border-color:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.15)}
 .clean-img{width:100%;height:140px;object-fit:contain;background:linear-gradient(135deg,#f0fdf4,#ecfeff);padding:10px}
 .clean-canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair;z-index:2}
 .clean-label{position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,.92);padding:8px 10px;display:flex;justify-content:space-between;align-items:center;z-index:3;backdrop-filter:blur(6px)}
 .progress{height:6px;background:#e5e7eb;border-radius:999px;overflow:hidden;flex:1;margin:0 8px}
-.progress-fill{height:100%;width:100%;background:#22c55e;transition:width .3s;transform-origin:left}
+.progress-fill{height:100%;width:100%;background:#22c55e;transition:width .3s}
 .confetti{position:absolute;width:8px;height:8px;border-radius:50%;pointer-events:none;animation:popC .9s ease-out forwards;z-index:20}
 @keyframes popC{0%{transform:translateY(0) scale(0);opacity:1}100%{transform:translateY(-70px) scale(1.5) rotate(200deg);opacity:0}}
-#penBubble{position:fixed;bottom:90px;right:16px;z-index:50;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#0f172a,#334155);box-shadow:0 8px 24px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none;will-change:transform}
-#penBubble:active{transform:scale(.92)}
-#penPanel{position:fixed;bottom:150px;right:16px;z-index:51;width:220px;background:rgba(255,255,255,.98);border:2px solid #e2e8f0;border-radius:20px;padding:12px;box-shadow:0 16px 40px rgba(0,0,0,.18);transform:scale(.9);opacity:0;pointer-events:none;transition:all .25s cubic-bezier(.34,1.56,.64,1);transform-origin:bottom right}
+#penBubble{position:fixed;bottom:22px;right:16px;z-index:50;width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#0f172a,#334155);box-shadow:0 8px 24px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none}
+#penPanel{position:fixed;bottom:84px;right:16px;z-index:51;width:224px;background:rgba(255,255,255,.98);border:2px solid #e2e8f0;border-radius:20px;padding:12px;box-shadow:0 16px 40px rgba(0,0,0,.22);transform:scale(.9);opacity:0;pointer-events:none;transition:all .25s cubic-bezier(.34,1.56,.64,1);transform-origin:bottom right}
 #penPanel.open{transform:scale(1);opacity:1;pointer-events:auto}
 .pen-row{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
 .pen-tool{width:38px;height:38px;border-radius:12px;border:2px solid #e2e8f0;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:.15s}
 .pen-tool.on{border-color:#0ea5e9;background:#e0f2fe;transform:scale(1.08)}
 .color-dot{width:28px;height:28px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 0 0 1.5px #cbd5e1;cursor:pointer}
-.color-dot.on{box-shadow:0 0 0 2.5px #0ea5e9;transform:scale(1.1)}
+.color-dot.on{box-shadow:0 0 0 2.5px #0ea5e9}
 .size-slider{width:100%;accent-color:#0ea5e9}
-#bottomNav{height:54px;background:rgba(255,255,255,.94);border-top:1.5px solid #bbf7d0;display:flex;align-items:center;justify-content:space-around;flex-shrink:0;backdrop-filter:blur(12px)}
-.bottom-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.62rem;font-weight:800;color:#64748b;background:none;border:0;cursor:pointer;padding:6px}
-.bottom-btn.on{color:#15803d}
 #dimLayer{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:60;transition:opacity .25s}
 </style>
 </head>
 <body>
-<div class="bg"><img src="assets/nature-bg.webp" alt="" onerror="this.style.display='none'"/></div>
 <div id="dimLayer"></div>
-<header>
-<div style="display:flex;align-items:center;gap:8px">
-<button class="btn" type="button" onclick="goHub()">← Hub</button>
-<span class="badge">Zaina</span>
-<img src="assets/earth-globe.webp" alt="" class="globe" id="headerGlobe" onerror="this.style.display='none'"/>
+<div class="floating-hud-dock" id="hudDock">
+<button class="icon-btn" type="button" onclick="goHub()">←</button>
+<span class="badge" style="background:linear-gradient(135deg,#22c55e,#0ea5e9);color:#fff;font-weight:900;font-size:.7rem;padding:4px 9px;border-radius:999px">Zaina</span>
+<img src="assets/earth-globe.webp" alt="" class="globe" id="headerGlobe" style="width:32px;height:32px" onerror="this.style.display='none'"/>
+<div class="mode-pill">
+<button class="mode-icon active" id="btnPractice" type="button" onclick="setMode('practice')">📖</button>
+<button class="mode-icon" id="btnWrite" type="button" onclick="setMode('write')">✍️</button>
 </div>
-<div style="display:flex;align-items:center;gap:6px">
-<button class="btn on" id="btnPractice" type="button" onclick="setMode('practice')">Practice</button>
-<button class="btn" id="btnWrite" type="button" onclick="setMode('write')">Write</button>
-<label style="display:flex;align-items:center;gap:4px;font-size:.65rem;font-weight:800;color:#166534">Dim<input type="range" id="dimSlider" min="0" max="60" value="0" oninput="setDim(this.value)" style="width:54px;accent-color:#15803d"/></label>
+<button class="icon-btn" type="button" onclick="toggleDock()" style="font-size:.9rem">—</button>
 </div>
-</header>
-<div class="tabs">
-<button class="tab on" id="tabA" type="button" onclick="setTab('A')">A · Fill</button>
-<button class="tab" id="tabB" type="button" onclick="setTab('B')">B · Match</button>
-<button class="tab" id="tabC" type="button" onclick="setTab('C')">C · T/F</button>
-<button class="tab" id="tabD" type="button" onclick="setTab('D')">D · Clean 🌍</button>
+<div class="dock-peek" id="dockPeek" onclick="toggleDock()">👧🌍</div>
+<div class="master-scenic-stage" id="masterStage">
+<div class="scenic-bg-layer" id="scenicBg"></div>
+<div class="scenic-ambient-dimmer"></div>
+<div class="pollution-fog" id="pollutionFog"></div>
+<canvas id="dustCanvas"></canvas>
+<div class="binder-cover" id="binderCover" onclick="openBinder()">
+<div class="spine-rings"><div class="spiral"></div><div class="spiral"></div><div class="spiral"></div><div class="spiral"></div><div class="spiral"></div></div>
+<div style="text-align:center;z-index:6;padding:20px">
+<img src="assets/earth-patrol-hero.webp" alt="" style="width:110px;height:110px;object-fit:contain;animation:floatH 3s ease-in-out infinite" onerror="this.style.display='none'"/>
+<div style="font-family:var(--font-display);font-weight:800;font-size:1.8rem;color:#3f2a14;margin-top:12px;text-shadow:0 2px 0 rgba(255,255,255,.6)">EARTH PATROL HQ</div>
+<div style="font-weight:800;color:#5a3c22;margin-top:6px">Pollution - Class Work</div>
+<div style="margin-top:18px;background:#3f2a14;color:#fff;padding:8px 18px;border-radius:12px;font-weight:800;display:inline-block">Tap to Open Binder 📒</div>
+<div style="margin-top:12px;font-size:.8rem;color:#5a3c22;font-weight:700">Your garden grows as you clean the earth 🌱</div>
 </div>
-<main id="mainEl">
-<div class="hero">
+</div>
+<div class="content-scroll" id="contentScroll">
+<div class="hero-card">
 <img src="assets/earth-patrol-hero.webp" class="hero-img" alt="" onerror="this.src='assets/earth-globe.webp'"/>
-<div style="flex:1;z-index:1">
-<div style="font-weight:900;color:#14532d">Pollution Patrol</div>
-<div style="font-size:.7rem;font-weight:700;color:#475569;margin-top:2px" id="gardenCount">Garden: 0 plants</div>
-<div style="height:6px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin-top:4px;width:100px"><div id="earthFill" style="height:100%;width:0%;background:linear-gradient(90deg,#22c55e,#0ea5e9);transition:width .6s"></div></div>
+<div style="flex:1">
+<div style="font-family:var(--font-display);font-weight:800;color:#14532d;font-size:1.05rem">Pollution Patrol</div>
+<div style="font-size:.7rem;font-weight:700;color:#475569;margin-top:2px" id="gardenCount">Garden: 0 plants • Fog: 65% cleared</div>
+<div style="height:7px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin-top:6px;width:120px"><div id="earthFill" style="height:100%;width:0%;background:linear-gradient(90deg,#22c55e,#0ea5e9);transition:width .6s"></div></div>
 </div>
-<img src="assets/earth-globe.webp" style="width:44px;height:44px;object-fit:contain;animation:spinS 12s linear infinite;z-index:1" alt="" onerror="this.style.display='none'"/>
+<img src="assets/earth-globe.webp" style="width:46px;height:46px;object-fit:contain;animation:spinS 14s linear infinite" alt="" onerror="this.style.display='none'"/>
 </div>
-<div class="garden" id="garden"></div>
+<div class="garden-strip" id="garden"></div>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<button class="icon-btn" id="tabA" type="button" onclick="setTab('A')" style="width:auto;padding:0 12px;font-size:.75rem" >A · Fill</button>
+<button class="icon-btn" id="tabB" type="button" onclick="setTab('B')" style="width:auto;padding:0 12px;font-size:.75rem">B · Match</button>
+<button class="icon-btn" id="tabC" type="button" onclick="setTab('C')" style="width:auto;padding:0 12px;font-size:.75rem">C · T/F</button>
+<button class="icon-btn" id="tabD" type="button" onclick="setTab('D')" style="width:auto;padding:0 12px;font-size:.75rem">D · Clean 🌍</button>
+<label style="margin-left:auto;display:flex;align-items:center;gap:4px;font-size:.65rem;font-weight:800;color:#fff;background:rgba(0,0,0,.3);padding:4px 8px;border-radius:10px">Dim<input type="range" id="dimSlider" min="0" max="60" value="0" oninput="setDim(this.value)" style="width:50px;accent-color:#22c55e"/></label>
+</div>
 <div id="panel"></div>
-<div style="height:90px"></div>
-</main>
-<div id="bottomNav">
-<button class="bottom-btn on" id="bA" type="button" onclick="setTab('A')">Fill</button>
-<button class="bottom-btn" id="bB" type="button" onclick="setTab('B')">Match</button>
-<button class="bottom-btn" id="bC" type="button" onclick="setTab('C')">T/F</button>
-<button class="bottom-btn" id="bD" type="button" onclick="setTab('D')">Clean</button>
+</div>
 </div>
 <div id="penBubble"><span style="font-size:22px">✏️</span></div>
 <div id="penPanel">
@@ -162,7 +240,7 @@ main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px}
 </div>
 </div>
 <script>
-const STORE='zaina_poll_garden_v1_';
+const STORE='zaina_poll_hq_v2_';
 const FILLS=[
 {id:'f1', pre:'', suf:' damages our environment.', ans:'Pollution'},
 {id:'f2', pre:'Pollutants are of two types: ', mid:' and ', suf:'.', ans1:'natural', ans2:'human-made', double:true, id2:'f2b'},
@@ -191,13 +269,14 @@ const TF=[
 {id:'t4', text:'The comfortable level of sound for human ears is 200–240 decibels (dB).'},
 ];
 const CLEAN=[
-{id:'c1', title:'Clean Air', icon:'assets/pollution-air.webp', pollution:'smoke', color:'rgba(120,120,130,0.85)'},
-{id:'c2', title:'Clean Water', icon:'assets/pollution-water.webp', pollution:'oil', color:'rgba(80,160,120,0.85)'},
-{id:'c3', title:'Clean Land', icon:'assets/pollution-land.webp', pollution:'garbage', color:'rgba(200,200,210,0.9)'},
-{id:'c4', title:'Quiet Zone', icon:'assets/pollution-noise.webp', pollution:'sound', color:'rgba(251,146,60,0.8)'},
+{id:'c1', title:'Clean Air', icon:'assets/pollution-air.webp', pollution:'smoke', color:'rgba(100,100,110,0.88)'},
+{id:'c2', title:'Clean Water', icon:'assets/pollution-water.webp', pollution:'oil', color:'rgba(60,130,100,0.88)'},
+{id:'c3', title:'Clean Land', icon:'assets/pollution-land.webp', pollution:'garbage', color:'rgba(180,170,160,0.9)'},
+{id:'c4', title:'Quiet Zone', icon:'assets/pollution-noise.webp', pollution:'sound', color:'rgba(251,146,60,0.85)'},
 ];
 let mode='practice', tab='A';
 let fillOrder=FILLS.map((_,i)=>i), tfOrder=TF.map((_,i)=>i);
+let bOrder=shuffle(MATCH_B.map((_,i)=>i)); // FIXED: B shuffled, not same row
 let connections={}, dragState=null;
 let currentPen={type:'pen', color:'#0f172a', size:2.6, stamp:'🍃'};
 let rainbowHue=0;
@@ -212,8 +291,34 @@ function goHub(){try{window.parent.postMessage('close-lesson-to-hub','*');}catch
 function setDim(v){document.getElementById('dimLayer').style.opacity=(Number(v)/100).toFixed(2); localStorage.setItem(STORE+'dim',v);}
 (function(){const s=localStorage.getItem(STORE+'dim'); if(s){document.getElementById('dimSlider').value=s; setDim(s);}})();
 function shuffle(a){const b=a.slice(); for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]} return b;}
-function setMode(m){flushAllInk(); mode=m; if(m==='write'){fillOrder=shuffle(FILLS.map((_,i)=>i)); tfOrder=shuffle(TF.map((_,i)=>i));} else {fillOrder=FILLS.map((_,i)=>i); tfOrder=TF.map((_,i)=>i);} document.getElementById('btnPractice').classList.toggle('on',m==='practice'); document.getElementById('btnWrite').classList.toggle('on',m==='write'); connections={}; render();}
-function setTab(t){flushAllInk(); tab=t; ['A','B','C','D'].forEach(k=>{document.getElementById('tab'+k)?.classList.toggle('on',k===t); document.getElementById('b'+k)?.classList.toggle('on',k===t);}); document.getElementById('mainEl').scrollTo({top:0,behavior:'smooth'}); render();}
+function toggleDock(){document.getElementById('hudDock').classList.toggle('dock-minimized'); document.getElementById('dockPeek').classList.toggle('show');}
+function openBinder(){document.getElementById('binderCover').classList.add('binder-open'); document.getElementById('masterStage').classList.add('stage-darkened');}
+function closeBinder(){document.getElementById('binderCover').classList.remove('binder-open'); document.getElementById('masterStage').classList.remove('stage-darkened');}
+function setMode(m){
+ flushAllInk(); mode=m;
+ if(m==='write'){fillOrder=shuffle(FILLS.map((_,i)=>i)); tfOrder=shuffle(TF.map((_,i)=>i)); bOrder=shuffle(MATCH_B.map((_,i)=>i));}
+ else {fillOrder=FILLS.map((_,i)=>i); tfOrder=TF.map((_,i)=>i); bOrder=shuffle(MATCH_B.map((_,i)=>i));}
+ // ensure B not same row as correct in write mode
+ if(m==='write'){
+  let attempts=0;
+  while(attempts<10){
+   let bad=false;
+   for(let i=0;i<MATCH_DATA.length;i++){ if(MATCH_B[bOrder[i]].id===MATCH_DATA[i].correct) bad=true; }
+   if(!bad) break;
+   bOrder=shuffle(MATCH_B.map((_,i)=>i)); attempts++;
+  }
+ }
+ document.getElementById('btnPractice').classList.toggle('active',m==='practice');
+ document.getElementById('btnWrite').classList.toggle('active',m==='write');
+ connections={}; render();
+}
+function setTab(t){
+ flushAllInk(); tab=t;
+ ['A','B','C','D'].forEach(k=>{document.getElementById('tab'+k)?.classList.remove('on');});
+ document.getElementById('tab'+t)?.classList.add('on');
+ document.getElementById('contentScroll').scrollTo({top:0,behavior:'smooth'});
+ render();
+}
 function inkKey(id){return STORE+'ink_'+mode+'_'+id;}
 function flushAllInk(){document.querySelectorAll('canvas[data-ink-id]').forEach(c=>{try{if(c.width) localStorage.setItem(inkKey(c.dataset.inkId), c.toDataURL('image/png'));}catch(_){}});}
 function pushHist(id,can){if(!historyMap[id]) historyMap[id]=[]; try{historyMap[id].push(can.toDataURL('image/png')); if(historyMap[id].length>24) historyMap[id].shift();}catch(_){}}
@@ -228,15 +333,16 @@ function undoInk(id){const s=historyMap[id]; if(!s?.length){clearInk(id);return;
 function doUndo(){const cans=document.querySelectorAll('canvas[data-ink-id]'); if(cans.length) undoInk(cans[cans.length-1].dataset.inkId);}
 function doClear(){const cans=document.querySelectorAll('canvas[data-ink-id]'); if(cans.length) clearInk(cans[cans.length-1].dataset.inkId);}
 function stripHTML(id){return `<div class="inline-strip" id="wrap_${id}"><canvas data-ink-id="${id}" tabindex="0"></canvas><div class="strip-tools"><button class="tool-btn" onclick="undoInk('${id}')" type="button"><svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M20 9H4"/></svg></button><button class="tool-btn" onclick="clearInk('${id}')" type="button"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg></button></div></div>`;}
-function confettiAt(x,y){for(let i=0;i<7;i++){const d=document.createElement('div'); d.className='confetti'; d.style.left=(x+(Math.random()*30-15))+'px'; d.style.top=(y+(Math.random()*10-5))+'px'; d.style.background=['#22c55e','#0ea5e9','#f59e0b','#a78bfa'][i%4]; d.style.animationDelay=(i*0.05)+'s'; document.body.appendChild(d); setTimeout(()=>d.remove(),900);} const g=document.getElementById('headerGlobe'); if(g){g.style.animation='spinS .5s ease 4'; setTimeout(()=>g.style.animation='spinS 12s linear infinite',2000);} if(navigator.vibrate) navigator.vibrate(40);}
+function confettiAt(x,y){for(let i=0;i<7;i++){const d=document.createElement('div'); d.className='confetti'; d.style.left=(x+(Math.random()*30-15))+'px'; d.style.top=(y+(Math.random()*10-5))+'px'; d.style.background=['#22c55e','#0ea5e9','#f59e0b','#a78bfa'][i%4]; d.style.animationDelay=(i*0.05)+'s'; document.body.appendChild(d); setTimeout(()=>d.remove(),900);} const g=document.getElementById('headerGlobe'); if(g){g.style.animation='spinS .5s ease 4'; setTimeout(()=>g.style.animation='spinS 14s linear infinite',2000);} if(navigator.vibrate) navigator.vibrate(40);}
 function addPlant(type){garden.push({type, t:Date.now()}); localStorage.setItem(STORE+'garden', JSON.stringify(garden)); updateGardenUI(); confettiAt(window.innerWidth/2, 200);}
 function updateGardenUI(){
- const el=document.getElementById('garden'); el.innerHTML=garden.slice(-20).map(p=>`<div class="garden-item">${p.type}</div>`).join('') || '<div style="font-size:.75rem;color:#64748b">Your garden is empty - clean pollution to grow 🌱</div>';
- document.getElementById('gardenCount').textContent=`Garden: ${garden.length} plants`;
- const total=FILLS.length+1+MATCH_DATA.length+TF.length+CLEAN.length;
- const filled=document.querySelectorAll('canvas[data-ink-id]').length? document.querySelectorAll('canvas[data-ink-id]').length : 0;
- let filledCount=0; document.querySelectorAll('canvas[data-ink-id]').forEach(c=>{if(localStorage.getItem(inkKey(c.dataset.inkId))) filledCount++;});
- const pct=Math.min(100,Math.round((filledCount+garden.length+Object.keys(connections).length)/ (total+5) *100));
+ const el=document.getElementById('garden'); el.innerHTML=garden.slice(-18).map(p=>`<div class="garden-item">${p.type}</div>`).join('') || '<div style="font-size:.75rem;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.8)">Garden empty - clean pollution to grow 🌱</div>';
+ const fog=document.getElementById('pollutionFog');
+ const cleared=Math.min(85, garden.length*8);
+ if(fog) fog.style.opacity=((100-cleared)/100*0.65).toFixed(2);
+ document.getElementById('gardenCount').textContent=`Garden: ${garden.length} plants • Fog: ${Math.max(15,100-cleared)}% cleared`;
+ let filled=0; document.querySelectorAll('canvas[data-ink-id]').forEach(c=>{if(localStorage.getItem(inkKey(c.dataset.inkId))) filled++;});
+ const pct=Math.min(100,Math.round((filled+garden.length+Object.keys(connections).length)/(FILLS.length+MATCH_DATA.length+TF.length+CLEAN.length+5)*100));
  document.getElementById('earthFill').style.width=pct+'%';
 }
 function renderFill(){
@@ -255,24 +361,26 @@ function renderTF(){
  }).join('');
 }
 function renderMatch(){
+ // FIXED: B is shuffled, not same row
  let html=`<div class="match-wrap" id="matchWrap"><svg class="svg-layer" id="svgLayer"></svg><div id="matchGrid">`;
  MATCH_DATA.forEach((a,i)=>{
-  const correctB=MATCH_B.find(b=>b.id===a.correct);
+  const bIdx=bOrder[i];
+  const bItem=MATCH_B[bIdx];
   html+=`<div class="match-item ${mode==='write'?'write-mode':''}" data-a="${a.id}">
    <div class="dot a-dot" data-a="${a.id}" data-type="a">${i+1}</div>
    <div style="display:flex;align-items:center;gap:8px"><div class="icon-box"><img src="${a.icon}" alt="" onerror="this.style.display='none'"/></div><div style="font-weight:800">${makeSpeakable(a.text)}</div></div>
-   <div class="dot b-dot" data-b="${correctB.id}" data-type="b">${String.fromCharCode(65+i)}</div>
-   <div style="display:flex;align-items:center;gap:8px"><div class="icon-box"><img src="${correctB.icon}" alt="" onerror="this.style.display='none'"/></div><div style="font-weight:800;color:#0e7490">${makeSpeakable(correctB.text)}</div></div>
+   <div class="dot b-dot" data-b="${bItem.id}" data-type="b">${String.fromCharCode(65+bIdx)}</div>
+   <div style="display:flex;align-items:center;gap:8px"><div class="icon-box"><img src="${bItem.icon}" alt="" onerror="this.style.display='none'"/></div><div style="font-weight:800;color:#0e7490">${makeSpeakable(bItem.text)}</div></div>
    ${mode==='write'?stripHTML('m_'+a.id):''}
   </div>`;
  });
  html+=`</div></div>`;
- if(mode==='practice') html+=`<div style="text-align:center;margin-top:10px"><div style="font-size:.75rem;color:#64748b">Practice: drag A ● to B ● - instant feedback</div></div>`;
- else html+=`<div style="text-align:center;margin-top:10px"><button class="btn on" type="button" onclick="checkWriteMatch()">✅ Check All Connections</button><div style="font-size:.72rem;color:#64748b;margin-top:6px">Connect all, then check + write letters in boxes</div></div>`;
+ if(mode==='practice') html+=`<div style="text-align:center;margin-top:8px"><div style="font-size:.72rem;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.8)">Practice: drag A ● to B ● across rows - instant feedback ✨</div></div>`;
+ else html+=`<div style="text-align:center;margin-top:10px"><button class="btn" type="button" onclick="checkWriteMatch()" style="background:#15803d;color:#fff;border-color:#15803d;padding:8px 16px;border-radius:12px;font-weight:800">✅ Check All</button><div style="font-size:.7rem;color:#fff;margin-top:6px;text-shadow:0 1px 3px rgba(0,0,0,.8)">Write mode: B is shuffled, not same row. Drag across, then check.</div></div>`;
  return html;
 }
 function renderClean(){
- let html=`<div class="card"><div style="font-weight:900;color:#14532d;margin-bottom:8px">🌍 Eraser Cleaning - Erase the pollution with 🧽 eraser!</div><div style="font-size:.76rem;color:#475569;margin-bottom:10px">Use S Pen eraser or pick 🧽 in pen bubble. Erase 70% to clean and grow garden.</div><div class="clean-grid">`;
+ let html=`<div class="card"><div style="font-weight:900;color:#14532d;margin-bottom:8px">🌍 Eraser Cleaning - Erase pollution with 🧽</div><div style="font-size:.76rem;color:#475569;margin-bottom:10px">Use eraser in pen bubble. Erase 70% to clean and grow garden + clear fog.</div><div class="clean-grid">`;
  CLEAN.forEach(c=>{
   html+=`<div class="clean-card" id="clean_${c.id}">
    <img src="${c.icon}" class="clean-img" alt="${c.title}"/>
@@ -301,10 +409,10 @@ function checkWriteMatch(){
  let correct=0; Object.entries(connections).forEach(([a,b])=>{
   const exp=MATCH_DATA.find(x=>x.id===a)?.correct; if(b===exp){correct++; addPlant('🌿');}
  });
- alert(`You got ${correct}/${MATCH_DATA.length} correct! Garden grew +${correct} 🌱`);
+ alert(`You got ${correct}/${MATCH_DATA.length} correct! Garden +${correct} 🌱 Fog clears!`);
  updateGardenUI();
 }
-// MATCH DRAG
+// MATCH DRAG - FIXED cross-line
 function initMatchDrag(){
  const wrap=document.getElementById('matchWrap'); const svg=document.getElementById('svgLayer');
  if(!wrap||!svg) return;
@@ -356,14 +464,13 @@ function initMatchDrag(){
  wrap.addEventListener('pointerup', endDrag);
  wrap.addEventListener('pointercancel', ()=>{if(dragState){dragState.path.remove(); dragState.aDot.classList.remove('dragging'); dragState=null;}});
 }
-// CLEANING CANVASES
+// CLEANING
 function initCleanCanvases(){
  document.querySelectorAll('canvas[data-clean-id]').forEach(can=>{
-  const dpr=Math.min(window.devicePixelRatio||1,2);
+  const dpr=Math.min(devicePixelRatio||1,2);
   const rect=can.getBoundingClientRect(); can.width=rect.width*dpr; can.height=rect.height*dpr; can.style.width=rect.width+'px'; can.style.height=rect.height+'px';
   const ctx=can.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
   const color=can.dataset.color;
-  // draw pollution
   ctx.fillStyle=color;
   if(can.dataset.pollution==='smoke'){
    ctx.beginPath(); ctx.ellipse(rect.width*0.5, rect.height*0.35, rect.width*0.4, rect.height*0.25, 0,0,Math.PI*2); ctx.fill();
@@ -375,8 +482,6 @@ function initCleanCanvases(){
   } else {
    ctx.strokeStyle=color; ctx.lineWidth=6; for(let i=0;i<3;i++){ctx.beginPath(); ctx.arc(rect.width*0.7, rect.height*0.5, 20+i*15, -0.5, 0.5); ctx.stroke();}
   }
-  // store initial pixels for progress
-  can.dataset.total=can.width*can.height;
  });
  let cleaning=null;
  document.addEventListener('pointerdown', e=>{
@@ -388,35 +493,43 @@ function initCleanCanvases(){
   if(!cleaning) return; const can=cleaning.can; const rect=can.getBoundingClientRect();
   const x=(e.clientX-rect.left), y=(e.clientY-rect.top);
   const ctx=can.getContext('2d'); ctx.globalCompositeOperation='destination-out';
-  ctx.lineWidth=currentPen.type==='eraser'? currentPen.size*4 : 22; ctx.lineCap='round'; ctx.lineJoin='round';
+  ctx.lineWidth=currentPen.type==='eraser'? currentPen.size*4 : 24; ctx.lineCap='round'; ctx.lineJoin='round';
   ctx.beginPath(); ctx.moveTo(cleaning.lastX, cleaning.lastY); ctx.lineTo(x,y); ctx.stroke();
   cleaning.lastX=x; cleaning.lastY=y;
-  // check progress
   requestAnimationFrame(()=>checkCleanProgress(can));
  }, {passive:false});
  function endClean(){ if(!cleaning) return; checkCleanProgress(cleaning.can, true); cleaning=null; }
  document.addEventListener('pointerup', endClean); document.addEventListener('pointercancel', endClean);
 }
-function checkCleanProgress(can, final){
+function checkCleanProgress(can){
  const ctx=can.getContext('2d'); const w=can.width, h=can.height;
  try{
   const data=ctx.getImageData(0,0,w,h).data;
   let transparent=0; for(let i=3;i<data.length;i+=4){if(data[i]===0) transparent++;}
   const total=w*h; const cleaned=transparent/total;
-  const pct=Math.round((1-cleaned)*100); // remaining
-  const cleanedPct=Math.round(cleaned*100);
   const prog=document.getElementById('prog_'+can.dataset.cleanId); const txt=document.getElementById('txt_'+can.dataset.cleanId);
-  if(prog) prog.style.width=(100-cleanedPct)+'%';
-  if(txt) txt.textContent=(100-cleanedPct)+'% left';
+  if(prog) prog.style.width=(100-cleaned*100)+'%';
+  if(txt) txt.textContent=Math.round(100-cleaned*100)+'% left';
   if(cleaned>0.7){
    const card=document.getElementById('clean_'+can.dataset.cleanId);
    if(card && !card.classList.contains('cleaned')){
-    card.classList.add('cleaned'); confettiAt(can.getBoundingClientRect().left+can.width/2, can.getBoundingClientRect().top+50); addPlant(['🌳','🌸','🌻','🌿','♻️'][Math.floor(Math.random()*5)]);
+    card.classList.add('cleaned'); confettiAt(can.getBoundingClientRect().left+100, can.getBoundingClientRect().top+50); addPlant(['🌳','🌸','🌻','🌿','♻️'][Math.floor(Math.random()*5)]);
     if(txt) txt.textContent='Cleaned! 🌱';
    }
   }
  }catch(_){}
 }
+// Dust particles
+(function(){
+ const canvas=document.getElementById('dustCanvas'); const ctx=canvas.getContext('2d'); let particles=[];
+ function resize(){canvas.width=canvas.clientWidth*devicePixelRatio; canvas.height=canvas.clientHeight*devicePixelRatio; particles=[]; for(let i=0;i<40;i++){particles.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*2+0.5,vx:(Math.random()-.5)*0.3,vy:(Math.random()-.5)*0.3,alpha:Math.random()*0.4+0.1})}}
+ window.addEventListener('resize', resize); resize();
+ (function loop(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  for(let p of particles){p.x+=p.vx; p.y+=p.vy; if(p.x<0||p.x>canvas.width) p.vx*=-1; if(p.y<0||p.y>canvas.height) p.vy*=-1; ctx.globalAlpha=p.alpha*(1-garden.length*0.04); ctx.fillStyle='#a3a3a3'; ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();}
+  ctx.globalAlpha=1; requestAnimationFrame(loop);
+ })();
+})();
 // PEN BUBBLE
 (function(){
  const bubble=document.getElementById('penBubble'); const panel=document.getElementById('penPanel');
@@ -465,12 +578,12 @@ function checkCleanProgress(can, final){
   }
   lx=x; ly=y;
  },{passive:false});
- function end(e){if(!drawing||!active) return; drawing=false; if(started){pushHist(active.dataset.inkId, active); try{localStorage.setItem(inkKey(active.dataset.inkId), active.toDataURL('image/png')); active.parentElement.classList.add('has-ink'); if(Math.random()>0.5) addPlant('🌱'); updateGardenUI();}catch(_){}} started=false; active=null; if(e&&e.pointerType==='pen') lastPenTime=Date.now(); const ctx=document.querySelector('canvas[data-ink-id]')?.getContext('2d'); if(ctx) ctx.globalCompositeOperation='source-over';}
+ function end(e){if(!drawing||!active) return; drawing=false; if(started){pushHist(active.dataset.inkId, active); try{localStorage.setItem(inkKey(active.dataset.inkId), active.toDataURL('image/png')); active.parentElement.classList.add('has-ink'); if(Math.random()>0.5) addPlant('🌱'); updateGardenUI();}catch(_){}} started=false; active=null; if(e&&e.pointerType==='pen') lastPenTime=Date.now();}
  document.addEventListener('pointerup', end); document.addEventListener('pointercancel', end);
  // swipe
  let sx=0;
- document.getElementById('mainEl').addEventListener('touchstart', e=>{sx=e.touches[0].clientX},{passive:true});
- document.getElementById('mainEl').addEventListener('touchend', e=>{
+ document.getElementById('contentScroll').addEventListener('touchstart', e=>{sx=e.touches[0].clientX},{passive:true});
+ document.getElementById('contentScroll').addEventListener('touchend', e=>{
   const dx=e.changedTouches[0].clientX - sx; if(Math.abs(dx)>80){
    if(dx<0){ if(tab==='A') setTab('B'); else if(tab==='B') setTab('C'); else if(tab==='C') setTab('D'); }
    else { if(tab==='D') setTab('C'); else if(tab==='C') setTab('B'); else if(tab==='B') setTab('A'); }
@@ -478,7 +591,7 @@ function checkCleanProgress(can, final){
  },{passive:true});
 })();
 window.addEventListener('beforeunload', flushAllInk); window.addEventListener('pagehide', flushAllInk);
-render(); updateGardenUI();
+setMode('practice'); setTab('A'); updateGardenUI();
 </script>
 </body>
 </html>
