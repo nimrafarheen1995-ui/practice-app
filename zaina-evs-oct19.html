@@ -1,1156 +1,707 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Zaina • Earth Patrol — Pollution</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
-  <style>
-    :root { --ink:#0f172a; --muted:#64748b; --green:#15803d; }
-    *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    .hidden { display: none !important; }
-    html, body { margin: 0; height: 100%; overflow: hidden; font-family: 'Nunito', sans-serif; background: #ecfdf5; color: var(--ink); }
-    body { display: flex; flex-direction: column; user-select: none; -webkit-user-select: none; }
-    body::before {
-      content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
-      background: url('assets/nature-bg.webp') center/cover no-repeat; opacity: 0.22;
-    }
-    header, main { position: relative; z-index: 1; }
-
-    /* Header */
-    header {
-      flex-shrink: 0; min-height: 56px; padding: 6px 12px; gap: 8px; flex-wrap: wrap;
-      background: rgba(255,255,255,0.92); border-bottom: 2px solid #bbf7d0;
-      display: flex; align-items: center; justify-content: space-between; backdrop-filter: blur(6px);
-    }
-    .hdr-left, .hdr-right { display: flex; align-items: center; gap: 8px; min-width: 0; flex-wrap: wrap; }
-    .hdr-title { font-weight: 900; font-size: 0.92rem; line-height: 1.1; }
-    .hdr-sub { font-size: 0.68rem; font-weight: 700; color: var(--muted); }
-    .globe { width: 28px; height: 28px; object-fit: contain; }
-    .badge { background: linear-gradient(135deg,#22c55e,#0ea5e9); color:#fff; font-weight:900; font-size:0.72rem; padding:4px 10px; border-radius:999px; }
-    .btn {
-      border: 1px solid #86efac; background: #fff; color: #166534;
-      font-weight: 800; font-size: 0.78rem; padding: 6px 11px; border-radius: 10px; cursor: pointer; font-family: inherit;
-    }
-    .btn:active { transform: scale(0.97); }
-    .btn.on-practice { background: #0ea5e9; border-color: #0ea5e9; color: #fff; }
-    .btn.on-write { background: #7c3aed; border-color: #7c3aed; color: #fff; }
-    .mode-bar { display: flex; gap: 6px; }
-    .dim-wrap { display: flex; align-items: center; gap: 6px; font-size: 0.68rem; font-weight: 800; color: #166534; }
-    .dim-wrap input { width: 70px; accent-color: #15803d; }
-
-    /* Main */
-    main { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px 12px 96px; }
-    .card {
-      background: rgba(255,255,255,0.95); border: 1px solid #bbf7d0; border-radius: 16px;
-      padding: 12px; margin-bottom: 10px; box-shadow: 0 4px 14px rgba(15,118,110,0.06);
-    }
-    .card h3 { margin: 0 0 8px; font-size: 0.95rem; font-weight: 900; color: #14532d; }
-    .hero { display: flex; align-items: center; gap: 10px; }
-    .hero img { width: 64px; height: 64px; object-fit: contain; }
-    .hero-title { font-weight: 900; color: #14532d; }
-    .hero-sub { font-size: 0.78rem; font-weight: 700; color: var(--muted); }
-
-    /* Mission board */
-    .board-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
-    .mission {
-      position: relative; text-align: left; font-family: inherit; color: var(--ink);
-      background: #fff; border: 2px solid #86efac; border-radius: 18px; padding: 12px;
-      cursor: pointer; box-shadow: 0 6px 16px rgba(21,128,61,0.10);
-      display: flex; flex-direction: column; gap: 4px;
-    }
-    .mission:active { transform: scale(0.98); }
-    .mission.locked { opacity: 0.55; border-style: dashed; cursor: not-allowed; }
-    .mission .ico { font-size: 1.7rem; }
-    .mission .t { font-weight: 900; font-size: 1rem; color: #14532d; }
-    .mission .s { font-size: 0.75rem; font-weight: 700; color: var(--muted); }
-    .mission .dots { display: flex; gap: 5px; margin-top: 4px; flex-wrap: wrap; }
-    .dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid #86efac; background: #fff; }
-    .dot.on { background: #16a34a; border-color: #16a34a; }
-    .done-badge {
-      position: absolute; top: 8px; right: 8px; background: #16a34a; color: #fff;
-      border-radius: 999px; font-size: 0.68rem; font-weight: 900; padding: 2px 8px;
-    }
-
-    /* Section */
-    .sec-head { display: flex; align-items: center; justify-content: space-between; font-weight: 900; color: #14532d; }
-    .say {
-      font: inherit; font-weight: 900; color: #075985; background: #e0f2fe;
-      border: 1px solid #7dd3fc; border-radius: 8px; padding: 0 6px; cursor: pointer;
-    }
-    .prompt { font-size: 0.95rem; font-weight: 800; line-height: 1.5; margin-bottom: 4px; }
-
-    /* Ink strips */
-    .strip-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 8px; }
-    .strip-grid.two { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
-    .strip-block { min-width: 0; }
-    .strip-label { font-size: 0.7rem; font-weight: 900; color: #166534; margin-bottom: 3px; }
-    .ruled-strip {
-      --rule: 44px;
-      position: relative; height: 68px; width: 100%; border: 1.5px solid #94a3b8; border-radius: 10px;
-      background-color: #fffef8;
-      background-image: linear-gradient(to bottom, transparent var(--rule), #93c5fd var(--rule), #93c5fd calc(var(--rule) + 1px), transparent calc(var(--rule) + 1px));
-      overflow: hidden; touch-action: none;
-    }
-    .ruled-strip.sm { --rule: 34px; height: 54px; }
-    .ruled-strip canvas { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; touch-action: none; }
-    .wm {
-      position: absolute; left: 12px; right: 12px; top: 0; height: var(--rule); z-index: 0;
-      display: flex; align-items: flex-end; padding-bottom: 4px; pointer-events: none; overflow: hidden; white-space: nowrap;
-      font-family: 'Kalam', cursive; font-size: 1.5rem; color: rgba(15,23,42,0.22);
-    }
-    .wm.long { font-size: 1.1rem; }
-    .strip-tools { display: flex; gap: 6px; margin-top: 5px; justify-content: flex-end; }
-    .mini-btn {
-      border: 1px solid #cbd5e1; background: #f8fafc; border-radius: 8px; padding: 6px 10px;
-      font-size: 0.72rem; font-weight: 800; cursor: pointer; color: #334155; font-family: inherit;
-    }
-    .mini-btn:active { transform: scale(0.97); }
-    .q-foot { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
-    .tip { font-size: 0.75rem; font-weight: 700; color: #0369a1; min-height: 1.1em; }
-    .tip.ok { color: #15803d; }
-    .tip.bad { color: #b91c1c; }
-
-    /* Self-check */
-    .self-check { display: flex; gap: 6px; margin-top: 8px; }
-    .ck { width: 36px; height: 36px; border-radius: 10px; border: 2px solid #cbd5e1; background: #fff; font-weight: 900; cursor: pointer; }
-    .ck.y.on { background: #16a34a; color: #fff; border-color: #16a34a; }
-    .ck.n.on { background: #dc2626; color: #fff; border-color: #dc2626; }
-
-    /* Match */
-    .match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; align-items: start; }
-    .match-grid.three { grid-template-columns: 1fr 1fr 1fr; }
-    .match-col { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-    .col-head { font-size: 0.66rem; font-weight: 900; color: #166534; text-transform: uppercase; letter-spacing: 0.03em; }
-    .match-chip {
-      display: flex; align-items: center; gap: 6px; border: 2px solid #cbd5e1; background: #f8fafc;
-      border-radius: 12px; padding: 9px; font-weight: 800; font-size: 0.8rem; cursor: pointer;
-      text-align: left; font-family: inherit; color: var(--ink);
-    }
-    .match-chip img { width: 24px; height: 24px; object-fit: contain; flex-shrink: 0; }
-    .match-chip.selected { border-color: #eab308; background: #fef9c3; box-shadow: 0 0 0 3px rgba(234,179,8,0.25); }
-    .match-chip.pending { border-color: #a78bfa; background: #f5f3ff; }
-    .match-chip.ok { border-color: #16a34a; background: #dcfce7; color: #166534; pointer-events: none; }
-    .match-chip.bad { border-color: #f87171; background: #fef2f2; }
-    .match-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
-    .mini-btn.big { font-size: 0.85rem; padding: 9px 14px; background: #16a34a; border-color: #16a34a; color: #fff; }
-    .wr-cell { display: flex; flex-direction: column; gap: 4px; }
-
-    /* True / False */
-    .tf-row { display: flex; gap: 8px; margin-top: 8px; }
-    .tf-btn { width: 48px; height: 48px; border-radius: 12px; border: 2px solid #cbd5e1; background: #fff; font-weight: 900; font-size: 1.1rem; cursor: pointer; font-family: inherit; }
-    .tf-btn.on-t { background: #16a34a; color: #fff; border-color: #16a34a; }
-    .tf-btn.on-f { background: #dc2626; color: #fff; border-color: #dc2626; }
-
-    /* Floating pen drawer */
-    .pen-fab {
-      position: fixed; right: 14px; bottom: 14px; z-index: 60;
-      width: 52px; height: 52px; border-radius: 50%; background: #1e293b;
-      border: 2px solid rgba(255,255,255,0.8); color: #fff; font-size: 22px; cursor: pointer;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.35); display: flex; align-items: center; justify-content: center;
-    }
-    .pen-fab:active { transform: scale(0.92); }
-    .pen-drawer {
-      position: fixed; right: 12px; bottom: 76px; z-index: 61; display: none; align-items: center; gap: 6px;
-      background: rgba(15,23,42,0.96); padding: 8px; border-radius: 18px;
-      border: 1.5px solid rgba(255,255,255,0.35); box-shadow: 0 15px 35px rgba(0,0,0,0.45);
-    }
-    .pen-drawer.open { display: flex; }
-    .dtool {
-      width: 40px; height: 40px; border-radius: 11px; border: 1px solid rgba(255,255,255,0.22);
-      background: rgba(255,255,255,0.08); color: #fff; font-size: 18px; font-weight: 900; cursor: pointer;
-      display: inline-flex; align-items: center; justify-content: center; font-family: inherit; padding: 0;
-    }
-    .dtool.on { background: #b45309; border-color: #fde047; box-shadow: 0 0 10px rgba(245,158,11,0.55); }
-    .dtool:active { transform: scale(0.92); }
-    .pdiv { width: 1px; height: 26px; background: rgba(255,255,255,0.25); }
-    .bubble {
-      position: absolute; right: 0; bottom: calc(100% + 10px); display: none; flex-wrap: wrap; gap: 8px;
-      background: rgba(15,23,42,0.98); border: 2px solid #fde047; border-radius: 16px; padding: 10px;
-      width: max-content; max-width: min(270px, 86vw); box-shadow: 0 12px 28px rgba(0,0,0,0.55);
-    }
-    .bubble.open { display: flex; }
-    .bubble.col { flex-direction: column; align-items: stretch; min-width: 180px; }
-    .bub-title { width: 100%; font-size: 10px; font-weight: 900; color: #fde68a; text-transform: uppercase; letter-spacing: 0.05em; }
-    .bub-row { display: flex; flex-wrap: wrap; gap: 6px; width: 100%; }
-    .sw { width: 30px; height: 30px; border-radius: 50%; border: 2.5px solid #fff; cursor: pointer; }
-    .sw.on { transform: scale(1.15); box-shadow: 0 0 10px #fde047; }
-    .st {
-      width: 38px; height: 38px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.25);
-      background: rgba(255,255,255,0.08); font-size: 20px; cursor: pointer; padding: 0;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .st img { width: 26px; height: 26px; object-fit: contain; }
-    .st.on { background: #b45309; border-color: #fde047; }
-    .bubble label { color: #fff; font-size: 11px; font-weight: 800; }
-    .bubble input[type=range] { width: 100%; accent-color: #fbbf24; }
-    #thickLabel { color: #fde68a; font-size: 11px; font-weight: 900; text-align: center; }
-
-    /* PIN overlay */
-    #pinOverlay {
-      position: fixed; inset: 0; z-index: 80; background: rgba(15,23,42,0.6);
-      display: none; align-items: center; justify-content: center;
-    }
-    #pinOverlay.open { display: flex; }
-    .pin-box { background: #fff; border-radius: 20px; padding: 18px; width: min(300px, 90vw); text-align: center; }
-    .pin-box.shake { animation: shakeX 0.4s ease; }
-    .pin-title { font-weight: 900; font-size: 1.05rem; color: #4c1d95; }
-    .pin-sub { font-size: 0.78rem; font-weight: 700; color: var(--muted); margin-top: 4px; }
-    .pin-dots { margin-top: 12px; }
-    .pin-dots span { display: inline-block; width: 14px; height: 14px; border-radius: 50%; border: 2px solid #7c3aed; margin: 0 6px; }
-    .pin-dots span.on { background: #7c3aed; }
-    .pin-pad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
-    .pin-pad button {
-      height: 50px; border-radius: 12px; border: 2px solid #c4b5fd; background: #f5f3ff;
-      font: 800 1.2rem 'Nunito', sans-serif; color: #4c1d95; cursor: pointer;
-    }
-    .pin-cancel { margin-top: 12px; background: none; border: none; color: var(--muted); font: 800 0.85rem 'Nunito', sans-serif; cursor: pointer; }
-
-    /* Toast, dim, confetti */
-    .toast {
-      position: fixed; left: 50%; bottom: 90px; z-index: 90; max-width: 90vw; text-align: center;
-      transform: translateX(-50%) translateY(20px); opacity: 0; pointer-events: none; transition: 0.25s;
-      background: #14532d; color: #fff; font-weight: 800; padding: 10px 16px; border-radius: 14px;
-    }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-    #dimLayer { position: fixed; inset: 0; background: #000; opacity: 0; pointer-events: none; z-index: 50; transition: opacity 0.2s; }
-    #confettiCanvas { position: fixed; inset: 0; pointer-events: none; z-index: 95; }
-
-    @keyframes shakeX { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Zaina • Earth Patrol — Pollution • Hybrid 6D</title>
+<link href="https://fonts.googleapis.com/css2?family=Kalam:wght@400;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --ink:#0f172a; --muted:#64748b; --green:#14532d; --lime:#86efac;
+  --qScale:1; --hero:64px;
+  --tabPad:12px;
+}
+*,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+.hidden{display:none !important}
+html,body{margin:0;height:100%;height:100dvh;overflow:hidden;font-family:'Nunito',sans-serif;background:#ecfdf5;color:var(--ink)}
+body{display:flex;flex-direction:column;user-select:none;-webkit-user-select:none}
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:url('assets/nature-bg.webp') center/cover no-repeat;opacity:.22
+}
+header,main,#dimLayer{position:relative;z-index:1}
+/* Header - fits Tab S11 portrait + landscape */
+header{
+  flex-shrink:0; min-height:56px; padding:6px 10px;
+  background:rgba(255,255,255,.92); border-bottom:2px solid #bbf7d0;
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  backdrop-filter:blur(8px); flex-wrap:wrap;
+}
+.hdr-left,.hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.badge{background:linear-gradient(135deg,#22c55e,#0ea5e9);color:#fff;font-weight:900;font-size:.72rem;padding:4px 10px;border-radius:999px}
+.hdr-title{font-weight:900;font-size:.92rem;line-height:1.1}
+.hdr-sub{font-size:.66rem;font-weight:800;color:var(--muted)}
+.btn{border:1px solid #86efac;background:#fff;color:#166534;font-weight:800;font-size:.78rem;padding:6px 11px;border-radius:10px;cursor:pointer;font-family:inherit}
+.btn:active{transform:scale(.97)}
+.btn.on-practice{background:#0ea5e9;border-color:#0ea5e9;color:#fff}
+.btn.on-write{background:#7c3aed;border-color:#7c3aed;color:#fff}
+.mode-bar{display:flex;gap:6px}
+.dim-wrap{display:flex;align-items:center;gap:6px;font-size:.68rem;font-weight:800;color:#166534}
+.dim-wrap input{width:70px;accent-color:#15803d}
+/* Aa pill */
+.aa-pill{display:flex;align-items:center;gap:2px;background:#fff;border:1.5px solid #bbf7d0;border-radius:999px;padding:2px 4px}
+.aa-pill button{width:28px;height:28px;border-radius:999px;border:1px solid transparent;background:transparent;font-weight:900;font-size:.72rem;cursor:pointer;font-family:inherit}
+.aa-pill button.on{background:#14532d;color:#fff;border-color:#14532d}
+/* Main - Tab safe */
+main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:var(--tabPad) var(--tabPad) 108px}
+.card{background:rgba(255,255,255,.96);border:1px solid #bbf7d0;border-radius:16px;padding:12px;margin-bottom:10px;box-shadow:0 4px 14px rgba(15,118,110,.06)}
+.hero{display:flex;align-items:center;gap:12px}
+.hero img{width:clamp(72px,10vw,112px);height:clamp(72px,10vw,112px);object-fit:contain}
+.hero-title{font-weight:900;color:#14532d;font-size:clamp(.95rem,2.2vw,1.2rem)}
+.hero-sub{font-size:clamp(.78rem,1.8vw,.9rem);font-weight:700;color:var(--muted);line-height:1.3}
+/* Board - 6D Holographic */
+#boardView{perspective:1200px}
+.board-grid{
+  display:grid; gap:14px; margin-top:10px;
+  grid-template-columns: repeat(auto-fit,minmax(160px,1fr));
+  transform-style:preserve-3d;
+}
+@media (orientation: landscape) and (min-width:800px){
+  .board-grid{grid-template-columns:repeat(3,1fr)}
+  main{padding:16px 20px 110px}
+}
+@media (orientation: portrait){
+  .board-grid{grid-template-columns:repeat(2,1fr)}
+}
+.mission{
+  position:relative; text-align:left; font-family:inherit; color:var(--ink);
+  background:radial-gradient(120% 120% at 20% 10%,rgba(255,255,255,.95),rgba(255,255,255,.75));
+  border:2px solid #86efac; border-radius:22px; padding:14px 12px;
+  cursor:pointer; box-shadow:0 10px 24px rgba(21,128,61,.14), inset 0 1px 0 rgba(255,255,255,.9);
+  display:flex; flex-direction:column; gap:4px;
+  transform-style:preserve-3d; transition: transform .35s cubic-bezier(.18,.89,.32,1.28), box-shadow .35s;
+  will-change:transform;
+}
+.mission .ico{font-size:clamp(28px,5vw,40px); transform:translateZ(24px)}
+.mission .t{font-weight:900;font-size:clamp(1rem,2.2vw,1.15rem);color:#14532d;transform:translateZ(18px)}
+.mission .s{font-size:.78rem;font-weight:700;color:var(--muted);transform:translateZ(12px)}
+.mission .dots{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;transform:translateZ(10px)}
+.mission .dot{width:11px;height:11px;border-radius:50%;border:2px solid #86efac;background:#fff}
+.mission .dot.on{background:#16a34a;border-color:#16a34a}
+.mission.locked{opacity:.55;border-style:dashed}
+.done-badge{position:absolute;top:8px;right:8px;background:#16a34a;color:#fff;border-radius:999px;font-size:.68rem;font-weight:900;padding:2px 8px;transform:translateZ(30px)}
+/* Section modal - appears in middle of Tab */
+#sectionModal{
+  position:fixed; inset:0; z-index:55; display:none; align-items:center; justify-content:center;
+  background:rgba(15,23,42,.42); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  padding:16px;
+}
+#sectionModal.open{display:flex}
+.modal-box{
+  width:min(86vw,780px); height:min(82dvh,900px); max-height:86dvh;
+  background:rgba(255,255,255,.98); border:2px solid #bbf7d0; border-radius:24px;
+  box-shadow:0 30px 80px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.6) inset;
+  display:flex; flex-direction:column; overflow:hidden;
+  transform:scale(.85) translateY(18px) rotateX(6deg); opacity:0;
+  transition: transform .42s cubic-bezier(.18,.89,.32,1.28), opacity .3s;
+  transform-origin:center;
+}
+#sectionModal.open .modal-box{transform:scale(1) translateY(0) rotateX(0); opacity:1}
+.modal-head{
+  flex-shrink:0; padding:12px 14px; display:flex; align-items:center; justify-content:space-between; gap:8px;
+  background:linear-gradient(135deg,#f0fdf4,#ecfeff); border-bottom:1.5px solid #bbf7d0;
+}
+.modal-title{font-weight:900;color:#14532d;font-size:clamp(1rem,2.2vw,1.2rem)}
+.modal-body{flex:1; min-height:0; overflow-y:auto; padding:12px 12px 100px; perspective:800px}
+/* layer stack visual for B */
+.layer-stack{position:relative; margin:6px 0 10px}
+.layer{
+  background:#fff; border:2px solid #cbd5e1; border-left:6px solid var(--layerCol); border-radius:14px; padding:10px 12px; margin-bottom:8px;
+  box-shadow:0 6px 14px rgba(0,0,0,.06); transform-style:preserve-3d;
+  animation: layerIn .5s ease both;
+}
+.layer:nth-child(1){--layerCol:#0ea5e9}
+.layer:nth-child(2){--layerCol:#2563eb}
+.layer:nth-child(3){--layerCol:#a16207}
+.layer:nth-child(4){--layerCol:#7c3aed}
+.layer:nth-child(5){--layerCol:#dc2626}
+@keyframes layerIn{from{opacity:0; transform:translateY(14px) translateZ(-20px) rotateX(6deg)} to{opacity:1; transform:translateY(0) translateZ(0) rotateX(0)}}
+/* Prompt - tap anywhere to speak */
+.prompt{
+  font-size:calc(clamp(.92rem,2vw,1.05rem) * var(--qScale));
+  font-weight:800; line-height:1.5; margin-bottom:4px; cursor:pointer;
+}
+.prompt:active{background:rgba(14,165,233,.08); border-radius:8px}
+.say-hint{font-size:.62rem;font-weight:800;color:#0ea5e9;margin-left:6px;opacity:.8}
+/* Ink strips - icon only outside */
+.strip-row{display:flex;align-items:flex-start;gap:8px;margin-top:8px}
+.strip-main{flex:1;min-width:0}
+.strip-label{font-size:calc(.70rem * var(--qScale));font-weight:900;color:#166534;margin-bottom:3px}
+.ruled-strip{
+  --rule:44px; position:relative; height:68px; width:100%; border:1.5px solid #94a3b8; border-radius:12px;
+  background-color:#fffef8;
+  background-image:linear-gradient(to bottom,transparent var(--rule),#93c5fd var(--rule),#93c5fd calc(var(--rule) + 1px),transparent calc(var(--rule) + 1px));
+  overflow:hidden; touch-action:none;
+}
+.ruled-strip.sm{--rule:34px;height:54px}
+.ruled-strip canvas{position:absolute;inset:0;z-index:1;width:100%;height:100%;touch-action:none;cursor:crosshair}
+.wm{
+  position:absolute;left:12px;right:12px;top:0;height:var(--rule);z-index:0;display:flex;align-items:flex-end;padding-bottom:4px;pointer-events:none;overflow:hidden;white-space:nowrap;
+  font-family:'Kalam',cursive;font-size:calc(1.5rem * var(--qScale));color:rgba(15,23,42,.22)
+}
+.wm.long{font-size:calc(1.1rem * var(--qScale))}
+.strip-tools{display:flex;flex-direction:column;gap:6px}
+.icon-btn{
+  width:40px;height:40px;border-radius:10px;border:1.5px solid #cbd5e1;background:#f8fafc;display:inline-flex;align-items:center;justify-content:center;
+  font-size:18px;cursor:pointer;flex-shrink:0;
+}
+.icon-btn:active{transform:scale(.93)}
+.icon-btn:disabled{opacity:.35}
+/* Match - bigger images */
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+.match-grid.three{grid-template-columns:1fr 1fr 1fr}
+@media (orientation: portrait) and (max-width:700px){ .match-grid.three{grid-template-columns:1fr 1fr} }
+.match-col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.col-head{font-size:.66rem;font-weight:900;color:#166534;text-transform:uppercase;letter-spacing:.03em}
+.match-chip{
+  display:flex;align-items:center;gap:8px;border:2px solid #cbd5e1;background:#f8fafc;border-radius:14px;padding:10px 12px;
+  font-weight:800;font-size:calc(.82rem * var(--qScale));cursor:pointer;text-align:left;font-family:inherit;color:var(--ink);
+  min-height:56px;
+}
+.match-chip img{width:clamp(36px,6vw,56px);height:clamp(36px,6vw,56px);object-fit:contain;flex-shrink:0}
+.match-chip.selected{border-color:#eab308;background:#fef9c3;box-shadow:0 0 0 3px rgba(234,179,8,.25)}
+.match-chip.pending{border-color:#a78bfa;background:#f5f3ff}
+.match-chip.ok{border-color:#16a34a;background:#dcfce7;color:#166534;pointer-events:none}
+.match-chip.bad{border-color:#f87171;background:#fef2f2}
+.match-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.mini-btn{border:1px solid #cbd5e1;background:#f8fafc;border-radius:10px;padding:8px 12px;font-size:.82rem;font-weight:800;cursor:pointer;font-family:inherit}
+.mini-btn.big{background:#16a34a;border-color:#16a34a;color:#fff;padding:10px 16px;font-size:.92rem}
+.tip{font-size:calc(.75rem * var(--qScale));font-weight:700;color:#0369a1;min-height:1.1em}
+.tip.ok{color:#15803d}.tip.bad{color:#b91c1c}
+/* TF */
+.tf-row{display:flex;gap:10px;margin-top:8px}
+.tf-btn{width:56px;height:56px;border-radius:14px;border:2px solid #cbd5e1;background:#fff;font-weight:900;font-size:1.2rem;cursor:pointer;font-family:inherit}
+.tf-btn.on-t{background:#16a34a;color:#fff;border-color:#16a34a}
+.tf-btn.on-f{background:#dc2626;color:#fff;border-color:#dc2626}
+/* Pen drawer - hybrid with rainbow + cursive */
+.pen-fab{
+  position:fixed;right:16px;bottom:16px;z-index:60;width:56px;height:56px;border-radius:50%;background:#1e293b;border:2px solid rgba(255,255,255,.9);color:#fff;font-size:24px;cursor:pointer;
+  box-shadow:0 8px 24px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;
+}
+.pen-drawer{
+  position:fixed;right:14px;bottom:80px;z-index:61;display:none;flex-direction:column;gap:8px;min-width:260px;
+  background:rgba(15,23,42,.97);padding:10px;border-radius:20px;border:1.5px solid rgba(255,255,255,.35);box-shadow:0 16px 40px rgba(0,0,0,.5);
+}
+.pen-drawer.open{display:flex}
+.pen-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.dtool{width:40px;height:40px;border-radius:11px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#fff;font-size:18px;font-weight:900;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-family:inherit;padding:0}
+.dtool.on{background:#b45309;border-color:#fde047;box-shadow:0 0 10px rgba(245,158,11,.55)}
+.pdiv{width:1px;height:26px;background:rgba(255,255,255,.25)}
+.bubble{position:absolute;right:0;bottom:calc(100% + 10px);display:none;flex-wrap:wrap;gap:8px;background:rgba(15,23,42,.98);border:2px solid #fde047;border-radius:16px;padding:10px;width:max-content;max-width:min(280px,86vw);box-shadow:0 12px 28px rgba(0,0,0,.55)}
+.bubble.open{display:flex}
+.bubble.col{flex-direction:column;align-items:stretch;min-width:200px}
+.bub-title{width:100%;font-size:10px;font-weight:900;color:#fde68a;text-transform:uppercase;letter-spacing:.05em}
+.bub-row{display:flex;flex-wrap:wrap;gap:6px;width:100%}
+.sw{width:32px;height:32px;border-radius:50%;border:2.5px solid #fff;cursor:pointer}
+.sw.on{transform:scale(1.15);box-shadow:0 0 10px #fde047}
+.st{width:42px;height:42px;border-radius:10px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);font-size:22px;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center}
+.st img{width:28px;height:28px;object-fit:contain}
+.st.on{background:#b45309;border-color:#fde047}
+.bubble label{color:#fff;font-size:11px;font-weight:800}
+.bubble input[type=range]{width:100%;accent-color:#fbbf24}
+/* Celebration - earth hero popup */
+#celebrate{
+  position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;
+  background:rgba(15,23,42,.48);backdrop-filter:blur(12px);
+}
+#celebrate.open{display:flex}
+.celeb-box{
+  background:#fff;border-radius:26px;padding:18px 16px 14px;width:min(420px,92vw);text-align:center;
+  box-shadow:0 24px 80px rgba(0,0,0,.35); transform:scale(.9); animation:popIn .4s cubic-bezier(.18,.89,.32,1.28) forwards;
+}
+.celeb-box img{width:clamp(96px,18vw,140px);height:clamp(96px,18vw,140px);object-fit:contain;margin:0 auto 8px;display:block}
+.celeb-title{font-weight:900;font-size:clamp(1.2rem,3vw,1.5rem);color:#14532d}
+.celeb-msg{font-size:clamp(.92rem,2.2vw,1.05rem);font-weight:700;color:var(--ink);margin:6px 0 12px;line-height:1.4}
+.celeb-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+@keyframes popIn{to{transform:scale(1)}}
+@keyframes shakeX{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+/* PIN */
+#pinOverlay{position:fixed;inset:0;z-index:80;background:rgba(15,23,42,.6);display:none;align-items:center;justify-content:center}
+#pinOverlay.open{display:flex}
+.pin-box{background:#fff;border-radius:20px;padding:18px;width:min(300px,90vw);text-align:center}
+.pin-box.shake{animation:shakeX .4s ease}
+.pin-title{font-weight:900;font-size:1.05rem;color:#4c1d95}
+.pin-sub{font-size:.78rem;font-weight:700;color:var(--muted);margin-top:4px}
+.pin-dots{margin-top:12px}
+.pin-dots span{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid #7c3aed;margin:0 6px}
+.pin-dots span.on{background:#7c3aed}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.pin-pad button{height:50px;border-radius:12px;border:2px solid #c4b5fd;background:#f5f3ff;font:800 1.2rem 'Nunito',sans-serif;color:#4c1d95;cursor:pointer}
+.pin-cancel{margin-top:12px;background:none;border:none;color:var(--muted);font:800 .85rem 'Nunito',sans-serif;cursor:pointer}
+.toast{position:fixed;left:50%;bottom:90px;z-index:90;max-width:90vw;text-align:center;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;transition:.25s;background:#14532d;color:#fff;font-weight:800;padding:10px 16px;border-radius:14px}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#dimLayer{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:50;transition:opacity .2s}
+#confettiCanvas{position:fixed;inset:0;pointer-events:none;z-index:95}
+</style>
 </head>
 <body>
-  <div id="dimLayer"></div>
-
-  <header>
-    <div class="hdr-left">
-      <button class="btn" id="backBtn" onclick="onBack()">← Hub</button>
-      <span class="badge">Zaina</span>
-      <img class="globe" src="assets/earth-globe.webp" alt="" onerror="this.style.display='none'" />
-      <div style="min-width:0">
-        <div class="hdr-title" id="hTitle">Earth Patrol</div>
-        <div class="hdr-sub" id="hSub">Pollution · EVS</div>
+<div id="dimLayer"></div>
+<header>
+  <div class="hdr-left">
+    <button class="btn" id="backBtn" onclick="onBack()">← Hub</button>
+    <span class="badge">Zaina</span>
+    <img src="assets/earth-globe.webp" alt="" style="width:28px;height:28px;object-fit:contain" onerror="this.style.display='none'" />
+    <div style="min-width:0"><div class="hdr-title" id="hTitle">Earth Patrol</div><div class="hdr-sub" id="hSub">Pollution · EVS</div></div>
+  </div>
+  <div class="hdr-right">
+    <div class="aa-pill" id="aaPill">
+      <button type="button" onclick="setFontScale(0)" title="Small">A-</button>
+      <button type="button" onclick="setFontScale(1)" title="Normal">Aa</button>
+      <button type="button" onclick="setFontScale(2)" title="Large">A+</button>
+    </div>
+    <div class="mode-bar">
+      <button class="btn" id="btnPractice" onclick="onPracticeClick()">Practice</button>
+      <button class="btn" id="btnWrite" onclick="onWriteClick()">Write</button>
+    </div>
+    <label class="dim-wrap">Dim<input type="range" id="dimSlider" min="0" max="50" value="0" oninput="setDim(this.value)" /></label>
+  </div>
+</header>
+<main>
+  <div id="boardView">
+    <div class="card hero">
+      <img src="assets/earth-patrol-hero.webp" alt="" onerror="this.src='assets/earth-globe.webp'" />
+      <div><div class="hero-title" id="heroTitle">Practice mode</div><div class="hero-sub" id="heroSub">Pick a mission. It flies to the middle! 🚀</div></div>
+    </div>
+    <div class="board-grid" id="boardGrid"></div>
+  </div>
+</main>
+<!-- Section Modal - middle of Tab -->
+<div id="sectionModal" onclick="if(event.target===this) closeSection()">
+  <div class="modal-box">
+    <div class="modal-head">
+      <span class="modal-title" id="secTitle"></span>
+      <div style="display:flex;gap:6px">
+        <button class="btn" onclick="speakFull(document.getElementById('panel')?.innerText||'')">🔊 Read</button>
+        <button class="btn" onclick="closeSection()">✕ Close</button>
       </div>
     </div>
-    <div class="hdr-right">
-      <div class="mode-bar">
-        <button class="btn" id="btnPractice" onclick="onPracticeClick()">Practice</button>
-        <button class="btn" id="btnWrite" onclick="onWriteClick()">Write</button>
-      </div>
-      <label class="dim-wrap">Dim
-        <input type="range" id="dimSlider" min="0" max="50" value="0" oninput="setDim(this.value)" />
-      </label>
-    </div>
-  </header>
-
-  <main>
-    <!-- Mission board -->
-    <div id="boardView">
-      <div class="card hero">
-        <img src="assets/earth-patrol-hero.webp" alt="Earth Patrol"
-             onerror="this.src='assets/earth-globe.webp'; this.onerror=function(){this.style.display='none'}" />
-        <div>
-          <div class="hero-title" id="heroTitle">Practice mode</div>
-          <div class="hero-sub" id="heroSub">Pick a mission to start.</div>
-        </div>
-      </div>
-      <div class="board-grid" id="boardGrid"></div>
-    </div>
-
-    <!-- Section workspace -->
-    <div id="sectionView" class="hidden">
-      <div class="card sec-head">
-        <span id="secTitle"></span>
-        <button class="say" onclick="speak(SECTIONS[section].title)" title="Read aloud">🔊</button>
-      </div>
-      <div id="panel"></div>
-    </div>
-  </main>
-
-  <!-- Floating pen drawer -->
-  <button type="button" class="pen-fab hidden" id="penBtn" onclick="togglePenDrawer()" title="Pen tools">✏️</button>
-  <div class="pen-drawer" id="penDrawer">
+    <div class="modal-body" id="panel"></div>
+  </div>
+</div>
+<!-- Pen -->
+<button type="button" class="pen-fab" id="penBtn" onclick="togglePenDrawer()" title="Pen tools">✏️</button>
+<div class="pen-drawer" id="penDrawer">
+  <div class="pen-row">
     <button type="button" class="dtool" id="dtPen" onclick="setTool('pen')" title="Pen">✏️</button>
     <button type="button" class="dtool" id="dtEraser" onclick="setTool('eraser')" title="Eraser">🧽</button>
     <span class="pdiv"></span>
     <button type="button" class="dtool" id="dtColors" onclick="toggleBubble('colorBubble')" title="Colours">🎨</button>
     <button type="button" class="dtool" id="dtThick" onclick="toggleBubble('thickBubble')" title="Thickness">━</button>
-    <button type="button" class="dtool" id="dtStamp" onclick="stampTool()" title="Stamps">⭐</button>
-
+    <button type="button" class="dtool" id="dtCursive" onclick="setTool('cursive')" title="Cursive nib">✒️</button>
+    <button type="button" class="dtool" id="dtRainbow" onclick="setTool('rainbow')" title="Rainbow">🌈</button>
+    <button type="button" class="dtool" id="dtStamp" onclick="toggleBubble('stampBubble')" title="Stamps">⭐</button>
     <div id="colorBubble" class="bubble"></div>
     <div id="thickBubble" class="bubble col">
-      <label>Thickness</label>
-      <input type="range" id="thickSlider" min="1" max="8" step="0.5" value="2.5" oninput="setThickness(this.value)" />
+      <label>Thickness — slide to change</label>
+      <input type="range" id="thickSlider" min="1" max="10" step="0.5" value="2.5" oninput="setThickness(this.value)" />
       <span id="thickLabel">2.5</span>
     </div>
     <div id="stampBubble" class="bubble"></div>
   </div>
-
-  <!-- Parent PIN -->
-  <div id="pinOverlay" onclick="if(event.target===this) closePin()">
-    <div class="pin-box" id="pinBox">
-      <div class="pin-title">🔒 Parent check</div>
-      <div class="pin-sub">Enter the parent PIN to go back to Practice.</div>
-      <div class="pin-dots" id="pinDots"><span></span><span></span><span></span><span></span></div>
-      <div class="pin-pad">
-        <button onclick="pinKey('1')">1</button><button onclick="pinKey('2')">2</button><button onclick="pinKey('3')">3</button>
-        <button onclick="pinKey('4')">4</button><button onclick="pinKey('5')">5</button><button onclick="pinKey('6')">6</button>
-        <button onclick="pinKey('7')">7</button><button onclick="pinKey('8')">8</button><button onclick="pinKey('9')">9</button>
-        <button onclick="pinKey('C')">C</button><button onclick="pinKey('0')">0</button><button onclick="pinKey('E')">✓</button>
-      </div>
-      <button class="pin-cancel" onclick="closePin()">Cancel</button>
+</div>
+<!-- Celebration with earth-patrol-hero -->
+<div id="celebrate" onclick="if(event.target===this) { closeCelebrate(); closeSection(); }">
+  <div class="celeb-box">
+    <img src="assets/earth-patrol-hero.webp" alt="" onerror="this.src='assets/earth-globe.webp'" />
+    <div class="celeb-title" id="celebTitle">Mission Complete!</div>
+    <div class="celeb-msg" id="celebMsg">Amazing, Zaina! 🌍</div>
+    <div id="celebCountdown" style="font-size:.78rem;font-weight:800;color:#64748b;margin:6px 0 8px;display:none">Returning to board in 5s…</div>
+    <div class="celeb-actions">
+      <button class="btn" style="background:#e0f2fe;border-color:#7dd3fc" onclick="continueCelebrate()">Continue here 💚</button>
+      <button class="btn on-practice" onclick="closeCelebrate(); closeSection()">Back to Board 🚀</button>
     </div>
   </div>
-
-  <div class="toast" id="toast"></div>
-  <canvas id="confettiCanvas"></canvas>
-
-  <script>
-    const STORE = 'zaina_evs_pollution_oct20_';
-    const PARENT_PIN = '1995';
-
-    const ICONS = {
-      air: 'assets/pollution-air.webp',
-      water: 'assets/pollution-water.webp',
-      land: 'assets/pollution-land.webp',
-      noise: 'assets/pollution-noise.webp'
-    };
-    const EMOJI_STAMPS = ['🌍', '🌳', '💧', '🏭', '♻️', '☢️', '⭐', '✅', '❌'];
-    const COLORS = ['#0f172a', '#dc2626', '#2563eb', '#16a34a', '#ec4899', '#f59e0b'];
-    const SECTIONS = { A: { title: 'A · Fill in' }, B: { title: 'B · Match' }, C: { title: 'C · True / False' } };
-    const SAY_WORDS = ['pollution', 'pollutants', 'contamination', 'decibels', 'radioactive', 'soil', 'natural', 'humanmade', 'noise', 'water', 'air', 'land'];
-    const SAY_AS = { humanmade: 'human made' };
-
-    /* ----- Content ----- */
-    const FILLS = [
-      { id: 'f1', qno: 1, text: '________ damages our environment.', tip: 'The main word for harming land, water and air.',
-        strips: [{ id: 'f1', answer: 'pollution' }] },
-      { id: 'f2', qno: 2, text: 'Pollutants are of two types: ________ and ________.', tip: 'One type is from nature; the other is made by people.',
-        strips: [{ id: 'f2a', answer: 'natural', label: '1' }, { id: 'f2b', answer: 'humanmade', label: '2' }] },
-      { id: 'f3', qno: 3, text: 'Land pollution is also known as ________.', tip: 'Another name for the ground we walk on.',
-        strips: [{ id: 'f3', answer: 'soil pollution' }] },
-      { id: 'f4', qno: 4, text: 'Sound is measured in ________.', tip: 'Unit for loudness (short form is fine).',
-        strips: [{ id: 'f4', answer: 'decibels' }] },
-      { id: 'f5', qno: 5, text: 'Radioactive pollution is caused by ________ substances.', tip: 'Think nuclear / uranium-type materials.',
-        strips: [{ id: 'f5', answer: 'radioactive' }] }
-    ];
-
-    const MATCH_LEFT = [
-      { id: 'm1', text: 'Household garbage on streets', pair: 'land' },
-      { id: 'm2', text: 'Uranium leak', pair: 'radioactive' },
-      { id: 'm3', text: 'Rock concerts', pair: 'noise' },
-      { id: 'm4', text: 'Chlorofluorocarbons', pair: 'air' },
-      { id: 'm5', text: 'Oil spill', pair: 'water' }
-    ];
-    const MATCH_RIGHT = [
-      { id: 'r1', text: 'Air Pollution', pair: 'air', icon: ICONS.air },
-      { id: 'r2', text: 'Water Pollution', pair: 'water', icon: ICONS.water },
-      { id: 'r3', text: 'Land Pollution', pair: 'land', icon: ICONS.land },
-      { id: 'r4', text: 'Noise Pollution', pair: 'noise', icon: ICONS.noise },
-      { id: 'r5', text: 'Radioactive Pollution', pair: 'radioactive', emoji: '☢️' }
-    ];
-
-    const TF = [
-      { id: 't1', text: 'Pollution is the contamination of land, water and air by harmful substances.', answer: true },
-      { id: 't2', text: 'All pollutants are humanmade pollutants.', answer: false },
-      { id: 't3', text: 'Land pollution is also known as soil pollution.', answer: true },
-      { id: 't4', text: 'The comfortable level of sound for human ears is 200–240 decibels (dB).', answer: false }
-    ];
-
-    /* ----- State ----- */
-    let mode = localStorage.getItem(STORE + 'mode') === 'write' ? 'write' : 'practice';
-    let section = null; // null = board, or 'A' | 'B' | 'C'
-    let fillOrder = [], matchLeftOrder = [], matchRightOrder = [], tfOrder = [];
-    let matchState = { pairs: {}, locked: {} };
-    let tfChoice = {}, selfTicks = {}, doneWrite = {};
-    let selectedLeft = null, selectedRight = null, wrongIds = [], matchMsg = null;
-    let penOpen = false;
-    let pen = Object.assign({ tool: 'pen', color: '#0f172a', width: 2.5, stamp: { type: 'emoji', value: '⭐' } }, loadJSON('pen', {}));
-    const undoStacks = {};
-    const iconCache = {};
-    let pinBuf = '';
-
-    /* ----- Storage helpers ----- */
-    function loadJSON(k, fb) {
-      try { const v = JSON.parse(localStorage.getItem(STORE + k)); return v == null ? fb : v; } catch (_) { return fb; }
-    }
-    function saveJSON(k, v) { try { localStorage.setItem(STORE + k, JSON.stringify(v)); } catch (_) {} }
-    function inkKey(id) { return STORE + 'ink_' + mode + '_' + id; }
-    function hasInk(id) { return localStorage.getItem(inkKey(id)) !== null; }
-    function persistMatch() { saveJSON('match_' + mode, matchState); }
-
-    function loadModeState() {
-      matchState = loadJSON('match_' + mode, { pairs: {}, locked: {} });
-      tfChoice = loadJSON('tf_' + mode, {});
-      selfTicks = loadJSON('ticks_' + mode, {});
-    }
-
-    function shuffle(arr) {
-      const a = arr.slice();
-      for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-      }
-      return a;
-    }
-    const idx = n => [...Array(n).keys()];
-    function shuffleMatch(rand) {
-      matchLeftOrder = rand ? shuffle(idx(MATCH_LEFT.length)) : idx(MATCH_LEFT.length);
-      matchRightOrder = rand ? shuffle(idx(MATCH_RIGHT.length)) : idx(MATCH_RIGHT.length);
-    }
-    function resetOrders(rand) {
-      fillOrder = rand ? shuffle(idx(FILLS.length)) : idx(FILLS.length);
-      tfOrder = rand ? shuffle(idx(TF.length)) : idx(TF.length);
-      shuffleMatch(rand);
-    }
-
-    /* ----- Mode, PIN, toast ----- */
-    function setMode(m) {
-      if (m === mode) return;
-      flushAllInk();
-      mode = m;
-      localStorage.setItem(STORE + 'mode', m);
-      loadModeState();
-      resetOrders(m === 'write');
-      selectedLeft = selectedRight = null;
-      wrongIds = [];
-      matchMsg = null;
-      render();
-    }
-    function onWriteClick() {
-      if (mode === 'write') return;
-      setMode('write');
-      if (!loadJSON('write_intro', false)) {
-        saveJSON('write_intro', true);
-        toast('Write mode is for independent work ✍️');
-      }
-    }
-    function onPracticeClick() {
-      if (mode === 'write') openPin();
-    }
-
-    function openPin() {
-      pinBuf = '';
-      updatePinDots();
-      document.getElementById('pinOverlay').classList.add('open');
-    }
-    function closePin() {
-      pinBuf = '';
-      document.getElementById('pinOverlay').classList.remove('open');
-    }
-    function updatePinDots() {
-      document.querySelectorAll('#pinDots span').forEach((s, i) => s.classList.toggle('on', i < pinBuf.length));
-    }
-    function pinKey(k) {
-      if (k === 'C') {
-        pinBuf = '';
-      } else if (k === 'E') {
-        if (pinBuf === PARENT_PIN) {
-          closePin();
-          setMode('practice');
-          toast('Practice mode unlocked ✅');
-          return;
-        }
-        pinBuf = '';
-        const box = document.getElementById('pinBox');
-        box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake');
-        toast('Wrong PIN, try again');
-      } else if (pinBuf.length < 4) {
-        pinBuf += k;
-      }
-      updatePinDots();
-    }
-
-    let toastT;
-    function toast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      clearTimeout(toastT);
-      toastT = setTimeout(() => t.classList.remove('show'), 2200);
-    }
-
-    /* ----- Read-aloud ----- */
-    function sayify(text) {
-      const re = new RegExp('\\b(' + SAY_WORDS.join('|') + ')\\b', 'gi');
-      return text.replace(re, m => `<button type="button" class="say" onclick="speak('${m.toLowerCase()}')">${m}</button>`);
-    }
-    function speak(text) {
-      if (!('speechSynthesis' in window)) { toast('Read-aloud is not on this device'); return; }
-      speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(SAY_AS[text] || text);
-      u.lang = 'en-GB';
-      u.rate = 0.9;
-      const v = speechSynthesis.getVoices().find(v => /en[-_]GB/i.test(v.lang));
-      if (v) u.voice = v;
-      speechSynthesis.speak(u);
-    }
-
-    /* ----- Navigation ----- */
-    function goHub() {
-      try { window.parent.postMessage('close-lesson-to-hub', '*'); } catch (_) {}
-      if (history.length > 1) history.back();
-    }
-    function onBack() {
-      if (section) backToBoard(); else goHub();
-    }
-    function openSection(s) {
-      flushAllInk();
-      section = s;
-      selectedLeft = selectedRight = null;
-      wrongIds = [];
-      matchMsg = null;
-      render();
-      document.querySelector('main').scrollTop = 0;
-    }
-    function backToBoard() {
-      flushAllInk();
-      section = null;
-      render();
-    }
-
-    function updateModeUI() {
-      document.getElementById('btnPractice').className = 'btn' + (mode === 'practice' ? ' on-practice' : '');
-      document.getElementById('btnWrite').className = 'btn' + (mode === 'write' ? ' on-write' : '');
-      document.getElementById('heroTitle').textContent = mode === 'practice' ? 'Practice mode' : 'Write mode';
-      document.getElementById('heroSub').textContent = mode === 'practice'
-        ? 'Tips and soft checks are on. Pick a mission.'
-        : 'Independent work. Finish each mission in your own writing.';
-    }
-
-    /* ----- Dim ----- */
-    function setDim(v) {
-      document.getElementById('dimLayer').style.opacity = (Number(v) / 100).toFixed(2);
-      localStorage.setItem(STORE + 'dim', v);
-    }
-
-    /* ----- Ink: strips ----- */
-    function getCtx(c) {
-      const ctx = c.getContext('2d');
-      const d = Number(c.dataset.dpr) || 1;
-      ctx.setTransform(d, 0, 0, d, 0, 0);
-      return ctx;
-    }
-    function canvasFor(id) { return document.querySelector('canvas[data-ink-id="' + id + '"]'); }
-    function undoKey(c) { return mode + ':' + c.dataset.inkId; }
-
-    function isBlank(c) {
-      try {
-        const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data;
-        for (let i = 3; i < d.length; i += 4) if (d[i]) return false;
-        return true;
-      } catch (_) { return false; }
-    }
-    function saveInk(c) {
-      if (!c || !c.dataset.inkId || !c.width) return;
-      const key = inkKey(c.dataset.inkId);
-      try {
-        if (isBlank(c)) localStorage.removeItem(key);
-        else localStorage.setItem(key, c.toDataURL('image/png'));
-      } catch (_) {}
-    }
-    function flushAllInk() {
-      document.querySelectorAll('canvas[data-ink-id]').forEach(saveInk);
-    }
-    function pushUndo(c) {
-      const k = undoKey(c);
-      const st = undoStacks[k] || (undoStacks[k] = []);
-      st.push(c.toDataURL('image/png'));
-      if (st.length > 20) st.shift();
-    }
-    function restore(c, url) {
-      const ctx = getCtx(c);
-      const w = Number(c.dataset.w), h = Number(c.dataset.h);
-      ctx.clearRect(0, 0, w, h);
-      if (!url) { saveInk(c); return; }
-      const img = new Image();
-      img.onload = () => {
-        ctx.clearRect(0, 0, w, h);
-        ctx.drawImage(img, 0, 0, w, h);
-        saveInk(c);
-      };
-      img.src = url;
-    }
-    function undoStrip(id) {
-      const c = canvasFor(id);
-      if (!c) return;
-      const st = undoStacks[mode + ':' + id];
-      if (!st || !st.length) { toast('Nothing to undo yet'); return; }
-      restore(c, st.pop());
-    }
-    function clearStrip(id) {
-      const c = canvasFor(id);
-      if (!c || !c.width) return;
-      pushUndo(c);
-      getCtx(c).clearRect(0, 0, Number(c.dataset.w), Number(c.dataset.h));
-      saveInk(c);
-    }
-
-    function mountStrip(c) {
-      const parent = c.parentElement;
-      const w = parent.clientWidth, h = parent.clientHeight;
-      if (!w || !h) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      c.width = Math.round(w * dpr);
-      c.height = Math.round(h * dpr);
-      c.style.width = w + 'px';
-      c.style.height = h + 'px';
-      c.dataset.dpr = dpr;
-      c.dataset.w = w;
-      c.dataset.h = h;
-      const ctx = getCtx(c);
-      ctx.clearRect(0, 0, w, h);
-      const raw = localStorage.getItem(inkKey(c.dataset.inkId));
-      if (raw) {
-        const img = new Image();
-        img.onload = () => { ctx.clearRect(0, 0, w, h); ctx.drawImage(img, 0, 0, w, h); };
-        img.src = raw;
-      }
-    }
-
-    /* ----- Drawing (pen, eraser, stamps) ----- */
-    function iconImage(key) {
-      if (!iconCache[key]) {
-        const im = new Image();
-        im.src = ICONS[key];
-        iconCache[key] = im;
-      }
-      return iconCache[key];
-    }
-    function drawStamp(ctx, x, y) {
-      const size = 20 + pen.width * 3;
-      const s = pen.stamp;
-      if (s.type === 'img') {
-        const img = iconImage(s.value);
-        if (img.complete && img.naturalWidth) ctx.drawImage(img, x - size / 2, y - size / 2, size, size);
-      } else {
-        ctx.font = `${size}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(s.value, x, y);
-      }
-    }
-    function applyStroke(ctx) {
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
-      if (pen.tool === 'eraser') {
-        ctx.globalCompositeOperation = 'destination-out';
-        ctx.strokeStyle = '#000';
-        ctx.lineWidth = Math.max(14, pen.width * 6);
-      } else {
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.strokeStyle = pen.color;
-        ctx.lineWidth = pen.width;
-      }
-    }
-
-    (function bindDraw() {
-      let drawing = false, lx = 0, ly = 0, active = null;
-      const pos = (e, c) => { const r = c.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
-
-      document.addEventListener('pointerdown', e => {
-        const c = e.target.closest ? e.target.closest('canvas[data-ink-id]') : null;
-        if (!c || !c.width) return;
-        e.preventDefault();
-        try { c.setPointerCapture(e.pointerId); } catch (_) {}
-        const [x, y] = pos(e, c);
-        pushUndo(c);
-        const ctx = getCtx(c);
-        if (pen.tool === 'stamp') {
-          drawStamp(ctx, x, y);
-          ctx.globalCompositeOperation = 'source-over';
-          saveInk(c);
-          return;
-        }
-        drawing = true; active = c; lx = x; ly = y;
-        ctx.beginPath();
-        applyStroke(ctx);
-        ctx.moveTo(x, y);
-        ctx.lineTo(x + 0.01, y);
-        ctx.stroke();
-      }, { passive: false });
-
-      document.addEventListener('pointermove', e => {
-        if (!drawing || !active) return;
-        e.preventDefault();
-        const [x, y] = pos(e, active);
-        const ctx = getCtx(active);
-        ctx.beginPath();
-        applyStroke(ctx);
-        ctx.moveTo(lx, ly);
-        ctx.lineTo(x, y);
-        ctx.stroke();
-        lx = x; ly = y;
-      }, { passive: false });
-
-      function end() {
-        if (!drawing) return;
-        drawing = false;
-        saveInk(active);
-        active = null;
-      }
-      document.addEventListener('pointerup', end);
-      document.addEventListener('pointercancel', end);
-      document.addEventListener('contextmenu', e => {
-        if (e.target.closest && e.target.closest('canvas[data-ink-id]')) e.preventDefault();
-      });
-    })();
-
-    /* ----- Pen drawer UI ----- */
-    function buildPenUI() {
-      document.getElementById('colorBubble').innerHTML =
-        '<div class="bub-title">Colours</div><div class="bub-row">' +
-        COLORS.map(c => `<div class="sw" data-c="${c}" style="background:${c}" onclick="setColor('${c}')"></div>`).join('') +
-        '</div>';
-      document.getElementById('stampBubble').innerHTML =
-        '<div class="bub-title">Fun stamps</div><div class="bub-row">' +
-        EMOJI_STAMPS.map(e => `<button type="button" class="st" data-type="emoji" data-v="${e}" onclick="pickStamp('emoji','${e}')">${e}</button>`).join('') +
-        '</div><div class="bub-title">Pollution stamps</div><div class="bub-row">' +
-        Object.keys(ICONS).map(k => `<button type="button" class="st" data-type="img" data-v="${k}" onclick="pickStamp('img','${k}')"><img src="${ICONS[k]}" alt="${k}" /></button>`).join('') +
-        '</div>';
-    }
-    function closeBubbles() { document.querySelectorAll('.bubble').forEach(b => b.classList.remove('open')); }
-    function toggleBubble(id) {
-      const el = document.getElementById(id);
-      const was = el.classList.contains('open');
-      closeBubbles();
-      if (!was) el.classList.add('open');
-      updatePenUI();
-    }
-    function togglePenDrawer() {
-      penOpen = !penOpen;
-      closeBubbles();
-      document.getElementById('penDrawer').classList.toggle('open', penOpen);
-    }
-    function savePen() { saveJSON('pen', pen); }
-    function setTool(t) {
-      pen.tool = t;
-      closeBubbles();
-      savePen();
-      updatePenUI();
-    }
-    function setColor(c) {
-      pen.color = c;
-      pen.tool = 'pen';
-      closeBubbles();
-      savePen();
-      updatePenUI();
-    }
-    function setThickness(v) {
-      pen.width = Number(v);
-      savePen();
-      updatePenUI();
-    }
-    function stampTool() {
-      const el = document.getElementById('stampBubble');
-      const was = el.classList.contains('open');
-      closeBubbles();
-      if (!was) el.classList.add('open');
-      pen.tool = 'stamp';
-      savePen();
-      updatePenUI();
-    }
-    function pickStamp(type, value) {
-      pen.stamp = { type, value };
-      pen.tool = 'stamp';
-      savePen();
-      closeBubbles();
-      updatePenUI();
-    }
-    function updatePenUI() {
-      const set = (id, on) => document.getElementById(id).classList.toggle('on', !!on);
-      set('dtPen', pen.tool === 'pen');
-      set('dtEraser', pen.tool === 'eraser');
-      set('dtStamp', pen.tool === 'stamp');
-      set('dtThick', document.getElementById('thickBubble').classList.contains('open'));
-      set('dtColors', document.getElementById('colorBubble').classList.contains('open'));
-
-      const colorBtn = document.getElementById('dtColors');
-      colorBtn.style.boxShadow = `inset 0 -4px 0 ${pen.color}`;
-
-      const stampBtn = document.getElementById('dtStamp');
-      stampBtn.innerHTML = pen.stamp.type === 'img'
-        ? `<img src="${ICONS[pen.stamp.value]}" alt="" style="width:24px;height:24px;object-fit:contain" />`
-        : pen.stamp.value;
-
-      document.querySelectorAll('.sw').forEach(s => s.classList.toggle('on', s.dataset.c === pen.color));
-      document.querySelectorAll('.st').forEach(b =>
-        b.classList.toggle('on', pen.tool === 'stamp' && b.dataset.type === pen.stamp.type && b.dataset.v === pen.stamp.value));
-
-      document.getElementById('thickSlider').value = pen.width;
-      document.getElementById('thickLabel').textContent = pen.width;
-    }
-
-    /* ----- Render helpers ----- */
-    function selfCheckHTML(id) {
-      if (mode !== 'write') return '';
-      const st = selfTicks[id];
-      return `<div class="self-check">
-        <button type="button" class="ck y ${st === 'y' ? 'on' : ''}" onclick="tick('${id}','y')">✔</button>
-        <button type="button" class="ck n ${st === 'n' ? 'on' : ''}" onclick="tick('${id}','n')">✘</button>
-      </div>`;
-    }
-    function tick(id, v) {
-      selfTicks[id] = selfTicks[id] === v ? null : v;
-      saveJSON('ticks_' + mode, selfTicks);
-      render();
-    }
-    function stripBlock(id, answer, label, small) {
-      const wm = (mode === 'practice' && answer)
-        ? `<div class="wm ${answer.length > 12 ? 'long' : ''}">${answer}</div>` : '';
-      return `<div class="strip-block">
-        ${label ? `<div class="strip-label">${label}</div>` : ''}
-        <div class="ruled-strip ${small ? 'sm' : ''}">${wm}<canvas data-ink-id="${id}"></canvas></div>
-        <div class="strip-tools">
-          <button type="button" class="mini-btn" onclick="undoStrip('${id}')">↶ Undo</button>
-          <button type="button" class="mini-btn" onclick="clearStrip('${id}')">🗑 Clear</button>
-        </div>
-      </div>`;
-    }
-
-    /* ----- Board ----- */
-    function fillInkCount() {
-      return FILLS.reduce((n, q) => n + q.strips.filter(s => hasInk(s.id)).length, 0);
-    }
-    function fillStripTotal() { return FILLS.reduce((n, q) => n + q.strips.length, 0); }
-
-    function renderBoard() {
-      const cards = [
-        { k: 'A', ico: '✍️', title: 'Fill in', sub: '5 questions', total: fillStripTotal(), done: fillInkCount() },
-        { k: 'B', ico: '🔗', title: 'Match', sub: '5 pairs', total: MATCH_LEFT.length, done: Object.keys(matchState.locked).length },
-        { k: 'C', ico: '✅', title: 'True / False', sub: '4 questions', total: TF.length, done: TF.filter(q => typeof tfChoice[q.id] === 'boolean').length },
-        { k: 'D', ico: '🔒', title: 'Answer the following', sub: 'Coming soon', locked: true }
-      ];
-      document.getElementById('boardGrid').innerHTML = cards.map(c => {
-        if (c.locked) {
-          return `<div class="mission locked"><div class="ico">${c.ico}</div><div class="t">${c.title}</div><div class="s">${c.sub}</div></div>`;
-        }
-        const badge = doneWrite[c.k] ? '<span class="done-badge">✅ Done</span>' : '';
-        const dots = Array.from({ length: c.total }, (_, i) => `<span class="dot ${i < c.done ? 'on' : ''}"></span>`).join('');
-        return `<button type="button" class="mission" onclick="openSection('${c.k}')">
-          ${badge}
-          <div class="ico">${c.ico}</div>
-          <div class="t">${c.title}</div>
-          <div class="s">${c.sub} · ${Math.min(c.done, c.total)}/${c.total}</div>
-          <div class="dots">${dots}</div>
-        </button>`;
-      }).join('');
-    }
-
-    /* ----- Section A: Fill in ----- */
-    function renderFill() {
-      return fillOrder.map(i => {
-        const q = FILLS[i];
-        const strips = q.strips.map(s => stripBlock(s.id, s.answer, s.label, false)).join('');
-        const tipBtn = mode === 'practice'
-          ? `<button type="button" class="mini-btn" onclick="showFillTip('${q.id}')">💡 Check tip</button>` : '';
-        return `<div class="card">
-          <div class="prompt">${q.qno}. ${sayify(q.text)}</div>
-          <div class="strip-grid ${q.strips.length > 1 ? 'two' : ''}">${strips}</div>
-          <div class="q-foot">${tipBtn}<div class="tip" id="tip_${q.id}"></div></div>
-          ${selfCheckHTML(q.id)}
-        </div>`;
-      }).join('');
-    }
-    function showFillTip(id) {
-      const q = FILLS.find(x => x.id === id);
-      const el = document.getElementById('tip_' + id);
-      if (!q || !el) return;
-      el.textContent = 'Tip: ' + q.tip + ' (Answer idea: ' + q.strips.map(s => s.answer).join(' and ') + ')';
-      el.className = 'tip ok';
-    }
-
-    /* ----- Section B: Match ----- */
-    function leftOfRight(rid) {
-      return Object.keys(matchState.pairs).find(l => matchState.pairs[l] === rid);
-    }
-    function renderMatch() {
-      const left = matchLeftOrder.map(i => MATCH_LEFT[i]);
-      const right = matchRightOrder.map(i => MATCH_RIGHT[i]);
-      const pairs = matchState.pairs, locked = matchState.locked;
-      const pairedCount = Object.keys(pairs).length;
-      const allLocked = Object.keys(locked).length === MATCH_LEFT.length;
-
-      const leftHTML = left.map(it => {
-        let cls = '';
-        if (locked[it.id]) cls = 'ok';
-        else if (selectedLeft === it.id) cls = 'selected';
-        else if (pairs[it.id]) cls = 'pending';
-        else if (wrongIds.includes(it.id)) cls = 'bad';
-        return `<button type="button" class="match-chip ${cls}" onclick="tapLeft('${it.id}')">${it.text}</button>`;
-      }).join('');
-
-      const rightHTML = right.map(it => {
-        const by = leftOfRight(it.id);
-        let cls = '';
-        if (by && locked[by]) cls = 'ok';
-        else if (selectedRight === it.id) cls = 'selected';
-        else if (by) cls = 'pending';
-        const icon = it.icon ? `<img src="${it.icon}" alt="" onerror="this.style.display='none'" />`
-          : (it.emoji ? `<span>${it.emoji}</span>` : '');
-        return `<button type="button" class="match-chip ${cls}" onclick="tapRight('${it.id}')">${icon}<span>${it.text}</span></button>`;
-      }).join('');
-
-      const writeHTML = mode === 'write'
-        ? `<div class="match-col"><div class="col-head">Write the type</div>${left.map(it => `
-            <div class="wr-cell">
-              ${stripBlock('match_write_' + it.id, '', '', true).replace('ruled-strip ', 'ruled-strip ')}
-            </div>`).join('')}</div>`
-        : '';
-
-      const grid = `<div class="match-grid ${mode === 'write' ? 'three' : ''}">
-        <div class="match-col"><div class="col-head">Cause</div>${leftHTML}</div>
-        <div class="match-col"><div class="col-head">Type</div>${rightHTML}</div>
-        ${writeHTML}
-      </div>`;
-
-      const defaultMsg = mode === 'practice'
-        ? 'Tap one on the left, then one on the right.'
-        : 'Tap a cause, then its type. When all 5 are paired, press Check.';
-      const msgText = matchMsg ? matchMsg.t : defaultMsg;
-      const msgCls = matchMsg ? matchMsg.c : '';
-
-      const checkBtn = (mode === 'write' && pairedCount === MATCH_LEFT.length && !allLocked)
-        ? `<button type="button" class="mini-btn big" onclick="checkMatches()">✅ Check matches</button>` : '';
-      const reshuffleBtn = mode === 'write'
-        ? `<button type="button" class="mini-btn" onclick="reshuffleMatch()">🔀 Reshuffle</button>` : '';
-
-      return `<div class="card">
-        <h3>Match the cause to the type of pollution</h3>
-        ${grid}
-        <div class="match-actions">${checkBtn}${reshuffleBtn}</div>
-        <div class="tip ${msgCls}" id="matchTip">${msgText}</div>
-      </div>`;
-    }
-
-    function tapLeft(id) {
-      if (matchState.locked[id]) return;
-      wrongIds = [];
-      if (mode === 'write' && matchState.pairs[id]) {
-        // Tap a paired cause in Write to undo that pair and re-pair it
-        delete matchState.pairs[id];
-        selectedLeft = null;
-        matchMsg = null;
-        persistMatch();
-        render();
-        return;
-      }
-      selectedLeft = id;
-      if (selectedRight) { attemptPair(id, selectedRight); return; }
-      matchMsg = null;
-      render();
-    }
-    function tapRight(rid) {
-      wrongIds = [];
-      const by = leftOfRight(rid);
-      if (by) {
-        if (matchState.locked[by]) return;
-        delete matchState.pairs[by];
-        persistMatch();
-      }
-      if (selectedLeft) { attemptPair(selectedLeft, rid); return; }
-      selectedRight = rid;
-      matchMsg = null;
-      render();
-    }
-    function attemptPair(lid, rid) {
-      const L = MATCH_LEFT.find(x => x.id === lid);
-      const R = MATCH_RIGHT.find(x => x.id === rid);
-      selectedLeft = null;
-      selectedRight = null;
-      if (mode === 'practice') {
-        if (L.pair === R.pair) {
-          matchState.pairs[lid] = rid;
-          matchState.locked[lid] = true;
-          matchMsg = { t: 'Correct pair! 🎉', c: 'ok' };
-        } else {
-          matchMsg = { t: 'Not a match — try again.', c: 'bad' };
-        }
-      } else {
-        matchState.pairs[lid] = rid;
-        matchMsg = { t: 'Paired. Press Check when all 5 are paired.', c: '' };
-      }
-      persistMatch();
-      render();
-    }
-    function checkMatches() {
-      const bad = [];
-      Object.keys(matchState.pairs).forEach(lid => {
-        const L = MATCH_LEFT.find(x => x.id === lid);
-        const R = MATCH_RIGHT.find(x => x.id === matchState.pairs[lid]);
-        if (L.pair === R.pair) {
-          matchState.locked[lid] = true;
-        } else {
-          bad.push(lid);
-          delete matchState.pairs[lid];
-        }
-      });
-      wrongIds = bad;
-      const okCount = Object.keys(matchState.locked).length;
-      matchMsg = bad.length
-        ? { t: `${okCount} right, ${bad.length} to try again.`, c: 'bad' }
-        : { t: 'All matched! 🎉', c: 'ok' };
-      persistMatch();
-      render();
-    }
-    function reshuffleMatch() {
-      shuffleMatch(true);
-      selectedLeft = selectedRight = null;
-      render();
-    }
-
-    /* ----- Section C: True / False ----- */
-    function renderTF() {
-      return tfOrder.map(i => {
-        const q = TF[i];
-        const ch = tfChoice[q.id];
-        let tip = '';
-        if (mode === 'practice' && typeof ch === 'boolean') {
-          const ok = ch === q.answer;
-          tip = `<div class="tip ${ok ? 'ok' : 'bad'}">${ok ? 'Correct!' : 'Not quite — think again.'}</div>`;
-        }
-        return `<div class="card">
-          <div class="prompt">${i + 1}. ${sayify(q.text)}</div>
-          <div class="tf-row">
-            <button type="button" class="tf-btn ${ch === true ? 'on-t' : ''}" onclick="setTF('${q.id}', true)">T</button>
-            <button type="button" class="tf-btn ${ch === false ? 'on-f' : ''}" onclick="setTF('${q.id}', false)">F</button>
-          </div>
-          ${tip}
-          ${selfCheckHTML(q.id)}
-        </div>`;
-      }).join('');
-    }
-    function setTF(id, val) {
-      tfChoice[id] = val;
-      saveJSON('tf_' + mode, tfChoice);
-      render();
-    }
-
-    /* ----- Completion celebration (Write only) ----- */
-    function sectionDone(s) {
-      if (s === 'A') {
-        return FILLS.every(q => selfTicks[q.id] === 'y' || q.strips.every(st => hasInk(st.id)));
-      }
-      if (s === 'B') {
-        return Object.keys(matchState.locked).length === MATCH_LEFT.length;
-      }
-      if (s === 'C') {
-        return TF.every(q => typeof tfChoice[q.id] === 'boolean' && (selfTicks[q.id] === 'y' || selfTicks[q.id] === 'n'));
-      }
-      return false;
-    }
-    function checkCompletions() {
-      if (mode !== 'write') return;
-      ['A', 'B', 'C'].forEach(s => {
-        if (!doneWrite[s] && sectionDone(s)) {
-          doneWrite[s] = true;
-          saveJSON('done_write', doneWrite);
-          spawnConfetti();
-          chime();
-          toast(`Mission ${s} complete! 🌍`);
-        }
-      });
-    }
-    function chime() {
-      try {
-        const ac = new (window.AudioContext || window.webkitAudioContext)();
-        [523, 659, 784].forEach((f, i) => {
-          const t0 = ac.currentTime + i * 0.15;
-          const o = ac.createOscillator(), g = ac.createGain();
-          o.frequency.value = f;
-          o.connect(g); g.connect(ac.destination);
-          g.gain.setValueAtTime(0.0001, t0);
-          g.gain.exponentialRampToValueAtTime(0.25, t0 + 0.02);
-          g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.5);
-          o.start(t0); o.stop(t0 + 0.55);
-        });
-      } catch (_) {}
-    }
-    function spawnConfetti() {
-      const c = document.getElementById('confettiCanvas');
-      const ctx = c.getContext('2d');
-      c.width = window.innerWidth; c.height = window.innerHeight;
-      const colors = ['#22c55e', '#0ea5e9', '#fde047', '#f472b6', '#a78bfa', '#fb923c'];
-      const bits = Array.from({ length: 70 }, () => ({
-        x: Math.random() * c.width, y: -20 - Math.random() * 80,
-        s: Math.random() * 7 + 4, vx: (Math.random() - 0.5) * 3, vy: Math.random() * 3 + 2,
-        col: colors[Math.floor(Math.random() * colors.length)], r: Math.random() * 360
-      }));
-      let f = 0;
-      (function tickC() {
-        ctx.clearRect(0, 0, c.width, c.height);
-        bits.forEach(b => {
-          b.x += b.vx; b.y += b.vy; b.vy += 0.06; b.r += 4;
-          ctx.save(); ctx.translate(b.x, b.y); ctx.rotate(b.r * Math.PI / 180);
-          ctx.fillStyle = b.col; ctx.fillRect(-b.s / 2, -b.s / 2, b.s, b.s); ctx.restore();
-        });
-        if (++f < 110) requestAnimationFrame(tickC);
-        else ctx.clearRect(0, 0, c.width, c.height);
-      })();
-    }
-
-    /* ----- Main render ----- */
-    function render() {
-      updateModeUI();
-      const onBoard = section === null;
-
-      document.getElementById('boardView').classList.toggle('hidden', !onBoard);
-      document.getElementById('sectionView').classList.toggle('hidden', onBoard);
-      document.getElementById('penBtn').classList.toggle('hidden', onBoard || section === 'C');
-      if (onBoard || section === 'C') {
-        penOpen = false;
-        document.getElementById('penDrawer').classList.remove('open');
-        closeBubbles();
-      }
-
-      document.getElementById('backBtn').textContent = onBoard ? '← Hub' : '← Board';
-      document.getElementById('hTitle').textContent = onBoard ? 'Earth Patrol' : 'Earth Patrol · ' + SECTIONS[section].title.replace(/^[A-C] · /, '');
-      document.getElementById('hSub').textContent = onBoard ? 'Pollution · EVS' : (mode === 'write' ? 'Write mode' : 'Practice mode');
-
-      checkCompletions();
-
-      if (onBoard) {
-        renderBoard();
-      } else {
-        document.getElementById('secTitle').textContent = SECTIONS[section].title;
-        let html = '';
-        if (section === 'A') html = renderFill();
-        else if (section === 'B') html = renderMatch();
-        else html = renderTF();
-        document.getElementById('panel').innerHTML = html;
-      }
-
-      requestAnimationFrame(() => {
-        document.querySelectorAll('canvas[data-ink-id]').forEach(mountStrip);
-      });
-    }
-
-    /* ----- Init ----- */
-    buildPenUI();
-    updatePenUI();
-    (function initDim() {
-      const s = localStorage.getItem(STORE + 'dim');
-      if (s != null) { document.getElementById('dimSlider').value = s; setDim(s); }
-    })();
-    doneWrite = loadJSON('done_write', {});
-    loadModeState();
-    resetOrders(mode === 'write');
-    Object.keys(ICONS).forEach(iconImage);
-    document.getElementById('penDrawer').classList.remove('open');
-
-    window.addEventListener('beforeunload', flushAllInk);
-    let resizeT;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeT);
-      resizeT = setTimeout(() => {
-        flushAllInk();
-        document.querySelectorAll('canvas[data-ink-id]').forEach(mountStrip);
-      }, 150);
+</div>
+<div id="pinOverlay" onclick="if(event.target===this) closePin()"><div class="pin-box" id="pinBox"><div class="pin-title">🔒 Parent check</div><div class="pin-sub">Enter PIN to go to Practice</div><div class="pin-dots" id="pinDots"><span></span><span></span><span></span><span></span></div><div class="pin-pad"><button onclick="pinKey('1')">1</button><button onclick="pinKey('2')">2</button><button onclick="pinKey('3')">3</button><button onclick="pinKey('4')">4</button><button onclick="pinKey('5')">5</button><button onclick="pinKey('6')">6</button><button onclick="pinKey('7')">7</button><button onclick="pinKey('8')">8</button><button onclick="pinKey('9')">9</button><button onclick="pinKey('C')">C</button><button onclick="pinKey('0')">0</button><button onclick="pinKey('E')">✓</button></div><button class="pin-cancel" onclick="closePin()">Cancel</button></div></div>
+<div class="toast" id="toast"></div>
+<canvas id="confettiCanvas"></canvas>
+<script>
+const STORE='zaina_evs_pollution_hybrid_';
+const PARENT_PIN='1995';
+const ICONS={air:'assets/pollution-air.webp',water:'assets/pollution-water.webp',land:'assets/pollution-land.webp',noise:'assets/pollution-noise.webp',radioactive:'assets/pollution-radioactive.webp'};
+const EMOJI_STAMPS=['🌍','🌳','💧','🏭','♻','☢','⭐','✅','❌','🌈'];
+const COLORS=['#0f172a','#dc2626','#2563eb','#16a34a','#ec4899','#f59e0b','#7c3aed'];
+const RAINBOW=['#ef4444','#f97316','#eab308','#22c55e','#3b82f6','#8b5cf6','#ec4899'];
+const SECTIONS={A:{title:'A · Fill in'},B:{title:'B · Match'},C:{title:'C · True / False'}};
+const ENCOURAGE=[
+"Amazing work, Zaina! 🌍 Earth Patrol is so proud of you!",
+"Superstar! You cleaned up the whole mission! ✨",
+"You did it! The planet says thank you! 🌳💧",
+"Wow Zaina, that was brilliant! Ready for the next adventure?",
+"Earth hero unlocked! 🦸‍♀️ Keep shining!",
+"Perfect patrol! Your writing is beautiful! 💚"
+];
+const FILLS=[
+  {id:'f1',qno:1,text:'________ damages our environment.',tip:'The main word for harming land, water and air.',strips:[{id:'f1',answer:'pollution'}]},
+  {id:'f2',qno:2,text:'Pollutants are of two types: ________ and ________.',tip:'One from nature; other made by people.',strips:[{id:'f2a',answer:'natural',label:'1'}, {id:'f2b',answer:'human-made',label:'2'}]},
+  {id:'f3',qno:3,text:'Land pollution is also known as ________.',tip:'Another name for the ground.',strips:[{id:'f3',answer:'soil pollution'}]},
+  {id:'f4',qno:4,text:'Sound is measured in ________.',tip:'Unit for loudness.',strips:[{id:'f4',answer:'decibels'}]},
+  {id:'f5',qno:5,text:'Radioactive pollution is caused by ________ substances.',tip:'Think nuclear materials.',strips:[{id:'f5',answer:'radioactive'}]}
+];
+const MATCH_LEFT=[
+  {id:'m1',text:'Household garbage on streets',pair:'land'},
+  {id:'m2',text:'Uranium leak',pair:'radioactive'},
+  {id:'m3',text:'Rock concerts',pair:'noise'},
+  {id:'m4',text:'Chlorofluorocarbons',pair:'air'},
+  {id:'m5',text:'Oil spill',pair:'water'}
+];
+const MATCH_RIGHT=[
+  {id:'r1',text:'Air Pollution',pair:'air',icon:ICONS.air},
+  {id:'r2',text:'Water Pollution',pair:'water',icon:ICONS.water},
+  {id:'r3',text:'Land Pollution',pair:'land',icon:ICONS.land},
+  {id:'r4',text:'Noise Pollution',pair:'noise',icon:ICONS.noise},
+  {id:'r5',text:'Radioactive Pollution',pair:'radioactive',emoji:'☢'}
+];
+const TF=[
+  {id:'t1',text:'Pollution is the contamination of land, water and air by harmful substances.',answer:true},
+  {id:'t2',text:'All pollutants are human-made pollutants.',answer:false},
+  {id:'t3',text:'Land pollution is also known as soil pollution.',answer:true},
+  {id:'t4',text:'The comfortable level of sound for human ears is 200–240 decibels (dB).',answer:false}
+];
+let mode=localStorage.getItem(STORE+'mode')==='write'?'write':'practice';
+let section=null;
+let fontScaleIdx=Number(localStorage.getItem(STORE+'fontScale')||1);
+let fillOrder=[],matchLeftOrder=[],matchRightOrder=[],tfOrder=[];
+let matchState={pairs:{},locked:{}},tfChoice={},doneWrite={},doneWriteSections={};
+let selectedLeft=null,selectedRight=null,wrongIds=[],matchMsg=null;
+let pen={tool:'pen',color:'#0f172a',width:2.5,stamp:{type:'emoji',value:'⭐'}};
+let rainbowIdx=0;
+let penOpen=false;
+const undoStacks={};
+const iconCache={};
+let pinBuf='';
+function loadJSON(k,fb){try{const v=JSON.parse(localStorage.getItem(STORE+k));return v==null?fb:v}catch(_){return fb}}
+function saveJSON(k,v){try{localStorage.setItem(STORE+k,JSON.stringify(v))}catch(_){}}
+function inkKey(id){return STORE+'ink_'+mode+'_'+id}
+function hasInk(id){return localStorage.getItem(inkKey(id))!==null}
+function persistMatch(){saveJSON('match_'+mode,matchState)}
+function loadModeState(){
+  matchState=loadJSON('match_'+mode,{pairs:{},locked:{}});
+  tfChoice=loadJSON('tf_'+mode,{});
+  doneWrite=loadJSON('done_write',{});
+  doneWriteSections=loadJSON('done_write_sections',{});
+}
+function shuffle(a){const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
+const idx=n=>[...Array(n).keys()];
+function resetOrders(rand){
+  fillOrder=rand?shuffle(idx(FILLS.length)):idx(FILLS.length);
+  tfOrder=rand?shuffle(idx(TF.length)):idx(TF.length);
+  matchLeftOrder=rand?shuffle(idx(MATCH_LEFT.length)):idx(MATCH_LEFT.length);
+  matchRightOrder=rand?shuffle(idx(MATCH_RIGHT.length)):idx(MATCH_RIGHT.length);
+}
+/* Font scale */
+function applyFontScale(){
+  const scales=[0.9,1,1.28];
+  document.documentElement.style.setProperty('--qScale',scales[fontScaleIdx]);
+  document.querySelectorAll('#aaPill button').forEach((b,i)=>b.classList.toggle('on',i===fontScaleIdx));
+}
+function setFontScale(i){fontScaleIdx=i;localStorage.setItem(STORE+'fontScale',i);applyFontScale();render()}
+/* Mode */
+function setMode(m){
+  if(m===mode) return;
+  flushAllInk(); mode=m; localStorage.setItem(STORE+'mode',m); loadModeState(); resetOrders(m==='write');
+  selectedLeft=selectedRight=null; wrongIds=[]; matchMsg=null; render();
+}
+function onWriteClick(){if(mode==='write')return; setMode('write'); if(!loadJSON('write_intro',false)){saveJSON('write_intro',true); toast('Write mode ✍ — finish a section to get Earth hero cheer!')}}
+function onPracticeClick(){if(mode==='write') openPin()}
+/* PIN */
+function openPin(){pinBuf=''; updatePinDots(); document.getElementById('pinOverlay').classList.add('open')}
+function closePin(){pinBuf=''; document.getElementById('pinOverlay').classList.remove('open')}
+function updatePinDots(){document.querySelectorAll('#pinDots span').forEach((s,i)=>s.classList.toggle('on',i<pinBuf.length))}
+function pinKey(k){
+  if(k==='C') pinBuf=''; else if(k==='E'){
+    if(pinBuf===PARENT_PIN){closePin(); setMode('practice'); toast('Practice mode ✅'); return}
+    pinBuf=''; const box=document.getElementById('pinBox'); box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake'); toast('Wrong PIN')
+  } else if(pinBuf.length<4) pinBuf+=k; updatePinDots();
+}
+let toastT; function toast(msg){const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2300)}
+/* Speak - tap anywhere */
+function speak(text){
+  if(!('speechSynthesis' in window)){toast('Read-aloud not on this device'); return}
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text); u.lang='en-GB'; u.rate=0.92;
+  const v=speechSynthesis.getVoices().find(v=>/en[-_]GB/i.test(v.lang)); if(v) u.voice=v;
+  speechSynthesis.speak(u);
+}
+function speakFull(txt){const clean=(txt||'').replace(/\s+/g,' ').trim().slice(0,500); if(clean) speak(clean)}
+function promptSpeak(el){speakFull(el.innerText||el.textContent)}
+/* Navigation - 6D portal */
+function goHub(){try{window.parent.postMessage('close-lesson-to-hub','*')}catch(_){} if(history.length>1) history.back()}
+function onBack(){ if(section) closeSection(); else goHub()}
+function openSection(s, cardEl){
+  flushAllInk();
+  // fly animation if cardEl provided
+  if(cardEl){
+    cardEl.style.transition='transform .42s cubic-bezier(.18,.89,.32,1.28), opacity .32s';
+    cardEl.style.transform='scale(1.1) translateZ(60px)';
+  }
+  setTimeout(()=>{
+    section=s; selectedLeft=selectedRight=null; wrongIds=[]; matchMsg=null;
+    document.getElementById('sectionModal').classList.add('open');
+    document.getElementById('secTitle').textContent=SECTIONS[s].title;
+    renderSection();
+    if(cardEl){ cardEl.style.transform=''; }
+  }, cardEl?180:0);
+}
+function closeSection(){
+  flushAllInk();
+  document.getElementById('sectionModal').classList.remove('open');
+  section=null;
+  renderBoard();
+}
+function updateModeUI(){
+  document.getElementById('btnPractice').className='btn'+(mode==='practice'?' on-practice':'');
+  document.getElementById('btnWrite').className='btn'+(mode==='write'?' on-write':'');
+  document.getElementById('heroTitle').textContent=mode==='practice'?'Practice mode':'Write mode — finish all to get hero cheer!';
+  document.getElementById('heroSub').textContent=mode==='practice'?'Tap a mission — it flies to the middle 🚀':'Independent work. Complete a whole section for celebration 🌍';
+}
+/* Dim */
+function setDim(v){document.getElementById('dimLayer').style.opacity=(Number(v)/100).toFixed(2); localStorage.setItem(STORE+'dim',v)}
+/* Ink */
+function getCtx(c){const ctx=c.getContext('2d'); const d=Number(c.dataset.dpr)||1; ctx.setTransform(d,0,0,d,0,0); return ctx}
+function canvasFor(id){return document.querySelector('canvas[data-ink-id="'+id+'"]')}
+function undoKey(c){return mode+':'+c.dataset.inkId}
+function isBlank(c){try{const d=c.getContext('2d').getImageData(0,0,c.width,c.height).data; for(let i=3;i<d.length;i+=4) if(d[i]) return false; return true}catch(_){return false}}
+function saveInk(c){if(!c||!c.dataset.inkId||!c.width) return; const key=inkKey(c.dataset.inkId); try{if(isBlank(c)) localStorage.removeItem(key); else localStorage.setItem(key,c.toDataURL('image/png'))}catch(_){}}
+function flushAllInk(){document.querySelectorAll('canvas[data-ink-id]').forEach(saveInk)}
+function pushUndo(c){const k=undoKey(c); const st=undoStacks[k]||(undoStacks[k]=[]); st.push(c.toDataURL('image/png')); if(st.length>20) st.shift()}
+function restore(c,url){const ctx=getCtx(c); const w=Number(c.dataset.w),h=Number(c.dataset.h); ctx.clearRect(0,0,w,h); if(!url){saveInk(c); return} const img=new Image(); img.onload=()=>{ctx.clearRect(0,0,w,h); ctx.drawImage(img,0,0,w,h); saveInk(c)}; img.src=url}
+function undoStrip(id){const c=canvasFor(id); if(!c) return; const st=undoStacks[mode+':'+id]; if(!st||!st.length){toast('Nothing to undo yet'); return} restore(c,st.pop())}
+function clearStrip(id){const c=canvasFor(id); if(!c||!c.width) return; pushUndo(c); getCtx(c).clearRect(0,0,Number(c.dataset.w),Number(c.dataset.h)); saveInk(c)}
+function mountStrip(c){
+  const parent=c.parentElement; const w=parent.clientWidth,h=parent.clientHeight; if(!w||!h) return;
+  const dpr=Math.min(window.devicePixelRatio||1,2); c.width=Math.round(w*dpr); c.height=Math.round(h*dpr);
+  c.style.width=w+'px'; c.style.height=h+'px'; c.dataset.dpr=dpr; c.dataset.w=w; c.dataset.h=h;
+  const ctx=getCtx(c); ctx.clearRect(0,0,w,h);
+  const raw=localStorage.getItem(inkKey(c.dataset.inkId)); if(raw){const img=new Image(); img.onload=()=>{ctx.clearRect(0,0,w,h); ctx.drawImage(img,0,0,w,h)}; img.src=raw}
+}
+function iconImage(k){if(!iconCache[k]){const im=new Image(); im.src=ICONS[k]; iconCache[k]=im} return iconCache[k]}
+function drawStamp(ctx,x,y){
+  const size=20+pen.width*3.6;
+  const s=pen.stamp;
+  if(s.type==='img'){const img=iconImage(s.value); if(img.complete&&img.naturalWidth) ctx.drawImage(img,x-size/2,y-size/2,size,size)}
+  else{ctx.font=`${size}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(s.value,x,y)}
+}
+function strokeStyleFor(){
+  if(pen.tool==='rainbow'){const c=RAINBOW[rainbowIdx%RAINBOW.length]; rainbowIdx++; return c}
+  return pen.color
+}
+function applyStroke(ctx){
+  ctx.lineCap='round'; ctx.lineJoin='round';
+  if(pen.tool==='eraser'){ctx.globalCompositeOperation='destination-out'; ctx.strokeStyle='#000'; ctx.lineWidth=Math.max(16,pen.width*6)}
+  else if(pen.tool==='cursive'){ctx.globalCompositeOperation='source-over'; ctx.strokeStyle=pen.color; ctx.lineWidth=pen.width*1.5; ctx.globalAlpha=0.88}
+  else{ctx.globalCompositeOperation='source-over'; ctx.strokeStyle=strokeStyleFor(); ctx.lineWidth=pen.width; ctx.globalAlpha=1}
+}
+(function bindDraw(){
+  let drawing=false,lx=0,ly=0,active=null;
+  const pos=(e,c)=>{const r=c.getBoundingClientRect(); return [e.clientX-r.left,e.clientY-r.top]};
+  document.addEventListener('pointerdown',e=>{
+    const c=e.target.closest?e.target.closest('canvas[data-ink-id]'):null; if(!c||!c.width) return;
+    e.preventDefault(); try{c.setPointerCapture(e.pointerId)}catch(_){}
+    const [x,y]=pos(e,c); pushUndo(c); const ctx=getCtx(c);
+    if(pen.tool==='stamp'){drawStamp(ctx,x,y); ctx.globalCompositeOperation='source-over'; ctx.globalAlpha=1; saveInk(c); return}
+    drawing=true; active=c; lx=x; ly=y; ctx.beginPath(); applyStroke(ctx); ctx.moveTo(x,y); ctx.lineTo(x+0.01,y); ctx.stroke(); ctx.globalAlpha=1;
+  },{passive:false});
+  document.addEventListener('pointermove',e=>{if(!drawing||!active) return; e.preventDefault(); const [x,y]=pos(e,active); const ctx=getCtx(active); ctx.beginPath(); applyStroke(ctx); ctx.moveTo(lx,ly); ctx.lineTo(x,y); ctx.stroke(); ctx.globalAlpha=1; lx=x; ly=y},{passive:false});
+  function end(){if(!drawing) return; drawing=false; saveInk(active); active=null}
+  document.addEventListener('pointerup',end); document.addEventListener('pointercancel',end);
+  document.addEventListener('contextmenu',e=>{if(e.target.closest&&e.target.closest('canvas[data-ink-id]')) e.preventDefault()});
+})();
+/* Pen UI */
+function buildPenUI(){
+  document.getElementById('colorBubble').innerHTML='<div class="bub-title">Colours</div><div class="bub-row">'+COLORS.map(c=>`<div class="sw" data-c="${c}" style="background:${c}" onclick="setColor('${c}')"></div>`).join('')+'</div>';
+  document.getElementById('stampBubble').innerHTML='<div class="bub-title">Fun stamps</div><div class="bub-row">'+EMOJI_STAMPS.map(e=>`<button type="button" class="st" data-type="emoji" data-v="${e}" onclick="pickStamp('emoji','${e}')">${e}</button>`).join('')+'</div><div class="bub-title">Pollution stamps (bigger!)</div><div class="bub-row">'+Object.keys(ICONS).map(k=>`<button type="button" class="st" data-type="img" data-v="${k}" onclick="pickStamp('img','${k}')"><img src="${ICONS[k]}" alt="${k}" /></button>`).join('')+'</div>';
+}
+function closeBubbles(){document.querySelectorAll('.bubble').forEach(b=>b.classList.remove('open'))}
+function toggleBubble(id){const el=document.getElementById(id); const was=el.classList.contains('open'); closeBubbles(); if(!was) el.classList.add('open'); updatePenUI()}
+function togglePenDrawer(){penOpen=!penOpen; closeBubbles(); document.getElementById('penDrawer').classList.toggle('open',penOpen)}
+function savePen(){saveJSON('pen',pen)}
+function setTool(t){pen.tool=t; if(t!=='stamp'){/* keep stamp */} closeBubbles(); savePen(); updatePenUI()}
+function setColor(c){pen.color=c; pen.tool='pen'; closeBubbles(); savePen(); updatePenUI()}
+function setThickness(v){pen.width=Number(v); savePen(); updatePenUI()}
+function pickStamp(type,value){pen.stamp={type,value}; pen.tool='stamp'; savePen(); closeBubbles(); updatePenUI()}
+function updatePenUI(){
+  const set=(id,on)=>document.getElementById(id)?.classList.toggle('on',!!on);
+  set('dtPen',pen.tool==='pen'); set('dtEraser',pen.tool==='eraser'); set('dtCursive',pen.tool==='cursive'); set('dtRainbow',pen.tool==='rainbow'); set('dtStamp',pen.tool==='stamp');
+  set('dtThick',document.getElementById('thickBubble').classList.contains('open')); set('dtColors',document.getElementById('colorBubble').classList.contains('open'));
+  const colorBtn=document.getElementById('dtColors'); if(colorBtn) colorBtn.style.boxShadow=`inset 0 -4px 0 ${pen.color}`;
+  const stampBtn=document.getElementById('dtStamp'); if(stampBtn) stampBtn.innerHTML=pen.stamp.type==='img'?`<img src="${ICONS[pen.stamp.value]}" alt="" style="width:24px;height:24px;object-fit:contain" />`:pen.stamp.value;
+  document.querySelectorAll('.sw').forEach(s=>s.classList.toggle('on',s.dataset.c===pen.color));
+  document.querySelectorAll('.st').forEach(b=>b.classList.toggle('on',pen.tool==='stamp'&&b.dataset.type===pen.stamp.type&&b.dataset.v===pen.stamp.value));
+  document.getElementById('thickSlider').value=pen.width; document.getElementById('thickLabel').textContent=pen.width;
+}
+/* Board */
+function fillInkCount(){return FILLS.reduce((n,q)=>n+q.strips.filter(s=>hasInk(s.id)).length,0)}
+function fillStripTotal(){return FILLS.reduce((n,q)=>n+q.strips.length,0)}
+function renderBoard(){
+  const cards=[
+    {k:'A',ico:'✍️',title:'Fill in',sub:'5 questions',total:fillStripTotal(),done:fillInkCount(),layer:0},
+    {k:'B',ico:'🔗',title:'Match',sub:'5 pairs',total:MATCH_LEFT.length,done:Object.keys(matchState.locked).length,layer:1},
+    {k:'C',ico:'✅',title:'True / False',sub:'4 questions',total:TF.length,done:TF.filter(q=>typeof tfChoice[q.id]==='boolean').length,layer:2},
+    {k:'D',ico:'🔒',title:'Answer the following',sub:'Coming soon',locked:true,layer:3}
+  ];
+  document.getElementById('boardGrid').innerHTML=cards.map(c=>{
+    if(c.locked) return `<div class="mission locked" style="transform: translateZ(${-c.layer*2}px)"><div class="ico">${c.ico}</div><div class="t">${c.title}</div><div class="s">${c.sub}</div></div>`;
+    const badge=doneWriteSections[c.k]?'<span class="done-badge">🌍 Done</span>':'';
+    const dots=Array.from({length:c.total},(_,i)=>`<span class="dot ${i<c.done?'on':''}"></span>`).join('');
+    // 6D tilt based on layer
+    return `<button type="button" class="mission" data-k="${c.k}" onclick="openSection('${c.k}', this)" style="transform: translateZ(${c.layer*8}px)">
+      ${badge}<div class="ico">${c.ico}</div><div class="t">${c.title}</div><div class="s">${c.sub} · ${Math.min(c.done,c.total)}/${c.total}</div><div class="dots">${dots}</div>
+    </button>`;
+  }).join('');
+  // add subtle 6D parallax on pointer move for Tab S11
+  const grid=document.getElementById('boardGrid');
+  grid.onpointermove=e=>{
+    const rect=grid.getBoundingClientRect();
+    const cx= (e.clientX-rect.left)/rect.width - .5;
+    const cy= (e.clientY-rect.top)/rect.height - .5;
+    grid.querySelectorAll('.mission').forEach((m,i)=>{
+      const factor = (i+1)*0.6;
+      m.style.transform=`perspective(800px) rotateY(${cx*8*factor}deg) rotateX(${-cy*6*factor}deg) translateZ(${i*8}px)`;
     });
-
-    render();
-  </script>
+  };
+  grid.onpointerleave=()=>{ renderBoard(); };
+}
+/* Sections */
+function stripBlock(id,answer,label,small){
+  const wm=(mode==='practice'&&answer)?`<div class="wm ${answer.length>12?'long':''}">${answer}</div>`:'';
+  return `<div class="strip-main">${label?`<div class="strip-label">${label}</div>`:''}<div class="ruled-strip ${small?'sm':''}">${wm}<canvas data-ink-id="${id}"></canvas></div></div>
+  <div class="strip-tools"><button type="button" class="icon-btn" onclick="undoStrip('${id}')" title="Undo">↶</button><button type="button" class="icon-btn" onclick="clearStrip('${id}')" title="Clear">🗑</button></div>`;
+}
+function renderFill(){
+  return `<div class="layer-stack">${fillOrder.map(i=>{
+    const q=FILLS[i];
+    const strips=q.strips.map(s=>`<div class="strip-row">${stripBlock(s.id,s.answer,s.label,false)}</div>`).join('');
+    const tipBtn=mode==='practice'?`<button type="button" class="mini-btn" onclick="showFillTip('${q.id}')">💡 Tip</button>`:'';
+    return `<div class="layer card" onclick="promptSpeak(this)"><div class="prompt">${q.qno}. ${q.text} <span class="say-hint">tap to hear 🔊</span></div>${strips}<div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap">${tipBtn}<div class="tip" id="tip_${q.id}"></div></div></div>`;
+  }).join('')}</div>`;
+}
+function showFillTip(id){const q=FILLS.find(x=>x.id===id); const el=document.getElementById('tip_'+id); if(!q||!el) return; el.textContent='Tip: '+q.tip+' (Idea: '+q.strips.map(s=>s.answer).join(' and ')+')'; el.className='tip ok'; speakFull(q.tip)}
+function leftOfRight(rid){return Object.keys(matchState.pairs).find(l=>matchState.pairs[l]===rid)}
+function renderMatch(){
+  const left=matchLeftOrder.map(i=>MATCH_LEFT[i]); const right=matchRightOrder.map(i=>MATCH_RIGHT[i]);
+  const pairs=matchState.pairs, locked=matchState.locked; const pairedCount=Object.keys(pairs).length; const allLocked=Object.keys(locked).length===MATCH_LEFT.length;
+  const leftHTML=left.map(it=>{let cls=''; if(locked[it.id]) cls='ok'; else if(selectedLeft===it.id) cls='selected'; else if(pairs[it.id]) cls='pending'; else if(wrongIds.includes(it.id)) cls='bad'; return `<button type="button" class="match-chip ${cls}" onclick="tapLeft('${it.id}')">${it.text}</button>`}).join('');
+  const rightHTML=right.map(it=>{
+    const by=leftOfRight(it.id); let cls=''; if(by&&locked[by]) cls='ok'; else if(selectedRight===it.id) cls='selected'; else if(by) cls='pending';
+    const icon=it.icon?`<img src="${it.icon}" alt="" onerror="this.style.display='none'" />`:(it.emoji?`<span style="font-size:28px">${it.emoji}</span>`:'');
+    return `<button type="button" class="match-chip ${cls}" onclick="tapRight('${it.id}')">${icon}<span>${it.text}</span></button>`;
+  }).join('');
+  const grid=`<div class="match-grid"><div class="match-col"><div class="col-head">Cause</div>${leftHTML}</div><div class="match-col"><div class="col-head">Type — big icons!</div>${rightHTML}</div></div>`;
+  const defaultMsg=mode==='practice'?'Tap one left, then one right.':'Tap cause then type. When all 5 paired, press Check.';
+  const msgText=matchMsg?matchMsg.t:defaultMsg; const msgCls=matchMsg?matchMsg.c:'';
+  const checkBtn=(mode==='write'&&pairedCount===MATCH_LEFT.length&&!allLocked)?`<button type="button" class="mini-btn big" onclick="checkMatches()">✅ Check matches</button>`:'';
+  const reshuffleBtn=`<button type="button" class="mini-btn" onclick="reshuffleMatch()">🔀 Reshuffle</button>`;
+  return `<div class="card" onclick="if(event.target===this) speakFull(this.innerText)"><h3>Match the cause to the type — tap anywhere to hear 🔊</h3>${grid}<div class="match-actions">${checkBtn}${reshuffleBtn}</div><div class="tip ${msgCls}" id="matchTip">${msgText}</div></div>`;
+}
+function tapLeft(id){
+  if(matchState.locked[id]) return; wrongIds=[];
+  if(mode==='write'&&matchState.pairs[id]){delete matchState.pairs[id]; selectedLeft=null; matchMsg=null; persistMatch(); renderSection(); return}
+  selectedLeft=id; if(selectedRight){attemptPair(id,selectedRight); return} matchMsg=null; renderSection();
+}
+function tapRight(rid){
+  wrongIds=[]; const by=leftOfRight(rid); if(by){if(matchState.locked[by]) return; delete matchState.pairs[by]; persistMatch()}
+  if(selectedLeft){attemptPair(selectedLeft,rid); return} selectedRight=rid; matchMsg=null; renderSection();
+}
+function attemptPair(lid,rid){
+  const L=MATCH_LEFT.find(x=>x.id===lid), R=MATCH_RIGHT.find(x=>x.id===rid); selectedLeft=null; selectedRight=null;
+  if(mode==='practice'){
+    if(L.pair===R.pair){matchState.pairs[lid]=rid; matchState.locked[lid]=true; matchMsg={t:'Correct pair! 🎉',c:'ok'}; speak('Correct!')}
+    else{matchMsg={t:'Not a match — try again.',c:'bad'}; speak('Try again')}
+  } else {matchState.pairs[lid]=rid; matchMsg={t:'Paired. Press Check when all 5 are paired.',c:''}}
+  persistMatch(); renderSection(); checkSectionComplete();
+}
+function checkMatches(){
+  const bad=[]; Object.keys(matchState.pairs).forEach(lid=>{
+    const L=MATCH_LEFT.find(x=>x.id===lid), R=MATCH_RIGHT.find(x=>x.id===matchState.pairs[lid]);
+    if(L.pair===R.pair) matchState.locked[lid]=true; else{bad.push(lid); delete matchState.pairs[lid]}
+  }); wrongIds=bad; const ok=Object.keys(matchState.locked).length;
+  matchMsg=bad.length?{t:`${ok} right, ${bad.length} to try again.`,c:'bad'}:{t:'All matched! 🎉',c:'ok'};
+  persistMatch(); renderSection(); checkSectionComplete();
+}
+function reshuffleMatch(){shuffleMatch(true); selectedLeft=selectedRight=null; renderSection()}
+function renderTF(){
+  return `<div class="layer-stack">${tfOrder.map(i=>{
+    const q=TF[i]; const ch=tfChoice[q.id];
+    let tip=''; if(mode==='practice'&&typeof ch==='boolean'){const ok=ch===q.answer; tip=`<div class="tip ${ok?'ok':'bad'}">${ok?'Correct!':'Not quite — think again.'}</div>`}
+    return `<div class="layer card" onclick="promptSpeak(this)"><div class="prompt">${i+1}. ${q.text} <span class="say-hint">tap to hear 🔊</span></div><div class="tf-row"><button type="button" class="tf-btn ${ch===true?'on-t':''}" onclick="setTF('${q.id}',true)">T</button><button type="button" class="tf-btn ${ch===false?'on-f':''}" onclick="setTF('${q.id}',false)">F</button></div>${tip}</div>`;
+  }).join('')}</div>`;
+}
+function setTF(id,val){tfChoice[id]=val; saveJSON('tf_'+mode,tfChoice); renderSection(); checkSectionComplete()}
+function sectionDone(s){
+  if(s==='A') return FILLS.every(q=>q.strips.every(st=>hasInk(st.id)));
+  if(s==='B') return Object.keys(matchState.locked).length===MATCH_LEFT.length;
+  if(s==='C') return TF.every(q=>typeof tfChoice[q.id]==='boolean');
+  return false;
+}
+function checkSectionComplete(){
+  if(mode!=='write' || !section) return;
+  if(sectionDone(section) && !doneWriteSections[section]){
+    doneWriteSections[section]=true; saveJSON('done_write_sections',doneWriteSections);
+    const msg=ENCOURAGE[Math.floor(Math.random()*ENCOURAGE.length)];
+    showCelebrate(SECTIONS[section].title, msg);
+    spawnConfetti(); chime();
+  }
+}
+let celebTimer=null, celebCount=5;
+function showCelebrate(title,msg){
+  document.getElementById('celebTitle').textContent=title+' Complete! 🌍';
+  document.getElementById('celebMsg').textContent=msg;
+  document.getElementById('celebrate').classList.add('open');
+  speak(msg);
+  // auto-return countdown
+  clearInterval(celebTimer);
+  celebCount=5;
+  const countEl=document.getElementById('celebCountdown');
+  if(countEl){ countEl.textContent=`Returning to board in ${celebCount}s…`; countEl.style.display='block'; }
+  celebTimer=setInterval(()=>{
+    celebCount--;
+    if(countEl) countEl.textContent=`Returning to board in ${celebCount}s…`;
+    if(celebCount<=0){ clearInterval(celebTimer); closeCelebrate(); closeSection(); }
+  },1000);
+}
+function continueCelebrate(){
+  clearInterval(celebTimer);
+  document.getElementById('celebrate').classList.remove('open');
+  // stay in section
+}
+function closeCelebrate(){
+  clearInterval(celebTimer);
+  document.getElementById('celebrate').classList.remove('open');
+  renderBoard();
+}
+function chime(){try{const ac=new (window.AudioContext||window.webkitAudioContext)(); [523,659,784].forEach((f,i)=>{const t0=ac.currentTime+i*0.15; const o=ac.createOscillator(), g=ac.createGain(); o.frequency.value=f; o.connect(g); g.connect(ac.destination); g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(0.25,t0+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t0+0.5); o.start(t0); o.stop(t0+0.55)})}catch(_){}}
+function spawnConfetti(){
+  const c=document.getElementById('confettiCanvas'); const ctx=c.getContext('2d'); c.width=innerWidth; c.height=innerHeight;
+  const colors=['#22c55e','#0ea5e9','#fde047','#f472b6','#a78bfa','#fb923c'];
+  const bits=Array.from({length:80},()=>({x:Math.random()*c.width,y:-20-Math.random()*80,s:Math.random()*7+4,vx:(Math.random()-0.5)*3,vy:Math.random()*3+2,col:colors[Math.floor(Math.random()*colors.length)],r:Math.random()*360}));
+  let f=0; (function tickC(){ctx.clearRect(0,0,c.width,c.height); bits.forEach(b=>{b.x+=b.vx; b.y+=b.vy; b.vy+=0.06; b.r+=4; ctx.save(); ctx.translate(b.x,b.y); ctx.rotate(b.r*Math.PI/180); ctx.fillStyle=b.col; ctx.fillRect(-b.s/2,-b.s/2,b.s,b.s); ctx.restore()}); if(++f<120) requestAnimationFrame(tickC); else ctx.clearRect(0,0,c.width,c.height)})();
+}
+function renderSection(){
+  if(!section) return;
+  let html='';
+  if(section==='A') html=renderFill(); else if(section==='B') html=renderMatch(); else html=renderTF();
+  document.getElementById('panel').innerHTML=html;
+  requestAnimationFrame(()=>{document.querySelectorAll('canvas[data-ink-id]').forEach(mountStrip)});
+  updatePenUI();
+}
+function render(){
+  updateModeUI(); applyFontScale();
+  const modal=document.getElementById('sectionModal');
+  if(!section){ modal.classList.remove('open'); document.getElementById('boardView').classList.remove('hidden'); renderBoard(); }
+  document.getElementById('backBtn').textContent=section?'← Board':'← Hub';
+  document.getElementById('hTitle').textContent=section? 'Earth Patrol · '+SECTIONS[section].title : 'Earth Patrol';
+  document.getElementById('hSub').textContent=section? (mode==='write'?'Write mode — finish all for cheer':'Practice mode') : 'Pollution · EVS';
+}
+/* Init */
+buildPenUI(); updatePenUI();
+(function initDim(){const s=localStorage.getItem(STORE+'dim'); if(s!=null){document.getElementById('dimSlider').value=s; setDim(s)}})();
+loadModeState(); resetOrders(mode==='write');
+pen=Object.assign({tool:'pen',color:'#0f172a',width:2.5,stamp:{type:'emoji',value:'⭐'}}, loadJSON('pen',{}));
+Object.keys(ICONS).forEach(k=>{const im=new Image(); im.src=ICONS[k]; iconCache[k]=im});
+window.addEventListener('beforeunload',flushAllInk);
+let resizeT; window.addEventListener('resize',()=>{clearTimeout(resizeT); resizeT=setTimeout(()=>{flushAllInk(); document.querySelectorAll('canvas[data-ink-id]').forEach(mountStrip)},150)});
+render();
+</script>
 </body>
 </html>
