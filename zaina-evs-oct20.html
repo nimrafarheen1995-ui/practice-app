@@ -3,129 +3,138 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-<title>Pollution - Zaina</title>
+<title>Pollution - Living Garden</title>
 <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet" />
 <script src="shared/safe-storage.js"></script>
 <style>
-:root{--ink:#1e293b}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
-html,body{margin:0;height:100%;overflow:hidden;font-family:'Nunito',sans-serif;background:#f0fdf4;color:var(--ink)}
-body{display:flex;flex-direction:column;position:relative}
-.bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-.bg-layer img{width:100%;height:100%;object-fit:cover;opacity:.28}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;font-family:'Nunito',sans-serif;background:#f0fdf4;color:#1e293b}
+body{display:flex;flex-direction:column}
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+.bg img{width:100%;height:100%;object-fit:cover;opacity:.26}
 header,.tabs,main,#bottomNav{position:relative;z-index:2}
-header{flex-shrink:0;height:54px;background:rgba(255,255,255,.92);border-bottom:2px solid #bbf7d0;display:flex;align-items:center;justify-content:space-between;padding:0 10px;backdrop-filter:blur(12px)}
-.btn{border:1.5px solid #86efac;background:#fff;color:#166534;font-weight:800;font-size:.76rem;padding:6px 11px;border-radius:11px;cursor:pointer;transition:transform .12s}
-.btn:active{transform:scale(.92)}
+header{height:54px;background:rgba(255,255,255,.92);border-bottom:2px solid #bbf7d0;display:flex;align-items:center;justify-content:space-between;padding:0 10px;backdrop-filter:blur(12px);flex-shrink:0}
+.btn{border:1.5px solid #86efac;background:#fff;color:#166534;font-weight:800;font-size:.76rem;padding:6px 11px;border-radius:11px;cursor:pointer}
 .btn.on{background:#15803d;color:#fff;border-color:#15803d}
 .badge{background:linear-gradient(135deg,#22c55e,#0ea5e9);color:#fff;font-weight:900;font-size:.7rem;padding:4px 9px;border-radius:999px}
-.tabs{flex-shrink:0;display:flex;gap:6px;padding:8px 10px;background:rgba(255,255,255,.8);border-bottom:1px solid #bbf7d0;overflow-x:auto;scrollbar-width:none}
+.tabs{display:flex;gap:6px;padding:8px 10px;background:rgba(255,255,255,.8);border-bottom:1px solid #bbf7d0;overflow-x:auto;flex-shrink:0;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
-.tab{border:1.5px solid #86efac;background:#fff;color:#166534;font-weight:800;font-size:.76rem;padding:7px 13px;border-radius:999px;cursor:pointer;white-space:nowrap;transition:all .22s cubic-bezier(.34,1.56,.64,1)}
-.tab.on{background:#15803d;color:#fff;border-color:#15803d;transform:translateY(-1px);box-shadow:0 6px 14px rgba(21,128,61,.22)}
-main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px;overscroll-behavior:contain}
-.card{background:rgba(255,255,255,.97);border:1.5px solid #e7dcc0;border-radius:18px;padding:12px;margin-bottom:10px;box-shadow:0 8px 20px rgba(15,118,110,.08);will-change:transform}
-.hero{display:flex;align-items:center;gap:10px;padding:10px;background:linear-gradient(135deg,#fff,#ecfdf5);border:2px solid #86efac;border-radius:18px;margin-bottom:10px;position:relative;overflow:hidden}
-.hero-img{width:64px;height:64px;object-fit:contain;animation:floatH 3s ease-in-out infinite;z-index:1}
+.tab{border:1.5px solid #86efac;background:#fff;color:#166534;font-weight:800;font-size:.75rem;padding:7px 12px;border-radius:999px;white-space:nowrap;cursor:pointer;transition:.2s}
+.tab.on{background:#15803d;color:#fff;box-shadow:0 4px 12px rgba(21,128,61,.2)}
+main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px}
+.hero{display:flex;align-items:center;gap:10px;padding:12px;background:linear-gradient(135deg,#fff,#ecfdf5);border:2px solid #86efac;border-radius:18px;margin-bottom:10px;position:relative;overflow:hidden}
+.hero-img{width:62px;height:62px;object-fit:contain;animation:floatH 3s ease-in-out infinite;z-index:1}
 @keyframes floatH{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-.hero-globe{width:44px;height:44px;object-fit:contain;animation:spinS 12s linear infinite;z-index:1}
+.globe{width:42px;height:42px;animation:spinS 12s linear infinite}
 @keyframes spinS{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-.earth-bar{height:7px;background:#e5e7eb;border-radius:999px;overflow:hidden;width:90px}
-.earth-fill{height:100%;width:0%;background:linear-gradient(90deg,#22c55e,#0ea5e9);transition:width .7s cubic-bezier(.34,1.56,.64,1)}
-/* Inline strip 450px */
-.inline-strip{position:relative;display:inline-flex;vertical-align:middle;width:min(450px,100%);min-width:220px;height:62px;border:1.8px solid #c9b896;border-radius:14px;background:#fffffe;overflow:hidden;touch-action:none;box-shadow:inset 0 2px 0 rgba(0,0,0,.02);transition:.2s}
+.garden{display:flex;gap:6px;flex-wrap:wrap;align-items:center;min-height:32px;padding:6px 10px;background:rgba(255,255,255,.9);border:1.5px dashed #86efac;border-radius:14px;margin-bottom:10px}
+.garden-item{width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:#dcfce7;border-radius:50%;font-size:18px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1);box-shadow:0 2px 6px rgba(0,0,0,.1)}
+@keyframes popIn{0%{transform:scale(0) rotate(-20deg)}100%{transform:scale(1) rotate(0)}}
+.card{background:rgba(255,255,255,.97);border:1.5px solid #e7dcc0;border-radius:18px;padding:12px;margin-bottom:10px;box-shadow:0 8px 20px rgba(15,118,110,.08)}
+.q-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px 10px;border:1.5px dashed #e7dcc0;border-radius:16px;margin-bottom:10px;background:linear-gradient(to bottom,#fffffe,#fefcf3);line-height:1.7}
+.q-num{color:#c2410c;font-weight:900;min-width:22px}
+.q-text{font-weight:800;font-size:1rem;flex:1 1 auto}
+.s-word{cursor:pointer;border-radius:5px;padding:0 2px;display:inline-block}
+.s-word.speaking{background:#fde68a;outline:2px solid #f59e0b}
+.inline-strip{position:relative;display:inline-flex;vertical-align:middle;width:min(450px,100%);height:62px;border:1.8px solid #c9b896;border-radius:14px;background:#fffffe;overflow:hidden;touch-action:none}
 .inline-strip.has-ink{border-color:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.15)}
 .inline-strip::before{content:'';position:absolute;left:14px;top:0;bottom:0;width:1.5px;background:#f87171;opacity:.9;z-index:1}
 .inline-strip::after{content:'';position:absolute;left:0;right:38px;top:54%;height:1.5px;background:#c7d2fe;z-index:1}
-.inline-strip canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair;z-index:2}
+.inline-strip canvas{position:absolute;inset:0;width:100%;height:100%;z-index:2;touch-action:none}
 .strip-tools{position:absolute;right:0;top:0;bottom:0;width:38px;display:flex;flex-direction:column;border-left:1.2px solid #e7dcc0;background:#fefcf3;z-index:3}
 .tool-btn{flex:1;display:flex;align-items:center;justify-content:center;border:0;background:transparent;cursor:pointer}
 .tool-btn:first-child{border-bottom:1px solid #e7dcc0}
 .tool-btn svg{width:16px;height:16px;stroke-width:2.2;stroke:currentColor;fill:none}
-.q-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px 10px;border:1.5px dashed #e7dcc0;border-radius:16px;margin-bottom:10px;background:linear-gradient(to bottom,#fffffe,#fefcf3);line-height:1.7}
-.q-num{color:#c2410c;font-weight:900;min-width:24px}
-.q-text{font-weight:800;font-size:1rem;flex:1 1 auto;min-width:180px}
-.s-word{cursor:pointer;border-radius:6px;padding:0 2px;display:inline-block}
-.s-word.speaking{background:#fde68a;outline:2px solid #f59e0b}
-/* Match drag */
-.match-wrap{position:relative;overflow:hidden}
-.match-grid{position:relative;display:flex;flex-direction:column;gap:10px}
-.match-item{display:grid;grid-template-columns:28px 1fr 28px 1fr 90px;gap:8px;align-items:center;padding:10px;border:1.5px solid #e0f2fe;border-radius:16px;background:linear-gradient(135deg,#f8fafc,#f0fdfa);transition:transform .2s}
-.match-item.write-mode{grid-template-columns:28px 1fr 28px 1fr minmax(120px, 450px)}
-.match-item:active{transform:scale(.99)}
-.dot{width:26px;height:26px;border-radius:50%;background:#fff;border:2.5px solid #94a3b8;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.7rem;color:#475569;cursor:grab;touch-action:none;transition:all .18s;will-change:transform}
+/* Match */
+.match-wrap{position:relative}
+.match-item{display:grid;grid-template-columns:28px 1fr 28px 1fr;gap:8px;align-items:center;padding:10px;border:1.5px solid #e0f2fe;border-radius:16px;background:linear-gradient(135deg,#f8fafc,#f0fdfa);margin-bottom:10px;transition:.2s}
+.match-item.write-mode{grid-template-columns:28px 1fr 28px 1fr minmax(120px,450px)}
+.dot{width:26px;height:26px;border-radius:50%;background:#fff;border:2.5px solid #94a3b8;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.7rem;cursor:grab;touch-action:none;transition:.18s}
 .dot.a-dot{border-color:#0ea5e9;color:#0ea5e9}
 .dot.b-dot{border-color:#f59e0b;color:#f59e0b}
-.dot.dragging{transform:scale(1.4);box-shadow:0 0 0 6px rgba(14,165,233,.2);z-index:10}
+.dot.dragging{transform:scale(1.35);box-shadow:0 0 0 6px rgba(14,165,233,.2)}
 .dot.connected{border-color:#22c55e;background:#dcfce7;color:#15803d}
 .dot.wrong{border-color:#ef4444;background:#fee2e2;animation:shake .4s ease}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
-.icon-box{width:42px;height:42px;display:flex;align-items:center;justify-content:center}
+.icon-box{width:40px;height:40px}
 .icon-box img{width:100%;height:100%;object-fit:contain}
 .svg-layer{position:absolute;inset:0;pointer-events:none;z-index:1;overflow:visible}
-.path-drag{fill:none;stroke:#0ea5e9;stroke-width:3.5;stroke-dasharray:8 8;stroke-linecap:round;opacity:.9;filter:drop-shadow(0 2px 4px rgba(14,165,233,.3))}
+.path-drag{fill:none;stroke:#0ea5e9;stroke-width:3.5;stroke-dasharray:8 8;stroke-linecap:round}
 .path-ok{fill:none;stroke:#22c55e;stroke-width:3.5;stroke-linecap:round;animation:drawLine .5s ease}
 @keyframes drawLine{from{stroke-dasharray:0 1000}to{stroke-dasharray:1000 0}}
+/* Eraser cleaning */
+.clean-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:700px){.clean-grid{grid-template-columns:1fr}}
+.clean-card{position:relative;border:2px solid #bbf7d0;border-radius:18px;overflow:hidden;background:#fff;box-shadow:0 6px 16px rgba(0,0,0,.08);transition:.2s}
+.clean-card.cleaned{border-color:#22c55e;box-shadow:0 0 0 4px rgba(34,197,94,.15)}
+.clean-img{width:100%;height:140px;object-fit:contain;background:linear-gradient(135deg,#f0fdf4,#ecfeff);padding:10px}
+.clean-canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair;z-index:2}
+.clean-label{position:absolute;bottom:0;left:0;right:0;background:rgba(255,255,255,.92);padding:8px 10px;display:flex;justify-content:space-between;align-items:center;z-index:3;backdrop-filter:blur(6px)}
+.progress{height:6px;background:#e5e7eb;border-radius:999px;overflow:hidden;flex:1;margin:0 8px}
+.progress-fill{height:100%;width:100%;background:#22c55e;transition:width .3s;transform-origin:left}
 .confetti{position:absolute;width:8px;height:8px;border-radius:50%;pointer-events:none;animation:popC .9s ease-out forwards;z-index:20}
 @keyframes popC{0%{transform:translateY(0) scale(0);opacity:1}100%{transform:translateY(-70px) scale(1.5) rotate(200deg);opacity:0}}
-/* Floating pen bubble - Option B */
-#penBubble{position:fixed;bottom:90px;right:16px;z-index:50;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#0f172a,#334155);box-shadow:0 8px 24px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none;transition:transform .15s;will-change:transform}
+#penBubble{position:fixed;bottom:90px;right:16px;z-index:50;width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#0f172a,#334155);box-shadow:0 8px 24px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none;will-change:transform}
 #penBubble:active{transform:scale(.92)}
-#penBubble .pen-icon{font-size:22px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.3))}
 #penPanel{position:fixed;bottom:150px;right:16px;z-index:51;width:220px;background:rgba(255,255,255,.98);border:2px solid #e2e8f0;border-radius:20px;padding:12px;box-shadow:0 16px 40px rgba(0,0,0,.18);transform:scale(.9);opacity:0;pointer-events:none;transition:all .25s cubic-bezier(.34,1.56,.64,1);transform-origin:bottom right}
 #penPanel.open{transform:scale(1);opacity:1;pointer-events:auto}
 .pen-row{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
 .pen-tool{width:38px;height:38px;border-radius:12px;border:2px solid #e2e8f0;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:.15s}
 .pen-tool.on{border-color:#0ea5e9;background:#e0f2fe;transform:scale(1.08)}
-.color-dot{width:28px;height:28px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 0 0 1.5px #cbd5e1;cursor:pointer;transition:.15s}
-.color-dot.on{box-shadow:0 0 0 2.5px #0ea5e9;transform:scale(1.15)}
+.color-dot{width:28px;height:28px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 0 0 1.5px #cbd5e1;cursor:pointer}
+.color-dot.on{box-shadow:0 0 0 2.5px #0ea5e9;transform:scale(1.1)}
 .size-slider{width:100%;accent-color:#0ea5e9}
-#bottomNav{flex-shrink:0;height:56px;background:rgba(255,255,255,.94);border-top:1.5px solid #bbf7d0;display:flex;align-items:center;justify-content:space-around;padding:0 10px;backdrop-filter:blur(12px)}
+#bottomNav{height:54px;background:rgba(255,255,255,.94);border-top:1.5px solid #bbf7d0;display:flex;align-items:center;justify-content:space-around;flex-shrink:0;backdrop-filter:blur(12px)}
 .bottom-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.62rem;font-weight:800;color:#64748b;background:none;border:0;cursor:pointer;padding:6px}
 .bottom-btn.on{color:#15803d}
-.bottom-btn svg{width:20px;height:20px;stroke:currentColor;stroke-width:2;fill:none}
 #dimLayer{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:60;transition:opacity .25s}
 </style>
 </head>
 <body>
-<div class="bg-layer"><img src="assets/nature-bg.webp" alt="" onerror="this.style.display='none'"/></div>
+<div class="bg"><img src="assets/nature-bg.webp" alt="" onerror="this.style.display='none'"/></div>
 <div id="dimLayer"></div>
 <header>
 <div style="display:flex;align-items:center;gap:8px">
 <button class="btn" type="button" onclick="goHub()">← Hub</button>
 <span class="badge">Zaina</span>
-<img src="assets/earth-globe.webp" alt="" class="hero-globe" id="headerGlobe" onerror="this.style.display='none'"/>
+<img src="assets/earth-globe.webp" alt="" class="globe" id="headerGlobe" onerror="this.style.display='none'"/>
 </div>
 <div style="display:flex;align-items:center;gap:6px">
-<button class="btn mode-btn on" id="btnPractice" type="button" onclick="setMode('practice')">Practice</button>
-<button class="btn mode-btn" id="btnWrite" type="button" onclick="setMode('write')">Write</button>
+<button class="btn on" id="btnPractice" type="button" onclick="setMode('practice')">Practice</button>
+<button class="btn" id="btnWrite" type="button" onclick="setMode('write')">Write</button>
 <label style="display:flex;align-items:center;gap:4px;font-size:.65rem;font-weight:800;color:#166534">Dim<input type="range" id="dimSlider" min="0" max="60" value="0" oninput="setDim(this.value)" style="width:54px;accent-color:#15803d"/></label>
 </div>
 </header>
-<div class="tabs" id="tabs">
+<div class="tabs">
 <button class="tab on" id="tabA" type="button" onclick="setTab('A')">A · Fill</button>
 <button class="tab" id="tabB" type="button" onclick="setTab('B')">B · Match</button>
 <button class="tab" id="tabC" type="button" onclick="setTab('C')">C · T/F</button>
+<button class="tab" id="tabD" type="button" onclick="setTab('D')">D · Clean 🌍</button>
 </div>
 <main id="mainEl">
 <div class="hero">
 <img src="assets/earth-patrol-hero.webp" class="hero-img" alt="" onerror="this.src='assets/earth-globe.webp'"/>
-<div style="flex:1;z-index:1"><div style="font-weight:900;color:#14532d">Pollution</div><div class="earth-bar"><div class="earth-fill" id="earthFill"></div></div></div>
+<div style="flex:1;z-index:1">
+<div style="font-weight:900;color:#14532d">Pollution Patrol</div>
+<div style="font-size:.7rem;font-weight:700;color:#475569;margin-top:2px" id="gardenCount">Garden: 0 plants</div>
+<div style="height:6px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin-top:4px;width:100px"><div id="earthFill" style="height:100%;width:0%;background:linear-gradient(90deg,#22c55e,#0ea5e9);transition:width .6s"></div></div>
+</div>
 <img src="assets/earth-globe.webp" style="width:44px;height:44px;object-fit:contain;animation:spinS 12s linear infinite;z-index:1" alt="" onerror="this.style.display='none'"/>
 </div>
+<div class="garden" id="garden"></div>
 <div id="panel"></div>
 <div style="height:90px"></div>
 </main>
 <div id="bottomNav">
-<button class="bottom-btn on" id="bA" type="button" onclick="setTab('A')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Fill</button>
-<button class="bottom-btn" id="bB" type="button" onclick="setTab('B')"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Match</button>
-<button class="bottom-btn" id="bC" type="button" onclick="setTab('C')"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>T/F</button>
-<button class="bottom-btn" type="button" onclick="checkWrite()"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Check</button>
+<button class="bottom-btn on" id="bA" type="button" onclick="setTab('A')">Fill</button>
+<button class="bottom-btn" id="bB" type="button" onclick="setTab('B')">Match</button>
+<button class="bottom-btn" id="bC" type="button" onclick="setTab('C')">T/F</button>
+<button class="bottom-btn" id="bD" type="button" onclick="setTab('D')">Clean</button>
 </div>
-<div id="penBubble"><span class="pen-icon">✏️</span></div>
+<div id="penBubble"><span style="font-size:22px">✏️</span></div>
 <div id="penPanel">
-<div style="font-weight:900;font-size:.78rem;margin-bottom:8px;color:#0f172a">Pen Tools</div>
+<div style="font-weight:900;font-size:.78rem;margin-bottom:8px">Pen Tools</div>
 <div class="pen-row">
 <button class="pen-tool on" data-pen="pen" type="button">✏️</button>
 <button class="pen-tool" data-pen="cursive" type="button">🖋️</button>
@@ -133,15 +142,13 @@ main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;paddin
 <button class="pen-tool" data-pen="glitter" type="button">✨</button>
 <button class="pen-tool" data-pen="stamp" type="button">🍃</button>
 </div>
-<div class="pen-row" id="colorRow">
+<div class="pen-row">
 <div class="color-dot on" style="background:#0f172a" data-color="#0f172a"></div>
 <div class="color-dot" style="background:#2563eb" data-color="#2563eb"></div>
 <div class="color-dot" style="background:#15803d" data-color="#15803d"></div>
 <div class="color-dot" style="background:#dc2626" data-color="#dc2626"></div>
 </div>
-<div class="pen-row">
-<input type="range" min="1" max="8" value="2.5" step="0.5" class="size-slider" id="sizeSlider"/>
-</div>
+<div class="pen-row"><input type="range" min="1" max="8" value="2.6" step="0.5" class="size-slider" id="sizeSlider"/></div>
 <div class="pen-row" id="stampRow" style="display:none">
 <button class="pen-tool" data-stamp="🍃" type="button">🍃</button>
 <button class="pen-tool" data-stamp="🌍" type="button">🌍</button>
@@ -149,13 +156,13 @@ main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;paddin
 <button class="pen-tool" data-stamp="♻️" type="button">♻️</button>
 </div>
 <div class="pen-row">
-<button class="pen-tool" type="button" onclick="doUndo()"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2"><path d="M9 14L4 9l5-5"/><path d="M20 9H4"/></svg></button>
-<button class="pen-tool" type="button" onclick="doClear()"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg></button>
+<button class="pen-tool" type="button" onclick="doUndo()">↩️</button>
+<button class="pen-tool" type="button" onclick="doClear()">🧹</button>
 <button class="pen-tool" data-pen="eraser" type="button">🧽</button>
 </div>
 </div>
 <script>
-const STORE='zaina_poll_v6_';
+const STORE='zaina_poll_garden_v1_';
 const FILLS=[
 {id:'f1', pre:'', suf:' damages our environment.', ans:'Pollution'},
 {id:'f2', pre:'Pollutants are of two types: ', mid:' and ', suf:'.', ans1:'natural', ans2:'human-made', double:true, id2:'f2b'},
@@ -164,11 +171,11 @@ const FILLS=[
 {id:'f5', pre:'Radioactive pollution is caused by ', suf:' substances.', ans:'radioactive'},
 ];
 const MATCH_DATA=[
-{id:'a1', text:'Household garbage on streets', b:'Land Pollution', icon:'assets/pollution-land.webp', correct:'b3'},
-{id:'a2', text:'Uranium leak', b:'Radioactive Pollution', icon:'assets/earth-globe.webp', correct:'b5'},
-{id:'a3', text:'Rock concerts', b:'Noise Pollution', icon:'assets/pollution-noise.webp', correct:'b4'},
-{id:'a4', text:'Chlorofluorocarbons', b:'Air Pollution', icon:'assets/pollution-air.webp', correct:'b1'},
-{id:'a5', text:'Oil spill', b:'Water Pollution', icon:'assets/pollution-water.webp', correct:'b2'},
+{id:'a1', text:'Household garbage on streets', icon:'assets/pollution-land.webp', correct:'b3'},
+{id:'a2', text:'Uranium leak', icon:'assets/earth-globe.webp', correct:'b5'},
+{id:'a3', text:'Rock concerts', icon:'assets/pollution-noise.webp', correct:'b4'},
+{id:'a4', text:'Chlorofluorocarbons', icon:'assets/pollution-air.webp', correct:'b1'},
+{id:'a5', text:'Oil spill', icon:'assets/pollution-water.webp', correct:'b2'},
 ];
 const MATCH_B=[
 {id:'b1', text:'Air Pollution', icon:'assets/pollution-air.webp'},
@@ -183,36 +190,30 @@ const TF=[
 {id:'t3', text:'Land pollution is also known as soil pollution.'},
 {id:'t4', text:'The comfortable level of sound for human ears is 200–240 decibels (dB).'},
 ];
+const CLEAN=[
+{id:'c1', title:'Clean Air', icon:'assets/pollution-air.webp', pollution:'smoke', color:'rgba(120,120,130,0.85)'},
+{id:'c2', title:'Clean Water', icon:'assets/pollution-water.webp', pollution:'oil', color:'rgba(80,160,120,0.85)'},
+{id:'c3', title:'Clean Land', icon:'assets/pollution-land.webp', pollution:'garbage', color:'rgba(200,200,210,0.9)'},
+{id:'c4', title:'Quiet Zone', icon:'assets/pollution-noise.webp', pollution:'sound', color:'rgba(251,146,60,0.8)'},
+];
 let mode='practice', tab='A';
 let fillOrder=FILLS.map((_,i)=>i), tfOrder=TF.map((_,i)=>i);
-let connections={}, permanentLines=[], dragState=null;
+let connections={}, dragState=null;
 let currentPen={type:'pen', color:'#0f172a', size:2.6, stamp:'🍃'};
 let rainbowHue=0;
 const historyMap={}; let penActive=false,lastPenTime=0;
+let garden=JSON.parse(localStorage.getItem(STORE+'garden')||'[]');
 let ukVoice=null;
 function loadVoice(){const v=speechSynthesis.getVoices(); ukVoice=v.find(x=>x.lang==='en-GB')||v[0]||null;}
 speechSynthesis.onvoiceschanged=loadVoice; loadVoice();
-function speak(t,el){if(!t) return; speechSynthesis.cancel(); document.querySelectorAll('.s-word.speaking').forEach(e=>e.classList.remove('speaking')); if(el) el.classList.add('speaking'); const u=new SpeechSynthesisUtterance(t); u.lang='en-GB'; u.rate=0.88; if(ukVoice) u.voice=ukVoice; u.onend=()=>{if(el) el.classList.remove('speaking')}; speechSynthesis.speak(u);}
+function speak(t,el){if(!t) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.lang='en-GB'; u.rate=0.88; if(ukVoice) u.voice=ukVoice; u.onend=()=>{if(el) el.classList.remove('speaking')}; if(el) el.classList.add('speaking'); speechSynthesis.speak(u);}
 function makeSpeakable(s){return s.split(/(\s+)/).map(tok=>{if(/^\s+$/.test(tok)) return tok; const c=tok.replace(/[.,()]/g,''); if(!c) return tok; return `<span class="s-word" data-speak="${c}">${tok}</span>`;}).join('');}
 function goHub(){try{window.parent.postMessage('close-lesson-to-hub','*');}catch(_){}}
 function setDim(v){document.getElementById('dimLayer').style.opacity=(Number(v)/100).toFixed(2); localStorage.setItem(STORE+'dim',v);}
 (function(){const s=localStorage.getItem(STORE+'dim'); if(s){document.getElementById('dimSlider').value=s; setDim(s);}})();
 function shuffle(a){const b=a.slice(); for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]} return b;}
-function setMode(m){
- flushAllInk(); mode=m; connections={}; permanentLines=[];
- if(m==='write'){fillOrder=shuffle(FILLS.map((_,i)=>i)); tfOrder=shuffle(TF.map((_,i)=>i));}
- else {fillOrder=FILLS.map((_,i)=>i); tfOrder=TF.map((_,i)=>i);}
- document.getElementById('btnPractice').classList.toggle('on',m==='practice'); document.getElementById('btnWrite').classList.toggle('on',m==='write');
- render();
-}
-function setTab(t){
- flushAllInk(); tab=t;
- document.getElementById('tabA').classList.toggle('on',t==='A'); document.getElementById('tabB').classList.toggle('on',t==='B'); document.getElementById('tabC').classList.toggle('on',t==='C');
- document.getElementById('bA').classList.toggle('on',t==='A'); document.getElementById('bB').classList.toggle('on',t==='B'); document.getElementById('bC').classList.toggle('on',t==='C');
- render();
- // butter smooth: scroll top with spring
- document.getElementById('mainEl').scrollTo({top:0,behavior:'smooth'});
-}
+function setMode(m){flushAllInk(); mode=m; if(m==='write'){fillOrder=shuffle(FILLS.map((_,i)=>i)); tfOrder=shuffle(TF.map((_,i)=>i));} else {fillOrder=FILLS.map((_,i)=>i); tfOrder=TF.map((_,i)=>i);} document.getElementById('btnPractice').classList.toggle('on',m==='practice'); document.getElementById('btnWrite').classList.toggle('on',m==='write'); connections={}; render();}
+function setTab(t){flushAllInk(); tab=t; ['A','B','C','D'].forEach(k=>{document.getElementById('tab'+k)?.classList.toggle('on',k===t); document.getElementById('b'+k)?.classList.toggle('on',k===t);}); document.getElementById('mainEl').scrollTo({top:0,behavior:'smooth'}); render();}
 function inkKey(id){return STORE+'ink_'+mode+'_'+id;}
 function flushAllInk(){document.querySelectorAll('canvas[data-ink-id]').forEach(c=>{try{if(c.width) localStorage.setItem(inkKey(c.dataset.inkId), c.toDataURL('image/png'));}catch(_){}});}
 function pushHist(id,can){if(!historyMap[id]) historyMap[id]=[]; try{historyMap[id].push(can.toDataURL('image/png')); if(historyMap[id].length>24) historyMap[id].shift();}catch(_){}}
@@ -220,19 +221,27 @@ function mountStrip(canvas){
  const id=canvas.dataset.inkId; const p=canvas.parentElement; const dpr=Math.min(window.devicePixelRatio||1,2);
  const rw=p.clientWidth, rh=p.clientHeight; canvas.width=Math.round(rw*dpr); canvas.height=Math.round(rh*dpr); canvas.style.width=rw+'px'; canvas.style.height=rh+'px';
  const ctx=canvas.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,rw,rh);
- const raw=localStorage.getItem(inkKey(id)); if(raw){const img=new Image(); img.onload=()=>{ctx.drawImage(img,0,0,rw,rh); p.classList.add('has-ink'); if(!historyMap[id]||!historyMap[id].length) historyMap[id]=[raw];}; img.src=raw;} else historyMap[id]=[];
+ const raw=localStorage.getItem(inkKey(id)); if(raw){const img=new Image(); img.onload=()=>{ctx.drawImage(img,0,0,rw,rh); p.classList.add('has-ink'); if(!historyMap[id]?.length) historyMap[id]=[raw];}; img.src=raw;} else historyMap[id]=[];
 }
-function clearInk(id){localStorage.removeItem(inkKey(id)); historyMap[id]=[]; const c=document.querySelector(`canvas[data-ink-id="${id}"]`); if(!c) return; c.parentElement.classList.remove('has-ink'); const ctx=c.getContext('2d'); const dpr=Math.min(devicePixelRatio||1,2); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,c.width/dpr,c.height/dpr); updateEarth();}
-function undoInk(id){const s=historyMap[id]; if(!s||!s.length){clearInk(id);return;} s.pop(); const c=document.querySelector(`canvas[data-ink-id="${id}"]`); if(!c) return; const ctx=c.getContext('2d'); const dpr=Math.min(devicePixelRatio||1,2); const w=c.width/dpr,h=c.height/dpr; ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,w,h); if(!s.length){localStorage.removeItem(inkKey(id)); c.parentElement.classList.remove('has-ink'); updateEarth(); return;} const img=new Image(); img.onload=()=>{ctx.drawImage(img,0,0,w,h); try{localStorage.setItem(inkKey(id),s[s.length-1]);}catch(_){}}; img.src=s[s.length-1];}
-function doUndo(){const active=document.querySelector('canvas[data-ink-id]:focus')||document.querySelectorAll('canvas[data-ink-id]')[document.querySelectorAll('canvas[data-ink-id]').length-1]; if(active) undoInk(active.dataset.inkId);}
-function doClear(){const active=document.querySelector('canvas[data-ink-id]:focus')||document.querySelectorAll('canvas[data-ink-id]')[document.querySelectorAll('canvas[data-ink-id]').length-1]; if(active) clearInk(active.dataset.inkId);}
+function clearInk(id){localStorage.removeItem(inkKey(id)); historyMap[id]=[]; const c=document.querySelector(`canvas[data-ink-id="${id}"]`); if(!c) return; c.parentElement.classList.remove('has-ink'); const ctx=c.getContext('2d'); const dpr=Math.min(devicePixelRatio||1,2); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,c.width/dpr,c.height/dpr); updateGardenUI();}
+function undoInk(id){const s=historyMap[id]; if(!s?.length){clearInk(id);return;} s.pop(); const c=document.querySelector(`canvas[data-ink-id="${id}"]`); if(!c) return; const ctx=c.getContext('2d'); const dpr=Math.min(devicePixelRatio||1,2); const w=c.width/dpr,h=c.height/dpr; ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,w,h); if(!s.length){localStorage.removeItem(inkKey(id)); c.parentElement.classList.remove('has-ink'); updateGardenUI(); return;} const img=new Image(); img.onload=()=>{ctx.drawImage(img,0,0,w,h); try{localStorage.setItem(inkKey(id),s[s.length-1]);}catch(_){}}; img.src=s[s.length-1];}
+function doUndo(){const cans=document.querySelectorAll('canvas[data-ink-id]'); if(cans.length) undoInk(cans[cans.length-1].dataset.inkId);}
+function doClear(){const cans=document.querySelectorAll('canvas[data-ink-id]'); if(cans.length) clearInk(cans[cans.length-1].dataset.inkId);}
 function stripHTML(id){return `<div class="inline-strip" id="wrap_${id}"><canvas data-ink-id="${id}" tabindex="0"></canvas><div class="strip-tools"><button class="tool-btn" onclick="undoInk('${id}')" type="button"><svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M20 9H4"/></svg></button><button class="tool-btn" onclick="clearInk('${id}')" type="button"><svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg></button></div></div>`;}
-function confettiAt(x,y){for(let i=0;i<7;i++){const d=document.createElement('div'); d.className='confetti'; d.style.left=(x+(Math.random()*30-15))+'px'; d.style.top=(y+(Math.random()*10-5))+'px'; d.style.background=['#22c55e','#0ea5e9','#f59e0b','#a78bfa'][i%4]; d.style.animationDelay=(i*0.05)+'s'; document.body.appendChild(d); setTimeout(()=>d.remove(),900);} document.getElementById('headerGlobe').style.animation='spinS .6s ease 3'; setTimeout(()=>{document.getElementById('headerGlobe').style.animation='spinS 12s linear infinite'},1800); if(navigator.vibrate) navigator.vibrate(40);}
-function updateEarth(){let total=FILLS.length+1+MATCH_DATA.length+TF.length; let filled=0; document.querySelectorAll('canvas[data-ink-id]').forEach(c=>{if(localStorage.getItem(inkKey(c.dataset.inkId))) filled++;}); const pct=Math.min(100,Math.round((filled+Object.keys(connections).length)/total*100)); document.getElementById('earthFill').style.width=pct+'%';}
-// RENDER
+function confettiAt(x,y){for(let i=0;i<7;i++){const d=document.createElement('div'); d.className='confetti'; d.style.left=(x+(Math.random()*30-15))+'px'; d.style.top=(y+(Math.random()*10-5))+'px'; d.style.background=['#22c55e','#0ea5e9','#f59e0b','#a78bfa'][i%4]; d.style.animationDelay=(i*0.05)+'s'; document.body.appendChild(d); setTimeout(()=>d.remove(),900);} const g=document.getElementById('headerGlobe'); if(g){g.style.animation='spinS .5s ease 4'; setTimeout(()=>g.style.animation='spinS 12s linear infinite',2000);} if(navigator.vibrate) navigator.vibrate(40);}
+function addPlant(type){garden.push({type, t:Date.now()}); localStorage.setItem(STORE+'garden', JSON.stringify(garden)); updateGardenUI(); confettiAt(window.innerWidth/2, 200);}
+function updateGardenUI(){
+ const el=document.getElementById('garden'); el.innerHTML=garden.slice(-20).map(p=>`<div class="garden-item">${p.type}</div>`).join('') || '<div style="font-size:.75rem;color:#64748b">Your garden is empty - clean pollution to grow 🌱</div>';
+ document.getElementById('gardenCount').textContent=`Garden: ${garden.length} plants`;
+ const total=FILLS.length+1+MATCH_DATA.length+TF.length+CLEAN.length;
+ const filled=document.querySelectorAll('canvas[data-ink-id]').length? document.querySelectorAll('canvas[data-ink-id]').length : 0;
+ let filledCount=0; document.querySelectorAll('canvas[data-ink-id]').forEach(c=>{if(localStorage.getItem(inkKey(c.dataset.inkId))) filledCount++;});
+ const pct=Math.min(100,Math.round((filledCount+garden.length+Object.keys(connections).length)/ (total+5) *100));
+ document.getElementById('earthFill').style.width=pct+'%';
+}
 function renderFill(){
- return fillOrder.map((idx,displayIdx)=>{
-  const q=FILLS[idx]; const num=mode==='write'?displayIdx+1:idx+1;
+ return fillOrder.map((idx,dIdx)=>{
+  const q=FILLS[idx]; const num=mode==='write'?dIdx+1:idx+1;
   let html=`<div class="card"><div class="q-row"><span class="q-num">${num}.</span><div class="q-text">`;
   if(q.double){html+=`${makeSpeakable(q.pre)} ${stripHTML(q.id)} <span>${makeSpeakable(q.mid)}</span> ${stripHTML(q.id2)} <span>${makeSpeakable(q.suf)}</span>`;}
   else {html+=`${q.pre?makeSpeakable(q.pre):''} ${stripHTML(q.id)} <span>${makeSpeakable(q.suf)}</span>`;}
@@ -240,16 +249,14 @@ function renderFill(){
  }).join('');
 }
 function renderTF(){
- return tfOrder.map((idx,displayIdx)=>{
-  const q=TF[idx]; const num=mode==='write'?displayIdx+1:idx+1;
-  return `<div class="card"><div class="q-row" style="justify-content:space-between"><div style="display:flex;gap:8px;align-items:center"><span class="q-num">${num}.</span><div class="q-text">${makeSpeakable(q.text)}</div></div>${stripHTML(q.id)}</div></div>`;
+ return tfOrder.map((idx,dIdx)=>{
+  const q=TF[idx]; const num=mode==='write'?dIdx+1:idx+1;
+  return `<div class="card"><div class="q-row" style="justify-content:space-between"><div style="display:flex;gap:8px"><span class="q-num">${num}.</span><div class="q-text">${makeSpeakable(q.text)}</div></div>${stripHTML(q.id)}</div></div>`;
  }).join('');
 }
 function renderMatch(){
- const bShuffled=mode==='write'?shuffle(MATCH_B):MATCH_B;
- const aList=MATCH_DATA;
- let html=`<div class="match-wrap" id="matchWrap"><svg class="svg-layer" id="svgLayer"></svg><div class="match-grid" id="matchGrid">`;
- aList.forEach((a,i)=>{
+ let html=`<div class="match-wrap" id="matchWrap"><svg class="svg-layer" id="svgLayer"></svg><div id="matchGrid">`;
+ MATCH_DATA.forEach((a,i)=>{
   const correctB=MATCH_B.find(b=>b.id===a.correct);
   html+=`<div class="match-item ${mode==='write'?'write-mode':''}" data-a="${a.id}">
    <div class="dot a-dot" data-a="${a.id}" data-type="a">${i+1}</div>
@@ -260,163 +267,189 @@ function renderMatch(){
   </div>`;
  });
  html+=`</div></div>`;
- if(mode==='practice') html+=`<div style="text-align:center;margin-top:10px"><button class="btn on" type="button" onclick="checkPractice()">✨ Check Connections</button></div>`;
- else html+=`<div style="text-align:center;margin-top:10px"><button class="btn on" type="button" onclick="checkWriteMatch()">✅ Check All</button></div>`;
+ if(mode==='practice') html+=`<div style="text-align:center;margin-top:10px"><div style="font-size:.75rem;color:#64748b">Practice: drag A ● to B ● - instant feedback</div></div>`;
+ else html+=`<div style="text-align:center;margin-top:10px"><button class="btn on" type="button" onclick="checkWriteMatch()">✅ Check All Connections</button><div style="font-size:.72rem;color:#64748b;margin-top:6px">Connect all, then check + write letters in boxes</div></div>`;
+ return html;
+}
+function renderClean(){
+ let html=`<div class="card"><div style="font-weight:900;color:#14532d;margin-bottom:8px">🌍 Eraser Cleaning - Erase the pollution with 🧽 eraser!</div><div style="font-size:.76rem;color:#475569;margin-bottom:10px">Use S Pen eraser or pick 🧽 in pen bubble. Erase 70% to clean and grow garden.</div><div class="clean-grid">`;
+ CLEAN.forEach(c=>{
+  html+=`<div class="clean-card" id="clean_${c.id}">
+   <img src="${c.icon}" class="clean-img" alt="${c.title}"/>
+   <canvas class="clean-canvas" data-clean-id="${c.id}" data-color="${c.color}" data-pollution="${c.pollution}"></canvas>
+   <div class="clean-label"><span style="font-weight:800;font-size:.8rem">${c.title}</span><div class="progress"><div class="progress-fill" id="prog_${c.id}"></div></div><span id="txt_${c.id}" style="font-size:.7rem;font-weight:800">100%</span></div>
+  </div>`;
+ });
+ html+=`</div></div>`;
  return html;
 }
 function render(){
  const p=document.getElementById('panel');
  if(tab==='A') p.innerHTML=renderFill();
  else if(tab==='B') p.innerHTML=renderMatch();
- else p.innerHTML=renderTF();
+ else if(tab==='C') p.innerHTML=renderTF();
+ else p.innerHTML=renderClean();
  p.querySelectorAll('.s-word').forEach(el=>{el.addEventListener('click',e=>{e.stopPropagation(); speak(el.dataset.speak, el);});});
- requestAnimationFrame(()=>{document.querySelectorAll('canvas[data-ink-id]').forEach(mountStrip); setTimeout(updateEarth,200); if(tab==='B') initMatchDrag();});
-}
-function checkPractice(){
- // grade instantly already done, just confetti all correct
- Object.entries(connections).forEach(([a,b])=>{
-  const correct=MATCH_DATA.find(x=>x.id===a)?.correct;
-  if(b===correct){confettiAt(window.innerWidth/2, window.innerHeight/2);}
+ requestAnimationFrame(()=>{
+  document.querySelectorAll('canvas[data-ink-id]').forEach(mountStrip);
+  if(tab==='B') initMatchDrag();
+  if(tab==='D') initCleanCanvases();
+  setTimeout(updateGardenUI,200);
  });
-}
-function checkWrite(){
- if(tab==='B') checkWriteMatch();
- else {alert('Great work! Check your writing ✨');}
 }
 function checkWriteMatch(){
- let correct=0;
- Object.entries(connections).forEach(([a,b])=>{
-  const exp=MATCH_DATA.find(x=>x.id===a)?.correct;
-  if(b===exp){correct++; confettiAt(window.innerWidth/2, 200+Math.random()*200);}
+ let correct=0; Object.entries(connections).forEach(([a,b])=>{
+  const exp=MATCH_DATA.find(x=>x.id===a)?.correct; if(b===exp){correct++; addPlant('🌿');}
  });
- if(Object.keys(connections).length===0) alert('Drag dots to connect first! Use S Pen');
- else alert(`You got ${correct}/${MATCH_DATA.length} correct! 🌍`);
+ alert(`You got ${correct}/${MATCH_DATA.length} correct! Garden grew +${correct} 🌱`);
+ updateGardenUI();
 }
-// MATCH DRAG LOGIC - butter smooth 120fps
+// MATCH DRAG
 function initMatchDrag(){
  const wrap=document.getElementById('matchWrap'); const svg=document.getElementById('svgLayer');
  if(!wrap||!svg) return;
  svg.setAttribute('width', wrap.clientWidth); svg.setAttribute('height', wrap.clientHeight);
- svg.innerHTML=''; // clear
- permanentLines=[];
- // draw existing
- Object.entries(connections).forEach(([a,b])=>{drawPermanentLine(a,b, svg, wrap, true);});
- let activeLine=null;
- function getDotCenter(dot){
-  const rect=dot.getBoundingClientRect(); const wRect=wrap.getBoundingClientRect();
-  return {x: rect.left+rect.width/2 - wRect.left, y: rect.top+rect.height/2 - wRect.top};
- }
- function drawPermanentLine(aId,bId, svgEl, wrapEl, isOk){
-  const aDot=wrapEl.querySelector(`.dot.a-dot[data-a="${aId}"]`); const bDot=wrapEl.querySelector(`.dot.b-dot[data-b="${bId}"]`);
+ svg.innerHTML='';
+ function getCenter(dot){const r=dot.getBoundingClientRect(); const wr=wrap.getBoundingClientRect(); return {x:r.left+r.width/2-wr.left, y:r.top+r.height/2-wr.top};}
+ Object.entries(connections).forEach(([a,b])=>{
+  const aDot=wrap.querySelector(`.dot.a-dot[data-a="${a}"]`); const bDot=wrap.querySelector(`.dot.b-dot[data-b="${b}"]`);
   if(!aDot||!bDot) return;
-  const p1=getDotCenter(aDot), p2=getDotCenter(bDot);
+  const p1=getCenter(aDot), p2=getCenter(bDot);
   const path=document.createElementNS('http://www.w3.org/2000/svg','path');
-  const dx=p2.x-p1.x; const cx=p1.x+dx*0.5;
-  const d=`M ${p1.x} ${p1.y} C ${cx} ${p1.y}, ${cx} ${p2.y}, ${p2.x} ${p2.y}`;
-  path.setAttribute('d', d); path.setAttribute('class', isOk?'path-ok':'path-drag'); path.setAttribute('data-a', aId);
-  svgEl.appendChild(path); permanentLines.push(path);
- }
+  const cx=p1.x+(p2.x-p1.x)*0.5;
+  path.setAttribute('d',`M ${p1.x} ${p1.y} C ${cx} ${p1.y}, ${cx} ${p2.y}, ${p2.x} ${p2.y}`);
+  path.setAttribute('class','path-ok'); svg.appendChild(path);
+ });
  wrap.addEventListener('pointerdown', e=>{
-  const dot=e.target.closest('.dot'); if(!dot) return;
-  if(dot.dataset.type!=='a') return; // only start from A
+  const dot=e.target.closest('.dot'); if(!dot||dot.dataset.type!=='a') return;
   e.preventDefault(); dot.setPointerCapture(e.pointerId); dot.classList.add('dragging');
-  const start=getDotCenter(dot);
+  const start=getCenter(dot);
   const path=document.createElementNS('http://www.w3.org/2000/svg','path'); path.setAttribute('class','path-drag'); svg.appendChild(path);
-  dragState={aId:dot.dataset.a, aDot:dot, path, start, current:{x:start.x,y:start.y}};
+  dragState={aId:dot.dataset.a, aDot:dot, path, start};
  });
  wrap.addEventListener('pointermove', e=>{
   if(!dragState) return;
-  const wRect=wrap.getBoundingClientRect();
-  const x=e.clientX - wRect.left, y=e.clientY - wRect.top;
-  dragState.current={x,y};
+  const wr=wrap.getBoundingClientRect(); const x=e.clientX-wr.left, y=e.clientY-wr.top;
   requestAnimationFrame(()=>{
    if(!dragState) return;
-   const {start, current}=dragState;
-   const dx=current.x-start.x; const cx=start.x+dx*0.5;
-   const d=`M ${start.x} ${start.y} C ${cx} ${start.y}, ${cx} ${current.y}, ${current.x} ${current.y}`;
-   dragState.path.setAttribute('d', d);
+   const {start}=dragState; const cx=start.x+(x-start.x)*0.5;
+   dragState.path.setAttribute('d',`M ${start.x} ${start.y} C ${cx} ${start.y}, ${cx} ${y}, ${x} ${y}`);
   });
  });
  function endDrag(e){
   if(!dragState) return;
   const target=document.elementFromPoint(e.clientX, e.clientY);
   const bDot=target?.closest('.dot.b-dot');
-  const aDotEl=dragState.aDot; aDotEl.classList.remove('dragging');
-  dragState.path.remove();
+  const {aId, aDot, path}=dragState; path.remove(); aDot.classList.remove('dragging');
   if(bDot){
-   const aId=dragState.aId, bId=bDot.dataset.b;
-   const exp=MATCH_DATA.find(x=>x.id===aId)?.correct;
-   const isCorrect=exp===bId;
+   const bId=bDot.dataset.b; const exp=MATCH_DATA.find(x=>x.id===aId)?.correct;
    if(mode==='practice'){
-    // instant grading
-    if(isCorrect){
-     connections[aId]=bId; drawPermanentLine(aId,bId, svg, wrap, true);
-     aDotEl.classList.add('connected'); bDot.classList.add('connected');
-     confettiAt(e.clientX, e.clientY);
-    } else {
-     bDot.classList.add('wrong'); setTimeout(()=>bDot.classList.remove('wrong'),600);
-     if(navigator.vibrate) navigator.vibrate([30,50,30]);
-    }
+    if(bId===exp){connections[aId]=bId; const p1=getCenter(aDot), p2=getCenter(bDot); const np=document.createElementNS('http://www.w3.org/2000/svg','path'); const cx=p1.x+(p2.x-p1.x)*0.5; np.setAttribute('d',`M ${p1.x} ${p1.y} C ${cx} ${p1.y}, ${cx} ${p2.y}, ${p2.x} ${p2.y}`); np.setAttribute('class','path-ok'); svg.appendChild(np); aDot.classList.add('connected'); bDot.classList.add('connected'); confettiAt(e.clientX,e.clientY); addPlant(['🌿','🍃','🌸','♻️'][Math.floor(Math.random()*4)]);}
+    else {bDot.classList.add('wrong'); setTimeout(()=>bDot.classList.remove('wrong'),600);}
    } else {
-    // write mode - no instant grading, just store
-    connections[aId]=bId;
-    drawPermanentLine(aId,bId, svg, wrap, false);
-    aDotEl.classList.add('connected'); bDot.classList.add('connected');
+    connections[aId]=bId; const p1=getCenter(aDot), p2=getCenter(bDot); const np=document.createElementNS('http://www.w3.org/2000/svg','path'); const cx=p1.x+(p2.x-p1.x)*0.5; np.setAttribute('d',`M ${p1.x} ${p1.y} C ${cx} ${p1.y}, ${cx} ${p2.y}, ${p2.x} ${p2.y}`); np.setAttribute('class','path-drag'); np.style.stroke='#94a3b8'; svg.appendChild(np); aDot.classList.add('connected'); bDot.classList.add('connected');
    }
-   updateEarth();
+   updateGardenUI();
   }
   dragState=null;
  }
  wrap.addEventListener('pointerup', endDrag);
  wrap.addEventListener('pointercancel', ()=>{if(dragState){dragState.path.remove(); dragState.aDot.classList.remove('dragging'); dragState=null;}});
 }
-// PEN BUBBLE - draggable + rainbow/cursive/glitter
+// CLEANING CANVASES
+function initCleanCanvases(){
+ document.querySelectorAll('canvas[data-clean-id]').forEach(can=>{
+  const dpr=Math.min(window.devicePixelRatio||1,2);
+  const rect=can.getBoundingClientRect(); can.width=rect.width*dpr; can.height=rect.height*dpr; can.style.width=rect.width+'px'; can.style.height=rect.height+'px';
+  const ctx=can.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
+  const color=can.dataset.color;
+  // draw pollution
+  ctx.fillStyle=color;
+  if(can.dataset.pollution==='smoke'){
+   ctx.beginPath(); ctx.ellipse(rect.width*0.5, rect.height*0.35, rect.width*0.4, rect.height*0.25, 0,0,Math.PI*2); ctx.fill();
+   ctx.beginPath(); ctx.ellipse(rect.width*0.6, rect.height*0.25, rect.width*0.2, rect.height*0.15, 0,0,Math.PI*2); ctx.fill();
+  } else if(can.dataset.pollution==='oil'){
+   ctx.beginPath(); ctx.ellipse(rect.width*0.5, rect.height*0.5, rect.width*0.3, rect.height*0.2, 0,0,Math.PI*2); ctx.fill();
+  } else if(can.dataset.pollution==='garbage'){
+   for(let i=0;i<6;i++){ctx.beginPath(); ctx.ellipse(Math.random()*rect.width, Math.random()*rect.height*0.8+10, 12+Math.random()*10, 8+Math.random()*6, Math.random(),0,Math.PI*2); ctx.fill();}
+  } else {
+   ctx.strokeStyle=color; ctx.lineWidth=6; for(let i=0;i<3;i++){ctx.beginPath(); ctx.arc(rect.width*0.7, rect.height*0.5, 20+i*15, -0.5, 0.5); ctx.stroke();}
+  }
+  // store initial pixels for progress
+  can.dataset.total=can.width*can.height;
+ });
+ let cleaning=null;
+ document.addEventListener('pointerdown', e=>{
+  const can=e.target.closest('canvas[data-clean-id]'); if(!can) return;
+  e.preventDefault(); can.setPointerCapture(e.pointerId); cleaning={can, lastX:0, lastY:0};
+  const rect=can.getBoundingClientRect(); cleaning.lastX=(e.clientX-rect.left); cleaning.lastY=(e.clientY-rect.top);
+ }, {passive:false});
+ document.addEventListener('pointermove', e=>{
+  if(!cleaning) return; const can=cleaning.can; const rect=can.getBoundingClientRect();
+  const x=(e.clientX-rect.left), y=(e.clientY-rect.top);
+  const ctx=can.getContext('2d'); ctx.globalCompositeOperation='destination-out';
+  ctx.lineWidth=currentPen.type==='eraser'? currentPen.size*4 : 22; ctx.lineCap='round'; ctx.lineJoin='round';
+  ctx.beginPath(); ctx.moveTo(cleaning.lastX, cleaning.lastY); ctx.lineTo(x,y); ctx.stroke();
+  cleaning.lastX=x; cleaning.lastY=y;
+  // check progress
+  requestAnimationFrame(()=>checkCleanProgress(can));
+ }, {passive:false});
+ function endClean(){ if(!cleaning) return; checkCleanProgress(cleaning.can, true); cleaning=null; }
+ document.addEventListener('pointerup', endClean); document.addEventListener('pointercancel', endClean);
+}
+function checkCleanProgress(can, final){
+ const ctx=can.getContext('2d'); const w=can.width, h=can.height;
+ try{
+  const data=ctx.getImageData(0,0,w,h).data;
+  let transparent=0; for(let i=3;i<data.length;i+=4){if(data[i]===0) transparent++;}
+  const total=w*h; const cleaned=transparent/total;
+  const pct=Math.round((1-cleaned)*100); // remaining
+  const cleanedPct=Math.round(cleaned*100);
+  const prog=document.getElementById('prog_'+can.dataset.cleanId); const txt=document.getElementById('txt_'+can.dataset.cleanId);
+  if(prog) prog.style.width=(100-cleanedPct)+'%';
+  if(txt) txt.textContent=(100-cleanedPct)+'% left';
+  if(cleaned>0.7){
+   const card=document.getElementById('clean_'+can.dataset.cleanId);
+   if(card && !card.classList.contains('cleaned')){
+    card.classList.add('cleaned'); confettiAt(can.getBoundingClientRect().left+can.width/2, can.getBoundingClientRect().top+50); addPlant(['🌳','🌸','🌻','🌿','♻️'][Math.floor(Math.random()*5)]);
+    if(txt) txt.textContent='Cleaned! 🌱';
+   }
+  }
+ }catch(_){}
+}
+// PEN BUBBLE
 (function(){
  const bubble=document.getElementById('penBubble'); const panel=document.getElementById('penPanel');
  let isDragging=false, startX, startY, origX, origY;
  bubble.addEventListener('pointerdown', e=>{isDragging=true; bubble.setPointerCapture(e.pointerId); startX=e.clientX; startY=e.clientY; const r=bubble.getBoundingClientRect(); origX=r.left; origY=r.top; e.preventDefault();});
  bubble.addEventListener('pointermove', e=>{if(!isDragging) return; const dx=e.clientX-startX, dy=e.clientY-startY; bubble.style.left=(origX+dx)+'px'; bubble.style.top=(origY+dy)+'px'; bubble.style.right='auto'; bubble.style.bottom='auto';});
- bubble.addEventListener('pointerup', e=>{if(!isDragging) return; isDragging=false; const dist=Math.hypot(e.clientX-startX, e.clientY-startY); if(dist<8){panel.classList.toggle('open');} });
- bubble.addEventListener('click', e=>{if(Math.hypot(e.clientX-startX||0, e.clientY-startY||0)<5){panel.classList.toggle('open');}});
+ bubble.addEventListener('pointerup', e=>{if(!isDragging) return; isDragging=false; const dist=Math.hypot(e.clientX-startX, e.clientY-startY); if(dist<8){panel.classList.toggle('open');}});
  document.querySelectorAll('.pen-tool[data-pen]').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-   document.querySelectorAll('.pen-tool[data-pen]').forEach(b=>b.classList.remove('on')); btn.classList.add('on');
-   currentPen.type=btn.dataset.pen;
-   document.getElementById('stampRow').style.display=currentPen.type==='stamp'?'flex':'none';
-   bubble.querySelector('.pen-icon').textContent=btn.textContent;
-  });
+  btn.addEventListener('click',()=>{document.querySelectorAll('.pen-tool[data-pen]').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); currentPen.type=btn.dataset.pen; document.getElementById('stampRow').style.display=currentPen.type==='stamp'?'flex':'none'; bubble.querySelector('span').textContent=btn.textContent;});
  });
- document.querySelectorAll('.color-dot').forEach(d=>{
-  d.addEventListener('click',()=>{document.querySelectorAll('.color-dot').forEach(x=>x.classList.remove('on')); d.classList.add('on'); currentPen.color=d.dataset.color;});
- });
- document.querySelectorAll('[data-stamp]').forEach(b=>{
-  b.addEventListener('click',()=>{currentPen.stamp=b.dataset.stamp; document.querySelectorAll('[data-stamp]').forEach(x=>x.classList.remove('on')); b.classList.add('on');});
- });
+ document.querySelectorAll('.color-dot').forEach(d=>{d.addEventListener('click',()=>{document.querySelectorAll('.color-dot').forEach(x=>x.classList.remove('on')); d.classList.add('on'); currentPen.color=d.dataset.color;});});
+ document.querySelectorAll('[data-stamp]').forEach(b=>{b.addEventListener('click',()=>{currentPen.stamp=b.dataset.stamp; document.querySelectorAll('[data-stamp]').forEach(x=>x.classList.remove('on')); b.classList.add('on');});});
  document.getElementById('sizeSlider').addEventListener('input',e=>{currentPen.size=parseFloat(e.target.value);});
  document.addEventListener('click',e=>{if(!panel.contains(e.target)&&!bubble.contains(e.target)) panel.classList.remove('open');});
 })();
-// CANVAS DRAW - with pens
+// DRAW for inline strips
 (function(){
- let drawing=false,lx=0,ly=0,active=null,started=false,lastCanvas=null;
+ let drawing=false,lx=0,ly=0,active=null,started=false;
  function pos(e,c){const r=c.getBoundingClientRect(); return [e.clientX-r.left, e.clientY-r.top];}
  document.addEventListener('pointerdown', e=>{
   const c=e.target.closest('canvas[data-ink-id]'); if(!c) return;
   if(e.pointerType==='touch' && penActive && Date.now()-lastPenTime<800) return;
   if(e.pointerType==='touch' && e.width>26) return;
   if(e.pointerType==='pen'){penActive=true; lastPenTime=Date.now();}
-  e.preventDefault(); c.setPointerCapture(e.pointerId); drawing=true; active=c; started=true; lastCanvas=c;
-  const [x,y]=pos(e,c); lx=x; ly=y;
-  const ctx=c.getContext('2d');
-  if(currentPen.type==='stamp'){
-   ctx.font=`${currentPen.size*10}px serif`; ctx.fillText(currentPen.stamp, x, y); return;
-  }
-  if(currentPen.type==='eraser'){ctx.globalCompositeOperation='destination-out';}
-  else {ctx.globalCompositeOperation='source-over';}
+  e.preventDefault(); c.setPointerCapture(e.pointerId); drawing=true; active=c; started=true;
+  const [x,y]=pos(e,c); lx=x; ly=y; const ctx=c.getContext('2d');
+  if(currentPen.type==='stamp'){ctx.font=`${currentPen.size*10}px serif`; ctx.fillText(currentPen.stamp, x, y); return;}
+  if(currentPen.type==='eraser') ctx.globalCompositeOperation='destination-out'; else ctx.globalCompositeOperation='source-over';
   ctx.strokeStyle=currentPen.type==='rainbow'?`hsl(${rainbowHue},100%,50%)`:currentPen.color;
   ctx.lineWidth=currentPen.size; ctx.lineCap='round'; ctx.lineJoin='round';
-  if(currentPen.type==='cursive'){ctx.lineWidth=currentPen.size*1.8; ctx.lineCap='butt';}
+  if(currentPen.type==='cursive') ctx.lineWidth=currentPen.size*1.7;
   ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+0.01,y); ctx.stroke();
-  if(currentPen.type==='glitter'){for(let i=0;i<4;i++){ctx.beginPath(); ctx.arc(x+Math.random()*6-3,y+Math.random()*6-3,Math.random()*2+0.5,0,Math.PI*2); ctx.fillStyle=`hsl(${Math.random()*60+30},100%,60%)`; ctx.fill();}}
+  if(currentPen.type==='glitter'){for(let i=0;i<3;i++){ctx.beginPath(); ctx.arc(x+Math.random()*6-3,y+Math.random()*6-3,Math.random()*2+0.5,0,Math.PI*2); ctx.fillStyle=`hsl(${Math.random()*60+30},100%,60%)`; ctx.fill();}}
  },{passive:false});
  document.addEventListener('pointermove', e=>{
   if(!drawing||!active) return; if(e.pointerType==='touch' && penActive && Date.now()-lastPenTime<800) return; e.preventDefault();
@@ -427,25 +460,25 @@ function initMatchDrag(){
    ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(x,y); ctx.stroke();
    for(let i=0;i<2;i++){ctx.beginPath(); ctx.arc(x,y,Math.random()*2,0,Math.PI*2); ctx.fillStyle=`hsl(${Math.random()*60+40},100%,70%)`; ctx.fill();}
   } else {
-   ctx.lineWidth=currentPen.type==='cursive'?currentPen.size*1.6 + Math.abs(Math.sin(Math.atan2(y-ly,x-lx)))*2:currentPen.size;
+   ctx.lineWidth=currentPen.type==='cursive'?currentPen.size*1.5 + Math.abs(Math.sin(Math.atan2(y-ly,x-lx)))*2:currentPen.size;
    ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(x,y); ctx.stroke();
   }
   lx=x; ly=y;
  },{passive:false});
- function end(e){if(!drawing||!active) return; drawing=false; if(started){pushHist(active.dataset.inkId, active); try{localStorage.setItem(inkKey(active.dataset.inkId), active.toDataURL('image/png')); active.parentElement.classList.add('has-ink'); updateEarth();}catch(_){}} started=false; active=null; if(e&&e.pointerType==='pen') lastPenTime=Date.now(); active=null; const ctx=lastCanvas?.getContext('2d'); if(ctx) ctx.globalCompositeOperation='source-over';}
+ function end(e){if(!drawing||!active) return; drawing=false; if(started){pushHist(active.dataset.inkId, active); try{localStorage.setItem(inkKey(active.dataset.inkId), active.toDataURL('image/png')); active.parentElement.classList.add('has-ink'); if(Math.random()>0.5) addPlant('🌱'); updateGardenUI();}catch(_){}} started=false; active=null; if(e&&e.pointerType==='pen') lastPenTime=Date.now(); const ctx=document.querySelector('canvas[data-ink-id]')?.getContext('2d'); if(ctx) ctx.globalCompositeOperation='source-over';}
  document.addEventListener('pointerup', end); document.addEventListener('pointercancel', end);
- // swipe between tabs - butter smooth
+ // swipe
  let sx=0;
  document.getElementById('mainEl').addEventListener('touchstart', e=>{sx=e.touches[0].clientX},{passive:true});
  document.getElementById('mainEl').addEventListener('touchend', e=>{
   const dx=e.changedTouches[0].clientX - sx; if(Math.abs(dx)>80){
-   if(dx<0){ if(tab==='A') setTab('B'); else if(tab==='B') setTab('C'); }
-   else { if(tab==='C') setTab('B'); else if(tab==='B') setTab('A'); }
+   if(dx<0){ if(tab==='A') setTab('B'); else if(tab==='B') setTab('C'); else if(tab==='C') setTab('D'); }
+   else { if(tab==='D') setTab('C'); else if(tab==='C') setTab('B'); else if(tab==='B') setTab('A'); }
   }
  },{passive:true});
 })();
 window.addEventListener('beforeunload', flushAllInk); window.addEventListener('pagehide', flushAllInk);
-setMode('practice');
+render(); updateGardenUI();
 </script>
 </body>
 </html>
