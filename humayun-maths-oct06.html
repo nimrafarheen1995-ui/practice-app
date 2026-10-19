@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Humayun • Division Rainbow Warm-Up</title>
+  <link rel="preload" as="image" href="assets/naruto.png" />
+  <link rel="preload" as="image" href="assets/kakashi.png" />
+  <link rel="preload" as="image" href="assets/humayun-avatar.webp" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Quicksand:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: #cbd5e1;
+      --soft: #f1f5f9;
+      --card: #ffffff;
+      --ninja: #1e3a5f;
+      --accent: #f59e0b;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; height: 100%; overflow: hidden; font-family: 'Nunito', sans-serif; background: #e8eef6; color: var(--ink); }
+    body { display: flex; flex-direction: column; }
+
+    header {
+      flex-shrink: 0; height: 56px; background: #fff; border-bottom: 2px solid var(--line);
+      display: flex; align-items: center; justify-content: space-between; padding: 0 12px; gap: 8px;
+    }
+    .btn {
+      border: 1px solid var(--line); background: var(--soft); color: #334155;
+      font-weight: 800; font-size: 0.8rem; padding: 6px 12px; border-radius: 10px; cursor: pointer;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: #1d4ed8; color: #fff; border-color: #1d4ed8; }
+    .badge { background: linear-gradient(135deg,#f59e0b,#d97706); color:#fff; font-weight:900; font-size:0.75rem; padding:4px 10px; border-radius:999px; }
+
+    main {
+      flex: 1; min-height: 0; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 10px; padding: 10px;
+      max-width: 1200px; width: 100%; margin: 0 auto;
+    }
+    @media (max-width: 900px) {
+      main { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+    }
+
+    .panel {
+      background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+      display: flex; flex-direction: column; min-height: 0; overflow: hidden;
+    }
+    .panel-hd {
+      padding: 8px 12px; border-bottom: 1px solid var(--line); background: #f8fafc;
+      font-weight: 900; font-size: 0.85rem; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+
+    /* Rainbow */
+    .rainbow-wrap {
+      flex: 1; min-height: 180px; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(180deg, #eff6ff 0%, #f0fdf4 100%); padding: 8px;
+    }
+    .rainbow-stage { position: relative; width: min(100%, 520px); aspect-ratio: 500 / 270; }
+    .rainbow-stage svg, .rainbow-stage canvas {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+    }
+    .arc-base { fill: none; stroke: #e2e8f0; stroke-linecap: round; }
+    .arc-label { font-family: 'Quicksand', sans-serif; font-weight: 900; font-size: 14px; fill: #0f172a; text-anchor: middle; }
+    .arc-hit { fill: none; stroke: transparent; stroke-linecap: round; cursor: pointer; }
+    .arc-glow { stroke: #93c5fd; animation: pulse 1s alternate infinite; }
+    @keyframes pulse { from { stroke: #93c5fd; } to { stroke: #2563eb; } }
+
+    .hint-bar {
+      padding: 8px 12px; border-top: 1px solid var(--line); background: #fffbeb;
+      font-size: 0.8rem; font-weight: 800; color: #92400e; text-align: center; min-height: 36px;
+    }
+    .hint-bar.ok { background: #ecfdf5; color: #065f46; }
+    .hint-bar.err { background: #fef2f2; color: #991b1b; }
+
+    /* Cards */
+    .cards-scroll { flex: 1; min-height: 0; overflow-y: auto; padding: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    @media (max-width: 600px) { .cards-scroll { grid-template-columns: 1fr; } }
+
+    .q-card {
+      border: 2px solid var(--line); border-radius: 12px; padding: 10px; background: #f8fafc;
+      cursor: pointer; display: flex; flex-direction: column; gap: 6px; transition: 0.15s;
+    }
+    .q-card.active { border-color: #2563eb; background: #eff6ff; box-shadow: 0 0 0 3px rgba(37,99,235,0.2); }
+    .q-card.done { border-color: #10b981; background: #ecfdf5; }
+    .q-card.nudge { border-color: #f59e0b; background: #fffbeb; }
+    .q-top { display: flex; align-items: center; justify-content: space-between; font-size: 0.72rem; font-weight: 900; color: #475569; }
+    .dot { width: 14px; height: 14px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.12); }
+    .eq { font-family: 'Quicksand', sans-serif; font-size: 1.25rem; font-weight: 800; text-align: center; }
+    .eq .blank {
+      display: inline-flex; min-width: 42px; height: 34px; align-items: center; justify-content: center;
+      border: 2px dashed #94a3b8; border-radius: 8px; background: #fff; margin: 0 2px;
+    }
+    .q-card.active .blank { border-color: #2563eb; }
+    .q-card.done .blank { border-style: solid; border-color: #10b981; background: #d1fae5; }
+
+    /* Scratchpad fixed */
+    .scratch {
+      border-top: 1px solid var(--line); background: #fff; flex-shrink: 0;
+      display: flex; flex-direction: column; height: 130px;
+    }
+    .scratch-tools {
+      display: flex; gap: 6px; align-items: center; padding: 4px 8px; background: #f8fafc; border-bottom: 1px solid var(--line);
+    }
+    .tool {
+      width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--line); background: #fff;
+      display: inline-flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.85rem;
+    }
+    .tool.on { background: #1d4ed8; color: #fff; border-color: #1d4ed8; }
+    .scratch-canvas-wrap { flex: 1; position: relative; background-image: linear-gradient(#e2e8f0 1px, transparent 1px), linear-gradient(90deg, #e2e8f0 1px, transparent 1px); background-size: 18px 18px; touch-action: none; }
+    #scratchCanvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; }
+
+    /* Floating keypad */
+    #keypad {
+      position: fixed; right: 12px; bottom: 12px; z-index: 50;
+      width: min(280px, calc(100vw - 24px));
+      background: #0f172a; border-radius: 16px; padding: 10px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.35); display: none;
+    }
+    #keypad.open { display: block; }
+    .kp-display {
+      background: #1e293b; color: #fff; font-family: 'Quicksand', sans-serif; font-weight: 900;
+      font-size: 1.6rem; text-align: center; padding: 8px; border-radius: 10px; margin-bottom: 8px; min-height: 44px;
+    }
+    .kp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .kp-btn {
+      background: #334155; color: #fff; border: none; border-radius: 10px; height: 44px;
+      font-weight: 900; font-size: 1.2rem; cursor: pointer;
+    }
+    .kp-btn:active { background: #475569; }
+    .kp-btn.ok { background: #059669; grid-column: span 2; }
+    .kp-btn.del { background: #b45309; }
+    .kp-btn.close { background: #475569; font-size: 0.85rem; }
+
+    #dim { position: fixed; inset: 0; background: #000; opacity: 0; pointer-events: none; z-index: 40; transition: opacity 0.2s; }
+    #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 60; }
+  </style>
+</head>
+<body>
+  <div id="dim"></div>
+  <canvas id="confetti"></canvas>
+
+  <header>
+    <div style="display:flex;align-items:center;gap:8px;min-width:0">
+      <button class="btn" onclick="goHub()">🏠 Hub</button>
+      <span class="badge">Humayun</span>
+      <div style="min-width:0">
+        <div style="font-weight:900;font-size:0.95rem;line-height:1.1">Division Rainbow</div>
+        <div style="font-size:0.7rem;font-weight:700;color:var(--muted)">Warm-up • Grade 3 Maths</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px">
+      <img src="assets/naruto.png" alt="" style="width:36px;height:36px;object-fit:contain" onerror="this.style.display='none'" />
+      <button class="btn" onclick="toggleKeypad()">⌨️ Keypad</button>
+      <button class="btn" onclick="toggleDim()">🌙</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- LEFT: Rainbow -->
+    <section class="panel">
+      <div class="panel-hd">
+        <span>🌈 Colour the matching arc</span>
+        <span id="progressPill" style="font-size:0.75rem;color:#065f46;background:#ecfdf5;border:1px solid #a7f3d0;padding:2px 8px;border-radius:999px">0 / 7</span>
+      </div>
+      <div class="rainbow-wrap">
+        <div class="rainbow-stage" id="rainbowStage">
+          <svg viewBox="0 0 500 270" id="rainbowSvg">
+            <!-- arcs outer to inner: 12, 6, 3, 4, 8, 5, 7 -->
+            <path class="arc-base" data-arc="12" d="M 40,250 A 210,210 0 0 1 460,250" stroke-width="22" />
+            <path class="arc-base" data-arc="6"  d="M 62,250 A 188,188 0 0 1 438,250" stroke-width="22" />
+            <path class="arc-base" data-arc="3"  d="M 84,250 A 166,166 0 0 1 416,250" stroke-width="22" />
+            <path class="arc-base" data-arc="4"  d="M 106,250 A 144,144 0 0 1 394,250" stroke-width="22" />
+            <path class="arc-base" data-arc="8"  d="M 128,250 A 122,122 0 0 1 372,250" stroke-width="22" />
+            <path class="arc-base" data-arc="5"  d="M 150,250 A 100,100 0 0 1 350,250" stroke-width="22" />
+            <path class="arc-base" data-arc="7"  d="M 172,250 A 78,78 0 0 1 328,250" stroke-width="22" />
+            <!-- labels -->
+            <text class="arc-label" x="250" y="48">12</text>
+            <text class="arc-label" x="250" y="72">6</text>
+            <text class="arc-label" x="250" y="96">3</text>
+            <text class="arc-label" x="250" y="120">4</text>
+            <text class="arc-label" x="250" y="144">8</text>
+            <text class="arc-label" x="250" y="168">5</text>
+            <text class="arc-label" x="250" y="192">7</text>
+            <!-- wide hit targets -->
+            <path class="arc-hit" data-arc="12" d="M 40,250 A 210,210 0 0 1 460,250" stroke-width="26" onclick="paintArc(12)" />
+            <path class="arc-hit" data-arc="6"  d="M 62,250 A 188,188 0 0 1 438,250" stroke-width="26" onclick="paintArc(6)" />
+            <path class="arc-hit" data-arc="3"  d="M 84,250 A 166,166 0 0 1 416,250" stroke-width="26" onclick="paintArc(3)" />
+            <path class="arc-hit" data-arc="4"  d="M 106,250 A 144,144 0 0 1 394,250" stroke-width="26" onclick="paintArc(4)" />
+            <path class="arc-hit" data-arc="8"  d="M 128,250 A 122,122 0 0 1 372,250" stroke-width="26" onclick="paintArc(8)" />
+            <path class="arc-hit" data-arc="5"  d="M 150,250 A 100,100 0 0 1 350,250" stroke-width="26" onclick="paintArc(5)" />
+            <path class="arc-hit" data-arc="7"  d="M 172,250 A 78,78 0 0 1 328,250" stroke-width="26" onclick="paintArc(7)" />
+          </svg>
+        </div>
+      </div>
+      <div class="hint-bar" id="hintBar">Solve a card on the right, then tap the arc with that answer number.</div>
+    </section>
+
+    <!-- RIGHT: Cards + scratchpad -->
+    <section class="panel">
+      <div class="panel-hd">
+        <span>🎯 Colour key — find each answer</span>
+        <img src="assets/kakashi.png" alt="" style="width:28px;height:28px;object-fit:contain" onerror="this.style.display='none'" />
+      </div>
+      <div class="cards-scroll" id="cards"></div>
+      <div class="scratch">
+        <div class="scratch-tools">
+          <span style="font-size:0.72rem;font-weight:800;color:#64748b;margin-right:4px">Scratchpad</span>
+          <button class="tool on" id="tPen" onclick="setTool('pen')">✏️</button>
+          <button class="tool" id="tEraser" onclick="setTool('eraser')">🧽</button>
+          <button class="tool" onclick="clearScratch()">🗑️</button>
+          <button class="btn" style="margin-left:auto;font-size:0.72rem" onclick="toggleKeypad()">⌨️ Answer keypad</button>
+        </div>
+        <div class="scratch-canvas-wrap" id="scratchWrap">
+          <canvas id="scratchCanvas"></canvas>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Keypad -->
+  <div id="keypad">
+    <div class="kp-display" id="kpDisplay">·</div>
+    <div class="kp-grid">
+      <button class="kp-btn" onclick="kpInput('1')">1</button>
+      <button class="kp-btn" onclick="kpInput('2')">2</button>
+      <button class="kp-btn" onclick="kpInput('3')">3</button>
+      <button class="kp-btn" onclick="kpInput('4')">4</button>
+      <button class="kp-btn" onclick="kpInput('5')">5</button>
+      <button class="kp-btn" onclick="kpInput('6')">6</button>
+      <button class="kp-btn" onclick="kpInput('7')">7</button>
+      <button class="kp-btn" onclick="kpInput('8')">8</button>
+      <button class="kp-btn" onclick="kpInput('9')">9</button>
+      <button class="kp-btn del" onclick="kpDel()">⌫</button>
+      <button class="kp-btn" onclick="kpInput('0')">0</button>
+      <button class="kp-btn close" onclick="toggleKeypad(false)">Hide</button>
+      <button class="kp-btn ok" onclick="kpCheck()">✓ Check</button>
+    </div>
+  </div>
+
+  <script>
+    // Textbook-style key: equation → answer (arc number) → colour
+    const QUESTIONS = [
+      { id: 'q1', label: 'Blue',   color: '#3b82f6', text: '45 ÷ 9',  answer: 5,  arc: 5  },
+      { id: 'q2', label: 'Red',    color: '#ef4444', text: '24 ÷ 2',  answer: 12, arc: 12 },
+      { id: 'q3', label: 'Yellow', color: '#eab308', text: '21 ÷ 3',  answer: 7,  arc: 7  },
+      { id: 'q4', label: 'Green',  color: '#22c55e', text: '25 ÷ 5',  answer: 5,  arc: 5  },
+      { id: 'q5', label: 'Pink',   color: '#ec4899', text: '20 ÷ 4',  answer: 5,  arc: 5  },
+      { id: 'q6', label: 'Purple', color: '#8b5cf6', text: '32 ÷ 4',  answer: 8,  arc: 8  },
+      { id: 'q7', label: 'Orange', color: '#f97316', text: '60 ÷ 10', answer: 6,  arc: 6  },
+      { id: 'q8', label: 'Teal',   color: '#14b8a6', text: '49 ÷ 7',  answer: 7,  arc: 7  },
+      { id: 'q9', label: 'Indigo', color: '#6366f1', text: '18 ÷ 6',  answer: 3,  arc: 3  },
+      { id: 'q10',label: 'Amber',  color: '#d97706', text: '16 ÷ 4',  answer: 4,  arc: 4  }
+    ];
+    // Note: arcs 5 and 7 can receive more than one colour; last correct paint wins (matches colour-by-answer play)
+
+    const state = {
+      active: 0,
+      answers: {},      // id -> typed string
+      tries: {},        // id -> count
+      solved: {},       // id -> true
+      painted: {},      // arc num -> color
+      pendingPaint: null, // { arc, color, id } after correct answer
+      kpValue: ''
+    };
+
+    function goHub() {
+      try { window.parent.postMessage('close-lesson-to-hub', '*'); } catch (_) {}
+      if (history.length > 1) history.back();
+    }
+
+    function save() {
+      localStorage.setItem('humayun_div_rainbow_oct06', JSON.stringify({
+        answers: state.answers, tries: state.tries, solved: state.solved, painted: state.painted
+      }));
+    }
+    function load() {
+      try {
+        const raw = localStorage.getItem('humayun_div_rainbow_oct06');
+        if (!raw) return;
+        const d = JSON.parse(raw);
+        state.answers = d.answers || {};
+        state.tries = d.tries || {};
+        state.solved = d.solved || {};
+        state.painted = d.painted || {};
+      } catch (_) {}
+    }
+
+    function setHint(msg, type) {
+      const el = document.getElementById('hintBar');
+      el.textContent = msg;
+      el.className = 'hint-bar' + (type === 'ok' ? ' ok' : type === 'err' ? ' err' : '');
+    }
+
+    function renderCards() {
+      const box = document.getElementById('cards');
+      box.innerHTML = QUESTIONS.map((q, i) => {
+        const solved = !!state.solved[q.id];
+        const tries = state.tries[q.id] || 0;
+        const active = i === state.active;
+        const val = state.answers[q.id] || '';
+        let cls = 'q-card';
+        if (active) cls += ' active';
+        if (solved) cls += ' done';
+        else if (tries >= 2) cls += ' nudge';
+        return `<button type="button" class="${cls}" onclick="selectCard(${i})">
+          <div class="q-top">
+            <span style="display:flex;align-items:center;gap:6px"><span class="dot" style="background:${q.color}"></span>${q.label}</span>
+            <span>${solved ? '✓' : tries >= 2 ? '💡' : ''}</span>
+          </div>
+          <div class="eq">${q.text} = <span class="blank">${solved ? q.answer : (active ? (val || '?') : (val || ''))}</span></div>
+        </button>`;
+      }).join('');
+      const doneCount = Object.keys(state.painted).length;
+      document.getElementById('progressPill').textContent = doneCount + ' / 7 arcs';
+      paintSvgFromState();
+    }
+
+    function selectCard(i) {
+      state.active = i;
+      state.kpValue = state.answers[QUESTIONS[i].id] || '';
+      document.getElementById('kpDisplay').textContent = state.kpValue || '·';
+      renderCards();
+      const q = QUESTIONS[i];
+      if (state.solved[q.id]) {
+        setHint('Already solved. Tap arc ' + q.arc + ' if it still needs colour.');
+        state.pendingPaint = { arc: q.arc, color: q.color, id: q.id };
+      } else if ((state.tries[q.id] || 0) >= 2) {
+        setHint('Soft nudge: use the scratchpad. Think how many times ' + q.text.split('÷')[1].trim() + ' fits into ' + q.text.split('÷')[0].trim() + '.');
+      } else {
+        setHint('Solve ' + q.text + ' = ? then press Check on the keypad.');
+      }
+    }
+
+    /* Keypad */
+    function toggleKeypad(force) {
+      const kp = document.getElementById('keypad');
+      const open = force === false ? false : force === true ? true : !kp.classList.contains('open');
+      kp.classList.toggle('open', open);
+    }
+    function kpInput(d) {
+      if (state.kpValue.length >= 3) return;
+      state.kpValue += d;
+      document.getElementById('kpDisplay').textContent = state.kpValue;
+    }
+    function kpDel() {
+      state.kpValue = state.kpValue.slice(0, -1);
+      document.getElementById('kpDisplay').textContent = state.kpValue || '·';
+    }
+    function kpCheck() {
+      const q = QUESTIONS[state.active];
+      if (!q) return;
+      if (state.solved[q.id]) {
+        setHint('Already done — paint arc ' + q.arc + '!', 'ok');
+        return;
+      }
+      const val = parseInt(state.kpValue, 10);
+      state.answers[q.id] = state.kpValue;
+      if (val === q.answer) {
+        state.solved[q.id] = true;
+        state.pendingPaint = { arc: q.arc, color: q.color, id: q.id };
+        setHint('Correct! Now tap arc ' + q.arc + ' on the rainbow to paint it ' + q.label.toLowerCase() + '.', 'ok');
+        // highlight arc
+        document.querySelectorAll('.arc-base').forEach(p => p.classList.remove('arc-glow'));
+        const base = document.querySelector('.arc-base[data-arc="' + q.arc + '"]');
+        if (base) base.classList.add('arc-glow');
+        beep(520, 0.08);
+      } else {
+        state.tries[q.id] = (state.tries[q.id] || 0) + 1;
+        state.kpValue = '';
+        document.getElementById('kpDisplay').textContent = '·';
+        if (state.tries[q.id] >= 2) {
+          setHint('Soft nudge: open the scratchpad and work out ' + q.text + '. How many groups?', 'err');
+        } else {
+          setHint('Not quite — try again. (' + state.tries[q.id] + '/2 tries)', 'err');
+        }
+        beep(180, 0.1);
+      }
+      save();
+      renderCards();
+    }
+
+    function paintArc(arcNum) {
+      if (!state.pendingPaint) {
+        setHint('Solve a card first, then paint the arc that matches your answer.');
+        return;
+      }
+      if (state.pendingPaint.arc !== arcNum) {
+        setHint('That arc is ' + arcNum + '. Your answer matches arc ' + state.pendingPaint.arc + '.', 'err');
+        beep(180, 0.08);
+        return;
+      }
+      state.painted[arcNum] = state.pendingPaint.color;
+      state.pendingPaint = null;
+      document.querySelectorAll('.arc-base').forEach(p => p.classList.remove('arc-glow'));
+      paintSvgFromState();
+      setHint('Arc ' + arcNum + ' painted! Pick another card.', 'ok');
+      beep(660, 0.1);
+      save();
+      renderCards();
+      // auto advance
+      for (let i = 1; i <= QUESTIONS.length; i++) {
+        const n = (state.active + i) % QUESTIONS.length;
+        if (!state.solved[QUESTIONS[n].id]) { selectCard(n); break; }
+      }
+      checkComplete();
+    }
+
+    function paintSvgFromState() {
+      document.querySelectorAll('.arc-base').forEach(p => {
+        const n = p.getAttribute('data-arc');
+        p.style.stroke = state.painted[n] || '#e2e8f0';
+      });
+    }
+
+    function checkComplete() {
+      // all unique arcs painted
+      const need = ['12','6','3','4','8','5','7'];
+      if (need.every(a => state.painted[a])) {
+        setHint('🎉 Rainbow complete — great division work, Humayun!', 'ok');
+        confetti();
+      }
+    }
+
+    /* Scratchpad */
+    let tool = 'pen';
+    const canvas = () => document.getElementById('scratchCanvas');
+    const wrap = () => document.getElementById('scratchWrap');
+    function setTool(t) {
+      tool = t;
+      document.getElementById('tPen').classList.toggle('on', t === 'pen');
+      document.getElementById('tEraser').classList.toggle('on', t === 'eraser');
+    }
+    function syncScratch() {
+      const c = canvas(), a = wrap();
+      if (!c || !a) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = a.clientWidth, h = a.clientHeight;
+      if (!w || !h) return;
+      c.width = Math.round(w * dpr);
+      c.height = Math.round(h * dpr);
+      c.style.width = w + 'px';
+      c.style.height = h + 'px';
+      c.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    function clearScratch() {
+      const c = canvas();
+      const ctx = c.getContext('2d');
+      ctx.save();
+      ctx.setTransform(1,0,0,1,0,0);
+      ctx.clearRect(0,0,c.width,c.height);
+      ctx.restore();
+    }
+    (function drawScratch() {
+      let drawing = false, lx = 0, ly = 0;
+      function pos(e) {
+        const r = canvas().getBoundingClientRect();
+        return [e.clientX - r.left, e.clientY - r.top];
+      }
+      document.addEventListener('pointerdown', e => {
+        if (e.target !== canvas()) return;
+        e.preventDefault();
+        canvas().setPointerCapture(e.pointerId);
+        drawing = true;
+        const [x,y] = pos(e);
+        lx = x; ly = y;
+        const ctx = canvas().getContext('2d');
+        ctx.beginPath();
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        if (tool === 'eraser') {
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.lineWidth = 18;
+        } else {
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.strokeStyle = '#1e3a8a';
+          ctx.lineWidth = 2.5;
+        }
+        ctx.moveTo(x,y); ctx.lineTo(x+0.01,y); ctx.stroke();
+      }, { passive: false });
+      document.addEventListener('pointermove', e => {
+        if (!drawing) return;
+        e.preventDefault();
+        const [x,y] = pos(e);
+        const ctx = canvas().getContext('2d');
+        ctx.beginPath();
+        if (tool === 'eraser') {
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.lineWidth = 18;
+        } else {
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.strokeStyle = '#1e3a8a';
+          ctx.lineWidth = 2.5;
+        }
+        ctx.lineCap = 'round';
+        ctx.moveTo(lx, ly); ctx.lineTo(x, y); ctx.stroke();
+        lx = x; ly = y;
+      }, { passive: false });
+      document.addEventListener('pointerup', () => { drawing = false; });
+    })();
+
+    function toggleDim() {
+      const d = document.getElementById('dim');
+      d.style.opacity = d.style.opacity === '0.4' ? '0' : '0.4';
+    }
+
+    function beep(freq, dur) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.frequency.value = freq; o.type = 'sine';
+        g.gain.value = 0.06;
+        o.connect(g); g.connect(ctx.destination);
+        o.start();
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+        o.stop(ctx.currentTime + dur + 0.02);
+      } catch (_) {}
+    }
+
+    function confetti() {
+      const c = document.getElementById('confetti');
+      const ctx = c.getContext('2d');
+      c.width = innerWidth; c.height = innerHeight;
+      const bits = Array.from({ length: 50 }, () => ({
+        x: Math.random() * c.width, y: -20 - Math.random() * 60,
+        s: 3 + Math.random() * 6, vx: (Math.random() - 0.5) * 3, vy: 2 + Math.random() * 3,
+        col: ['#ef4444','#3b82f6','#eab308','#22c55e','#8b5cf6'][Math.floor(Math.random()*5)]
+      }));
+      let n = 0;
+      (function tick() {
+        ctx.clearRect(0,0,c.width,c.height);
+        bits.forEach(b => {
+          b.x += b.vx; b.y += b.vy; b.vy += 0.05;
+          ctx.fillStyle = b.col;
+          ctx.fillRect(b.x, b.y, b.s, b.s);
+        });
+        if (++n < 90) requestAnimationFrame(tick);
+        else ctx.clearRect(0,0,c.width,c.height);
+      })();
+    }
+
+    load();
+    renderCards();
+    selectCard(0);
+    toggleKeypad(true);
+    requestAnimationFrame(syncScratch);
+    window.addEventListener('resize', syncScratch);
+  </script>
+</body>
+</html>
