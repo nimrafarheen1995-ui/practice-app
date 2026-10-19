@@ -19,37 +19,76 @@ body::before{
   content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
   background:url('assets/nature-bg.webp') center/cover no-repeat;opacity:.22
 }
-header,main,#dimLayer{position:relative;z-index:1}
-/* Header - fits Tab S11 portrait + landscape */
+
+/* ---------- TOP HEADER & TOGGLE ---------- */
+#topHeader{position:relative;z-index:20;flex-shrink:0;transition:height 0.3s ease}
+#topHeader.collapsed{height:0;overflow:hidden}
 header{
-  flex-shrink:0; min-height:56px; padding:6px 10px;
+  min-height:56px; padding:6px 14px;
   background:rgba(255,255,255,.92); border-bottom:2px solid #bbf7d0;
   display:flex; align-items:center; justify-content:space-between; gap:8px;
   backdrop-filter:blur(8px); flex-wrap:wrap;
+}
+#headerToggle{
+  position:absolute; left:50%; bottom:-16px; transform:translateX(-50%); z-index:40;
+  background:#14532d; color:#fff; border:1.5px solid #86efac; border-top:0; border-radius:0 0 12px 12px;
+  padding:1px 16px 2px; font-size:12px; line-height:1; cursor:pointer; font-weight:900;
 }
 .hdr-left,.hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
 .badge{background:linear-gradient(135deg,#22c55e,#0ea5e9);color:#fff;font-weight:900;font-size:.72rem;padding:4px 10px;border-radius:999px}
 .hdr-title{font-weight:900;font-size:.92rem;line-height:1.1}
 .hdr-sub{font-size:.66rem;font-weight:800;color:var(--muted)}
-.btn{border:1px solid #86efac;background:#fff;color:#166534;font-weight:800;font-size:.78rem;padding:6px 11px;border-radius:10px;cursor:pointer;font-family:inherit}
+.btn{border:1px solid #86efac;background:#fff;color:#166534;font-weight:800;font-size:.78rem;padding:6px 11px;border-radius:10px;cursor:pointer;font-family:inherit;transition:transform .2s}
 .btn:active{transform:scale(.97)}
 .btn.on-practice{background:#0ea5e9;border-color:#0ea5e9;color:#fff}
 .btn.on-write{background:#7c3aed;border-color:#7c3aed;color:#fff}
 .mode-bar{display:flex;gap:6px}
 .dim-wrap{display:flex;align-items:center;gap:6px;font-size:.68rem;font-weight:800;color:#166534}
 .dim-wrap input{width:70px;accent-color:#15803d}
-/* Aa pill */
-.aa-pill{display:flex;align-items:center;gap:2px;background:#fff;border:1.5px solid #bbf7d0;border-radius:999px;padding:2px 4px}
-.aa-pill button{width:28px;height:28px;border-radius:999px;border:1px solid transparent;background:transparent;font-weight:900;font-size:.72rem;cursor:pointer;font-family:inherit}
-.aa-pill button.on{background:#14532d;color:#fff;border-color:#14532d}
-/* Main - Tab safe */
-main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:var(--tabPad) var(--tabPad) 108px}
+.font-toggle-btn{
+  background:#fff; border:1.5px solid #bbf7d0; border-radius:12px; padding:6px 10px;
+  font-weight:900; font-size:.78rem; cursor:pointer; color:#14532d; display:flex; align-items:center; gap:4px;
+}
+.font-toggle-btn:active{transform:scale(.95)}
+
+/* Main */
+main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:var(--tabPad) var(--tabPad) 108px;position:relative;z-index:1}
 .card{background:rgba(255,255,255,.96);border:1px solid #bbf7d0;border-radius:16px;padding:12px;margin-bottom:10px;box-shadow:0 4px 14px rgba(15,118,110,.06)}
-.hero{display:flex;align-items:center;gap:12px}
-.hero img{width:clamp(72px,10vw,112px);height:clamp(72px,10vw,112px);object-fit:contain}
+
+/* Hero with floating sparkles */
+.hero{display:flex;align-items:center;gap:16px;position:relative;overflow:hidden}
+.hero-img-wrap{position:relative;flex-shrink:0}
+.hero img{width:clamp(72px,10vw,112px);height:clamp(72px,10vw,112px);object-fit:contain;animation: floatHero 4s ease-in-out infinite}
+@keyframes floatHero{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.sparkle{
+  position:absolute; font-size:16px; pointer-events:none;
+  animation: floatSparkle 3s ease-in-out infinite;
+}
+.sparkle:nth-child(2){top:-4px; left:10px; animation-delay:0s}
+.sparkle:nth-child(3){bottom:2px; right:4px; animation-delay:1.5s}
+.sparkle:nth-child(4){top:50%; right:-8px; animation-delay:0.8s}
+@keyframes floatSparkle{
+  0%,100%{transform:translate(0,0) scale(0.8); opacity:0.6}
+  50%{transform:translate(4px,-8px) scale(1.2); opacity:1}
+}
 .hero-title{font-weight:900;color:#14532d;font-size:clamp(.95rem,2.2vw,1.2rem)}
 .hero-sub{font-size:clamp(.78rem,1.8vw,.9rem);font-weight:700;color:var(--muted);line-height:1.3}
-/* Board - 6D Holographic */
+
+/* Binder Cover Overlay */
+#binderCover{
+  position:fixed; inset:0; z-index:100; background:linear-gradient(135deg,#065f46,#047857);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;
+  transition: transform .6s cubic-bezier(0.77,0,0.175,1), opacity .5s;
+}
+#binderCover.open{transform:translateX(-100%); opacity:0; pointer-events:none}
+.binder-book{
+  background:#fff; width:min(420px,92vw); border-radius:24px; padding:28px 24px; text-align:center;
+  box-shadow:0 25px 50px rgba(0,0,0,0.3); border:4px solid #a7f3d0; position:relative;
+}
+.binder-rings{position:absolute; left:12px; top:20px; bottom:20px; display:flex; flex-direction:column; justify-content:space-around}
+.ring{width:12px; height:12px; background:#cbd5e1; border-radius:50%; border:2px solid #94a3b8}
+
+/* Board */
 #boardView{perspective:1200px}
 .board-grid{
   display:grid; gap:14px; margin-top:10px;
@@ -77,10 +116,12 @@ main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;paddin
 .mission .s{font-size:.78rem;font-weight:700;color:var(--muted);transform:translateZ(12px)}
 .mission .dots{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap;transform:translateZ(10px)}
 .mission .dot{width:11px;height:11px;border-radius:50%;border:2px solid #86efac;background:#fff}
-.mission .dot.on{background:#16a34a;border-color:#16a34a}
-.mission.locked{opacity:.55;border-style:dashed}
+.mission .dot.on{background:#16a34a;border-color:#16a34a;animation: popDot .3s ease}
+@keyframes popDot{0%{transform:scale(0.6)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
+.mission.locked{opacity:.75;border-style:solid}
 .done-badge{position:absolute;top:8px;right:8px;background:#16a34a;color:#fff;border-radius:999px;font-size:.68rem;font-weight:900;padding:2px 8px;transform:translateZ(30px)}
-/* Section modal - appears in middle of Tab */
+
+/* Section Modal */
 #sectionModal{
   position:fixed; inset:0; z-index:55; display:none; align-items:center; justify-content:center;
   background:rgba(15,23,42,.42); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
@@ -103,10 +144,11 @@ main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;paddin
 }
 .modal-title{font-weight:900;color:#14532d;font-size:clamp(1rem,2.2vw,1.2rem)}
 .modal-body{flex:1; min-height:0; overflow-y:auto; padding:12px 12px 100px; perspective:800px}
-/* layer stack visual for B */
+
+/* Layer stack */
 .layer-stack{position:relative; margin:6px 0 10px}
 .layer{
-  background:#fff; border:2px solid #cbd5e1; border-left:6px solid var(--layerCol); border-radius:14px; padding:10px 12px; margin-bottom:8px;
+  background:#fff; border:2px solid #cbd5e1; border-left:6px solid var(--layerCol); border-radius:14px; padding:12px 14px; margin-bottom:10px;
   box-shadow:0 6px 14px rgba(0,0,0,.06); transform-style:preserve-3d;
   animation: layerIn .5s ease both;
 }
@@ -116,38 +158,46 @@ main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;paddin
 .layer:nth-child(4){--layerCol:#7c3aed}
 .layer:nth-child(5){--layerCol:#dc2626}
 @keyframes layerIn{from{opacity:0; transform:translateY(14px) translateZ(-20px) rotateX(6deg)} to{opacity:1; transform:translateY(0) translateZ(0) rotateX(0)}}
-/* Prompt - tap anywhere to speak */
-.prompt{
+
+/* Inline Sentence Layout & Frosted Writing Strips */
+.sentence-line{
+  display:flex; align-items:center; flex-wrap:wrap; gap:6px;
   font-size:calc(clamp(.92rem,2vw,1.05rem) * var(--qScale));
-  font-weight:800; line-height:1.5; margin-bottom:4px; cursor:pointer;
+  font-weight:800; line-height:2.2;
 }
-.prompt:active{background:rgba(14,165,233,.08); border-radius:8px}
-.say-hint{font-size:.62rem;font-weight:800;color:#0ea5e9;margin-left:6px;opacity:.8}
-/* Ink strips - icon only outside */
-.strip-row{display:flex;align-items:flex-start;gap:8px;margin-top:8px}
-.strip-main{flex:1;min-width:0}
-.strip-label{font-size:calc(.70rem * var(--qScale));font-weight:900;color:#166534;margin-bottom:3px}
-.ruled-strip{
-  --rule:44px; position:relative; height:68px; width:100%; border:1.5px solid #94a3b8; border-radius:12px;
-  background-color:#fffef8;
+.speakable-word{
+  display:inline-block; padding:0 3px; border-radius:4px; cursor:pointer; transition:background .15s, color .15s;
+}
+.speakable-word:hover{background:#e0f2fe; color:#0369a1}
+.speakable-word:active{background:#bae6fd; transform:scale(0.96)}
+
+.inline-strip-wrap{
+  display:inline-flex; align-items:center; gap:4px; vertical-align:middle; margin:0 4px;
+}
+.inline-strip{
+  --rule:36px; position:relative; height:50px; width:150px; border:1.5px solid #94a3b8; border-radius:10px;
+  background: linear-gradient(135deg, rgba(255,254,248,0.92), rgba(240,253,244,0.92));
   background-image:linear-gradient(to bottom,transparent var(--rule),#93c5fd var(--rule),#93c5fd calc(var(--rule) + 1px),transparent calc(var(--rule) + 1px));
-  overflow:hidden; touch-action:none;
+  overflow:hidden; touch-action:none; display:inline-block;
 }
-.ruled-strip.sm{--rule:34px;height:54px}
-.ruled-strip canvas{position:absolute;inset:0;z-index:1;width:100%;height:100%;touch-action:none;cursor:crosshair}
-.wm{
-  position:absolute;left:12px;right:12px;top:0;height:var(--rule);z-index:0;display:flex;align-items:flex-end;padding-bottom:4px;pointer-events:none;overflow:hidden;white-space:nowrap;
-  font-family:'Kalam',cursive;font-size:calc(1.5rem * var(--qScale));color:rgba(15,23,42,.22)
+.inline-strip canvas{position:absolute;inset:0;z-index:1;width:100%;height:100%;touch-action:none;cursor:crosshair}
+.inline-wm{
+  position:absolute;left:8px;right:8px;top:0;height:var(--rule);z-index:0;display:flex;align-items:flex-end;padding-bottom:3px;pointer-events:none;overflow:hidden;white-space:nowrap;
+  font-family:'Kalam',cursive;font-size:calc(1.2rem * var(--qScale));color:rgba(15,23,42,.22)
 }
-.wm.long{font-size:calc(1.1rem * var(--qScale))}
-.strip-tools{display:flex;flex-direction:column;gap:6px}
-.icon-btn{
-  width:40px;height:40px;border-radius:10px;border:1.5px solid #cbd5e1;background:#f8fafc;display:inline-flex;align-items:center;justify-content:center;
-  font-size:18px;cursor:pointer;flex-shrink:0;
+.inline-strip.solved .inline-wm{
+  color: #16a34a; text-shadow: 0 0 8px rgba(34,197,94,0.4); animation: magicalSparkleText .8s ease;
 }
-.icon-btn:active{transform:scale(.93)}
-.icon-btn:disabled{opacity:.35}
-/* Match - bigger images */
+@keyframes magicalSparkleText{0%{transform:scale(1)}50%{transform:scale(1.1);filter:brightness(1.3)}100%{transform:scale(1)}}
+
+.strip-tools-mini{display:flex;gap:3px;align-items:center}
+.icon-btn-sm{
+  width:32px;height:32px;border-radius:8px;border:1.5px solid #cbd5e1;background:#f8fafc;display:inline-flex;align-items:center;justify-content:center;
+  font-size:14px;cursor:pointer;
+}
+.icon-btn-sm:active{transform:scale(.92)}
+
+/* Match */
 .match-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
 .match-grid.three{grid-template-columns:1fr 1fr 1fr}
 @media (orientation: portrait) and (max-width:700px){ .match-grid.three{grid-template-columns:1fr 1fr} }
@@ -156,8 +206,9 @@ main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;paddin
 .match-chip{
   display:flex;align-items:center;gap:8px;border:2px solid #cbd5e1;background:#f8fafc;border-radius:14px;padding:10px 12px;
   font-weight:800;font-size:calc(.82rem * var(--qScale));cursor:pointer;text-align:left;font-family:inherit;color:var(--ink);
-  min-height:56px;
+  min-height:56px; transition:transform .2s, border-color .2s, background .2s;
 }
+.match-chip:active{transform:scale(0.98)}
 .match-chip img{width:clamp(36px,6vw,56px);height:clamp(36px,6vw,56px);object-fit:contain;flex-shrink:0}
 .match-chip.selected{border-color:#eab308;background:#fef9c3;box-shadow:0 0 0 3px rgba(234,179,8,.25)}
 .match-chip.pending{border-color:#a78bfa;background:#f5f3ff}
@@ -168,16 +219,21 @@ main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;paddin
 .mini-btn.big{background:#16a34a;border-color:#16a34a;color:#fff;padding:10px 16px;font-size:.92rem}
 .tip{font-size:calc(.75rem * var(--qScale));font-weight:700;color:#0369a1;min-height:1.1em}
 .tip.ok{color:#15803d}.tip.bad{color:#b91c1c}
-/* TF */
+
+/* True / False */
 .tf-row{display:flex;gap:10px;margin-top:8px}
-.tf-btn{width:56px;height:56px;border-radius:14px;border:2px solid #cbd5e1;background:#fff;font-weight:900;font-size:1.2rem;cursor:pointer;font-family:inherit}
+.tf-btn{width:56px;height:56px;border-radius:14px;border:2px solid #cbd5e1;background:#fff;font-weight:900;font-size:1.2rem;cursor:pointer;font-family:inherit;transition:transform .15s}
+.tf-btn:active{transform:scale(0.92)}
 .tf-btn.on-t{background:#16a34a;color:#fff;border-color:#16a34a}
 .tf-btn.on-f{background:#dc2626;color:#fff;border-color:#dc2626}
-/* Pen drawer - hybrid with rainbow + cursive */
+
+/* Pen FAB */
 .pen-fab{
   position:fixed;right:16px;bottom:16px;z-index:60;width:56px;height:56px;border-radius:50%;background:#1e293b;border:2px solid rgba(255,255,255,.9);color:#fff;font-size:24px;cursor:pointer;
   box-shadow:0 8px 24px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;
+  animation: bounceFab 3s ease-in-out infinite;
 }
+@keyframes bounceFab{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 .pen-drawer{
   position:fixed;right:14px;bottom:80px;z-index:61;display:none;flex-direction:column;gap:8px;min-width:260px;
   background:rgba(15,23,42,.97);padding:10px;border-radius:20px;border:1.5px solid rgba(255,255,255,.35);box-shadow:0 16px 40px rgba(0,0,0,.5);
@@ -199,15 +255,16 @@ main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;paddin
 .st.on{background:#b45309;border-color:#fde047}
 .bubble label{color:#fff;font-size:11px;font-weight:800}
 .bubble input[type=range]{width:100%;accent-color:#fbbf24}
-/* Celebration - earth hero popup */
-#celebrate{
-  position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;
-  background:rgba(15,23,42,.48);backdrop-filter:blur(12px);
+
+/* Celebration & Grand Finale Stage */
+#grandCelebrationStage{
+  position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;
+  background:radial-gradient(circle at center, rgba(30,27,75,0.85) 0%, rgba(7,11,20,0.95) 100%);backdrop-filter:blur(12px);
 }
-#celebrate.open{display:flex}
+#grandCelebrationStage.open{display:flex}
 .celeb-box{
-  background:#fff;border-radius:26px;padding:18px 16px 14px;width:min(420px,92vw);text-align:center;
-  box-shadow:0 24px 80px rgba(0,0,0,.35); transform:scale(.9); animation:popIn .4s cubic-bezier(.18,.89,.32,1.28) forwards;
+  background:#fff;border-radius:26px;padding:24px 20px 18px;width:min(420px,92vw);text-align:center;
+  box-shadow:0 24px 80px rgba(0,0,0,.5); transform:scale(.9); animation:popIn .4s cubic-bezier(.18,.89,.32,1.28) forwards;
 }
 .celeb-box img{width:clamp(96px,18vw,140px);height:clamp(96px,18vw,140px);object-fit:contain;margin:0 auto 8px;display:block}
 .celeb-title{font-weight:900;font-size:clamp(1.2rem,3vw,1.5rem);color:#14532d}
@@ -215,9 +272,10 @@ main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;paddin
 .celeb-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 @keyframes popIn{to{transform:scale(1)}}
 @keyframes shakeX{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
-/* PIN */
-#pinOverlay{position:fixed;inset:0;z-index:80;background:rgba(15,23,42,.6);display:none;align-items:center;justify-content:center}
-#pinOverlay.open{display:flex}
+
+/* PIN & Parent Review Modals */
+#pinOverlay, #parentModal{position:fixed;inset:0;z-index:100050;background:rgba(15,23,42,.7);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center}
+#pinOverlay.open, #parentModal.open{display:flex}
 .pin-box{background:#fff;border-radius:20px;padding:18px;width:min(300px,90vw);text-align:center}
 .pin-box.shake{animation:shakeX .4s ease}
 .pin-title{font-weight:900;font-size:1.05rem;color:#4c1d95}
@@ -228,56 +286,81 @@ main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;paddin
 .pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
 .pin-pad button{height:50px;border-radius:12px;border:2px solid #c4b5fd;background:#f5f3ff;font:800 1.2rem 'Nunito',sans-serif;color:#4c1d95;cursor:pointer}
 .pin-cancel{margin-top:12px;background:none;border:none;color:var(--muted);font:800 .85rem 'Nunito',sans-serif;cursor:pointer}
+
 .toast{position:fixed;left:50%;bottom:90px;z-index:90;max-width:90vw;text-align:center;transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;transition:.25s;background:#14532d;color:#fff;font-weight:800;padding:10px 16px;border-radius:14px}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 #dimLayer{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:50;transition:opacity .2s}
-#confettiCanvas{position:fixed;inset:0;pointer-events:none;z-index:95}
+#confettiCanvas{position:fixed;inset:0;pointer-events:none;z-index:100060}
 </style>
 </head>
 <body>
+
+<!-- Notebook Binder Cover Overlay -->
+<div id="binderCover">
+  <div class="binder-book">
+    <div class="binder-rings">
+      <div class="ring"></div><div class="ring"></div><div class="ring"></div><div class="ring"></div>
+    </div>
+    <div style="font-size:3rem; margin-bottom:10px;">🌍</div>
+    <h1 style="color:#14532d; font-size:1.5rem; margin:0 0 8px;">Earth Patrol</h1>
+    <p style="color:#64748b; font-weight:800; font-size:0.9rem; margin-bottom:20px;">Pollution & Environment • Grade 3 EVS</p>
+    <div style="background:#f0fdf4; border:2px dashed #86efac; border-radius:14px; padding:12px; margin-bottom:20px; font-weight:800; color:#166534; font-size:0.85rem;">
+      Notebook prepared specially for:<br><span style="font-size:1.1rem; color:#047857;">✨ Zaina ✨</span>
+    </div>
+    <button class="btn on-practice" style="width:100%; padding:12px; font-size:1rem;" onclick="openNotebook()">Open Notebook 🚀</button>
+  </div>
+</div>
+
 <div id="dimLayer"></div>
-<header>
-  <div class="hdr-left">
-    <button class="btn" id="backBtn" onclick="onBack()">← Hub</button>
-    <span class="badge">Zaina</span>
-    <img src="assets/earth-globe.webp" alt="" style="width:28px;height:28px;object-fit:contain" onerror="this.style.display='none'" />
-    <div style="min-width:0"><div class="hdr-title" id="hTitle">Earth Patrol</div><div class="hdr-sub" id="hSub">Pollution · EVS</div></div>
-  </div>
-  <div class="hdr-right">
-    <div class="aa-pill" id="aaPill">
-      <button type="button" onclick="setFontScale(0)" title="Small">A-</button>
-      <button type="button" onclick="setFontScale(1)" title="Normal">Aa</button>
-      <button type="button" onclick="setFontScale(2)" title="Large">A+</button>
+
+<header id="topHeader">
+  <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+    <div class="hdr-left">
+      <button class="btn" id="backBtn" onclick="onBack()">← Hub</button>
+      <span class="badge">Zaina</span>
+      <img src="assets/earth-globe.webp" alt="" style="width:28px;height:28px;object-fit:contain" onerror="this.style.display='none'" />
+      <div style="min-width:0"><div class="hdr-title" id="hTitle">Earth Patrol</div><div class="hdr-sub" id="hSub">Pollution · EVS</div></div>
     </div>
-    <div class="mode-bar">
-      <button class="btn" id="btnPractice" onclick="onPracticeClick()">Practice</button>
-      <button class="btn" id="btnWrite" onclick="onWriteClick()">Write</button>
+    <div class="hdr-right">
+      <button type="button" class="font-toggle-btn" onclick="cycleFontScale()" title="Change font size">🔠 Aa</button>
+      <div class="mode-bar">
+        <button class="btn" id="btnPractice" onclick="onPracticeClick()">Practice</button>
+        <button class="btn" id="btnWrite" onclick="onWriteClick()">Write</button>
+      </div>
+      <label class="dim-wrap">Dim<input type="range" id="dimSlider" min="0" max="50" value="0" oninput="setDim(this.value)" /></label>
     </div>
-    <label class="dim-wrap">Dim<input type="range" id="dimSlider" min="0" max="50" value="0" oninput="setDim(this.value)" /></label>
   </div>
+  <button id="headerToggle" onclick="toggleHeader()" title="Hide or show top header">▴</button>
 </header>
+
 <main>
   <div id="boardView">
     <div class="card hero">
-      <img src="assets/earth-patrol-hero.webp" alt="" onerror="this.src='assets/earth-globe.webp'" />
+      <div class="hero-img-wrap">
+        <span class="sparkle">✨</span>
+        <span class="sparkle">⭐</span>
+        <span class="sparkle">🌟</span>
+        <img src="assets/earth-patrol-hero.webp" alt="" onerror="this.src='assets/earth-globe.webp'" />
+      </div>
       <div><div class="hero-title" id="heroTitle">Practice mode</div><div class="hero-sub" id="heroSub">Pick a mission. It flies to the middle! 🚀</div></div>
     </div>
     <div class="board-grid" id="boardGrid"></div>
   </div>
 </main>
-<!-- Section Modal - middle of Tab -->
+
+<!-- Section Modal -->
 <div id="sectionModal" onclick="if(event.target===this) closeSection()">
   <div class="modal-box">
     <div class="modal-head">
       <span class="modal-title" id="secTitle"></span>
       <div style="display:flex;gap:6px">
-        <button class="btn" onclick="speakFull(document.getElementById('panel')?.innerText||'')">🔊 Read</button>
         <button class="btn" onclick="closeSection()">✕ Close</button>
       </div>
     </div>
     <div class="modal-body" id="panel"></div>
   </div>
 </div>
+
 <!-- Pen -->
 <button type="button" class="pen-fab" id="penBtn" onclick="togglePenDrawer()" title="Pen tools">✏️</button>
 <div class="pen-drawer" id="penDrawer">
@@ -299,8 +382,9 @@ main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;paddin
     <div id="stampBubble" class="bubble"></div>
   </div>
 </div>
-<!-- Celebration with earth-patrol-hero -->
-<div id="celebrate" onclick="if(event.target===this) { closeCelebrate(); closeSection(); }">
+
+<!-- Grand Celebration Stage -->
+<div id="grandCelebrationStage">
   <div class="celeb-box">
     <img src="assets/earth-patrol-hero.webp" alt="" onerror="this.src='assets/earth-globe.webp'" />
     <div class="celeb-title" id="celebTitle">Mission Complete!</div>
@@ -312,17 +396,50 @@ main{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;paddin
     </div>
   </div>
 </div>
-<div id="pinOverlay" onclick="if(event.target===this) closePin()"><div class="pin-box" id="pinBox"><div class="pin-title">🔒 Parent check</div><div class="pin-sub">Enter PIN to go to Practice</div><div class="pin-dots" id="pinDots"><span></span><span></span><span></span><span></span></div><div class="pin-pad"><button onclick="pinKey('1')">1</button><button onclick="pinKey('2')">2</button><button onclick="pinKey('3')">3</button><button onclick="pinKey('4')">4</button><button onclick="pinKey('5')">5</button><button onclick="pinKey('6')">6</button><button onclick="pinKey('7')">7</button><button onclick="pinKey('8')">8</button><button onclick="pinKey('9')">9</button><button onclick="pinKey('C')">C</button><button onclick="pinKey('0')">0</button><button onclick="pinKey('E')">✓</button></div><button class="pin-cancel" onclick="closePin()">Cancel</button></div></div>
+
+<!-- PIN Lock Overlay -->
+<div id="pinOverlay" onclick="if(event.target===this) closePin()">
+  <div class="pin-box" id="pinBox">
+    <div class="pin-title">🔒 Parent check</div>
+    <div class="pin-sub">Enter PIN to go to Practice</div>
+    <div class="pin-dots" id="pinDots"><span></span><span></span><span></span><span></span></div>
+    <div class="pin-pad">
+      <button onclick="pinKey('1')">1</button><button onclick="pinKey('2')">2</button><button onclick="pinKey('3')">3</button>
+      <button onclick="pinKey('4')">4</button><button onclick="pinKey('5')">5</button><button onclick="pinKey('6')">6</button>
+      <button onclick="pinKey('7')">7</button><button onclick="pinKey('8')">8</button><button onclick="pinKey('9')">9</button>
+      <button onclick="pinKey('C')">C</button><button onclick="pinKey('0')">0</button><button onclick="pinKey('E')">✓</button>
+    </div>
+    <button class="pin-cancel" onclick="closePin()">Cancel</button>
+  </div>
+</div>
+
+<!-- Parent Review Modal -->
+<div id="parentModal" onclick="if(event.target===this) closeParentModal()">
+  <div class="pin-box">
+    <div class="pin-title">👪 Parent Review</div>
+    <div class="pin-sub">Please ask a parent to verify Zaina's independent work. Enter PIN to confirm.</div>
+    <div class="pin-dots" id="parentPinDots"><span></span><span></span><span></span><span></span></div>
+    <div class="pin-pad">
+      <button onclick="parentPinKey('1')">1</button><button onclick="parentPinKey('2')">2</button><button onclick="parentPinKey('3')">3</button>
+      <button onclick="parentPinKey('4')">4</button><button onclick="parentPinKey('5')">5</button><button onclick="parentPinKey('6')">6</button>
+      <button onclick="parentPinKey('7')">7</button><button onclick="parentPinKey('8')">8</button><button onclick="parentPinKey('9')">9</button>
+      <button onclick="parentPinKey('C')">C</button><button onclick="parentPinKey('0')">0</button><button onclick="parentPinKey('E')">✓</button>
+    </div>
+    <button class="pin-cancel" onclick="closeParentModal()">Cancel</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 <canvas id="confettiCanvas"></canvas>
+
 <script>
-const STORE='zaina_evs_pollution_hybrid_';
+const STORE='zaina_evs_pollution_hybrid_6d_';
 const PARENT_PIN='1995';
 const ICONS={air:'assets/pollution-air.webp',water:'assets/pollution-water.webp',land:'assets/pollution-land.webp',noise:'assets/pollution-noise.webp',radioactive:'assets/pollution-radioactive.webp'};
 const EMOJI_STAMPS=['🌍','🌳','💧','🏭','♻','☢','⭐','✅','❌','🌈'];
 const COLORS=['#0f172a','#dc2626','#2563eb','#16a34a','#ec4899','#f59e0b','#7c3aed'];
 const RAINBOW=['#ef4444','#f97316','#eab308','#22c55e','#3b82f6','#8b5cf6','#ec4899'];
-const SECTIONS={A:{title:'A · Fill in'},B:{title:'B · Match'},C:{title:'C · True / False'}};
+const SECTIONS={A:{title:'A · Fill in'},B:{title:'B · Match'},C:{title:'C · True / False'},D:{title:'D · Answer the Following'}};
 const ENCOURAGE=[
 "Amazing work, Zaina! 🌍 Earth Patrol is so proud of you!",
 "Superstar! You cleaned up the whole mission! ✨",
@@ -332,11 +449,11 @@ const ENCOURAGE=[
 "Perfect patrol! Your writing is beautiful! 💚"
 ];
 const FILLS=[
-  {id:'f1',qno:1,text:'________ damages our environment.',tip:'The main word for harming land, water and air.',strips:[{id:'f1',answer:'pollution'}]},
-  {id:'f2',qno:2,text:'Pollutants are of two types: ________ and ________.',tip:'One from nature; other made by people.',strips:[{id:'f2a',answer:'natural',label:'1'}, {id:'f2b',answer:'human-made',label:'2'}]},
-  {id:'f3',qno:3,text:'Land pollution is also known as ________.',tip:'Another name for the ground.',strips:[{id:'f3',answer:'soil pollution'}]},
-  {id:'f4',qno:4,text:'Sound is measured in ________.',tip:'Unit for loudness.',strips:[{id:'f4',answer:'decibels'}]},
-  {id:'f5',qno:5,text:'Radioactive pollution is caused by ________ substances.',tip:'Think nuclear materials.',strips:[{id:'f5',answer:'radioactive'}]}
+  {id:'f1',qno:1,template:'________ damages our environment.',tip:'The main word for harming land, water and air.',strips:[{id:'f1',answer:'pollution'}]},
+  {id:'f2',qno:2,template:'Pollutants are of two types: ________ and ________.',tip:'One from nature; other made by people.',strips:[{id:'f2a',answer:'natural'}, {id:'f2b',answer:'human-made'}]},
+  {id:'f3',qno:3,template:'Land pollution is also known as ________.',tip:'Another name for the ground.',strips:[{id:'f3',answer:'soil pollution'}]},
+  {id:'f4',qno:4,template:'Sound is measured in ________.',tip:'Unit for loudness.',strips:[{id:'f4',answer:'decibels'}]},
+  {id:'f5',qno:5,template:'Radioactive pollution is caused by ________ substances.',tip:'Think nuclear materials.',strips:[{id:'f5',answer:'radioactive'}]}
 ];
 const MATCH_LEFT=[
   {id:'m1',text:'Household garbage on streets',pair:'land'},
@@ -358,10 +475,16 @@ const TF=[
   {id:'t3',text:'Land pollution is also known as soil pollution.',answer:true},
   {id:'t4',text:'The comfortable level of sound for human ears is 200–240 decibels (dB).',answer:false}
 ];
+const QUESTIONS_D=[
+  {id:'d1',qno:1,question:'What is pollution?',answer:'Contamination of environment by harmful substances'},
+  {id:'d2',qno:2,question:'Name two main types of pollutants.',answer:'Natural and human-made'},
+  {id:'d3',qno:3,question:'How can we reduce noise pollution?',answer:'Planting trees and avoiding loud honking'}
+];
+
 let mode=localStorage.getItem(STORE+'mode')==='write'?'write':'practice';
 let section=null;
-let fontScaleIdx=Number(localStorage.getItem(STORE+'fontScale')||1);
-let fillOrder=[],matchLeftOrder=[],matchRightOrder=[],tfOrder=[];
+let fontScaleIdx=Number(localStorage.getItem(STORE+'fontScale')||0);
+let fillOrder=[],matchLeftOrder=[],matchRightOrder=[],tfOrder=[],dOrder=[];
 let matchState={pairs:{},locked:{}},tfChoice={},doneWrite={},doneWriteSections={};
 let selectedLeft=null,selectedRight=null,wrongIds=[],matchMsg=null;
 let pen={tool:'pen',color:'#0f172a',width:2.5,stamp:{type:'emoji',value:'⭐'}};
@@ -369,7 +492,74 @@ let rainbowIdx=0;
 let penOpen=false;
 const undoStacks={};
 const iconCache={};
-let pinBuf='';
+let pinBuf='', parentPinBuf='';
+let streakCount=0;
+
+/* Header Collapser */
+let headerOpen = localStorage.getItem(STORE+'header_open') !== 'no';
+function applyHeader(){
+  document.getElementById('topHeader').classList.toggle('collapsed', !headerOpen);
+  document.getElementById('headerToggle').textContent = headerOpen ? '▴' : '▾';
+}
+function toggleHeader(){
+  headerOpen = !headerOpen;
+  localStorage.setItem(STORE+'header_open', headerOpen ? 'yes' : 'no');
+  applyHeader();
+}
+applyHeader();
+
+function openNotebook(){
+  document.getElementById('binderCover').classList.add('open');
+  chime();
+}
+
+/* Web Audio Sound FX */
+let audioCtx=null;
+function getAudioCtx(){if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)(); return audioCtx}
+function playMarkerSound(){
+  try{
+    const ac=getAudioCtx();
+    const bufSize=ac.sampleRate*0.04;
+    const buf=ac.createBuffer(1,bufSize,ac.sampleRate);
+    const data=buf.getChannelData(0);
+    for(let i=0;i<bufSize;i++) data[i]=(Math.random()*2-1)*0.15;
+    const src=ac.createBufferSource(); src.buffer=buf;
+    const filt=ac.createBiquadFilter(); filt.type='bandpass'; filt.frequency.value=1200;
+    const gain=ac.createGain(); gain.gain.setValueAtTime(0.08,ac.currentTime);
+    src.connect(filt); filt.connect(gain); gain.connect(ac.destination);
+    src.start();
+  }catch(_){}
+}
+function playEraserSound(){
+  try{
+    const ac=getAudioCtx();
+    const bufSize=ac.sampleRate*0.08;
+    const buf=ac.createBuffer(1,bufSize,ac.sampleRate);
+    const data=buf.getChannelData(0);
+    for(let i=0;i<bufSize;i++) data[i]=(Math.random()*2-1)*0.25;
+    const src=ac.createBufferSource(); src.buffer=buf;
+    const filt=ac.createBiquadFilter(); filt.type='lowpass'; filt.frequency.value=400;
+    const gain=ac.createGain(); gain.gain.setValueAtTime(0.12,ac.currentTime);
+    src.connect(filt); filt.connect(gain); gain.connect(ac.destination);
+    src.start();
+  }catch(_){}
+}
+function playStarBurstSound(){
+  try{
+    const ac=getAudioCtx();
+    [587.33, 880, 1174.66].forEach((f,i)=>{
+      const t=ac.currentTime+i*0.08;
+      const o=ac.createOscillator(); const g=ac.createGain();
+      o.type='triangle'; o.frequency.value=f;
+      o.connect(g); g.connect(ac.destination);
+      g.gain.setValueAtTime(0.0001,t);
+      g.gain.exponentialRampToValueAtTime(0.2,t+0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001,t+0.25);
+      o.start(t); o.stop(t+0.3);
+    });
+  }catch(_){}
+}
+
 function loadJSON(k,fb){try{const v=JSON.parse(localStorage.getItem(STORE+k));return v==null?fb:v}catch(_){return fb}}
 function saveJSON(k,v){try{localStorage.setItem(STORE+k,JSON.stringify(v))}catch(_){}}
 function inkKey(id){return STORE+'ink_'+mode+'_'+id}
@@ -388,23 +578,29 @@ function resetOrders(rand){
   tfOrder=rand?shuffle(idx(TF.length)):idx(TF.length);
   matchLeftOrder=rand?shuffle(idx(MATCH_LEFT.length)):idx(MATCH_LEFT.length);
   matchRightOrder=rand?shuffle(idx(MATCH_RIGHT.length)):idx(MATCH_RIGHT.length);
+  dOrder=rand?shuffle(idx(QUESTIONS_D.length)):idx(QUESTIONS_D.length);
 }
-/* Font scale */
+/* Font Scale */
 function applyFontScale(){
-  const scales=[0.9,1,1.28];
+  const scales=[0.9,1.1,1.3];
   document.documentElement.style.setProperty('--qScale',scales[fontScaleIdx]);
-  document.querySelectorAll('#aaPill button').forEach((b,i)=>b.classList.toggle('on',i===fontScaleIdx));
 }
-function setFontScale(i){fontScaleIdx=i;localStorage.setItem(STORE+'fontScale',i);applyFontScale();render()}
-/* Mode */
+function cycleFontScale(){
+  fontScaleIdx=(fontScaleIdx+1)%3;
+  localStorage.setItem(STORE+'fontScale',fontScaleIdx);
+  applyFontScale();
+  toast(fontScaleIdx===0?'Font: Normal':fontScaleIdx===1?'Font: Large':'Font: Extra Large');
+}
+/* Mode Switching with PIN Protection */
 function setMode(m){
   if(m===mode) return;
   flushAllInk(); mode=m; localStorage.setItem(STORE+'mode',m); loadModeState(); resetOrders(m==='write');
   selectedLeft=selectedRight=null; wrongIds=[]; matchMsg=null; render();
 }
-function onWriteClick(){if(mode==='write')return; setMode('write'); if(!loadJSON('write_intro',false)){saveJSON('write_intro',true); toast('Write mode ✍ — finish a section to get Earth hero cheer!')}}
+function onWriteClick(){if(mode==='write')return; setMode('write'); if(!loadJSON('write_intro',false)){saveJSON('write_intro',true); toast('Write mode ✍ — finish a section for parent review & Earth hero cheer!')}}
 function onPracticeClick(){if(mode==='write') openPin()}
-/* PIN */
+
+/* PIN Lock Modal */
 function openPin(){pinBuf=''; updatePinDots(); document.getElementById('pinOverlay').classList.add('open')}
 function closePin(){pinBuf=''; document.getElementById('pinOverlay').classList.remove('open')}
 function updatePinDots(){document.querySelectorAll('#pinDots span').forEach((s,i)=>s.classList.toggle('on',i<pinBuf.length))}
@@ -414,23 +610,39 @@ function pinKey(k){
     pinBuf=''; const box=document.getElementById('pinBox'); box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake'); toast('Wrong PIN')
   } else if(pinBuf.length<4) pinBuf+=k; updatePinDots();
 }
+
+/* Parent Review Modal before Grand Celebration */
+function openParentModal(){parentPinBuf=''; updateParentPinDots(); document.getElementById('parentModal').classList.add('open')}
+function closeParentModal(){parentPinBuf=''; document.getElementById('parentModal').classList.remove('open')}
+function updateParentPinDots(){document.querySelectorAll('#parentPinDots span').forEach((s,i)=>s.classList.toggle('on',i<parentPinBuf.length))}
+function parentPinKey(k){
+  if(k==='C') parentPinBuf=''; else if(k==='E'){
+    if(parentPinBuf===PARENT_PIN){closeParentModal(); triggerGrandCelebrationAfterReview(); return}
+    parentPinBuf=''; toast('Wrong PIN')
+  } else if(parentPinBuf.length<4) parentPinBuf+=k; updateParentPinDots();
+}
+
 let toastT; function toast(msg){const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('show'),2300)}
-/* Speak - tap anywhere */
-function speak(text){
+
+/* Word Speech & Syllables */
+function speakWord(w){
   if(!('speechSynthesis' in window)){toast('Read-aloud not on this device'); return}
   speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(text); u.lang='en-GB'; u.rate=0.92;
+  const cleanWord=w.replace(/[^a-zA-Z0-9 ]/g,'');
+  if(!cleanWord) return;
+  const u=new SpeechSynthesisUtterance(cleanWord); u.lang='en-GB'; u.rate=0.85;
   const v=speechSynthesis.getVoices().find(v=>/en[-_]GB/i.test(v.lang)); if(v) u.voice=v;
   speechSynthesis.speak(u);
 }
-function speakFull(txt){const clean=(txt||'').replace(/\s+/g,' ').trim().slice(0,500); if(clean) speak(clean)}
-function promptSpeak(el){speakFull(el.innerText||el.textContent)}
-/* Navigation - 6D portal */
+function makeWordsHtml(text){
+  return text.split(' ').map(w=>`<span class="speakable-word" onclick="speakWord('${w.replace(/'/g,"\\'")}')">${w}</span>`).join(' ');
+}
+
+/* Navigation */
 function goHub(){try{window.parent.postMessage('close-lesson-to-hub','*')}catch(_){} if(history.length>1) history.back()}
 function onBack(){ if(section) closeSection(); else goHub()}
 function openSection(s, cardEl){
   flushAllInk();
-  // fly animation if cardEl provided
   if(cardEl){
     cardEl.style.transition='transform .42s cubic-bezier(.18,.89,.32,1.28), opacity .32s';
     cardEl.style.transform='scale(1.1) translateZ(60px)';
@@ -452,28 +664,62 @@ function closeSection(){
 function updateModeUI(){
   document.getElementById('btnPractice').className='btn'+(mode==='practice'?' on-practice':'');
   document.getElementById('btnWrite').className='btn'+(mode==='write'?' on-write':'');
-  document.getElementById('heroTitle').textContent=mode==='practice'?'Practice mode':'Write mode — finish all to get hero cheer!';
-  document.getElementById('heroSub').textContent=mode==='practice'?'Tap a mission — it flies to the middle 🚀':'Independent work. Complete a whole section for celebration 🌍';
+  document.getElementById('heroTitle').textContent=mode==='practice'?'Practice mode':'Write mode — finish all for parent review & hero cheer!';
+  document.getElementById('heroSub').textContent=mode==='practice'?'Tap a mission — it flies to the middle 🚀':'Independent work. Complete a whole section for parent verification & celebration 🌍';
 }
 /* Dim */
 function setDim(v){document.getElementById('dimLayer').style.opacity=(Number(v)/100).toFixed(2); localStorage.setItem(STORE+'dim',v)}
-/* Ink */
+
+/* Ink & Palm Rejection Engine */
+let penSeenAt=0;
+document.addEventListener('pointerdown',e=>{if(e.pointerType==='pen') penSeenAt=Date.now();},true);
+function fingerAllowed(e){
+  if(Date.now()-penSeenAt<1200) return false;
+  if(e.width>24 || e.height>24) return false;
+  return true;
+}
+
 function getCtx(c){const ctx=c.getContext('2d'); const d=Number(c.dataset.dpr)||1; ctx.setTransform(d,0,0,d,0,0); return ctx}
 function canvasFor(id){return document.querySelector('canvas[data-ink-id="'+id+'"]')}
 function undoKey(c){return mode+':'+c.dataset.inkId}
 function isBlank(c){try{const d=c.getContext('2d').getImageData(0,0,c.width,c.height).data; for(let i=3;i<d.length;i+=4) if(d[i]) return false; return true}catch(_){return false}}
-function saveInk(c){if(!c||!c.dataset.inkId||!c.width) return; const key=inkKey(c.dataset.inkId); try{if(isBlank(c)) localStorage.removeItem(key); else localStorage.setItem(key,c.toDataURL('image/png'))}catch(_){}}
+function saveInk(c){
+  if(!c||!c.dataset.inkId||!c.width) return;
+  const key=inkKey(c.dataset.inkId);
+  try{
+    if(isBlank(c)) {
+      localStorage.removeItem(key);
+      c.closest('.inline-strip')?.classList.remove('solved');
+    } else {
+      localStorage.setItem(key,c.toDataURL('image/png'));
+      if(mode==='practice') {
+        c.closest('.inline-strip')?.classList.add('solved');
+        spawnStarBurst(c);
+      }
+    }
+  }catch(_){}
+}
 function flushAllInk(){document.querySelectorAll('canvas[data-ink-id]').forEach(saveInk)}
 function pushUndo(c){const k=undoKey(c); const st=undoStacks[k]||(undoStacks[k]=[]); st.push(c.toDataURL('image/png')); if(st.length>20) st.shift()}
 function restore(c,url){const ctx=getCtx(c); const w=Number(c.dataset.w),h=Number(c.dataset.h); ctx.clearRect(0,0,w,h); if(!url){saveInk(c); return} const img=new Image(); img.onload=()=>{ctx.clearRect(0,0,w,h); ctx.drawImage(img,0,0,w,h); saveInk(c)}; img.src=url}
-function undoStrip(id){const c=canvasFor(id); if(!c) return; const st=undoStacks[mode+':'+id]; if(!st||!st.length){toast('Nothing to undo yet'); return} restore(c,st.pop())}
-function clearStrip(id){const c=canvasFor(id); if(!c||!c.width) return; pushUndo(c); getCtx(c).clearRect(0,0,Number(c.dataset.w),Number(c.dataset.h)); saveInk(c)}
+function undoStrip(id){playEraserSound(); const c=canvasFor(id); if(!c) return; const st=undoStacks[mode+':'+id]; if(!st||!st.length){toast('Nothing to undo yet'); return} restore(c,st.pop())}
+function clearStrip(id){playEraserSound(); const c=canvasFor(id); if(!c||!c.width) return; pushUndo(c); getCtx(c).clearRect(0,0,Number(c.dataset.w),Number(c.dataset.h)); saveInk(c)}
+
 function mountStrip(c){
   const parent=c.parentElement; const w=parent.clientWidth,h=parent.clientHeight; if(!w||!h) return;
   const dpr=Math.min(window.devicePixelRatio||1,2); c.width=Math.round(w*dpr); c.height=Math.round(h*dpr);
   c.style.width=w+'px'; c.style.height=h+'px'; c.dataset.dpr=dpr; c.dataset.w=w; c.dataset.h=h;
   const ctx=getCtx(c); ctx.clearRect(0,0,w,h);
-  const raw=localStorage.getItem(inkKey(c.dataset.inkId)); if(raw){const img=new Image(); img.onload=()=>{ctx.clearRect(0,0,w,h); ctx.drawImage(img,0,0,w,h)}; img.src=raw}
+  const raw=localStorage.getItem(inkKey(c.dataset.inkId));
+  if(raw){
+    const img=new Image();
+    img.onload=()=>{
+      ctx.clearRect(0,0,w,h);
+      ctx.drawImage(img,0,0,w,h);
+      if(mode==='practice') c.closest('.inline-strip')?.classList.add('solved');
+    };
+    img.src=raw;
+  }
 }
 function iconImage(k){if(!iconCache[k]){const im=new Image(); im.src=ICONS[k]; iconCache[k]=im} return iconCache[k]}
 function drawStamp(ctx,x,y){
@@ -492,13 +738,38 @@ function applyStroke(ctx){
   else if(pen.tool==='cursive'){ctx.globalCompositeOperation='source-over'; ctx.strokeStyle=pen.color; ctx.lineWidth=pen.width*1.5; ctx.globalAlpha=0.88}
   else{ctx.globalCompositeOperation='source-over'; ctx.strokeStyle=strokeStyleFor(); ctx.lineWidth=pen.width; ctx.globalAlpha=1}
 }
+
+function spawnStarBurst(targetEl){
+  playStarBurstSound();
+  streakCount++;
+  const rect = targetEl.getBoundingClientRect();
+  const x = rect.left + rect.width / 2;
+  const y = rect.top + rect.height / 2;
+  const burst = document.createElement('div');
+  burst.style.cssText=`position:fixed; left:${x}px; top:${y}px; z-index:99; pointer-events:none; font-size:22px; transform:translate(-50%,-50%); animation: burstAnim .6s ease forwards;`;
+  burst.innerHTML='⭐✨🔥';
+  document.body.appendChild(burst);
+  setTimeout(()=>burst.remove(), 600);
+}
+
+const styleSheet = document.createElement('style');
+styleSheet.innerHTML=`
+@keyframes burstAnim{
+  0%{transform:translate(-50%,-50%) scale(0.5); opacity:1}
+  100%{transform:translate(-50%,-70px) scale(1.4); opacity:0}
+}
+`;
+document.head.appendChild(styleSheet);
+
 (function bindDraw(){
   let drawing=false,lx=0,ly=0,active=null;
   const pos=(e,c)=>{const r=c.getBoundingClientRect(); return [e.clientX-r.left,e.clientY-r.top]};
   document.addEventListener('pointerdown',e=>{
     const c=e.target.closest?e.target.closest('canvas[data-ink-id]'):null; if(!c||!c.width) return;
+    if(e.pointerType==='touch' && !fingerAllowed(e)) return;
     e.preventDefault(); try{c.setPointerCapture(e.pointerId)}catch(_){}
     const [x,y]=pos(e,c); pushUndo(c); const ctx=getCtx(c);
+    if(pen.tool==='eraser') playEraserSound(); else playMarkerSound();
     if(pen.tool==='stamp'){drawStamp(ctx,x,y); ctx.globalCompositeOperation='source-over'; ctx.globalAlpha=1; saveInk(c); return}
     drawing=true; active=c; lx=x; ly=y; ctx.beginPath(); applyStroke(ctx); ctx.moveTo(x,y); ctx.lineTo(x+0.01,y); ctx.stroke(); ctx.globalAlpha=1;
   },{passive:false});
@@ -507,6 +778,7 @@ function applyStroke(ctx){
   document.addEventListener('pointerup',end); document.addEventListener('pointercancel',end);
   document.addEventListener('contextmenu',e=>{if(e.target.closest&&e.target.closest('canvas[data-ink-id]')) e.preventDefault()});
 })();
+
 /* Pen UI */
 function buildPenUI(){
   document.getElementById('colorBubble').innerHTML='<div class="bub-title">Colours</div><div class="bub-row">'+COLORS.map(c=>`<div class="sw" data-c="${c}" style="background:${c}" onclick="setColor('${c}')"></div>`).join('')+'</div>';
@@ -516,7 +788,7 @@ function closeBubbles(){document.querySelectorAll('.bubble').forEach(b=>b.classL
 function toggleBubble(id){const el=document.getElementById(id); const was=el.classList.contains('open'); closeBubbles(); if(!was) el.classList.add('open'); updatePenUI()}
 function togglePenDrawer(){penOpen=!penOpen; closeBubbles(); document.getElementById('penDrawer').classList.toggle('open',penOpen)}
 function savePen(){saveJSON('pen',pen)}
-function setTool(t){pen.tool=t; if(t!=='stamp'){/* keep stamp */} closeBubbles(); savePen(); updatePenUI()}
+function setTool(t){pen.tool=t; closeBubbles(); savePen(); updatePenUI()}
 function setColor(c){pen.color=c; pen.tool='pen'; closeBubbles(); savePen(); updatePenUI()}
 function setThickness(v){pen.width=Number(v); savePen(); updatePenUI()}
 function pickStamp(type,value){pen.stamp={type,value}; pen.tool='stamp'; savePen(); closeBubbles(); updatePenUI()}
@@ -530,26 +802,25 @@ function updatePenUI(){
   document.querySelectorAll('.st').forEach(b=>b.classList.toggle('on',pen.tool==='stamp'&&b.dataset.type===pen.stamp.type&&b.dataset.v===pen.stamp.value));
   document.getElementById('thickSlider').value=pen.width; document.getElementById('thickLabel').textContent=pen.width;
 }
+
 /* Board */
 function fillInkCount(){return FILLS.reduce((n,q)=>n+q.strips.filter(s=>hasInk(s.id)).length,0)}
 function fillStripTotal(){return FILLS.reduce((n,q)=>n+q.strips.length,0)}
+function dInkCount(){return QUESTIONS_D.filter(q=>hasInk('d_'+q.id)).length}
 function renderBoard(){
   const cards=[
     {k:'A',ico:'✍️',title:'Fill in',sub:'5 questions',total:fillStripTotal(),done:fillInkCount(),layer:0},
     {k:'B',ico:'🔗',title:'Match',sub:'5 pairs',total:MATCH_LEFT.length,done:Object.keys(matchState.locked).length,layer:1},
     {k:'C',ico:'✅',title:'True / False',sub:'4 questions',total:TF.length,done:TF.filter(q=>typeof tfChoice[q.id]==='boolean').length,layer:2},
-    {k:'D',ico:'🔒',title:'Answer the following',sub:'Coming soon',locked:true,layer:3}
+    {k:'D',ico:'📝',title:'Answer Following',sub:'3 questions',total:QUESTIONS_D.length,done:dInkCount(),layer:3}
   ];
   document.getElementById('boardGrid').innerHTML=cards.map(c=>{
-    if(c.locked) return `<div class="mission locked" style="transform: translateZ(${-c.layer*2}px)"><div class="ico">${c.ico}</div><div class="t">${c.title}</div><div class="s">${c.sub}</div></div>`;
     const badge=doneWriteSections[c.k]?'<span class="done-badge">🌍 Done</span>':'';
     const dots=Array.from({length:c.total},(_,i)=>`<span class="dot ${i<c.done?'on':''}"></span>`).join('');
-    // 6D tilt based on layer
     return `<button type="button" class="mission" data-k="${c.k}" onclick="openSection('${c.k}', this)" style="transform: translateZ(${c.layer*8}px)">
       ${badge}<div class="ico">${c.ico}</div><div class="t">${c.title}</div><div class="s">${c.sub} · ${Math.min(c.done,c.total)}/${c.total}</div><div class="dots">${dots}</div>
     </button>`;
   }).join('');
-  // add subtle 6D parallax on pointer move for Tab S11
   const grid=document.getElementById('boardGrid');
   grid.onpointermove=e=>{
     const rect=grid.getBoundingClientRect();
@@ -562,21 +833,41 @@ function renderBoard(){
   };
   grid.onpointerleave=()=>{ renderBoard(); };
 }
+
 /* Sections */
-function stripBlock(id,answer,label,small){
-  const wm=(mode==='practice'&&answer)?`<div class="wm ${answer.length>12?'long':''}">${answer}</div>`:'';
-  return `<div class="strip-main">${label?`<div class="strip-label">${label}</div>`:''}<div class="ruled-strip ${small?'sm':''}">${wm}<canvas data-ink-id="${id}"></canvas></div></div>
-  <div class="strip-tools"><button type="button" class="icon-btn" onclick="undoStrip('${id}')" title="Undo">↶</button><button type="button" class="icon-btn" onclick="clearStrip('${id}')" title="Clear">🗑</button></div>`;
-}
 function renderFill(){
   return `<div class="layer-stack">${fillOrder.map(i=>{
     const q=FILLS[i];
-    const strips=q.strips.map(s=>`<div class="strip-row">${stripBlock(s.id,s.answer,s.label,false)}</div>`).join('');
+    const parts = q.template.split('________');
+    let sentenceHtml = '';
+    parts.forEach((part, idx)=>{
+      if(part) sentenceHtml += makeWordsHtml(part);
+      if(idx < q.strips.length){
+        const s = q.strips[idx];
+        const wm = (mode==='practice'&&s.answer)?`<div class="inline-wm">${s.answer}</div>`:'';
+        const widthStyle = s.answer.length > 10 ? 'width:190px' : 'width:130px';
+        sentenceHtml += `<span class="inline-strip-wrap">
+          <span class="inline-strip" style="${widthStyle}">
+            ${wm}
+            <canvas data-ink-id="${s.id}"></canvas>
+          </span>
+          <span class="strip-tools-mini">
+            <button type="button" class="icon-btn-sm" onclick="undoStrip('${s.id}')" title="Undo">↶</button>
+            <button type="button" class="icon-btn-sm" onclick="clearStrip('${s.id}')" title="Clear">🗑</button>
+          </span>
+        </span>`;
+      }
+    });
+
     const tipBtn=mode==='practice'?`<button type="button" class="mini-btn" onclick="showFillTip('${q.id}')">💡 Tip</button>`:'';
-    return `<div class="layer card" onclick="promptSpeak(this)"><div class="prompt">${q.qno}. ${q.text} <span class="say-hint">tap to hear 🔊</span></div>${strips}<div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap">${tipBtn}<div class="tip" id="tip_${q.id}"></div></div></div>`;
+    return `<div class="layer card">
+      <div class="sentence-line"><span style="margin-right:6px; color:#14532d; font-weight:900;">${q.qno}.</span>${sentenceHtml}</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap">${tipBtn}<div class="tip" id="tip_${q.id}"></div></div>
+    </div>`;
   }).join('')}</div>`;
 }
-function showFillTip(id){const q=FILLS.find(x=>x.id===id); const el=document.getElementById('tip_'+id); if(!q||!el) return; el.textContent='Tip: '+q.tip+' (Idea: '+q.strips.map(s=>s.answer).join(' and ')+')'; el.className='tip ok'; speakFull(q.tip)}
+function showFillTip(id){const q=FILLS.find(x=>x.id===id); const el=document.getElementById('tip_'+id); if(!q||!el) return; el.textContent='Tip: '+q.tip; el.className='tip ok'; speakWord(q.tip)}
+
 function leftOfRight(rid){return Object.keys(matchState.pairs).find(l=>matchState.pairs[l]===rid)}
 function renderMatch(){
   const left=matchLeftOrder.map(i=>MATCH_LEFT[i]); const right=matchRightOrder.map(i=>MATCH_RIGHT[i]);
@@ -587,12 +878,12 @@ function renderMatch(){
     const icon=it.icon?`<img src="${it.icon}" alt="" onerror="this.style.display='none'" />`:(it.emoji?`<span style="font-size:28px">${it.emoji}</span>`:'');
     return `<button type="button" class="match-chip ${cls}" onclick="tapRight('${it.id}')">${icon}<span>${it.text}</span></button>`;
   }).join('');
-  const grid=`<div class="match-grid"><div class="match-col"><div class="col-head">Cause</div>${leftHTML}</div><div class="match-col"><div class="col-head">Type — big icons!</div>${rightHTML}</div></div>`;
+  const grid=`<div class="match-grid"><div class="match-col"><div class="col-head">Cause</div>${leftHTML}</div><div class="match-col"><div class="col-head">Type</div>${rightHTML}</div></div>`;
   const defaultMsg=mode==='practice'?'Tap one left, then one right.':'Tap cause then type. When all 5 paired, press Check.';
   const msgText=matchMsg?matchMsg.t:defaultMsg; const msgCls=matchMsg?matchMsg.c:'';
   const checkBtn=(mode==='write'&&pairedCount===MATCH_LEFT.length&&!allLocked)?`<button type="button" class="mini-btn big" onclick="checkMatches()">✅ Check matches</button>`:'';
   const reshuffleBtn=`<button type="button" class="mini-btn" onclick="reshuffleMatch()">🔀 Reshuffle</button>`;
-  return `<div class="card" onclick="if(event.target===this) speakFull(this.innerText)"><h3>Match the cause to the type — tap anywhere to hear 🔊</h3>${grid}<div class="match-actions">${checkBtn}${reshuffleBtn}</div><div class="tip ${msgCls}" id="matchTip">${msgText}</div></div>`;
+  return `<div class="card"><h3>Match the cause to the type</h3>${grid}<div class="match-actions">${checkBtn}${reshuffleBtn}</div><div class="tip ${msgCls}" id="matchTip">${msgText}</div></div>`;
 }
 function tapLeft(id){
   if(matchState.locked[id]) return; wrongIds=[];
@@ -606,8 +897,13 @@ function tapRight(rid){
 function attemptPair(lid,rid){
   const L=MATCH_LEFT.find(x=>x.id===lid), R=MATCH_RIGHT.find(x=>x.id===rid); selectedLeft=null; selectedRight=null;
   if(mode==='practice'){
-    if(L.pair===R.pair){matchState.pairs[lid]=rid; matchState.locked[lid]=true; matchMsg={t:'Correct pair! 🎉',c:'ok'}; speak('Correct!')}
-    else{matchMsg={t:'Not a match — try again.',c:'bad'}; speak('Try again')}
+    if(L.pair===R.pair){
+      matchState.pairs[lid]=rid; matchState.locked[lid]=true; matchMsg={t:'Correct pair! 🎉',c:'ok'};
+      speakWord('Correct');
+      const chipEl=document.querySelector(`[onclick*="${lid}"]`) || document.body;
+      spawnStarBurst(chipEl);
+    }
+    else{matchMsg={t:'Not a match — try again.',c:'bad'}; speakWord('Try again')}
   } else {matchState.pairs[lid]=rid; matchMsg={t:'Paired. Press Check when all 5 are paired.',c:''}}
   persistMatch(); renderSection(); checkSectionComplete();
 }
@@ -619,37 +915,73 @@ function checkMatches(){
   matchMsg=bad.length?{t:`${ok} right, ${bad.length} to try again.`,c:'bad'}:{t:'All matched! 🎉',c:'ok'};
   persistMatch(); renderSection(); checkSectionComplete();
 }
-function reshuffleMatch(){shuffleMatch(true); selectedLeft=selectedRight=null; renderSection()}
+function reshuffleMatch(){resetOrders(true); selectedLeft=selectedRight=null; renderSection()}
+
 function renderTF(){
   return `<div class="layer-stack">${tfOrder.map(i=>{
     const q=TF[i]; const ch=tfChoice[q.id];
-    let tip=''; if(mode==='practice'&&typeof ch==='boolean'){const ok=ch===q.answer; tip=`<div class="tip ${ok?'ok':'bad'}">${ok?'Correct!':'Not quite — think again.'}</div>`}
-    return `<div class="layer card" onclick="promptSpeak(this)"><div class="prompt">${i+1}. ${q.text} <span class="say-hint">tap to hear 🔊</span></div><div class="tf-row"><button type="button" class="tf-btn ${ch===true?'on-t':''}" onclick="setTF('${q.id}',true)">T</button><button type="button" class="tf-btn ${ch===false?'on-f':''}" onclick="setTF('${q.id}',false)">F</button></div>${tip}</div>`;
+    let tip=''; if(mode==='practice'&&typeof ch==='boolean'){
+      const ok=ch===q.answer;
+      tip=`<div class="tip ${ok?'ok':'bad'}">${ok?'Correct!':'Not quite — think again.'}</div>`;
+      if(ok) spawnStarBurst(document.body);
+    }
+    return `<div class="layer card">
+      <div class="sentence-line"><span style="margin-right:6px; color:#14532d; font-weight:900;">${i+1}.</span>${makeWordsHtml(q.text)}</div>
+      <div class="tf-row"><button type="button" class="tf-btn ${ch===true?'on-t':''}" onclick="setTF('${q.id}',true)">T</button><button type="button" class="tf-btn ${ch===false?'on-f':''}" onclick="setTF('${q.id}',false)">F</button></div>${tip}
+    </div>`;
   }).join('')}</div>`;
 }
 function setTF(id,val){tfChoice[id]=val; saveJSON('tf_'+mode,tfChoice); renderSection(); checkSectionComplete()}
+
+function renderSectionD(){
+  return `<div class="layer-stack">${dOrder.map(i=>{
+    const q=QUESTIONS_D[i];
+    const stripId='d_'+q.id;
+    const wm=(mode==='practice'&&q.answer)?`<div class="inline-wm" style="font-size:1rem;">${q.answer}</div>`:'';
+    return `<div class="layer card">
+      <div class="sentence-line"><span style="margin-right:6px; color:#14532d; font-weight:900;">${q.qno}.</span>${makeWordsHtml(q.question)}</div>
+      <div style="margin-top:8px;">
+        <div class="inline-strip" style="width:100%; height:80px; --rule:40px;">
+          ${wm}
+          <canvas data-ink-id="${stripId}"></canvas>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:4px;">
+          <button type="button" class="icon-btn-sm" onclick="undoStrip('${stripId}')" title="Undo">↶</button>
+          <button type="button" class="icon-btn-sm" onclick="clearStrip('${stripId}')" title="Clear">🗑</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
 function sectionDone(s){
   if(s==='A') return FILLS.every(q=>q.strips.every(st=>hasInk(st.id)));
   if(s==='B') return Object.keys(matchState.locked).length===MATCH_LEFT.length;
   if(s==='C') return TF.every(q=>typeof tfChoice[q.id]==='boolean');
+  if(s==='D') return QUESTIONS_D.every(q=>hasInk('d_'+q.id));
   return false;
 }
 function checkSectionComplete(){
   if(mode!=='write' || !section) return;
   if(sectionDone(section) && !doneWriteSections[section]){
     doneWriteSections[section]=true; saveJSON('done_write_sections',doneWriteSections);
-    const msg=ENCOURAGE[Math.floor(Math.random()*ENCOURAGE.length)];
-    showCelebrate(SECTIONS[section].title, msg);
-    spawnConfetti(); chime();
+    // In write mode, require parent review verification before grand celebration
+    openParentModal();
   }
 }
+
+function triggerGrandCelebrationAfterReview(){
+  const msg=ENCOURAGE[Math.floor(Math.random()*ENCOURAGE.length)];
+  showCelebrate(section ? SECTIONS[section].title : 'Mission', msg);
+  spawnConfetti(); chime();
+}
+
 let celebTimer=null, celebCount=5;
 function showCelebrate(title,msg){
   document.getElementById('celebTitle').textContent=title+' Complete! 🌍';
   document.getElementById('celebMsg').textContent=msg;
-  document.getElementById('celebrate').classList.add('open');
-  speak(msg);
-  // auto-return countdown
+  document.getElementById('grandCelebrationStage').classList.add('open');
+  speakWord('Amazing');
   clearInterval(celebTimer);
   celebCount=5;
   const countEl=document.getElementById('celebCountdown');
@@ -662,15 +994,14 @@ function showCelebrate(title,msg){
 }
 function continueCelebrate(){
   clearInterval(celebTimer);
-  document.getElementById('celebrate').classList.remove('open');
-  // stay in section
+  document.getElementById('grandCelebrationStage').classList.remove('open');
 }
 function closeCelebrate(){
   clearInterval(celebTimer);
-  document.getElementById('celebrate').classList.remove('open');
+  document.getElementById('grandCelebrationStage').classList.remove('open');
   renderBoard();
 }
-function chime(){try{const ac=new (window.AudioContext||window.webkitAudioContext)(); [523,659,784].forEach((f,i)=>{const t0=ac.currentTime+i*0.15; const o=ac.createOscillator(), g=ac.createGain(); o.frequency.value=f; o.connect(g); g.connect(ac.destination); g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(0.25,t0+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t0+0.5); o.start(t0); o.stop(t0+0.55)})}catch(_){}}
+function chime(){try{const ac=getAudioCtx(); [523,659,784].forEach((f,i)=>{const t0=ac.currentTime+i*0.15; const o=ac.createOscillator(), g=ac.createGain(); o.frequency.value=f; o.connect(g); g.connect(ac.destination); g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(0.25,t0+0.02); g.gain.exponentialRampToValueAtTime(0.0001,t0+0.5); o.start(t0); o.stop(t0+0.55)})}catch(_){}}
 function spawnConfetti(){
   const c=document.getElementById('confettiCanvas'); const ctx=c.getContext('2d'); c.width=innerWidth; c.height=innerHeight;
   const colors=['#22c55e','#0ea5e9','#fde047','#f472b6','#a78bfa','#fb923c'];
@@ -680,7 +1011,10 @@ function spawnConfetti(){
 function renderSection(){
   if(!section) return;
   let html='';
-  if(section==='A') html=renderFill(); else if(section==='B') html=renderMatch(); else html=renderTF();
+  if(section==='A') html=renderFill();
+  else if(section==='B') html=renderMatch();
+  else if(section==='C') html=renderTF();
+  else if(section==='D') html=renderSectionD();
   document.getElementById('panel').innerHTML=html;
   requestAnimationFrame(()=>{document.querySelectorAll('canvas[data-ink-id]').forEach(mountStrip)});
   updatePenUI();
@@ -691,8 +1025,9 @@ function render(){
   if(!section){ modal.classList.remove('open'); document.getElementById('boardView').classList.remove('hidden'); renderBoard(); }
   document.getElementById('backBtn').textContent=section?'← Board':'← Hub';
   document.getElementById('hTitle').textContent=section? 'Earth Patrol · '+SECTIONS[section].title : 'Earth Patrol';
-  document.getElementById('hSub').textContent=section? (mode==='write'?'Write mode — finish all for cheer':'Practice mode') : 'Pollution · EVS';
+  document.getElementById('hSub').textContent=section? (mode==='write'?'Write mode — finish for parent review':'Practice mode') : 'Pollution · EVS';
 }
+
 /* Init */
 buildPenUI(); updatePenUI();
 (function initDim(){const s=localStorage.getItem(STORE+'dim'); if(s!=null){document.getElementById('dimSlider').value=s; setDim(s)}})();
