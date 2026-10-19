@@ -1,44 +1,122 @@
-# 🌟 Learning Quest — Daily Practice Hub
+# Learning Quest — Daily Practice Hub
 
-An interactive, tablet-optimized learning platform designed for stylus handwriting, memorization, and daily practice.
+Interactive practice lessons for **Humayun** (Samsung Tab S9) and **Zaina** (Samsung Tab S11).
 
----
-
-## 🚀 Live Access Links
-
-* 📱 **[Master Quest Hub](https://nimrafarheen1995-ui.github.io/practice-app/)** *(Main launchpad for both tablets)*
-* Open the hub, then tap Humayun or Zaina to see their lessons.
+This app stays on our tablets. It is not a public product — just a family learning kit.
 
 ---
 
-## 📚 Subject Architecture
+## Open the hub
 
-The hub automatically detects and formats lessons for these 6 core subjects:
+- Live hub (if deployed): use your GitHub Pages link  
+- Or open `index.html` on the tablet
 
-| Subject | Supported Keywords | Palette | Auto Icon |
-| :--- | :--- | :--- | :--- |
-| **English** | `english` | Blue | 📖 |
-| **Maths** | `maths`, `math` | Amber | 🔢 |
-| **EVS** | `evs`, `science` | Green | 🌱 |
-| **Islamiyath** | `islamiyath`, `islam` | Teal | 🌙 |
-| **Tamil** | `tamil` | Red | 🪔 |
-| **Arabic** | `arabic` | Purple | 📜 |
+From the hub: choose the child → choose the subject → open a lesson.
 
 ---
 
-## 📝 Daily Lesson File Naming Rules
+## How lessons are named
 
-When uploading new worksheets or quizzes, use the following pattern so `index.html` indexes them automatically without editing code:
+```
+<student>-<subject>-<date>.html
+```
 
-```plaintext
-<student>-<subject>-<optionalDate>.html
+Examples:
 
+- `zaina-maths-oct19.html`
+- `humayun-evs-oct16.html`
+- `zaina-islamiyath-oct19.html`
+
+Subjects the hub understands: **english**, **maths**, **evs**, **islamiyath**, **tamil**, **arabic**
 
 ---
 
-## 🔧 New in this version
+## Add a new lesson (simple path)
 
-* **shared/safe-storage.js** is loaded by every page. If the tablet's storage is full, writing is kept in a second store instead of being lost, and picture errors never break a page.
-* **💾 Backup** (hub, bottom right) saves all writing and progress to one file and restores it later.
-* **lessons.json** is the lesson list the hub reads. It is rebuilt automatically by `.github/workflows/update-lessons.yml` whenever you upload a lesson or picture. To rebuild by hand: `python3 tools/build_lessons.py`.
-* **sw.js** keeps every lesson and picture in `lessons.json` offline. Change `VER` in `sw.js` to make every tablet refresh its saved copy.
+1. Copy an existing lesson that is closest to what you need  
+   (for example, copy a Zaina maths file to make another Zaina maths lesson).
+2. Rename the copy using the pattern above.
+3. Change:
+   - the title
+   - the questions and answers
+   - characters / theme if you want
+4. Save the file in the main folder (same place as the other `.html` lessons).
+5. Rebuild the lesson list (see below).
+6. Open the hub on the tablet and check the new lesson appears.
+
+---
+
+## Rebuild the lesson list
+
+The hub reads `lessons.json` to know which lessons exist.
+
+**Automatic:**  
+If you use GitHub, pushing a new `.html` or asset can run the update workflow.
+
+**By hand on the computer:**
+
+```bash
+python3 tools/build_lessons.py
+```
+
+That refreshes `lessons.json`.
+
+---
+
+## Folders (what lives where)
+
+| Folder / file | Purpose |
+|---------------|---------|
+| `index.html` | Main hub (pick child → subjects → lessons) |
+| `lessons.json` | List of lessons the hub shows |
+| `*.html` | Individual lesson pages |
+| `assets/` | Pictures, videos, badges |
+| `shared/` | Code shared by several lessons (storage, notebook helpers) |
+| `tools/` | Script that rebuilds `lessons.json` |
+| `sw.js` | Offline support (service worker) |
+| `manifest.json` | Home-screen / app-style settings |
+
+---
+
+## Tablets
+
+| Child | Tablet |
+|-------|--------|
+| Humayun (9) | Samsung Galaxy Tab S9 |
+| Zaina (10) | Samsung Galaxy Tab S11 |
+
+Tips:
+
+- Test new lessons on the real tablet (portrait and landscape).
+- Use the **Backup** button on the hub before a tablet reset or big update.
+- Prefer clear file names in `assets/` so you can find things later.
+
+---
+
+## Backup of writing and progress
+
+On the hub (bottom area):
+
+- **Backup** — saves writing and progress to a file  
+- **Restore** — loads a previous backup file  
+
+Use this if a tablet is reset or you move to a new device.
+
+---
+
+## Optional: offline refresh
+
+If lessons or pictures look old after an update, change the version text inside `sw.js` (the `VER` value), then reload the hub on the tablet so it fetches a fresh copy.
+
+---
+
+## Notes for future me
+
+- One exercise at a time is enough.
+- Copy a good lesson instead of starting from a blank page.
+- Keep video backgrounds light (teach screens are fine; practice screens stay calm).
+- Perfect code is not the goal — clear practice for the kids is the goal.
+
+---
+
+*Made for Humayun and Zaina.*
