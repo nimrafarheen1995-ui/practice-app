@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Zaina • Decimal Point Dance — Exercise 5.6</title>
+
+  <link rel="preload" as="image" href="assets/twilight.png" />
+  <link rel="preload" as="image" href="assets/fluttershy.png" />
+  <link rel="preload" as="image" href="assets/rarity.png" />
+  <link rel="preload" as="image" href="assets/pinkie.png" />
+  <link rel="preload" as="image" href="assets/luna.png" />
+  <link rel="preload" as="image" href="assets/celestia.png" />
+  <link rel="preload" as="image" href="assets/applejack.png" />
+  <link rel="preload" as="image" href="assets/rainbow.png" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800&family=Quicksand:wght@500;700;800&family=Kalam:wght@700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --twilight: #7c3aed;
+      --pinkie: #ec4899;
+      --ink: #1e1b4b;
+      --font-main: 'Quicksand', sans-serif;
+      --font-display: 'Fredoka', cursive, sans-serif;
+      --font-hand: 'Kalam', cursive, sans-serif;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #0f0720;
+      color: #1e1b4b;
+      font-family: var(--font-main);
+      touch-action: manipulation;
+    }
+
+    body { display: flex; flex-direction: column; }
+
+    .font-display { font-family: var(--font-display); }
+    .font-hand { font-family: var(--font-hand); }
+
+    /* Background stars */
+    #starCanvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    #screenDimOverlay {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 99998;
+      transition: opacity 0.2s ease;
+    }
+
+    #confettiCanvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 99999;
+    }
+
+    /* Graph paper inside binder */
+    .graph-paper {
+      background-color: #fffef8;
+      background-image:
+        linear-gradient(to right, #e2e8f0 1px, transparent 1px),
+        linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
+      background-size: 22px 22px;
+    }
+
+    /* Binder cover flip */
+    .binder-cover {
+      transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease;
+      transform-origin: left center;
+    }
+    .binder-cover.binder-open {
+      transform: perspective(900px) rotateY(-105deg);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Place-value strip */
+    .pv-cell {
+      min-width: 2.4rem;
+      height: 2.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.15rem;
+      border-radius: 0.55rem;
+      border: 2px solid #c4b5fd;
+      background: #f5f3ff;
+      color: #4c1d95;
+      position: relative;
+    }
+    .pv-cell.decimal-dot {
+      min-width: 1.1rem;
+      background: transparent;
+      border: none;
+      color: #ec4899;
+      font-size: 1.6rem;
+      padding-bottom: 0.35rem;
+    }
+    .pv-label {
+      position: absolute;
+      bottom: -1.15rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.55rem;
+      font-weight: 700;
+      color: #7c3aed;
+      white-space: nowrap;
+      letter-spacing: 0.02em;
+    }
+
+    /* Question list cards */
+    .q-card {
+      background: linear-gradient(145deg, #1e1b4b 0%, #312e81 100%);
+      border: 1px solid rgba(196, 181, 253, 0.35);
+      border-radius: 1.1rem;
+      padding: 0.85rem 1rem;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .q-card:active { transform: scale(0.97); }
+    .q-card.done {
+      border-color: #34d399;
+      background: linear-gradient(145deg, #064e3b 0%, #065f46 100%);
+    }
+    .q-card.active-q {
+      border-color: #f472b6;
+      box-shadow: 0 0 0 2px rgba(244, 114, 182, 0.4);
+    }
+
+    /* Stage panels */
+    .stage { display: none; flex: 1; flex-direction: column; min-height: 0; position: relative; z-index: 10; }
+    .stage.active { display: flex; }
+
+    /* Header */
+    header {
+      flex-shrink: 0;
+      z-index: 20;
+      background: linear-gradient(180deg, #1e1035 0%, transparent 100%);
+    }
+
+    /* Scroll areas */
+    .scroll-y { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+    /* Tool buttons */
+    .tool-btn {
+      width: 2.1rem;
+      height: 2.1rem;
+      border-radius: 0.55rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      cursor: pointer;
+    }
+    .tool-btn.active {
+      background: #7c3aed;
+      color: white;
+      border-color: #6d28d9;
+    }
+
+    /* Dance animation for decimal point */
+    @keyframes bounceDot {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    .dot-dance { animation: bounceDot 0.7s ease infinite; }
+
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(24px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .slide-in { animation: slideInRight 0.35s ease forwards; }
+  </style>
+</head>
+<body>
+
+  <canvas id="starCanvas"></canvas>
+  <canvas id="confettiCanvas"></canvas>
+  <div id="screenDimOverlay"></div>
+
+  <!-- ========== HEADER ========== -->
+  <header class="px-4 pt-3 pb-2 flex items-center justify-between gap-3">
+    <div class="flex items-center gap-2.5 min-w-0">
+      <button type="button" onclick="goHub()" class="shrink-0 bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-xl border border-white/20">
+        ← Hub
+      </button>
+      <div class="min-w-0">
+        <h1 class="font-display text-white text-base md:text-lg font-bold leading-tight truncate">
+          Decimal Point Dance
+        </h1>
+        <p class="text-purple-200 text-[11px] font-semibold">Exercise 5.6 · Place Value · Zaina</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 shrink-0">
+      <label class="flex items-center gap-1.5 text-purple-200 text-[10px] font-bold">
+        Dim
+        <input type="range" id="dimSlider" min="0" max="50" value="0" class="w-16 accent-purple-400"
+               oninput="setDim(this.value)" />
+      </label>
+      <img src="assets/twilight.png" alt="Twilight" class="w-10 h-10 object-contain drop-shadow-lg"
+           onerror="this.style.display='none'" />
+    </div>
+  </header>
+
+  <!-- ========== STAGE 1: INTRO / TEACH ========== -->
+  <section id="stageTeach" class="stage active px-4 pb-4">
+    <div class="flex-1 scroll-y max-w-2xl mx-auto w-full flex flex-col gap-4 justify-center">
+
+      <!-- Twilight intro card -->
+      <div class="bg-gradient-to-br from-violet-900/90 to-indigo-950/90 border border-violet-400/30 rounded-3xl p-5 flex flex-col sm:flex-row items-center gap-4 shadow-2xl">
+        <img src="assets/twilight.png" alt="Twilight Sparkle" class="w-28 h-28 sm:w-36 sm:h-36 object-contain drop-shadow-2xl shrink-0"
+             onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22120%22 height=%22120%22><circle cx=%2260%22 cy=%2260%22 r=%2256%22 fill=%22%23EDE9FE%22/><text x=%2250%%22 y=%2255%%22 text-anchor=%22middle%22 font-size=%2248%22>🦄</text></svg>'" />
+        <div class="text-center sm:text-left">
+          <p class="font-display text-pink-300 text-sm font-bold tracking-wide uppercase mb-1">Twilight’s Lesson</p>
+          <h2 class="font-display text-white text-xl md:text-2xl font-bold leading-snug mb-2">
+            The Decimal Point Loves to Dance!
+          </h2>
+          <p class="text-purple-100 text-sm leading-relaxed">
+            When we multiply by <b class="text-yellow-300">10</b>, <b class="text-yellow-300">100</b> or <b class="text-yellow-300">1000</b>,
+            the decimal point simply <b class="text-pink-300">moves to the right</b>.
+            No hard multiplying — just count the zeros and dance the point!
+          </p>
+        </div>
+      </div>
+
+      <!-- Dance rules -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="bg-white/10 border border-white/15 rounded-2xl p-4 text-center">
+          <div class="text-3xl mb-1">①</div>
+          <p class="font-display text-yellow-300 text-lg font-bold">× 10</p>
+          <p class="text-purple-100 text-xs mt-1">Move the point<br/><b>1 place</b> right</p>
+          <p class="font-hand text-pink-300 text-sm mt-2">4.97 → 49.7</p>
+        </div>
+        <div class="bg-white/10 border border-white/15 rounded-2xl p-4 text-center">
+          <div class="text-3xl mb-1">②</div>
+          <p class="font-display text-yellow-300 text-lg font-bold">× 100</p>
+          <p class="text-purple-100 text-xs mt-1">Move the point<br/><b>2 places</b> right</p>
+          <p class="font-hand text-pink-300 text-sm mt-2">23.5 → 2350</p>
+        </div>
+        <div class="bg-white/10 border border-white/15 rounded-2xl p-4 text-center">
+          <div class="text-3xl mb-1">③</div>
+          <p class="font-display text-yellow-300 text-lg font-bold">× 1000</p>
+          <p class="text-purple-100 text-xs mt-1">Move the point<br/><b>3 places</b> right</p>
+          <p class="font-hand text-pink-300 text-sm mt-2">0.12 → 120</p>
+        </div>
+      </div>
+
+      <!-- Live demo strip -->
+      <div class="bg-slate-900/80 border border-violet-500/40 rounded-2xl p-4">
+        <p class="text-center text-purple-200 text-xs font-bold mb-3 uppercase tracking-wider">Watch the point dance</p>
+        <div id="demoStrip" class="flex justify-center items-end gap-1.5 flex-wrap min-h-[3.5rem]"></div>
+        <div class="flex justify-center gap-2 mt-4">
+          <button type="button" onclick="runDemo(10)" class="bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg">× 10</button>
+          <button type="button" onclick="runDemo(100)" class="bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg">× 100</button>
+          <button type="button" onclick="runDemo(1000)" class="bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg">× 1000</button>
+          <button type="button" onclick="resetDemo()" class="bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-lg">Reset</button>
+        </div>
+      </div>
+
+      <button type="button" onclick="showPractice()"
+              class="w-full sm:w-auto mx-auto bg-gradient-to-r from-pink-500 to-violet-600 hover:from-pink-400 hover:to-violet-500 text-white font-display font-bold text-lg px-8 py-3.5 rounded-2xl shadow-lg shadow-pink-500/30 active:scale-95 transition">
+        Start the Dance ✨
+      </button>
+    </div>
+  </section>
+
+  <!-- ========== STAGE 2: PRACTICE LIST ========== -->
+  <section id="stageList" class="stage px-4 pb-4">
+    <div class="flex-1 scroll-y max-w-lg mx-auto w-full flex flex-col gap-3 pt-1">
+      <div class="flex items-center justify-between mb-1">
+        <button type="button" onclick="showTeach()" class="text-purple-200 text-xs font-bold hover:text-white">← Lesson</button>
+        <p class="text-purple-200 text-xs font-bold" id="progressLabel">0 / 10 done</p>
+      </div>
+
+      <div id="questionList" class="flex flex-col gap-2.5"></div>
+    </div>
+  </section>
+
+  <!-- ========== STAGE 3: BINDER WORKSPACE ========== -->
+  <section id="stageBinder" class="stage px-3 pb-3">
+    <div class="flex-1 flex flex-col max-w-3xl mx-auto w-full min-h-0">
+
+      <!-- Top bar -->
+      <div class="flex items-center justify-between gap-2 mb-2 shrink-0">
+        <button type="button" onclick="backToList()" class="bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-xl border border-white/20">
+          ← All questions
+        </button>
+        <div class="flex items-center gap-2">
+          <button type="button" id="btnPrev" onclick="navQuestion(-1)" class="bg-white/10 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg disabled:opacity-30">◀</button>
+          <span id="qCounter" class="text-purple-200 text-xs font-bold min-w-[3.5rem] text-center">1 / 10</span>
+          <button type="button" id="btnNext" onclick="navQuestion(1)" class="bg-white/10 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg disabled:opacity-30">▶</button>
+        </div>
+      </div>
+
+      <!-- Question + place-value helper -->
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col flex-1 min-h-0 border border-violet-200">
+
+        <!-- Question header -->
+        <div class="px-4 py-3 bg-gradient-to-r from-violet-50 to-pink-50 border-b border-violet-100 shrink-0">
+          <div class="flex items-start gap-3">
+            <img id="qPony" src="assets/twilight.png" alt="" class="w-12 h-12 object-contain shrink-0" onerror="this.style.display='none'" />
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2 flex-wrap mb-0.5">
+                <span id="qLabel" class="bg-violet-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-md">1.a</span>
+                <span id="qShift" class="bg-pink-100 text-pink-700 text-[10px] font-bold px-2 py-0.5 rounded-md">× 100 → 2 places</span>
+              </div>
+              <p id="qText" class="font-semibold text-slate-800 text-sm md:text-base leading-snug">23.5 × 100 = ?</p>
+            </div>
+          </div>
+
+          <!-- Live place-value strip for this question -->
+          <div class="mt-3 flex justify-center">
+            <div id="pvStrip" class="flex items-end gap-1 flex-wrap justify-center"></div>
+          </div>
+          <p class="text-center text-[10px] text-violet-500 font-bold mt-4 mb-0.5">Tip: count the zeros, then move the pink dot</p>
+        </div>
+
+        <!-- Answer row -->
+        <div class="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center gap-2 shrink-0 flex-wrap">
+          <span class="text-slate-500 text-xs font-bold">Answer</span>
+          <input type="text" inputmode="decimal" id="answerInput" placeholder="Type here…"
+                 class="flex-1 min-w-[6rem] px-3 py-1.5 rounded-lg border border-slate-300 text-sm font-bold text-center focus:outline-none focus:ring-2 focus:ring-violet-500"
+                 oninput="saveAnswer()" onkeydown="if(event.key==='Enter') checkAnswer()" />
+          <button type="button" onclick="checkAnswer()"
+                  class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm px-4 py-1.5 rounded-lg shadow-sm">
+            ✅ Check
+          </button>
+        </div>
+
+        <!-- Binder workspace -->
+        <div class="relative flex-1 min-h-[200px] flex flex-col">
+          <!-- Binder cover (closed state) -->
+          <div id="binderCover" class="binder-cover absolute inset-0 z-20 flex flex-col items-center justify-center cursor-pointer"
+               style="background: linear-gradient(145deg, #5b21b6 0%, #4c1d95 40%, #312e81 100%);"
+               onclick="openBinder()">
+            <div class="absolute left-3 top-4 bottom-4 w-3 flex flex-col justify-between pointer-events-none">
+              <i class="block w-3 h-2.5 rounded-full bg-white/40"></i>
+              <i class="block w-3 h-2.5 rounded-full bg-white/40"></i>
+              <i class="block w-3 h-2.5 rounded-full bg-white/40"></i>
+              <i class="block w-3 h-2.5 rounded-full bg-white/40"></i>
+              <i class="block w-3 h-2.5 rounded-full bg-white/40"></i>
+              <i class="block w-3 h-2.5 rounded-full bg-white/40"></i>
+            </div>
+            <img id="coverPony" src="assets/twilight.png" alt="" class="w-24 h-24 object-contain drop-shadow-xl mb-2" onerror="this.style.display='none'" />
+            <p class="font-display text-white text-lg font-bold">Open Notebook</p>
+            <p class="text-violet-200 text-xs mt-0.5">Tap to write your working</p>
+          </div>
+
+          <!-- Open notebook -->
+          <div class="flex-1 flex flex-col min-h-0">
+            <!-- Tools -->
+            <div class="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 border-b border-amber-100 shrink-0">
+              <button type="button" class="tool-btn active" id="toolPen" onclick="setTool('pen')" title="Pen">✏️</button>
+              <button type="button" class="tool-btn" id="toolEraser" onclick="setTool('eraser')" title="Eraser">🧽</button>
+              <span class="w-px h-5 bg-amber-200 mx-0.5"></span>
+              <button type="button" class="tool-btn" style="background:#1e1b4b" onclick="setColor('#1e1b4b')"></button>
+              <button type="button" class="tool-btn" style="background:#dc2626" onclick="setColor('#dc2626')"></button>
+              <button type="button" class="tool-btn" style="background:#2563eb" onclick="setColor('#2563eb')"></button>
+              <button type="button" class="tool-btn" style="background:#16a34a" onclick="setColor('#16a34a')"></button>
+              <span class="flex-1"></span>
+              <button type="button" class="tool-btn" onclick="undoInk()" title="Undo">↩️</button>
+              <button type="button" class="tool-btn" onclick="clearCanvas()" title="Clear">🗑️</button>
+              <button type="button" class="tool-btn" onclick="closeBinder()" title="Close">📕</button>
+            </div>
+            <!-- Canvas -->
+            <div class="flex-1 relative graph-paper overflow-hidden select-none touch-none" id="canvasArea">
+              <canvas id="inkCanvas" class="absolute inset-0 w-full h-full cursor-crosshair touch-none" oncontextmenu="return false;"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Celebration overlay -->
+  <div id="celebrateOverlay" class="fixed inset-0 z-[100000] hidden items-center justify-center bg-black/50" style="display:none">
+    <div class="bg-white rounded-3xl p-6 max-w-sm mx-4 text-center shadow-2xl slide-in">
+      <img id="celebPony" src="assets/twilight.png" alt="" class="w-28 h-28 mx-auto object-contain mb-2" />
+      <h3 id="celebTitle" class="font-display text-2xl font-bold text-violet-800 mb-1">Perfect!</h3>
+      <p id="celebBody" class="text-slate-600 text-sm mb-4">The decimal point danced exactly the right number of places.</p>
+      <div class="flex gap-2 justify-center">
+        <button type="button" onclick="closeCelebrate()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm px-4 py-2 rounded-xl">Close</button>
+        <button type="button" onclick="closeCelebrate(); navQuestion(1)" class="bg-violet-600 hover:bg-violet-500 text-white font-bold text-sm px-4 py-2 rounded-xl">Next ▶</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ================================================================
+       DATA — Exercise 5.6
+       ================================================================ */
+    const QUESTIONS = [
+      {
+        id: 'e56_1a', label: '1.a',
+        text: '23.5 × 100 = ?',
+        num: '23.5', mult: 100, places: 2,
+        answer: '2350',
+        pony: 'Fluttershy', avatar: 'assets/fluttershy.png'
+      },
+      {
+        id: 'e56_1b', label: '1.b',
+        text: '1.15 × 100 = ?',
+        num: '1.15', mult: 100, places: 2,
+        answer: '115',
+        pony: 'Rarity', avatar: 'assets/rarity.png'
+      },
+      {
+        id: 'e56_1c', label: '1.c',
+        text: '4.97 × 10 = ?',
+        num: '4.97', mult: 10, places: 1,
+        answer: '49.7',
+        pony: 'Pinkie Pie', avatar: 'assets/pinkie.png'
+      },
+      {
+        id: 'e56_1d', label: '1.d',
+        text: '69.8 × 1000 = ?',
+        num: '69.8', mult: 1000, places: 3,
+        answer: '69800',
+        pony: 'Princess Luna', avatar: 'assets/luna.png'
+      },
+      {
+        id: 'e56_1e', label: '1.e',
+        text: '0.12 × 1000 = ?',
+        num: '0.12', mult: 1000, places: 3,
+        answer: '120',
+        pony: 'Twilight Sparkle', avatar: 'assets/twilight.png'
+      },
+      {
+        id: 'e56_1f', label: '1.f',
+        text: '0.28 × 10 = ?',
+        num: '0.28', mult: 10, places: 1,
+        answer: '2.8',
+        pony: 'Princess Celestia', avatar: 'assets/celestia.png'
+      },
+      {
+        id: 'e56_1g', label: '1.g',
+        text: '24.4 × 10 = ?',
+        num: '24.4', mult: 10, places: 1,
+        answer: '244',
+        pony: 'Rainbow Dash', avatar: 'assets/rainbow.png'
+      },
+      {
+        id: 'e56_1h', label: '1.h',
+        text: '5.08 × 100 = ?',
+        num: '5.08', mult: 100, places: 2,
+        answer: '508',
+        pony: 'Applejack', avatar: 'assets/applejack.png'
+      },
+      {
+        id: 'e56_q2', label: 'Q2',
+        text: 'A coin is 2.8 cm wide. Manoj lined up 10 coins across his desk. What is the width of the desk?',
+        num: '2.8', mult: 10, places: 1,
+        answer: '28',
+        unit: 'cm',
+        pony: 'Applejack', avatar: 'assets/applejack.png',
+        word: true
+      },
+      {
+        id: 'e56_q3', label: 'Q3',
+        text: 'One page is 0.4 mm thick. A book has 300 pages. How thick is the book?',
+        num: '0.4', mult: 300, places: null,
+        answer: '120',
+        unit: 'mm',
+        pony: 'Rarity', avatar: 'assets/rarity.png',
+        word: true
+      }
+    ];
+
+    let currentIndex = 0;
+    let binderOpen = false;
+    let penColor = '#1e1b4b';
+    let penTool = 'pen';
+    const undoStack = [];
+
+    /* ---------- Navigation between stages ---------- */
+    function showStage(id) {
+      document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+    function showTeach() { showStage('stageTeach'); }
+    function showPractice() {
+      renderList();
+      showStage('stageList');
+    }
+    function backToList() {
+      saveInk();
+      renderList();
+      showStage('stageList');
+    }
+    function goHub() {
+      try { window.parent.postMessage('close-lesson-to-hub', '*'); } catch (_) {}
+      if (window.history.length > 1) history.back();
+    }
+
+    /* ---------- Progress ---------- */
+    function isDone(id) {
+      return localStorage.getItem('zaina_e56_done_' + id) === '1';
+    }
+    function markDone(id) {
+      localStorage.setItem('zaina_e56_done_' + id, '1');
+    }
+    function progressCount() {
+      return QUESTIONS.filter(q => isDone(q.id)).length;
+    }
+
+    /* ---------- Question list ---------- */
+    function renderList() {
+      const box = document.getElementById('questionList');
+      document.getElementById('progressLabel').textContent = progressCount() + ' / ' + QUESTIONS.length + ' done';
+      box.innerHTML = QUESTIONS.map((q, i) => {
+        const done = isDone(q.id);
+        return `
+          <button type="button" class="q-card ${done ? 'done' : ''}" onclick="openQuestion(${i})">
+            <img src="${q.avatar}" alt="" class="w-10 h-10 object-contain shrink-0" onerror="this.style.display='none'" />
+            <div class="text-left min-w-0 flex-1">
+              <div class="flex items-center gap-1.5 mb-0.5">
+                <span class="text-[10px] font-bold ${done ? 'text-emerald-300' : 'text-pink-300'}">${q.label}</span>
+                ${done ? '<span class="text-[10px] text-emerald-300 font-bold">✓</span>' : ''}
+                ${q.word ? '<span class="text-[9px] bg-white/10 text-purple-200 px-1.5 py-0.5 rounded">Word</span>' : ''}
+              </div>
+              <p class="text-white text-xs font-semibold truncate">${q.text}</p>
+            </div>
+            <span class="text-purple-300 text-lg shrink-0">›</span>
+          </button>`;
+      }).join('');
+    }
+
+    /* ---------- Open a question ---------- */
+    function openQuestion(index) {
+      currentIndex = index;
+      binderOpen = false;
+      const q = QUESTIONS[index];
+
+      document.getElementById('qLabel').textContent = q.label;
+      document.getElementById('qText').textContent = q.text;
+      document.getElementById('qPony').src = q.avatar;
+      document.getElementById('coverPony').src = q.avatar;
+      document.getElementById('qCounter').textContent = (index + 1) + ' / ' + QUESTIONS.length;
+
+      if (q.places != null) {
+        document.getElementById('qShift').textContent = `× ${q.mult} → ${q.places} place${q.places > 1 ? 's' : ''}`;
+        document.getElementById('qShift').style.display = '';
+      } else {
+        document.getElementById('qShift').textContent = `× ${q.mult}`;
+        document.getElementById('qShift').style.display = '';
+      }
+
+      document.getElementById('answerInput').value = localStorage.getItem('zaina_ans_' + q.id) || '';
+      document.getElementById('btnPrev').disabled = index === 0;
+      document.getElementById('btnNext').disabled = index === QUESTIONS.length - 1;
+
+      // Reset binder cover
+      const cover = document.getElementById('binderCover');
+      cover.classList.remove('binder-open');
+
+      buildPlaceValueStrip(q);
+      showStage('stageBinder');
+
+      // Init canvas after layout
+      requestAnimationFrame(() => {
+        syncCanvas();
+        loadInk();
+      });
+    }
+
+    function navQuestion(dir) {
+      const next = currentIndex + dir;
+      if (next >= 0 && next < QUESTIONS.length) {
+        saveInk();
+        openQuestion(next);
+      }
+    }
+
+    /* ---------- Place-value strip ---------- */
+    function buildPlaceValueStrip(q) {
+      const strip = document.getElementById('pvStrip');
+      if (q.word && q.places == null) {
+        // For ×300 just show the number
+        strip.innerHTML = `<div class="text-violet-700 text-sm font-bold font-hand">${q.num} × ${q.mult} = ?</div>`;
+        return;
+      }
+
+      const parts = String(q.num).split('.');
+      const whole = parts[0] || '0';
+      const frac = parts[1] || '';
+
+      // Build digit cells: some leading blanks for shifts, then digits, then trailing blanks
+      const lead = 1;
+      const trail = Math.max(q.places || 0, 2);
+      let html = '';
+
+      // Leading empty (for visual balance)
+      for (let i = 0; i < lead; i++) {
+        html += `<div class="pv-cell" style="opacity:0.35"> </div>`;
+      }
+
+      // Whole-number digits
+      for (let i = 0; i < whole.length; i++) {
+        const placeNames = ['Ones', 'Tens', 'Hundreds', 'Thousands', 'Ten Thousands'];
+        const placeIdx = whole.length - 1 - i;
+        const label = placeIdx < placeNames.length ? placeNames[placeIdx] : '';
+        html += `<div class="pv-cell">${whole[i]}${label ? `<span class="pv-label">${label}</span>` : ''}</div>`;
+      }
+
+      // Decimal point
+      html += `<div class="pv-cell decimal-dot dot-dance">.</div>`;
+
+      // Fractional digits
+      const fracLabels = ['Tenths', 'Hundredths', 'Thousandths'];
+      for (let i = 0; i < Math.max(frac.length, trail); i++) {
+        const dig = frac[i] || '0';
+        const label = fracLabels[i] || '';
+        const faded = i >= frac.length ? 'opacity:0.35' : '';
+        html += `<div class="pv-cell" style="${faded}">${dig}${label ? `<span class="pv-label">${label}</span>` : ''}</div>`;
+      }
+
+      strip.innerHTML = html;
+    }
+
+    /* ---------- Demo on teach screen ---------- */
+    const DEMO_NUM = '23.5';
+    function renderDemoCells(numStr, highlightDot = true) {
+      const parts = String(numStr).split('.');
+      const whole = parts[0] || '0';
+      const frac = parts[1] || '';
+      let html = '';
+      for (const d of whole) html += `<div class="pv-cell">${d}</div>`;
+      html += `<div class="pv-cell decimal-dot ${highlightDot ? 'dot-dance' : ''}">.</div>`;
+      for (const d of frac) html += `<div class="pv-cell">${d}</div>`;
+      if (!frac) html += `<div class="pv-cell" style="opacity:0.3">0</div>`;
+      document.getElementById('demoStrip').innerHTML = html;
+    }
+    function resetDemo() { renderDemoCells(DEMO_NUM); }
+    function runDemo(mult) {
+      const n = parseFloat(DEMO_NUM);
+      const result = n * mult;
+      // Format nicely
+      let s = String(result);
+      if (Number.isInteger(result)) s = String(result);
+      renderDemoCells(s, true);
+    }
+    resetDemo();
+
+    /* ---------- Answer handling ---------- */
+    function saveAnswer() {
+      const q = QUESTIONS[currentIndex];
+      localStorage.setItem('zaina_ans_' + q.id, document.getElementById('answerInput').value);
+    }
+
+    function answersMatch(typed, correct) {
+      const clean = t => String(t).replace(/₹|cm|mm|,|\s/gi, '').trim();
+      const a = clean(typed), b = clean(correct);
+      if (!a) return false;
+      if (a === b) return true;
+      const na = Number(a), nb = Number(b);
+      return !isNaN(na) && !isNaN(nb) && Math.abs(na - nb) < 1e-6;
+    }
+
+    function checkAnswer() {
+      saveInk();
+      saveAnswer();
+      const q = QUESTIONS[currentIndex];
+      const val = document.getElementById('answerInput').value;
+      if (answersMatch(val, q.answer)) {
+        markDone(q.id);
+        celebrate(q);
+      } else {
+        alert('Not quite! Count the zeros in the multiplier and move the decimal point that many places to the right. Try again.');
+      }
+    }
+
+    function celebrate(q) {
+      document.getElementById('celebPony').src = q.avatar;
+      document.getElementById('celebTitle').textContent = q.pony + ' says: Perfect!';
+      const placesMsg = q.places != null
+        ? `You moved the decimal point ${q.places} place${q.places > 1 ? 's' : ''} to the right.`
+        : `You multiplied correctly — the decimal point danced into place.`;
+      document.getElementById('celebBody').textContent = placesMsg;
+      const ov = document.getElementById('celebrateOverlay');
+      ov.style.display = 'flex';
+      spawnConfetti();
+    }
+    function closeCelebrate() {
+      document.getElementById('celebrateOverlay').style.display = 'none';
+    }
+
+    /* ---------- Binder open / close ---------- */
+    function openBinder() {
+      binderOpen = true;
+      document.getElementById('binderCover').classList.add('binder-open');
+      requestAnimationFrame(() => { syncCanvas(); loadInk(); });
+    }
+    function closeBinder() {
+      saveInk();
+      binderOpen = false;
+      document.getElementById('binderCover').classList.remove('binder-open');
+    }
+
+    /* ---------- Canvas ink ---------- */
+    const canvas = () => document.getElementById('inkCanvas');
+    const area = () => document.getElementById('canvasArea');
+
+    function inkKey() {
+      return 'zaina_ink_' + QUESTIONS[currentIndex].id;
+    }
+
+    function syncCanvas() {
+      const c = canvas();
+      const a = area();
+      if (!c || !a) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = a.clientWidth;
+      const h = a.clientHeight;
+      if (!w || !h) return;
+      const tw = Math.round(w * dpr);
+      const th = Math.round(h * dpr);
+      if (c.width === tw && c.height === th) return;
+      c.style.width = w + 'px';
+      c.style.height = h + 'px';
+      c.width = tw;
+      c.height = th;
+      c.dataset.dpr = String(dpr);
+      const ctx = c.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function loadInk() {
+      const c = canvas();
+      if (!c) return;
+      const ctx = c.getContext('2d');
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, c.width, c.height);
+      ctx.restore();
+      const raw = localStorage.getItem(inkKey());
+      if (!raw) return;
+      const img = new Image();
+      img.onload = () => {
+        const dpr = Number(c.dataset.dpr) || 1;
+        ctx.drawImage(img, 0, 0, c.width / dpr, c.height / dpr);
+      };
+      img.src = raw;
+    }
+
+    function saveInk() {
+      const c = canvas();
+      if (!c || !c.width) return;
+      try {
+        const prev = localStorage.getItem(inkKey());
+        if (prev) {
+          undoStack.push(prev);
+          if (undoStack.length > 20) undoStack.shift();
+        }
+        localStorage.setItem(inkKey(), c.toDataURL('image/png'));
+      } catch (_) {}
+    }
+
+    function setTool(t) {
+      penTool = t;
+      document.getElementById('toolPen').classList.toggle('active', t === 'pen');
+      document.getElementById('toolEraser').classList.toggle('active', t === 'eraser');
+    }
+    function setColor(c) {
+      penColor = c;
+      setTool('pen');
+    }
+    function clearCanvas() {
+      const c = canvas();
+      if (!c) return;
+      const prev = localStorage.getItem(inkKey());
+      if (prev) undoStack.push(prev);
+      const ctx = c.getContext('2d');
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, c.width, c.height);
+      ctx.restore();
+      localStorage.removeItem(inkKey());
+    }
+    function undoInk() {
+      if (!undoStack.length) return;
+      const prev = undoStack.pop();
+      if (prev) localStorage.setItem(inkKey(), prev);
+      else localStorage.removeItem(inkKey());
+      loadInk();
+    }
+
+    // Pointer drawing
+    (function setupDrawing() {
+      let drawing = false;
+      let lastX = 0, lastY = 0;
+
+      function pos(e) {
+        const c = canvas();
+        const r = c.getBoundingClientRect();
+        return [(e.clientX - r.left), (e.clientY - r.top)];
+      }
+
+      document.addEventListener('pointerdown', (e) => {
+        if (!binderOpen) return;
+        const c = canvas();
+        if (!c || e.target !== c) return;
+        e.preventDefault();
+        c.setPointerCapture(e.pointerId);
+        drawing = true;
+        const [x, y] = pos(e);
+        lastX = x; lastY = y;
+        const ctx = c.getContext('2d');
+        ctx.beginPath();
+        if (penTool === 'eraser') {
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.lineWidth = 22;
+        } else {
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.strokeStyle = penColor;
+          ctx.lineWidth = 2.4;
+        }
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + 0.01, y);
+        ctx.stroke();
+      }, { passive: false });
+
+      document.addEventListener('pointermove', (e) => {
+        if (!drawing) return;
+        const c = canvas();
+        if (!c) return;
+        e.preventDefault();
+        const [x, y] = pos(e);
+        const ctx = c.getContext('2d');
+        ctx.beginPath();
+        if (penTool === 'eraser') {
+          ctx.globalCompositeOperation = 'destination-out';
+          ctx.lineWidth = 22;
+        } else {
+          ctx.globalCompositeOperation = 'source-over';
+          ctx.strokeStyle = penColor;
+          ctx.lineWidth = 2.4;
+        }
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        lastX = x; lastY = y;
+      }, { passive: false });
+
+      function endDraw(e) {
+        if (!drawing) return;
+        drawing = false;
+        saveInk();
+      }
+      document.addEventListener('pointerup', endDraw);
+      document.addEventListener('pointercancel', endDraw);
+    })();
+
+    window.addEventListener('resize', () => {
+      if (document.getElementById('stageBinder').classList.contains('active')) {
+        syncCanvas();
+        loadInk();
+      }
+    });
+
+    /* ---------- Dim ---------- */
+    function setDim(v) {
+      document.getElementById('screenDimOverlay').style.opacity = (Number(v) / 100).toFixed(2);
+      localStorage.setItem('zaina_dim_level', v);
+    }
+    (function () {
+      const s = localStorage.getItem('zaina_dim_level');
+      if (s != null) {
+        document.getElementById('dimSlider').value = s;
+        setDim(s);
+      }
+    })();
+
+    /* ---------- Stars background ---------- */
+    (function stars() {
+      const c = document.getElementById('starCanvas');
+      const ctx = c.getContext('2d');
+      let w, h, pts = [];
+      function resize() {
+        w = c.width = window.innerWidth;
+        h = c.height = window.innerHeight;
+        pts = Array.from({ length: 60 }, () => ({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          r: Math.random() * 1.4 + 0.3,
+          a: Math.random()
+        }));
+      }
+      function draw() {
+        ctx.clearRect(0, 0, w, h);
+        pts.forEach(p => {
+          p.a += 0.008;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(200,180,255,${0.25 + 0.35 * Math.sin(p.a)})`;
+          ctx.fill();
+        });
+        requestAnimationFrame(draw);
+      }
+      resize();
+      window.addEventListener('resize', resize);
+      draw();
+    })();
+
+    /* ---------- Confetti ---------- */
+    function spawnConfetti() {
+      const c = document.getElementById('confettiCanvas');
+      const ctx = c.getContext('2d');
+      c.width = window.innerWidth;
+      c.height = window.innerHeight;
+      const colors = ['#ec4899', '#a78bfa', '#38bdf8', '#fde047', '#4ade80', '#fff'];
+      const bits = Array.from({ length: 55 }, () => ({
+        x: Math.random() * c.width,
+        y: -20 - Math.random() * 80,
+        s: Math.random() * 7 + 3,
+        vx: (Math.random() - 0.5) * 3,
+        vy: Math.random() * 3 + 2,
+        col: colors[Math.floor(Math.random() * colors.length)],
+        r: Math.random() * 360
+      }));
+      let frames = 0;
+      function tick() {
+        ctx.clearRect(0, 0, c.width, c.height);
+        bits.forEach(b => {
+          b.x += b.vx;
+          b.y += b.vy;
+          b.vy += 0.06;
+          b.r += 4;
+          ctx.save();
+          ctx.translate(b.x, b.y);
+          ctx.rotate(b.r * Math.PI / 180);
+          ctx.fillStyle = b.col;
+          ctx.fillRect(-b.s / 2, -b.s / 2, b.s, b.s);
+          ctx.restore();
+        });
+        frames++;
+        if (frames < 90) requestAnimationFrame(tick);
+        else ctx.clearRect(0, 0, c.width, c.height);
+      }
+      tick();
+    }
+  </script>
+</body>
+</html>
