@@ -3,7 +3,7 @@
    - Pages use network-first with offline fallback.
    - Assets use cache-first with stale-while-revalidate.
    Bump VER whenever you update lessons or code to force a refresh. */
-const VER = 'learning-hub-v3';
+const VER = 'learning-hub-v4';
 
 const CORE = [
   './',
