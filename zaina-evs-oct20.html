@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Zaina • Earth Patrol — Pollution</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Quicksand:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #0f172a;
+      --muted: #64748b;
+      --line: #cbd5e1;
+      --soft: #f0fdf4;
+      --card: #ffffff;
+      --earth: #15803d;
+      --sky: #0ea5e9;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; height: 100%; overflow: hidden; font-family: 'Nunito', sans-serif; background: #ecfdf5; color: var(--ink); }
+    body { display: flex; flex-direction: column; }
+    body::before {
+      content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background: url('assets/nature-bg.webp') center/cover no-repeat;
+      opacity: 0.22;
+    }
+    header, main, #dimLayer { position: relative; z-index: 1; }
+
+    header {
+      flex-shrink: 0; height: 56px; background: rgba(255,255,255,0.92); border-bottom: 2px solid #bbf7d0;
+      display: flex; align-items: center; justify-content: space-between; padding: 0 12px; gap: 8px;
+      backdrop-filter: blur(6px);
+    }
+    .btn {
+      border: 1px solid #86efac; background: #fff; color: #166534;
+      font-weight: 800; font-size: 0.78rem; padding: 6px 11px; border-radius: 10px; cursor: pointer;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn.on { background: #15803d; color: #fff; border-color: #15803d; }
+    .badge { background: linear-gradient(135deg,#22c55e,#0ea5e9); color:#fff; font-weight:900; font-size:0.72rem; padding:4px 10px; border-radius:999px; }
+
+    .mode-bar { display: flex; gap: 6px; }
+    .mode-btn { font-size: 0.75rem; }
+    .mode-btn.on-practice { background: #0ea5e9; border-color: #0ea5e9; color: #fff; }
+    .mode-btn.on-write { background: #7c3aed; border-color: #7c3aed; color: #fff; }
+
+    .tabs {
+      flex-shrink: 0; display: flex; gap: 6px; padding: 8px 12px; background: rgba(255,255,255,0.85);
+      border-bottom: 1px solid #bbf7d0; overflow-x: auto;
+    }
+    .tab {
+      border: 1px solid #86efac; background: #fff; color: #166534; font-weight: 800; font-size: 0.78rem;
+      padding: 7px 12px; border-radius: 999px; cursor: pointer; white-space: nowrap;
+    }
+    .tab.on { background: #15803d; color: #fff; border-color: #15803d; }
+
+    main { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px; }
+
+    .card {
+      background: rgba(255,255,255,0.95); border: 1px solid #bbf7d0; border-radius: 16px;
+      padding: 12px; margin-bottom: 10px; box-shadow: 0 4px 14px rgba(15, 118, 110, 0.06);
+    }
+    .card h3 { margin: 0 0 8px; font-size: 0.95rem; font-weight: 900; color: #14532d; }
+    .prompt { font-size: 0.92rem; font-weight: 700; line-height: 1.45; color: #0f172a; }
+
+    .blank-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; }
+    .ruled-strip {
+      position: relative; width: min(100%, 280px); height: 48px; border: 1.5px solid #94a3b8; border-radius: 10px;
+      background: #fffef8;
+      background-image: linear-gradient(to bottom, transparent 30px, #93c5fd 30px, #93c5fd 31px, transparent 31px);
+      overflow: hidden; touch-action: none;
+    }
+    .ruled-strip canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; }
+    .mini-btn {
+      border: 1px solid #cbd5e1; background: #f8fafc; border-radius: 8px; padding: 6px 10px;
+      font-size: 0.72rem; font-weight: 800; cursor: pointer; color: #334155;
+    }
+    .tip { margin-top: 6px; font-size: 0.75rem; font-weight: 700; color: #0369a1; min-height: 1.1em; }
+    .tip.ok { color: #15803d; }
+    .tip.bad { color: #b91c1c; }
+
+    .match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .match-col { display: flex; flex-direction: column; gap: 8px; }
+    .match-chip {
+      border: 2px solid #cbd5e1; background: #f8fafc; border-radius: 12px; padding: 10px;
+      font-weight: 800; font-size: 0.82rem; cursor: pointer; text-align: left;
+    }
+    .match-chip.selected { border-color: #eab308; background: #fef9c3; box-shadow: 0 0 0 3px rgba(234,179,8,0.25); }
+    .match-chip.paired { border-color: #16a34a; background: #dcfce7; color: #166534; pointer-events: none; }
+    .match-chip.wrong { border-color: #f87171; background: #fef2f2; }
+
+    .tf-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px; margin-top: 8px; }
+    .tf-btn {
+      width: 48px; height: 48px; border-radius: 12px; border: 2px solid #cbd5e1; background: #fff;
+      font-weight: 900; font-size: 1.1rem; cursor: pointer;
+    }
+    .tf-btn.on-t { background: #16a34a; color: #fff; border-color: #16a34a; }
+    .tf-btn.on-f { background: #dc2626; color: #fff; border-color: #dc2626; }
+
+    .self-check { display: flex; gap: 6px; margin-top: 8px; }
+    .ck {
+      width: 36px; height: 36px; border-radius: 10px; border: 2px solid #cbd5e1; background: #fff;
+      font-weight: 900; cursor: pointer;
+    }
+    .ck.y.on { background: #16a34a; color: #fff; border-color: #16a34a; }
+    .ck.n.on { background: #dc2626; color: #fff; border-color: #dc2626; }
+
+    .hero-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .hero-row img { width: 64px; height: 64px; object-fit: contain; }
+    .type-icon { width: 28px; height: 28px; object-fit: contain; vertical-align: middle; margin-right: 4px; }
+
+    #dimLayer {
+      position: fixed; inset: 0; background: #000; opacity: 0; pointer-events: none; z-index: 50;
+      transition: opacity 0.2s;
+    }
+    .dim-wrap { display: flex; align-items: center; gap: 6px; font-size: 0.68rem; font-weight: 800; color: #166534; }
+    .dim-wrap input { width: 70px; accent-color: #15803d; }
+  </style>
+</head>
+<body>
+  <div id="dimLayer"></div>
+
+  <header>
+    <div style="display:flex;align-items:center;gap:8px;min-width:0">
+      <button class="btn" onclick="goHub()">← Hub</button>
+      <span class="badge">Zaina</span>
+      <img src="assets/earth-globe.webp" alt="" style="width:28px;height:28px;object-fit:contain" onerror="this.style.display='none'" />
+      <div style="min-width:0">
+        <div style="font-weight:900;font-size:0.92rem;line-height:1.1">Earth Patrol</div>
+        <div style="font-size:0.68rem;font-weight:700;color:#64748b">Pollution · EVS</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+      <div class="mode-bar">
+        <button class="btn mode-btn on-practice" id="btnPractice" onclick="setMode('practice')">Practice</button>
+        <button class="btn mode-btn" id="btnWrite" onclick="setMode('write')">Write</button>
+      </div>
+      <label class="dim-wrap">Dim
+        <input type="range" id="dimSlider" min="0" max="50" value="0" oninput="setDim(this.value)" />
+      </label>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab on" id="tabA" onclick="setTab('A')">A · Fill in</button>
+    <button class="tab" id="tabB" onclick="setTab('B')">B · Match</button>
+    <button class="tab" id="tabC" onclick="setTab('C')">C · True / False</button>
+  </div>
+
+  <main>
+    <div class="hero-row card" style="margin-bottom:10px">
+      <img src="assets/earth-patrol-hero.webp" alt="Earth Patrol" onerror="this.src='assets/earth-globe.webp'; this.onerror=function(){this.style.display='none'}" />
+      <div>
+        <div style="font-weight:900;color:#14532d" id="heroTitle">Practice mode</div>
+        <div style="font-size:0.78rem;font-weight:700;color:#64748b" id="heroSub">Soft checks and tips are on. Ink is saved per question.</div>
+      </div>
+    </div>
+    <div id="panel"></div>
+  </main>
+
+  <script>
+    const STORE = 'zaina_evs_pollution_oct20_';
+
+    /* ----- Content (canonical order = Practice order) ----- */
+    const FILLS = [
+      { id: 'f1', text: '________ damages our environment.', tip: 'The main word for harming land, water and air.', answer: 'pollution' },
+      { id: 'f2', text: 'Pollutants are of two types: ________ and ________.', tip: 'One type is from nature; the other is made by people.', answer: 'natural and humanmade' },
+      { id: 'f3', text: 'Land pollution is also known as ________.', tip: 'Another name for the ground we walk on.', answer: 'soil pollution' },
+      { id: 'f4', text: 'Sound is measured in ________.', tip: 'Unit for loudness (short form is fine).', answer: 'decibels' },
+      { id: 'f5', text: 'Radioactive pollution is caused by ________ substances.', tip: 'Think nuclear / uranium-type materials.', answer: 'radioactive' }
+    ];
+
+    const MATCH_LEFT = [
+      { id: 'm1', text: 'Household garbage on streets', pair: 'land' },
+      { id: 'm2', text: 'Uranium leak', pair: 'radioactive' },
+      { id: 'm3', text: 'Rock concerts', pair: 'noise' },
+      { id: 'm4', text: 'Chlorofluorocarbons', pair: 'air' },
+      { id: 'm5', text: 'Oil spill', pair: 'water' }
+    ];
+    const MATCH_RIGHT = [
+      { id: 'r1', text: 'Air Pollution', pair: 'air', icon: 'assets/pollution-air.webp' },
+      { id: 'r2', text: 'Water Pollution', pair: 'water', icon: 'assets/pollution-water.webp' },
+      { id: 'r3', text: 'Land Pollution', pair: 'land', icon: 'assets/pollution-land.webp' },
+      { id: 'r4', text: 'Noise Pollution', pair: 'noise', icon: 'assets/pollution-noise.webp' },
+      { id: 'r5', text: 'Radioactive Pollution', pair: 'radioactive', icon: 'assets/earth-globe.webp' }
+    ];
+
+    const TF = [
+      { id: 't1', text: 'Pollution is the contamination of land, water and air by harmful substances.', answer: true },
+      { id: 't2', text: 'All pollutants are humanmade pollutants.', answer: false },
+      { id: 't3', text: 'Land pollution is also known as soil pollution.', answer: true },
+      { id: 't4', text: 'The comfortable level of sound for human ears is 200–240 decibels (dB).', answer: false }
+    ];
+
+    let mode = 'practice'; // practice | write
+    let tab = 'A';
+    let fillOrder = FILLS.map((_, i) => i);
+    let matchLeftOrder = MATCH_LEFT.map((_, i) => i);
+    let matchRightOrder = MATCH_RIGHT.map((_, i) => i);
+    let tfOrder = TF.map((_, i) => i);
+
+    // Match UI state (not persisted as ink)
+    let selectedLeft = null;
+    let selectedRight = null;
+    let paired = loadJSON('paired_' + mode, {}); // pairKey -> true
+    let tfChoice = loadJSON('tf_' + mode, {}); // id -> true/false
+    let selfTicks = loadJSON('ticks_' + mode, {}); // id -> 'y'|'n'
+
+    function goHub() {
+      try { window.parent.postMessage('close-lesson-to-hub', '*'); } catch (_) {}
+      if (history.length > 1) history.back();
+    }
+
+    function setDim(v) {
+      document.getElementById('dimLayer').style.opacity = (Number(v) / 100).toFixed(2);
+      localStorage.setItem(STORE + 'dim', v);
+    }
+    (function () {
+      const s = localStorage.getItem(STORE + 'dim');
+      if (s != null) {
+        document.getElementById('dimSlider').value = s;
+        setDim(s);
+      }
+    })();
+
+    function loadJSON(k, fallback) {
+      try { return JSON.parse(localStorage.getItem(STORE + k) || 'null') || fallback; } catch (_) { return fallback; }
+    }
+    function saveJSON(k, val) {
+      localStorage.setItem(STORE + k, JSON.stringify(val));
+    }
+
+    /* Fisher–Yates */
+    function shuffle(arr) {
+      const a = arr.slice();
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function setMode(m) {
+      flushAllInk();
+      mode = m;
+      paired = loadJSON('paired_' + mode, {});
+      tfChoice = loadJSON('tf_' + mode, {});
+      selfTicks = loadJSON('ticks_' + mode, {});
+      selectedLeft = selectedRight = null;
+
+      if (mode === 'write') {
+        fillOrder = shuffle(FILLS.map((_, i) => i));
+        matchLeftOrder = shuffle(MATCH_LEFT.map((_, i) => i));
+        matchRightOrder = shuffle(MATCH_RIGHT.map((_, i) => i));
+        tfOrder = shuffle(TF.map((_, i) => i));
+      } else {
+        fillOrder = FILLS.map((_, i) => i);
+        matchLeftOrder = MATCH_LEFT.map((_, i) => i);
+        matchRightOrder = MATCH_RIGHT.map((_, i) => i);
+        tfOrder = TF.map((_, i) => i);
+      }
+
+      document.getElementById('btnPractice').className = 'btn mode-btn' + (m === 'practice' ? ' on-practice' : '');
+      document.getElementById('btnWrite').className = 'btn mode-btn' + (m === 'write' ? ' on-write' : '');
+      document.getElementById('heroTitle').textContent = m === 'practice' ? 'Practice mode' : 'Write mode';
+      document.getElementById('heroSub').textContent = m === 'practice'
+        ? 'Soft checks and tips are on. Ink is saved per question.'
+        : 'No tips. Order is shuffled. Your writing stays with each question.';
+      render();
+    }
+
+    function setTab(t) {
+      flushAllInk();
+      tab = t;
+      document.getElementById('tabA').classList.toggle('on', t === 'A');
+      document.getElementById('tabB').classList.toggle('on', t === 'B');
+      document.getElementById('tabC').classList.toggle('on', t === 'C');
+      selectedLeft = selectedRight = null;
+      render();
+    }
+
+    /* ----- Ink: independent per mode + question id ----- */
+    function inkKey(id) { return STORE + 'ink_' + mode + '_' + id; }
+
+    function flushAllInk() {
+      document.querySelectorAll('canvas[data-ink-id]').forEach(c => {
+        try {
+          if (c.width) localStorage.setItem(inkKey(c.dataset.inkId), c.toDataURL('image/png'));
+        } catch (_) {}
+      });
+    }
+
+    function mountStrip(canvas) {
+      const id = canvas.dataset.inkId;
+      const parent = canvas.parentElement;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = parent.clientWidth, h = parent.clientHeight;
+      if (!w || !h) return;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, w, h);
+      const raw = localStorage.getItem(inkKey(id));
+      if (raw) {
+        const img = new Image();
+        img.onload = () => ctx.drawImage(img, 0, 0, w, h);
+        img.src = raw;
+      }
+    }
+
+    function clearInk(id) {
+      localStorage.removeItem(inkKey(id));
+      const c = document.querySelector('canvas[data-ink-id="' + id + '"]');
+      if (!c) return;
+      const ctx = c.getContext('2d');
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, c.width / dpr, c.height / dpr);
+    }
+
+    (function bindDraw() {
+      let drawing = false, lx = 0, ly = 0, active = null;
+      function pos(e, c) {
+        const r = c.getBoundingClientRect();
+        return [e.clientX - r.left, e.clientY - r.top];
+      }
+      document.addEventListener('pointerdown', e => {
+        const c = e.target.closest('canvas[data-ink-id]');
+        if (!c) return;
+        e.preventDefault();
+        c.setPointerCapture(e.pointerId);
+        drawing = true; active = c;
+        const [x, y] = pos(e, c);
+        lx = x; ly = y;
+        const ctx = c.getContext('2d');
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 2.2;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.lineTo(x + 0.01, y);
+        ctx.stroke();
+      }, { passive: false });
+      document.addEventListener('pointermove', e => {
+        if (!drawing || !active) return;
+        e.preventDefault();
+        const [x, y] = pos(e, active);
+        const ctx = active.getContext('2d');
+        ctx.strokeStyle = '#0f172a';
+        ctx.lineWidth = 2.2;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(lx, ly);
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        lx = x; ly = y;
+      }, { passive: false });
+      function end() {
+        if (!drawing || !active) return;
+        try { localStorage.setItem(inkKey(active.dataset.inkId), active.toDataURL('image/png')); } catch (_) {}
+        drawing = false; active = null;
+      }
+      document.addEventListener('pointerup', end);
+      document.addEventListener('pointercancel', end);
+    })();
+
+    /* ----- Render sections ----- */
+    function selfCheckHTML(id) {
+      if (mode !== 'write') return '';
+      const st = selfTicks[id];
+      return `<div class="self-check">
+        <button type="button" class="ck y ${st==='y'?'on':''}" onclick="tick('${id}','y')">✔</button>
+        <button type="button" class="ck n ${st==='n'?'on':''}" onclick="tick('${id}','n')">✘</button>
+      </div>`;
+    }
+    function tick(id, v) {
+      selfTicks[id] = selfTicks[id] === v ? null : v;
+      saveJSON('ticks_' + mode, selfTicks);
+      render();
+    }
+
+    function renderFill() {
+      return fillOrder.map(i => {
+        const q = FILLS[i];
+        return `<div class="card" data-qid="${q.id}">
+          <div class="prompt">${i + 1}. ${q.text}</div>
+          <div class="blank-row">
+            <div class="ruled-strip"><canvas data-ink-id="${q.id}"></canvas></div>
+            <button type="button" class="mini-btn" onclick="clearInk('${q.id}')">Clear</button>
+            ${mode === 'practice' ? `<button type="button" class="mini-btn" onclick="showFillTip('${q.id}')">Check tip</button>` : ''}
+          </div>
+          <div class="tip" id="tip_${q.id}"></div>
+          ${selfCheckHTML(q.id)}
+        </div>`;
+      }).join('');
+    }
+    function showFillTip(id) {
+      const q = FILLS.find(x => x.id === id);
+      const el = document.getElementById('tip_' + id);
+      if (!q || !el) return;
+      el.textContent = 'Tip: ' + q.tip + ' (Answer idea: ' + q.answer + ')';
+      el.className = 'tip ok';
+    }
+
+    function renderMatch() {
+      const left = matchLeftOrder.map(i => MATCH_LEFT[i]);
+      const right = matchRightOrder.map(i => MATCH_RIGHT[i]);
+      const leftHTML = left.map(item => {
+        const isPaired = Object.keys(paired).some(k => k.startsWith(item.pair + '::') || k.endsWith('::' + item.pair));
+        // paired keys as pair id
+        const done = !!paired[item.pair];
+        return `<button type="button" class="match-chip ${done?'paired':''} ${selectedLeft===item.id?'selected':''}"
+          onclick="tapLeft('${item.id}','${item.pair}')">${item.text}</button>`;
+      }).join('');
+      const rightHTML = right.map(item => {
+        const done = !!paired[item.pair];
+        const icon = item.icon ? `<img class="type-icon" src="${item.icon}" alt="" onerror="this.style.display='none'" />` : '';
+        return `<button type="button" class="match-chip ${done?'paired':''} ${selectedRight===item.id?'selected':''}"
+          onclick="tapRight('${item.id}','${item.pair}')">${icon}${item.text}</button>`;
+      }).join('');
+      return `<div class="card"><h3>Match the cause to the type of pollution</h3>
+        <div class="match-grid">
+          <div class="match-col">${leftHTML}</div>
+          <div class="match-col">${rightHTML}</div>
+        </div>
+        <div class="tip" id="matchTip">${mode==='practice'?'Tap one on the left, then one on the right.':'Match each pair. Use ✔/✘ when you finish a pair.'}</div>
+        ${mode==='write' ? selfCheckHTML('match_all') : ''}
+      </div>`;
+    }
+
+    function tapLeft(id, pair) {
+      if (paired[pair]) return;
+      selectedLeft = id;
+      selectedRight = null;
+      window._leftPair = pair;
+      render();
+    }
+    function tapRight(id, pair) {
+      if (paired[pair]) return;
+      if (!selectedLeft) {
+        selectedRight = id;
+        render();
+        return;
+      }
+      const leftPair = window._leftPair;
+      if (leftPair === pair) {
+        paired[pair] = true;
+        saveJSON('paired_' + mode, paired);
+        selectedLeft = selectedRight = null;
+        const tip = document.getElementById('matchTip');
+        if (tip && mode === 'practice') {
+          tip.textContent = 'Correct pair!';
+          tip.className = 'tip ok';
+        }
+      } else {
+        if (mode === 'practice') {
+          const tip = document.getElementById('matchTip');
+          if (tip) { tip.textContent = 'Not a match — try again.'; tip.className = 'tip bad'; }
+        }
+        selectedLeft = selectedRight = null;
+      }
+      render();
+    }
+
+    function renderTF() {
+      return tfOrder.map(i => {
+        const q = TF[i];
+        const ch = tfChoice[q.id];
+        let tip = '';
+        if (mode === 'practice' && ch !== undefined && ch !== null) {
+          const ok = ch === q.answer;
+          tip = `<div class="tip ${ok?'ok':'bad'}">${ok ? 'Correct!' : 'Not quite — think again.'}</div>`;
+        }
+        return `<div class="card">
+          <div class="prompt">${q.text}</div>
+          <div class="tf-row">
+            <button type="button" class="tf-btn ${ch===true?'on-t':''}" onclick="setTF('${q.id}', true)">T</button>
+            <button type="button" class="tf-btn ${ch===false?'on-f':''}" onclick="setTF('${q.id}', false)">F</button>
+          </div>
+          ${tip}
+          ${selfCheckHTML(q.id)}
+        </div>`;
+      }).join('');
+    }
+    function setTF(id, val) {
+      tfChoice[id] = val;
+      saveJSON('tf_' + mode, tfChoice);
+      render();
+    }
+
+    function render() {
+      const panel = document.getElementById('panel');
+      if (tab === 'A') panel.innerHTML = renderFill();
+      else if (tab === 'B') panel.innerHTML = renderMatch();
+      else panel.innerHTML = renderTF();
+
+      requestAnimationFrame(() => {
+        document.querySelectorAll('canvas[data-ink-id]').forEach(mountStrip);
+      });
+    }
+
+    window.addEventListener('beforeunload', flushAllInk);
+    setMode('practice');
+  </script>
+</body>
+</html>
