@@ -1,1 +1,336 @@
-Loading content...
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Zaina • Soil Farm — Clean</title>
+<script src="shared/safe-storage.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Quicksand:wght@700;800&display=swap" rel="stylesheet" />
+<style>
+:root { --ink:#1e293b; --earth:#5c4033; --leaf:#16a34a; --sky:#0ea5e9; --soft:#f8fafc; --line:#e2e8f0; }
+* { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body { margin:0; height:100%; overflow:hidden; font-family:'Nunito',sans-serif; background:#f0fdf4; color:var(--ink); }
+body { display:flex; flex-direction:column; }
+header { flex-shrink:0; height:56px; background:rgba(255,255,255,.94); border-bottom:2px solid #bbf7d0; display:flex; align-items:center; justify-content:space-between; padding:0 12px; gap:8px; backdrop-filter:blur(6px); }
+.btn { border:1px solid #86efac; background:#fff; color:#166534; font-weight:800; font-size:.78rem; padding:6px 11px; border-radius:10px; cursor:pointer; }
+.btn.on-practice { background:#0ea5e9; color:#fff; border-color:#0ea5e9; }
+.btn.on-write { background:#7c3aed; color:#fff; border-color:#7c3aed; }
+.badge { background:linear-gradient(135deg,#22c55e,#0ea5e9); color:#fff; font-weight:900; font-size:.72rem; padding:4px 10px; border-radius:999px; }
+.dim-wrap { display:flex; align-items:center; gap:6px; font-size:.68rem; font-weight:800; color:#166534; }
+.dim-wrap input { width:70px; accent-color:#15803d; }
+#dimLayer { position:fixed; inset:0; background:#000; opacity:0; pointer-events:none; z-index:40; transition:opacity .2s; }
+main { flex:1; min-height:0; overflow-y:auto; padding:12px; }
+.board { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:10px; }
+.sec-card { background:#fff; border:1px solid #bbf7d0; border-radius:16px; padding:12px; cursor:pointer; box-shadow:0 4px 12px rgba(22,163,74,.08); transition:transform .15s; }
+.sec-card:active { transform:scale(.98); }
+.sec-card h3 { margin:0 0 4px; font-size:.9rem; font-weight:900; color:#14532d; }
+.sec-card p { margin:0; font-size:.72rem; color:#64748b; font-weight:700; }
+.sec-card .prog { margin-top:6px; font-size:.68rem; font-weight:800; color:#15803d; }
+.workspace { display:none; }
+.workspace.on { display:block; }
+.card { background:#fff; border:1px solid #bbf7d0; border-radius:16px; padding:12px; margin-bottom:10px; }
+.prompt { font-size:.92rem; font-weight:700; line-height:1.45; }
+.ruled-strip { position:relative; width:100%; min-height:64px; height:68px; border:1.5px solid #94a3b8; border-radius:10px; background:#fffef8; background-image:linear-gradient(to bottom,transparent 42px,#93c5fd 42px,#93c5fd 43px,transparent 43px); overflow:hidden; touch-action:none; margin-top:8px; }
+.ruled-strip canvas { position:absolute; inset:0; width:100%; height:100%; touch-action:none; }
+.strip-tools { display:flex; gap:6px; margin-top:6px; }
+.mini { border:1px solid #cbd5e1; background:#f8fafc; border-radius:8px; padding:5px 10px; font-size:.72rem; font-weight:800; cursor:pointer; }
+.watermark { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:1rem; font-weight:800; opacity:.28; pointer-events:none; font-family:'Quicksand',sans-serif; }
+.tf-row { display:flex; gap:8px; margin-top:8px; }
+.tf-btn { width:52px; height:48px; border-radius:12px; border:2px solid #cbd5e1; background:#fff; font-weight:900; font-size:1.05rem; cursor:pointer; }
+.tf-btn.on-t { background:#16a34a; color:#fff; border-color:#16a34a; }
+.tf-btn.on-f { background:#dc2626; color:#fff; border-color:#dc2626; }
+.self-check { display:flex; gap:6px; margin-top:8px; }
+.ck { width:36px; height:36px; border-radius:10px; border:2px solid #cbd5e1; background:#fff; font-weight:900; cursor:pointer; }
+.ck.y.on { background:#16a34a; color:#fff; border-color:#16a34a; }
+.ck.n.on { background:#dc2626; color:#fff; border-color:#dc2626; }
+.opt-btn { display:block; width:100%; text-align:left; margin-top:6px; padding:8px 10px; border:2px solid #cbd5e1; border-radius:10px; background:#f8fafc; font-weight:800; cursor:pointer; }
+.opt-btn.sel { border-color:#2563eb; background:#eff6ff; }
+.opt-btn.ok { border-color:#16a34a; background:#dcfce7; }
+.opt-btn.bad { border-color:#f87171; background:#fef2f2; }
+.pen-float { position:fixed; right:14px; bottom:14px; z-index:30; }
+.pen-btn { width:48px; height:48px; border-radius:50%; background:#1e293b; color:#fff; border:2px solid #fff; font-size:22px; cursor:pointer; box-shadow:0 6px 16px rgba(0,0,0,.3); }
+.pen-drawer { position:absolute; right:0; bottom:56px; display:none; flex-direction:column; gap:6px; background:rgba(15,23,42,.96); padding:10px; border-radius:16px; border:1px solid rgba(255,255,255,.3); min-width:140px; }
+.pen-drawer.open { display:flex; }
+.drawer-row { display:flex; gap:6px; flex-wrap:wrap; }
+.drawer-tool { width:36px; height:36px; border-radius:10px; border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.1); color:#fff; font-size:16px; cursor:pointer; }
+.drawer-tool.on { background:#b45309; border-color:#fde047; }
+.thick { width:100%; accent-color:#fbbf24; }
+#pinModal { position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:60; display:none; align-items:center; justify-content:center; }
+#pinModal.show { display:flex; }
+.pin-box { background:#fff; border-radius:16px; padding:16px; width:min(280px,90vw); text-align:center; }
+.pin-box input { width:100%; padding:10px; font-size:1.2rem; text-align:center; border:2px solid #cbd5e1; border-radius:10px; margin:8px 0; }
+.s-word { cursor:pointer; border-bottom:1px dotted #94a3b8; }
+.s-word.speaking { background:#fef9c3; }
+</style>
+</head>
+<body>
+<div id="dimLayer"></div>
+<header>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="btn" onclick="goHub()">← Hub</button>
+    <span class="badge">Zaina</span>
+    <div><div style="font-weight:900;font-size:.92rem">Soil Farm</div><div style="font-size:.68rem;color:#64748b">EVS • Clean rebuild</div></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <button class="btn on-practice" id="btnP" onclick="requestMode('practice')">Practice</button>
+    <button class="btn" id="btnW" onclick="requestMode('write')">Write</button>
+    <label class="dim-wrap">Dim <input type="range" id="dimSlider" min="0" max="50" value="0" oninput="setDim(this.value)"></label>
+  </div>
+</header>
+<main>
+  <div id="board" class="board"></div>
+  <div id="workspace" class="workspace">
+    <button class="btn" onclick="backToBoard()" style="margin-bottom:10px">← All sections</button>
+    <div id="panel"></div>
+  </div>
+</main>
+<div class="pen-float">
+  <button class="pen-btn" onclick="togglePenDrawer()">✏️</button>
+  <div class="pen-drawer" id="penDrawer">
+    <div class="drawer-row">
+      <button class="drawer-tool on" id="dtPen" onclick="setPen('pen')">✏️</button>
+      <button class="drawer-tool" id="dtEraser" onclick="setPen('eraser')">🧽</button>
+      <button class="drawer-tool" onclick="undoInk()">↩️</button>
+      <button class="drawer-tool" onclick="redoInk()">↪️</button>
+      <button class="drawer-tool" onclick="clearCurrent()">🗑️</button>
+    </div>
+    <div style="font-size:.65rem;color:#cbd5e1;font-weight:700">Thickness</div>
+    <input type="range" class="thick" id="thick" min="1.5" max="5" step="0.5" value="2.5" oninput="setThick(this.value)">
+  </div>
+</div>
+<div id="pinModal"><div class="pin-box">
+  <div style="font-weight:900">Parent PIN</div>
+  <div style="font-size:.75rem;color:#64748b;margin-top:4px">Enter 1995 to return to Practice</div>
+  <input id="pinInput" type="password" inputmode="numeric" maxlength="4" placeholder="••••">
+  <div id="pinError" style="color:#dc2626;font-size:.75rem;display:none">Wrong PIN</div>
+  <div style="display:flex;gap:8px;margin-top:8px">
+    <button class="btn" onclick="closePin()">Cancel</button>
+    <button class="btn" style="background:#15803d;color:#fff" onclick="checkPin()">Enter</button>
+  </div>
+</div></div>
+<script>
+const STORE = 'soilClean_';
+const OBJ = [
+  {opts:['Overgrazing','Water','Wind','Terrace farming'], ans:'Terrace farming', id:'o1', q:'Which of the following does not cause soil erosion?'},
+  {opts:['20 April','21 April','23 April','22 April'], ans:'22 April', id:'o2', q:'Earth Day is celebrated on:'},
+  {opts:['Humus','Subsoil','Bedrock','Parent material'], ans:'Parent material', id:'o3', q:'Which of the following is also called regolith?'},
+  {opts:['soil erosion','storm','growing trees','weathering'], ans:'growing trees', id:'o4', q:'Afforestation means:'},
+  {opts:['stems','roots','leaves','buds'], ans:'roots', id:'o5', q:'Plants and trees hold the soil together by their:'}
+];
+const FILLS = [
+  {q:'The layer of the soil with humus is the', hint:'(subsoil/organic layer)', ans:'organic layer', id:'f1'},
+  {q:'Soil has', suffix:'layers.', hint:'(different/same)', ans:'different', id:'f2'},
+  {q:'Trees in fields can act as shields against strong', hint:'(winds/rain)', ans:'winds', id:'f3'},
+  {q:'Wearing away of soil by forces such as water or wind is called soil', hint:'(erosion/conservation)', ans:'erosion', id:'f4'},
+  {q:'Building', suffix:'along the riverbanks can prevent soil erosion.', hint:'(embankments/windbreaks)', ans:'embankments', id:'f5'}
+];
+const TFS = [
+  {q:'The layer below the topsoil is called parent rock.', ans:'false', id:'t1'},
+  {q:'Soil is a natural resource.', ans:'true', id:'t2'},
+  {q:'Soil can never lose its fertility.', ans:'false', id:'t3'},
+  {q:'The heat of the Sun has no effect on soil.', ans:'false', id:'t4'},
+  {q:'Overgrazing can lead to soil erosion.', ans:'true', id:'t5'}
+];
+const CAUSES = ['Deforestation','Heavy Rainfall','Strong Wind','Heat of Sun','Overgrazing','Ploughing of hills','Flowing Water'];
+const CONS = ['Afforestation','Reforestation','Crop Rotation','Cover Crops','Pastures','Embankments','Terrace Farming','Constructing Dams','Windbreaks'];
+const SECTIONS = [
+  {id:'A', title:'A. Objective', desc:'Tick the correct answer', count:OBJ.length},
+  {id:'B', title:'B. Fill in the blanks', desc:'Write on the strips', count:FILLS.length},
+  {id:'C', title:'C. True / False', desc:'Choose True or False', count:TFS.length},
+  {id:'D', title:'D. Causes of Erosion', desc:'Read the causes', count:CAUSES.length},
+  {id:'E', title:'E. Soil Conservation', desc:'Read the methods', count:CONS.length},
+  {id:'F', title:'F. Word hunt', desc:'Find the words (coming)', count:0}
+];
+let mode = 'practice';
+let currentSec = null;
+let pen = {type:'pen', size:2.5, color:'#1e293b'};
+let undoStack = [], redoStack = [];
+let ukVoice = null;
+function loadVoice(){ const v = speechSynthesis.getVoices(); ukVoice = v.find(x => x.lang === 'en-GB') || v[0] || null; }
+speechSynthesis.onvoiceschanged = loadVoice; loadVoice();
+function speak(t, el){
+  if(!t) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(t);
+  u.lang = 'en-GB'; u.rate = 0.85;
+  if(ukVoice) u.voice = ukVoice;
+  if(el) el.classList.add('speaking');
+  u.onend = () => { if(el) el.classList.remove('speaking'); };
+  speechSynthesis.speak(u);
+}
+function makeSpeakable(s){
+  return s.split(/(\s+)/).map(tok => {
+    if(/^\s+$/.test(tok)) return tok;
+    const c = tok.replace(/[.,()!?]/g,'');
+    if(!c) return tok;
+    return `<span class="s-word" data-speak="${c}" onclick="speak('${c}', this)">${tok}</span>`;
+  }).join('');
+}
+function goHub(){ try{ window.parent.postMessage('close-lesson-to-hub','*'); }catch(_){} if(history.length>1) history.back(); }
+function setDim(v){ document.getElementById('dimLayer').style.opacity = (Number(v)/100).toFixed(2); localStorage.setItem(STORE+'dim', v); }
+(function(){ const s = localStorage.getItem(STORE+'dim'); if(s!=null){ document.getElementById('dimSlider').value=s; setDim(s); } })();
+function requestMode(m){
+  if(mode === m) return;
+  if(mode === 'write' && m === 'practice'){
+    document.getElementById('pinModal').classList.add('show');
+    document.getElementById('pinInput').value = '';
+    document.getElementById('pinError').style.display = 'none';
+    window._pending = m;
+    return;
+  }
+  setMode(m);
+}
+function setMode(m){
+  mode = m;
+  document.getElementById('btnP').className = 'btn' + (m==='practice'?' on-practice':'');
+  document.getElementById('btnW').className = 'btn' + (m==='write'?' on-write':'');
+  if(currentSec) renderSection();
+  else renderBoard();
+}
+function closePin(){ document.getElementById('pinModal').classList.remove('show'); }
+function checkPin(){
+  if(document.getElementById('pinInput').value === '1995'){
+    closePin();
+    setMode(window._pending || 'practice');
+  } else {
+    document.getElementById('pinError').style.display = 'block';
+  }
+}
+function togglePenDrawer(){ document.getElementById('penDrawer').classList.toggle('open'); }
+function setPen(t){
+  pen.type = t;
+  document.getElementById('dtPen').classList.toggle('on', t==='pen');
+  document.getElementById('dtEraser').classList.toggle('on', t==='eraser');
+}
+function setThick(v){ pen.size = Number(v); }
+function inkKey(id){ return STORE + 'ink_' + mode + '_' + id; }
+function mountCanvas(c){
+  const id = c.dataset.inkId;
+  const p = c.parentElement;
+  const dpr = Math.min(window.devicePixelRatio||1, 2);
+  const w = p.clientWidth, h = p.clientHeight;
+  if(!w || !h) return;
+  c.width = Math.round(w * dpr); c.height = Math.round(h * dpr);
+  c.style.width = w+'px'; c.style.height = h+'px';
+  const ctx = c.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,w,h);
+  const raw = localStorage.getItem(inkKey(id));
+  if(raw){ const img = new Image(); img.onload = () => ctx.drawImage(img,0,0,w,h); img.src = raw; }
+}
+function saveInk(c){ try{ localStorage.setItem(inkKey(c.dataset.inkId), c.toDataURL('image/png')); }catch(_){} }
+function clearInk(id){
+  localStorage.removeItem(inkKey(id));
+  const c = document.querySelector('canvas[data-ink-id="'+id+'"]');
+  if(c){ const ctx = c.getContext('2d'); const dpr = Math.min(window.devicePixelRatio||1,2); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,c.width/dpr,c.height/dpr); }
+}
+function undoInk(){ /* simple: clear last stroke by reloading previous — for now clear current */ }
+function redoInk(){}
+function clearCurrent(){ if(currentSec){ document.querySelectorAll('canvas[data-ink-id]').forEach(c => clearInk(c.dataset.inkId)); } }
+(function draw(){
+  let drawing=false, lx=0, ly=0, active=null;
+  function pos(e,c){ const r=c.getBoundingClientRect(); return [e.clientX-r.left, e.clientY-r.top]; }
+  document.addEventListener('pointerdown', e=>{
+    const c = e.target.closest('canvas[data-ink-id]');
+    if(!c) return;
+    e.preventDefault(); c.setPointerCapture(e.pointerId);
+    drawing=true; active=c;
+    const [x,y]=pos(e,c); lx=x; ly=y;
+    const ctx=c.getContext('2d');
+    ctx.lineCap='round'; ctx.lineJoin='round';
+    if(pen.type==='eraser'){ ctx.globalCompositeOperation='destination-out'; ctx.lineWidth=18; }
+    else { ctx.globalCompositeOperation='source-over'; ctx.strokeStyle=pen.color; ctx.lineWidth=pen.size; }
+    ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+.01,y); ctx.stroke();
+  }, {passive:false});
+  document.addEventListener('pointermove', e=>{
+    if(!drawing||!active) return;
+    e.preventDefault();
+    const [x,y]=pos(e,active);
+    const ctx=active.getContext('2d');
+    if(pen.type==='eraser'){ ctx.globalCompositeOperation='destination-out'; ctx.lineWidth=18; }
+    else { ctx.globalCompositeOperation='source-over'; ctx.strokeStyle=pen.color; ctx.lineWidth=pen.size; }
+    ctx.lineCap='round'; ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(x,y); ctx.stroke();
+    lx=x; ly=y;
+  }, {passive:false});
+  document.addEventListener('pointerup', ()=>{ if(drawing&&active) saveInk(active); drawing=false; active=null; });
+})();
+function renderBoard(){
+  document.getElementById('workspace').classList.remove('on');
+  document.getElementById('board').style.display = 'grid';
+  document.getElementById('board').innerHTML = SECTIONS.map(s => `
+    <div class="sec-card" onclick="openSection('${s.id}')">
+      <h3>${s.title}</h3>
+      <p>${s.desc}</p>
+      <div class="prog">${s.count ? s.count + ' items' : 'soon'}</div>
+    </div>`).join('');
+}
+function backToBoard(){ currentSec=null; renderBoard(); }
+function openSection(id){
+  currentSec = id;
+  document.getElementById('board').style.display = 'none';
+  document.getElementById('workspace').classList.add('on');
+  renderSection();
+}
+function renderSection(){
+  const panel = document.getElementById('panel');
+  if(currentSec==='A') panel.innerHTML = renderObj();
+  else if(currentSec==='B') panel.innerHTML = renderFills();
+  else if(currentSec==='C') panel.innerHTML = renderTF();
+  else if(currentSec==='D') panel.innerHTML = renderList(CAUSES, 'Causes of soil erosion');
+  else if(currentSec==='E') panel.innerHTML = renderList(CONS, 'Soil conservation methods');
+  else panel.innerHTML = '<div class="card"><div class="prompt">Word hunt coming soon.</div></div>';
+  requestAnimationFrame(() => document.querySelectorAll('canvas[data-ink-id]').forEach(mountCanvas));
+}
+function renderObj(){
+  return OBJ.map(q => `<div class="card"><div class="prompt">${makeSpeakable(q.q)}</div>
+    ${q.opts.map(o => `<button class="opt-btn" onclick="chooseOpt('${q.id}','${o}')">${o}</button>`).join('')}
+  </div>`).join('');
+}
+function chooseOpt(id, val){
+  const q = OBJ.find(x=>x.id===id);
+  if(!q) return;
+  if(mode==='practice') alert(val===q.ans ? 'Correct!' : 'Try again');
+  else alert('Saved. Use self-check later.');
+}
+function renderFills(){
+  return FILLS.map(q => {
+    const wm = mode==='practice' ? `<div class="watermark">${q.ans}</div>` : '';
+    const tip = mode==='practice' ? `<div style="font-size:.72rem;color:#0369a1;margin-top:4px">${q.hint||''}</div>` : '';
+    return `<div class="card">
+      <div class="prompt">${makeSpeakable(q.q)} ${q.suffix||''}</div>
+      <div class="ruled-strip">${wm}<canvas data-ink-id="${q.id}"></canvas></div>
+      <div class="strip-tools">
+        <button class="mini" onclick="clearInk('${q.id}')">Clear</button>
+        <button class="mini" onclick="alert('Undo last stroke — coming')">Undo</button>
+      </div>
+      ${tip}
+      ${mode==='write' ? selfCheck(q.id) : ''}
+    </div>`;
+  }).join('');
+}
+function renderTF(){
+  return TFS.map(q => `<div class="card">
+    <div class="prompt">${makeSpeakable(q.q)}</div>
+    <div class="tf-row">
+      <button class="tf-btn" onclick="setTF('${q.id}','true')">T</button>
+      <button class="tf-btn" onclick="setTF('${q.id}','false')">F</button>
+    </div>
+    ${mode==='write' ? selfCheck(q.id) : ''}
+  </div>`).join('');
+}
+function setTF(id, val){ localStorage.setItem(STORE+'tf_'+mode+'_'+id, val); }
+function renderList(arr, title){
+  return `<div class="card"><h3 style="margin:0 0 8px">${title}</h3>
+    ${arr.map(t => `<div class="prompt" style="margin:4px 0">${makeSpeakable(t)}</div>`).join('')}
+  </div>`;
+}
+function selfCheck(id){
+  return `<div class="self-check">
+    <button class="ck y" onclick="this.classList.toggle('on')">✔</button>
+    <button class="ck n" onclick="this.classList.toggle('on')">✘</button>
+  </div>`;
+}
+renderBoard();
+</script>
+</body>
+</html>
