@@ -1,57 +1,58 @@
-// shared/math-pen.js v1.0
+// shared/math-pen.js v1.2
 // Maths pen: universal pen + Line tool (auto-snap + glow + ding)
-// For zaina-maths-*.html
 
 (function(){
-  // Load universal pen first
   const script = document.createElement('script');
   script.src = 'shared/universal-pen.js';
   script.onload = () => {
-    // Add line tool after universal loads
     setTimeout(() => {
-      const panel = document.getElementById('universalPenPanel');
-      if(!panel) return;
+      const bar = document.getElementById('penBar');
+      if(!bar) return;
       
-      const lineBtn = document.createElement('button');
-      lineBtn.className = 'up-btn';
+      // Insert line tool between pen and eraser
+      const lineBtn = document.createElement('div');
+      lineBtn.className = 'pen-btn';
       lineBtn.dataset.tool = 'line';
-      lineBtn.type = 'button';
       lineBtn.textContent = '📏';
       lineBtn.title = 'Straight Line';
       
-      const firstRow = panel.querySelector('.up-row');
-      firstRow.insertBefore(lineBtn, firstRow.children[1]); // After pen, before eraser
+      const eraser = bar.querySelector('[data-tool="eraser"]');
+      bar.insertBefore(lineBtn, eraser);
       
-      // Web Audio ding for line snap
-      let audioCtx;
-      const playDing = () => {
-        if(!window.UniversalPen?.state.soundOn) return;
-        if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine'; osc.frequency.setValueAtTime(800, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-        osc.connect(gain).connect(audioCtx.destination);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+      lineBtn.onclick = (e) => {
+        e.stopPropagation();
+        window.UniversalPen.state.tool = 'line';
+        window.UniversalPen.saveState();
+        bar.querySelectorAll('[data-tool]').forEach(b => b.classList.remove('on'));
+        lineBtn.classList.add('on');
       };
       
-      // Override line drawing
+      // Line drawing logic with snap + glow + ding
       let lineStart = null;
       document.addEventListener('pointerdown', e => {
         if(window.UniversalPen?.state.tool === 'line') {
           const c = e.target.closest('canvas');
-          if(c) lineStart = {x: e.clientX - c.getBoundingClientRect().left, y: e.clientY - c.getBoundingClientRect().top, canvas: c};
+          if(c) {
+            const r = c.getBoundingClientRect();
+            lineStart = {
+              x: (e.touches?e.touches[0].clientX:e.clientX) - r.left,
+              y: (e.touches?e.touches[0].clientY:e.clientY) - r.top,
+              canvas: c,
+              ctx: c.getContext('2d')
+            };
+          }
         }
       });
       
       document.addEventListener('pointerup', e => {
         if(window.UniversalPen?.state.tool === 'line' && lineStart) {
-          const c = lineStart.canvas;
-          const ctx = c.getContext('2d');
-          const end = {x: e.clientX - c.getBoundingClientRect().left, y: e.clientY - c.getBoundingClientRect().top};
+          const r = lineStart.canvas.getBoundingClientRect();
+          const end = {
+            x: (e.touches?e.changedTouches[0].clientX:e.clientX) - r.left,
+            y: (e.touches?e.changedTouches[0].clientY:e.clientY) - r.top
+          };
           
-          // Draw snapped line
+          const ctx = lineStart.ctx;
           ctx.save();
           ctx.strokeStyle = '#8B5A2B';
           ctx.lineWidth = window.UniversalPen.state.size;
@@ -61,14 +62,16 @@
           ctx.lineTo(end.x, end.y);
           ctx.stroke();
           
-          // Glow effect
+          // Gold glow
           ctx.strokeStyle = '#F59E0B';
           ctx.lineWidth = window.UniversalPen.state.size + 4;
           ctx.globalAlpha = 0.6;
           ctx.stroke();
           ctx.restore();
           
-          playDing();
+          window.UniversalPen.playDing();
+          
+          // Fade glow after 500ms
           setTimeout(() => {
             ctx.save();
             ctx.strokeStyle = '#8B5A2B';
@@ -78,6 +81,10 @@
             ctx.lineTo(end.x, end.y);
             ctx.stroke();
             ctx.restore();
+            
+            // Save to undo stack
+            window.UniversalPen.state.undoStack.push(lineStart.canvas.toDataURL());
+            window.UniversalPen.state.redoStack = [];
           }, 500);
           
           lineStart = null;
