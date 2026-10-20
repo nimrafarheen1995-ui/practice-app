@@ -46,8 +46,8 @@ body{display:flex;flex-direction:column;padding:6px;position:relative}
 .spiral{width:18px;height:10px;border-radius:6px;background:linear-gradient(135deg,#fff 0%,#d1d5db 45%,#6b7280 80%,#1f2937 100%)}
 .binder-open{transform:perspective(1400px) rotateY(-118deg) rotateX(8deg) translateZ(20px);opacity:0;pointer-events:none}
 .content-scroll{position:relative;z-index:7;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:76px 12px 18px 12px;display:flex;flex-direction:column;gap:10px;touch-action:pan-y}
-.hero-card{display:flex;align-items:center;gap:10px;padding:10px;background:rgba(255,255,255,.96);border:2.5px solid #8B5A2B;border-radius:18px;box-shadow:0 8px 20px rgba(0,0,0,.25)}
-.hero-img{width:62px;height:62px;object-fit:contain;animation:floatH 3s ease-in-out infinite;cursor:pointer}
+.hero-card{display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.96);border:2.5px solid #8B5A2B;border-radius:18px;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+.hero-img{width:88px;height:88px;object-fit:contain;animation:floatH 3s ease-in-out infinite;cursor:pointer;filter:drop-shadow(0 4px 8px rgba(0,0,0,.25))}
 @keyframes floatH{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
 .globe{width:40px;height:40px;animation:spinS 14s linear infinite}
 @keyframes spinS{from{transform:rotate(0)}to{transform:rotate(360deg)}}
@@ -103,8 +103,8 @@ body{display:flex;flex-direction:column;padding:6px;position:relative}
 /* CENTER MODAL TRY AGAIN */
 #tryAgainModal{position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
 #tryAgainModal.show{display:flex}
-.try-modal-box{background:#FFFBEB;border:3px solid #DC2626;border-radius:22px;padding:18px;width:min(360px,92vw);text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.4);animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
-.try-hero-big{width:92px;height:92px;object-fit:contain;animation:floatH 2s ease-in-out infinite;margin:0 auto;display:block}
+.try-modal-box{background:#FFFBEB;border:3px solid #DC2626;border-radius:22px;padding:18px;width:min(380px,92vw);text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.4);animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
+.try-hero-big{width:140px;height:140px;object-fit:contain;animation:floatH 2s ease-in-out infinite;margin:0 auto;display:block;filter:drop-shadow(0 6px 12px rgba(0,0,0,.25))}
 .try-title{font-family:'Fredoka',sans-serif;font-weight:800;color:#DC2626;font-size:1.25rem;margin-top:8px}
 .try-sub{font-size:.82rem;color:#7C2D12;font-weight:700;margin-top:6px;line-height:1.4}
 .try-btn{margin-top:14px;background:#DC2626;color:#fff;border:2px solid #991B1B;border-radius:12px;padding:10px 22px;font-weight:800;font-size:.9rem;cursor:pointer;box-shadow:0 4px 12px rgba(220,38,38,.3)}
@@ -183,7 +183,7 @@ body{display:flex;flex-direction:column;padding:6px;position:relative}
 <div class="binder-cover" id="binderCover" onclick="openBinder()">
 <div class="spine-rings"><div class="spiral"></div><div class="spiral"></div><div class="spiral"></div><div class="spiral"></div><div class="spiral"></div></div>
 <div style="text-align:center;z-index:6;padding:18px">
-<img src="assets/earth-patrol-hero.webp" alt="" style="width:100px;height:100px;object-fit:contain;animation:floatH 3s ease-in-out infinite" onerror="this.src='assets/earth-globe.webp'"/>
+<img src="assets/earth-patrol-hero.webp" alt="" style="width:140px;height:140px;object-fit:contain;animation:floatH 3s ease-in-out infinite;filter:drop-shadow(0 8px 16px rgba(0,0,0,.25))" onerror="this.src='assets/earth-globe.webp'"/>
 <div style="font-family:'Fredoka',sans-serif;font-weight:800;font-size:1.5rem;color:#3F2A14;margin-top:10px">FIELD LAB</div>
 <div style="font-weight:800;color:#5A3C22;margin-top:4px">Lab Table • Map Pinned</div>
 <div style="margin-top:14px;background:#5A3C22;color:#fff;padding:6px 14px;border-radius:10px;font-weight:800;display:inline-block;font-size:.8rem">OPEN LAB BOOK</div>
@@ -303,10 +303,10 @@ const CLEAN=[
 let mode='practice', tab='A';
 let fillOrder=FILLS.map((_,i)=>i), tfOrder=TF.map((_,i)=>i);
 let bOrder=shuffle(MATCH_B.map((_,i)=>i));
-let connections={}, dragState=null;
+let connections={}, dragState=null, cleaning=null;
 let currentPen={type:'pen', color:'#5A3C22', size:2.6};
 let rainbowHue=0;
-const historyMap={}; let penActive=false,lastPenTime=0;
+const historyMap={}; let penActive=false,lastPenTime=0, isDrawing=false;
 let garden=JSON.parse(localStorage.getItem(STORE+'garden')||'[]');
 let pendingMode=null, soundTick=0, fontScale=parseFloat(localStorage.getItem(STORE+'fontScale')||'1');
 let tryAgainType=null;
@@ -635,7 +635,6 @@ function initCleanCanvases(){
    ctx.strokeStyle=color; ctx.lineWidth=6; for(let i=0;i<3;i++){ctx.beginPath(); ctx.arc(rect.width*0.7, rect.height*0.5, 20+i*15, -0.5, 0.5); ctx.stroke();}
   }
  });
- let cleaning=null;
  document.addEventListener('pointerdown', e=>{
   const can=e.target.closest('canvas[data-clean-id]'); if(!can) return;
   e.preventDefault(); initAudio(); can.setPointerCapture(e.pointerId); cleaning={can, lastX:0, lastY:0};
@@ -784,16 +783,31 @@ function makeDraggable(el){
 document.querySelectorAll('[data-sticker]').forEach(b=>{
  b.addEventListener('click',()=>{spawnSticker(b.dataset.sticker); document.querySelectorAll('[data-sticker]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); setTimeout(()=>b.classList.remove('on'),400);});
 });
-// SWIPE
+// SWIPE - FIXED: Don't trigger swipe when dragging match dots, drawing, or stickers
 (function(){
- let startX=0, isSwipe=false;
+ let startX=0, startY=0, isSwipe=false, swipeBlocked=false;
  const scrollEl=document.getElementById('contentScroll');
- scrollEl.addEventListener('touchstart', e=>{startX=e.touches[0].clientX; isSwipe=false;}, {passive:true});
- scrollEl.addEventListener('touchmove', e=>{if(!startX) return; const dx=e.touches[0].clientX-startX; if(Math.abs(dx)>18) isSwipe=true;}, {passive:true});
+ scrollEl.addEventListener('touchstart', e=>{
+  const target=e.target;
+  // Block swipe if touching match area, dots, canvas, or stickers
+  if(target.closest('.dot') || target.closest('.match-wrap') || target.closest('.match-item') || target.closest('canvas[data-ink-id]') || target.closest('canvas[data-clean-id]') || target.closest('.sticker') || target.closest('#penPanel') || target.closest('#penBubble')){
+   swipeBlocked=true; startX=0; isSwipe=false; return;
+  }
+  if(dragState || cleaning) { swipeBlocked=true; return; }
+  swipeBlocked=false;
+  startX=e.touches[0].clientX; startY=e.touches[0].clientY; isSwipe=false;
+ }, {passive:true});
+ scrollEl.addEventListener('touchmove', e=>{
+  if(swipeBlocked || !startX) return;
+  const dx=e.touches[0].clientX-startX;
+  const dy=e.touches[0].clientY-startY;
+  if(Math.abs(dx)>Math.abs(dy) && Math.abs(dx)>18){isSwipe=true;}
+ }, {passive:true});
  scrollEl.addEventListener('touchend', e=>{
+  if(swipeBlocked){ swipeBlocked=false; startX=0; isSwipe=false; return; }
   if(!isSwipe) {startX=0; return;}
   const dx=e.changedTouches[0].clientX-startX;
-  if(Math.abs(dx)>60){
+  if(Math.abs(dx)>70){
    if(dx<0){ if(tab==='A') setTab('B'); else if(tab==='B') setTab('C'); else if(tab==='C') setTab('D'); }
    else { if(tab==='D') setTab('C'); else if(tab==='C') setTab('B'); else if(tab==='B') setTab('A'); }
   }
