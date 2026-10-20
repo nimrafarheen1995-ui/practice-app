@@ -1,151 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Zaina Maths - Oct 21</title>
-<link rel="stylesheet" href="../shared/notebook.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Maths Pen Test - Oct 21</title>
 <style>
-  :root { --brown:#8B5A2B; --cream:#FEF3C7; }
-  body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto; background:#FFFBF2; overflow:hidden; }
-  #top-bar {
-    height: 54px; background: #fff; border-bottom: 2px solid var(--brown);
-    display:flex; align-items:center; justify-content:space-between; padding:0 14px;
-    position:fixed; top:0; left:0; right:0; z-index:10;
-  }
-  #top-bar h1 { font-size:16px; color:var(--brown); margin:0; }
-  #top-bar .badge { background:var(--cream); border:1.5px solid var(--brown); padding:4px 10px; border-radius:20px; font-size:12px; font-weight:700; color:var(--brown); }
-  #lesson-wrap { position:fixed; top:54px; bottom:0; left:0; right:0; overflow:auto; -webkit-overflow-scrolling:touch; padding:14px; padding-bottom:100px; }
-  .question-card {
-    background:#fff; border:2px solid var(--brown); border-radius:16px; padding:14px; margin-bottom:14px;
-    box-shadow:0 2px 8px rgba(139,90,43,.12);
-  }
-  .q-title { font-weight:800; color:var(--brown); font-size:14px; margin-bottom:8px; }
-  .q-text { font-size:15px; line-height:1.5; color:#3a2a18; }
-  .canvas-area {
-    margin-top:10px; border:1.5px dashed #D9C4A5; border-radius:12px; background:#fff; height:180px;
-    position:relative; overflow:hidden;
-  }
-  .canvas-area canvas { width:100%; height:100%; touch-action:none; }
-  .hint { font-size:12px; color:#8B5A2B; margin-top:6px; }
-  /* ensure pen bubble not covered */
-  #math-pen-root { z-index: 10000 !important; }
+*{margin:0;padding:0;box-sizing:border-box;touch-action:none}
+html,body{height:100%;overflow:hidden;background:#FEF3C7;font-family:system-ui}
+.graph-paper{position:absolute;inset:0;background-image:linear-gradient(to right,#8B5A2B20 1px,transparent 1px),linear-gradient(to bottom,#8B5A2B20 1px,transparent 1px);background-size:20px 20px}
+#inkCanvas{position:absolute;inset:0;z-index:10}
+.test-label{position:fixed;top:10px;left:10px;background:#8B5A2B;color:#fff;padding:8px 12px;border-radius:12px;font-weight:800;z-index:20}
 </style>
 </head>
 <body>
-
-<div id="top-bar">
-  <h1>📏 Zaina Maths • Oct 21</h1>
-  <div class="badge">White • Vertical Pen</div>
-</div>
-
-<div id="lesson-wrap">
-  <div class="question-card">
-    <div class="q-title">Q1. MEASUREMENT</div>
-    <div class="q-text">Use the 📏 ruler tool from the pen bubble. Draw a line 6 cm long.</div>
-    <div class="canvas-area"><canvas class="draw-canvas"></canvas></div>
-    <div class="hint">Tap ✏️ bubble bottom-right → tap 📏 to show ruler → drag ruler to measure</div>
-  </div>
-
-  <div class="question-card">
-    <div class="q-title">Q2. ADDITION</div>
-    <div class="q-text">Ravi has 47 marbles, Zaina has 36 marbles. How many total? Show your work.</div>
-    <div class="canvas-area"><canvas class="draw-canvas"></canvas></div>
-  </div>
-
-  <div class="question-card">
-    <div class="q-title">Q3. SHAPES - Use stamps ⭐ ❤</div>
-    <div class="q-text">Draw 2 triangles and stamp ⭐ inside. Draw 3 circles and stamp ❤ inside.</div>
-    <div class="canvas-area"><canvas class="draw-canvas"></canvas></div>
-    <div class="hint">12 stamps: ⭐ 😡 ❤ 😊 🌸 ♻ 🌿 🌍 ✅ ❌ 💯 🎉 — tap to place</div>
-  </div>
-
-  <div class="question-card">
-    <div class="q-title">Q4. WORD PROBLEM - CLEANUP</div>
-    <div class="q-text">School garden had 12 🌳 trees. Students planted 8 more 🌿. Use sticker to show.</div>
-    <div class="canvas-area"><canvas class="draw-canvas"></canvas></div>
-    <div class="hint">8 stickers: 🌿 🌍 ⭐ 🌸 💧 ♻ 🌳 🧹 — tap to add</div>
-  </div>
-
-  <div class="question-card" style="background:#FFFEF7;">
-    <div class="q-title">🎉 FINISH</div>
-    <div class="q-text">When done, show to teacher. Tap ✅ stamp for correct!</div>
-  </div>
-</div>
-
-<!-- Core shared files -->
-<script src="../shared/safe-storage.js"></script>
-<script src="../shared/notebook.js"></script>
-
-<!-- Maths pen - WHITE vertical stack + ruler -->
-<script src="data:application/javascript;base64,LyoqCiAqIG1hdGgtcGVuLmpzIC0gV0hJVEUgVEhFTUUgdmVydGljYWwgc3RhY2sgKyDwn5OPIHJ1bGVyIGZvciBNYXRocwogKiBTYW1lIGxheW91dCBhcyB1bml2ZXJzYWwtcGVuLmpzIGJ1dCBhZGRzIHJ1bGVyL3NjYWxlIHRvb2wKICogRm9yIFM5L1MxMSBwb3J0cmFpdCB0YWJsZXRzCiAqLwooZnVuY3Rpb24oKSB7CiAgY29uc3QgQ09ORklHID0gewogICAgdGhlbWVCZzogJyNGRkZGRkYnLAogICAgYm9yZGVyQ29sb3I6ICcjOEI1QTJCJywKICAgIGFjdGl2ZUJnOiAnI0ZFRjNDNycsCiAgICBpY29uU2l6ZTogMzYsCiAgICBzdGFtcHM6IFsn4q2QJywn8J+YoScsJ+KdpCcsJ/CfmIonLCfwn4y4Jywn4pm7Jywn8J+MvycsJ/CfjI0nLCfinIUnLCfinYwnLCfwn5KvJywn8J+OiSddLAogICAgc3RpY2tlcnM6IFsn8J+MvycsJ/CfjI0nLCfirZAnLCfwn4y4Jywn8J+SpycsJ+KZuycsJ/CfjLMnLCfwn6e5J10sCiAgICBidWJibGVQb3M6ICdib3R0b20tcmlnaHQnCiAgfTsKCiAgY29uc3QgU1RZTEUgPSBgCiAgI21hdGgtcGVuLXJvb3QgeyBwb3NpdGlvbjogZml4ZWQ7IHotaW5kZXg6IDk5OTk7IGZvbnQtZmFtaWx5OiBzeXN0ZW0tdWk7IH0KICAjbWF0aC1wZW4tcm9vdC5iciB7IGJvdHRvbTogMThweDsgcmlnaHQ6IDE4cHg7IH0KICAjbWF0aC1wZW4tYnViYmxlIHsKICAgIHdpZHRoOiA1NnB4OyBoZWlnaHQ6IDU2cHg7IGJhY2tncm91bmQ6ICR7Q09ORklHLnRoZW1lQmd9OwogICAgYm9yZGVyOiAycHggc29saWQgJHtDT05GSUcuYm9yZGVyQ29sb3J9OyBib3JkZXItcmFkaXVzOiA1MCU7CiAgICBkaXNwbGF5OiBncmlkOyBwbGFjZS1pdGVtczogY2VudGVyOyBjdXJzb3I6IHBvaW50ZXI7CiAgICBib3gtc2hhZG93OiAwIDRweCAxMnB4IHJnYmEoMCwwLDAsLjE1KTsgZm9udC1zaXplOiAyNnB4OwogICAgdXNlci1zZWxlY3Q6IG5vbmU7IC13ZWJraXQtdGFwLWhpZ2hsaWdodC1jb2xvcjogdHJhbnNwYXJlbnQ7CiAgfQogICNtYXRoLXBlbi1wYW5lbCB7CiAgICBwb3NpdGlvbjogYWJzb2x1dGU7IGJvdHRvbTogNjhweDsgcmlnaHQ6IDA7CiAgICBiYWNrZ3JvdW5kOiAke0NPTkZJRy50aGVtZUJnfTsgYm9yZGVyOiAycHggc29saWQgJHtDT05GSUcuYm9yZGVyQ29sb3J9OwogICAgYm9yZGVyLXJhZGl1czogMTZweDsgcGFkZGluZzogMTBweDsgd2lkdGg6IDI3MHB4OwogICAgYm94LXNoYWRvdzogMCA4cHggMjRweCByZ2JhKDAsMCwwLC4xOCk7IGRpc3BsYXk6IG5vbmU7CiAgICBmbGV4LWRpcmVjdGlvbjogY29sdW1uOyBnYXA6IDhweDsKICB9CiAgI21hdGgtcGVuLXBhbmVsLm9wZW4geyBkaXNwbGF5OiBmbGV4OyB9CiAgLnBlbi1yb3cgeyBkaXNwbGF5OiBmbGV4OyBnYXA6IDZweDsgZmxleC13cmFwOiB3cmFwOyBqdXN0aWZ5LWNvbnRlbnQ6IGZsZXgtc3RhcnQ7IH0KICAucGVuLWljb24gewogICAgd2lkdGg6ICR7Q09ORklHLmljb25TaXplfXB4OyBoZWlnaHQ6ICR7Q09ORklHLmljb25TaXplfXB4OwogICAgYmFja2dyb3VuZDogI2ZmZjsgYm9yZGVyOiAxLjVweCBzb2xpZCAke0NPTkZJRy5ib3JkZXJDb2xvcn07CiAgICBib3JkZXItcmFkaXVzOiA4cHg7IGRpc3BsYXk6IGdyaWQ7IHBsYWNlLWl0ZW1zOiBjZW50ZXI7CiAgICBjdXJzb3I6IHBvaW50ZXI7IGZvbnQtc2l6ZTogMThweDsgdHJhbnNpdGlvbjogLjE1czsKICB9CiAgLnBlbi1pY29uLmFjdGl2ZSB7IGJhY2tncm91bmQ6ICR7Q09ORklHLmFjdGl2ZUJnfTsgYm9yZGVyLXdpZHRoOiAycHg7IHRyYW5zZm9ybTogc2NhbGUoMS4wNSk7IH0KICAucGVuLWxhYmVsIHsgZm9udC1zaXplOiAxMXB4OyBmb250LXdlaWdodDogNzAwOyBjb2xvcjogJHtDT05GSUcuYm9yZGVyQ29sb3J9OyBtYXJnaW46IDRweCAycHggMDsgbGV0dGVyLXNwYWNpbmc6IC41cHg7IH0KICAucGVuLXNsaWRlciB7IHdpZHRoOiAxMDAlOyBhY2NlbnQtY29sb3I6ICR7Q09ORklHLmJvcmRlckNvbG9yfTsgfQogIC5wZW4tZGl2aWRlciB7IGhlaWdodDogMXB4OyBiYWNrZ3JvdW5kOiAjRTdENUI4OyBtYXJnaW46IDJweCAwOyB9CiAgI3Blbi1zb3VuZC10b2dnbGUtbWF0aCB7CiAgICBwb3NpdGlvbjogZml4ZWQ7IGJvdHRvbTogMThweDsgbGVmdDogMThweDsgei1pbmRleDogOTk5ODsKICAgIHdpZHRoOiA0NHB4OyBoZWlnaHQ6IDQ0cHg7IGJhY2tncm91bmQ6ICNmZmY7IGJvcmRlcjogMnB4IHNvbGlkICR7Q09ORklHLmJvcmRlckNvbG9yfTsKICAgIGJvcmRlci1yYWRpdXM6IDUwJTsgZGlzcGxheTogZ3JpZDsgcGxhY2UtaXRlbXM6IGNlbnRlcjsgY3Vyc29yOiBwb2ludGVyOyBmb250LXNpemU6IDIwcHg7CiAgfQogICNtYXRoLXJ1bGVyLW92ZXJsYXkgewogICAgcG9zaXRpb246IGZpeGVkOyB0b3A6IDA7IGxlZnQ6IDA7IHJpZ2h0OiAwOyBib3R0b206IDA7IHBvaW50ZXItZXZlbnRzOiBub25lOyB6LWluZGV4OiA5OTk3OyBkaXNwbGF5OiBub25lOwogIH0KICAjbWF0aC1ydWxlci1vdmVybGF5LnNob3cgeyBkaXNwbGF5OiBibG9jazsgfQogIC5ydWxlci1saW5lIHsKICAgIHBvc2l0aW9uOiBhYnNvbHV0ZTsgdG9wOiA1MCU7IGxlZnQ6IDEwJTsgcmlnaHQ6IDEwJTsgaGVpZ2h0OiA2MHB4OwogICAgYmFja2dyb3VuZDogcmVwZWF0aW5nLWxpbmVhci1ncmFkaWVudCg5MGRlZywgJHtDT05GSUcuYm9yZGVyQ29sb3J9IDAgMnB4LCB0cmFuc3BhcmVudCAycHggMjBweCk7CiAgICBib3JkZXItdG9wOiAycHggc29saWQgJHtDT05GSUcuYm9yZGVyQ29sb3J9OyBib3JkZXItYm90dG9tOiAycHggc29saWQgJHtDT05GSUcuYm9yZGVyQ29sb3J9OwogICAgYmFja2dyb3VuZC1jb2xvcjogcmdiYSgyNTUsMjU1LDI1NSwuODUpOyBwb2ludGVyLWV2ZW50czogYXV0bzsgY3Vyc29yOiBtb3ZlOyB0b3VjaC1hY3Rpb246IG5vbmU7CiAgICBkaXNwbGF5OiBmbGV4OyBhbGlnbi1pdGVtczogY2VudGVyOyBqdXN0aWZ5LWNvbnRlbnQ6IHNwYWNlLWJldHdlZW47IHBhZGRpbmc6IDAgOHB4OyBmb250LXNpemU6IDEycHg7IGNvbG9yOiAke0NPTkZJRy5ib3JkZXJDb2xvcn07CiAgfQogIGA7CgogIGZ1bmN0aW9uIGluamVjdFN0eWxlKCkgewogICAgaWYgKGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdtYXRoLXBlbi1zdHlsZScpKSByZXR1cm47CiAgICBjb25zdCBzID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnc3R5bGUnKTsKICAgIHMuaWQgPSAnbWF0aC1wZW4tc3R5bGUnOwogICAgcy50ZXh0Q29udGVudCA9IFNUWUxFOwogICAgZG9jdW1lbnQuaGVhZC5hcHBlbmRDaGlsZChzKTsKICB9CgogIGZ1bmN0aW9uIGNyZWF0ZVVJKCkgewogICAgaW5qZWN0U3R5bGUoKTsKICAgIGlmIChkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnbWF0aC1wZW4tcm9vdCcpKSByZXR1cm47CgogICAgY29uc3Qgcm9vdCA9IGRvY3VtZW50LmNyZWF0ZUVsZW1lbnQoJ2RpdicpOwogICAgcm9vdC5pZCA9ICdtYXRoLXBlbi1yb290JzsKICAgIHJvb3QuY2xhc3NOYW1lID0gJ2JyJzsKICAgIHJvb3QuaW5uZXJIVE1MID0gYAogICAgICA8ZGl2IGlkPSJtYXRoLXBlbi1wYW5lbCI+CiAgICAgICAgPGRpdiBjbGFzcz0icGVuLWxhYmVsIj5UT09MUzwvZGl2PgogICAgICAgIDxkaXYgY2xhc3M9InBlbi1yb3ciIGlkPSJwZW4tdG9vbHMtbWF0aCI+CiAgICAgICAgICA8ZGl2IGNsYXNzPSJwZW4taWNvbiBhY3RpdmUiIGRhdGEtdG9vbD0icGVuIiB0aXRsZT0iUGVuIj7inI/vuI88L2Rpdj4KICAgICAgICAgIDxkaXYgY2xhc3M9InBlbi1pY29uIiBkYXRhLXRvb2w9ImVyYXNlciIgdGl0bGU9IkVyYXNlciI+8J+nvTwvZGl2PgogICAgICAgICAgPGRpdiBjbGFzcz0icGVuLWljb24iIGRhdGEtdG9vbD0icnVsZXIiIHRpdGxlPSJSdWxlciI+8J+TjzwvZGl2PgogICAgICAgICAgPGRpdiBjbGFzcz0icGVuLWljb24iIGRhdGEtdG9vbD0idW5kbyIgdGl0bGU9IlVuZG8iPuKGqe+4jzwvZGl2PgogICAgICAgICAgPGRpdiBjbGFzcz0icGVuLWljb24iIGRhdGEtdG9vbD0icmVkbyIgdGl0bGU9IlJlZG8iPuKGqu+4jzwvZGl2PgogICAgICAgICAgPGRpdiBjbGFzcz0icGVuLWljb24iIGRhdGEtdG9vbD0iY2xlYXIiIHRpdGxlPSJDbGVhciI+8J+Xke+4jzwvZGl2PgogICAgICAgIDwvZGl2PgogICAgICAgIDxkaXYgY2xhc3M9InBlbi1kaXZpZGVyIj48L2Rpdj4KICAgICAgICA8ZGl2IGNsYXNzPSJwZW4tbGFiZWwiPlNJWkU8L2Rpdj4KICAgICAgICA8aW5wdXQgdHlwZT0icmFuZ2UiIG1pbj0iMiIgbWF4PSIyNCIgdmFsdWU9IjQiIGNsYXNzPSJwZW4tc2xpZGVyIiBpZD0icGVuLXNpemUtbWF0aCI+CiAgICAgICAgPGRpdiBjbGFzcz0icGVuLXJvdyI+PHNwYW4gc3R5bGU9ImZvbnQtc2l6ZToxMXB4O2NvbG9yOiM4QjVBMkIiPlBlbiAvIEVyYXNlciB0aGlja25lc3M8L3NwYW4+PC9kaXY+CiAgICAgICAgPGRpdiBjbGFzcz0icGVuLWRpdmlkZXIiPjwvZGl2PgogICAgICAgIDxkaXYgY2xhc3M9InBlbi1sYWJlbCI+U1RBTVBTICgxMik8L2Rpdj4KICAgICAgICA8ZGl2IGNsYXNzPSJwZW4tcm93IiBpZD0icGVuLXN0YW1wcy1tYXRoIj48L2Rpdj4KICAgICAgICA8ZGl2IGNsYXNzPSJwZW4tZGl2aWRlciI+PC9kaXY+CiAgICAgICAgPGRpdiBjbGFzcz0icGVuLWxhYmVsIj5TVElDS0VSUyAoOCk8L2Rpdj4KICAgICAgICA8ZGl2IGNsYXNzPSJwZW4tcm93IiBpZD0icGVuLXN0aWNrZXJzLW1hdGgiPjwvZGl2PgogICAgICA8L2Rpdj4KICAgICAgPGRpdiBpZD0ibWF0aC1wZW4tYnViYmxlIj7inI/vuI88L2Rpdj4KICAgIGA7CiAgICBkb2N1bWVudC5ib2R5LmFwcGVuZENoaWxkKHJvb3QpOwoKICAgIGNvbnN0IHNvdW5kQnRuID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnZGl2Jyk7CiAgICBzb3VuZEJ0bi5pZCA9ICdwZW4tc291bmQtdG9nZ2xlLW1hdGgnOwogICAgc291bmRCdG4udGV4dENvbnRlbnQgPSAn8J+Uiic7CiAgICBzb3VuZEJ0bi50aXRsZSA9ICdNdXRlL1VubXV0ZSBzb3VuZHMnOwogICAgZG9jdW1lbnQuYm9keS5hcHBlbmRDaGlsZChzb3VuZEJ0bik7CgogICAgY29uc3QgcnVsZXJPdmVybGF5ID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgnZGl2Jyk7CiAgICBydWxlck92ZXJsYXkuaWQgPSAnbWF0aC1ydWxlci1vdmVybGF5JzsKICAgIHJ1bGVyT3ZlcmxheS5pbm5lckhUTUwgPSBgPGRpdiBjbGFzcz0icnVsZXItbGluZSI+PHNwYW4+MDwvc3Bhbj48c3Bhbj4xPC9zcGFuPjxzcGFuPjI8L3NwYW4+PHNwYW4+Mzwvc3Bhbj48c3Bhbj40PC9zcGFuPjxzcGFuPjU8L3NwYW4+PHNwYW4+Njwvc3Bhbj48c3Bhbj43PC9zcGFuPjxzcGFuPjg8L3NwYW4+PHNwYW4+OTwvc3Bhbj48c3Bhbj4xMCBjbTwvc3Bhbj48L2Rpdj5gOwogICAgZG9jdW1lbnQuYm9keS5hcHBlbmRDaGlsZChydWxlck92ZXJsYXkpOwoKICAgIGNvbnN0IHN0YW1wc0VsID0gcm9vdC5xdWVyeVNlbGVjdG9yKCcjcGVuLXN0YW1wcy1tYXRoJyk7CiAgICBDT05GSUcuc3RhbXBzLmZvckVhY2gocyA9PiB7CiAgICAgIGNvbnN0IGQgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdkaXYnKTsKICAgICAgZC5jbGFzc05hbWUgPSAncGVuLWljb24nOyBkLnRleHRDb250ZW50ID0gczsgZC5kYXRhc2V0LnN0YW1wID0gczsKICAgICAgc3RhbXBzRWwuYXBwZW5kQ2hpbGQoZCk7CiAgICB9KTsKICAgIGNvbnN0IHN0aWNrZXJzRWwgPSByb290LnF1ZXJ5U2VsZWN0b3IoJyNwZW4tc3RpY2tlcnMtbWF0aCcpOwogICAgQ09ORklHLnN0aWNrZXJzLmZvckVhY2gocyA9PiB7CiAgICAgIGNvbnN0IGQgPSBkb2N1bWVudC5jcmVhdGVFbGVtZW50KCdkaXYnKTsKICAgICAgZC5jbGFzc05hbWUgPSAncGVuLWljb24nOyBkLnRleHRDb250ZW50ID0gczsgZC5kYXRhc2V0LnN0aWNrZXIgPSBzOwogICAgICBzdGlja2Vyc0VsLmFwcGVuZENoaWxkKGQpOwogICAgfSk7CgogICAgcmV0dXJuIHsgcm9vdCwgcnVsZXJPdmVybGF5IH07CiAgfQoKICBmdW5jdGlvbiBhdHRhY2hMb2dpYygpIHsKICAgIGNvbnN0IHsgcm9vdCwgcnVsZXJPdmVybGF5IH0gPSBjcmVhdGVVSSgpIHx8IHt9OwogICAgaWYgKCFyb290KSByZXR1cm47CiAgICBjb25zdCBidWJibGUgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgnbWF0aC1wZW4tYnViYmxlJyk7CiAgICBjb25zdCBwYW5lbCA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdtYXRoLXBlbi1wYW5lbCcpOwogICAgY29uc3Qgc291bmRUb2dnbGUgPSBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgncGVuLXNvdW5kLXRvZ2dsZS1tYXRoJyk7CiAgICBsZXQgc291bmRPbiA9IHRydWU7CiAgICBsZXQgY3VycmVudFRvb2wgPSAncGVuJzsKICAgIGxldCBwZW5TaXplID0gNDsKICAgIGxldCBydWxlclZpc2libGUgPSBmYWxzZTsKCiAgICBmdW5jdGlvbiB0b2dnbGVSdWxlcigpIHsKICAgICAgcnVsZXJWaXNpYmxlID0gIXJ1bGVyVmlzaWJsZTsKICAgICAgcnVsZXJPdmVybGF5LmNsYXNzTGlzdC50b2dnbGUoJ3Nob3cnLCBydWxlclZpc2libGUpOwogICAgICAvLyBkcmFnZ2FibGUKICAgICAgY29uc3QgbGluZSA9IHJ1bGVyT3ZlcmxheS5xdWVyeVNlbGVjdG9yKCcucnVsZXItbGluZScpOwogICAgICBsZXQgc3RhcnRZPTAsIHN0YXJ0VG9wPTAsIGRyYWdnaW5nPWZhbHNlOwogICAgICBsaW5lLmFkZEV2ZW50TGlzdGVuZXIoJ3RvdWNoc3RhcnQnLCAoZSk9PnsKICAgICAgICBkcmFnZ2luZz10cnVlOyBzdGFydFk9ZS50b3VjaGVzWzBdLmNsaWVudFk7IHN0YXJ0VG9wPWxpbmUub2Zmc2V0VG9wOwogICAgICB9KTsKICAgICAgbGluZS5hZGRFdmVudExpc3RlbmVyKCd0b3VjaG1vdmUnLCAoZSk9PnsKICAgICAgICBpZighZHJhZ2dpbmcpIHJldHVybjsgZS5wcmV2ZW50RGVmYXVsdCgpOwogICAgICAgIGNvbnN0IGR5ID0gZS50b3VjaGVzWzBdLmNsaWVudFkgLSBzdGFydFk7CiAgICAgICAgbGluZS5zdHlsZS50b3AgPSAoc3RhcnRUb3AgKyBkeSkgKyAncHgnOwogICAgICB9LCB7cGFzc2l2ZTpmYWxzZX0pOwogICAgICBsaW5lLmFkZEV2ZW50TGlzdGVuZXIoJ3RvdWNoZW5kJywgKCk9PiBkcmFnZ2luZz1mYWxzZSk7CiAgICAgIGxpbmUuYWRkRXZlbnRMaXN0ZW5lcignbW91c2Vkb3duJywgKGUpPT57CiAgICAgICAgZHJhZ2dpbmc9dHJ1ZTsgc3RhcnRZPWUuY2xpZW50WTsgc3RhcnRUb3A9bGluZS5vZmZzZXRUb3A7CiAgICAgICAgY29uc3Qgb25Nb3ZlID0gKGV2KT0+eyBpZighZHJhZ2dpbmcpIHJldHVybjsgbGluZS5zdHlsZS50b3AgPSAoc3RhcnRUb3AgKyBldi5jbGllbnRZIC0gc3RhcnRZKSsncHgnOyB9OwogICAgICAgIGNvbnN0IG9uVXAgPSAoKT0+eyBkcmFnZ2luZz1mYWxzZTsgZG9jdW1lbnQucmVtb3ZlRXZlbnRMaXN0ZW5lcignbW91c2Vtb3ZlJywgb25Nb3ZlKTsgZG9jdW1lbnQucmVtb3ZlRXZlbnRMaXN0ZW5lcignbW91c2V1cCcsIG9uVXApOyB9OwogICAgICAgIGRvY3VtZW50LmFkZEV2ZW50TGlzdGVuZXIoJ21vdXNlbW92ZScsIG9uTW92ZSk7IGRvY3VtZW50LmFkZEV2ZW50TGlzdGVuZXIoJ21vdXNldXAnLCBvblVwKTsKICAgICAgfSk7CiAgICB9CgogICAgYnViYmxlLmFkZEV2ZW50TGlzdGVuZXIoJ2NsaWNrJywgKCkgPT4gewogICAgICBwYW5lbC5jbGFzc0xpc3QudG9nZ2xlKCdvcGVuJyk7CiAgICAgIGlmIChuYXZpZ2F0b3IudmlicmF0ZSkgbmF2aWdhdG9yLnZpYnJhdGUoMTApOwogICAgfSk7CgogICAgc291bmRUb2dnbGUuYWRkRXZlbnRMaXN0ZW5lcignY2xpY2snLCAoKSA9PiB7CiAgICAgIHNvdW5kT24gPSAhc291bmRPbjsKICAgICAgc291bmRUb2dnbGUudGV4dENvbnRlbnQgPSBzb3VuZE9uID8gJ/CflIonIDogJ/CflIcnOwogICAgfSk7CgogICAgcm9vdC5xdWVyeVNlbGVjdG9yQWxsKCcucGVuLWljb25bZGF0YS10b29sXScpLmZvckVhY2goZWwgPT4gewogICAgICBlbC5hZGRFdmVudExpc3RlbmVyKCdjbGljaycsICgpID0+IHsKICAgICAgICBjb25zdCB0b29sID0gZWwuZGF0YXNldC50b29sOwogICAgICAgIGlmICh0b29sPT09J3J1bGVyJykgewogICAgICAgICAgdG9nZ2xlUnVsZXIoKTsKICAgICAgICAgIGVsLmNsYXNzTGlzdC50b2dnbGUoJ2FjdGl2ZScpOwogICAgICAgICAgcmV0dXJuOwogICAgICAgIH0KICAgICAgICByb290LnF1ZXJ5U2VsZWN0b3JBbGwoJy5wZW4taWNvbltkYXRhLXRvb2xdJykuZm9yRWFjaChpPT57IGlmKGkuZGF0YXNldC50b29sIT09J3J1bGVyJykgaS5jbGFzc0xpc3QucmVtb3ZlKCdhY3RpdmUnKTsgfSk7CiAgICAgICAgaWYgKFsncGVuJywnZXJhc2VyJ10uaW5jbHVkZXModG9vbCkpIGVsLmNsYXNzTGlzdC5hZGQoJ2FjdGl2ZScpOwogICAgICAgIGN1cnJlbnRUb29sID0gdG9vbDsKICAgICAgICBpZiAod2luZG93Lk5vdGVib29rQVBJKSB7CiAgICAgICAgICBpZiAoY3VycmVudFRvb2w9PT0ncGVuJykgTm90ZWJvb2tBUEkuc2V0VG9vbCgncGVuJywgcGVuU2l6ZSk7CiAgICAgICAgICBpZiAoY3VycmVudFRvb2w9PT0nZXJhc2VyJykgTm90ZWJvb2tBUEkuc2V0VG9vbCgnZXJhc2VyJywgcGVuU2l6ZSoyLjUpOwogICAgICAgICAgaWYgKGN1cnJlbnRUb29sPT09J3VuZG8nKSBOb3RlYm9va0FQSS51bmRvKCk7CiAgICAgICAgICBpZiAoY3VycmVudFRvb2w9PT0ncmVkbycpIE5vdGVib29rQVBJLnJlZG8oKTsKICAgICAgICAgIGlmIChjdXJyZW50VG9vbD09PSdjbGVhcicpIHsgaWYoY29uZmlybSgnQ2xlYXIgcGFnZT8nKSkgTm90ZWJvb2tBUEkuY2xlYXIoKTsgfQogICAgICAgIH0KICAgICAgfSk7CiAgICB9KTsKCiAgICBkb2N1bWVudC5nZXRFbGVtZW50QnlJZCgncGVuLXNpemUtbWF0aCcpLmFkZEV2ZW50TGlzdGVuZXIoJ2lucHV0JywgKGUpID0+IHsKICAgICAgcGVuU2l6ZSA9IHBhcnNlSW50KGUudGFyZ2V0LnZhbHVlKTsKICAgICAgaWYgKHdpbmRvdy5Ob3RlYm9va0FQSSAmJiBjdXJyZW50VG9vbD09PSdwZW4nKSBOb3RlYm9va0FQSS5zZXRUb29sKCdwZW4nLCBwZW5TaXplKTsKICAgICAgaWYgKHdpbmRvdy5Ob3RlYm9va0FQSSAmJiBjdXJyZW50VG9vbD09PSdlcmFzZXInKSBOb3RlYm9va0FQSS5zZXRUb29sKCdlcmFzZXInLCBwZW5TaXplKjIuNSk7CiAgICB9KTsKCiAgICByb290LnF1ZXJ5U2VsZWN0b3JBbGwoJ1tkYXRhLXN0YW1wXScpLmZvckVhY2goZWwgPT4gewogICAgICBlbC5hZGRFdmVudExpc3RlbmVyKCdjbGljaycsICgpID0+IHsKICAgICAgICBpZiAod2luZG93Lk5vdGVib29rQVBJKSBOb3RlYm9va0FQSS5hZGRTdGFtcChlbC5kYXRhc2V0LnN0YW1wLCBwZW5TaXplKTsKICAgICAgfSk7CiAgICB9KTsKICAgIHJvb3QucXVlcnlTZWxlY3RvckFsbCgnW2RhdGEtc3RpY2tlcl0nKS5mb3JFYWNoKGVsID0+IHsKICAgICAgZWwuYWRkRXZlbnRMaXN0ZW5lcignY2xpY2snLCAoKSA9PiB7CiAgICAgICAgaWYgKHdpbmRvdy5Ob3RlYm9va0FQSSkgTm90ZWJvb2tBUEkuYWRkU3RpY2tlcihlbC5kYXRhc2V0LnN0aWNrZXIpOwogICAgICB9KTsKICAgIH0pOwoKICAgIHdpbmRvdy5NYXRoUGVuID0geyBDT05GSUcsIHJ1bGVyVmlzaWJsZTogKCkgPT4gcnVsZXJWaXNpYmxlIH07CiAgfQoKICBpZiAoZG9jdW1lbnQucmVhZHlTdGF0ZSA9PT0gJ2xvYWRpbmcnKSBkb2N1bWVudC5hZGRFdmVudExpc3RlbmVyKCdET01Db250ZW50TG9hZGVkJywgYXR0YWNoTG9naWMpOwogIGVsc2UgYXR0YWNoTG9naWMoKTsKfSkoKTsK"></script>
+<div class="test-label">Maths Pen Test - Drag ✏️ anywhere</div>
+<div class="graph-paper"></div>
+<canvas id="inkCanvas"></canvas>
 
 <script>
-// Simple canvas fallback if NotebookAPI not yet set
-(function(){
-  function initCanvases() {
-    document.querySelectorAll('.draw-canvas').forEach(c => {
-      const parent = c.parentElement;
-      function resize() {
-        c.width = parent.clientWidth * 2;
-        c.height = parent.clientHeight * 2;
-        c.style.width = parent.clientWidth + 'px';
-        c.style.height = parent.clientHeight + 'px';
-        const ctx = c.getContext('2d');
-        ctx.scale(2,2);
-        ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-      }
-      resize();
-      let drawing=false, last={x:0,y:0};
-      let tool='pen', size=4;
-      window.NotebookAPI = window.NotebookAPI || {};
-      const getPos = (e) => {
-        const rect = c.getBoundingClientRect();
-        const t = e.touches ? e.touches[0] : e;
-        return {x: t.clientX - rect.left, y: t.clientY - rect.top};
-      };
-      const start = (e) => { drawing=true; last=getPos(e); };
-      const move = (e) => {
-        if(!drawing) return;
-        e.preventDefault();
-        const pos=getPos(e);
-        const ctx=c.getContext('2d');
-        ctx.globalCompositeOperation = (tool==='eraser') ? 'destination-out' : 'source-over';
-        ctx.strokeStyle = '#3a2a18';
-        ctx.lineWidth = (tool==='eraser') ? size*2.5 : size;
-        ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(pos.x, pos.y); ctx.stroke();
-        last=pos;
-      };
-      const end = () => drawing=false;
-      c.addEventListener('mousedown', start); c.addEventListener('mousemove', move); c.addEventListener('mouseup', end);
-      c.addEventListener('touchstart', start, {passive:false}); c.addEventListener('touchmove', move, {passive:false}); c.addEventListener('touchend', end);
+// Setup canvas
+const c = document.getElementById('inkCanvas');
+const ctx = c.getContext('2d');
+function resize(){ c.width = window.innerWidth; c.height = window.innerHeight; }
+resize(); window.addEventListener('resize', resize);
 
-      // API hooks for math-pen.js
-      window.NotebookAPI.setTool = (t,s) => { tool=t; if(s) size=s; };
-      window.NotebookAPI.undo = () => { /* simple clear last stroke not implemented - uses snapshot in real notebook.js */ 
-        const ctx=c.getContext('2d'); ctx.clearRect(0,0,c.width,c.height);
-      };
-      window.NotebookAPI.redo = () => {};
-      window.NotebookAPI.clear = () => { const ctx=c.getContext('2d'); ctx.clearRect(0,0,c.width,c.height); };
-      window.NotebookAPI.addStamp = (emoji, sz) => {
-        const ctx=c.getContext('2d');
-        ctx.globalCompositeOperation='source-over';
-        ctx.font = `${(sz||4)*6}px system-ui`;
-        ctx.fillText(emoji, last.x || 40, last.y || 40);
-      };
-      window.NotebookAPI.addSticker = (emoji) => {
-        const ctx=c.getContext('2d');
-        ctx.globalCompositeOperation='source-over';
-        ctx.font = `28px system-ui`;
-        ctx.fillText(emoji, (last.x||40)+Math.random()*20, (last.y||40)+Math.random()*20);
-      };
-      // expose current canvas for stamps
-      c.addEventListener('click', (e)=>{ last=getPos(e); });
-    });
-  }
-  if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', initCanvases);
-  else initCanvases();
-})();
+// Safe storage stub (so pen doesn't error)
+window.Storage = {
+  safeGet: (k,d)=>{try{return localStorage.getItem(k)||d}catch(e){return d}},
+  safeSet: (k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}
+};
 </script>
+
+<!-- Math pen with line tool -->
+<script src="shared/math-pen.js"></script>
 </body>
 </html>
