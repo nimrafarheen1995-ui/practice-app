@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 <title>Zaina EVS and Soil</title>
 <script src="shared/safe-storage.js"></script>
-<link rel="preload" as="image" href="assets/soil-girl-hero.webp" />
+<link rel="preload" as="image" href="assets/soil-girl-hero.png" />
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800&family=Nunito:wght@700;800;900&family=Kalam:wght@700&display=swap" rel="stylesheet" />
 <style>
 :root{--font-scale:1}
@@ -13,16 +13,17 @@
 html,body{width:100vw;height:100vh;height:100dvh;margin:0;padding:0;overflow:hidden;background:#5D4037;font-family:'Nunito',sans-serif}
 .master-farm{position:relative;width:100vw;height:100dvh;overflow:hidden;background:#8D6E63 url('assets/soil-farm-muted-bg.jpg') center/cover no-repeat}
 .master-farm::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom, rgba(78,52,46,0.12) 0%, rgba(62,39,35,0.22) 100%);z-index:1;pointer-events:none}
-.hud{position:fixed;top:8px;left:8px;right:8px;z-index:95;display:flex;align-items:center;gap:6px;background:rgba(255,253,240,0.96);border:2.5px solid #5D4037;border-radius:20px;padding:5px 8px;box-shadow:0 6px 18px rgba(0,0,0,0.28);transition:transform .35s}
-.hud.minimized{transform:translateY(-80px)}
-.hub-btn{width:42px;height:36px;border-radius:12px;border:2px solid #5D4037;background:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;cursor:pointer;font-size:1.1rem}
-.zaina-pill{display:flex;align-items:center;gap:4px;background:#D7CCC8;border:2px solid #5D4037;border-radius:14px;padding:3px 10px;font-weight:900;color:#3E2723;font-size:.85rem}
-.mode-pill{display:flex;gap:3px;background:#EFEBE9;border:2px solid #8D6E63;border-radius:12px;padding:2px}
-.mode-btn{border:0;background:transparent;padding:4px 10px;border-radius:8px;font-weight:800;font-size:.7rem;cursor:pointer}
+/* COMPACT HEADPILL - only as wide as icons */
+.hud{position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:95;display:inline-flex;align-items:center;gap:6px;background:rgba(255,253,240,0.96);border:2.5px solid #5D4037;border-radius:999px;padding:5px 10px;box-shadow:0 6px 18px rgba(0,0,0,0.28);transition:transform .35s;width:fit-content;max-width:calc(100vw - 16px);white-space:nowrap}
+.hud.minimized{transform:translateX(-50%) translateY(-80px)}
+.hub-btn{width:32px;height:32px;border-radius:999px;border:2px solid #5D4037;background:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;cursor:pointer;font-size:.95rem;flex-shrink:0}
+.zaina-pill{display:flex;align-items:center;gap:4px;background:#D7CCC8;border:2px solid #5D4037;border-radius:999px;padding:3px 10px;font-weight:900;color:#3E2723;font-size:.8rem;flex-shrink:0}
+.mode-pill{display:flex;gap:3px;background:#EFEBE9;border:2px solid #8D6E63;border-radius:999px;padding:2px;flex-shrink:0}
+.mode-btn{border:0;background:transparent;padding:4px 10px;border-radius:999px;font-weight:800;font-size:.7rem;cursor:pointer}
 .mode-btn.active{background:#5D4037;color:#fff}
-.font-pill{display:flex;gap:2px;background:#EFEBE9;border:2px solid #8D6E63;border-radius:10px;padding:2px}
-.font-btn{border:0;background:#fff;width:42px;height:28px;border-radius:8px;font-weight:900;font-size:.8rem;cursor:pointer;border:1px solid #BCAAA4}
-.min-btn{width:38px;height:36px;border-radius:12px;border:2px solid #5D4037;background:#fff;font-weight:900;cursor:pointer}
+.font-pill{display:flex;gap:2px;background:#EFEBE9;border:2px solid #8D6E63;border-radius:999px;padding:2px;flex-shrink:0}
+.font-btn{border:0;background:#fff;width:42px;height:28px;border-radius:999px;font-weight:900;font-size:.8rem;cursor:pointer;border:1px solid #BCAAA4}
+.min-btn{width:32px;height:32px;border-radius:999px;border:2px solid #5D4037;background:#fff;font-weight:900;cursor:pointer;flex-shrink:0}
 .dock-peek{position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:94;background:rgba(255,253,240,0.98);border:2.5px solid #5D4037;border-top:0;border-radius:0 0 14px 14px;padding:4px 16px 6px;font-size:.78rem;font-weight:900;color:#3E2723;cursor:pointer;opacity:0;pointer-events:none;transition:all .3s;box-shadow:0 4px 12px rgba(0,0,0,0.3)}
 .dock-peek.show{opacity:1;pointer-events:auto;top:6px}
 .top-tap{position:fixed;top:0;left:0;right:0;height:26px;z-index:93;background:transparent}
@@ -68,24 +69,26 @@ html,body{width:100vw;height:100vh;height:100dvh;margin:0;padding:0;overflow:hid
 .q-text{font-weight:800;font-size:calc(.92rem * var(--font-scale));flex:1 1 100%;white-space:pre-wrap}
 .s-word{cursor:pointer;border-radius:3px;padding:0 2px;display:inline-block}
 .s-word.speaking{background:#C8E6C9;outline:2px solid #4CAF50}
-.inline-strip{position:relative;display:inline-flex;vertical-align:middle;width:450px;max-width:calc(100% - 10px);height:70px;border:1.8px solid #8D6E63;border-radius:10px;background:#fffffe;overflow:hidden;touch-action:none;margin:6px 0;z-index:4;cursor:crosshair}
-.inline-strip.short{width:450px;max-width:100%;height:70px}
+.inline-strip{position:relative;display:inline-flex;vertical-align:middle;width:450px;max-width:calc(100% - 10px);height:60px;border:1.8px solid #8D6E63;border-radius:10px;background:#fffffe;overflow:hidden;touch-action:none;margin:6px 4px;z-index:4;cursor:crosshair}
+.inline-strip.short{width:450px;max-width:100%;height:60px}
 .inline-strip::after{content:'';position:absolute;left:8px;right:8px;top:50%;height:1.2px;background:#C7D2FE;z-index:1;pointer-events:none}
 .inline-strip::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:1.2px;background:#F87171;opacity:.9;z-index:1;pointer-events:none}
-.inline-strip.has-ink{border-color:#5D4037;box-shadow:0 0 0 2px rgba(93,64,55,.12)}
-.mini-strip{border:1px solid #BCAAA4;background:#fff;border-radius:8px;padding:4px 7px;font-size:.7rem;font-weight:800;cursor:pointer;flex-shrink:0}
 .inline-strip canvas{position:absolute;inset:0;width:100%;height:100%;z-index:3;touch-action:none;cursor:crosshair}
-.tf-chip{display:inline-flex;align-items:center;justify-content:center;min-width:54px;height:32px;padding:0 10px;border:2px solid #BCAAA4;border-radius:999px;font-weight:900;font-size:.74rem;cursor:pointer;background:#fff}
+.mini-strip{width:28px;height:28px;border-radius:8px;border:1.5px solid #BCAAA4;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.8rem}
+.tf-chip{display:inline-flex;align-items:center;justify-content:center;min-width:54px;height:32px;padding:0 10px;border:2px solid #BCAAA4;border-radius:999px;font-weight:900;font-size:.74rem;cursor:pointer;background:#fff;transition:transform .12s, background .12s}
+.tf-chip:active{transform:scale(0.94)}
 .tf-chip.on.true{background:#5D4037;color:#fff} .tf-chip.on.false{background:#E57373;color:#fff}
 .tf-chip.practice-correct{border-color:#2E7D32;box-shadow:0 0 0 2px rgba(46,125,50,.25);background:#E8F5E9}
-.opt-btn{display:inline-flex;align-items:center;justify-content:center;min-width:108px;padding:5px 9px;margin:3px;border:2px solid #BCAAA4;border-radius:10px;background:#fff;font-weight:800;font-size:.72rem;cursor:pointer}
+.opt-btn{display:inline-flex;align-items:center;justify-content:center;min-width:108px;padding:5px 9px;margin:3px;border:2px solid #BCAAA4;border-radius:10px;background:#fff;font-weight:800;font-size:.72rem;cursor:pointer;transition:transform .12s}
+.opt-btn:active{transform:scale(0.94)}
 .opt-btn.on{background:#5D4037;color:#fff;border-color:#3E2723}
 .opt-btn.practice-correct{border-color:#2E7D32;background:#E8F5E9;color:#2E7D32;box-shadow:0 0 0 2px rgba(46,125,50,.18)}
 .map-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .map-box{border:2px dashed #A5D6A7;border-radius:12px;padding:6px;background:#F1F8E9;min-height:62px;transition:.2s;position:relative;z-index:2}
 .map-box.no-tap{cursor:default;background:#EFEBE9;border-color:#BCAAA4}
 .fill-chip-row{display:flex;gap:5px;flex-wrap:wrap;margin-left:6px}
-.fill-chip{padding:4px 10px;background:#fff;border:2px solid #8D6E63;border-radius:999px;font-weight:800;font-size:.68rem;cursor:pointer}
+.fill-chip{padding:4px 10px;background:#fff;border:2px solid #8D6E63;border-radius:999px;font-weight:800;font-size:.68rem;cursor:pointer;transition:transform .12s}
+.fill-chip:active{transform:scale(0.93)}
 .fill-chip.on{background:#5D4037;color:#fff}
 .fill-chip.practice-correct{border-color:#2E7D32;background:#E8F5E9;color:#2E7D32}
 .soil-grid-wrap{background:linear-gradient(180deg,#FFF8E1 0%, #D7CCC8 100%);border:2.5px solid #5D4037;border-radius:14px;padding:8px;position:relative;z-index:4}
@@ -94,11 +97,11 @@ html,body{width:100vw;height:100vh;height:100dvh;margin:0;padding:0;overflow:hid
 .clod-cell.selected{background:linear-gradient(145deg,#FFF9C4,#FFEB3B);border-color:#F9A825;transform:scale(1.08) translateY(-2px);z-index:6;color:#3E2723;text-shadow:0 0 8px #FFF9C4, 0 0 18px #FFEB3B, 0 0 28px #F9A825;animation:glowPulse 0.85s infinite alternate;will-change:text-shadow}
 @keyframes glowPulse{0%{text-shadow:0 0 6px #FFF9C4, 0 0 12px #FFEB3B}100%{text-shadow:0 0 10px #FFF9C4, 0 0 22px #FFEB3B, 0 0 34px #F9A825, 0 0 44px #FFA000}}
 .clod-cell.found{background:linear-gradient(145deg,#A5D6A7,#81C784);border-color:#2E7D32}
-.clod-cell .sprout{font-size:20px;animation:sproutGrow .7s cubic-bezier(.34,1.56,.64,1);filter:drop-shadow(0 0 8px #A5D6A7) drop-shadow(0 0 16px #81C784);transition:filter .3s}
+.clod-cell .sprout{font-size:20px;animation:sproutGrow .7s cubic-bezier(.34,1.56,.64,1);filter:drop-shadow(0 0 8px #A5D6A7) drop-shadow(0 0 16px #81C784)}
 @keyframes sproutGrow{0%{transform:scale(0) rotate(-20deg)}60%{transform:scale(1.4) rotate(10deg)}100%{transform:scale(1) rotate(0)}}
-@keyframes sproutGlow{0%,100%{filter:drop-shadow(0 0 8px #A5D6A7) drop-shadow(0 0 14px #81C784)}50%{filter:drop-shadow(0 0 14px #66BB6A) drop-shadow(0 0 26px #A5D6A7)}}
 .clod-cell.found .sprout{animation:sproutGrow .7s cubic-bezier(.34,1.56,.64,1), sproutGlow 1.6s ease-in-out infinite}
-.water-drop{position:absolute;top:-2px;font-size:12px;animation:dropFall .9s ease-in forwards;pointer-events:none;z-index:10;filter:drop-shadow(0 0 6px #64B5F6) drop-shadow(0 0 10px #42A5F5)}
+@keyframes sproutGlow{0%,100%{filter:drop-shadow(0 0 8px #A5D6A7) drop-shadow(0 0 14px #81C784)}50%{filter:drop-shadow(0 0 14px #66BB6A) drop-shadow(0 0 26px #A5D6A7)}}
+.water-drop{position:absolute;top:-2px;font-size:12px;animation:dropFall .9s ease-in forwards;pointer-events:none;z-index:10;filter:drop-shadow(0 0 6px #64B5F6)}
 @keyframes dropFall{0%{transform:translateY(0) scale(0);opacity:1}100%{transform:translateY(36px) scale(1.2);opacity:0}}
 .word-targets{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px;position:relative;z-index:2}
 .word-target{padding:4px 9px;background:#fff;border:2px solid #5D4037;border-radius:999px;font-weight:900;font-size:.68rem;color:#3E2723}
@@ -151,7 +154,7 @@ html,body{width:100vw;height:100vh;height:100dvh;margin:0;padding:0;overflow:hid
 <div class="creature butterfly" style="left:10%;top:20%">🦋</div><div class="creature butterfly" style="left:60%;top:16%;animation-delay:2s">🦋</div>
 <div class="creature bird" style="left:5%;top:12%">🐦</div><div class="creature bird" style="left:15%;top:28%;animation-delay:3s">🐦</div>
 <div class="creature bee" style="left:20%;top:45%">🐝</div><div class="creature bee" style="left:55%;top:50%;animation-delay:2s">🐝</div>
-<img id="fieldGirl" class="field-girl" src="assets/soil-girl-hero.webp" alt="girl" onerror="this.style.display='none'"/>
+<img id="fieldGirl" class="field-girl" src="assets/soil-girl-hero.png" alt="girl" onerror="this.style.display='none'"/>
 <div id="stickerLayer"></div>
 <div class="signboard" id="signA" onclick="openSection('A', this)"><div class="sign-emoji">🌻</div><div class="sign-post"></div><div class="sign-wood" id="woodA">A<br/>Objective</div></div>
 <div class="signboard" id="signB" onclick="openSection('B', this)"><div class="sign-emoji">🌷</div><div class="sign-post"></div><div class="sign-wood" id="woodB">B<br/>Fill</div></div>
@@ -160,38 +163,59 @@ html,body{width:100vw;height:100vh;height:100dvh;margin:0;padding:0;overflow:hid
 <div class="signboard" id="signE" onclick="openSection('E', this)"><div class="sign-emoji">🌿</div><div class="sign-post"></div><div class="sign-wood" id="woodE">E<br/>Conserve</div></div>
 <div class="signboard" id="signF" onclick="openSection('F', this)"><div class="sign-emoji">🧱</div><div class="sign-post"></div><div class="sign-wood" id="woodF">F<br/>Grid</div></div>
 </div><div id="cardModal" onclick="if(event.target===this) closeCard()"><div class="card-box" id="cardBox"><div class="card-header"><div class="card-title" id="cardTitle">A</div><button class="close-btn" type="button" onclick="closeCard()">✕</button></div><div class="card-scroll" id="cardScroll"></div></div></div></div>
-<div id="tryAgainModal"><div class="try-modal-box"><img src="assets/soil-girl-hero.webp" class="try-hero-big" alt="" onerror="this.style.display='none'"/><div class="try-title" id="tryTitle">Try Again</div><div class="try-sub" id="trySub">Let's try again!</div><button class="try-btn" type="button" onclick="closeTryAgain()">Try Again</button></div></div>
+<div id="tryAgainModal"><div class="try-modal-box"><img src="assets/soil-girl-hero.png" class="try-hero-big" alt="" onerror="this.style.display='none'"/><div class="try-title" id="tryTitle">Try Again</div><div class="try-sub" id="trySub">Let's try again!</div><button class="try-btn" type="button" onclick="closeTryAgain()">Try Again</button></div></div>
 <div id="penBubble">✏</div><div id="penPanel"><div class="pen-row"><div class="pen-tool on" id="penMain" onclick="togglePenSub()"><span id="penIcon">✏</span><div class="pen-submenu" id="penSub"><button class="pen-sub on" data-pen="pen" type="button" onclick="setPen('pen','✏')">✏</button><button class="pen-sub" data-pen="cursive" type="button" onclick="setPen('cursive','🖋')">🖋</button><button class="pen-sub" data-pen="rainbow" type="button" onclick="setPen('rainbow','🌈')">🌈</button><button class="pen-sub" data-pen="glitter" type="button" onclick="setPen('glitter','✨')">✨</button></div></div><button class="pen-tool" id="eraserTool" type="button" onclick="setPen('eraser','🧽')">🧽</button><button class="pen-tool" type="button" onclick="doUndo()">↩</button><button class="pen-tool" type="button" onclick="doClear()">🧹</button><button class="pen-tool" type="button" onclick="toggleStickers()">🎨</button></div><div class="pen-row"><div class="color-dot on" style="background:#3E2723" data-color="#3E2723"></div><div class="color-dot" style="background:#2E7D32" data-color="#2E7D32"></div><div class="color-dot" style="background:#1565C0" data-color="#1565C0"></div><div class="color-dot" style="background:#C62828" data-color="#C62828"></div><div class="color-dot" style="background:#F9A825" data-color="#F9A825"></div></div><div class="pen-row"><input type="range" min="1" max="8" value="2.6" step="0.5" class="size-slider" id="sizeSlider"/></div><div class="pen-row sticker-row" id="stickerRow"><button class="pen-tool" type="button" onclick="spawnSticker('🌻')">🌻</button><button class="pen-tool" type="button" onclick="spawnSticker('🌷')">🌷</button><button class="pen-tool" type="button" onclick="spawnSticker('💧')">💧</button><button class="pen-tool" type="button" onclick="spawnSticker('🦋')">🦋</button><button class="pen-tool" type="button" onclick="spawnSticker('🐝')">🐝</button><button class="pen-tool" type="button" onclick="spawnSticker('🌾')">🌾</button><button class="pen-tool" type="button" onclick="spawnSticker('⭐')">⭐</button><button class="pen-tool" type="button" onclick="spawnSticker('🌿')">🌿</button></div></div>
 <div id="pinModal"><div class="pin-box"><div style="font-weight:900">Enter PIN</div><input type="password" id="pinInput" class="pin-input" placeholder="••••" inputmode="numeric"/><div id="pinError" style="display:none;color:#D32F2F;font-size:.7rem;font-weight:800">Wrong PIN</div><div style="display:flex;gap:8px;margin-top:8px"><button class="hub-btn" type="button" onclick="closePin()" style="flex:1">Cancel</button><button class="hub-btn" type="button" onclick="checkPin()" style="flex:1;background:#5D4037;color:#fff">OK</button></div></div></div>
 <script>
 let audioCtx=null;
 function initAudio(){if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();}
-function playPop(){if(!audioCtx) return; const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.frequency.value=440; o.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime+.15); g.gain.value=.12; g.gain.exponentialRampToValueAtTime(.01, audioCtx.currentTime+.2); o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+.2);}
-function playCandy(){if(!audioCtx) return; [523,659,784,1046].forEach((f,i)=>{const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.frequency.value=f; g.gain.value=.1; o.connect(g); g.connect(audioCtx.destination); o.start(audioCtx.currentTime+i*.07); g.gain.exponentialRampToValueAtTime(.001, audioCtx.currentTime+i*.07+.3); o.stop(audioCtx.currentTime+i*.07+.3);});}
-function playWater(){if(!audioCtx) return; const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.frequency.value=900+Math.random()*300; o.type='sine'; g.gain.value=.12; o.connect(g); g.connect(audioCtx.destination); o.start(); g.gain.exponentialRampToValueAtTime(.001, audioCtx.currentTime+.35); o.stop(audioCtx.currentTime+.35);}
-function playBird(){if(!audioCtx) return; const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.frequency.value=1400+Math.random()*600; g.gain.value=.05; o.connect(g); g.connect(audioCtx.destination); o.start(); g.gain.exponentialRampToValueAtTime(.001, audioCtx.currentTime+.5); o.stop(audioCtx.currentTime+.5);}
-const STORE='soilV5_';
-const OBJ=[
+function playPop(){if(!audioCtx) return; const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.frequency.value=440; o.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime+.15); g.gain.value=.08; g.gain.exponentialRampToValueAtTime(.01, audioCtx.currentTime+.12); o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+.12);}
+function playCandy(){if(!audioCtx) return; [523,659,784,1046].forEach((f,i)=>{const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.frequency.value=f; g.gain.value=.06; o.connect(g); g.connect(audioCtx.destination); o.start(audioCtx.currentTime+i*.05); g.gain.exponentialRampToValueAtTime(.001, audioCtx.currentTime+i*.05+.2); o.stop(audioCtx.currentTime+i*.05+.2);});}
+function playWater(){if(!audioCtx) return; const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.frequency.value=900+Math.random()*300; o.type='sine'; g.gain.value=.08; o.connect(g); g.connect(audioCtx.destination); o.start(); g.gain.exponentialRampToValueAtTime(.001, audioCtx.currentTime+.25); o.stop(audioCtx.currentTime+.25);}
+function playBird(){if(!audioCtx) return; const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.frequency.value=1400+Math.random()*600; g.gain.value=.04; o.connect(g); g.connect(audioCtx.destination); o.start(); g.gain.exponentialRampToValueAtTime(.001, audioCtx.currentTime+.3); o.stop(audioCtx.currentTime+.3);}
+const STORE='soilPasteFix_';
+const OBJ_ORIG=[
 {opts:['Overgrazing','Water','Wind','Terrace farming'], ans:'Terrace farming', id:'o1', q:'Which of the following does not cause soil erosion?'},
 {opts:['20 April','21 April','23 April','22 April'], ans:'22 April', id:'o2', q:'Earth Day is celebrated on:'},
 {opts:['Humus','Subsoil','Bedrock','Parent material'], ans:'Parent material', id:'o3', q:'Which of the following is also called regolith?'},
 {opts:['soil erosion','storm','growing trees','weathering'], ans:'growing trees', id:'o4', q:'Afforestation means:'},
 {opts:['stems','roots','leaves','buds'], ans:'roots', id:'o5', q:'Plants and trees hold the soil together by their:'}
 ];
-const FILLS=[
+const FILLS_ORIG=[
 {q:'The layer of the soil with humus is the', hint:'(subsoil/organic layer)', ans:'organic layer', id:'f1', chips:['subsoil','organic layer']},
 {q:'Soil has', suffix:'layers.', hint:'(different/same)', ans:'different', id:'f2', chips:['different','same']},
 {q:'Trees in fields can act as shields against strong', hint:'(winds/rain)', ans:'winds', id:'f3', chips:['winds','rain']},
 {q:'Wearing away of soil by forces such as water or wind is called soil', hint:'(erosion/conservation)', ans:'erosion', id:'f4', chips:['erosion','conservation']},
 {q:'Building', suffix:'along the riverbanks can prevent soil erosion.', hint:'(embankments/windbreaks)', ans:'embankments', id:'f5', chips:['embankments','windbreaks']}
 ];
-const TFS=[
+const TFS_ORIG=[
 {q:'The layer below the topsoil is called parent rock.', ans:'false', id:'t1'},
 {q:'Soil is a natural resource.', ans:'true', id:'t2'},
 {q:'Soil can never lose its fertility.', ans:'false', id:'t3'},
 {q:'The heat of the Sun has no effect on soil.', ans:'false', id:'t4'},
 {q:'Overgrazing can lead to soil erosion.', ans:'true', id:'t5'}
 ];
+// Fisher-Yates - like pollution
+function fisherYates(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+let OBJ=[], FILLS=[], TFS=[];
+function buildOrders(){
+  if(mode==='write'){
+    OBJ=fisherYates(OBJ_ORIG);
+    FILLS=fisherYates(FILLS_ORIG);
+    TFS=fisherYates(TFS_ORIG);
+  } else {
+    OBJ=[...OBJ_ORIG];
+    FILLS=[...FILLS_ORIG];
+    TFS=[...TFS_ORIG];
+  }
+}
 const CAUSES=['Deforestation','Heavy Rainfall','Strong Wind','Heat of Sun','Overgrazing','Ploughing of hills','Flowing Water'];
 const CONS=['Afforestation','Reforestation','Crop Rotation','Cover Crops','Pastures','Embankments','Terrace Farming','Constructing Dams','Windbreaks'];
 let GRID=[['W','D','E','W','E','S','D','F','R','W','D','S','H','E','V','B','B'],['A','C','T','E','R','R','A','C','E','F','A','R','M','I','N','G','G'],['N','O','I','T','A','T','S','E','R','O','F','E','D','T','L','L','N'],['V','I','R','G','S','U','B','S','O','I','L','R','G','Q','I','Y','O'],['B','L','U','S','H','F','G','H','U','M','U','S','G','R','O','N','N'],['U','N','T','Y','S','P','O','R','C','R','E','V','O','C','S','F','F']];
@@ -201,7 +225,7 @@ let foundW=JSON.parse(localStorage.getItem(STORE+'found_write')||'[]');
 let selected=[]; let isSelecting=false; let currentSec=null; let mode='practice'; let fontScale=parseFloat(localStorage.getItem(STORE+'fontScale')||'1'); let fontIdx=[0.8,1,1.2,1.4].indexOf(fontScale); if(fontIdx<0) fontIdx=1;
 let currentPen={type:'pen', color:'#3E2723', size:2.6}; let rainbowHue=0; const historyMap={}; let ukVoice=null;
 function loadVoice(){const v=speechSynthesis.getVoices(); ukVoice=v.find(x=>x.lang==='en-GB')||v[0]||null;} speechSynthesis.onvoiceschanged=loadVoice; loadVoice();
-function speak(t){if(!t) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.lang='en-GB'; u.rate=0.85; if(ukVoice) u.voice=ukVoice; speechSynthesis.speak(u);}
+function speak(t){if(!t) return; try{speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.lang='en-GB'; u.rate=0.9; if(ukVoice) u.voice=ukVoice; speechSynthesis.speak(u);}catch(_){}}
 function makeSpeakable(s){return s.split(/(\s+)/).map(tok=>{if(/^\s+$/.test(tok)) return tok; const c=tok.replace(/[.,()!?]/g,''); if(!c) return tok; return `<span class="s-word" data-speak="${c}">${tok}</span>`;}).join('');}
 function applyFont(){document.documentElement.style.setProperty('--font-scale', fontScale); localStorage.setItem(STORE+'fontScale', fontScale.toFixed(2)); const btn=document.getElementById('fontAa'); if(btn) btn.textContent='Aa '+Math.round(fontScale*100)+'%';}
 applyFont();
@@ -209,7 +233,7 @@ function cycleFont(){const sizes=[0.8,1,1.2,1.4]; fontIdx=(fontIdx+1)%sizes.leng
 function requestMode(m){ if(mode===m) return; if(mode==='write' && m==='practice'){document.getElementById('pinModal').classList.add('show'); document.getElementById('pinInput').value=''; document.getElementById('pinError').style.display='none'; window._pending=m; return;} setMode(m); }
 function closePin(){document.getElementById('pinModal').classList.remove('show');}
 function checkPin(){const v=document.getElementById('pinInput').value; if(v==='1995'){document.getElementById('pinModal').classList.remove('show'); setMode(window._pending||'practice');} else {document.getElementById('pinError').style.display='block';}}
-function setMode(m){mode=m; document.getElementById('btnPractice').classList.toggle('active', m==='practice'); document.getElementById('btnWrite').classList.toggle('active', m==='write'); if(currentSec) renderSec();}
+function setMode(m){mode=m; buildOrders(); document.getElementById('btnPractice').classList.toggle('active', m==='practice'); document.getElementById('btnWrite').classList.toggle('active', m==='write'); if(currentSec) renderSec();}
 function goHub(){try{window.parent.postMessage('close-lesson-to-hub','*');}catch(_){} if(window.history.length>1) history.back();}
 function hideHud(){document.getElementById('hud').classList.add('minimized'); document.getElementById('dockPeek').classList.add('show');}
 function showHud(){document.getElementById('hud').classList.remove('minimized'); document.getElementById('dockPeek').classList.remove('show');}
@@ -250,25 +274,21 @@ function spawnSticker(emoji){
   document.addEventListener('pointermove', move); document.addEventListener('pointerup', up);
  });
  document.addEventListener('pointerdown', (e)=>{if(!e.target.closest('.sticker')) document.querySelectorAll('.sticker').forEach(s=>s.classList.remove('selected'));});
- playPop();
+ setTimeout(()=>playPop(),10);
 }
 function mountStrip(canvas){
  const id=canvas.dataset.inkId; const ghost=canvas.dataset.ghost||'';
- const parent = canvas.parentElement;
- const w = parent.clientWidth || 450;
- const h = parent.clientHeight || 70;
- const dpr=Math.min(devicePixelRatio||1,2);
- canvas.width=Math.round(w*dpr); canvas.height=Math.round(h*dpr);
- canvas.style.width=w+'px'; canvas.style.height=h+'px';
+ const w=450; const h=60; const dpr=Math.min(devicePixelRatio||1,2);
+ canvas.width=w*dpr; canvas.height=h*dpr; canvas.style.width=w+'px'; canvas.style.height=h+'px'; canvas.style.maxWidth='100%';
  const ctx=canvas.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,w,h);
  ctx.save(); ctx.strokeStyle='#C7D2FE'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(8, h/2); ctx.lineTo(w-8, h/2); ctx.stroke(); ctx.restore();
  if(mode==='practice' && ghost){ctx.save(); ctx.globalAlpha=0.22; ctx.font='700 15px Kalam, cursive'; ctx.fillStyle='#5D4037'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(ghost, w/2, h/2+2); ctx.restore();}
  try{const saved=localStorage.getItem(inkKey(id)); if(saved){const img=new Image(); img.onload=()=>ctx.drawImage(img,0,0,w,h); img.src=saved;}}catch(_){}
 }
-function stripHTML(id,ghost=''){return `<div style="display:inline-flex;align-items:center;gap:4px"><div class="inline-strip"><canvas data-ink-id="${id}" data-ghost="${ghost}"></canvas></div><button class="mini-strip" type="button" onclick="doUndoStrip('${id}')">↩️</button><button class="mini-strip" type="button" onclick="doClearStrip('${id}')">🗑️</button></div>`;}
-function shortStrip(id,ghost=''){return `<div style="display:inline-flex;align-items:center;gap:4px"><div class="inline-strip short"><canvas data-ink-id="${id}" data-ghost="${ghost}"></canvas></div><button class="mini-strip" type="button" onclick="doUndoStrip('${id}')">↩️</button><button class="mini-strip" type="button" onclick="doClearStrip('${id}')">🗑️</button></div>`;}
-function doUndoStrip(id){const c=document.querySelector(`canvas[data-ink-id="${id}"]`); if(!c) return; const w=450,h=60; const ctx=c.getContext('2d'); ctx.clearRect(0,0,w*2,h*2); ctx.save(); ctx.strokeStyle='#C7D2FE'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(8,h/2); ctx.lineTo(w-8,h/2); ctx.stroke(); ctx.restore(); const ghost=c.dataset.ghost||''; if(mode==='practice'&&ghost){ctx.save(); ctx.globalAlpha=0.22; ctx.font='700 15px Kalam, cursive'; ctx.fillStyle='#5D4037'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(ghost, w/2, h/2+2); ctx.restore();} const hist=historyMap[id]; if(hist&&hist.length){hist.pop(); if(hist.length){const img=new Image(); img.onload=()=>ctx.drawImage(img,0,0,w,h); img.src=hist[hist.length-1]; localStorage.setItem(inkKey(id), hist[hist.length-1]);} else localStorage.removeItem(inkKey(id));} else localStorage.removeItem(inkKey(id));}
-function doClearStrip(id){const c=document.querySelector(`canvas[data-ink-id="${id}"]`); if(!c) return; const w=450,h=60; const ctx=c.getContext('2d'); ctx.clearRect(0,0,w*2,h*2); ctx.save(); ctx.strokeStyle='#C7D2FE'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(8,h/2); ctx.lineTo(w-8,h/2); ctx.stroke(); ctx.restore(); const ghost=c.dataset.ghost||''; if(mode==='practice'&&ghost){ctx.save(); ctx.globalAlpha=0.22; ctx.font='700 15px Kalam, cursive'; ctx.fillStyle='#5D4037'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(ghost, w/2, h/2+2); ctx.restore();} historyMap[id]=[]; localStorage.removeItem(inkKey(id));}
+function stripHTML(id,ghost=''){return `<div style="display:inline-flex;align-items:center;gap:4px"><div class="inline-strip"><canvas data-ink-id="${id}" data-ghost="${ghost}"></canvas></div><button class="mini-strip" type="button" onclick="doUndoStrip('${id}')">↩</button><button class="mini-strip" type="button" onclick="doClearStrip('${id}')">🗑</button></div>`;}
+function shortStrip(id,ghost=''){return `<div style="display:inline-flex;align-items:center;gap:4px"><div class="inline-strip short"><canvas data-ink-id="${id}" data-ghost="${ghost}"></canvas></div><button class="mini-strip" type="button" onclick="doUndoStrip('${id}')">↩</button><button class="mini-strip" type="button" onclick="doClearStrip('${id}')">🗑</button></div>`;}
+function doUndoStrip(id){const c=document.querySelector(`canvas[data-ink-id="${id}"]`); if(!c) return; const w=450,h=60; const ctx=c.getContext('2d'); const dpr=Math.min(devicePixelRatio||1,2); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,w,h); ctx.save(); ctx.strokeStyle='#C7D2FE'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(8,h/2); ctx.lineTo(w-8,h/2); ctx.stroke(); ctx.restore(); const ghost=c.dataset.ghost||''; if(mode==='practice'&&ghost){ctx.save(); ctx.globalAlpha=0.22; ctx.font='700 15px Kalam, cursive'; ctx.fillStyle='#5D4037'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(ghost, w/2, h/2+2); ctx.restore();} const hist=historyMap[id]; if(hist&&hist.length){hist.pop(); if(hist.length){const img=new Image(); img.onload=()=>ctx.drawImage(img,0,0,w,h); img.src=hist[hist.length-1]; localStorage.setItem(inkKey(id), hist[hist.length-1]);} else localStorage.removeItem(inkKey(id));} else localStorage.removeItem(inkKey(id));}
+function doClearStrip(id){const c=document.querySelector(`canvas[data-ink-id="${id}"]`); if(!c) return; const w=450,h=60; const ctx=c.getContext('2d'); const dpr=Math.min(devicePixelRatio||1,2); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,w,h); ctx.save(); ctx.strokeStyle='#C7D2FE'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(8,h/2); ctx.lineTo(w-8,h/2); ctx.stroke(); ctx.restore(); const ghost=c.dataset.ghost||''; if(mode==='practice'&&ghost){ctx.save(); ctx.globalAlpha=0.22; ctx.font='700 15px Kalam, cursive'; ctx.fillStyle='#5D4037'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(ghost, w/2, h/2+2); ctx.restore();} historyMap[id]=[]; localStorage.removeItem(inkKey(id));}
 function doUndo(){const k=Object.keys(historyMap); if(!k.length) return; doUndoStrip(k[k.length-1]);}
 function doClear(){if(!confirm('Clear all ink?')) return; document.querySelectorAll('#cardScroll canvas[data-ink-id]').forEach(c=>doClearStrip(c.dataset.inkId));}
 function openSection(sec, el){
@@ -290,33 +310,35 @@ function renderSec(){
  document.getElementById('cardTitle').textContent=titles[currentSec]||currentSec;
  let html=''; if(currentSec==='A') html=renderA(); if(currentSec==='B') html=renderB(); if(currentSec==='C') html=renderC(); if(currentSec==='D') html=renderD(); if(currentSec==='E') html=renderE(); if(currentSec==='F') html=renderF();
  const girlClass=currentSec==='F'?'girl-embossed sectionF':'girl-embossed';
- html=`<div class="card-content">${html}</div><img src="assets/soil-girl-hero.webp" class="${girlClass}" alt="" onerror="this.style.display='none'"/>`;
+ html=`<div class="card-content">${html}</div><img src="assets/soil-girl-hero.png" class="${girlClass}" alt="" onerror="this.style.display='none'"/>`;
  document.getElementById('cardScroll').innerHTML=html;
- document.querySelectorAll('.s-word').forEach(el=>{el.addEventListener('click', e=>{e.stopPropagation(); speak(el.dataset.speak);});});
+ document.querySelectorAll('.s-word').forEach(el=>{el.addEventListener('click', e=>{e.stopPropagation(); setTimeout(()=>speak(el.dataset.speak),5);});});
  requestAnimationFrame(()=>{document.querySelectorAll('canvas[data-ink-id]').forEach(mountStrip); if(currentSec==='F') initClod();});
 }
 function gradeA(){let c=0; OBJ.forEach(o=>{const s=localStorage.getItem(STORE+'obj_'+mode+'_'+o.id); if(s===o.ans) c++;}); return {correct:c, total:OBJ.length};}
 function renderA(){
  const g=gradeA();
  let checkBtn = mode==='write' ? `<button class="check-btn" type="button" onclick="checkAnswers('A')">✅ Check</button>` : '';
- let h=`<div class="grade-bar">Score: ${g.correct}/${g.total} ${g.correct===g.total?'🌟':''} ${mode==='practice'?'(Practice - answer visible)':'(Write)'} ${checkBtn}</div>`;
+ let h=`<div class="grade-bar">Score: ${g.correct}/${g.total} ${g.correct===g.total?'🌟':''} ${mode==='practice'?'(Practice - answer visible)':'(Write - shuffled)'} ${checkBtn}</div>`;
  OBJ.forEach((o,i)=>{
   const saved=localStorage.getItem(STORE+'obj_'+mode+'_'+o.id);
-  h+=`<div class="q-row"><div class="q-text">${i+1}. ${makeSpeakable(o.q)}</div><div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:4px">`;
-  o.opts.forEach(opt=>{let cls='opt-btn'; if(saved===opt) cls+=' on'; if(mode==='practice' && opt===o.ans) cls+=' practice-correct'; h+=`<button class="${cls}" type="button" onclick="selectObj('${o.id}','${opt}')">${makeSpeakable(opt)}</button>`;});
+  h+=`<div class="q-row" data-qid="${o.id}"><div class="q-text">${i+1}. ${makeSpeakable(o.q)}</div><div class="opt-row" style="display:flex;gap:5px;flex-wrap:wrap;margin-top:4px">`;
+  o.opts.forEach(opt=>{let cls='opt-btn'; if(saved===opt) cls+=' on'; if(mode==='practice' && opt===o.ans) cls+=' practice-correct'; h+=`<button class="${cls}" type="button" data-opt="${opt}" data-qid="${o.id}" onclick="selectObj('${o.id}','${opt.replace(/'/g,"\\'")}')">${makeSpeakable(opt)}</button>`;});
   const ghost=mode==='practice'?o.ans:''; h+=`</div>${shortStrip(o.id,ghost)}</div>`;
  });
  return h;
 }
 function renderB(){
  let checkBtn = mode==='write' ? `<button class="check-btn" type="button" onclick="checkAnswers('B')">✅ Check</button>` : '';
- let h=`<div class="grade-bar">${mode==='practice'?'Practice: trace + tap chip':'Write: tap chip + write'} ${checkBtn}</div>`;
+ let h=`<div class="grade-bar">${mode==='practice'?'Practice: trace + tap chip (shuffled in Write)':'Write: tap chip + write (shuffled)'} ${checkBtn}</div>`;
  FILLS.forEach((f,i)=>{
   const saved=localStorage.getItem(STORE+'fill_'+mode+'_'+f.id);
   const ghost=mode==='practice'?f.ans:'';
-  h+=`<div class="q-row"><div class="q-text">${i+1}. ${makeSpeakable(f.q)} ${stripHTML(f.id,ghost)} <span style="font-size:.68rem;color:#8D6E63">${mode==='practice'?f.hint:''}</span>`;
+  // FIX: soil has inline canvas layers - include suffix after canvas
+  const suffix = f.suffix ? ` <span class="s-word">${makeSpeakable(f.suffix)}</span>` : '';
+  h+=`<div class="q-row" data-qid="${f.id}"><div class="q-text">${i+1}. ${makeSpeakable(f.q)} ${stripHTML(f.id,ghost)}${suffix} <span style="font-size:.68rem;color:#8D6E63">${mode==='practice'?f.hint:''}</span>`;
   h+=`<span class="fill-chip-row">`;
-  f.chips.forEach(ch=>{let cls='fill-chip'; if(saved===ch) cls+=' on'; if(mode==='practice' && ch===f.ans) cls+=' practice-correct'; h+=`<button class="${cls}" type="button" onclick="selectFill('${f.id}','${ch}')">${makeSpeakable(ch)}</button>`;});
+  f.chips.forEach(ch=>{let cls='fill-chip'; if(saved===ch) cls+=' on'; if(mode==='practice' && ch===f.ans) cls+=' practice-correct'; h+=`<button class="${cls}" type="button" data-chip="${ch}" data-qid="${f.id}" onclick="selectFill('${f.id}','${ch.replace(/'/g,"\\'")}')">${makeSpeakable(ch)}</button>`;});
   h+=`</span></div></div>`;
  });
  return h;
@@ -324,13 +346,13 @@ function renderB(){
 function renderC(){
  let correct=0; TFS.forEach(t=>{const s=localStorage.getItem(STORE+'tf_'+mode+'_'+t.id); if(s===t.ans) correct++;});
  let checkBtn = mode==='write' ? `<button class="check-btn" type="button" onclick="checkAnswers('C')">✅ Check</button>` : '';
- let h=`<div class="grade-bar">Score: ${correct}/${TFS.length} ${checkBtn}</div>`;
+ let h=`<div class="grade-bar">Score: ${correct}/${TFS.length} ${mode==='practice'?'(Practice)':'(Write - shuffled)'} ${checkBtn}</div>`;
  TFS.forEach((t,i)=>{
   const saved=localStorage.getItem(STORE+'tf_'+mode+'_'+t.id);
   const ghost=mode==='practice'?t.ans:'';
-  h+=`<div class="q-row"><div class="q-text">${i+1}. ${makeSpeakable(t.q)}</div><div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap">
-   <button class="tf-chip true ${saved==='true'?'on':''} ${mode==='practice'&&t.ans==='true'?'practice-correct':''}" type="button" onclick="selectTF('${t.id}','true')">True</button>
-   <button class="tf-chip false ${saved==='false'?'on':''} ${mode==='practice'&&t.ans==='false'?'practice-correct':''}" type="button" onclick="selectTF('${t.id}','false')">False</button>
+  h+=`<div class="q-row" data-qid="${t.id}"><div class="q-text">${i+1}. ${makeSpeakable(t.q)}</div><div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap">
+   <button class="tf-chip true ${saved==='true'?'on':''} ${mode==='practice'&&t.ans==='true'?'practice-correct':''}" type="button" data-qid="${t.id}" data-val="true" onclick="selectTF('${t.id}','true')">True</button>
+   <button class="tf-chip false ${saved==='false'?'on':''} ${mode==='practice'&&t.ans==='false'?'practice-correct':''}" type="button" data-qid="${t.id}" data-val="false" onclick="selectTF('${t.id}','false')">False</button>
    ${shortStrip(t.id,ghost)}</div></div>`;
  });
  return h;
@@ -338,7 +360,7 @@ function renderC(){
 function renderD(){
  let placed=0; CAUSES.forEach((_,i)=>{if(localStorage.getItem(STORE+'cause_'+mode+'_'+i)) placed++;});
  let checkBtn = mode==='write' ? `<button class="check-btn" type="button" onclick="checkAnswers('D')">✅ Check</button>` : '';
- let h=`<div class="grade-bar">Placed: ${placed}/${CAUSES.length} ${mode==='practice'?'(ghost visible - no tap needed)':'(Write)'} ${checkBtn}</div><div class="map-grid">`;
+ let h=`<div class="grade-bar">Placed: ${placed}/${CAUSES.length} ${mode==='practice'?'(ghost visible)':'(Write)'} ${checkBtn}</div><div class="map-grid">`;
  CAUSES.forEach((w,i)=>{
   const ghost=mode==='practice'?w:'';
   if(mode==='practice'){
@@ -373,8 +395,8 @@ function checkSel(){const w=getWord(); const rev=w.split('').reverse().join('');
 function foundWord(word){
  let f=getFound(); f.push(word); setFound(f);
  localStorage.setItem(STORE+'pos_'+mode+'_'+word, JSON.stringify(selected.slice()));
- selected.forEach(sc=>{const el=document.querySelector(`.clod-cell[data-r="${sc.r}"][data-c="${sc.c}"]`); if(el){el.classList.add('found'); el.innerHTML=`<span class="sprout">${getSprout(word)}</span>`; for(let i=0;i<4;i++){const drop=document.createElement('div'); drop.className='water-drop'; drop.textContent='💧'; drop.style.left=(5+Math.random()*20)+'px'; drop.style.animationDelay=(i*0.12)+'s'; el.appendChild(drop); setTimeout(()=>drop.remove(),1000);} playWater();}});
- playCandy(); setTimeout(()=>{selected=[]; renderSec();},800);
+ selected.forEach(sc=>{const el=document.querySelector(`.clod-cell[data-r="${sc.r}"][data-c="${sc.c}"]`); if(el){el.classList.add('found'); el.innerHTML=`<span class="sprout">${getSprout(word)}</span>`; for(let i=0;i<4;i++){const drop=document.createElement('div'); drop.className='water-drop'; drop.textContent='💧'; drop.style.left=(5+Math.random()*20)+'px'; drop.style.animationDelay=(i*0.12)+'s'; el.appendChild(drop); setTimeout(()=>drop.remove(),1000);} setTimeout(()=>playWater(),10);}});
+ setTimeout(()=>playCandy(),10); setTimeout(()=>{selected=[]; renderSec();},800);
 }
 function clearSel(){selected=[]; renderSec();}
 function renderF(){
@@ -418,13 +440,42 @@ function checkAnswers(sec){
   document.getElementById('tryTitle').textContent=`Great Job! 🌟 ${correct}/${total}`;
   document.getElementById('trySub').textContent=`All correct!`;
   document.getElementById('tryAgainModal').classList.add('show');
-  // soft celebration
-  try{ if(typeof playCandy==='function') playCandy(); }catch(_){}
  }
+}
+// FAST TAP FIX - no full render, instant visual feedback
+function fastSelectUpdate(group, id, val){
+  const row=document.querySelector(`.q-row[data-qid="${id}"]`);
+  if(!row) return;
+  if(group==='obj'){
+    row.querySelectorAll('.opt-btn').forEach(b=>{b.classList.toggle('on', b.dataset.opt===val);});
+  } else if(group==='fill'){
+    row.querySelectorAll('.fill-chip').forEach(b=>{b.classList.toggle('on', b.dataset.chip===val);});
+  } else if(group==='tf'){
+    row.querySelectorAll('.tf-chip').forEach(b=>{b.classList.toggle('on', b.dataset.val===val);});
+  }
+}
+function selectObj(id, opt){
+  localStorage.setItem(STORE+'obj_'+mode+'_'+id, opt);
+  fastSelectUpdate('obj', id, opt);
+  // defer heavy work to avoid lag
+  setTimeout(()=>{playPop();}, 0);
+  setTimeout(()=>{speak(opt);}, 30);
+}
+function selectFill(id, chip){
+  localStorage.setItem(STORE+'fill_'+mode+'_'+id, chip);
+  fastSelectUpdate('fill', id, chip);
+  setTimeout(()=>{playPop();}, 0);
+  setTimeout(()=>{speak(chip);}, 30);
+}
+function selectTF(id, val){
+  localStorage.setItem(STORE+'tf_'+mode+'_'+id, val);
+  fastSelectUpdate('tf', id, val);
+  setTimeout(()=>{playPop();}, 0);
+  setTimeout(()=>{speak(val);}, 30);
 }
 (function(){
  let drawing=false,lx=0,ly=0,active=null,started=false;
- function pos(e,c){const r=c.getBoundingClientRect(); const dpr=Math.min(devicePixelRatio||1,2); return [(e.clientX-r.left), (e.clientY-r.top)];}
+ function pos(e,c){const r=c.getBoundingClientRect(); return [(e.clientX-r.left)*(450/r.width), (e.clientY-r.top)*(60/r.height)];}
  document.addEventListener('pointerdown', e=>{
   const c=e.target.closest('canvas[data-ink-id]'); if(!c) return; e.preventDefault(); initAudio(); c.setPointerCapture(e.pointerId); drawing=true; active=c; started=true;
   const ctx=c.getContext('2d'); const [x,y]=pos(e,c); lx=x; ly=y;
@@ -446,9 +497,7 @@ function checkAnswers(sec){
 })();
 document.querySelectorAll('.color-dot').forEach(d=>{d.addEventListener('click',()=>{currentPen.color=d.dataset.color; document.querySelectorAll('.color-dot').forEach(x=>x.classList.remove('on')); d.classList.add('on');});});
 document.getElementById('sizeSlider').addEventListener('input', e=>{currentPen.size=parseFloat(e.target.value);});
-function selectObj(id, opt){localStorage.setItem(STORE+'obj_'+mode+'_'+id, opt); renderSec(); speak(opt); playPop();}
-function selectFill(id, chip){localStorage.setItem(STORE+'fill_'+mode+'_'+id, chip); renderSec(); speak(chip); playPop();}
-function selectTF(id, val){localStorage.setItem(STORE+'tf_'+mode+'_'+id, val); renderSec(); speak(val); playPop();}
+buildOrders();
 setInterval(()=>{if(Math.random()>0.75) playBird();}, 7000);
 setMode('practice');
 </script>
