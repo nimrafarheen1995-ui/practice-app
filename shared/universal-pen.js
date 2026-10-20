@@ -1,21 +1,22 @@
-// shared/universal-pen.js v1.2
+// shared/universal-pen.js v1.3
 // 7-icon bar: Pen Eraser Undo Redo Clear Colors Stamps/Stickers
-// Fixes: undo/redo stack, palm rejection, smart panel, no double-tap clear
+// Line tool: Exact 5.6 Exercise implementation - thin line, NO glow
+// Fixes: undo/redo stack, palm rejection, long-press eraser, smooth pen
 
 (function(){
   const CFG = {
     colors: ['#0F172A','#2563EB','#15803D','#DC2626','#7C3AED'],
     stamps: ['⭐','😡','❤️','😊','😢','🌸','♻️','🌍','✅','❌','💯','❄️'],
     stickers: ['💃','🔥','⭐','🌹','🧐','🫰','🌳','🧹'],
-    storageKey: 'LQ_UNIVERSAL_PEN_V12',
-    soundKey: 'LQ_PEN_SOUND_V12'
+    storageKey: 'LQ_UNIVERSAL_PEN_V13',
+    soundKey: 'LQ_PEN_SOUND_V13'
   };
   
   let state = {
     tool: 'pen', penType: 'normal', color: '#0F172A', size: 2.5,
     drawing: false, soundOn: false, activeCanvas: null, ctx: null,
     audioCtx: null, undoStack: [], redoStack: [], rainbowHue: 0,
-    isScrolling: false, lastPoint: null, longPressTimer: null
+    isScrolling: false, points: [], longPressTimer: null
   };
   
   const loadState = () => {
@@ -35,7 +36,6 @@
     } catch(e){}
   };
   
-  // Web Audio - Option A: Realistic pencil
   const initAudio = () => {
     if(!state.audioCtx) state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   };
@@ -249,7 +249,7 @@
         state.tool = state.tool === 'eraser' ? 'pen' : 'eraser';
         saveState(); updateUI();
         navigator.vibrate?.(50);
-      }, 500);
+      }, 600);
     };
     bubble.onpointerup = () => clearTimeout(state.longPressTimer);
     bubble.onpointerleave = () => clearTimeout(state.longPressTimer);
@@ -344,19 +344,24 @@
   };
   
   const makeDraggable = (el, bar) => {
-    let pos = {x:0,y:0};
+    let pos = {x:0,y:0}, moved = false;
     el.onpointerdown = e => {
       if(e.target !== el && !el.contains(e.target)) return;
       e.preventDefault(); e.stopPropagation();
-      pos = {x:e.clientX, y:e.clientY};
+      pos = {x:e.clientX, y:e.clientY}; moved = false;
       const move = e => {
+        if(Math.abs(e.clientX - pos.x) > 5 || Math.abs(e.clientY - pos.y) > 5) moved = true;
         el.style.left = (el.offsetLeft + e.clientX - pos.x) + 'px';
         el.style.top = (el.offsetTop + e.clientY - pos.y) + 'px';
         el.style.bottom = el.style.right = 'auto';
         pos = {x:e.clientX, y:e.clientY};
         if(bar.classList.contains('open')) positionBar(el, bar);
       };
-      const up = () => { document.removeEventListener('pointermove', move); document.removeEventListener('pointerup', up); };
+      const up = () => { 
+        document.removeEventListener('pointermove', move); 
+        document.removeEventListener('pointerup', up);
+        if(moved) clearTimeout(state.longPressTimer);
+      };
       document.addEventListener('pointermove', move);
       document.addEventListener('pointerup', up);
     };
@@ -369,16 +374,15 @@
   };
   
   const startDraw = (e) => {
-    if(!state.activeCanvas || !state.ctx || state.isScrolling) return;
+    if(!state.activeCanvas || !state.ctx || state.isScrolling || state.tool==='line') return;
     // Palm rejection: only pen or finger with pressure
     if(e.pointerType === 'touch' && e.width > 20) return;
     if(e.pointerType !== 'pen' && e.pressure === 0 && e.pointerType !== 'mouse') return;
     
     e.preventDefault();
     state.drawing = true;
-    state.lastPoint = getPos(e);
+    state.points = [getPos(e)];
     state.ctx.beginPath();
-    state.ctx.moveTo(state.lastPoint.x, state.lastPoint.y);
     state.ctx.lineCap = state.ctx.lineJoin = 'round';
     state.ctx.lineWidth = state.size;
     
@@ -392,8 +396,7 @@
         state.rainbowHue = (state.rainbowHue + 5) % 360;
       } else if(state.penType === 'glitter') {
         state.ctx.strokeStyle = state.color;
-        state.ctx.shadowColor = state.color;
-        state.ctx.shadowBlur = 0; // No shadow for glitter
+        state.ctx.shadowBlur = 0; // No shadow - fixes bold
       } else {
         state.ctx.strokeStyle = state.color;
         state.ctx.shadowBlur = 0;
@@ -404,13 +407,26 @@
   };
   
   const draw = (e) => {
-    if(!state.drawing || !state.ctx || state.isScrolling) return;
+    if(!state.drawing || !state.ctx || state.isScrolling || state.tool==='line') return;
     if(e.pointerType === 'touch' && e.width > 20) return;
     
     e.preventDefault();
     const p = getPos(e);
-    state.ctx.lineTo(p.x, p.y);
-    state.ctx.stroke();
+    state.points.push(p);
+    
+    // Smooth with quadratic curves
+    if(state.points.length >= 3) {
+      const len = state.points.length;
+      const xc = (state.points[len-2].x + p.x) / 2;
+      const yc = (state.points[len-2].y + p.y) / 2;
+      state.ctx.quadraticCurveTo(state.points[len-2].x, state.points[len-2].y, xc, yc);
+      state.ctx.stroke();
+      state.ctx.beginPath();
+      state.ctx.moveTo(xc, yc);
+    } else {
+      state.ctx.lineTo(p.x, p.y);
+      state.ctx.stroke();
+    }
     
     // Glitter sparkles
     if(state.tool !== 'eraser' && state.penType === 'glitter' && Math.random() > 0.7) {
@@ -427,13 +443,18 @@
       state.ctx.strokeStyle = `hsl(${state.rainbowHue},100%,50%)`;
       state.rainbowHue = (state.rainbowHue + 5) % 360;
     }
-    
-    state.lastPoint = p;
   };
   
-  const endDraw = () => {
-    if(!state.drawing) return;
+  const endDraw = (e) => {
+    if(!state.drawing || state.tool==='line') return;
     state.drawing = false;
+    // Smooth final segment
+    if(state.points.length >= 2) {
+      const p = state.points[state.points.length-1];
+      state.ctx.lineTo(p.x, p.y);
+      state.ctx.stroke();
+    }
+    state.points = [];
     // Save state AFTER stroke completes - fixes undo glitch
     setTimeout(() => {
       if(state.activeCanvas) {
@@ -540,5 +561,5 @@
   document.addEventListener('pointerdown', startDraw);
   document.addEventListener('pointermove', draw);
   document.addEventListener('pointerup', endDraw);
-  document.addEventListener('pointercancel', endDraw);
+  document.addEventListener('pointercancel', () => { state.drawing = false; state.points = []; });
 })();
