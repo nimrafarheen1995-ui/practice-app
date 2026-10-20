@@ -144,6 +144,23 @@ html,body{width:100vw;height:100vh;height:100dvh;margin:0;padding:0;overflow:hid
 #pinModal.show{display:flex}
 .pin-box{background:#fff;border:3px solid #5D4037;border-radius:16px;padding:16px;width:min(300px,90vw);text-align:center}
 .pin-input{width:100%;padding:10px;border:2px solid #BCAAA4;border-radius:10px;font-size:1.1rem;font-weight:800;text-align:center;margin:8px 0;letter-spacing:5px}
+
+/* ---- Soil Farm juice (transform + opacity only) ---- */
+.root-line{flex:1 1 100%;height:2px;margin:-2px 0 0 14px;max-width:calc(100% - 14px);background:#5D4037;border-radius:2px;transform:scaleX(0);transform-origin:left center;transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
+.q-row.rooted .root-line{transform:scaleX(1)}
+.fill-chip.snap{animation:chipSnap .35s cubic-bezier(.34,1.56,.64,1)}
+@keyframes chipSnap{0%{transform:scale(1)}50%{transform:scale(1.22)}100%{transform:scale(1)}}
+.pot-row{display:inline-flex;gap:4px;align-items:flex-end;margin-right:4px}
+.pot{position:relative;display:inline-block;width:30px;height:32px;font-size:22px;line-height:32px;text-align:center}
+.sprout-mini{position:absolute;left:50%;top:-12px;font-size:15px;line-height:1;transform:translateX(-50%) scale(0);transform-origin:50% 100%;pointer-events:none}
+.sprout-mini.grow{transform:translateX(-50%) scale(1)}
+.sprout-mini.pop{animation:potPop .45s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes potPop{0%{transform:translateX(-50%) scale(0)}100%{transform:translateX(-50%) scale(1)}}
+.worm-peek{position:fixed;bottom:-40px;left:12px;z-index:20;font-size:28px;line-height:1;padding:4px;cursor:pointer;transform:translateY(0);transition:transform .5s cubic-bezier(.34,1.56,.64,1)}
+.worm-peek.show{transform:translateY(-48px)}
+.worm-say{position:fixed;left:12px;bottom:56px;z-index:21;max-width:200px;background:#fff;border:2px solid #5D4037;border-radius:12px;padding:6px 10px;font-weight:900;font-size:.72rem;color:#3E2723;box-shadow:0 4px 10px rgba(0,0,0,.25);opacity:0;transform:translateY(6px);transition:opacity .3s,transform .3s;pointer-events:none}
+.worm-say.show{opacity:1;transform:translateY(0)}
+@media (prefers-reduced-motion:reduce){.fill-chip.snap,.sprout-mini.pop{animation:none}.worm-peek,.worm-say,.root-line{transition:none}}
 </style>
 </head>
 <body>
@@ -166,6 +183,7 @@ html,body{width:100vw;height:100vh;height:100dvh;margin:0;padding:0;overflow:hid
 <div id="tryAgainModal"><div class="try-modal-box"><img src="assets/soil-girl-hero.png" class="try-hero-big" alt="" onerror="this.style.display='none'"/><div class="try-title" id="tryTitle">Try Again</div><div class="try-sub" id="trySub">Let's try again!</div><button class="try-btn" type="button" onclick="closeTryAgain()">Try Again</button></div></div>
 <div id="penBubble">✏</div><div id="penPanel"><div class="pen-row"><div class="pen-tool on" id="penMain" onclick="togglePenSub()"><span id="penIcon">✏</span><div class="pen-submenu" id="penSub"><button class="pen-sub on" data-pen="pen" type="button" onclick="setPen('pen','✏')">✏</button><button class="pen-sub" data-pen="cursive" type="button" onclick="setPen('cursive','🖋')">🖋</button><button class="pen-sub" data-pen="rainbow" type="button" onclick="setPen('rainbow','🌈')">🌈</button><button class="pen-sub" data-pen="glitter" type="button" onclick="setPen('glitter','✨')">✨</button></div></div><button class="pen-tool" id="eraserTool" type="button" onclick="setPen('eraser','🧽')">🧽</button><button class="pen-tool" type="button" onclick="doUndo()">↩</button><button class="pen-tool" type="button" onclick="doClear()">🧹</button><button class="pen-tool" type="button" onclick="toggleStickers()">🎨</button></div><div class="pen-row"><div class="color-dot on" style="background:#3E2723" data-color="#3E2723"></div><div class="color-dot" style="background:#2E7D32" data-color="#2E7D32"></div><div class="color-dot" style="background:#1565C0" data-color="#1565C0"></div><div class="color-dot" style="background:#C62828" data-color="#C62828"></div><div class="color-dot" style="background:#F9A825" data-color="#F9A825"></div></div><div class="pen-row"><input type="range" min="1" max="8" value="2.6" step="0.5" class="size-slider" id="sizeSlider"/></div><div class="pen-row sticker-row" id="stickerRow"><button class="pen-tool" type="button" onclick="spawnSticker('🌻')">🌻</button><button class="pen-tool" type="button" onclick="spawnSticker('🌷')">🌷</button><button class="pen-tool" type="button" onclick="spawnSticker('💧')">💧</button><button class="pen-tool" type="button" onclick="spawnSticker('🦋')">🦋</button><button class="pen-tool" type="button" onclick="spawnSticker('🐝')">🐝</button><button class="pen-tool" type="button" onclick="spawnSticker('🌾')">🌾</button><button class="pen-tool" type="button" onclick="spawnSticker('⭐')">⭐</button><button class="pen-tool" type="button" onclick="spawnSticker('🌿')">🌿</button></div></div>
 <div id="pinModal"><div class="pin-box"><div style="font-weight:900">Enter PIN</div><input type="password" id="pinInput" class="pin-input" placeholder="••••" inputmode="numeric"/><div id="pinError" style="display:none;color:#D32F2F;font-size:.7rem;font-weight:800">Wrong PIN</div><div style="display:flex;gap:8px;margin-top:8px"><button class="hub-btn" type="button" onclick="closePin()" style="flex:1">Cancel</button><button class="hub-btn" type="button" onclick="checkPin()" style="flex:1;background:#5D4037;color:#fff">OK</button></div></div></div>
+<div class="worm-say" id="wormSay" aria-live="polite"></div><div class="worm-peek" id="worm" title="Tap me!">🪱</div>
 <script>
 let audioCtx=null;
 function initAudio(){if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();}
@@ -222,7 +240,7 @@ let GRID=[['W','D','E','W','E','S','D','F','R','W','D','S','H','E','V','B','B'],
 const TARGETS=['TERRACE','FARMING','DEFORESTATION','SUBSOIL','HUMUS'];
 let foundP=JSON.parse(localStorage.getItem(STORE+'found_practice')||'[]');
 let foundW=JSON.parse(localStorage.getItem(STORE+'found_write')||'[]');
-let selected=[]; let isSelecting=false; let currentSec=null; let mode='practice'; let fontScale=parseFloat(localStorage.getItem(STORE+'fontScale')||'1'); let fontIdx=[0.8,1,1.2,1.4].indexOf(fontScale); if(fontIdx<0) fontIdx=1;
+let justFound=null; let selected=[]; let isSelecting=false; let currentSec=null; let mode='practice'; let fontScale=parseFloat(localStorage.getItem(STORE+'fontScale')||'1'); let fontIdx=[0.8,1,1.2,1.4].indexOf(fontScale); if(fontIdx<0) fontIdx=1;
 let currentPen={type:'pen', color:'#3E2723', size:2.6}; let rainbowHue=0; const historyMap={}; let ukVoice=null;
 function loadVoice(){const v=speechSynthesis.getVoices(); ukVoice=v.find(x=>x.lang==='en-GB')||v[0]||null;} speechSynthesis.onvoiceschanged=loadVoice; loadVoice();
 function speak(t){if(!t) return; try{speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.lang='en-GB'; u.rate=0.9; if(ukVoice) u.voice=ukVoice; speechSynthesis.speak(u);}catch(_){}}
@@ -334,12 +352,13 @@ function renderB(){
  FILLS.forEach((f,i)=>{
   const saved=localStorage.getItem(STORE+'fill_'+mode+'_'+f.id);
   const ghost=mode==='practice'?f.ans:'';
+  const rooted=(saved&&(mode==='write'||saved===f.ans))?' rooted':'';
   // FIX: soil has inline canvas layers - include suffix after canvas
   const suffix = f.suffix ? ` <span class="s-word">${makeSpeakable(f.suffix)}</span>` : '';
-  h+=`<div class="q-row" data-qid="${f.id}"><div class="q-text">${i+1}. ${makeSpeakable(f.q)} ${stripHTML(f.id,ghost)}${suffix} <span style="font-size:.68rem;color:#8D6E63">${mode==='practice'?f.hint:''}</span>`;
+  h+=`<div class="q-row${rooted}" data-qid="${f.id}"><div class="q-text">${i+1}. ${makeSpeakable(f.q)} ${stripHTML(f.id,ghost)}${suffix} <span style="font-size:.68rem;color:#8D6E63">${mode==='practice'?f.hint:''}</span>`;
   h+=`<span class="fill-chip-row">`;
   f.chips.forEach(ch=>{let cls='fill-chip'; if(saved===ch) cls+=' on'; if(mode==='practice' && ch===f.ans) cls+=' practice-correct'; h+=`<button class="${cls}" type="button" data-chip="${ch}" data-qid="${f.id}" onclick="selectFill('${f.id}','${ch.replace(/'/g,"\\'")}')">${makeSpeakable(ch)}</button>`;});
-  h+=`</span></div></div>`;
+  h+=`</span></div><div class="root-line"></div></div>`;
  });
  return h;
 }
@@ -393,7 +412,7 @@ function isFoundCell(r,c){return whichFound(r,c)!=='';}
 function getWord(){return selected.map(sc=>GRID[sc.r][sc.c]).join('');}
 function checkSel(){const w=getWord(); const rev=w.split('').reverse().join(''); const found=getFound(); if(TARGETS.includes(w)&&!found.includes(w)) foundWord(w); else if(TARGETS.includes(rev)&&!found.includes(rev)) foundWord(rev); else if(w.length>2){setTimeout(()=>clearSel(),400);}}
 function foundWord(word){
- let f=getFound(); f.push(word); setFound(f);
+ let f=getFound(); f.push(word); setFound(f); justFound=word;
  localStorage.setItem(STORE+'pos_'+mode+'_'+word, JSON.stringify(selected.slice()));
  selected.forEach(sc=>{const el=document.querySelector(`.clod-cell[data-r="${sc.r}"][data-c="${sc.c}"]`); if(el){el.classList.add('found'); el.innerHTML=`<span class="sprout">${getSprout(word)}</span>`; for(let i=0;i<4;i++){const drop=document.createElement('div'); drop.className='water-drop'; drop.textContent='💧'; drop.style.left=(5+Math.random()*20)+'px'; drop.style.animationDelay=(i*0.12)+'s'; el.appendChild(drop); setTimeout(()=>drop.remove(),1000);} setTimeout(()=>playWater(),10);}});
  setTimeout(()=>playCandy(),10); setTimeout(()=>{selected=[]; renderSec();},800);
@@ -402,7 +421,9 @@ function clearSel(){selected=[]; renderSec();}
 function renderF(){
  const found=getFound();
  let checkBtn = mode==='write' ? `<button class="check-btn" type="button" onclick="checkAnswers('F')">✅ Check</button>` : '';
- let h=`<div class="grade-bar">Found: ${found.length}/${TARGETS.length} ${mode==='practice'?'(Practice visible)':'(Write)'} ${checkBtn}</div>`;
+ const freshFind=justFound; justFound=null;
+ const pots=TARGETS.map(w=>{const done=found.includes(w); const cls=done?(w===freshFind?' pop':' grow'):''; return `<span class="pot" title="${done?w:'Hidden word'}"><span class="pot-emoji">🪴</span><span class="sprout-mini${cls}">${done?getSprout(w):''}</span></span>`;}).join('');
+ let h=`<div class="grade-bar" aria-label="Found ${found.length} of ${TARGETS.length}"><span class="pot-row">${pots}</span><span>${found.length}/${TARGETS.length}</span> ${mode==='practice'?'(Practice visible)':'(Write)'} ${checkBtn}</div>`;
  h+=`<div class="q-row"><div class="q-text">1. Organic layer of soil
 2. The layer below the topsoil
 3. Crops grown in between the harvesting of one crop and growing the next crop
@@ -462,6 +483,7 @@ function selectObj(id, opt){
   setTimeout(()=>{speak(opt);}, 30);
 }
 function selectFill(id, chip){
+  fillJuice(id, chip);
   localStorage.setItem(STORE+'fill_'+mode+'_'+id, chip);
   fastSelectUpdate('fill', id, chip);
   setTimeout(()=>{playPop();}, 0);
@@ -500,6 +522,64 @@ document.getElementById('sizeSlider').addEventListener('input', e=>{currentPen.s
 buildOrders();
 setInterval(()=>{if(Math.random()>0.75) playBird();}, 7000);
 setMode('practice');
+
+/* ===== Soil Farm juice: root growth, water drop, chip snap, worm companion ===== */
+function fillJuice(id, chip){
+  const row=document.querySelector(`.q-row[data-qid="${id}"]`);
+  if(!row) return;
+  const f=FILLS.find(x=>x.id===id);
+  const correct=!!f && chip===f.ans;
+  const celebrate = mode==='write' || correct; // Write never reveals right/wrong
+  row.classList.toggle('rooted', celebrate);
+  const btn=[...row.querySelectorAll('.fill-chip')].find(b=>b.dataset.chip===chip);
+  if(btn){ btn.classList.remove('snap'); void btn.offsetWidth; btn.classList.add('snap'); }
+  if(navigator.vibrate) navigator.vibrate(15); // Android only; iPad ignores this
+  if(celebrate) dropWater(row);
+}
+function dropWater(row){
+  const strip=row.querySelector('.inline-strip');
+  if(!strip) return;
+  const drop=document.createElement('div');
+  drop.textContent='💧';
+  drop.style.cssText='position:absolute;left:50%;top:2px;margin-left:-6px;font-size:12px;line-height:1;pointer-events:none;z-index:5';
+  strip.appendChild(drop);
+  playWater();
+  drop.animate([{transform:'translateY(0)',opacity:1},{transform:'translateY(40px)',opacity:1}],{duration:480,easing:'ease-in',fill:'forwards'})
+    .onfinish=()=>{
+      drop.remove();
+      const s=document.createElement('div');
+      s.style.cssText='position:absolute;left:50%;bottom:4px;width:16px;height:6px;margin-left:-8px;border-radius:50%;border:2px solid #60A5FA;pointer-events:none;z-index:5';
+      strip.appendChild(s);
+      s.animate([{transform:'scale(0.3)',opacity:.9},{transform:'scale(1.8)',opacity:0}],{duration:420,easing:'ease-out',fill:'forwards'})
+        .onfinish=()=>s.remove();
+    };
+}
+
+const WORM_LINES=['Psst! Soil has 3 main layers!','Psst! Worms make soil healthy!'];
+let wormIdle=null, wormHide=null, wormLine=0;
+function hideWorm(){
+  document.getElementById('worm').classList.remove('show');
+  document.getElementById('wormSay').classList.remove('show');
+}
+function showWorm(){
+  const cm=document.getElementById('cardModal');
+  if(cm && cm.classList.contains('show')){ armWorm(5000); return; }
+  const line=WORM_LINES[wormLine % WORM_LINES.length]; wormLine++;
+  const say=document.getElementById('wormSay');
+  say.textContent=line;
+  document.getElementById('worm').classList.add('show');
+  say.classList.add('show');
+  speak(line);
+  clearTimeout(wormHide);
+  wormHide=setTimeout(()=>{ hideWorm(); armWorm(30000); }, 6000); // then rest 30s before next peek
+}
+function armWorm(ms){ clearTimeout(wormIdle); wormIdle=setTimeout(showWorm, ms); }
+['pointerdown','keydown','touchstart'].forEach(ev=>document.addEventListener(ev, e=>{
+  if(e.target.closest && e.target.closest('#worm')) return; // worm handles its own taps
+  hideWorm(); clearTimeout(wormHide); armWorm(5000);
+}, {passive:true}));
+document.getElementById('worm').addEventListener('click', ()=>{ clearTimeout(wormIdle); showWorm(); });
+armWorm(5000);
 </script>
 </body>
 </html>
