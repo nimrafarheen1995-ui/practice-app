@@ -1,6 +1,8 @@
 /**
- * Universal Pen + Line Tool  v1.5  (Samsung S9 / S11 ready)
- * Fixes: redo reliability, eraser size, undo-after-eraser clearing
+ * Universal Pen + Line Tool  v1.6
+ * Samsung S9 / S11 ready
+ * + Automatic ink save / load (survives browser close)
+ * + Per-section / per-mode isolation (no duplicate ink)
  */
 (function () {
   'use strict';
@@ -9,13 +11,15 @@
     colors: ['#0F172A', '#2563EB', '#15803D', '#DC2626', '#7C3AED'],
     stamps: ['⭐', '😡', '❤️', '😊', '😢', '🌸', '♻️', '🌍', '✅', '❌', '💯', '❄️'],
     stickers: ['💃', '🔥', '⭐', '🌹', '🧐', '🫰', '🌳', '🧹'],
-    storageKey: 'LQ_UNIVERSAL_PEN_V15',
-    soundKey: 'LQ_PEN_SOUND_V15',
+    storageKey: 'LQ_UNIVERSAL_PEN_V16',
+    soundKey: 'LQ_PEN_SOUND_V16',
+    inkPrefix: 'LQ_INK_V16_',
     maxUndo: 30,
     lineColor: '#8B5A2B',
     lineWidth: 2.5,
-    eraserMultiplier: 4,   // eraser is 4× bigger than pen size
-    minEraserSize: 12
+    eraserMultiplier: 4,
+    minEraserSize: 12,
+    saveDebounceMs: 400
   };
 
   const state = {
@@ -35,10 +39,14 @@
     points: [],
     longPressTimer: null,
     lineStart: null,
-    pointerId: null
+    pointerId: null,
+    // Ink persistence
+    currentInkKey: null,
+    saveTimer: null,
+    inkLoadedFor: null
   };
 
-  // ---------- Persistence ----------
+  // ---------- Persistence (tool settings) ----------
   function loadState() {
     try {
       const s = localStorage.getItem(CFG.storageKey);
@@ -57,6 +65,102 @@
       }));
       localStorage.setItem(CFG.soundKey, String(state.soundOn));
     } catch (e) {}
+  }
+
+  // ---------- Ink key helpers ----------
+  /**
+   * Build a unique storage key for the current canvas + mode.
+   * Priority:
+   *  1. Explicit key set by UniversalPen.setInkKey('write')
+   *  2. canvas[data-ink-key]
+   *  3. canvas.id
+   *  4. 'default'
+   * Always prefixed with page path so different lessons never clash.
+   */
+  function buildInkKey(canvas) {
+    if (!canvas) return null;
+
+    const pagePart = (location.pathname || 'page')
+      .replace(/^\//, '')
+      .replace(/\.html?$/i, '')
+      .replace(/[^a-z0-9_-]/gi, '_') || 'page';
+
+    let sectionPart = 'default';
+    if (state.currentInkKey) {
+      sectionPart = state.currentInkKey;
+    } else if (canvas.dataset && canvas.dataset.inkKey) {
+      sectionPart = canvas.dataset.inkKey;
+    } else if (canvas.id) {
+      sectionPart = canvas.id;
+    }
+
+    return CFG.inkPrefix + pagePart + '__' + sectionPart;
+  }
+
+  function saveInkNow() {
+    if (!state.activeCanvas) return;
+    const key = buildInkKey(state.activeCanvas);
+    if (!key) return;
+    try {
+      const data = state.activeCanvas.toDataURL('image/png');
+      localStorage.setItem(key, data);
+    } catch (e) {
+      // Storage full – silent fail (safe-storage in the hub can help later)
+    }
+  }
+
+  function scheduleSaveInk() {
+    clearTimeout(state.saveTimer);
+    state.saveTimer = setTimeout(saveInkNow, CFG.saveDebounceMs);
+  }
+
+  function loadInkFor(canvas) {
+    if (!canvas) return;
+    const key = buildInkKey(canvas);
+    if (!key) return;
+
+    // Already loaded this exact key for this canvas → skip
+    if (state.inkLoadedFor === key && state.activeCanvas === canvas) return;
+
+    const data = localStorage.getItem(key);
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Reset undo for this canvas/mode
+    state.undoStack = [];
+    state.redoStack = [];
+
+    if (!data) {
+      // Empty – just store a blank snapshot
+      try {
+        state.undoStack.push(canvas.toDataURL('image/png'));
+      } catch (e) {}
+      state.inkLoadedFor = key;
+      return;
+    }
+
+    const img = new Image();
+    img.onload = () => {
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0);
+      try {
+        state.undoStack.push(canvas.toDataURL('image/png'));
+      } catch (e) {}
+      state.inkLoadedFor = key;
+    };
+    img.onerror = () => {
+      state.inkLoadedFor = key;
+    };
+    img.src = data;
+  }
+
+  function clearSavedInk() {
+    if (!state.activeCanvas) return;
+    const key = buildInkKey(state.activeCanvas);
+    if (key) {
+      try { localStorage.removeItem(key); } catch (e) {}
+    }
   }
 
   // ---------- Audio ----------
@@ -118,22 +222,64 @@
     osc.stop(state.audioCtx.currentTime + 0.25);
   }
 
+  // ---------- Public API ----------
   window.UniversalPen = {
     state,
     saveState,
     playDing,
     initAudio,
+
+    /** Force a canvas and load its ink */
     forceCanvas: (canvas) => {
       if (canvas && canvas.tagName === 'CANVAS') {
         state.activeCanvas = canvas;
         state.ctx = canvas.getContext('2d');
-        ensureInitialUndo();
         canvas.style.touchAction = 'none';
+        canvas.dataset.pen = 'true';
+        loadInkFor(canvas);
       }
+    },
+
+    /**
+     * Change the ink “bucket” for the current canvas.
+     * Use this when switching Write ↔ Practice or Section A ↔ Section B
+     * so the drawings stay separate and never duplicate.
+     *
+     * Example:
+     *   UniversalPen.setInkKey('write');
+     *   UniversalPen.setInkKey('practice');
+     *   UniversalPen.setInkKey('section-2');
+     */
+    setInkKey: (key) => {
+      // Save whatever is currently on the canvas before switching
+      if (state.activeCanvas) saveInkNow();
+
+      state.currentInkKey = key ? String(key) : null;
+      state.inkLoadedFor = null; // force reload
+
+      if (state.activeCanvas) {
+        loadInkFor(state.activeCanvas);
+      }
+    },
+
+    /** Manually save right now */
+    saveInk: saveInkNow,
+
+    /** Clear the saved ink for the current key (and the canvas) */
+    clearInk: () => {
+      if (!state.ctx || !state.activeCanvas) return;
+      state.ctx.globalCompositeOperation = 'source-over';
+      state.ctx.clearRect(0, 0, state.activeCanvas.width, state.activeCanvas.height);
+      state.undoStack = [];
+      state.redoStack = [];
+      clearSavedInk();
+      try {
+        state.undoStack.push(state.activeCanvas.toDataURL('image/png'));
+      } catch (e) {}
     }
   };
 
-  // ---------- UI (same as before) ----------
+  // ---------- UI ----------
   function buildUI() {
     if (document.getElementById('penBubble')) return;
 
@@ -458,8 +604,7 @@
   }
 
   function isPalm(e) {
-    if (e.pointerType === 'touch' && (e.width > 28 || e.height > 28)) return true;
-    return false;
+    return e.pointerType === 'touch' && (e.width > 28 || e.height > 28);
   }
 
   function getCurrentLineWidth() {
@@ -473,15 +618,14 @@
   function ensureInitialUndo() {
     if (!state.activeCanvas || state.undoStack.length > 0) return;
     try {
-      state.undoStack.push(state.activeCanvas.toDataURL());
+      state.undoStack.push(state.activeCanvas.toDataURL('image/png'));
     } catch (e) {}
   }
 
   function pushUndo() {
     if (!state.activeCanvas) return;
     try {
-      const data = state.activeCanvas.toDataURL();
-      // Avoid pushing identical consecutive states (helps eraser-on-empty case)
+      const data = state.activeCanvas.toDataURL('image/png');
       if (state.undoStack.length && state.undoStack[state.undoStack.length - 1] === data) return;
       state.undoStack.push(data);
       if (state.undoStack.length > CFG.maxUndo) state.undoStack.shift();
@@ -515,10 +659,12 @@
     const canvas = e.target.closest('canvas');
     if (!canvas) return;
 
+    // Activate + load ink if this is a new canvas / new key
     state.activeCanvas = canvas;
     state.ctx = canvas.getContext('2d');
     canvas.dataset.pen = 'true';
     canvas.style.touchAction = 'none';
+    loadInkFor(canvas);
     ensureInitialUndo();
 
     try {
@@ -570,7 +716,6 @@
     if (state.isScrolling) return;
     if (isPalm(e)) return;
 
-    // LINE PREVIEW
     if (state.tool === 'line' && state.lineStart) {
       e.preventDefault();
       const { canvas, ctx, snapshot, x, y } = state.lineStart;
@@ -626,7 +771,6 @@
   }
 
   function endDraw(e) {
-    // LINE COMMIT
     if (state.tool === 'line' && state.lineStart) {
       e.preventDefault();
       const { canvas, ctx, x, y } = state.lineStart;
@@ -644,6 +788,7 @@
       ctx.restore();
       playDing();
       pushUndo();
+      scheduleSaveInk();
       state.lineStart = null;
       return;
     }
@@ -658,10 +803,12 @@
     }
     state.points = [];
 
-    // Always reset composite so next stroke is normal
     if (state.ctx) state.ctx.globalCompositeOperation = 'source-over';
 
-    setTimeout(pushUndo, 16);
+    setTimeout(() => {
+      pushUndo();
+      scheduleSaveInk();
+    }, 16);
 
     if (state.activeCanvas && state.pointerId != null) {
       try { state.activeCanvas.releasePointerCapture(state.pointerId); } catch (err) {}
@@ -669,13 +816,14 @@
     }
   }
 
-  // ---------- Undo / Redo / Clear (fixed) ----------
+  // ---------- Undo / Redo / Clear ----------
   async function undo() {
     if (!state.ctx || state.undoStack.length < 2) return;
     const current = state.undoStack.pop();
     state.redoStack.push(current);
     const prev = state.undoStack[state.undoStack.length - 1];
     await restoreFromDataURL(prev);
+    scheduleSaveInk();
   }
 
   async function redo() {
@@ -683,13 +831,16 @@
     const data = state.redoStack.pop();
     state.undoStack.push(data);
     await restoreFromDataURL(data);
+    scheduleSaveInk();
   }
 
   function clearCanvas() {
-    if (!state.ctx) return;
+    if (!state.ctx || !state.activeCanvas) return;
     pushUndo();
     state.ctx.globalCompositeOperation = 'source-over';
     state.ctx.clearRect(0, 0, state.activeCanvas.width, state.activeCanvas.height);
+    clearSavedInk();
+    scheduleSaveInk();
   }
 
   // ---------- Stamps & Stickers ----------
@@ -702,7 +853,10 @@
     state.ctx.font = '32px serif';
     state.ctx.fillStyle = state.color;
     state.ctx.fillText(em, state.activeCanvas.width / 2 - 16, state.activeCanvas.height / 2 + 12);
-    setTimeout(pushUndo, 10);
+    setTimeout(() => {
+      pushUndo();
+      scheduleSaveInk();
+    }, 10);
   }
 
   function placeSticker(em) {
@@ -788,6 +942,12 @@
     state.lineStart = null;
     if (state.ctx) state.ctx.globalCompositeOperation = 'source-over';
   });
+
+  // Save when the page is hidden / closed
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') saveInkNow();
+  });
+  window.addEventListener('pagehide', saveInkNow);
 
   let scrollTimer;
   window.addEventListener('scroll', () => {
