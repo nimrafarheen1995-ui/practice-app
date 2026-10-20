@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+<title>Zaina - Soil Farm Gardenscapes</title>
+<script src="shared/safe-storage.js"></script>
+<link rel="preload" as="image" href="assets/farm-gardenscape-bg.jpeg" />
+<link rel="preload" as="image" href="assets/soil-girl-hero.png" />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700;800&family=Nunito:wght@700;900&display=swap" rel="stylesheet" />
+<style>
+:root{--font-scale:1}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Nunito',sans-serif;background:#2d5a27;overflow:hidden;touch-action:none;user-select:none}
+.master-stage{position:relative;width:100vw;height:100vh;overflow:hidden;display:flex;flex-direction:column;background:url('assets/farm-gardenscape-bg.jpeg') center/cover no-repeat}
+.master-stage::before{content:'';position:absolute;inset:0;background:linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 40%, rgba(0,0,0,0.1) 100%);z-index:1;pointer-events:none}
+.paper-map{position:relative;flex:1;margin:12px;border-radius:22px;overflow:hidden;background:rgba(255,255,255,0.12);backdrop-filter:blur(2px);border:3px solid rgba(255,255,255,0.6);box-shadow:0 16px 40px rgba(0,0,0,0.3);display:flex;flex-direction:column}
+.paper-map-inner{position:relative;flex:1;overflow:hidden;background:rgba(255,253,240,0.88);display:flex;flex-direction:column}
+.tape{position:absolute;width:68px;height:22px;background:rgba(255,255,255,0.7);border:1px solid rgba(0,0,0,0.08);box-shadow:0 2px 6px rgba(0,0,0,0.12);z-index:10}
+.tape-tl{top:-6px;left:18px;transform:rotate(-8deg)} .tape-tr{top:-6px;right:22px;transform:rotate(7deg)} .tape-bl{bottom:-6px;left:28px;transform:rotate(5deg)} .tape-br{bottom:-6px;right:18px;transform:rotate(-6deg)}
+.lab-light{position:absolute;inset:0;pointer-events:none;z-index:2;background:radial-gradient(circle at 30% 20%, rgba(255,253,200,.22) 0%, transparent 55%), radial-gradient(circle at 80% 80%, rgba(150,255,150,.14) 0%, transparent 50%)}
+.soil-dust-fog{position:absolute;inset:14px;z-index:3;pointer-events:none;opacity:.38;transition:opacity 1.5s ease;background:radial-gradient(circle at 25% 30%, rgba(120,90,50,.28) 0%, transparent 40%), radial-gradient(circle at 70% 25%, rgba(160,130,80,.20) 0%, transparent 35%);filter:blur(7px)}
+
+.binder-cover{position:absolute;inset:0;z-index:8;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(rgba(0,0,0,0.25), rgba(0,0,0,0.15)), url('assets/farm-gardenscape-bg.jpeg') center/cover no-repeat;transition:transform .75s cubic-bezier(.18,.89,.32,1.28),opacity .45s;transform-origin:0% 50%;transform-style:preserve-3d;cursor:pointer}
+.binder-cover::before{content:'';position:absolute;left:0;top:0;bottom:0;width:34px;background:linear-gradient(90deg,#3f2a14 0%,#5a3c22 55%,#8b5a2b 85%,#3f2a14 100%);border-right:3px solid rgba(255,255,255,.25);z-index:5}
+.spine-rings{position:absolute;left:27px;top:16px;bottom:16px;width:16px;display:flex;flex-direction:column;justify-content:space-between;z-index:10}
+.spiral{width:18px;height:10px;border-radius:6px;background:linear-gradient(135deg,#fff 0%,#d1d5db 45%,#6b7280 80%,#1f2937 100%)}
+.binder-open{transform:perspective(1400px) rotateY(-118deg) rotateX(8deg) translateZ(20px);opacity:0;pointer-events:none}
+.content-scroll{position:relative;z-index:7;flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:76px 12px 18px 12px;display:flex;flex-direction:column;gap:10px;touch-action:pan-y}
+.hero-card{display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,.96);border:2.5px solid #4A7C59;border-radius:18px;box-shadow:0 8px 20px rgba(0,0,0,.25)}
+.hero-img{width:88px;height:88px;object-fit:contain;animation:floatH 3s ease-in-out infinite;cursor:pointer;filter:drop-shadow(0 4px 8px rgba(0,0,0,.25))}
+@keyframes floatH{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.globe{width:40px;height:40px;animation:spinS 14s linear infinite}
+@keyframes spinS{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.garden-strip{display:flex;gap:5px;flex-wrap:wrap;align-items:center;min-height:32px;padding:6px 10px;background:rgba(255,255,255,.93);border:1.5px dashed #4A7C59;border-radius:12px}
+.garden-item{width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:#DCFCE7;border-radius:50%;font-size:16px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes popIn{0%{transform:scale(0) rotate(-20deg)}100%{transform:scale(1) rotate(0)}}
+
+.swipe-track{display:flex;transition:transform .45s cubic-bezier(.22,1,.36,1);will-change:transform}
+.swipe-page{min-width:100%;flex-shrink:0;display:flex;flex-direction:column;gap:10px}
+.swipe-dots{display:flex;gap:6px;justify-content:center;margin-top:4px}
+.swipe-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.5);transition:.3s;border:1.5px solid #4A7C59}
+.swipe-dot.on{background:#4A7C59;transform:scale(1.3)}
+
+.card{background:rgba(255,255,255,.97);border:1.5px solid #BBD5B8;border-radius:16px;padding:10px;box-shadow:0 8px 20px rgba(0,0,0,.18)}
+.q-row{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:10px;border:1.5px dashed #BBD5B8;border-radius:14px;margin-bottom:8px;background:linear-gradient(to bottom,#fffffe,#F0FDF4);line-height:1.6}
+.q-num{color:#4A7C59;font-weight:900;min-width:18px}
+.q-text{font-weight:800;font-size:calc(.92rem * var(--font-scale));flex:1 1 auto}
+.s-word{cursor:pointer;border-radius:4px;padding:0 2px;display:inline-block}
+.s-word.speaking{background:#BBF7D0;outline:2px solid #22C55E}
+.inline-strip{position:relative;display:inline-flex;vertical-align:middle;width:min(450px,100%);height:60px;border:1.8px solid #A7C4A0;border-radius:12px;background:#fffffe;overflow:hidden;touch-action:none}
+.inline-strip.has-ink{border-color:#4A7C59;box-shadow:0 0 0 3px rgba(74,124,89,.12)}
+.inline-strip::before{content:'';position:absolute;left:12px;top:0;bottom:0;width:1.2px;background:#F87171;opacity:.9;z-index:1}
+.inline-strip::after{content:'';position:absolute;left:0;right:36px;top:54%;height:1.2px;background:#C7D2FE;z-index:1}
+.inline-strip canvas{position:absolute;inset:0;width:100%;height:100%;z-index:3;touch-action:none}
+.inline-strip.short-strip{width:min(120px,32vw);height:48px}
+.tf-chip{display:inline-flex;align-items:center;justify-content:center;min-width:58px;height:36px;padding:0 12px;border:2px solid #CBD5E1;border-radius:999px;font-weight:900;font-size:.78rem;cursor:pointer;background:#fff;transition:.18s;user-select:none}
+.tf-chip.true{border-color:#4A7C59;color:#2d5a27}
+.tf-chip.false{border-color:#EF4444;color:#B91C1C}
+.tf-chip.on.true{background:#4A7C59;color:#fff;box-shadow:0 0 0 3px rgba(74,124,89,.25);transform:scale(1.05)}
+.tf-chip.on.false{background:#EF4444;color:#fff;box-shadow:0 0 0 3px rgba(239,68,68,.25);transform:scale(1.05)}
+.tf-chip.wrong{animation:shake .4s ease}
+.tf-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px}
+.strip-tools{position:absolute;right:0;top:0;bottom:0;width:36px;display:flex;flex-direction:column;border-left:1.2px solid #E7DCC0;background:#DCFCE7;z-index:4}
+.tool-btn{flex:1;display:flex;align-items:center;justify-content:center;border:0;background:transparent;cursor:pointer}
+.tool-btn:first-child{border-bottom:1px solid #E7DCC0}
+.tool-btn svg{width:14px;height:14px;stroke-width:2.2;stroke:currentColor;fill:none}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+
+/* TRY AGAIN */
+#tryAgainModal{position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+#tryAgainModal.show{display:flex}
+.try-modal-box{background:#F0FDF4;border:3px solid #DC2626;border-radius:22px;padding:18px;width:min(380px,92vw);text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.4);animation:popIn .4s cubic-bezier(.34,1.56,.64,1)}
+.try-hero-big{width:160px;height:160px;object-fit:contain;animation:floatH 2s ease-in-out infinite;margin:0 auto;display:block;filter:drop-shadow(0 6px 12px rgba(0,0,0,.25))}
+.try-title{font-family:'Fredoka',sans-serif;font-weight:800;color:#DC2626;font-size:1.25rem;margin-top:8px}
+.try-sub{font-size:.82rem;color:#7C2D12;font-weight:700;margin-top:6px;line-height:1.4}
+.try-btn{margin-top:14px;background:#DC2626;color:#fff;border:2px solid #991B1B;border-radius:12px;padding:10px 22px;font-weight:800;font-size:.9rem;cursor:pointer;box-shadow:0 4px 12px rgba(220,38,38,.3)}
+
+/* BRICK WORD GRID - Candy Crush Pop Style */
+.brick-grid-wrap{background:linear-gradient(180deg,#FEF3C7 0%, #FDE68A 30%, #86EFAC 100%);border:3px solid #4A7C59;border-radius:18px;padding:10px;box-shadow:0 10px 24px rgba(0,0,0,0.25)}
+.brick-top-tray{display:flex;gap:8px;justify-content:center;align-items:center;padding:8px;background:rgba(255,255,255,0.9);border-radius:12px;margin-bottom:10px;border:2px dashed #4A7C59}
+.fruit-icon{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:26px;background:linear-gradient(135deg,#fff,#E0F2FE);border:2px solid #93C5FD;box-shadow:0 3px 8px rgba(0,0,0,0.12)}
+.brick-wall{display:grid;grid-template-columns:repeat(17, minmax(0,1fr));gap:2px;background:#B45309;padding:4px;border-radius:10px;box-shadow:inset 0 3px 10px rgba(0,0,0,0.3)}
+.brick-cell{aspect-ratio:1;background:linear-gradient(135deg,#FECACA 0%,#FCA5A5 50%,#F87171 100%);border:1.8px solid #7C2D12;border-radius:4px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:clamp(10px,1.8vw,15px);color:#7C2D12;cursor:pointer;touch-action:none;position:relative;user-select:none;transition:transform 0.1s, background 0.2s;box-shadow:0 2px 0 #7C2D12, 0 2px 4px rgba(0,0,0,0.2)}
+.brick-cell.selected{background:linear-gradient(135deg,#FEF08A,#FDE047);border-color:#CA8A04;color:#713F12;transform:scale(1.05);z-index:2;box-shadow:0 0 0 3px #FACC15, 0 4px 8px rgba(0,0,0,0.25)}
+.brick-cell.found{background:linear-gradient(135deg,#BBF7D0,#4ADE80);border-color:#15803D;color:#14532D}
+.brick-cell.pop{animation:candyPop 0.6s cubic-bezier(.34,1.56,.64,1) forwards}
+@keyframes candyPop{0%{transform:scale(1)} 30%{transform:scale(1.4) rotate(8deg)} 60%{transform:scale(1.2) rotate(-8deg);opacity:0.8} 100%{transform:scale(0) rotate(180deg);opacity:0}}
+.brick-cell.hint{animation:hintShake 0.6s ease infinite}
+@keyframes hintShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}
+.word-targets{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.word-target{padding:5px 10px;background:#fff;border:2px solid #4A7C59;border-radius:999px;font-weight:900;font-size:.75rem;color:#2d5a27;transition:.3s}
+.word-target.done{background:#4A7C59;color:#fff;transform:scale(1.05);text-decoration:line-through}
+.candy-confetti{position:absolute;width:8px;height:8px;border-radius:2px;pointer-events:none;animation:candyConfetti 0.8s ease-out forwards;z-index:30}
+@keyframes candyConfetti{0%{transform:translateY(0) scale(0) rotate(0);opacity:1}100%{transform:translateY(-80px) scale(1.5) rotate(360deg);opacity:0}}
+
+.confetti{position:absolute;width:7px;height:7px;border-radius:50%;pointer-events:none;animation:popC .9s ease-out forwards;z-index:20}
+@keyframes popC{0%{transform:translateY(0) scale(0);opacity:1}100%{transform:translateY(-60px) scale(1.4) rotate(200deg);opacity:0}}
+
+#stickerLayer{position:absolute;inset:0;z-index:15;pointer-events:none}
+.sticker{position:absolute;pointer-events:auto;cursor:grab;touch-action:none;user-select:none;filter:drop-shadow(0 4px 8px rgba(0,0,0,.25));animation:floatH 3s ease-in-out infinite;transition:transform .15s}
+.sticker-emoji{font-size:32px;display:block;transition:transform .2s}
+.sticker.selected{outline:2px dashed #4A7C59;outline-offset:6px;border-radius:10px}
+.sticker-controls{position:absolute;top:-34px;left:50%;transform:translateX(-50%);display:flex;gap:4px;background:rgba(255,255,255,.96);border:2px solid #4A7C59;border-radius:12px;padding:3px 5px;box-shadow:0 4px 12px rgba(0,0,0,.2);opacity:0;pointer-events:none;transition:opacity .3s;z-index:2}
+.sticker.selected .sticker-controls{opacity:1;pointer-events:auto}
+.ctrl-btn{width:26px;height:26px;border-radius:8px;border:1.5px solid #E7D5B0;background:#fff;font-weight:900;font-size:.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.ctrl-btn.del{background:#DC2626;color:#fff;border-color:#991B1B}
+
+#penBubble{position:fixed;bottom:18px;right:14px;z-index:50;width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,#2d5a27,#4A7C59);box-shadow:0 8px 24px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none}
+#penPanel{position:fixed;bottom:76px;right:14px;z-index:51;width:250px;background:rgba(255,255,255,.98);border:2px solid #BBD5B8;border-radius:18px;padding:10px;box-shadow:0 16px 40px rgba(0,0,0,.22);transform:scale(.9);opacity:0;pointer-events:none;transition:all .25s cubic-bezier(.34,1.56,.64,1);transform-origin:bottom right}
+#penPanel.open{transform:scale(1);opacity:1;pointer-events:auto}
+.pen-row{display:flex;gap:5px;margin-bottom:6px;flex-wrap:wrap}
+.pen-tool{width:36px;height:36px;border-radius:10px;border:2px solid #BBD5B8;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:.15s}
+.pen-tool.on{border-color:#4A7C59;background:#DCFCE7}
+.color-dot{width:26px;height:26px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 0 0 1.2px #CBD5E1;cursor:pointer}
+.color-dot.on{box-shadow:0 0 0 2.2px #4A7C59}
+.size-slider{width:100%;accent-color:#4A7C59}
+#dimLayer{position:fixed;inset:0;background:#000;opacity:0;pointer-events:none;z-index:60;transition:opacity .25s}
+#pinModal{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center}
+#pinModal.show{display:flex}
+.pin-box{background:#fff;border:3px solid #4A7C59;border-radius:18px;padding:18px;width:min(300px,90vw);text-align:center}
+.pin-input{width:100%;padding:12px;border:2px solid #CBD5E1;border-radius:12px;font-size:1.2rem;font-weight:800;text-align:center;margin:10px 0;letter-spacing:6px}
+#soundToggle{position:fixed;bottom:18px;left:14px;z-index:50;width:42px;height:42px;border-radius:50%;background:#fff;border:2px solid #4A7C59;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px}
+.icon-btn{border:2px solid #4A7C59;background:#fff;border-radius:12px;padding:6px 10px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s}
+.icon-btn.small{width:36px;height:36px}
+.icon-btn.active{background:#4A7C59;color:#fff}
+.hud-dock{position:absolute;top:8px;left:8px;right:8px;z-index:20;display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:rgba(255,255,255,0.92);backdrop-filter:blur(6px);border:2px solid #4A7C59;border-radius:14px;padding:6px 8px;transition:transform .3s}
+.hud-dock.dock-minimized{transform:translateY(-90%)}
+.dock-peek{position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:19;background:#4A7C59;color:#fff;border-radius:0 0 10px 10px;padding:2px 12px;font-size:.65rem;font-weight:800;cursor:pointer;display:none}
+.dock-peek.show{display:block}
+</style>
+</head>
+<body>
+<div id="dimLayer"></div>
+
+<div id="tryAgainModal">
+<div class="try-modal-box">
+<img src="assets/soil-girl-hero.png" class="try-hero-big" alt="" onerror="this.src='assets/earth-globe.webp'"/>
+<div class="try-title" id="tryTitle">Try Again</div>
+<div class="try-sub" id="trySub">Let's try again!</div>
+<button class="try-btn" type="button" onclick="handleTryAgain()">Try Again</button>
+</div>
+</div>
+
+<div id="pinModal">
+<div class="pin-box">
+<div style="font-weight:900;color:#2d5a27">Enter PIN to go to Practice</div>
+<div style="font-size:.72rem;color:#475569;margin-top:4px">PIN is 1995</div>
+<input type="password" id="pinInput" class="pin-input" placeholder="••••" inputmode="numeric"/>
+<div id="pinError" style="display:none;color:#DC2626;font-size:.7rem;font-weight:800;margin-top:4px">Wrong PIN</div>
+<div style="display:flex;gap:8px;margin-top:10px"><button class="icon-btn" type="button" onclick="closePin()" style="flex:1">Cancel</button><button class="icon-btn" type="button" onclick="checkPin()" style="flex:1;background:#4A7C59;color:#fff">OK</button></div>
+</div>
+</div>
+
+<div class="master-stage" id="masterStage">
+<div class="paper-map" id="paperMap">
+<div class="paper-map-inner" id="paperInner">
+<div class="tape tape-tl"></div><div class="tape tape-tr"></div><div class="tape tape-bl"></div><div class="tape tape-br"></div>
+<div class="lab-light"></div>
+<div class="soil-dust-fog" id="soilFog"></div>
+<canvas id="dustCanvas" style="position:absolute;inset:14px;z-index:4;pointer-events:none"></canvas>
+<div id="stickerLayer"></div>
+
+<div class="binder-cover" id="binderCover" onclick="openBinder()">
+<div class="spine-rings"><div class="spiral"></div><div class="spiral"></div><div class="spiral"></div><div class="spiral"></div><div class="spiral"></div></div>
+<img src="assets/soil-girl-hero.png" style="width:180px;height:180px;object-fit:contain;filter:drop-shadow(0 8px 16px rgba(0,0,0,0.3));animation:floatH 3s ease-in-out infinite" alt=""/>
+<div style="font-family:'Fredoka',sans-serif;font-weight:800;color:#fff;font-size:1.6rem;text-shadow:0 3px 8px rgba(0,0,0,0.6);margin-top:12px;text-align:center">SOIL FARM<br/><span style="font-size:1rem">Gardenscapes Lab</span></div>
+<div style="margin-top:14px;background:#4A7C59;color:#fff;border:2px solid #fff;border-radius:14px;padding:10px 22px;font-weight:900;box-shadow:0 6px 16px rgba(0,0,0,0.3)">OPEN FARM 🌱</div>
+<div style="font-size:.65rem;color:#fff;margin-top:8px;text-shadow:0 2px 4px rgba(0,0,0,0.8)">Tap to open - Tab S11 Big Screen</div>
+</div>
+
+<div class="hud-dock" id="hudDock">
+<button class="icon-btn small" type="button" onclick="toggleDock()">👁️</button>
+<div style="width:1px;height:22px;background:#CBD5E1"></div>
+<button class="icon-btn small" id="btnPractice" type="button" onclick="requestMode('practice')">✏️<span style="font-size:.55rem;margin-left:2px">Practice</span></button>
+<button class="icon-btn small" id="btnWrite" type="button" onclick="requestMode('write')">📝<span style="font-size:.55rem;margin-left:2px">Write</span></button>
+<div style="width:1px;height:22px;background:#CBD5E1"></div>
+<button class="icon-btn small" type="button" onclick="changeFont(-1)">A-</button>
+<button class="icon-btn small" type="button" onclick="changeFont(1)">A+</button>
+<div style="margin-left:auto;display:flex;align-items:center;gap:6px">
+<div style="text-align:right"><div style="font-size:.62rem;font-weight:900;color:#2d5a27">Zaina's Farm</div><div style="font-size:.58rem;color:#475569" id="gardenCount">Crops: 0 🌱</div><div style="height:6px;background:#BBD5B8;border-radius:999px;overflow:hidden;margin-top:3px;width:90px"><div id="earthFill" style="height:100%;width:0%;background:linear-gradient(90deg,#4A7C59,#22C55E);transition:width .6s"></div></div></div>
+<img id="heroPatrol" src="assets/soil-girl-hero.png" style="width:44px;height:44px;object-fit:contain;cursor:pointer" alt=""/>
+</div>
+</div>
+<div class="dock-peek" id="dockPeek" onclick="toggleDock()">👧 Tap to show</div>
+
+<div class="content-scroll" id="contentScroll">
+<div class="hero-card">
+<img src="assets/soil-girl-hero.png" class="hero-img" id="heroPatrol2" alt=""/>
+<div style="flex:1"><div style="font-family:'Fredoka',sans-serif;font-weight:800;color:#2d5a27;font-size:1rem">Soil Farm - Gardenscapes Restoration</div><div style="font-size:.7rem;color:#475569;font-weight:700">Restore the farm by answering! Fog clears as you grow 🌱</div></div>
+</div>
+
+<div class="garden-strip" id="garden"></div>
+
+<div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">
+<button class="icon-btn small" id="tabA" type="button" onclick="setTab('A')" style="width:auto;padding:0 10px;font-size:.7rem;background:#4A7C59;color:#fff">A Objective</button>
+<button class="icon-btn small" id="tabB" type="button" onclick="setTab('B')" style="width:auto;padding:0 10px;font-size:.7rem">B Fill+TF</button>
+<button class="icon-btn small" id="tabC" type="button" onclick="setTab('C')" style="width:auto;padding:0 10px;font-size:.7rem">C Map</button>
+<button class="icon-btn small" id="tabD" type="button" onclick="setTab('D')" style="width:auto;padding:0 10px;font-size:.7rem">D Brick Grid</button>
+<label style="margin-left:auto;display:flex;align-items:center;gap:3px;font-size:.6rem;font-weight:800;color:#fff;background:rgba(0,0,0,.35);padding:3px 6px;border-radius:8px">Dim<input type="range" id="dimSlider" min="0" max="60" value="0" oninput="setDim(this.value)" style="width:44px;accent-color:#4A7C59"/></label>
+</div>
+
+<div class="swipe-dots"><div class="swipe-dot on" id="dotA"></div><div class="swipe-dot" id="dotB"></div><div class="swipe-dot" id="dotC"></div><div class="swipe-dot" id="dotD"></div></div>
+
+<div id="swipeContainer" style="overflow:hidden">
+<div class="swipe-track" id="swipeTrack" style="transform:translateX(0)">
+<div class="swipe-page" id="pageA"><div id="panelA"></div></div>
+<div class="swipe-page" id="pageB"><div id="panelB"></div></div>
+<div class="swipe-page" id="pageC"><div id="panelC"></div></div>
+<div class="swipe-page" id="pageD"><div id="panelD"></div></div>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+</div>
+
+<div id="soundToggle" onclick="toggleSound()">🔊</div>
+<div id="penBubble"><span style="font-size:20px">✏️</span></div>
+<div id="penPanel">
+<div style="font-weight:900;font-size:.72rem;margin-bottom:6px">Lab Tools</div>
+<div class="pen-row">
+<button class="pen-tool on" data-pen="pen" type="button">✏️</button>
+<button class="pen-tool" data-pen="cursive" type="button">🖋️</button>
+<button class="pen-tool" data-pen="rainbow" type="button">🌈</button>
+<button class="pen-tool" data-pen="glitter" type="button">✨</button>
+<button class="pen-tool" data-pen="eraser" type="button">🧽</button>
+</div>
+<div class="pen-row">
+<div class="color-dot on" style="background:#2d5a27" data-color="#2d5a27"></div>
+<div class="color-dot" style="background:#2563eb" data-color="#2563eb"></div>
+<div class="color-dot" style="background:#15803d" data-color="#15803d"></div>
+<div class="color-dot" style="background:#DC2626" data-color="#DC2626"></div>
+</div>
+<div class="pen-row"><input type="range" min="1" max="8" value="2.6" step="0.5" class="size-slider" id="sizeSlider"/></div>
+<div style="font-weight:800;font-size:.68rem;margin:6px 0 4px;color:#2d5a27">Stickers - tap to float anywhere</div>
+<div class="pen-row" id="stickerRow">
+<button class="pen-tool" data-sticker="🌿" type="button">🌿</button>
+<button class="pen-tool" data-sticker="🌻" type="button">🌻</button>
+<button class="pen-tool" data-sticker="🌷" type="button">🌷</button>
+<button class="pen-tool" data-sticker="💧" type="button">💧</button>
+<button class="pen-tool" data-sticker="🦋" type="button">🦋</button>
+<button class="pen-tool" data-sticker="🐝" type="button">🐝</button>
+<button class="pen-tool" data-sticker="🌾" type="button">🌾</button>
+<button class="pen-tool" data-sticker="⭐" type="button">⭐</button>
+<button class="pen-tool" data-sticker="🍎" type="button">🍎</button>
+<button class="pen-tool" data-sticker="🪴" type="button">🪴</button>
+</div>
+<div style="font-size:.6rem;color:#2d5a27;font-weight:700">Tap sticker → floats, tap again → + - X, auto fades</div>
+<div class="pen-row" style="margin-top:6px">
+<button class="pen-tool" type="button" onclick="doUndo()">↩️</button>
+<button class="pen-tool" type="button" onclick="doClear()">🧹</button>
+</div>
+</div>
+
+<script>
+let audioCtx=null, soundOn=true;
+function initAudio(){if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();}
+function toggleSound(){soundOn=!soundOn; document.getElementById('soundToggle').textContent=soundOn?'🔊':'🔇'; if(soundOn)initAudio();}
+function playPenSound(){if(!soundOn||!audioCtx) return; const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type='sawtooth'; o.frequency.value=120+Math.random()*80; g.gain.value=0.02; o.connect(g); g.connect(audioCtx.destination); o.start(); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+0.08); o.stop(audioCtx.currentTime+0.08);}
+function playEraserSound(){if(!soundOn||!audioCtx) return; const b=audioCtx.sampleRate*0.15; const buf=audioCtx.createBuffer(1,b,audioCtx.sampleRate); const d=buf.getChannelData(0); for(let i=0;i<b;i++) d[i]=(Math.random()*2-1)*0.3*Math.sin(i*0.01); const s=audioCtx.createBufferSource(); s.buffer=buf; const g=audioCtx.createGain(); g.gain.value=0.15; s.connect(g); g.connect(audioCtx.destination); s.start();}
+function playPopSound(){if(!soundOn||!audioCtx) return; const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.frequency.value=440; o.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime+0.15); g.gain.value=0.15; g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+0.2); o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime+0.2);}
+function playSnapSound(){if(!soundOn||!audioCtx) return; const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.frequency.value=600; g.gain.value=0.2; o.connect(g); g.connect(audioCtx.destination); o.start(); g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime+0.12); o.stop(audioCtx.currentTime+0.12);}
+function playCandyPop(){if(!soundOn||!audioCtx) return; [523,659,784,1046].forEach((f,i)=>{const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.frequency.value=f; g.gain.value=0.12; o.connect(g); g.connect(audioCtx.destination); o.start(audioCtx.currentTime+i*0.07); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+i*0.07+0.3); o.stop(audioCtx.currentTime+i*0.07+0.3);});}
+
+const STORE='zaina_soil_farm_';
+const FILLS=[
+{id:'f1', pre:'The ', suf:' layer of soil contains most of the organic matter.', ans:'top'},
+{id:'f2', pre:'Soils are ', suf:' in nature.', ans:'different'},
+{id:'f3', pre:'The strong ', suf:' can blow away soil.', ans:'winds'},
+{id:'f4', pre:'Removal of topsoil is called soil ', suf:'.', ans:'erosion'},
+{id:'f5', pre:'We make ', suf:' to prevent soil erosion on slopes.', ans:'embankments'},
+];
+const OBJECTIVE=[
+{id:'o1', q:'What is a major cause of soil erosion?', opts:['Earth Day','Deforestation','Afforestation'], ans:'Deforestation'},
+{id:'o2', q:'Earth Day is celebrated on?', opts:['22 April','15 August','5 June'], ans:'22 April'},
+{id:'o3', q:'Regolith is also called?', opts:['Humus','Parent material','Topsoil'], ans:'Parent material'},
+{id:'o4', q:'Afforestation means?', opts:['Cutting trees','Growing trees','Soil erosion'], ans:'Growing trees'},
+{id:'o5', q:'Plants hold soil with?', opts:['Leaves','Roots','Flowers'], ans:'Roots'},
+];
+const TF=[
+{id:'t1', text:'The layer below the topsoil is the parent rock.', ans:'false'},
+{id:'t2', text:'Soil is a natural resource.', ans:'true'},
+{id:'t3', text:'Soil can never lose its fertility.', ans:'false'},
+{id:'t4', text:'Heat of the sun has no effect on soil.', ans:'false'},
+{id:'t5', text:'Overgrazing leads to soil erosion.', ans:'true'},
+];
+const CONCEPT_WORDS=['Deforestation','Heavy Rainfall','Strong Wind','Heat of Sun','Overgrazing','Ploughing of hills','Flowing Water'];
+
+let mode='practice', tab='A';
+let fillOrder=FILLS.map((_,i)=>i), tfOrder=TF.map((_,i)=>i), objOrder=OBJECTIVE.map((_,i)=>i);
+let connections={}, dragState=null;
+let currentPen={type:'pen', color:'#2d5a27', size:2.6};
+let rainbowHue=0;
+const historyMap={}; let penActive=false,lastPenTime=0;
+let garden=JSON.parse(localStorage.getItem(STORE+'garden')||'[]');
+let pendingMode=null, soundTick=0, fontScale=parseFloat(localStorage.getItem(STORE+'fontScale')||'1');
+let tryAgainType=null;
+let ukVoice=null;
+function loadVoice(){const v=speechSynthesis.getVoices(); ukVoice=v.find(x=>x.lang==='en-GB')||v[0]||null;}
+speechSynthesis.onvoiceschanged=loadVoice; loadVoice();
+function speak(t,el){if(!t) return; speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.lang='en-GB'; u.rate=0.88; if(ukVoice) u.voice=ukVoice; u.onend=()=>{if(el) el.classList.remove('speaking')}; if(el) el.classList.add('speaking'); speechSynthesis.speak(u);}
+function makeSpeakable(s){return s.split(/(\s+)/).map(tok=>{if(/^\s+$/.test(tok)) return tok; const c=tok.replace(/[.,()]/g,''); if(!c) return tok; return `<span class="s-word" data-speak="${c}">${tok}</span>`;}).join('');}
+function setDim(v){document.getElementById('dimLayer').style.opacity=(Number(v)/100).toFixed(2); localStorage.setItem(STORE+'dim',v);}
+(function(){const s=localStorage.getItem(STORE+'dim'); if(s){document.getElementById('dimSlider').value=s; setDim(s);}})();
+function shuffle(a){const b=a.slice(); for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]} return b;}
+function openBinder(){initAudio(); document.getElementById('binderCover').classList.add('binder-open');}
+function toggleDock(){document.getElementById('hudDock').classList.toggle('dock-minimized'); document.getElementById('dockPeek').classList.toggle('show');}
+function changeFont(delta){fontScale=Math.min(1.4, Math.max(0.8, fontScale+delta*0.12)); document.documentElement.style.setProperty('--font-scale', fontScale); localStorage.setItem(STORE+'fontScale', fontScale.toFixed(2)); playPopSound();}
+document.documentElement.style.setProperty('--font-scale', fontScale);
+function requestMode(newMode){
+ if(mode==='write' && newMode==='practice'){
+  pendingMode=newMode;
+  document.getElementById('pinModal').classList.add('show');
+  document.getElementById('pinInput').value=''; document.getElementById('pinError').style.display='none';
+  setTimeout(()=>document.getElementById('pinInput').focus(),100);
+  return;
+ }
+ setMode(newMode);
+}
+function closePin(){document.getElementById('pinModal').classList.remove('show'); pendingMode=null;}
+function checkPin(){
+ const v=document.getElementById('pinInput').value;
+ if(v==='1995'){document.getElementById('pinModal').classList.remove('show'); if(pendingMode) setMode(pendingMode); pendingMode=null; playPopSound();}
+ else {document.getElementById('pinError').style.display='block'; if(navigator.vibrate) navigator.vibrate([50,50,50]);}
+}
+function setMode(m){
+ flushAllInk(); mode=m;
+ if(m==='write'){fillOrder=shuffle(FILLS.map((_,i)=>i)); tfOrder=shuffle(TF.map((_,i)=>i)); objOrder=shuffle(OBJECTIVE.map((_,i)=>i));}
+ else {fillOrder=FILLS.map((_,i)=>i); tfOrder=TF.map((_,i)=>i); objOrder=OBJECTIVE.map((_,i)=>i);}
+ document.getElementById('btnPractice').classList.toggle('active',m==='practice');
+ document.getElementById('btnWrite').classList.toggle('active',m==='write');
+ hideTryAgain();
+ render();
+}
+function setTab(t){
+ flushAllInk(); tab=t;
+ ['A','B','C','D'].forEach(k=>{document.getElementById('tab'+k)?.classList.remove('on'); document.getElementById('dot'+k)?.classList.remove('on');});
+ document.getElementById('tab'+t)?.classList.add('on'); document.getElementById('dot'+t)?.classList.add('on');
+ const idx={A:0,B:1,C:2,D:3}[t];
+ document.getElementById('swipeTrack').style.transform=`translateX(-${idx*100}%)`;
+ document.getElementById('contentScroll').scrollTo({top:0,behavior:'smooth'});
+ render();
+}
+function inkKey(id){return STORE+'ink_'+mode+'_'+id;}
+function flushAllInk(){document.querySelectorAll('canvas[data-ink-id]').forEach(c=>{try{if(c.width) localStorage.setItem(inkKey(c.dataset.inkId), c.toDataURL('image/png'));}catch(_){}});}
+function pushHist(id,can){if(!historyMap[id]) historyMap[id]=[]; try{historyMap[id].push(can.toDataURL('image/png')); if(historyMap[id].length>24) historyMap[id].shift();}catch(_){}}
+
+function mountStrip(canvas){
+ const id=canvas.dataset.inkId; const p=canvas.parentElement; const dpr=Math.min(devicePixelRatio||1,2);
+ const rect=p.getBoundingClientRect(); canvas.width=rect.width*dpr; canvas.height=rect.height*dpr; canvas.style.width=rect.width+'px'; canvas.style.height=rect.height+'px';
+ const ctx=canvas.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0);
+ ctx.clearRect(0,0,rect.width,rect.height);
+ try{const saved=localStorage.getItem(inkKey(id)); if(saved){const img=new Image(); img.onload=()=>{ctx.drawImage(img,0,0,rect.width,rect.height);}; img.src=saved;}}catch(_){}
+}
+function shortStripHTML(id){return `<div class="inline-strip short-strip"><canvas data-ink-id="${id}"></canvas><div class="strip-tools"><button class="tool-btn" type="button" onclick="doUndoStrip('${id}')"><svg viewBox="0 0 24 24"><path d="M9 14 L4 9 L9 4"/><path d="M4 9 H16 A4 4 0 0 1 20 13"/></svg></button><button class="tool-btn" type="button" onclick="doClearStrip('${id}')"><svg viewBox="0 0 24 24"><path d="M3 6 H21"/><path d="M8 6 V4 H16 V6"/><path d="M19 6 V20 A2 2 0 0 1 18 22 H6 A2 2 0 0 1 4 20 V6"/><path d="M10 11 V17"/><path d="M14 11 V17"/></svg></button></div></div>`;}
+function stripHTML(id){return `<div class="inline-strip"><canvas data-ink-id="${id}"></canvas><div class="strip-tools"><button class="tool-btn" type="button" onclick="doUndoStrip('${id}')"><svg viewBox="0 0 24 24"><path d="M9 14 L4 9 L9 4"/><path d="M4 9 H16 A4 4 0 0 1 20 13"/></svg></button><button class="tool-btn" type="button" onclick="doClearStrip('${id}')"><svg viewBox="0 0 24 24"><path d="M3 6 H21"/><path d="M8 6 V4 H16 V6"/><path d="M19 6 V20 A2 2 0 0 1 18 22 H6 A2 2 0 0 1 4 20 V6"/><path d="M10 11 V17"/><path d="M14 11 V17"/></svg></button></div></div>`;}
+function doUndoStrip(id){const can=document.querySelector(`canvas[data-ink-id="${id}"]`); if(!can) return; const hist=historyMap[id]; if(!hist||!hist.length) return; const prev=hist.pop(); const ctx=can.getContext('2d'); const rect=can.parentElement.getBoundingClientRect(); ctx.clearRect(0,0,rect.width,rect.height); if(hist.length){const img=new Image(); img.onload=()=>ctx.drawImage(img,0,0,rect.width,rect.height); img.src=hist[hist.length-1];} localStorage.setItem(inkKey(id), hist.length?hist[hist.length-1]:'');}
+function doClearStrip(id){const can=document.querySelector(`canvas[data-ink-id="${id}"]`); if(!can) return; const ctx=can.getContext('2d'); const rect=can.parentElement.getBoundingClientRect(); ctx.clearRect(0,0,rect.width,rect.height); historyMap[id]=[]; localStorage.removeItem(inkKey(id)); can.parentElement.classList.remove('has-ink'); playEraserSound();}
+
+function renderObjective(){
+ let html=`<div class="card"><div style="font-weight:900;color:#2d5a27;margin-bottom:8px">A. Objective Type - Tick the correct answer</div>`;
+ objOrder.forEach((idx,num)=>{
+  const q=OBJECTIVE[idx];
+  const saved=localStorage.getItem(STORE+'obj_'+mode+'_'+q.id);
+  html+=`<div class="q-row"><span class="q-num">${num+1}.</span><div class="q-text" style="flex:1 1 100%">${makeSpeakable(q.q)}</div>`;
+  q.opts.forEach(opt=>{
+   const on=saved===opt?'on':'';
+   html+=`<button class="tf-chip true ${on}" type="button" onclick="selectObj('${q.id}','${opt}')">${opt}</button>`;
+  });
+  html+=`${shortStripHTML('obj_'+q.id)}</div>`;
+ });
+ html+=`</div>`;
+ if(mode==='write') html+=`<div style="text-align:center;margin-top:8px"><button class="icon-btn" type="button" onclick="checkWriteObj()" style="width:auto;padding:0 16px;background:#4A7C59;color:#fff">Check</button></div>`;
+ return html;
+}
+function renderFill(){
+ let html=`<div class="card"><div style="font-weight:900;color:#2d5a27;margin-bottom:8px">B. Fill in the blanks</div>`;
+ fillOrder.forEach((fi,i)=>{
+  const f=FILLS[fi];
+  html+=`<div class="q-row"><span class="q-num">${i+1}.</span><div class="q-text">${makeSpeakable(f.pre)} ${stripHTML(f.id)} ${makeSpeakable(f.suf)}</div></div>`;
+ });
+ html+=`</div>`;
+ if(mode==='write') html+=`<div style="text-align:center;margin-top:8px"><button class="icon-btn" type="button" onclick="checkWriteFill()" style="width:auto;padding:0 16px;background:#4A7C59;color:#fff">Check</button></div>`;
+ return html;
+}
+function renderTFAndFillCombined(){
+ let html=renderFill();
+ html+=`<div class="card" style="margin-top:8px"><div style="font-weight:900;color:#2d5a27;margin-bottom:8px">C. True / False</div>`;
+ tfOrder.forEach((idx,num)=>{
+  const q=TF[idx];
+  const saved=localStorage.getItem(STORE+'tf_'+mode+'_'+q.id);
+  const trueOn=saved==='true'?'on':''; const falseOn=saved==='false'?'on':'';
+  html+=`<div class="card" id="tfcard_${q.id}" style="margin-bottom:6px"><div class="q-row"><span class="q-num">${num+1}.</span><div class="q-text" style="flex:1">${makeSpeakable(q.text)}</div></div>
+   <div class="tf-row">
+    <button class="tf-chip true ${trueOn}" data-choice="true" type="button" onclick="selectTF('${q.id}','true')">True</button>
+    <button class="tf-chip false ${falseOn}" data-choice="false" type="button" onclick="selectTF('${q.id}','false')">False</button>
+    ${shortStripHTML('tf_'+q.id)}
+   </div></div>`;
+ });
+ html+=`</div>`;
+ if(mode==='write') html+=`<div style="text-align:center;margin-top:10px"><button class="icon-btn" type="button" onclick="checkWriteTF()" style="width:auto;padding:0 16px;background:#4A7C59;color:#fff">Check True/False</button></div>`;
+ return html;
+}
+function renderConceptMap(){
+ let html=`<div class="card"><div style="font-weight:900;color:#2d5a27;margin-bottom:6px">C. Concept Map - Causes of Soil Erosion (Write on your own)</div><div style="font-size:.7rem;color:#475569;margin-bottom:8px">In Write mode, write each cause yourself. Practice mode shows ghost text.</div>`;
+ CONCEPT_WORDS.forEach((w,i)=>{
+  const ghost = mode==='practice' ? w : '';
+  html+=`<div class="q-row"><span class="q-num">${i+1}.</span><div class="q-text" style="min-width:120px">${mode==='practice'?`<span style="color:#94a3b8">${w}</span>`:`<span style="color:#CBD5E1">Write cause ${i+1}</span>`}</div>${stripHTML('concept_'+i)}</div>`;
+ });
+ html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px"><div style="border:2px dashed #BBD5B8;border-radius:12px;padding:6px;background:#F0FDF4"><div style="font-size:.65rem;font-weight:800">Deforestation</div><img src="https://cdn-icons-png.flaticon.com/512/3262/3262972.png" style="width:100%;height:60px;object-fit:contain" onerror="this.style.display='none'"/></div><div style="border:2px dashed #BBD5B8;border-radius:12px;padding:6px;background:#F0FDF4"><div style="font-size:.65rem;font-weight:800">Overgrazing</div><img src="https://cdn-icons-png.flaticon.com/512/3081/3081559.png" style="width:100%;height:60px;object-fit:contain" onerror="this.style.display='none'"/></div></div></div>`;
+ return html;
+}
+
+// WORD GRID - Candy Crush Brick Pop
+const GRID_DATA=[
+ ['W','D','E','W','E','S','D','F','R','W','D','S','H','E','V','B','B'],
+ ['A','C','T','E','R','R','A','C','E','F','A','R','M','I','N','G','G'],
+ ['N','O','I','T','A','T','S','E','R','O','F','E','D','T','L','L','N'],
+ ['V','I','R','G','S','U','B','S','O','I','L','R','G','Q','I','Y','O'],
+ ['B','L','U','S','H','F','G','H','U','M','U','S','G','R','O','N','N'],
+ ['U','N','T','Y','S','P','O','R','C','R','E','V','O','C','S','F','F'],
+];
+const TARGET_WORDS=['TERRACE','FARMING','DEFORESTATION','SUBSOIL','HUMUS'];
+let foundWords=JSON.parse(localStorage.getItem(STORE+'foundWords')||'[]');
+let selectedCells=[]; // [{r,c}]
+let isSelecting=false;
+
+function renderBrickGrid(){
+ let html=`<div class="brick-grid-wrap"><div style="font-weight:900;color:#2d5a27;margin-bottom:6px">D. Word Grid - Brick Pop! Tap letters like Candy Crush 🌱</div>
+ <div style="font-size:.68rem;color:#475569;margin-bottom:8px">Find: <b>TERRACE FARMING, SUBSOIL, HUMUS, DEFORESTATION</b> - Select letters in order, they pop like candy!</div>
+ <div class="brick-top-tray">
+  <div class="fruit-icon">🍎</div><div class="fruit-icon">💧</div><div class="fruit-icon">🌻</div><div class="fruit-icon">🪴</div><div class="fruit-icon" style="background:linear-gradient(135deg,#FDE68A,#FACC15)">🌈</div>
+  <div style="font-weight:900;font-size:.7rem;color:#2d5a27;margin-left:8px">${foundWords.length}/${TARGET_WORDS.length} found</div>
+ </div>
+ <div class="brick-wall" id="brickWall">`;
+ for(let r=0;r<GRID_DATA.length;r++){
+  for(let c=0;c<GRID_DATA[r].length;c++){
+   const letter=GRID_DATA[r][c];
+   const isFound = isCellInFoundWord(r,c);
+   const isSelected = selectedCells.some(sc=>sc.r===r && sc.c===c);
+   let cls='brick-cell';
+   if(isFound) cls+=' found';
+   if(isSelected) cls+=' selected';
+   html+=`<div class="${cls}" data-r="${r}" data-c="${c}">${letter}</div>`;
+  }
+ }
+ html+=`</div><div class="word-targets">`;
+ TARGET_WORDS.forEach(w=>{
+  const done=foundWords.includes(w);
+  html+=`<div class="word-target ${done?'done':''}">${done?'✅ ':''}${w}</div>`;
+ });
+ html+=`</div><div style="margin-top:8px;display:flex;gap:6px"><button class="icon-btn" type="button" onclick="clearSelection()" style="padding:4px 12px;font-size:.7rem">Clear</button><button class="icon-btn" type="button" onclick="hintWord()" style="padding:4px 12px;font-size:.7rem;background:#FEF3C7">Hint 💡</button></div></div>`;
+ return html;
+}
+function isCellInFoundWord(r,c){
+ for(let w of foundWords){
+  // check if this cell part of found word - we store positions
+  const posKey=STORE+'wordpos_'+w;
+  const saved=localStorage.getItem(posKey);
+  if(!saved) continue;
+  try{const arr=JSON.parse(saved); if(arr.some(p=>p.r===r && p.c===c)) return true;}catch(_){}
+ }
+ return false;
+}
+function getWordFromSelection(){
+ if(selectedCells.length<2) return '';
+ return selectedCells.map(sc=>GRID_DATA[sc.r][sc.c]).join('');
+}
+function checkSelection(){
+ const word=getWordFromSelection();
+ const rev=word.split('').reverse().join('');
+ if(TARGET_WORDS.includes(word) && !foundWords.includes(word)){
+  foundWord(word);
+ } else if(TARGET_WORDS.includes(rev) && !foundWords.includes(rev)){
+  foundWord(rev);
+ } else if(word.length>2){
+  // wrong - shake
+  selectedCells.forEach(sc=>{
+   const el=document.querySelector(`.brick-cell[data-r="${sc.r}"][data-c="${sc.c}"]`);
+   if(el){el.classList.add('hint'); setTimeout(()=>el.classList.remove('hint'),600);}
+  });
+  if(navigator.vibrate) navigator.vibrate(30);
+  setTimeout(()=>clearSelection(),600);
+ }
+}
+function foundWord(word){
+ foundWords.push(word);
+ localStorage.setItem(STORE+'foundWords', JSON.stringify(foundWords));
+ localStorage.setItem(STORE+'wordpos_'+word, JSON.stringify(selectedCells.slice()));
+ // pop animation
+ selectedCells.forEach(sc=>{
+  const el=document.querySelector(`.brick-cell[data-r="${sc.r}"][data-c="${sc.c}"]`);
+  if(el){
+   el.classList.add('pop');
+   // confetti candy
+   for(let i=0;i<6;i++){
+    const conf=document.createElement('div');
+    conf.className='candy-confetti';
+    conf.style.left=(el.offsetLeft+Math.random()*el.offsetWidth)+'px';
+    conf.style.top=(el.offsetTop)+'px';
+    conf.style.background=['#F87171','#FBBF24','#4ADE80','#60A5FA','#A78BFA'][Math.floor(Math.random()*5)];
+    document.getElementById('brickWall').appendChild(conf);
+    setTimeout(()=>conf.remove(),800);
+   }
+  }
+ });
+ playCandyPop();
+ setTimeout(()=>{selectedCells=[]; render(); confettiAt(window.innerWidth/2, 200); for(let i=0;i<3;i++) addPlant('🌻'); updateGardenUI();},700);
+}
+function clearSelection(){selectedCells=[]; render();}
+function hintWord(){
+ // find first not found word and flash its letters
+ const remaining=TARGET_WORDS.filter(w=>!foundWords.includes(w));
+ if(!remaining.length) return;
+ const word=remaining[0];
+ // naive search for word in grid (horizontal)
+ for(let r=0;r<GRID_DATA.length;r++){
+  for(let c=0;c<=GRID_DATA[r].length-word.length;c++){
+   let match=true;
+   for(let k=0;k<word.length;k++){if(GRID_DATA[r][c+k]!==word[k]){match=false;break;}}
+   if(match){for(let k=0;k<word.length;k++){const el=document.querySelector(`.brick-cell[data-r="${r}"][data-c="${c+k}"]`); if(el){el.classList.add('hint'); setTimeout(()=>el.classList.remove('hint'),1200);}} return;}
+   // reverse
+   let revMatch=true; const rev=word.split('').reverse().join('');
+   for(let k=0;k<rev.length;k++){if(GRID_DATA[r][c+k]!==rev[k]){revMatch=false;break;}}
+   if(revMatch){for(let k=0;k<rev.length;k++){const el=document.querySelector(`.brick-cell[data-r="${r}"][data-c="${c+k}"]`); if(el){el.classList.add('hint'); setTimeout(()=>el.classList.remove('hint'),1200);}} return;}
+  }
+ }
+}
+
+function render(){
+ document.getElementById('panelA').innerHTML=renderObjective();
+ document.getElementById('panelB').innerHTML=renderTFAndFillCombined();
+ document.getElementById('panelC').innerHTML=renderConceptMap();
+ document.getElementById('panelD').innerHTML=renderBrickGrid();
+ document.querySelectorAll('.s-word').forEach(el=>{el.addEventListener('click',e=>{e.stopPropagation(); speak(el.dataset.speak, el);});});
+ requestAnimationFrame(()=>{
+  document.querySelectorAll('canvas[data-ink-id]').forEach(mountStrip);
+  initBrickDrag();
+  setTimeout(updateGardenUI,200);
+ });
+}
+
+function initBrickDrag(){
+ const wall=document.getElementById('brickWall');
+ if(!wall) return;
+ let startCell=null;
+ wall.addEventListener('pointerdown', e=>{
+  const cell=e.target.closest('.brick-cell'); if(!cell) return;
+  if(cell.classList.contains('found')) return;
+  e.preventDefault(); initAudio();
+  const r=parseInt(cell.dataset.r), c=parseInt(cell.dataset.c);
+  selectedCells=[{r,c}]; startCell={r,c}; isSelecting=true;
+  cell.setPointerCapture(e.pointerId);
+  renderBrickGrid();
+  initBrickDrag();
+ });
+ wall.addEventListener('pointermove', e=>{
+  if(!isSelecting) return;
+  const el=document.elementFromPoint(e.clientX, e.clientY);
+  const cell=el?.closest('.brick-cell'); if(!cell) return;
+  const r=parseInt(cell.dataset.r), c=parseInt(cell.dataset.c);
+  if(cell.classList.contains('found')) return;
+  // only allow adjacent (including diagonal) and not already selected
+  const last=selectedCells[selectedCells.length-1];
+  if(!last) return;
+  const dr=Math.abs(r-last.r), dc=Math.abs(c-last.c);
+  if(dr<=1 && dc<=1){
+   if(!selectedCells.some(sc=>sc.r===r && sc.c===c)){
+    selectedCells.push({r,c});
+    playPopSound();
+    renderBrickGrid();
+    initBrickDrag();
+   } else if(selectedCells.length>1 && selectedCells[selectedCells.length-2].r===r && selectedCells[selectedCells.length-2].c===c){
+    // backtrack
+    selectedCells.pop();
+    renderBrickGrid();
+    initBrickDrag();
+   }
+  }
+ });
+ function endSelect(e){
+  if(!isSelecting) return;
+  isSelecting=false;
+  checkSelection();
+  if(getWordFromSelection().length===0) render();
+ }
+ wall.addEventListener('pointerup', endSelect);
+ wall.addEventListener('pointercancel', ()=>{isSelecting=false; clearSelection();});
+}
+
+function showTryAgain(type, correct, total){
+ tryAgainType=type;
+ const title=document.getElementById('tryTitle');
+ const sub=document.getElementById('trySub');
+ if(correct===0){title.textContent='Try Again'; sub.textContent=`All wrong. You had 0/${total}. Tap Try Again to redraw.`;}
+ else {title.textContent='Almost'; sub.textContent=`You got ${correct}/${total}. Try for full!`;}
+ document.getElementById('tryAgainModal').classList.add('show');
+ speak(title.textContent+' '+sub.textContent);
+}
+function hideTryAgain(){document.getElementById('tryAgainModal').classList.remove('show'); tryAgainType=null;}
+function handleTryAgain(){
+ const type=tryAgainType;
+ hideTryAgain();
+ if(type==='tf'){ resetTF(); }
+ else if(type==='obj'){ resetObj(); }
+}
+function checkWriteObj(){
+ let correct=0, total=OBJECTIVE.length;
+ OBJECTIVE.forEach(q=>{const saved=localStorage.getItem(STORE+'obj_'+mode+'_'+q.id); if(saved===q.ans) correct++;});
+ if(correct===total){for(let i=0;i<correct;i++) addPlant('🌻'); confettiAt(window.innerWidth/2, 200); alert(`Perfect! ${correct}/${total}`);}
+ else {showTryAgain('obj', correct, total); if(correct>0) for(let i=0;i<correct;i++) addPlant('🌻');}
+ updateGardenUI();
+}
+function resetObj(){OBJECTIVE.forEach(q=>localStorage.removeItem(STORE+'obj_'+mode+'_'+q.id)); render(); playPopSound();}
+function checkWriteFill(){alert('Check with teacher! Write mode - all answers are in Practice mode ghost.');}
+function checkWriteTF(){
+ let correct=0, total=TF.length;
+ TF.forEach(q=>{const saved=localStorage.getItem(STORE+'tf_'+mode+'_'+q.id); if(saved===q.ans) correct++;});
+ if(correct===total){for(let i=0;i<correct;i++) addPlant('🌻'); confettiAt(window.innerWidth/2, 200); alert(`Perfect! ${correct}/${total}`);}
+ else {showTryAgain('tf', correct, total); if(correct>0) for(let i=0;i<correct;i++) addPlant('🌻');}
+ updateGardenUI();
+}
+function resetTF(){TF.forEach(q=>localStorage.removeItem(STORE+'tf_'+mode+'_'+q.id)); render(); playPopSound();}
+function selectObj(id, opt){localStorage.setItem(STORE+'obj_'+mode+'_'+id, opt); render(); playSnapSound(); addPlant('🌿'); updateGardenUI();}
+function selectTF(id, val){localStorage.setItem(STORE+'tf_'+mode+'_'+id, val); render(); playSnapSound(); addPlant('🌿'); updateGardenUI();}
+
+// Garden
+function addPlant(emoji){
+ garden.push({emoji, time:Date.now()});
+ localStorage.setItem(STORE+'garden', JSON.stringify(garden));
+ if(garden.length>50) garden=garden.slice(-50);
+}
+function updateGardenUI(){
+ const fog=document.getElementById('soilFog');
+ const fill=document.getElementById('earthFill');
+ const count=document.getElementById('gardenCount');
+ const gardenEl=document.getElementById('garden');
+ const totalTasks = OBJECTIVE.length + FILLS.length + TF.length + CONCEPT_WORDS.length + TARGET_WORDS.length;
+ const doneTasks = OBJECTIVE.filter(q=>localStorage.getItem(STORE+'obj_'+mode+'_'+q.id)).length + TF.filter(q=>localStorage.getItem(STORE+'tf_'+mode+'_'+q.id)).length + foundWords.length + Math.floor(garden.length/3);
+ const pct=Math.min(100, Math.round((doneTasks/totalTasks)*100));
+ if(fill) fill.style.width=pct+'%';
+ if(fog) fog.style.opacity=Math.max(0, 0.38 - (pct/100)*0.38);
+ if(count) count.textContent=`Crops: ${garden.length} 🌱 ${pct}%`;
+ if(gardenEl){
+  gardenEl.innerHTML='';
+  garden.slice(-12).forEach(g=>{
+   const d=document.createElement('div'); d.className='garden-item'; d.textContent=g.emoji; gardenEl.appendChild(d);
+  });
+ }
+}
+function confettiAt(x,y){
+ for(let i=0;i<18;i++){
+  const c=document.createElement('div'); c.className='confetti';
+  c.style.left=x+'px'; c.style.top=y+'px';
+  c.style.background=['#22C55E','#4A7C59','#FACC15','#F87171','#60A5FA'][Math.floor(Math.random()*5)];
+  document.body.appendChild(c);
+  setTimeout(()=>c.remove(),900);
+ }
+}
+
+// Stickers - same as before
+let stickers=JSON.parse(localStorage.getItem(STORE+'stickers')||'[]');
+function saveStickers(){localStorage.setItem(STORE+'stickers', JSON.stringify(stickers));}
+function spawnSticker(emoji){
+ const id='s'+Date.now(); const s={id, emoji, x:60+Math.random()*200, y:100+Math.random()*200, size:32};
+ stickers.push(s); saveStickers();
+ const layer=document.getElementById('stickerLayer'); const el=document.createElement('div'); el.className='sticker'; el.id=id;
+ el.innerHTML=`<span class="sticker-emoji" style="font-size:${s.size}px">${emoji}</span><div class="sticker-controls"><button class="ctrl-btn" onclick="resizeSticker('${id}',1)">+</button><button class="ctrl-btn" onclick="resizeSticker('${id}',-1)">-</button><button class="ctrl-btn del" onclick="removeSticker('${id}')">×</button></div>`;
+ el.style.left=s.x+'px'; el.style.top=s.y+'px'; layer.appendChild(el); makeDraggable(el); selectSticker(el); setTimeout(()=>resetFade(id),4000);
+ playPopSound(); addPlant(emoji);
+}
+function makeDraggable(el){
+ let dragging=false, startX=0, startY=0, origX=0, origY=0;
+ el.addEventListener('pointerdown', e=>{
+  if(e.target.closest('.ctrl-btn')) return;
+  e.preventDefault(); el.setPointerCapture(e.pointerId); dragging=true;
+  startX=e.clientX; startY=e.clientY; origX=parseFloat(el.style.left)||0; origY=parseFloat(el.style.top)||0; selectSticker(el);
+ });
+ el.addEventListener('pointermove', e=>{
+  if(!dragging) return; const dx=e.clientX-startX, dy=e.clientY-startY; el.style.left=(origX+dx)+'px'; el.style.top=(origY+dy)+'px';
+ });
+ function endDrag(){if(!dragging) return; dragging=false; const s=stickers.find(x=>x.id===el.id); if(s){s.x=parseFloat(el.style.left); s.y=parseFloat(el.style.top); saveStickers();} resetFade(el.id);}
+ el.addEventListener('pointerup', endDrag); el.addEventListener('pointercancel', endDrag);
+ el.addEventListener('click', e=>{if(e.target.closest('.ctrl-btn')) return; selectSticker(el);});
+}
+function selectSticker(el){
+ document.querySelectorAll('.sticker').forEach(x=>x.classList.remove('selected'));
+ el.classList.add('selected');
+}
+function resizeSticker(id, dir){
+ const s=stickers.find(x=>x.id===id); if(!s) return; s.size=Math.max(18, Math.min(72, (s.size||32)+dir*6)); const el=document.getElementById(id); if(el){el.querySelector('.sticker-emoji').style.fontSize=s.size+'px';} saveStickers(); resetFade(id);
+}
+function removeSticker(id){const el=document.getElementById(id); if(el) el.remove(); stickers=stickers.filter(x=>x.id!==id); saveStickers();}
+let fadeTimers={};
+function resetFade(id){clearTimeout(fadeTimers[id]); const el=document.getElementById(id); if(!el) return; el.style.opacity='1'; fadeTimers[id]=setTimeout(()=>{el.style.opacity='0.25';},4000);}
+document.addEventListener('click', e=>{if(!e.target.closest('.sticker') && !e.target.closest('#penPanel')){document.querySelectorAll('.sticker').forEach(x=>x.classList.remove('selected'));}});
+(function restoreStickers(){
+ const layer=document.getElementById('stickerLayer');
+ stickers.forEach(s=>{
+  const el=document.createElement('div'); el.className='sticker'; el.id=s.id;
+  el.innerHTML=`<span class="sticker-emoji" style="font-size:${s.size||32}px">${s.emoji}</span><div class="sticker-controls"><button class="ctrl-btn" onclick="resizeSticker('${s.id}',1)">+</button><button class="ctrl-btn" onclick="resizeSticker('${s.id}',-1)">-</button><button class="ctrl-btn del" onclick="removeSticker('${s.id}')">×</button></div>`;
+  el.style.left=(s.x||50)+'px'; el.style.top=(s.y||100)+'px';
+  layer.appendChild(el); makeDraggable(el);
+ });
+})();
+
+// SWIPE
+(function(){
+ let startX=0, startY=0, isSwipe=false, swipeBlocked=false;
+ const scrollEl=document.getElementById('contentScroll');
+ scrollEl.addEventListener('touchstart', e=>{
+  const target=e.target;
+  if(target.closest('.brick-cell') || target.closest('.brick-wall') || target.closest('.dot') || target.closest('canvas[data-ink-id]') || target.closest('.sticker') || target.closest('#penPanel') || target.closest('#penBubble')){
+   swipeBlocked=true; startX=0; isSwipe=false; return;
+  }
+  if(dragState) { swipeBlocked=true; return; }
+  swipeBlocked=false;
+  startX=e.touches[0].clientX; startY=e.touches[0].clientY; isSwipe=false;
+ }, {passive:true});
+ scrollEl.addEventListener('touchmove', e=>{
+  if(swipeBlocked || !startX) return;
+  const dx=e.touches[0].clientX-startX; const dy=e.touches[0].clientY-startY;
+  if(Math.abs(dx)>Math.abs(dy) && Math.abs(dx)>18){isSwipe=true;}
+ }, {passive:true});
+ scrollEl.addEventListener('touchend', e=>{
+  if(swipeBlocked){ swipeBlocked=false; startX=0; isSwipe=false; return; }
+  if(!isSwipe) {startX=0; return;}
+  const dx=e.changedTouches[0].clientX-startX;
+  if(Math.abs(dx)>70){
+   if(dx<0){ if(tab==='A') setTab('B'); else if(tab==='B') setTab('C'); else if(tab==='C') setTab('D'); }
+   else { if(tab==='D') setTab('C'); else if(tab==='C') setTab('B'); else if(tab==='B') setTab('A'); }
+  }
+  startX=0; isSwipe=false;
+ });
+})();
+
+// INK
+(function(){
+ let drawing=false,lx=0,ly=0,active=null,started=false;
+ function pos(e,c){const r=c.getBoundingClientRect(); return [e.clientX-r.left, e.clientY-r.top];}
+ document.addEventListener('pointerdown', e=>{
+  const c=e.target.closest('canvas[data-ink-id]'); if(!c) return;
+  if(e.target.closest('.sticker')) return;
+  if(e.pointerType==='touch' && penActive && Date.now()-lastPenTime<800) return;
+  if(e.pointerType==='touch' && e.width>26) return;
+  if(e.pointerType==='pen'){penActive=true; lastPenTime=Date.now();}
+  e.preventDefault(); initAudio(); c.setPointerCapture(e.pointerId); drawing=true; active=c; started=true;
+  const [x,y]=pos(e,c); lx=x; ly=y; const ctx=c.getContext('2d');
+  if(currentPen.type==='eraser') ctx.globalCompositeOperation='destination-out'; else ctx.globalCompositeOperation='source-over';
+  ctx.strokeStyle=currentPen.type==='rainbow'?`hsl(${rainbowHue},100%,50%)`:currentPen.color;
+  ctx.lineWidth=currentPen.size; ctx.lineCap='round'; ctx.lineJoin='round';
+  if(currentPen.type==='cursive') ctx.lineWidth=currentPen.size*1.7;
+  ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+0.01,y); ctx.stroke();
+  if(currentPen.type==='glitter'){for(let i=0;i<3;i++){ctx.beginPath(); ctx.arc(x+Math.random()*6-3,y+Math.random()*6-3,Math.random()*2+0.5,0,Math.PI*2); ctx.fillStyle=`hsl(${Math.random()*60+30},100%,60%)`; ctx.fill();}}
+ },{passive:false});
+ document.addEventListener('pointermove', e=>{
+  if(!drawing||!active) return; if(e.pointerType==='touch' && penActive && Date.now()-lastPenTime<800) return; e.preventDefault();
+  const [x,y]=pos(e,active); const ctx=active.getContext('2d');
+  if(currentPen.type==='rainbow'){rainbowHue=(rainbowHue+2)%360; ctx.strokeStyle=`hsl(${rainbowHue},100%,50%)`;}
+  if(soundTick++%6===0){ if(currentPen.type==='eraser') playEraserSound(); else playPenSound(); }
+  if(currentPen.type==='glitter'){
+   ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(x,y); ctx.stroke();
+   for(let i=0;i<2;i++){ctx.beginPath(); ctx.arc(x,y,Math.random()*2,0,Math.PI*2); ctx.fillStyle=`hsl(${Math.random()*60+40},100%,70%)`; ctx.fill();}
+  } else {
+   ctx.lineWidth=currentPen.type==='cursive'?currentPen.size*1.5 + Math.abs(Math.sin(Math.atan2(y-ly,x-lx)))*2:currentPen.size;
+   ctx.beginPath(); ctx.moveTo(lx,ly); ctx.lineTo(x,y); ctx.stroke();
+  }
+  lx=x; ly=y;
+ },{passive:false});
+ function end(e){if(!drawing||!active) return; drawing=false; if(started){pushHist(active.dataset.inkId, active); try{localStorage.setItem(inkKey(active.dataset.inkId), active.toDataURL('image/png')); active.parentElement.classList.add('has-ink'); if(Math.random()>0.5) addPlant('🌱'); updateGardenUI();}catch(_){}} started=false; active=null; if(e&&e.pointerType==='pen') lastPenTime=Date.now();}
+ document.addEventListener('pointerup', end); document.addEventListener('pointercancel', end);
+})();
+
+document.getElementById('heroPatrol').addEventListener('click', ()=>{
+ const hints=['Soil words pop like candy!','Find TERRACE FARMING','Tap farm zones to jump','A+ / A- changes font'];
+ const h=hints[Math.floor(Math.random()*hints.length)];
+ speak(h); playPopSound();
+});
+document.querySelectorAll('[data-pen]').forEach(b=>{
+ b.addEventListener('click',()=>{
+  const t=b.dataset.pen;
+  if(['pen','cursive','rainbow','glitter','eraser'].includes(t)){
+   currentPen.type=t;
+   document.querySelectorAll('[data-pen]').forEach(x=>{if(['pen','cursive','rainbow','glitter','eraser'].includes(x.dataset.pen)) x.classList.remove('on');});
+   b.classList.add('on');
+  }
+ });
+});
+document.querySelectorAll('.color-dot').forEach(d=>{
+ d.addEventListener('click',()=>{currentPen.color=d.dataset.color; document.querySelectorAll('.color-dot').forEach(x=>x.classList.remove('on')); d.classList.add('on');});
+});
+document.getElementById('sizeSlider').addEventListener('input', e=>{currentPen.size=parseFloat(e.target.value);});
+document.querySelectorAll('[data-sticker]').forEach(b=>{
+ b.addEventListener('click',()=>{spawnSticker(b.dataset.sticker); document.querySelectorAll('[data-sticker]').forEach(x=>x.classList.remove('on')); b.classList.add('on'); setTimeout(()=>b.classList.remove('on'),400);});
+});
+function doUndo(){const keys=Object.keys(historyMap); if(!keys.length) return; const last=keys[keys.length-1]; doUndoStrip(last);}
+function doClear(){if(!confirm('Clear all ink?')) return; document.querySelectorAll('canvas[data-ink-id]').forEach(c=>{const ctx=c.getContext('2d'); const rect=c.parentElement.getBoundingClientRect(); ctx.clearRect(0,0,rect.width,rect.height); historyMap[c.dataset.inkId]=[]; localStorage.removeItem(inkKey(c.dataset.inkId)); c.parentElement.classList.remove('has-ink');}); playEraserSound();}
+document.getElementById('penBubble').addEventListener('click', ()=>{document.getElementById('penPanel').classList.toggle('open');});
+window.addEventListener('beforeunload', flushAllInk); window.addEventListener('pagehide', flushAllInk);
+setMode('practice'); setTab('A'); updateGardenUI();
+</script>
+</body>
+</html>
