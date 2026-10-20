@@ -383,14 +383,28 @@ function mountStrip(canvas){
    const ghost=canvas.dataset.ghost||'';
    if(ghost){
     ctx.save();
-    ctx.globalAlpha=0.18;
-    ctx.font='700 16px Kalam, cursive';
-    ctx.fillStyle='#8B5A2B';
+    ctx.globalAlpha=mode==='practice'?0.55:0.18;
+    ctx.font='800 17px Kalam, cursive';
+    ctx.fillStyle='#5A3C22';
     ctx.textAlign='center';
     ctx.textBaseline='middle';
-    // center text
+    // center text - instant visible in practice
     ctx.fillText(ghost, rw/2, rh/2+2);
     ctx.restore();
+    // If practice, also ensure ghost on top even after ink load
+    if(mode==='practice' && ghost){
+      const imgOn=()=>{
+        ctx.save();
+        ctx.globalAlpha=0.48;
+        ctx.font='800 17px Kalam, cursive';
+        ctx.fillStyle='#5A3C22';
+        ctx.textAlign='center';
+        ctx.textBaseline='middle';
+        ctx.fillText(ghost, rw/2, rh/2+2);
+        ctx.restore();
+      };
+      if(raw){ setTimeout(imgOn, 120); }
+    }
    }
   }
  }
@@ -443,10 +457,12 @@ function updateGardenUI(){
 function renderFill(){
  return fillOrder.map((idx,dIdx)=>{
   const q=FILLS[idx]; const num=mode==='write'?dIdx+1:idx+1;
+  // Practice: show correct answer instantly
   const ghostAns=mode==='practice'?(q.ans||q.ans1||''):'';
+  const practiceHint=mode==='practice'?`<span style="margin-left:6px;padding:2px 8px;background:#DCFCE7;border:1.5px solid #15803d;border-radius:999px;font-size:.68rem;font-weight:900;color:#15803d">✅ ${q.ans||q.ans1||''}${q.ans2?' / '+q.ans2:''}</span>`:'';
   let html=`<div class="card"><div class="q-row"><span class="q-num">${num}.</span><div class="q-text">`;
-  if(q.double){html+=`${makeSpeakable(q.pre)} ${stripHTML(q.id, ghostAns)} <span>${makeSpeakable(q.mid)}</span> ${stripHTML(q.id2, q.ans2||'')} <span>${makeSpeakable(q.suf)}</span>`;}
-  else {html+=`${q.pre?makeSpeakable(q.pre):''} ${stripHTML(q.id, ghostAns)} <span>${makeSpeakable(q.suf)}</span>`;}
+  if(q.double){html+=`${makeSpeakable(q.pre)} ${stripHTML(q.id, ghostAns)} <span>${makeSpeakable(q.mid)}</span> ${stripHTML(q.id2, q.ans2||'')} <span>${makeSpeakable(q.suf)}</span> ${practiceHint}`;}
+  else {html+=`${q.pre?makeSpeakable(q.pre):''} ${stripHTML(q.id, ghostAns)} <span>${makeSpeakable(q.suf)}</span> ${practiceHint}`;}
   html+=`</div></div></div>`; return html;
  }).join('');
 }
@@ -528,6 +544,13 @@ function handleTryAgain(){
  hideTryAgain();
  if(type==='match'){ resetMatch(); }
  else if(type==='tf'){ resetTF(); }
+ else if(type==='celebrate'){ /* just close - celebration done */
+  // reset modal styles back to default for next try again
+  document.getElementById('tryTitle').style.color='';
+  document.querySelector('.try-modal-box').style.borderColor='';
+  document.querySelector('.try-btn').style.background='';
+  document.querySelector('.try-btn').textContent='Try Again';
+ }
 }
 function checkWriteMatch(){
  let correct=0; Object.entries(connections).forEach(([a,b])=>{
@@ -535,9 +558,20 @@ function checkWriteMatch(){
  });
  const total=MATCH_DATA.length;
  if(correct===total){
+  // Celebration like soil lesson - full success
   for(let i=0;i<correct;i++) addPlant('🌿');
-  confettiAt(window.innerWidth/2, 200);
-  alert(`Perfect! ${correct}/${total}`);
+  for(let k=0;k<5;k++) setTimeout(()=>confettiAt(window.innerWidth/2 -100 + Math.random()*200, 150+Math.random()*100), k*120);
+  // Play candy celebration sound (like soil)
+  try{ initAudio(); const notes=[523,659,784,1046]; notes.forEach((f,i)=>{ const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.frequency.value=f; g.gain.value=0.12; o.connect(g); g.connect(audioCtx.destination); o.start(audioCtx.currentTime+i*0.08); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+i*0.08+0.4); o.stop(audioCtx.currentTime+i*0.08+0.4); }); }catch(_){}
+  // Show Great Job modal like soil lesson
+  document.getElementById('tryTitle').textContent=`Great Job! 🌟 ${correct}/${total}`;
+  document.getElementById('trySub').textContent=`All matches perfect! Field is clean!`;
+  document.getElementById('tryTitle').style.color='#15803d';
+  document.querySelector('.try-modal-box').style.borderColor='#15803d';
+  document.querySelector('.try-btn').textContent='Awesome!';
+  document.querySelector('.try-btn').style.background='#15803d';
+  document.getElementById('tryAgainModal').classList.add('show');
+  tryAgainType='celebrate';
  } else {
   showTryAgain('match', correct, total);
   if(correct>0) for(let i=0;i<correct;i++) addPlant('🌿');
@@ -554,8 +588,16 @@ function checkWriteTF(){
  TF.forEach(q=>{const saved=localStorage.getItem(STORE+'tf_'+mode+'_'+q.id); if(saved===q.ans) correct++;});
  if(correct===total){
   for(let i=0;i<correct;i++) addPlant('🌿');
-  confettiAt(window.innerWidth/2, 200);
-  alert(`Perfect! ${correct}/${total}`);
+  for(let k=0;k<5;k++) setTimeout(()=>confettiAt(window.innerWidth/2 -100 + Math.random()*200, 150+Math.random()*100), k*120);
+  try{ initAudio(); const notes=[523,659,784,1046]; notes.forEach((f,i)=>{ const o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.frequency.value=f; g.gain.value=0.12; o.connect(g); g.connect(audioCtx.destination); o.start(audioCtx.currentTime+i*0.08); g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime+i*0.08+0.4); o.stop(audioCtx.currentTime+i*0.08+0.4); }); }catch(_){}
+  document.getElementById('tryTitle').textContent=`Great Job! 🌟 ${correct}/${total}`;
+  document.getElementById('trySub').textContent=`All True/False perfect! You know pollution!`;
+  document.getElementById('tryTitle').style.color='#15803d';
+  document.querySelector('.try-modal-box').style.borderColor='#15803d';
+  document.querySelector('.try-btn').textContent='Awesome!';
+  document.querySelector('.try-btn').style.background='#15803d';
+  document.getElementById('tryAgainModal').classList.add('show');
+  tryAgainType='celebrate';
  } else {
   showTryAgain('tf', correct, total);
   if(correct>0) for(let i=0;i<correct;i++) addPlant('🌿');
