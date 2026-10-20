@@ -1,122 +1,184 @@
-// shared/universal-pen.js v1.3
-// 7-icon bar: Pen Eraser Undo Redo Clear Colors Stamps/Stickers
-// Line tool: Exact 5.6 Exercise implementation - thin line, NO glow
-// Fixes: undo/redo stack, palm rejection, long-press eraser, smooth pen
+/**
+ * Universal Pen + Line Tool  v1.4  (Samsung S9 / S11 ready)
+ * 7-icon bar: Pen · Line · Eraser · Undo · Redo · Clear · Colors · Stamps/Stickers
+ * Pointer Events only · palm rejection · smooth strokes · undo/redo · sound
+ */
+(function () {
+  'use strict';
 
-(function(){
   const CFG = {
-    colors: ['#0F172A','#2563EB','#15803D','#DC2626','#7C3AED'],
-    stamps: ['⭐','😡','❤️','😊','😢','🌸','♻️','🌍','✅','❌','💯','❄️'],
-    stickers: ['💃','🔥','⭐','🌹','🧐','🫰','🌳','🧹'],
-    storageKey: 'LQ_UNIVERSAL_PEN_V13',
-    soundKey: 'LQ_PEN_SOUND_V13'
+    colors: ['#0F172A', '#2563EB', '#15803D', '#DC2626', '#7C3AED'],
+    stamps: ['⭐', '😡', '❤️', '😊', '😢', '🌸', '♻️', '🌍', '✅', '❌', '💯', '❄️'],
+    stickers: ['💃', '🔥', '⭐', '🌹', '🧐', '🫰', '🌳', '🧹'],
+    storageKey: 'LQ_UNIVERSAL_PEN_V14',
+    soundKey: 'LQ_PEN_SOUND_V14',
+    maxUndo: 30,
+    // Line tool style (Exact 5.6 Exercise look – thin, no glow)
+    lineColor: '#8B5A2B',
+    lineWidth: 2.5
   };
-  
-  let state = {
-    tool: 'pen', penType: 'normal', color: '#0F172A', size: 2.5,
-    drawing: false, soundOn: false, activeCanvas: null, ctx: null,
-    audioCtx: null, undoStack: [], redoStack: [], rainbowHue: 0,
-    isScrolling: false, points: [], longPressTimer: null
+
+  const state = {
+    tool: 'pen',          // pen | line | eraser
+    penType: 'normal',    // normal | cursive | rainbow | glitter
+    color: '#0F172A',
+    size: 2.5,
+    drawing: false,
+    soundOn: false,
+    activeCanvas: null,
+    ctx: null,
+    audioCtx: null,
+    undoStack: [],
+    redoStack: [],
+    rainbowHue: 0,
+    isScrolling: false,
+    points: [],
+    longPressTimer: null,
+    lineStart: null,      // {x,y,canvas,ctx,preview}
+    pointerId: null
   };
-  
-  const loadState = () => {
+
+  // ---------- Persistence ----------
+  function loadState() {
     try {
       const s = localStorage.getItem(CFG.storageKey);
-      if(s) Object.assign(state, JSON.parse(s));
+      if (s) Object.assign(state, JSON.parse(s));
       state.soundOn = localStorage.getItem(CFG.soundKey) === 'true';
-    } catch(e){}
-  };
-  
-  const saveState = () => {
+    } catch (e) {}
+  }
+
+  function saveState() {
     try {
       localStorage.setItem(CFG.storageKey, JSON.stringify({
-        tool: state.tool, penType: state.penType, color: state.color, size: state.size
+        tool: state.tool,
+        penType: state.penType,
+        color: state.color,
+        size: state.size
       }));
-      localStorage.setItem(CFG.soundKey, state.soundOn);
-    } catch(e){}
-  };
-  
-  const initAudio = () => {
-    if(!state.audioCtx) state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  };
-  
-  const playPen = () => {
-    if(!state.soundOn || !state.audioCtx) return;
-    const buffer = state.audioCtx.createBuffer(1, state.audioCtx.sampleRate * 0.06, state.audioCtx.sampleRate);
+      localStorage.setItem(CFG.soundKey, String(state.soundOn));
+    } catch (e) {}
+  }
+
+  // ---------- Audio ----------
+  function initAudio() {
+    if (!state.audioCtx) {
+      state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+  }
+
+  function playPen() {
+    if (!state.soundOn || !state.audioCtx) return;
+    const len = state.audioCtx.sampleRate * 0.06;
+    const buffer = state.audioCtx.createBuffer(1, len, state.audioCtx.sampleRate);
     const data = buffer.getChannelData(0);
-    for(let i=0;i<data.length;i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i/data.length*3) * 0.8;
+    for (let i = 0; i < data.length; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / data.length * 3) * 0.8;
+    }
     const noise = state.audioCtx.createBufferSource();
     const filter = state.audioCtx.createBiquadFilter();
     const gain = state.audioCtx.createGain();
     noise.buffer = buffer;
-    filter.type = 'lowpass'; filter.frequency.value = 800;
+    filter.type = 'lowpass';
+    filter.frequency.value = 800;
     gain.gain.setValueAtTime(0.05, state.audioCtx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.01, state.audioCtx.currentTime + 0.06);
     noise.connect(filter).connect(gain).connect(state.audioCtx.destination);
     noise.start();
-  };
-  
-  const playEraser = () => {
-    if(!state.soundOn || !state.audioCtx) return;
-    const buffer = state.audioCtx.createBuffer(1, state.audioCtx.sampleRate * 0.1, state.audioCtx.sampleRate);
+  }
+
+  function playEraser() {
+    if (!state.soundOn || !state.audioCtx) return;
+    const len = state.audioCtx.sampleRate * 0.1;
+    const buffer = state.audioCtx.createBuffer(1, len, state.audioCtx.sampleRate);
     const data = buffer.getChannelData(0);
-    for(let i=0;i<data.length;i++) data[i] = (Math.random() * 2 - 1) * 0.25;
+    for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * 0.25;
     const noise = state.audioCtx.createBufferSource();
     const filter = state.audioCtx.createBiquadFilter();
     const gain = state.audioCtx.createGain();
     noise.buffer = buffer;
-    filter.type = 'bandpass'; filter.frequency.value = 400; filter.Q.value = 0.5;
+    filter.type = 'bandpass';
+    filter.frequency.value = 400;
+    filter.Q.value = 0.5;
     gain.gain.setValueAtTime(0.04, state.audioCtx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.01, state.audioCtx.currentTime + 0.1);
     noise.connect(filter).connect(gain).connect(state.audioCtx.destination);
     noise.start();
-  };
-  
-  const playDing = () => {
-    if(!state.soundOn || !state.audioCtx) return;
+  }
+
+  function playDing() {
+    if (!state.soundOn || !state.audioCtx) return;
     const osc = state.audioCtx.createOscillator();
     const gain = state.audioCtx.createGain();
-    osc.type = 'sine'; osc.frequency.setValueAtTime(800, state.audioCtx.currentTime);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(800, state.audioCtx.currentTime);
     gain.gain.setValueAtTime(0.12, state.audioCtx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.01, state.audioCtx.currentTime + 0.25);
     osc.connect(gain).connect(state.audioCtx.destination);
-    osc.start(); osc.stop(state.audioCtx.currentTime + 0.25);
+    osc.start();
+    osc.stop(state.audioCtx.currentTime + 0.25);
+  }
+
+  // Public API
+  window.UniversalPen = {
+    state,
+    saveState,
+    playDing,
+    initAudio,
+    forceCanvas: (canvas) => {
+      if (canvas && canvas.tagName === 'CANVAS') {
+        state.activeCanvas = canvas;
+        state.ctx = canvas.getContext('2d');
+        ensureInitialUndo();
+        canvas.style.touchAction = 'none';
+      }
+    }
   };
-  
-  window.UniversalPen = { state, saveState, playDing, initAudio };
-  
-  const buildUI = () => {
-    if(document.getElementById('penBubble')) return;
-    
+
+  // ---------- UI ----------
+  function buildUI() {
+    if (document.getElementById('penBubble')) return;
+
     const css = document.createElement('style');
     css.textContent = `
-      #penBubble{position:fixed;bottom:18px;right:14px;z-index:50;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#5A3C22,#8B5A2B);box-shadow:0 8px 24px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none;transition:transform .15s}
+      #penBubble{position:fixed;bottom:18px;right:14px;z-index:50;width:56px;height:56px;border-radius:50%;
+        background:linear-gradient(135deg,#5A3C22,#8B5A2B);box-shadow:0 8px 24px rgba(0,0,0,.35);
+        display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none;transition:transform .15s}
       #penBubble:active{transform:scale(.95)}
-      #penBar{position:fixed;z-index:51;background:rgba(255,255,255,.98);border:2px solid #E7D5B0;border-radius:18px;padding:8px;box-shadow:0 16px 40px rgba(0,0,0,.22);transform:scale(.9);opacity:0;pointer-events:none;transition:all .25s;display:flex;gap:6px;align-items:center}
+      #penBar{position:fixed;z-index:51;background:rgba(255,255,255,.98);border:2px solid #E7D5B0;border-radius:18px;
+        padding:8px;box-shadow:0 16px 40px rgba(0,0,0,.22);transform:scale(.9);opacity:0;pointer-events:none;
+        transition:all .25s;display:flex;gap:6px;align-items:center;flex-wrap:wrap;max-width:calc(100vw - 24px)}
       #penBar.open{transform:scale(1);opacity:1;pointer-events:auto}
-      .pen-btn{width:36px;height:36px;border-radius:10px;border:2px solid #E7D5B0;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:.15s;position:relative}
+      .pen-btn{width:36px;height:36px;border-radius:10px;border:2px solid #E7D5B0;background:#fff;
+        display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:.15s;position:relative}
       .pen-btn.on{background:#FEF3C7;border-color:#8B5A2B}
       .pen-btn:active{transform:scale(.9)}
-      .pen-pop{position:absolute;bottom:46px;left:50%;transform:translateX(-50%) scale(.9);opacity:0;pointer-events:none;transition:all .2s;background:rgba(255,255,255,.98);border:2px solid #E7D5B0;border-radius:14px;padding:8px;box-shadow:0 8px 24px rgba(0,0,0,.18);white-space:nowrap;z-index:52}
+      .pen-pop{position:absolute;bottom:46px;left:50%;transform:translateX(-50%) scale(.9);opacity:0;pointer-events:none;
+        transition:all .2s;background:rgba(255,255,255,.98);border:2px solid #E7D5B0;border-radius:14px;padding:8px;
+        box-shadow:0 8px 24px rgba(0,0,0,.18);white-space:nowrap;z-index:52}
       .pen-pop.open{transform:translateX(-50%) scale(1);opacity:1;pointer-events:auto}
       .pen-pop-row{display:flex;gap:6px;align-items:center;margin-bottom:6px}
       .pen-pop-row:last-child{margin-bottom:0}
-      .pen-mini{width:32px;height:32px;border-radius:8px;border:2px solid #E7D5B0;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
+      .pen-mini{width:32px;height:32px;border-radius:8px;border:2px solid #E7D5B0;background:#fff;
+        display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
       .pen-mini.on{background:#FEF3C7;border-color:#8B5A2B}
       .pen-dot{width:28px;height:28px;border-radius:50%;cursor:pointer;border:3px solid #fff;box-shadow:0 0 0 2px #E7D5B0;transition:.15s}
       .pen-dot.on{box-shadow:0 0 0 2px #8B5A2B;transform:scale(1.1)}
       .pen-tab{padding:4px 10px;border-radius:8px;border:2px solid #E7D5B0;background:#fff;cursor:pointer;font-size:.75rem;font-weight:700}
       .pen-tab.on{background:#FEF3C7;border-color:#8B5A2B}
-      #penSound{position:fixed;bottom:18px;left:14px;z-index:50;width:44px;height:44px;border-radius:50%;background:#fff;border:2px solid #8B5A2B;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;box-shadow:0 4px 12px rgba(0,0,0,.15)}
-      .pen-sticker{position:fixed;font-size:32px;cursor:grab;z-index:15;user-select:none;touch-action:none;filter:drop-shadow(0 4px 8px rgba(0,0,0,.25))}
+      #penSound{position:fixed;bottom:18px;left:14px;z-index:50;width:44px;height:44px;border-radius:50%;
+        background:#fff;border:2px solid #8B5A2B;display:flex;align-items:center;justify-content:center;
+        cursor:pointer;font-size:20px;box-shadow:0 4px 12px rgba(0,0,0,.15);touch-action:none}
+      .pen-sticker{position:fixed;font-size:32px;cursor:grab;z-index:15;user-select:none;touch-action:none;
+        filter:drop-shadow(0 4px 8px rgba(0,0,0,.25))}
       .pen-sticker.sel{outline:2px dashed #8B5A2B;outline-offset:4px}
+      canvas[data-pen="true"]{touch-action:none !important}
     `;
     document.head.appendChild(css);
-    
+
     const bubble = document.createElement('div');
     bubble.id = 'penBubble';
     bubble.innerHTML = '<span style="font-size:24px">✏️</span>';
-    
+
     const bar = document.createElement('div');
     bar.id = 'penBar';
     bar.innerHTML = `
@@ -131,11 +193,13 @@
           </div>
           <div class="pen-pop-row">
             <span style="font-size:.65rem;font-weight:800">Size</span>
-            <input type="range" min="1" max="8" step="0.5" value="${state.size}" id="penSize" style="width:100px;accent-color:#8B5A2B"/>
+            <input type="range" min="1" max="8" step="0.5" value="${state.size}" id="penSize"
+                   style="width:100px;accent-color:#8B5A2B"/>
             <span id="penSizeLab" style="font-size:.65rem;font-weight:800;min-width:24px">${state.size}</span>
           </div>
         </div>
       </div>
+      <div class="pen-btn" data-tool="line" title="Straight Line">📏</div>
       <div class="pen-btn" data-tool="eraser">🧽</div>
       <div class="pen-btn" data-act="undo">↩️</div>
       <div class="pen-btn" data-act="redo">↪️</div>
@@ -157,269 +221,390 @@
         </div>
       </div>
     `;
-    
+
     const sound = document.createElement('div');
     sound.id = 'penSound';
     sound.textContent = state.soundOn ? '🔊' : '🔇';
-    
+
     document.body.appendChild(bubble);
     document.body.appendChild(bar);
     document.body.appendChild(sound);
-    
-    // Populate colors
+
+    // Colors
     const colorRow = document.getElementById('colorRow');
     CFG.colors.forEach(c => {
       const d = document.createElement('div');
-      d.className = 'pen-dot' + (c===state.color?' on':'');
+      d.className = 'pen-dot' + (c === state.color ? ' on' : '');
       d.style.background = c;
-      d.onclick = () => { state.color = c; saveState(); updateUI(); closePops(); };
+      d.onclick = () => {
+        state.color = c;
+        saveState();
+        updateUI();
+        closePops();
+      };
       colorRow.appendChild(d);
     });
-    
-    // Populate stamps/stickers
+
+    // Stamps / Stickers
     const stampGrid = document.getElementById('stampGrid');
-    const renderStamps = () => {
+    function renderStamps() {
       stampGrid.innerHTML = '';
       CFG.stamps.forEach(s => {
         const b = document.createElement('div');
-        b.className = 'pen-mini'; b.textContent = s; b.style.fontSize = '20px';
+        b.className = 'pen-mini';
+        b.textContent = s;
+        b.style.fontSize = '20px';
         b.onclick = () => { placeStamp(s); closePops(); };
         stampGrid.appendChild(b);
       });
-    };
-    const renderStickers = () => {
+    }
+    function renderStickers() {
       stampGrid.innerHTML = '';
       CFG.stickers.forEach(s => {
         const b = document.createElement('div');
-        b.className = 'pen-mini'; b.textContent = s; b.style.fontSize = '20px';
+        b.className = 'pen-mini';
+        b.textContent = s;
+        b.style.fontSize = '20px';
         b.onclick = () => { placeSticker(s); closePops(); };
         stampGrid.appendChild(b);
       });
-    };
+    }
     renderStamps();
-    
+
     attachEvents(bubble, bar, sound, renderStamps, renderStickers);
     makeDraggable(bubble, bar);
     updateUI();
-  };
-  
-  const closePops = () => document.querySelectorAll('.pen-pop').forEach(p => p.classList.remove('open'));
-  
-  const updateUI = () => {
+  }
+
+  function closePops() {
+    document.querySelectorAll('.pen-pop').forEach(p => p.classList.remove('open'));
+  }
+
+  function updateUI() {
     document.querySelectorAll('[data-tool]').forEach(b => {
       b.classList.toggle('on', b.dataset.tool === state.tool);
     });
     document.querySelectorAll('[data-type]').forEach(b => {
       b.classList.toggle('on', b.dataset.type === state.penType);
     });
-    document.querySelectorAll('.pen-dot').forEach((d,i) => {
+    document.querySelectorAll('.pen-dot').forEach((d, i) => {
       d.classList.toggle('on', CFG.colors[i] === state.color);
     });
-  };
-  
-  const positionBar = (bubble, bar) => {
+  }
+
+  function positionBar(bubble, bar) {
     const rect = bubble.getBoundingClientRect();
     const barRect = bar.getBoundingClientRect();
     const isTop = rect.top < window.innerHeight / 2;
-    
-    if(isTop) {
+
+    if (isTop) {
       bar.style.top = (rect.bottom + 8) + 'px';
       bar.style.bottom = 'auto';
     } else {
       bar.style.bottom = (window.innerHeight - rect.top + 8) + 'px';
       bar.style.top = 'auto';
     }
-    bar.style.left = Math.max(8, Math.min(window.innerWidth - barRect.width - 8, rect.left + rect.width/2 - barRect.width/2)) + 'px';
-  };
-  
-  const attachEvents = (bubble, bar, sound, renderStamps, renderStickers) => {
+    bar.style.left = Math.max(8, Math.min(window.innerWidth - barRect.width - 8,
+      rect.left + rect.width / 2 - barRect.width / 2)) + 'px';
+  }
+
+  function attachEvents(bubble, bar, sound, renderStamps, renderStickers) {
     let barOpen = false;
-    
-    bubble.onclick = (e) => {
+
+    bubble.addEventListener('click', e => {
       e.stopPropagation();
       barOpen = !barOpen;
       bar.classList.toggle('open', barOpen);
-      if(barOpen) positionBar(bubble, bar);
+      if (barOpen) positionBar(bubble, bar);
       closePops();
-    };
-    
-    // Long-press bubble = quick eraser
-    bubble.onpointerdown = (e) => {
+    });
+
+    // Long-press bubble → toggle eraser (Samsung friendly)
+    bubble.addEventListener('pointerdown', e => {
+      if (e.pointerType === 'touch' && e.width > 25) return; // ignore palm
       state.longPressTimer = setTimeout(() => {
         state.tool = state.tool === 'eraser' ? 'pen' : 'eraser';
-        saveState(); updateUI();
-        navigator.vibrate?.(50);
-      }, 600);
-    };
-    bubble.onpointerup = () => clearTimeout(state.longPressTimer);
-    bubble.onpointerleave = () => clearTimeout(state.longPressTimer);
-    
-    sound.onclick = () => {
+        saveState();
+        updateUI();
+        if (navigator.vibrate) navigator.vibrate(40);
+      }, 550);
+    });
+    bubble.addEventListener('pointerup', () => clearTimeout(state.longPressTimer));
+    bubble.addEventListener('pointerleave', () => clearTimeout(state.longPressTimer));
+    bubble.addEventListener('pointercancel', () => clearTimeout(state.longPressTimer));
+
+    sound.addEventListener('click', () => {
       state.soundOn = !state.soundOn;
       sound.textContent = state.soundOn ? '🔊' : '🔇';
       saveState();
-      if(state.soundOn) initAudio();
-    };
-    
-    // Tap outside closes
-    document.addEventListener('click', (e) => {
-      if(!bar.contains(e.target) && !bubble.contains(e.target)) {
+      if (state.soundOn) initAudio();
+    });
+
+    // Close on outside tap
+    document.addEventListener('click', e => {
+      if (!bar.contains(e.target) && !bubble.contains(e.target)) {
         bar.classList.remove('open');
         barOpen = false;
         closePops();
       }
     });
-    
+
     // Tool buttons
     bar.querySelectorAll('[data-tool]').forEach(b => {
-      b.onclick = (e) => {
+      b.addEventListener('click', e => {
         e.stopPropagation();
         state.tool = b.dataset.tool;
-        saveState(); updateUI(); closePops();
-      };
+        saveState();
+        updateUI();
+        closePops();
+      });
     });
-    
+
     // Pen pop
-    bar.querySelector('[data-tool="pen"]').onclick = (e) => {
+    bar.querySelector('[data-tool="pen"]').addEventListener('click', e => {
       e.stopPropagation();
       document.getElementById('penPop').classList.toggle('open');
-    };
-    
+    });
+
     bar.querySelectorAll('[data-type]').forEach(b => {
-      b.onclick = (e) => {
+      b.addEventListener('click', e => {
         e.stopPropagation();
         state.penType = b.dataset.type;
         state.tool = 'pen';
-        saveState(); updateUI();
-      };
+        saveState();
+        updateUI();
+      });
     });
-    
-    document.getElementById('penSize').oninput = (e) => {
+
+    document.getElementById('penSize').addEventListener('input', e => {
       state.size = parseFloat(e.target.value);
       document.getElementById('penSizeLab').textContent = state.size;
       saveState();
-    };
-    
+    });
+
     // Color pop
-    bar.querySelectorAll('.pen-btn')[5].onclick = (e) => {
+    bar.querySelectorAll('.pen-btn')[6].addEventListener('click', e => {
       e.stopPropagation();
       document.getElementById('colorPop').classList.toggle('open');
-    };
-    
+    });
+
     // Stamp pop
-    bar.querySelectorAll('.pen-btn')[6].onclick = (e) => {
+    bar.querySelectorAll('.pen-btn')[7].addEventListener('click', e => {
       e.stopPropagation();
       document.getElementById('stampPop').classList.toggle('open');
-    };
-    
+    });
+
     bar.querySelectorAll('.pen-tab').forEach(tab => {
-      tab.onclick = (e) => {
+      tab.addEventListener('click', e => {
         e.stopPropagation();
         bar.querySelectorAll('.pen-tab').forEach(t => t.classList.remove('on'));
         tab.classList.add('on');
-        if(tab.dataset.tab === 'stamps') renderStamps();
+        if (tab.dataset.tab === 'stamps') renderStamps();
         else renderStickers();
-      };
+      });
     });
-    
+
     // Actions
-    bar.querySelector('[data-act="undo"]').onclick = (e) => { e.stopPropagation(); undo(); };
-    bar.querySelector('[data-act="redo"]').onclick = (e) => { e.stopPropagation(); redo(); };
-    bar.querySelector('[data-act="clear"]').onclick = (e) => {
+    bar.querySelector('[data-act="undo"]').addEventListener('click', e => {
       e.stopPropagation();
-      if(confirm('Clear all drawings?')) clear();
-    };
-    
-    // Canvas detection
-    document.addEventListener('click', e => {
-      const c = e.target.closest('canvas');
-      if(c) { state.activeCanvas = c; state.ctx = c.getContext('2d'); }
+      undo();
     });
-    
-    // Scroll detection
-    window.addEventListener('scroll', () => {
-      state.isScrolling = true;
-      setTimeout(() => state.isScrolling = false, 150);
+    bar.querySelector('[data-act="redo"]').addEventListener('click', e => {
+      e.stopPropagation();
+      redo();
     });
-  };
-  
-  const makeDraggable = (el, bar) => {
-    let pos = {x:0,y:0}, moved = false;
-    el.onpointerdown = e => {
-      if(e.target !== el && !el.contains(e.target)) return;
-      e.preventDefault(); e.stopPropagation();
-      pos = {x:e.clientX, y:e.clientY}; moved = false;
-      const move = e => {
-        if(Math.abs(e.clientX - pos.x) > 5 || Math.abs(e.clientY - pos.y) > 5) moved = true;
-        el.style.left = (el.offsetLeft + e.clientX - pos.x) + 'px';
-        el.style.top = (el.offsetTop + e.clientY - pos.y) + 'px';
+    bar.querySelector('[data-act="clear"]').addEventListener('click', e => {
+      e.stopPropagation();
+      if (confirm('Clear all drawings?')) clearCanvas();
+    });
+  }
+
+  function makeDraggable(el, bar) {
+    let pos = { x: 0, y: 0 };
+    let moved = false;
+
+    el.addEventListener('pointerdown', e => {
+      if (e.target !== el && !el.contains(e.target)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      pos = { x: e.clientX, y: e.clientY };
+      moved = false;
+      el.setPointerCapture(e.pointerId);
+
+      const move = ev => {
+        if (Math.abs(ev.clientX - pos.x) > 6 || Math.abs(ev.clientY - pos.y) > 6) {
+          moved = true;
+          clearTimeout(state.longPressTimer);
+        }
+        el.style.left = (el.offsetLeft + ev.clientX - pos.x) + 'px';
+        el.style.top = (el.offsetTop + ev.clientY - pos.y) + 'px';
         el.style.bottom = el.style.right = 'auto';
-        pos = {x:e.clientX, y:e.clientY};
-        if(bar.classList.contains('open')) positionBar(el, bar);
+        pos = { x: ev.clientX, y: ev.clientY };
+        if (bar.classList.contains('open')) positionBar(el, bar);
       };
-      const up = () => { 
-        document.removeEventListener('pointermove', move); 
+
+      const up = () => {
+        el.releasePointerCapture(e.pointerId);
+        document.removeEventListener('pointermove', move);
         document.removeEventListener('pointerup', up);
-        if(moved) clearTimeout(state.longPressTimer);
+        document.removeEventListener('pointercancel', up);
+        if (moved) clearTimeout(state.longPressTimer);
       };
+
       document.addEventListener('pointermove', move);
       document.addEventListener('pointerup', up);
+      document.addEventListener('pointercancel', up);
+    });
+  }
+
+  // ---------- Drawing helpers ----------
+  function getPos(e, canvas) {
+    const r = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / r.width;
+    const scaleY = canvas.height / r.height;
+    return {
+      x: (e.clientX - r.left) * scaleX,
+      y: (e.clientY - r.top) * scaleY
     };
-  };
-  
-  const getPos = (e) => {
-    if(!state.activeCanvas) return null;
-    const r = state.activeCanvas.getBoundingClientRect();
-    return {x: (e.touches?e.touches[0].clientX:e.clientX) - r.left, y: (e.touches?e.touches[0].clientY:e.clientY) - r.top};
-  };
-  
-  const startDraw = (e) => {
-    if(!state.activeCanvas || !state.ctx || state.isScrolling || state.tool==='line') return;
-    // Palm rejection: only pen or finger with pressure
-    if(e.pointerType === 'touch' && e.width > 20) return;
-    if(e.pointerType !== 'pen' && e.pressure === 0 && e.pointerType !== 'mouse') return;
-    
+  }
+
+  function isPalm(e) {
+    // Samsung S9 / large contact areas
+    if (e.pointerType === 'touch' && (e.width > 28 || e.height > 28)) return true;
+    return false;
+  }
+
+  function ensureInitialUndo() {
+    if (!state.activeCanvas || state.undoStack.length > 0) return;
+    try {
+      state.undoStack.push(state.activeCanvas.toDataURL());
+    } catch (e) {}
+  }
+
+  function pushUndo() {
+    if (!state.activeCanvas) return;
+    try {
+      state.undoStack.push(state.activeCanvas.toDataURL());
+      if (state.undoStack.length > CFG.maxUndo) state.undoStack.shift();
+      state.redoStack = [];
+    } catch (e) {}
+  }
+
+  // ---------- Core drawing ----------
+  function startDraw(e) {
+    if (state.isScrolling) return;
+    if (isPalm(e)) return;
+
+    const canvas = e.target.closest('canvas');
+    if (!canvas) return;
+
+    // Activate canvas
+    state.activeCanvas = canvas;
+    state.ctx = canvas.getContext('2d');
+    canvas.dataset.pen = 'true';
+    canvas.style.touchAction = 'none';
+    ensureInitialUndo();
+
+    // Capture so we keep receiving events even if finger leaves canvas
+    try {
+      canvas.setPointerCapture(e.pointerId);
+      state.pointerId = e.pointerId;
+    } catch (err) {}
+
     e.preventDefault();
+
+    // ---- LINE TOOL ----
+    if (state.tool === 'line') {
+      const p = getPos(e, canvas);
+      state.lineStart = {
+        x: p.x,
+        y: p.y,
+        canvas,
+        ctx: state.ctx,
+        snapshot: null
+      };
+      // Save current canvas for live preview restore
+      try {
+        state.lineStart.snapshot = state.ctx.getImageData(0, 0, canvas.width, canvas.height);
+      } catch (err) {
+        state.lineStart.snapshot = null;
+      }
+      return;
+    }
+
+    // ---- PEN / ERASER ----
+    if (state.tool === 'line') return; // safety
+
     state.drawing = true;
-    state.points = [getPos(e)];
+    state.points = [getPos(e, canvas)];
     state.ctx.beginPath();
-    state.ctx.lineCap = state.ctx.lineJoin = 'round';
+    state.ctx.lineCap = 'round';
+    state.ctx.lineJoin = 'round';
     state.ctx.lineWidth = state.size;
-    
-    if(state.tool === 'eraser') {
+
+    if (state.tool === 'eraser') {
       state.ctx.globalCompositeOperation = 'destination-out';
       playEraser();
     } else {
       state.ctx.globalCompositeOperation = 'source-over';
-      if(state.penType === 'rainbow') {
+      state.ctx.shadowBlur = 0;
+
+      if (state.penType === 'rainbow') {
         state.ctx.strokeStyle = `hsl(${state.rainbowHue},100%,50%)`;
         state.rainbowHue = (state.rainbowHue + 5) % 360;
-      } else if(state.penType === 'glitter') {
-        state.ctx.strokeStyle = state.color;
-        state.ctx.shadowBlur = 0; // No shadow - fixes bold
       } else {
         state.ctx.strokeStyle = state.color;
-        state.ctx.shadowBlur = 0;
       }
-      if(state.penType === 'cursive') state.ctx.lineWidth = state.size * 0.7;
+
+      if (state.penType === 'cursive') {
+        state.ctx.lineWidth = state.size * 0.7;
+      }
       playPen();
     }
-  };
-  
-  const draw = (e) => {
-    if(!state.drawing || !state.ctx || state.isScrolling || state.tool==='line') return;
-    if(e.pointerType === 'touch' && e.width > 20) return;
-    
+  }
+
+  function draw(e) {
+    if (state.isScrolling) return;
+    if (isPalm(e)) return;
+
+    // ---- LINE PREVIEW ----
+    if (state.tool === 'line' && state.lineStart) {
+      e.preventDefault();
+      const { canvas, ctx, snapshot, x, y } = state.lineStart;
+      const end = getPos(e, canvas);
+
+      if (snapshot) {
+        ctx.putImageData(snapshot, 0, 0);
+      } else {
+        // fallback – rare
+      }
+
+      ctx.save();
+      ctx.strokeStyle = CFG.lineColor;
+      ctx.lineWidth = CFG.lineWidth;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(end.x, end.y);
+      ctx.stroke();
+      ctx.restore();
+      return;
+    }
+
+    if (!state.drawing || !state.ctx) return;
     e.preventDefault();
-    const p = getPos(e);
+
+    const p = getPos(e, state.activeCanvas);
     state.points.push(p);
-    
-    // Smooth with quadratic curves
-    if(state.points.length >= 3) {
+
+    // Smooth quadratic
+    if (state.points.length >= 3) {
       const len = state.points.length;
-      const xc = (state.points[len-2].x + p.x) / 2;
-      const yc = (state.points[len-2].y + p.y) / 2;
-      state.ctx.quadraticCurveTo(state.points[len-2].x, state.points[len-2].y, xc, yc);
+      const xc = (state.points[len - 2].x + p.x) / 2;
+      const yc = (state.points[len - 2].y + p.y) / 2;
+      state.ctx.quadraticCurveTo(state.points[len - 2].x, state.points[len - 2].y, xc, yc);
       state.ctx.stroke();
       state.ctx.beginPath();
       state.ctx.moveTo(xc, yc);
@@ -427,139 +612,211 @@
       state.ctx.lineTo(p.x, p.y);
       state.ctx.stroke();
     }
-    
+
     // Glitter sparkles
-    if(state.tool !== 'eraser' && state.penType === 'glitter' && Math.random() > 0.7) {
+    if (state.tool !== 'eraser' && state.penType === 'glitter' && Math.random() > 0.65) {
       state.ctx.save();
       state.ctx.fillStyle = state.color;
-      state.ctx.globalAlpha = 0.6;
+      state.ctx.globalAlpha = 0.55;
       state.ctx.beginPath();
-      state.ctx.arc(p.x + (Math.random()-0.5)*10, p.y + (Math.random()-0.5)*10, 1, 0, 7);
+      state.ctx.arc(
+        p.x + (Math.random() - 0.5) * 12,
+        p.y + (Math.random() - 0.5) * 12,
+        1.2, 0, Math.PI * 2
+      );
       state.ctx.fill();
       state.ctx.restore();
     }
-    
-    if(state.tool !== 'eraser' && state.penType === 'rainbow') {
+
+    // Rainbow continues
+    if (state.tool !== 'eraser' && state.penType === 'rainbow') {
       state.ctx.strokeStyle = `hsl(${state.rainbowHue},100%,50%)`;
       state.rainbowHue = (state.rainbowHue + 5) % 360;
     }
-  };
-  
-  const endDraw = (e) => {
-    if(!state.drawing || state.tool==='line') return;
+  }
+
+  function endDraw(e) {
+    // ---- LINE COMMIT ----
+    if (state.tool === 'line' && state.lineStart) {
+      e.preventDefault();
+      const { canvas, ctx, x, y } = state.lineStart;
+      const end = getPos(e, canvas);
+
+      // Final clean stroke (no glow)
+      ctx.save();
+      ctx.strokeStyle = CFG.lineColor;
+      ctx.lineWidth = CFG.lineWidth;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(end.x, end.y);
+      ctx.stroke();
+      ctx.restore();
+
+      playDing();
+      pushUndo();
+      state.lineStart = null;
+      return;
+    }
+
+    if (!state.drawing) return;
     state.drawing = false;
-    // Smooth final segment
-    if(state.points.length >= 2) {
-      const p = state.points[state.points.length-1];
+
+    // Final segment
+    if (state.points.length >= 2 && state.ctx) {
+      const p = state.points[state.points.length - 1];
       state.ctx.lineTo(p.x, p.y);
       state.ctx.stroke();
     }
     state.points = [];
-    // Save state AFTER stroke completes - fixes undo glitch
-    setTimeout(() => {
-      if(state.activeCanvas) {
-        state.undoStack.push(state.activeCanvas.toDataURL());
-        if(state.undoStack.length > 30) state.undoStack.shift();
-        state.redoStack = [];
-      }
-    }, 10);
-  };
-  
-  const undo = () => {
-    if(!state.ctx || state.undoStack.length < 2) return;
+
+    // Slight delay so last pixels are flushed
+    setTimeout(pushUndo, 12);
+
+    // Release capture
+    if (state.activeCanvas && state.pointerId != null) {
+      try {
+        state.activeCanvas.releasePointerCapture(state.pointerId);
+      } catch (err) {}
+      state.pointerId = null;
+    }
+  }
+
+  // ---------- Undo / Redo / Clear ----------
+  function undo() {
+    if (!state.ctx || state.undoStack.length < 2) return;
     state.redoStack.push(state.undoStack.pop());
     const img = new Image();
     img.onload = () => {
-      state.ctx.clearRect(0,0,state.activeCanvas.width,state.activeCanvas.height);
-      state.ctx.drawImage(img,0,0);
+      state.ctx.clearRect(0, 0, state.activeCanvas.width, state.activeCanvas.height);
+      state.ctx.drawImage(img, 0, 0);
     };
     img.src = state.undoStack[state.undoStack.length - 1];
-  };
-  
-  const redo = () => {
-    if(!state.ctx || !state.redoStack.length) return;
+  }
+
+  function redo() {
+    if (!state.ctx || !state.redoStack.length) return;
+    const data = state.redoStack.pop();
     const img = new Image();
     img.onload = () => {
-      state.ctx.clearRect(0,0,state.activeCanvas.width,state.activeCanvas.height);
-      state.ctx.drawImage(img,0,0);
-      state.undoStack.push(state.redoStack.pop());
+      state.ctx.clearRect(0, 0, state.activeCanvas.width, state.activeCanvas.height);
+      state.ctx.drawImage(img, 0, 0);
+      state.undoStack.push(data);
     };
-    img.src = state.redoStack[state.redoStack.length - 1];
-  };
-  
-  const clear = () => {
-    if(!state.ctx) return;
-    state.undoStack.push(state.activeCanvas.toDataURL());
-    state.ctx.clearRect(0,0,state.activeCanvas.width,state.activeCanvas.height);
-    state.redoStack = [];
-  };
-  
-  const placeStamp = (em) => {
-    if(!state.ctx) return alert('Tap a writing area first');
+    img.src = data;
+  }
+
+  function clearCanvas() {
+    if (!state.ctx) return;
+    pushUndo();
+    state.ctx.clearRect(0, 0, state.activeCanvas.width, state.activeCanvas.height);
+  }
+
+  // ---------- Stamps & Stickers ----------
+  function placeStamp(em) {
+    if (!state.ctx) {
+      alert('Tap a writing area first');
+      return;
+    }
     state.ctx.font = '32px serif';
-    state.ctx.fillText(em, state.activeCanvas.width/2 - 16, state.activeCanvas.height/2 + 16);
-    setTimeout(() => {
-      if(state.activeCanvas) {
-        state.undoStack.push(state.activeCanvas.toDataURL());
-        state.redoStack = [];
-      }
-    }, 10);
-  };
-  
-  const placeSticker = (em) => {
+    state.ctx.fillStyle = state.color;
+    state.ctx.fillText(em, state.activeCanvas.width / 2 - 16, state.activeCanvas.height / 2 + 12);
+    setTimeout(pushUndo, 10);
+  }
+
+  function placeSticker(em) {
     const s = document.createElement('div');
     s.className = 'pen-sticker';
     s.textContent = em;
-    s.style.left = '50%'; s.style.top = '50%';
+    s.style.left = '50%';
+    s.style.top = '45%';
     document.body.appendChild(s);
-    
-    let dragging = false, startPos = {};
-    s.onpointerdown = e => {
-      e.preventDefault(); e.stopPropagation();
+
+    let dragging = false;
+    let start = { x: 0, y: 0 };
+
+    s.addEventListener('pointerdown', e => {
+      e.preventDefault();
+      e.stopPropagation();
       dragging = true;
-      startPos = {x: e.clientX - s.offsetLeft, y: e.clientY - s.offsetTop};
+      start = { x: e.clientX - s.offsetLeft, y: e.clientY - s.offsetTop };
       s.style.cursor = 'grabbing';
-    };
-    
-    document.addEventListener('pointermove', e => {
-      if(!dragging) return;
-      s.style.left = (e.clientX - startPos.x) + 'px';
-      s.style.top = (e.clientY - startPos.y) + 'px';
+      s.setPointerCapture(e.pointerId);
     });
-    
-    document.addEventListener('pointerup', () => {
+
+    s.addEventListener('pointermove', e => {
+      if (!dragging) return;
+      s.style.left = (e.clientX - start.x) + 'px';
+      s.style.top = (e.clientY - start.y) + 'px';
+    });
+
+    s.addEventListener('pointerup', () => {
       dragging = false;
       s.style.cursor = 'grab';
     });
-    
-    s.onclick = (e) => {
-      if(dragging) return;
+
+    s.addEventListener('click', e => {
+      if (dragging) return;
       e.stopPropagation();
-      if(s.classList.contains('sel')) {
+      if (s.classList.contains('sel')) {
         s.classList.remove('sel');
         s.querySelector('.pen-sticker-ctrl')?.remove();
       } else {
         s.classList.add('sel');
         const ctrl = document.createElement('div');
         ctrl.className = 'pen-sticker-ctrl';
-        ctrl.style.cssText = 'position:absolute;top:-36px;left:50%;transform:translateX(-50%);display:flex;gap:4px;background:rgba(255,255,255,.96);border:2px solid #8B5A2B;border-radius:12px;padding:3px 5px';
-        ctrl.innerHTML = '<button type="button" style="width:26px;height:26px;border-radius:8px;border:1.5px solid #E7D5B0;background:#fff;font-size:16px">+</button><button type="button" style="width:26px;height:26px;border-radius:8px;border:1.5px solid #E7D5B0;background:#fff;font-size:16px">-</button><button type="button" style="width:26px;height:26px;border-radius:8px;border:1.5px solid #991B1B;background:#DC2626;color:#fff;font-size:16px">×</button>';
+        ctrl.style.cssText = 'position:absolute;top:-36px;left:50%;transform:translateX(-50%);display:flex;gap:4px;background:rgba(255,255,255,.96);border:2px solid #8B5A2B;border-radius:12px;padding:3px 5px;';
+        ctrl.innerHTML = `
+          <button type="button" style="width:26px;height:26px;border-radius:8px;border:1.5px solid #E7D5B0;background:#fff;font-size:16px">+</button>
+          <button type="button" style="width:26px;height:26px;border-radius:8px;border:1.5px solid #E7D5B0;background:#fff;font-size:16px">-</button>
+          <button type="button" style="width:26px;height:26px;border-radius:8px;border:1.5px solid #991B1B;background:#DC2626;color:#fff;font-size:16px">×</button>`;
         s.appendChild(ctrl);
-        ctrl.children[0].onclick = e => { e.stopPropagation(); s.style.fontSize = (parseInt(s.style.fontSize||32) + 4) + 'px'; };
-        ctrl.children[1].onclick = e => { e.stopPropagation(); s.style.fontSize = Math.max(16, parseInt(s.style.fontSize||32) - 4) + 'px'; };
-        ctrl.children[2].onclick = e => { e.stopPropagation(); s.remove(); };
+        ctrl.children[0].onclick = ev => {
+          ev.stopPropagation();
+          s.style.fontSize = (parseInt(s.style.fontSize || 32) + 4) + 'px';
+        };
+        ctrl.children[1].onclick = ev => {
+          ev.stopPropagation();
+          s.style.fontSize = Math.max(16, parseInt(s.style.fontSize || 32) - 4) + 'px';
+        };
+        ctrl.children[2].onclick = ev => {
+          ev.stopPropagation();
+          s.remove();
+        };
       }
-    };
-    
+    });
+
+    // Auto remove after 5 minutes
     setTimeout(() => s.remove(), 300000);
-  };
-  
+  }
+
+  // ---------- Init ----------
   loadState();
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', buildUI);
-  else buildUI();
-  
-  document.addEventListener('pointerdown', startDraw);
-  document.addEventListener('pointermove', draw);
-  document.addEventListener('pointerup', endDraw);
-  document.addEventListener('pointercancel', () => { state.drawing = false; state.points = []; });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', buildUI);
+  } else {
+    buildUI();
+  }
+
+  // Single set of listeners (Pointer Events only)
+  document.addEventListener('pointerdown', startDraw, { passive: false });
+  document.addEventListener('pointermove', draw, { passive: false });
+  document.addEventListener('pointerup', endDraw, { passive: false });
+  document.addEventListener('pointercancel', () => {
+    state.drawing = false;
+    state.points = [];
+    state.lineStart = null;
+  });
+
+  // Scroll detection (helps palm rejection)
+  let scrollTimer;
+  window.addEventListener('scroll', () => {
+    state.isScrolling = true;
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => { state.isScrolling = false; }, 180);
+  }, { passive: true });
+
 })();
