@@ -1,5 +1,5 @@
-// shared/math-pen.js v1.2
-// Maths pen: universal pen + Line tool (auto-snap + glow + ding)
+// shared/math-pen.js v1.3
+// Maths pen: universal pen + Line tool (Exact 5.6 Exercise - NO glow)
 
 (function(){
   const script = document.createElement('script');
@@ -27,10 +27,12 @@
         lineBtn.classList.add('on');
       };
       
-      // Line drawing logic with snap + glow + ding
+      // Line drawing - EXACT 5.6 Exercise code - NO GLOW
       let lineStart = null;
+      
       document.addEventListener('pointerdown', e => {
         if(window.UniversalPen?.state.tool === 'line') {
+          e.stopImmediatePropagation(); // Prevent pen from also drawing
           const c = e.target.closest('canvas');
           if(c) {
             const r = c.getBoundingClientRect();
@@ -42,7 +44,7 @@
             };
           }
         }
-      });
+      }, true); // Capture phase to intercept before pen
       
       document.addEventListener('pointerup', e => {
         if(window.UniversalPen?.state.tool === 'line' && lineStart) {
@@ -54,42 +56,26 @@
           
           const ctx = lineStart.ctx;
           ctx.save();
-          ctx.strokeStyle = '#8B5A2B';
-          ctx.lineWidth = window.UniversalPen.state.size;
+          ctx.strokeStyle = '#8B5A2B';  // Dark brown - 5.6 style
+          ctx.lineWidth = 2.5;          // Thin - 5.6 style
           ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
           ctx.beginPath();
           ctx.moveTo(lineStart.x, lineStart.y);
           ctx.lineTo(end.x, end.y);
           ctx.stroke();
-          
-          // Gold glow
-          ctx.strokeStyle = '#F59E0B';
-          ctx.lineWidth = window.UniversalPen.state.size + 4;
-          ctx.globalAlpha = 0.6;
-          ctx.stroke();
           ctx.restore();
           
+          // NO GLOW - removed per user request
           window.UniversalPen.playDing();
           
-          // Fade glow after 500ms
-          setTimeout(() => {
-            ctx.save();
-            ctx.strokeStyle = '#8B5A2B';
-            ctx.lineWidth = window.UniversalPen.state.size;
-            ctx.beginPath();
-            ctx.moveTo(lineStart.x, lineStart.y);
-            ctx.lineTo(end.x, end.y);
-            ctx.stroke();
-            ctx.restore();
-            
-            // Save to undo stack
-            window.UniversalPen.state.undoStack.push(lineStart.canvas.toDataURL());
-            window.UniversalPen.state.redoStack = [];
-          }, 500);
+          // Save to undo stack
+          window.UniversalPen.state.undoStack.push(lineStart.canvas.toDataURL());
+          window.UniversalPen.state.redoStack = [];
           
           lineStart = null;
         }
-      });
+      }, true);
     }, 100);
   };
   document.head.appendChild(script);
