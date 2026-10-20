@@ -161,6 +161,21 @@ html,body{width:100vw;height:100vh;height:100dvh;margin:0;padding:0;overflow:hid
 .worm-say{position:fixed;left:12px;bottom:56px;z-index:21;max-width:200px;background:#fff;border:2px solid #5D4037;border-radius:12px;padding:6px 10px;font-weight:900;font-size:.72rem;color:#3E2723;box-shadow:0 4px 10px rgba(0,0,0,.25);opacity:0;transform:translateY(6px);transition:opacity .3s,transform .3s;pointer-events:none}
 .worm-say.show{opacity:1;transform:translateY(0)}
 @media (prefers-reduced-motion:reduce){.fill-chip.snap,.sprout-mini.pop{animation:none}.worm-peek,.worm-say,.root-line{transition:none}}
+
+/* ---- Congratulations: hero slides in, dances, speaks ---- */
+.congrats{position:fixed;inset:0;z-index:130;background:rgba(62,39,35,.45);display:none;align-items:center;justify-content:center;padding:12px;backdrop-filter:blur(2px)}
+.congrats.show{display:flex}
+.congrats-box{display:flex;flex-direction:column;align-items:center;gap:10px;padding:14px 18px 18px;background:rgba(255,253,240,.98);border:3px solid #5D4037;border-radius:22px;box-shadow:0 18px 40px rgba(0,0,0,.35);max-width:min(340px,92vw);text-align:center;margin-top:60px}
+.congrats-hero{width:150px;height:150px;object-fit:contain;margin-top:-110px;filter:drop-shadow(0 8px 14px rgba(0,0,0,.3))}
+.congrats-hero.in{animation:heroIn .6s cubic-bezier(.34,1.56,.64,1) both, heroDance .6s ease-in-out .6s 4}
+@keyframes heroIn{from{transform:translateY(60vh) scale(.6)}to{transform:translateY(0) scale(1)}}
+@keyframes heroDance{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-14px) rotate(-3deg)}}
+.congrats-title{font-family:'Fredoka',sans-serif;font-weight:800;font-size:1.25rem;color:#3E2723}
+.congrats-sub{font-weight:800;font-size:.9rem;color:#5D4037}
+.congrats-btn{margin-top:4px;padding:8px 18px;border-radius:999px;border:2px solid #3E2723;background:#5D4037;color:#fff;font-weight:900;font-size:.85rem;cursor:pointer}
+.congrats-btn:active{transform:scale(.96)}
+.cfx{position:fixed;top:-12px;width:9px;height:9px;border-radius:2px;pointer-events:none;z-index:131}
+@media (prefers-reduced-motion:reduce){.congrats-hero.in{animation:none}}
 </style>
 </head>
 <body>
@@ -184,6 +199,7 @@ html,body{width:100vw;height:100vh;height:100dvh;margin:0;padding:0;overflow:hid
 <div id="penBubble">✏</div><div id="penPanel"><div class="pen-row"><div class="pen-tool on" id="penMain" onclick="togglePenSub()"><span id="penIcon">✏</span><div class="pen-submenu" id="penSub"><button class="pen-sub on" data-pen="pen" type="button" onclick="setPen('pen','✏')">✏</button><button class="pen-sub" data-pen="cursive" type="button" onclick="setPen('cursive','🖋')">🖋</button><button class="pen-sub" data-pen="rainbow" type="button" onclick="setPen('rainbow','🌈')">🌈</button><button class="pen-sub" data-pen="glitter" type="button" onclick="setPen('glitter','✨')">✨</button></div></div><button class="pen-tool" id="eraserTool" type="button" onclick="setPen('eraser','🧽')">🧽</button><button class="pen-tool" type="button" onclick="doUndo()">↩</button><button class="pen-tool" type="button" onclick="doClear()">🧹</button><button class="pen-tool" type="button" onclick="toggleStickers()">🎨</button></div><div class="pen-row"><div class="color-dot on" style="background:#3E2723" data-color="#3E2723"></div><div class="color-dot" style="background:#2E7D32" data-color="#2E7D32"></div><div class="color-dot" style="background:#1565C0" data-color="#1565C0"></div><div class="color-dot" style="background:#C62828" data-color="#C62828"></div><div class="color-dot" style="background:#F9A825" data-color="#F9A825"></div></div><div class="pen-row"><input type="range" min="1" max="8" value="2.6" step="0.5" class="size-slider" id="sizeSlider"/></div><div class="pen-row sticker-row" id="stickerRow"><button class="pen-tool" type="button" onclick="spawnSticker('🌻')">🌻</button><button class="pen-tool" type="button" onclick="spawnSticker('🌷')">🌷</button><button class="pen-tool" type="button" onclick="spawnSticker('💧')">💧</button><button class="pen-tool" type="button" onclick="spawnSticker('🦋')">🦋</button><button class="pen-tool" type="button" onclick="spawnSticker('🐝')">🐝</button><button class="pen-tool" type="button" onclick="spawnSticker('🌾')">🌾</button><button class="pen-tool" type="button" onclick="spawnSticker('⭐')">⭐</button><button class="pen-tool" type="button" onclick="spawnSticker('🌿')">🌿</button></div></div>
 <div id="pinModal"><div class="pin-box"><div style="font-weight:900">Enter PIN</div><input type="password" id="pinInput" class="pin-input" placeholder="••••" inputmode="numeric"/><div id="pinError" style="display:none;color:#D32F2F;font-size:.7rem;font-weight:800">Wrong PIN</div><div style="display:flex;gap:8px;margin-top:8px"><button class="hub-btn" type="button" onclick="closePin()" style="flex:1">Cancel</button><button class="hub-btn" type="button" onclick="checkPin()" style="flex:1;background:#5D4037;color:#fff">OK</button></div></div></div>
 <div class="worm-say" id="wormSay" aria-live="polite"></div><div class="worm-peek" id="worm" title="Tap me!">🪱</div>
+<div id="congrats" class="congrats" onclick="if(event.target===this) closeCongrats()"><div class="congrats-box"><img id="congratsHero" class="congrats-hero" src="assets/soil-girl-hero.png" alt="" onerror="this.style.display='none'"/><div class="congrats-title" id="congratsTitle">Well done!</div><div class="congrats-sub" id="congratsSub"></div><button type="button" class="congrats-btn" onclick="closeCongrats()">Keep going ✨</button></div></div>
 <script>
 let audioCtx=null;
 function initAudio(){if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();}
@@ -413,6 +429,7 @@ function getWord(){return selected.map(sc=>GRID[sc.r][sc.c]).join('');}
 function checkSel(){const w=getWord(); const rev=w.split('').reverse().join(''); const found=getFound(); if(TARGETS.includes(w)&&!found.includes(w)) foundWord(w); else if(TARGETS.includes(rev)&&!found.includes(rev)) foundWord(rev); else if(w.length>2){setTimeout(()=>clearSel(),400);}}
 function foundWord(word){
  let f=getFound(); f.push(word); setFound(f); justFound=word;
+ if(f.length===TARGETS.length) setTimeout(()=>celebrate('F','All 5 soil words found!'),1100);
  localStorage.setItem(STORE+'pos_'+mode+'_'+word, JSON.stringify(selected.slice()));
  selected.forEach(sc=>{const el=document.querySelector(`.clod-cell[data-r="${sc.r}"][data-c="${sc.c}"]`); if(el){el.classList.add('found'); el.innerHTML=`<span class="sprout">${getSprout(word)}</span>`; for(let i=0;i<4;i++){const drop=document.createElement('div'); drop.className='water-drop'; drop.textContent='💧'; drop.style.left=(5+Math.random()*20)+'px'; drop.style.animationDelay=(i*0.12)+'s'; el.appendChild(drop); setTimeout(()=>drop.remove(),1000);} setTimeout(()=>playWater(),10);}});
  setTimeout(()=>playCandy(),10); setTimeout(()=>{selected=[]; renderSec();},800);
@@ -458,9 +475,7 @@ function checkAnswers(sec){
   document.getElementById('trySub').textContent=`You got ${correct} out of ${total}. Let's try again!`;
   document.getElementById('tryAgainModal').classList.add('show');
  } else {
-  document.getElementById('tryTitle').textContent=`Great Job! 🌟 ${correct}/${total}`;
-  document.getElementById('trySub').textContent=`All correct!`;
-  document.getElementById('tryAgainModal').classList.add('show');
+  celebrate(sec, `All ${total} correct! ${correct}/${total}`);
  }
 }
 // FAST TAP FIX - no full render, instant visual feedback
@@ -477,6 +492,7 @@ function fastSelectUpdate(group, id, val){
 }
 function selectObj(id, opt){
   localStorage.setItem(STORE+'obj_'+mode+'_'+id, opt);
+  maybeCelebrate('A');
   fastSelectUpdate('obj', id, opt);
   // defer heavy work to avoid lag
   setTimeout(()=>{playPop();}, 0);
@@ -485,12 +501,14 @@ function selectObj(id, opt){
 function selectFill(id, chip){
   fillJuice(id, chip);
   localStorage.setItem(STORE+'fill_'+mode+'_'+id, chip);
+  maybeCelebrate('B');
   fastSelectUpdate('fill', id, chip);
   setTimeout(()=>{playPop();}, 0);
   setTimeout(()=>{speak(chip);}, 30);
 }
 function selectTF(id, val){
   localStorage.setItem(STORE+'tf_'+mode+'_'+id, val);
+  maybeCelebrate('C');
   fastSelectUpdate('tf', id, val);
   setTimeout(()=>{playPop();}, 0);
   setTimeout(()=>{speak(val);}, 30);
@@ -580,6 +598,57 @@ function armWorm(ms){ clearTimeout(wormIdle); wormIdle=setTimeout(showWorm, ms);
 }, {passive:true}));
 document.getElementById('worm').addEventListener('click', ()=>{ clearTimeout(wormIdle); showWorm(); });
 armWorm(5000);
+
+/* ===== Congratulations ===== */
+const CONGRATS_LINES={A:'Section A complete!',B:'Section B complete!',C:'Section C complete!',F:'All 5 soil words found!'};
+const celebrated=new Set();
+function sectionAllCorrect(sec){
+  if(sec==='A') return OBJ.every(o=>localStorage.getItem(STORE+'obj_'+mode+'_'+o.id)===o.ans);
+  if(sec==='B') return FILLS.every(f=>localStorage.getItem(STORE+'fill_'+mode+'_'+f.id)===f.ans);
+  if(sec==='C') return TFS.every(t=>localStorage.getItem(STORE+'tf_'+mode+'_'+t.id)===t.ans);
+  return false;
+}
+// Practice: celebrate once per section, when every answer is right.
+// Write: celebration comes from the Check button (checkAnswers).
+function maybeCelebrate(sec){
+  if(mode!=='practice') return;
+  const key='practice-'+sec;
+  if(celebrated.has(key) || !sectionAllCorrect(sec)) return;
+  celebrated.add(key);
+  setTimeout(()=>celebrate(sec), 250);
+}
+function congratsConfetti(){
+  if(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const cols=['#22c55e','#f59e0b','#ec4899','#38bdf8','#a78bfa','#fde047'];
+  for(let i=0;i<26;i++){
+    const d=document.createElement('div');
+    d.className='cfx';
+    d.style.left=(Math.random()*100)+'vw';
+    d.style.background=cols[i%cols.length];
+    document.body.appendChild(d);
+    const dx=(Math.random()-.5)*140;
+    d.animate(
+      [{transform:'translate(0,0) rotate(0deg)',opacity:1},
+       {transform:`translate(${dx}px,105vh) rotate(${360+Math.random()*360}deg)`,opacity:.9}],
+      {duration:1800+Math.random()*900,delay:Math.random()*300,easing:'cubic-bezier(.3,.6,.5,1)',fill:'forwards'}
+    ).onfinish=()=>d.remove();
+  }
+}
+function celebrate(sec, line){
+  initAudio();
+  const text=line || CONGRATS_LINES[sec] || 'Brilliant work!';
+  document.getElementById('congratsTitle').textContent='Well done, Zaina! 🌟';
+  document.getElementById('congratsSub').textContent=text;
+  const hero=document.getElementById('congratsHero');
+  hero.classList.remove('in'); void hero.offsetWidth; hero.classList.add('in');
+  document.getElementById('congrats').classList.add('show');
+  playCandy();
+  congratsConfetti();
+  speak('Well done Zaina! '+text);
+}
+function closeCongrats(){
+  document.getElementById('congrats').classList.remove('show');
+}
 </script>
 </body>
 </html>
