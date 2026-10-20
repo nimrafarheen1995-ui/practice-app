@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Zaina • Decimal Point Dance — Exercise 5.6</title>
-
   <link rel="preload" as="image" href="assets/twilight.png" />
   <link rel="preload" as="image" href="assets/fluttershy.png" />
   <link rel="preload" as="image" href="assets/rarity.png" />
@@ -13,12 +12,10 @@
   <link rel="preload" as="image" href="assets/celestia.png" />
   <link rel="preload" as="image" href="assets/applejack.png" />
   <link rel="preload" as="image" href="assets/rainbow.png" />
-
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800&family=Quicksand:wght@500;700;800&family=Kalam:wght@700&display=swap" rel="stylesheet" />
-
   <style>
     :root {
       --font-main: 'Quicksand', sans-serif;
@@ -31,7 +28,6 @@
     body.mode-practice { background: #f3eefc; }
     .font-display { font-family: var(--font-display); }
     .font-hand { font-family: var(--font-hand); }
-
     /* Teach video bg */
     #bgVideo {
       position: fixed; inset: 0; width: 100%; height: 100%;
@@ -43,22 +39,18 @@
       background: linear-gradient(180deg, rgba(15,7,32,0.55) 0%, rgba(15,7,32,0.72) 100%);
       transition: opacity 0.45s ease;
     }
-    body.mode-practice #bgVideo,
-    body.mode-practice #bgVideoShade { opacity: 0; }
-    body.mode-practice #bgVideoShade { animation: none !important; }
-
+    /* Practice keeps dim twilight instead of flat lavender */
+    body.mode-practice #bgVideo { opacity: 0.12 !important; }
+    body.mode-practice #bgVideoShade { opacity: 0.45 !important; animation: none !important; }
+    body.mode-practice #starCanvas { opacity: 0.25 !important; }
     @keyframes shadeBreathe { 0%,100%{opacity:0.52} 50%{opacity:0.68} }
     #bgVideoShade { animation: shadeBreathe 6s ease-in-out infinite; will-change: opacity; }
     #bgVideoShade.feedback-correct { animation: none !important; opacity: 0.15 !important; transition: opacity 0.5s ease; }
     #bgVideoShade.feedback-wrong { animation: none !important; opacity: 0.85 !important; transition: opacity 0.35s ease; }
-
-
     #starCanvas { position: fixed; inset: 0; pointer-events: none; z-index: 2; transition: opacity 0.4s ease; }
     body.mode-practice #starCanvas { opacity: 0; }
-
     #screenDimOverlay { position: fixed; inset: 0; background: #000; opacity: 0; pointer-events: none; z-index: 99998; transition: opacity 0.2s ease; }
     #confettiCanvas { position: fixed; inset: 0; pointer-events: none; z-index: 99999; }
-
     .graph-paper {
       background-color: #fffef8;
       background-image:
@@ -66,7 +58,6 @@
         linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
       background-size: 22px 22px;
     }
-
     /* Glass binder cover (frost + pony tint) */
     .binder-cover {
       transition: transform 0.75s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.45s ease;
@@ -122,7 +113,6 @@
       border-radius: 2px;
       background: repeating-linear-gradient(to bottom, #6366f1 0 6px, transparent 6px 12px);
     }
-
     /* Pen drawer */
     .tools-gear-btn {
       position: absolute; right: 12px; top: 10px; z-index: 40;
@@ -163,7 +153,6 @@
     }
     .wheel-swatch.on { transform: scale(1.15); box-shadow: 0 0 10px #fde047; }
     .thick-slider { width: 110px; accent-color: #fbbf24; }
-
     /* Place-value / dancer */
     .pv-cell {
       min-width: 2.35rem; height: 2.55rem;
@@ -180,7 +169,6 @@
       position: absolute; bottom: -1.1rem; left: 50%; transform: translateX(-50%);
       font-size: 0.52rem; font-weight: 700; color: #7c3aed; white-space: nowrap;
     }
-
     .q-card {
       background: linear-gradient(145deg, #1e1b4b 0%, #312e81 100%);
       border: 1px solid rgba(196,181,253,0.35); border-radius: 1.1rem;
@@ -193,14 +181,12 @@
     }
     .q-card:active { transform: scale(0.97); }
     .q-card.done { border-color: #34d399; background: linear-gradient(145deg, #064e3b 0%, #065f46 100%); }
-
     .stage { display: none; flex: 1; flex-direction: column; min-height: 0; position: relative; z-index: 10; }
     .stage.active { display: flex; }
     header { flex-shrink: 0; z-index: 20; }
     body:not(.mode-practice) header { background: linear-gradient(180deg, rgba(30,16,53,0.75) 0%, transparent 100%); }
     body.mode-practice header { background: linear-gradient(180deg, #ede9fe 0%, transparent 100%); }
     .scroll-y { overflow-y: auto; -webkit-overflow-scrolling: touch; }
-
     .dance-btn {
       width: 2.75rem; height: 2.75rem; border-radius: 0.85rem;
       border: 2px solid #c4b5fd; background: #fff; color: #5b21b6;
@@ -209,9 +195,22 @@
       box-shadow: 0 2px 6px rgba(91,33,182,0.12);
     }
     .dance-btn:active { transform: scale(0.94); background: #ede9fe; }
-
-    @keyframes bounceDot { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+    @keyframes bounceDot { 0%,100%{transform:translateY(0) scale(1)} 25%{transform:translateY(-8px) scale(1.1)} 50%{transform:translateY(-6px) scale(1.05)} 75%{transform:translateY(-2px) scale(1)} }
+    @keyframes cherryWobble { 0%,100%{transform:rotate(0deg)} 25%{transform:rotate(-8deg)} 75%{transform:rotate(8deg)} }
     .dot-dance { animation: bounceDot 0.7s ease infinite; }
+    .cherry-dot { 
+      background: linear-gradient(180deg, #ff6b9d 0%, #ec4899 50%, #be185d 100%);
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      width: 18px !important; height: 20px !important;
+      display: inline-flex !important; align-items: center; justify-content: center;
+      font-size: 11px; line-height: 1;
+      box-shadow: 0 2px 0 #9d174d, 0 3px 6px rgba(0,0,0,0.25), inset 0 1px 2px rgba(255,255,255,0.6);
+      position: relative;
+    }
+    .cherry-dot::before {
+      content: ''; position: absolute; top: -4px; left: 50%; width: 2px; height: 6px;
+      background: #4a7c2e; border-radius: 2px; transform: translateX(-50%) rotate(-12deg);
+    }
     @keyframes slideInRight { from{opacity:0;transform:translateX(24px)} to{opacity:1;transform:translateX(0)} }
     .slide-in { animation: slideInRight 0.35s ease forwards; }
     @keyframes shakeX { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
@@ -226,21 +225,29 @@
     }
     .pony-peek.show { opacity: 0.32; }
     .pony-peek.jump { transform: rotate(-6deg) translateY(-14px) scale(1.08); }
+    /* Close binder X - top-left, matches gear button style */
+    .close-binder-btn {
+      position: absolute; left: 12px; top: 10px; z-index: 30;
+      width: 34px; height: 34px; border-radius: 50%;
+      background: rgba(255,255,255,0.92); border: 2px solid #8b5a2b;
+      color: #5a3c22; font-weight: 900; font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      transition: transform 0.15s, background 0.15s;
+    }
+    .close-binder-btn:active { transform: scale(0.9); background: #fff; }
     /* Pony reward badges */
     #ponyRewardBar { display:flex; gap:6px; flex-wrap:wrap; min-height:28px; }
     .pony-badge { width:32px; height:32px; object-fit:contain; background:rgba(255,255,255,.9); border-radius:50%; padding:2px; border:2px solid #a78bfa; animation: popIn 0.5s cubic-bezier(.34,1.56,.64,1); }
     @keyframes popIn { 0%{transform:scale(0) rotate(-15deg)} 100%{transform:scale(1) rotate(0)} }
-
   </style>
 </head>
 <body>
-
   <video id="bgVideo" src="assets/twilight.mp4" muted loop playsinline preload="metadata"></video>
   <div id="bgVideoShade"></div>
   <canvas id="starCanvas"></canvas>
   <canvas id="confettiCanvas"></canvas>
   <div id="screenDimOverlay"></div>
-
   <header class="px-4 pt-3 pb-2 flex items-center justify-between gap-3">
     <div class="flex items-center gap-2.5 min-w-0">
       <button type="button" onclick="goHub()" id="hubBtn" class="shrink-0 text-xs font-bold px-3 py-1.5 rounded-xl border">← Hub</button>
@@ -257,7 +264,6 @@
       <img src="assets/twilight.png" alt="Twilight" class="w-10 h-10 object-contain drop-shadow-lg" onerror="this.style.display='none'" />
     </div>
   </header>
-
   <!-- TEACH -->
   <section id="stageTeach" class="stage active px-4 pb-4">
     <div class="flex-1 scroll-y max-w-2xl mx-auto w-full flex flex-col gap-4 justify-center">
@@ -274,7 +280,6 @@
           </p>
         </div>
       </div>
-
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div class="bg-black/35 border border-white/15 rounded-2xl p-4 text-center backdrop-blur-sm">
           <div class="text-3xl mb-1">①</div>
@@ -295,7 +300,6 @@
           <p class="font-hand text-pink-300 text-sm mt-2">0.12 → 120</p>
         </div>
       </div>
-
       <div class="bg-black/45 border border-violet-500/40 rounded-2xl p-4 backdrop-blur-sm">
         <p class="text-center text-purple-200 text-xs font-bold mb-1 uppercase tracking-wider">Watch the decimal point dance</p>
         <p class="text-center text-purple-300/80 text-[11px] mb-3">Example: <b class="text-white">23.5</b></p>
@@ -308,14 +312,12 @@
           <button type="button" onclick="resetDemo()" class="bg-white/10 hover:bg-white/20 text-white text-xs font-bold px-3 py-1.5 rounded-lg">Reset</button>
         </div>
       </div>
-
       <button type="button" onclick="showPractice()"
               class="w-full sm:w-auto mx-auto bg-gradient-to-r from-pink-500 to-violet-600 hover:from-pink-400 hover:to-violet-500 text-white font-display font-bold text-lg px-8 py-3.5 rounded-2xl shadow-lg shadow-pink-500/30 active:scale-95 transition">
         Start the Dance ✨
       </button>
     </div>
   </section>
-
   <!-- LIST -->
   <section id="stageList" class="stage px-4 pb-4">
     <div class="flex-1 scroll-y max-w-lg mx-auto w-full flex flex-col gap-3 pt-1">
@@ -326,7 +328,6 @@
       <div id="questionList" class="flex flex-col gap-2.5"></div>
     </div>
   </section>
-
   <!-- WORK -->
   <section id="stageWork" class="stage px-3 pb-3">
     <div class="flex-1 flex flex-col max-w-3xl mx-auto w-full min-h-0">
@@ -338,7 +339,6 @@
           <button type="button" id="btnNext" onclick="navQuestion(1)" class="bg-violet-100 text-violet-800 text-xs font-bold px-2.5 py-1.5 rounded-lg disabled:opacity-30 border border-violet-200">▶</button>
         </div>
       </div>
-
       <div class="bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col flex-1 min-h-0 border border-violet-200">
         <div class="px-4 py-3 bg-gradient-to-r from-violet-50 to-pink-50 border-b border-violet-100 shrink-0">
           <div class="flex items-start gap-3">
@@ -349,7 +349,6 @@
             </div>
           </div>
         </div>
-
         <!-- DANCER -->
         <div id="modeDancer" class="flex-1 flex flex-col min-h-0 px-4 py-4 gap-4">
           <p class="text-center text-violet-500 text-[11px] font-bold uppercase tracking-wider">Move the decimal point yourself</p>
@@ -371,7 +370,6 @@
             <p id="wrongMsgDancer" class="text-red-500 text-xs font-bold text-center mt-2 min-h-[1.1rem]"></p>
           </div>
         </div>
-
         <!-- BINDER -->
         <div id="modeBinder" class="flex-1 flex flex-col min-h-0 hidden">
           <div class="px-4 py-2.5 bg-slate-50 border-b border-slate-200 flex items-center gap-2 shrink-0 flex-wrap">
@@ -382,7 +380,6 @@
             <button type="button" onclick="checkAnswer()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm px-4 py-1.5 rounded-lg shadow-sm">✅ Check</button>
           </div>
           <p id="wrongMsgBinder" class="text-red-500 text-xs font-bold text-center px-4 min-h-[1.1rem]"></p>
-
           <div id="ponyRewardBar" class="px-4 py-1.5 flex items-center gap-1 bg-violet-50/80 border-b border-violet-100"></div>
           <div class="relative flex-1 min-h-[220px] flex flex-col">
             <!-- Glass cover -->
@@ -399,7 +396,6 @@
                 <span class="bg-white text-indigo-900 font-bold px-4 py-2 rounded-xl text-sm shadow">Tap to open notebook</span>
               </div>
             </div>
-
             <!-- Notebook page -->
             <div class="flex-1 flex flex-col min-h-0 relative" id="canvasAreaWrapper">
               <img id="ponyPeek" class="pony-peek" src="assets/rarity.png" alt="" onerror="this.style.display='none'" />
@@ -418,7 +414,6 @@
                 <button type="button" class="drawer-tool-btn" onclick="undoInk()" title="Undo">↩️</button>
                 <button type="button" class="drawer-tool-btn" onclick="redoInk()" title="Redo">↪️</button>
                 <button type="button" class="drawer-tool-btn" onclick="clearCanvas()" title="Clear">🗑️</button>
-
                 <div id="colorBubble" class="drawer-bubble">
                   <div class="wheel-swatch on" style="background:#1e1b4b" onclick="setColor('#1e1b4b')"></div>
                   <div class="wheel-swatch" style="background:#dc2626" onclick="setColor('#dc2626')"></div>
@@ -433,7 +428,6 @@
                   <span id="thickLabel" class="text-amber-200 text-[10px] font-bold text-center">2.5</span>
                 </div>
               </div>
-
               <div class="flex-1 relative graph-paper overflow-hidden select-none touch-none" id="canvasArea">
                 <canvas id="inkCanvas" class="absolute inset-0 w-full h-full cursor-crosshair touch-none" oncontextmenu="return false;"></canvas>
               </div>
@@ -443,7 +437,6 @@
       </div>
     </div>
   </section>
-
   <div id="celebrateOverlay" class="fixed inset-0 z-[100000] items-center justify-center bg-black/50" style="display:none">
     <div class="bg-white rounded-3xl p-6 max-w-sm mx-4 text-center shadow-2xl slide-in">
       <img id="celebPony" src="assets/twilight.png" alt="" class="w-28 h-28 mx-auto object-contain mb-2" />
@@ -455,7 +448,6 @@
       </div>
     </div>
   </div>
-
   <script>
     const QUESTIONS = [
       { id:'e56_1a', label:'1.a', text:'23.5 × 100 = .............', num:'23.5', mult:100, answer:'2350', pony:'Fluttershy', avatar:'assets/fluttershy.png', tint:'rgba(16,185,129,0.22)', mode:'dancer' },
@@ -469,9 +461,7 @@
       { id:'e56_q2', label:'Q2', text:'The diameter of a coin is 2.8 cm. Manoj lined up 10 coins from the left end of his desk to the right end of his desk. What is the width of his desk?', num:'2.8', mult:10, answer:'28', pony:'Applejack', avatar:'assets/applejack.png', tint:'rgba(234,88,12,0.28)', mode:'binder' },
       { id:'e56_q3', label:'Q3', text:'The thickness of one page is 0.4 mm. A book has 300 pages. How thick will the book be?', num:'0.4', mult:300, answer:'120', pony:'Rarity', avatar:'assets/rarity.png', tint:'rgba(168,85,247,0.28)', mode:'binder' }
     ];
-
     const RAINBOW = ['#ef4444','#f97316','#eab308','#22c55e','#3b82f6','#8b5cf6','#ec4899'];
-
     /* Sound */
     let audioCtx = null;
     function getAudio() {
@@ -518,7 +508,6 @@
     }
     function playTap() { playTone(480, 0.05, 'sine', 0.05); }
     function playError() { playTone(180, 0.15, 'sawtooth', 0.06); }
-
     let currentIndex = 0;
     let binderOpen = false;
     let drawerOpen = false;
@@ -528,7 +517,6 @@
     let rainbowIdx = 0;
     const undoStack = [];
     const redoStack = [];
-
     /* Video */
     const bgVideo = document.getElementById('bgVideo');
     function playBgVideo() {
@@ -537,7 +525,6 @@
     function pauseBgVideo() {
       bgVideo.pause();
     }
-
     function setPracticeMode(on) {
       document.body.classList.toggle('mode-practice', on);
       const title = document.getElementById('headerTitle');
@@ -558,7 +545,6 @@
         dim.classList.add('text-purple-200'); dim.classList.remove('text-violet-500');
       }
     }
-
     function showStage(id) {
       document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
@@ -570,11 +556,9 @@
       try { window.parent.postMessage('close-lesson-to-hub', '*'); } catch (_) {}
       if (window.history.length > 1) history.back();
     }
-
     function isDone(id) { return localStorage.getItem('zaina_e56_done_' + id) === '1'; }
     function markDone(id) { localStorage.setItem('zaina_e56_done_' + id, '1'); }
     function progressCount() { return QUESTIONS.filter(q => isDone(q.id)).length; }
-
     function renderList() {
       const box = document.getElementById('questionList');
       document.getElementById('progressLabel').textContent = progressCount() + ' / ' + QUESTIONS.length + ' done';
@@ -598,14 +582,12 @@
       });
       box.innerHTML = html;
     }
-
     function openQuestion(index) {
       playTap();
       currentIndex = index;
       binderOpen = false;
       closePenDrawer();
       const q = QUESTIONS[index];
-
       document.getElementById('qLabel').textContent = q.label;
       document.getElementById('qText').textContent = q.text;
       document.getElementById('qPony').src = q.avatar;
@@ -613,10 +595,8 @@
       document.getElementById('btnPrev').disabled = index === 0;
       document.getElementById('btnNext').disabled = index === QUESTIONS.length - 1;
       clearWrongMsgs();
-
       const dancer = document.getElementById('modeDancer');
       const binder = document.getElementById('modeBinder');
-
       if (q.mode === 'dancer') {
         dancer.classList.remove('hidden');
         binder.classList.add('hidden');
@@ -641,12 +621,10 @@
       }
       showStage('stageWork');
     }
-
     function navQuestion(dir) {
       const next = currentIndex + dir;
       if (next >= 0 && next < QUESTIONS.length) { saveInk(); openQuestion(next); }
     }
-
     /* Dancer */
     let danceDigits = [], danceDotIndex = 0;
     function initDancer(numStr) {
@@ -659,7 +637,7 @@
     function renderDancer() {
       let html = '';
       for (let i = 0; i <= danceDigits.length; i++) {
-        if (i === danceDotIndex) html += `<div class="pv-cell decimal-dot dot-dance">.</div>`;
+        if (i === danceDotIndex) html += `<div class="pv-cell cherry-dot dot-dance" title="decimal cherry">🍒</div>`;
         if (i < danceDigits.length) html += `<div class="pv-cell">${danceDigits[i]}</div>`;
       }
       document.getElementById('dancerStrip').innerHTML = html;
@@ -684,7 +662,6 @@
       frac = frac.replace(/0+$/, '');
       return frac ? whole + '.' + frac : whole;
     }
-
     /* Demo */
     const DEMO_NUM = '23.5';
     const PLACE_W = ['Ones','Tens','Hundreds','Thousands','Ten Th.'];
@@ -698,7 +675,7 @@
         const label = pi < PLACE_W.length ? PLACE_W[pi] : '';
         html += `<div class="pv-cell">${whole[i]}${label?`<span class="pv-label">${label}</span>`:''}</div>`;
       }
-      html += `<div class="pv-cell decimal-dot dot-dance">.</div>`;
+      html += `<div class="pv-cell cherry-dot dot-dance">🍒</div>`;
       const show = frac || '0';
       for (let i = 0; i < show.length; i++) {
         const dig = frac[i] || '0';
@@ -724,7 +701,6 @@
       setTimeout(() => playTone(520, 0.12, 'triangle', 0.1), 120);
     }
     resetDemo();
-
     /* Answers */
     function currentAnswerInput() {
       return document.getElementById(QUESTIONS[currentIndex].mode === 'dancer' ? 'answerInputDancer' : 'answerInputBinder');
@@ -801,7 +777,6 @@
       peek.classList.add('jump');
       setTimeout(()=>peek.classList.remove('jump'), 600);
     }
-
     function celebrate(q) {
       document.getElementById('celebPony').src = q.avatar;
       document.getElementById('celebTitle').textContent = q.pony + ' says: Perfect!';
@@ -810,7 +785,6 @@
       spawnConfetti();
     }
     function closeCelebrate() { document.getElementById('celebrateOverlay').style.display = 'none'; }
-
     /* Binder open/close */
     function openBinder() {
       playWhoosh();
@@ -823,7 +797,6 @@
       binderOpen = false;
       document.getElementById('binderCover').classList.remove('binder-open');
     }
-
     /* Pen drawer */
     function togglePenDrawer() {
       drawerOpen = !drawerOpen;
@@ -872,12 +845,10 @@
       penThickness = Number(v);
       document.getElementById('thickLabel').textContent = String(penThickness);
     }
-
     /* Canvas */
     const canvasEl = () => document.getElementById('inkCanvas');
     const areaEl = () => document.getElementById('canvasArea');
     function inkKey() { return 'zaina_ink_' + QUESTIONS[currentIndex].id; }
-
     function syncCanvas() {
       const c = canvasEl(), a = areaEl();
       if (!c || !a) return;
@@ -944,11 +915,9 @@
       ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,c.width,c.height); ctx.restore();
       localStorage.removeItem(inkKey());
     }
-
     /* Drawing */
     (function setupDrawing() {
       let drawing = false, lastX = 0, lastY = 0, startX = 0, startY = 0, snapshot = null;
-
       function pos(e) {
         const c = canvasEl();
         const r = c.getBoundingClientRect();
@@ -967,7 +936,6 @@
         if (penTool === 'eraser') return Math.max(18, penThickness * 8);
         return penThickness;
       }
-
       document.addEventListener('pointerdown', (e) => {
         if (!binderOpen) return;
         const c = canvasEl();
@@ -977,7 +945,6 @@
         const [x, y] = pos(e);
         lastX = startX = x; lastY = startY = y;
         drawing = true;
-
         if (penTool === 'line') {
           pushUndo();
           snapshot = c.getContext('2d').getImageData(0, 0, c.width, c.height);
@@ -1003,7 +970,6 @@
         ctx.stroke();
         ctx.globalAlpha = 1;
       }, { passive: false });
-
       document.addEventListener('pointermove', (e) => {
         if (!drawing) return;
         const c = canvasEl();
@@ -1011,7 +977,6 @@
         e.preventDefault();
         const [x, y] = pos(e);
         const ctx = c.getContext('2d');
-
         if (penTool === 'line' && snapshot) {
           ctx.putImageData(snapshot, 0, 0);
           ctx.save();
@@ -1032,7 +997,6 @@
           lastX = x; lastY = y;
           return;
         }
-
         ctx.beginPath();
         if (penTool === 'eraser') {
           ctx.globalCompositeOperation = 'destination-out';
@@ -1052,7 +1016,6 @@
         ctx.globalAlpha = 1;
         lastX = x; lastY = y;
       }, { passive: false });
-
       function endDraw() {
         if (!drawing) return;
         drawing = false;
@@ -1062,14 +1025,12 @@
       document.addEventListener('pointerup', endDraw);
       document.addEventListener('pointercancel', endDraw);
     })();
-
     window.addEventListener('resize', () => {
       if (document.getElementById('stageWork').classList.contains('active') &&
           QUESTIONS[currentIndex] && QUESTIONS[currentIndex].mode === 'binder') {
         syncCanvas(); loadInk();
       }
     });
-
     /* Dim */
     function setDim(v) {
       document.getElementById('screenDimOverlay').style.opacity = (Number(v) / 100).toFixed(2);
@@ -1079,7 +1040,6 @@
       const s = localStorage.getItem('zaina_dim_level');
       if (s != null) { document.getElementById('dimSlider').value = s; setDim(s); }
     })();
-
     /* Stars (subtle over video) */
     (function stars() {
       const c = document.getElementById('starCanvas');
@@ -1106,7 +1066,6 @@
       }
       resize(); window.addEventListener('resize', resize); draw();
     })();
-
     function spawnConfetti() {
       const c = document.getElementById('confettiCanvas');
       const ctx = c.getContext('2d');
@@ -1137,7 +1096,6 @@
       }
       tick();
     }
-
     // Start teach video
     setPracticeMode(false);
     playBgVideo();
