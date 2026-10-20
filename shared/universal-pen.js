@@ -1,7 +1,6 @@
 /**
- * Universal Pen + Line Tool  v1.4  (Samsung S9 / S11 ready)
- * 7-icon bar: Pen · Line · Eraser · Undo · Redo · Clear · Colors · Stamps/Stickers
- * Pointer Events only · palm rejection · smooth strokes · undo/redo · sound
+ * Universal Pen + Line Tool  v1.5  (Samsung S9 / S11 ready)
+ * Fixes: redo reliability, eraser size, undo-after-eraser clearing
  */
 (function () {
   'use strict';
@@ -10,17 +9,18 @@
     colors: ['#0F172A', '#2563EB', '#15803D', '#DC2626', '#7C3AED'],
     stamps: ['⭐', '😡', '❤️', '😊', '😢', '🌸', '♻️', '🌍', '✅', '❌', '💯', '❄️'],
     stickers: ['💃', '🔥', '⭐', '🌹', '🧐', '🫰', '🌳', '🧹'],
-    storageKey: 'LQ_UNIVERSAL_PEN_V14',
-    soundKey: 'LQ_PEN_SOUND_V14',
+    storageKey: 'LQ_UNIVERSAL_PEN_V15',
+    soundKey: 'LQ_PEN_SOUND_V15',
     maxUndo: 30,
-    // Line tool style (Exact 5.6 Exercise look – thin, no glow)
     lineColor: '#8B5A2B',
-    lineWidth: 2.5
+    lineWidth: 2.5,
+    eraserMultiplier: 4,   // eraser is 4× bigger than pen size
+    minEraserSize: 12
   };
 
   const state = {
-    tool: 'pen',          // pen | line | eraser
-    penType: 'normal',    // normal | cursive | rainbow | glitter
+    tool: 'pen',
+    penType: 'normal',
     color: '#0F172A',
     size: 2.5,
     drawing: false,
@@ -34,7 +34,7 @@
     isScrolling: false,
     points: [],
     longPressTimer: null,
-    lineStart: null,      // {x,y,canvas,ctx,preview}
+    lineStart: null,
     pointerId: null
   };
 
@@ -118,7 +118,6 @@
     osc.stop(state.audioCtx.currentTime + 0.25);
   }
 
-  // Public API
   window.UniversalPen = {
     state,
     saveState,
@@ -134,7 +133,7 @@
     }
   };
 
-  // ---------- UI ----------
+  // ---------- UI (same as before) ----------
   function buildUI() {
     if (document.getElementById('penBubble')) return;
 
@@ -230,7 +229,6 @@
     document.body.appendChild(bar);
     document.body.appendChild(sound);
 
-    // Colors
     const colorRow = document.getElementById('colorRow');
     CFG.colors.forEach(c => {
       const d = document.createElement('div');
@@ -245,7 +243,6 @@
       colorRow.appendChild(d);
     });
 
-    // Stamps / Stickers
     const stampGrid = document.getElementById('stampGrid');
     function renderStamps() {
       stampGrid.innerHTML = '';
@@ -296,7 +293,6 @@
     const rect = bubble.getBoundingClientRect();
     const barRect = bar.getBoundingClientRect();
     const isTop = rect.top < window.innerHeight / 2;
-
     if (isTop) {
       bar.style.top = (rect.bottom + 8) + 'px';
       bar.style.bottom = 'auto';
@@ -319,9 +315,8 @@
       closePops();
     });
 
-    // Long-press bubble → toggle eraser (Samsung friendly)
     bubble.addEventListener('pointerdown', e => {
-      if (e.pointerType === 'touch' && e.width > 25) return; // ignore palm
+      if (e.pointerType === 'touch' && e.width > 25) return;
       state.longPressTimer = setTimeout(() => {
         state.tool = state.tool === 'eraser' ? 'pen' : 'eraser';
         saveState();
@@ -340,7 +335,6 @@
       if (state.soundOn) initAudio();
     });
 
-    // Close on outside tap
     document.addEventListener('click', e => {
       if (!bar.contains(e.target) && !bubble.contains(e.target)) {
         bar.classList.remove('open');
@@ -349,7 +343,6 @@
       }
     });
 
-    // Tool buttons
     bar.querySelectorAll('[data-tool]').forEach(b => {
       b.addEventListener('click', e => {
         e.stopPropagation();
@@ -360,7 +353,6 @@
       });
     });
 
-    // Pen pop
     bar.querySelector('[data-tool="pen"]').addEventListener('click', e => {
       e.stopPropagation();
       document.getElementById('penPop').classList.toggle('open');
@@ -382,13 +374,11 @@
       saveState();
     });
 
-    // Color pop
     bar.querySelectorAll('.pen-btn')[6].addEventListener('click', e => {
       e.stopPropagation();
       document.getElementById('colorPop').classList.toggle('open');
     });
 
-    // Stamp pop
     bar.querySelectorAll('.pen-btn')[7].addEventListener('click', e => {
       e.stopPropagation();
       document.getElementById('stampPop').classList.toggle('open');
@@ -404,7 +394,6 @@
       });
     });
 
-    // Actions
     bar.querySelector('[data-act="undo"]').addEventListener('click', e => {
       e.stopPropagation();
       undo();
@@ -469,9 +458,16 @@
   }
 
   function isPalm(e) {
-    // Samsung S9 / large contact areas
     if (e.pointerType === 'touch' && (e.width > 28 || e.height > 28)) return true;
     return false;
+  }
+
+  function getCurrentLineWidth() {
+    if (state.tool === 'eraser') {
+      return Math.max(CFG.minEraserSize, state.size * CFG.eraserMultiplier);
+    }
+    if (state.penType === 'cursive') return state.size * 0.7;
+    return state.size;
   }
 
   function ensureInitialUndo() {
@@ -484,10 +480,31 @@
   function pushUndo() {
     if (!state.activeCanvas) return;
     try {
-      state.undoStack.push(state.activeCanvas.toDataURL());
+      const data = state.activeCanvas.toDataURL();
+      // Avoid pushing identical consecutive states (helps eraser-on-empty case)
+      if (state.undoStack.length && state.undoStack[state.undoStack.length - 1] === data) return;
+      state.undoStack.push(data);
       if (state.undoStack.length > CFG.maxUndo) state.undoStack.shift();
       state.redoStack = [];
     } catch (e) {}
+  }
+
+  function restoreFromDataURL(dataUrl) {
+    return new Promise((resolve) => {
+      if (!state.ctx || !state.activeCanvas) {
+        resolve();
+        return;
+      }
+      const img = new Image();
+      img.onload = () => {
+        state.ctx.globalCompositeOperation = 'source-over';
+        state.ctx.clearRect(0, 0, state.activeCanvas.width, state.activeCanvas.height);
+        state.ctx.drawImage(img, 0, 0);
+        resolve();
+      };
+      img.onerror = () => resolve();
+      img.src = dataUrl;
+    });
   }
 
   // ---------- Core drawing ----------
@@ -498,14 +515,12 @@
     const canvas = e.target.closest('canvas');
     if (!canvas) return;
 
-    // Activate canvas
     state.activeCanvas = canvas;
     state.ctx = canvas.getContext('2d');
     canvas.dataset.pen = 'true';
     canvas.style.touchAction = 'none';
     ensureInitialUndo();
 
-    // Capture so we keep receiving events even if finger leaves canvas
     try {
       canvas.setPointerCapture(e.pointerId);
       state.pointerId = e.pointerId;
@@ -513,17 +528,12 @@
 
     e.preventDefault();
 
-    // ---- LINE TOOL ----
+    // LINE TOOL
     if (state.tool === 'line') {
       const p = getPos(e, canvas);
       state.lineStart = {
-        x: p.x,
-        y: p.y,
-        canvas,
-        ctx: state.ctx,
-        snapshot: null
+        x: p.x, y: p.y, canvas, ctx: state.ctx, snapshot: null
       };
-      // Save current canvas for live preview restore
       try {
         state.lineStart.snapshot = state.ctx.getImageData(0, 0, canvas.width, canvas.height);
       } catch (err) {
@@ -532,15 +542,13 @@
       return;
     }
 
-    // ---- PEN / ERASER ----
-    if (state.tool === 'line') return; // safety
-
+    // PEN / ERASER
     state.drawing = true;
     state.points = [getPos(e, canvas)];
     state.ctx.beginPath();
     state.ctx.lineCap = 'round';
     state.ctx.lineJoin = 'round';
-    state.ctx.lineWidth = state.size;
+    state.ctx.lineWidth = getCurrentLineWidth();
 
     if (state.tool === 'eraser') {
       state.ctx.globalCompositeOperation = 'destination-out';
@@ -548,16 +556,11 @@
     } else {
       state.ctx.globalCompositeOperation = 'source-over';
       state.ctx.shadowBlur = 0;
-
       if (state.penType === 'rainbow') {
         state.ctx.strokeStyle = `hsl(${state.rainbowHue},100%,50%)`;
         state.rainbowHue = (state.rainbowHue + 5) % 360;
       } else {
         state.ctx.strokeStyle = state.color;
-      }
-
-      if (state.penType === 'cursive') {
-        state.ctx.lineWidth = state.size * 0.7;
       }
       playPen();
     }
@@ -567,18 +570,12 @@
     if (state.isScrolling) return;
     if (isPalm(e)) return;
 
-    // ---- LINE PREVIEW ----
+    // LINE PREVIEW
     if (state.tool === 'line' && state.lineStart) {
       e.preventDefault();
       const { canvas, ctx, snapshot, x, y } = state.lineStart;
       const end = getPos(e, canvas);
-
-      if (snapshot) {
-        ctx.putImageData(snapshot, 0, 0);
-      } else {
-        // fallback – rare
-      }
-
+      if (snapshot) ctx.putImageData(snapshot, 0, 0);
       ctx.save();
       ctx.strokeStyle = CFG.lineColor;
       ctx.lineWidth = CFG.lineWidth;
@@ -599,7 +596,6 @@
     const p = getPos(e, state.activeCanvas);
     state.points.push(p);
 
-    // Smooth quadratic
     if (state.points.length >= 3) {
       const len = state.points.length;
       const xc = (state.points[len - 2].x + p.x) / 2;
@@ -613,22 +609,16 @@
       state.ctx.stroke();
     }
 
-    // Glitter sparkles
     if (state.tool !== 'eraser' && state.penType === 'glitter' && Math.random() > 0.65) {
       state.ctx.save();
       state.ctx.fillStyle = state.color;
       state.ctx.globalAlpha = 0.55;
       state.ctx.beginPath();
-      state.ctx.arc(
-        p.x + (Math.random() - 0.5) * 12,
-        p.y + (Math.random() - 0.5) * 12,
-        1.2, 0, Math.PI * 2
-      );
+      state.ctx.arc(p.x + (Math.random() - 0.5) * 12, p.y + (Math.random() - 0.5) * 12, 1.2, 0, Math.PI * 2);
       state.ctx.fill();
       state.ctx.restore();
     }
 
-    // Rainbow continues
     if (state.tool !== 'eraser' && state.penType === 'rainbow') {
       state.ctx.strokeStyle = `hsl(${state.rainbowHue},100%,50%)`;
       state.rainbowHue = (state.rainbowHue + 5) % 360;
@@ -636,13 +626,11 @@
   }
 
   function endDraw(e) {
-    // ---- LINE COMMIT ----
+    // LINE COMMIT
     if (state.tool === 'line' && state.lineStart) {
       e.preventDefault();
       const { canvas, ctx, x, y } = state.lineStart;
       const end = getPos(e, canvas);
-
-      // Final clean stroke (no glow)
       ctx.save();
       ctx.strokeStyle = CFG.lineColor;
       ctx.lineWidth = CFG.lineWidth;
@@ -654,7 +642,6 @@
       ctx.lineTo(end.x, end.y);
       ctx.stroke();
       ctx.restore();
-
       playDing();
       pushUndo();
       state.lineStart = null;
@@ -664,7 +651,6 @@
     if (!state.drawing) return;
     state.drawing = false;
 
-    // Final segment
     if (state.points.length >= 2 && state.ctx) {
       const p = state.points[state.points.length - 1];
       state.ctx.lineTo(p.x, p.y);
@@ -672,45 +658,37 @@
     }
     state.points = [];
 
-    // Slight delay so last pixels are flushed
-    setTimeout(pushUndo, 12);
+    // Always reset composite so next stroke is normal
+    if (state.ctx) state.ctx.globalCompositeOperation = 'source-over';
 
-    // Release capture
+    setTimeout(pushUndo, 16);
+
     if (state.activeCanvas && state.pointerId != null) {
-      try {
-        state.activeCanvas.releasePointerCapture(state.pointerId);
-      } catch (err) {}
+      try { state.activeCanvas.releasePointerCapture(state.pointerId); } catch (err) {}
       state.pointerId = null;
     }
   }
 
-  // ---------- Undo / Redo / Clear ----------
-  function undo() {
+  // ---------- Undo / Redo / Clear (fixed) ----------
+  async function undo() {
     if (!state.ctx || state.undoStack.length < 2) return;
-    state.redoStack.push(state.undoStack.pop());
-    const img = new Image();
-    img.onload = () => {
-      state.ctx.clearRect(0, 0, state.activeCanvas.width, state.activeCanvas.height);
-      state.ctx.drawImage(img, 0, 0);
-    };
-    img.src = state.undoStack[state.undoStack.length - 1];
+    const current = state.undoStack.pop();
+    state.redoStack.push(current);
+    const prev = state.undoStack[state.undoStack.length - 1];
+    await restoreFromDataURL(prev);
   }
 
-  function redo() {
+  async function redo() {
     if (!state.ctx || !state.redoStack.length) return;
     const data = state.redoStack.pop();
-    const img = new Image();
-    img.onload = () => {
-      state.ctx.clearRect(0, 0, state.activeCanvas.width, state.activeCanvas.height);
-      state.ctx.drawImage(img, 0, 0);
-      state.undoStack.push(data);
-    };
-    img.src = data;
+    state.undoStack.push(data);
+    await restoreFromDataURL(data);
   }
 
   function clearCanvas() {
     if (!state.ctx) return;
     pushUndo();
+    state.ctx.globalCompositeOperation = 'source-over';
     state.ctx.clearRect(0, 0, state.activeCanvas.width, state.activeCanvas.height);
   }
 
@@ -720,6 +698,7 @@
       alert('Tap a writing area first');
       return;
     }
+    state.ctx.globalCompositeOperation = 'source-over';
     state.ctx.font = '32px serif';
     state.ctx.fillStyle = state.color;
     state.ctx.fillText(em, state.activeCanvas.width / 2 - 16, state.activeCanvas.height / 2 + 12);
@@ -788,7 +767,6 @@
       }
     });
 
-    // Auto remove after 5 minutes
     setTimeout(() => s.remove(), 300000);
   }
 
@@ -801,7 +779,6 @@
     buildUI();
   }
 
-  // Single set of listeners (Pointer Events only)
   document.addEventListener('pointerdown', startDraw, { passive: false });
   document.addEventListener('pointermove', draw, { passive: false });
   document.addEventListener('pointerup', endDraw, { passive: false });
@@ -809,9 +786,9 @@
     state.drawing = false;
     state.points = [];
     state.lineStart = null;
+    if (state.ctx) state.ctx.globalCompositeOperation = 'source-over';
   });
 
-  // Scroll detection (helps palm rejection)
   let scrollTimer;
   window.addEventListener('scroll', () => {
     state.isScrolling = true;
