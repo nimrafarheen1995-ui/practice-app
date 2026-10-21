@@ -1,5 +1,6 @@
 /**
- * Universal Pen + Line Tool  v1.6
+ * Universal Pen + Line Tool  v1.7
+ * Dual bubbles (Pen + Eraser) + Line moved to Stamps panel
  * Samsung S9 / S11 ready
  * + Automatic ink save / load (survives browser close)
  * + Per-section / per-mode isolation (no duplicate ink)
@@ -285,10 +286,13 @@
 
     const css = document.createElement('style');
     css.textContent = `
-      #penBubble{position:fixed;bottom:18px;right:14px;z-index:50;width:56px;height:56px;border-radius:50%;
+      #penBubble,#eraserBubble{position:fixed;z-index:50;width:56px;height:56px;border-radius:50%;
         background:linear-gradient(135deg,#5A3C22,#8B5A2B);box-shadow:0 8px 24px rgba(0,0,0,.35);
         display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none;transition:transform .15s}
-      #penBubble:active{transform:scale(.95)}
+      #penBubble{bottom:18px;right:14px}
+      #eraserBubble{bottom:18px;right:78px;background:linear-gradient(135deg,#6B7280,#9CA3AF)}
+      #penBubble.on,#eraserBubble.on{box-shadow:0 0 0 3px #FEF3C7, 0 8px 24px rgba(0,0,0,.35)}
+      #penBubble:active,#eraserBubble:active{transform:scale(.95)}
       #penBar{position:fixed;z-index:51;background:rgba(255,255,255,.98);border:2px solid #E7D5B0;border-radius:18px;
         padding:8px;box-shadow:0 16px 40px rgba(0,0,0,.22);transform:scale(.9);opacity:0;pointer-events:none;
         transition:all .25s;display:flex;gap:6px;align-items:center;flex-wrap:wrap;max-width:calc(100vw - 24px)}
@@ -324,6 +328,10 @@
     bubble.id = 'penBubble';
     bubble.innerHTML = '<span style="font-size:24px">✏️</span>';
 
+    const eraserBubble = document.createElement('div');
+    eraserBubble.id = 'eraserBubble';
+    eraserBubble.innerHTML = '<span style="font-size:22px">🧽</span>';
+
     const bar = document.createElement('div');
     bar.id = 'penBar';
     bar.innerHTML = `
@@ -344,8 +352,6 @@
           </div>
         </div>
       </div>
-      <div class="pen-btn" data-tool="line" title="Straight Line">📏</div>
-      <div class="pen-btn" data-tool="eraser">🧽</div>
       <div class="pen-btn" data-act="undo">↩️</div>
       <div class="pen-btn" data-act="redo">↪️</div>
       <div class="pen-btn" data-act="clear">🗑️</div>
@@ -361,6 +367,7 @@
           <div class="pen-pop-row">
             <div class="pen-tab on" data-tab="stamps">Stamps</div>
             <div class="pen-tab" data-tab="stickers">Stickers</div>
+            <div class="pen-tab" data-tab="line">📏 Line</div>
           </div>
           <div id="stampGrid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:6px"></div>
         </div>
@@ -372,6 +379,7 @@
     sound.textContent = state.soundOn ? '🔊' : '🔇';
 
     document.body.appendChild(bubble);
+    document.body.appendChild(eraserBubble);
     document.body.appendChild(bar);
     document.body.appendChild(sound);
 
@@ -424,6 +432,10 @@
   }
 
   function updateUI() {
+    const penB = document.getElementById('penBubble');
+    const erB = document.getElementById('eraserBubble');
+    if (penB) penB.classList.toggle('on', state.tool === 'pen');
+    if (erB) erB.classList.toggle('on', state.tool === 'eraser');
     document.querySelectorAll('[data-tool]').forEach(b => {
       b.classList.toggle('on', b.dataset.tool === state.tool);
     });
@@ -451,15 +463,31 @@
   }
 
   function attachEvents(bubble, bar, sound, renderStamps, renderStickers) {
+    const eraserBubble = document.getElementById('eraserBubble');
     let barOpen = false;
 
     bubble.addEventListener('click', e => {
       e.stopPropagation();
+      state.tool = 'pen';
+      saveState();
+      updateUI();
       barOpen = !barOpen;
       bar.classList.toggle('open', barOpen);
       if (barOpen) positionBar(bubble, bar);
       closePops();
     });
+
+    if (eraserBubble) {
+      eraserBubble.addEventListener('click', e => {
+        e.stopPropagation();
+        state.tool = 'eraser';
+        saveState();
+        updateUI();
+        bar.classList.remove('open');
+        barOpen = false;
+        closePops();
+      });
+    }
 
     bubble.addEventListener('pointerdown', e => {
       if (e.pointerType === 'touch' && e.width > 25) return;
