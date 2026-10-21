@@ -1,5 +1,4 @@
-/** Universal Pen v1.8 - dual bubbles, movable stickers */
-console.log('loaded');/**
+/**
  * Universal Pen + Line Tool  v1.7
  * Dual bubbles (Pen + Eraser) + Line moved to Stamps panel
  * Samsung S9 / S11 ready
@@ -958,9 +957,10 @@ console.log('loaded');/**
         ctrl.className = 'pen-sticker-ctrl';
         ctrl.style.cssText = 'position:absolute;top:-36px;left:50%;transform:translateX(-50%);display:flex;gap:4px;background:rgba(255,255,255,.96);border:2px solid #8B5A2B;border-radius:12px;padding:3px 5px;';
         ctrl.innerHTML = `
-          <button type="button" style="width:26px;height:26px;border-radius:8px;border:1.5px solid #E7D5B0;background:#fff;font-size:16px">+</button>
-          <button type="button" style="width:26px;height:26px;border-radius:8px;border:1.5px solid #E7D5B0;background:#fff;font-size:16px">-</button>
-          <button type="button" style="width:26px;height:26px;border-radius:8px;border:1.5px solid #991B1B;background:#DC2626;color:#fff;font-size:16px">×</button>`;
+          <button type="button" title="Bigger" style="width:26px;height:26px;border-radius:8px;border:1.5px solid #E7D5B0;background:#fff;font-size:16px">+</button>
+          <button type="button" title="Smaller" style="width:26px;height:26px;border-radius:8px;border:1.5px solid #E7D5B0;background:#fff;font-size:16px">-</button>
+          <button type="button" title="Close" style="width:26px;height:26px;border-radius:8px;border:1.5px solid #E7D5B0;background:#fff;font-size:14px">✕</button>
+          <button type="button" title="Delete" style="width:26px;height:26px;border-radius:8px;border:1.5px solid #991B1B;background:#DC2626;color:#fff;font-size:14px">🗑</button>`;
         s.appendChild(ctrl);
         ctrl.children[0].onclick = ev => {
           ev.stopPropagation();
@@ -971,6 +971,11 @@ console.log('loaded');/**
           s.style.fontSize = Math.max(16, parseInt(s.style.fontSize || 32) - 4) + 'px';
         };
         ctrl.children[2].onclick = ev => {
+          ev.stopPropagation();
+          s.classList.remove('sel');
+          ctrl.remove();
+        };
+        ctrl.children[3].onclick = ev => {
           ev.stopPropagation();
           s.remove();
         };
@@ -1013,4 +1018,3 @@ console.log('loaded');/**
   }, { passive: true });
 
 })();
-
