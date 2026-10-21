@@ -11,7 +11,7 @@
   const CFG = {
     colors: ['#0F172A', '#2563EB', '#15803D', '#DC2626', '#7C3AED'],
     stamps: ['⭐', '😡', '❤️', '😊', '😢', '🌸', '♻️', '🌍', '✅', '❌', '💯', '❄️'],
-    stickers: ['💃', '🔥', '⭐', '🌹', '🧐', '🫰', '🌳', '🧹'],
+    stickers: ['💃', '🔥', '⭐', '🌹', '🧐', '🫰', '🌳', '🎊'],
     storageKey: 'LQ_UNIVERSAL_PEN_V16',
     soundKey: 'LQ_PEN_SOUND_V16',
     inkPrefix: 'LQ_INK_V16_',
@@ -508,7 +508,12 @@
       state.soundOn = !state.soundOn;
       sound.textContent = state.soundOn ? '🔊' : '🔇';
       saveState();
-      if (state.soundOn) initAudio();
+      if (state.soundOn) {
+        initAudio();
+        if (state.audioCtx && state.audioCtx.state === 'suspended') {
+          state.audioCtx.resume();
+        }
+      }
     });
 
     document.addEventListener('click', e => {
@@ -612,16 +617,24 @@
       moved = false;
       el.setPointerCapture(e.pointerId);
 
+      const penB = document.getElementById('penBubble');
+      const erB = document.getElementById('eraserBubble');
+
       const move = ev => {
         if (Math.abs(ev.clientX - pos.x) > 6 || Math.abs(ev.clientY - pos.y) > 6) {
           moved = true;
           clearTimeout(state.longPressTimer);
         }
-        el.style.left = (el.offsetLeft + ev.clientX - pos.x) + 'px';
-        el.style.top = (el.offsetTop + ev.clientY - pos.y) + 'px';
-        el.style.bottom = el.style.right = 'auto';
+        const dx = ev.clientX - pos.x;
+        const dy = ev.clientY - pos.y;
+        [penB, erB].forEach(b => {
+          if (!b) return;
+          b.style.left = (b.offsetLeft + dx) + 'px';
+          b.style.top = (b.offsetTop + dy) + 'px';
+          b.style.bottom = b.style.right = 'auto';
+        });
         pos = { x: ev.clientX, y: ev.clientY };
-        if (bar.classList.contains('open')) positionBar(el, bar);
+        if (bar.classList.contains('open')) positionBar(penB || el, bar);
       };
 
       const up = () => {
@@ -650,7 +663,8 @@
   }
 
   function isPalm(e) {
-    return e.pointerType === 'touch' && (e.width > 28 || e.height > 28);
+    // Slightly softer so stylus + light finger still work on Samsung tabs
+    return e.pointerType === 'touch' && (e.width > 36 || e.height > 36);
   }
 
   function getCurrentLineWidth() {
@@ -712,6 +726,10 @@
     canvas.style.touchAction = 'none';
     loadInkFor(canvas);
     ensureInitialUndo();
+    // Guarantee a baseline snapshot before the first stroke
+    if (state.undoStack.length === 0 && state.activeCanvas) {
+      try { state.undoStack.push(state.activeCanvas.toDataURL('image/png')); } catch(e){}
+    }
 
     try {
       canvas.setPointerCapture(e.pointerId);
