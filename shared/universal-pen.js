@@ -1,5 +1,2 @@
-/**
- * Universal Pen + Line Tool  v1.7
- * Dual bubbles (Pen + Eraser) + Line moved to Stamps panel
- */
-console.log('pen loaded');
+/** Universal Pen v1.8 - dual bubbles, movable stickers */
+console.log('loaded');
