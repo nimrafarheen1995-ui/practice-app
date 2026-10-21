@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+<title>Humayun - Arabic - Oct23 - Scroll & Lantern</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  *{ -webkit-tap-highlight-color: transparent; }
+  body{
+    margin:0; min-height:100vh; font-family:'Baloo 2',system-ui; 
+    background:#0b1426 url('assets/islamic-night-bg.webp') center/cover no-repeat fixed;
+    overflow-x:hidden;
+  }
+  .night-overlay{ position:fixed; inset:0; background:rgba(11,20,38,0.78); pointer-events:none; z-index:0; }
+  /* Header - thin golden bar */
+  #topHeader{
+    position:sticky; top:0; z-index:40; 
+    background:linear-gradient(180deg,rgba(20,28,48,0.96),rgba(11,20,38,0.92));
+    border-bottom:2.5px solid #C9A86A; 
+    backdrop-filter: blur(10px);
+    transition: transform 0.35s ease;
+  }
+  #topHeader.hiddenBar{ transform: translateY(-100%); }
+  /* Parchment scroll container */
+  .parchment-scroll{
+    position:relative; z-index:1; 
+    width:min(980px,92vw); margin:18px auto; 
+    background:linear-gradient(180deg,#FFF9E6 0%,#FFF5D0 100%);
+    border-radius:18px 18px 28px 28px;
+    box-shadow:0 20px 60px rgba(0,0,0,.45), 0 0 0 1.5px rgba(201,168,106,.35);
+    padding:0 0 24px 0;
+  }
+  .parchment-scroll::before{
+    content:""; position:absolute; top:-14px; left:3%; right:3%; height:28px;
+    background:linear-gradient(180deg,#E8DCC0,#D9C8A0); border-radius:12px;
+    box-shadow:0 6px 18px rgba(0,0,0,.25); z-index:2;
+  }
+  .parchment-scroll::after{
+    content:""; position:absolute; bottom:-12px; left:3%; right:3%; height:24px;
+    background:linear-gradient(0deg,#E8DCC0,#D9C8A0); border-radius:12px;
+    box-shadow:0 -4px 12px rgba(0,0,0,.2); z-index:2;
+  }
+  /* Lantern rail - left fixed */
+  #lanternRail{
+    position:fixed; left:0; top:64px; bottom:0; width:86px; z-index:30;
+    background:linear-gradient(180deg,rgba(11,20,38,0.92),rgba(11,20,38,0.75));
+    border-right:1.5px solid rgba(201,168,106,0.25);
+    display:flex; flex-direction:column; align-items:center; padding:12px 0 80px;
+    overflow-y:auto; gap:2px;
+  }
+  #lanternRail::-webkit-scrollbar{ width:0; }
+  .rail-lantern{
+    width:52px; height:52px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:26px; cursor:pointer; position:relative; transition:all .3s;
+    background:rgba(255,255,255,0.06); border:2px solid rgba(201,168,106,0.18);
+  }
+  .rail-lantern.active{ background:radial-gradient(circle,#FFF3C0,#C9A86A); border-color:#FFD77A; box-shadow:0 0 18px rgba(255,215,122,.65), 0 0 36px rgba(255,215,122,.25); transform:scale(1.08); }
+  .rail-lantern.done::after{
+    content:"✓"; position:absolute; top:-2px; right:-2px; width:18px; height:18px; background:#2ECC71; color:#fff;
+    border-radius:50%; font-size:11px; display:flex; align-items:center; justify-content:center; border:2px solid #0b1426;
+  }
+  .rail-line{ width:2px; height:18px; background:linear-gradient(180deg,rgba(201,168,106,0.35),rgba(201,168,106,0.08)); }
+  /* Parchment cards - like your Image 3 */
+  .scroll-card{
+    position:relative; margin:16px 18px; padding:14px 16px;
+    background:linear-gradient(180deg,#FFFEF7 0%,#FFF8E1 100%);
+    border:1.8px solid #E8DCC0; border-radius:14px;
+    box-shadow:0 6px 18px rgba(0,0,0,.12), 0 0 0 1px rgba(201,168,106,.18) inset;
+    cursor:pointer; transition:all .28s ease; overflow:hidden;
+  }
+  .scroll-card:hover{ transform:translateY(-2px); box-shadow:0 10px 28px rgba(0,0,0,.18); }
+  .scroll-card.expanded{ cursor:default; border-color:#C9A86A; box-shadow:0 12px 32px rgba(0,0,0,.18), 0 0 0 1px #C9A86A inset; }
+  .scroll-card::before{
+    content:""; position:absolute; bottom:6px; right:10px; width:72px; height:36px;
+    background:url('assets/mosque-dome-silhouette.webp') center/contain no-repeat; opacity:0.07; pointer-events:none;
+  }
+  .card-banner{
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+    background:linear-gradient(90deg,#FFF3C0,rgba(201,168,106,0.18)); 
+    border:1px solid rgba(201,168,106,0.35); border-radius:999px; padding:4px 12px 4px 6px;
+    font-size:.78rem; font-weight:800; color:#5A3C22; width:fit-content; margin-bottom:8px;
+  }
+  .arabic{ font-family:'Amiri',serif; direction:rtl; font-size:1.35rem; font-weight:700; color:#3B2A14; }
+  /* Expanded content - like your Image 1 */
+  .card-body{ max-height:0; opacity:0; overflow:hidden; transition:all .35s ease; pointer-events:none; }
+  .scroll-card.expanded .card-body{ max-height:2000px; opacity:1; pointer-events:auto; margin-top:14px; border-top:1.5px dashed rgba(201,168,106,.35); padding-top:14px; }
+  .strip-row{ display:flex; align-items:center; gap:8px; margin:10px 0; flex-wrap:wrap; }
+  .ruled-strip{
+    flex:1; min-width:180px; height:54px; background:linear-gradient(0deg,transparent 0,transparent 18px,#C7DFF5 18px,#C7DFF5 19px,transparent 19px), linear-gradient(0deg,#FFF 0%,#FFF9E6 100%);
+    background-size:100% 26px; border:1.5px solid #E0D0A8; border-radius:10px; cursor:crosshair;
+  }
+  .mode-badge{ font-size:.65rem; font-weight:800; padding:2px 8px; border-radius:999px; background:#FEF3C7; border:1.5px solid #C9A86A; color:#5A3C22; }
+  /* Responsive */
+  @media(max-width:768px){
+    #lanternRail{ width:100%; height:64px; top:auto; bottom:0; flex-direction:row; justify-content:flex-start; overflow-x:auto; border-right:0; border-top:1.5px solid rgba(201,168,106,.25); padding:8px 12px; gap:10px; }
+    .rail-line{ width:18px; height:2px; } .parchment-scroll{ width:96vw; margin:12px auto 90px; } .scroll-card{ margin:12px 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="night-overlay" id="nightOverlay"></div>
+<!-- Thin golden header -->
+<header id="topHeader">
+  <div class="flex items-center justify-between px-3 py-2 gap-2">
+    <div class="flex items-center gap-2">
+      <button id="toggleHeaderBtn" class="w-9 h-9 rounded-full bg-[#FFFEF7] border-2 border-[#C9A86A] flex items-center justify-center text-lg" title="Hide header">🌙</button>
+      <div class="text-[#FFD77A] leading-tight">
+        <div class="font-extrabold text-[15px] flex items-center gap-2">تعلم العربية • Arabic Learning <span class="hidden md:inline text-[11px] font-normal text-[#C9A86A]">• Level 1 • Foundations</span></div>
+        <div class="text-[11px] text-[#C9A86A] hidden md:block">Scroll & Lantern • Tap a card to open canvas</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 flex-wrap">
+      <div class="flex bg-[#1A2340] border border-[#C9A86A]/30 rounded-full p-1">
+        <button id="practiceBtn" class="px-3 py-1 rounded-full text-[13px] font-bold bg-[#FFD77A] text-[#3B2A14]">Practice</button>
+        <button id="writeBtn" class="px-3 py-1 rounded-full text-[13px] font-bold text-[#C9A86A]">Write</button>
+      </div>
+      <div class="hidden md:flex items-center gap-1 bg-[#1A2340]/80 border border-[#C9A86A]/20 rounded-full px-2 py-1">
+        <span class="text-[10px] text-[#C9A86A] font-bold">Dim</span>
+        <input id="dimSlider" type="range" min="0" max="50" value="12" class="w-16 accent-[#C9A86A]">
+        <span id="dimVal" class="text-[10px] text-[#FFD77A] w-7">12%</span>
+      </div>
+      <button id="fontBtn" class="w-8 h-8 rounded-full bg-[#FFFEF7] border border-[#C9A86A] text-[13px] font-black text-[#5A3C22]">Aa</button>
+      <button id="soundBtn" class="w-8 h-8 rounded-full bg-[#FFFEF7] border border-[#C9A86A]">🔇</button>
+    </div>
+  </div>
+</header>
+<!-- Lantern Rail - Navigation different from other subjects -->
+<nav id="lanternRail">
+  <div class="text-[10px] font-black tracking-widest text-[#C9A86A] mb-1">PROGRESS</div>
+  <div class="text-[11px] font-bold text-[#FFD77A] mb-2" id="progressText">0/8 SAVED</div>
+  <!-- Lanterns will be injected by JS -->
+  <div id="railContainer" class="flex flex-col md:flex-col items-center gap-0"></div>
+  <div class="mt-auto text-[10px] text-[#C9A86A] hidden md:block">Caravan • Desert Route</div>
+</nav>
+<!-- Main parchment scroll - like your Image 3 -->
+<main class="parchment-scroll" style="margin-left:calc(86px + 4vw); margin-left:clamp(96px, 86px + 4vw, 50%); transform:translateX(-50%); left:50%; position:relative;">
+  <div class="text-center pt-7 pb-2">
+    <div class="inline-flex items-center gap-2 text-[11px] font-black tracking-[0.18em] text-[#8B7355]">TODAY'S LESSON • UNIT 3 LESSON 1 • 8 LANTERNS</div>
+    <h1 class="text-[22px] font-extrabold text-[#3B2A14] mt-1">English → Arabic • Animals & Classroom</h1>
+    <div class="text-[12px] text-[#8B7355]">Tap a parchment to open writing canvas • Vertical accordion scroll</div>
+  </div>
+  <div id="cardsContainer"></div>
+  <div class="text-center text-[11px] text-[#8B7355] mt-3 pb-2">Tap a section to open canvas • 8/8 sections • Caravan path complete</div>
+</main>
+<!-- Pen -->
+<script src="shared/universal-pen.js"></script>
+<script>
+const SECTIONS = [
+  { id:'sec1', title:'Section 1 • الأساسيات', sub:'English → Arabic • 3 words: مرحبا • شكرا • وداعا', words:[
+    {en:'bear', ar:'دَبٌ', arSimple:'دب', audioEn:'bear', audioAr:'دب'},
+    {en:'house', ar:'بَيْتٌ', arSimple:'بيت', audioEn:'house', audioAr:'بيت'},
+    {en:'apple', ar:'تُفَّاحٌ', arSimple:'تفاح', audioEn:'apple', audioAr:'تفاح'},
+  ]},
+  { id:'sec2', title:'Section 2 • التحيات', sub:'English → Arabic • 3 words: ليلة سعيدة • صباح الخير • مساء الخير', words:[
+    {en:'students', ar:'تَلَامِيذُ', arSimple:'تلاميذ', audioEn:'students', audioAr:'تلاميذ'},
+    {en:'books', ar:'كُتُبٌ', arSimple:'كتب', audioEn:'books', audioAr:'كتب'},
+    {en:'chair', ar:'كُرْسِيٌّ', arSimple:'كرسي', audioEn:'chair', audioAr:'كرسي'},
+  ]},
+  { id:'sec3', title:'Section 3 • الأرقام', sub:'Arabic Alphabets • الشمسية / القمرية • Write in columns', special:'letters'},
+  { id:'sec4', title:'Section 4 • الألوان', sub:'Indefinite → Definite • Add ال • دب → الدب', words:[
+    {en:'indefinite', ar:'دُبٌّ', arSimple:'دب', trans:'Definite: الدب'},
+    {en:'indefinite', ar:'بَيْتٌ', arSimple:'بيت', trans:'Definite: البيت'},
+    {en:'indefinite', ar:'تُفَّاحٌ', arSimple:'تفاح', trans:'Definite: التفاح'},
+  ]},
+  { id:'sec5', title:'Section 5 • العائلة', sub:'Definite → Indefinite • Remove ال', words:[
+    {en:'definite', ar:'الحِسَابُ', arSimple:'الحساب', trans:'Indefinite: حساب'},
+    {en:'definite', ar:'الجُغْرَافِيَا', arSimple:'الجغرافيا', trans:'Indefinite: جغرافيا'},
+  ]},
+  { id:'sec6', title:'Section 6 • الطعام', sub:'Frame sentences • هذا / هذه • ذلك / تلك', words:[
+    {en:'sentence', ar:'هذا مسجد', arSimple:'هذا مسجد', trans:'This is a mosque'},
+  ]},
+  { id:'sec7', title:'Section 7 • الاتجاهات', sub:'Prepositions • في / على / تحت • أين الكتاب؟', words:[
+    {en:'book on bag', ar:'الكتاب على الحقيبة', arSimple:'الكتاب على الحقيبة', trans:'Where is the book?'},
+  ]},
+  { id:'sec8', title:'Section 8 • الوقت', sub:'Review • 3 words: الآن • اليوم • غدا', words:[
+    {en:'now', ar:'الآن', arSimple:'الان', audioEn:'now', audioAr:'الآن'},
+    {en:'today', ar:'اليوم', arSimple:'اليوم', audioEn:'today', audioAr:'اليوم'},
+    {en:'tomorrow', ar:'غدا', arSimple:'غدا', audioEn:'tomorrow', audioAr:'غدا'},
+  ]},
+];
+let currentMode = 'practice';
+let fontLarge = false;
+let expandedId = null;
+function buildRail(){
+  const container = document.getElementById('railContainer');
+  container.innerHTML = '';
+  SECTIONS.forEach((s,i)=>{
+    const wrap = document.createElement('div');
+    wrap.className='flex flex-col items-center';
+    const btn = document.createElement('div');
+    btn.className='rail-lantern';
+    btn.id='rail-'+s.id;
+    btn.textContent='🏮';
+    btn.title=s.title;
+    btn.onclick=()=>openSection(s.id);
+    wrap.appendChild(btn);
+    if(i<SECTIONS.length-1){
+      const line=document.createElement('div'); line.className='rail-line'; wrap.appendChild(line);
+    }
+    container.appendChild(wrap);
+  });
+}
+function buildCards(){
+  const container=document.getElementById('cardsContainer');
+  container.innerHTML='';
+  SECTIONS.forEach(sec=>{
+    const card=document.createElement('div');
+    card.className='scroll-card'; card.id='card-'+sec.id;
+    card.innerHTML=`
+      <div class="flex items-start justify-between gap-2">
+        <div class="flex-1">
+          <div class="card-banner">🏮 ${sec.title.split('•')[0]} <span class="ml-2 opacity-70">${sec.title.split('•')[1]||''}</span></div>
+          <div class="text-[13px] font-bold text-[#5A3C22]">${sec.sub}</div>
+          <div class="text-[11px] text-[#8B7355] mt-1">Tap to open canvas • Ink saved separately for Practice / Write</div>
+        </div>
+        <div class="text-[20px]">📜</div>
+      </div>
+      <div class="card-body">
+        <div class="text-center mb-3">
+          <div class="text-[13px] font-extrabold text-[#8B7355]">— Handwriting Practice —</div>
+          <div class="text-[11px] text-[#8B7355]">Listen to the word, then practice writing below. Ink is saved automatically.</div>
+        </div>
+        <div id="body-${sec.id}"></div>
+        <div class="flex gap-2 mt-4">
+          <button class="flex-1 py-2 rounded-full bg-[#1A2340] text-[#FFD77A] font-bold text-[13px] border-2 border-[#C9A86A]" onclick="prevSection('${sec.id}')">🏮 Previous Lantern</button>
+          <button class="flex-1 py-2 rounded-full bg-[#1A2340] text-[#FFD77A] font-bold text-[13px] border-2 border-[#C9A86A]" onclick="nextSection('${sec.id}')">Next Lantern 🏮</button>
+        </div>
+      </div>
+    `;
+    card.querySelector('.flex').onclick=()=>openSection(sec.id);
+    container.appendChild(card);
+  });
+}
+function renderCardBody(secId){
+  const sec=SECTIONS.find(s=>s.id===secId);
+  const body=document.getElementById('body-'+secId);
+  if(!sec||!body) return;
+  if(sec.special==='letters'){
+    body.innerHTML=`
+      <div class="grid grid-cols-2 gap-3">
+        <div class="bg-[#FFFEF7] border-2 border-[#E8DCC0] rounded-xl p-3">
+          <div class="text-center font-black text-[#5A3C22]">الشَّمْسِيَّةُ <span class="text-[11px] text-[#8B7355]">Solar</span></div>
+          <div class="text-[11px] text-[#8B7355] mt-1">ت ث د ذ ر ز س ش ص ض ط ظ ل ن</div>
+          <canvas data-ink-key="${secId}-shamsi-${currentMode}" class="ruled-strip w-full mt-2" width="320" height="110"></canvas>
+        </div>
+        <div class="bg-[#FFFEF7] border-2 border-[#E8DCC0] rounded-xl p-3">
+          <div class="text-center font-black text-[#5A3C22]">القَمَرِيَّةُ <span class="text-[11px] text-[#8B7355]">Lunar</span></div>
+          <div class="text-[11px] text-[#8B7355] mt-1">أ ب ج ح خ ع غ ف ق ك م هـ و ي</div>
+          <canvas data-ink-key="${secId}-qamari-${currentMode}" class="ruled-strip w-full mt-2" width="320" height="110"></canvas>
+        </div>
+      </div>
+    `;
+    return;
+  }
+  body.innerHTML = sec.words.map((w,i)=>{
+    const key = `${secId}-${w.en}-${i}-${currentMode}`;
+    return `
+      <div class="strip-row">
+        <div class="flex items-center gap-2 min-w-[110px]">
+          <button class="px-2 py-1 rounded-lg bg-[#FFFEF7] border border-[#E8DCC0] text-[12px] font-bold" onclick="speakWord('${w.audioEn||w.en}','en-GB')">🔊 ${w.en}</button>
+          <button class="w-8 h-8 rounded-full bg-[#23408A] text-white flex items-center justify-center" onclick="speakWord('${w.audioAr||w.arSimple}','ar-SA')">🔊</button>
+        </div>
+        <canvas data-ink-key="${key}" id="canvas-${key}" class="ruled-strip" width="520" height="54"></canvas>
+        <div class="flex items-center gap-1">
+          <span class="mode-badge">${currentMode}</span>
+          <span class="arabic">${w.arSimple}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+  // Init pen canvases
+  setTimeout(()=>{
+    body.querySelectorAll('canvas').forEach(c=>{
+      const dpr=window.devicePixelRatio||1;
+      const rect=c.getBoundingClientRect();
+      if(c.width!==rect.width*dpr){ c.width=rect.width*dpr; c.height=54*dpr; c.style.height='54px'; }
+      const ctx=c.getContext('2d'); ctx.scale(dpr,dpr);
+      if(window.UniversalPen){ UniversalPen.forceCanvas(c); }
+    });
+  },80);
+}
+function openSection(id){
+  const prev=document.getElementById('card-'+expandedId);
+  if(prev) prev.classList.remove('expanded');
+  expandedId=id;
+  const card=document.getElementById('card-'+id);
+  if(card){ card.classList.add('expanded'); renderCardBody(id); card.scrollIntoView({behavior:'smooth', block:'start'}); }
+  document.querySelectorAll('.rail-lantern').forEach(el=>el.classList.remove('active'));
+  const rail=document.getElementById('rail-'+id); if(rail) rail.classList.add('active');
+}
+function nextSection(id){
+  const idx=SECTIONS.findIndex(s=>s.id===id);
+  if(idx>=0&&idx<SECTIONS.length-1) openSection(SECTIONS[idx+1].id);
+}
+function prevSection(id){
+  const idx=SECTIONS.findIndex(s=>s.id===id);
+  if(idx>0) openSection(SECTIONS[idx-1].id);
+}
+function speakWord(text, lang){
+  try{
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang=lang; u.rate=0.9;
+    speechSynthesis.cancel(); speechSynthesis.speak(u);
+  }catch(e){}
+}
+function updateProgress(){
+  let saved=0;
+  SECTIONS.forEach(s=>{
+    const key='LQ_INK_V16_humayun-arabic-oct23__'+s.id;
+    // check any ink for this section
+    let has=false;
+    for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&k.includes(s.id)){ has=true; break; } }
+    const rail=document.getElementById('rail-'+s.id);
+    if(rail&&has){ rail.classList.add('done'); saved++; }
+  });
+  document.getElementById('progressText').textContent=saved+'/8 SAVED';
+}
+document.getElementById('toggleHeaderBtn').onclick=()=>{
+  document.getElementById('topHeader').classList.toggle('hiddenBar');
+};
+document.getElementById('practiceBtn').onclick=()=>{
+  currentMode='practice';
+  document.getElementById('practiceBtn').className='px-3 py-1 rounded-full text-[13px] font-bold bg-[#FFD77A] text-[#3B2A14]';
+  document.getElementById('writeBtn').className='px-3 py-1 rounded-full text-[13px] font-bold text-[#C9A86A]';
+  if(expandedId) renderCardBody(expandedId);
+};
+document.getElementById('writeBtn').onclick=()=>{
+  currentMode='write';
+  document.getElementById('writeBtn').className='px-3 py-1 rounded-full text-[13px] font-bold bg-[#FFD77A] text-[#3B2A14]';
+  document.getElementById('practiceBtn').className='px-3 py-1 rounded-full text-[13px] font-bold text-[#C9A86A]';
+  if(expandedId) renderCardBody(expandedId);
+};
+document.getElementById('dimSlider').oninput=(e)=>{
+  const v=e.target.value;
+  document.getElementById('dimVal').textContent=v+'%';
+  document.getElementById('nightOverlay').style.background=`rgba(11,20,38,${0.6+v/100})`;
+};
+document.getElementById('fontBtn').onclick=()=>{
+  fontLarge=!fontLarge;
+  document.documentElement.style.fontSize=fontLarge?'18px':'16px';
+};
+document.getElementById('soundBtn').onclick=()=>{
+  const btn=document.getElementById('soundBtn');
+  const isMuted=btn.textContent==='🔇';
+  btn.textContent=isMuted?'🔊':'🔇';
+  if(window.UniversalPen&&UniversalPen.state) { UniversalPen.state.soundOn=isMuted; UniversalPen.saveState(); if(isMuted) UniversalPen.initAudio(); }
+};
+buildRail(); buildCards();
+setTimeout(()=>{ openSection('sec1'); updateProgress(); },400);
+setInterval(updateProgress,2000);
+</script>
+</body>
+</html>
