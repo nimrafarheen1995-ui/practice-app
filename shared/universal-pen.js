@@ -11,7 +11,7 @@
   const CFG = {
     colors: ['#0F172A', '#2563EB', '#15803D', '#DC2626', '#7C3AED'],
     stamps: ['⭐', '😡', '❤️', '😊', '😢', '🌸', '♻️', '🌍', '✅', '❌', '💯', '❄️'],
-    stickers: ['💃', '🔥', '⭐', '🌹', '🧐', '🫰', '🌳', '🧹'],
+    stickers: ['💃', '🔥', '⭐', '🌹', '🧐', '🫰', '🌳', '🎊'],
     storageKey: 'LQ_UNIVERSAL_PEN_V16',
     soundKey: 'LQ_PEN_SOUND_V16',
     inkPrefix: 'LQ_INK_V16_',
