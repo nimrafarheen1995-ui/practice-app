@@ -2,343 +2,603 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>Humayun - Arabic - Oct21 - V4</title>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400&family=Lateef:wght@400&family=Noto+Naskh+Arabic:wght@400&family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+<title>Humayun • Arabic • Unit 3 Lesson 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Amiri:wght@400;700&family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-  *{ -webkit-tap-highlight-color:transparent; }
-  body{ margin:0; min-height:100vh; font-family:'Baloo 2',system-ui; background:#0b1426 url('assets/islamic-night-bg.webp') center/cover no-repeat fixed; overflow-x:hidden; }
-  .night-overlay{ position:fixed; inset:0; background:rgba(11,20,38,0.82); pointer-events:none; z-index:0; }
-  #topHeader{ position:sticky; top:0; z-index:40; background:linear-gradient(180deg,rgba(20,28,48,0.96),rgba(11,20,38,0.92)); border-bottom:2.5px solid #C9A86A; backdrop-filter:blur(10px); transition:transform .4s ease; }
-  #topHeader.hiddenBar{ transform:translateY(-105%); }
-  #hangingAvatar{
-    position:fixed; top:4px; left:50%; transform:translateX(-50%); z-index:45;
-    width:84px; height:84px; border-radius:50%; border:3px solid #C9A86A;
-    background:#FFFEF7; box-shadow:0 8px 24px rgba(0,0,0,.35),0 0 0 4px rgba(11,20,38,.5);
-    display:flex; align-items:center; justify-content:center; cursor:pointer;
-    transition:all .4s cubic-bezier(.34,1.56,.64,1); overflow:hidden;
+*{ -webkit-tap-highlight-color:transparent; box-sizing:border-box; }
+html,body{ margin:0; min-height:100%; font-family:'Baloo 2',system-ui,sans-serif; background:#0b1426 url('assets/islamic-night-bg.webp') center/cover no-repeat fixed; overflow-x:hidden; }
+.night-overlay{ position:fixed; inset:0; background:rgba(11,20,38,0.82); pointer-events:none; z-index:0; }
+
+/* Traditional Arabic – bigger + clear harakat */
+.ar,.arabic-trad,#modalTitle.ar-title{
+  font-family:'Scheherazade New','Amiri','Traditional Arabic',serif !important;
+  direction:rtl; text-align:right;
+  font-feature-settings:"liga" 1,"calt" 1,"kern" 1;
+  -webkit-font-smoothing:antialiased;
+  color:#2B1E0E;
+}
+.ar-xl{ font-size:2.85rem; line-height:2.45; font-weight:700; }
+.ar-lg{ font-size:2.35rem; line-height:2.3; font-weight:700; }
+.ar-md{ font-size:1.95rem; line-height:2.15; font-weight:700; }
+.ar-sm{ font-size:1.55rem; line-height:2.0; font-weight:700; }
+.ar-header{ font-size:1.7rem; line-height:1.9; font-weight:700; color:#5A3C22; }
+
+#topHeader{
+  position:sticky; top:0; z-index:40;
+  background:linear-gradient(180deg,rgba(20,28,48,0.97),rgba(11,20,38,0.93));
+  border-bottom:2.5px solid #C9A86A; backdrop-filter:blur(10px);
+  transition:transform .4s ease;
+}
+#topHeader.hiddenBar{ transform:translateY(-105%); }
+
+#hangingAvatar{
+  position:fixed; top:4px; left:50%; transform:translateX(-50%); z-index:45;
+  width:78px; height:78px; border-radius:50%; border:3px solid #C9A86A;
+  background:#FFFEF7; box-shadow:0 8px 24px rgba(0,0,0,.35),0 0 0 4px rgba(11,20,38,.5);
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  transition:all .4s cubic-bezier(.34,1.56,.64,1); overflow:hidden;
+}
+#hangingAvatar img{ width:100%; height:100%; object-fit:cover; }
+#hangingAvatar.hiddenPos{ top:-10px; transform:translateX(-50%) scale(0.7); }
+#hangingAvatar::after{ content:""; position:absolute; top:-18px; left:50%; width:2px; height:18px; background:#C9A86A; transform:translateX(-50%); }
+
+#rolledScrollWrap{
+  position:relative; z-index:2; width:min(500px,88vw); margin:88px auto 0;
+  cursor:pointer; transition:all .7s cubic-bezier(.34,1.2,.64,1);
+}
+#rolledScrollWrap.unrolled{ opacity:0; transform:scale(0.9) translateY(-30px); pointer-events:none; max-height:0; margin:0 auto; overflow:hidden; }
+.rolled-scroll{
+  background:linear-gradient(180deg,#FFF9E6,#E8DCC0); border-radius:28px; padding:16px 14px;
+  box-shadow:0 18px 40px rgba(0,0,0,.4), inset 0 2px 0 rgba(255,255,255,.6);
+  border:2px solid #C9A86A; text-align:center; position:relative;
+}
+.rolled-scroll::before,.rolled-scroll::after{
+  content:""; position:absolute; left:10%; right:10%; height:12px;
+  background:linear-gradient(180deg,#D9C8A0,#C9A86A); border-radius:10px;
+}
+.rolled-scroll::before{ top:-7px; } .rolled-scroll::after{ bottom:-7px; }
+
+.parchment-scroll{
+  position:relative; z-index:1; width:min(960px,94vw); margin:0 auto;
+  background:linear-gradient(180deg,#FFFEF7 0%,#FFF8E1 100%);
+  border-radius:18px; box-shadow:0 20px 60px rgba(0,0,0,.45),0 0 0 1.5px rgba(201,168,106,.35);
+  padding:0 0 20px; max-height:0; opacity:0; overflow:hidden;
+  transform:scaleY(0.12); transform-origin:top center;
+  transition:all .85s cubic-bezier(.34,1.2,.64,1);
+}
+.parchment-scroll.open{ max-height:6000px; opacity:1; transform:scaleY(1); margin:16px auto 100px; }
+
+#lanternRail{
+  position:fixed; left:0; top:66px; bottom:0; width:78px; z-index:30;
+  background:linear-gradient(180deg,rgba(11,20,38,0.92),rgba(11,20,38,0.75));
+  border-right:1.5px solid rgba(201,168,106,0.25);
+  display:flex; flex-direction:column; align-items:center; padding:10px 0 90px; overflow-y:auto;
+}
+.rail-lantern{
+  width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  cursor:pointer; background:rgba(255,255,255,0.06); border:2px solid rgba(201,168,106,0.18);
+  transition:all .25s; font-size:1.1rem; font-weight:800; color:#C9A86A;
+}
+.rail-lantern img{ width:30px; height:30px; object-fit:contain; }
+.rail-lantern.active{
+  background:radial-gradient(circle,#FFF3C0,#C9A86A); border-color:#FFD77A;
+  box-shadow:0 0 16px rgba(255,215,122,.6); transform:scale(1.08); color:#3B2A14;
+}
+.rail-line{ width:2px; height:12px; background:rgba(201,168,106,0.25); }
+
+.scroll-card{
+  margin:12px 14px; padding:12px 14px; background:#FFFEF7;
+  border:1.5px solid #E8DCC0; border-radius:14px; cursor:pointer; transition:all .2s;
+}
+.scroll-card:active{ transform:scale(0.98); background:#FFF8E1; }
+.card-banner{
+  display:inline-flex; align-items:center; gap:6px; background:#FFF3C0;
+  border:1px solid rgba(201,168,106,0.35); border-radius:999px; padding:3px 10px;
+  font-size:.78rem; font-weight:800; color:#5A3C22;
+}
+
+/* Writing strip */
+.strip-wrap{ position:relative; width:100%; margin-top:6px; }
+.ruled-strip{
+  width:100%; height:96px; display:block;
+  background:
+    linear-gradient(0deg,transparent 0,transparent 47px,#8FB8E8 47px,#8FB8E8 48px,transparent 48px),
+    linear-gradient(0deg,#FFFFFF 0%,#FFFEF7 100%);
+  border:1.8px solid #D9C8A0; border-radius:12px; cursor:crosshair; touch-action:none;
+}
+.strip-tools{ position:absolute; top:-8px; right:-6px; display:flex; gap:4px; z-index:2; }
+.strip-btn{
+  width:26px; height:26px; border-radius:50%; border:1.5px solid #C9A86A;
+  background:#FFFEF7; display:flex; align-items:center; justify-content:center;
+  font-size:13px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.15);
+}
+.strip-btn.clear{ background:#FFF1F1; border-color:#E0A0A0; }
+
+.word-row{
+  display:grid; grid-template-columns:1fr 1.4fr 1fr; gap:8px; align-items:center;
+  padding:10px 8px; border-bottom:1px dashed #E8DCC0;
+}
+.word-row:last-child{ border-bottom:0; }
+.eng-label{ font-weight:700; color:#3B2A14; font-size:1.05rem; cursor:pointer; }
+.ans-box{
+  min-height:42px; display:flex; align-items:center; justify-content:flex-end;
+  padding:4px 8px; border-radius:8px;
+}
+.ans-box.practice{ background:rgba(201,168,106,0.12); }
+.blank-hint{ color:#C9A86A; font-size:0.9rem; font-style:italic; }
+
+/* Modal */
+#sectionModal{
+  position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center;
+  padding:12px; background:rgba(11,20,38,0.72); backdrop-filter:blur(8px);
+  opacity:0; pointer-events:none; transition:all .4s;
+}
+#sectionModal.open{ opacity:1; pointer-events:auto; }
+.modal-parchment{
+  width:min(900px,96vw); max-height:92vh; overflow-y:auto;
+  background:linear-gradient(180deg,#FFFEF7,#FFF8E1);
+  border-radius:18px; border:2px solid #C9A86A;
+  box-shadow:0 24px 80px rgba(0,0,0,.5);
+  transform:scale(0.88) translateY(24px); transition:all .45s cubic-bezier(.34,1.4,.64,1);
+}
+#sectionModal.open .modal-parchment{ transform:scale(1) translateY(0); }
+
+.col-write-box{
+  border:2px solid #E8DCC0; border-radius:14px; padding:12px; background:#FFFCF5; min-height:200px;
+}
+.letters-ref{ text-align:center; letter-spacing:0.1em; margin-bottom:8px; opacity:0.85; }
+
+.pic-q{
+  display:grid; grid-template-columns:90px 1fr; gap:12px; align-items:center;
+  padding:12px; border:1.5px solid #E8DCC0; border-radius:12px; margin-bottom:10px; background:#FFFEF7;
+}
+.pic-q svg{ width:72px; height:72px; }
+
+@media(max-width:768px){
+  #lanternRail{
+    width:100%; height:60px; top:auto; bottom:0; flex-direction:row;
+    justify-content:flex-start; overflow-x:auto; border-right:0;
+    border-top:1.5px solid rgba(201,168,106,.25); padding:6px 10px;
   }
-  #hangingAvatar img{ width:100%; height:100%; object-fit:cover; }
-  #hangingAvatar.hiddenPos{ top:-12px; transform:translateX(-50%) scale(0.72); }
-  #hangingAvatar::after{ content:""; position:absolute; top:-20px; left:50%; width:2px; height:20px; background:#C9A86A; transform:translateX(-50%); }
-  #rolledScrollWrap{ position:relative; z-index:2; width:min(520px,88vw); margin:92px auto 0; cursor:pointer; transition:all .7s cubic-bezier(.34,1.2,.64,1); }
-  #rolledScrollWrap.unrolled{ opacity:0; transform:scale(0.9) translateY(-30px); pointer-events:none; max-height:0; margin:0 auto; overflow:hidden; }
-  .rolled-scroll{ background:linear-gradient(180deg,#FFF9E6,#E8DCC0); border-radius:28px; padding:18px 16px; box-shadow:0 18px 40px rgba(0,0,0,.4); border:2px solid #C9A86A; text-align:center; position:relative; }
-  .rolled-scroll::before,.rolled-scroll::after{ content:""; position:absolute; left:10%; right:10%; height:14px; background:linear-gradient(180deg,#D9C8A0,#C9A86A); border-radius:10px; }
-  .rolled-scroll::before{ top:-8px; } .rolled-scroll::after{ bottom:-8px; }
-  .parchment-scroll{ position:relative; z-index:1; width:min(980px,94vw); margin:0 auto; background:linear-gradient(180deg,#FFFEF7 0%,#FFF8E1 100%); border-radius:18px; box-shadow:0 20px 60px rgba(0,0,0,.45); padding:0 0 22px 0; max-height:0; opacity:0; overflow:hidden; transform:scaleY(0.12); transform-origin:top center; transition:all .85s cubic-bezier(.34,1.2,.64,1); }
-  .parchment-scroll.open{ max-height:5000px; opacity:1; transform:scaleY(1); margin:18px auto 90px; }
-  #lanternRail{ position:fixed; left:0; top:70px; bottom:0; width:86px; z-index:30; background:linear-gradient(180deg,rgba(11,20,38,0.92),rgba(11,20,38,0.75)); border-right:1.5px solid rgba(201,168,106,0.25); display:flex; flex-direction:column; align-items:center; padding:12px 0 80px; overflow-y:auto; }
-  .rail-lantern{ width:54px; height:54px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; transition:all .3s; background:rgba(255,255,255,0.06); border:2px solid rgba(201,168,106,0.18); }
-  .rail-lantern img{ width:36px; height:36px; object-fit:contain; }
-  .rail-lantern.active{ background:radial-gradient(circle,#FFF3C0,#C9A86A); border-color:#FFD77A; box-shadow:0 0 18px rgba(255,215,122,.65); transform:scale(1.08); }
-  .rail-line{ width:2px; height:16px; background:rgba(201,168,106,0.25); }
-  .scroll-card{ position:relative; margin:14px 16px; padding:14px 16px; background:#FFFEF7; border:1.5px solid #E8DCC0; border-radius:14px; cursor:pointer; transition:all .25s; }
-  .card-banner{ display:inline-flex; align-items:center; gap:6px; background:#FFF3C0; border:1px solid rgba(201,168,106,0.35); border-radius:999px; padding:3px 10px; font-size:.76rem; font-weight:800; color:#5A3C22; }
-  /* FIX 1: NOT BOLD - Amiri 400 + Lateef 400 */
-  .arabic-trad{
-    font-family:'Amiri','Lateef','Noto Naskh Arabic',serif; direction:rtl; text-align:right;
-    font-size:1.55rem; line-height:1.9; font-weight:400; color:#2B1E0E;
-    font-feature-settings:"liga" 1,"calt" 1; cursor:pointer; user-select:none;
-    padding:2px 8px; border-radius:8px; transition:all .15s;
-  }
-  .arabic-trad.faint{ opacity:0.38; color:#8B7355; font-size:1.45rem; }
-  .arabic-trad.hidden-answer{ display:none !important; }
-  .english-clean{ font-weight:600; color:#3B2A14; font-size:0.95rem; cursor:pointer; user-select:none; padding:2px 6px; border-radius:6px; }
-  .strip-row-rtl{ display:flex; align-items:center; gap:10px; margin:16px 0; direction:ltr; }
-  .strip-row-rtl .eng-side{ order:1; min-width:82px; }
-  .strip-row-rtl .canvas-side{ order:2; flex:1; }
-  .strip-row-rtl .ar-side{ order:3; min-width:100px; display:flex; justify-content:flex-end; }
-  .strip-wrap{ position:relative; width:100%; }
-  .ruled-strip-long{
-    width:100%; height:88px; display:block;
-    background:
-      linear-gradient(0deg,transparent 0,transparent 43px,#8FB8E8 43px,#8FB8E8 44px,transparent 44px),
-      linear-gradient(0deg,#FFFFFF 0%,#FFFEF7 100%);
-    border:1.8px solid #D9C8A0; border-radius:12px; cursor:crosshair; direction:rtl;
-  }
-  .ruled-strip-long.practice-bg{
-    background:
-      linear-gradient(0deg,transparent 0,transparent 43px,#8FB8E8 43px,#8FB8E8 44px,transparent 44px),
-      linear-gradient(0deg,#FFFEF7 0%,#FFF8E1 100%);
-  }
-  .strip-tools{ position:absolute; top:-10px; right:-8px; display:flex; gap:5px; z-index:2; }
-  .strip-btn{ width:28px; height:28px; border-radius:50%; border:1.6px solid #C9A86A; background:#FFFEF7; display:flex; align-items:center; justify-content:center; font-size:14px; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,.18); }
-  .strip-btn.clear{ background:#FFF1F1; border-color:#E0A0A0; }
-  #sectionModal{ position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; padding:14px; background:rgba(11,20,38,0.72); backdrop-filter:blur(8px); opacity:0; pointer-events:none; transition:all .45s; }
-  #sectionModal.open{ opacity:1; pointer-events:auto; }
-  .modal-parchment{ width:min(860px,96vw); max-height:92vh; overflow-y:auto; background:linear-gradient(180deg,#FFFEF7,#FFF8E1); border-radius:18px; border:2px solid #C9A86A; box-shadow:0 24px 80px rgba(0,0,0,.5); transform:scale(0.82) translateY(30px); transition:all .5s cubic-bezier(.34,1.56,.64,1); }
-  #sectionModal.open .modal-parchment{ transform:scale(1) translateY(0); }
-  /* PIN Modal - hidden PIN */
-  #pinModal{ position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center; background:rgba(11,20,38,0.82); backdrop-filter:blur(6px); opacity:0; pointer-events:none; transition:all .3s; }
-  #pinModal.open{ opacity:1; pointer-events:auto; }
-  #pinModal .pin-box{ background:#FFFEF7; border:2px solid #C9A86A; border-radius:16px; padding:20px; width:min(320px,90vw); text-align:center; box-shadow:0 20px 50px rgba(0,0,0,.4); }
-  @media(max-width:768px){ #lanternRail{ width:100%; height:66px; top:auto; bottom:0; flex-direction:row; justify-content:flex-start; overflow-x:auto; border-right:0; border-top:1.5px solid rgba(201,168,106,.25); padding:8px 12px; } .rail-line{ width:16px; height:2px; } .parchment-scroll{ width:97vw; } .arabic-trad{ font-size:1.4rem; } .ruled-strip-long{ height:82px; } }
+  .rail-line{ width:12px; height:2px; }
+  .parchment-scroll{ width:97vw; }
+  .ar-xl{ font-size:2.4rem; }
+  .ar-lg{ font-size:2.0rem; }
+  .word-row{ grid-template-columns:1fr; gap:4px; }
+  .ruled-strip{ height:88px; }
+}
 </style>
 </head>
 <body>
 <div class="night-overlay"></div>
+
 <header id="topHeader">
   <div class="flex items-center justify-between px-3 py-2 gap-2">
     <div class="flex items-center gap-2">
       <img src="assets/badge-crescent-star.webp" alt="" class="w-7 h-7 object-contain" onerror="this.style.display='none'">
       <div class="text-[#FFD77A] leading-tight">
-        <div class="font-extrabold text-[14px]">تعلم العربية • Arabic</div>
-        <div class="text-[10px] text-[#C9A86A]">Unit 3 • Lesson 1</div>
+        <div class="font-extrabold text-[14px]">تَعَلَّمِ الْعَرَبِيَّةَ • Arabic</div>
+        <div class="text-[10px] text-[#C9A86A]">Unit 3 • Lesson 1 • Class III</div>
       </div>
     </div>
     <div class="flex items-center gap-2">
       <div class="flex bg-[#1A2340] border border-[#C9A86A]/30 rounded-full p-1">
-        <button id="practiceBtn" class="px-3 py-1 rounded-full text-[12px] font-bold bg-[#FFD77A] text-[#3B2A14] flex items-center gap-1">🔒 Practice</button>
+        <button id="practiceBtn" class="px-3 py-1 rounded-full text-[12px] font-bold bg-[#FFD77A] text-[#3B2A14]">Practice</button>
         <button id="writeBtn" class="px-3 py-1 rounded-full text-[12px] font-bold text-[#C9A86A]">Write</button>
       </div>
-      <button id="fontBtn" class="w-8 h-8 rounded-full bg-[#FFFEF7] border border-[#C9A86A] text-[12px] font-black text-[#5A3C22]">Aa</button>
+      <button type="button" onclick="location.href='index.html'" class="text-[11px] font-bold px-2 py-1 rounded-lg border border-[#C9A86A]/40 text-[#C9A86A]">← Hub</button>
     </div>
   </div>
 </header>
+
 <div id="hangingAvatar" title="Tap to show/hide header">
-  <img src="assets/humayun-scholar.webp" alt="Humayun" onerror="this.parentElement.textContent='👦'; this.style.display='none'">
+  <img src="assets/humayun-avatar.webp" alt="Humayun" onerror="this.src='assets/humayun-scholar.webp'; this.onerror=function(){this.parentElement.textContent='👦';}">
 </div>
+
 <div id="rolledScrollWrap">
   <div class="rolled-scroll">
     <div class="flex items-center justify-center gap-2">
-      <img src="assets/lantern-gem.webp" class="w-8 h-8" alt="" onerror="this.textContent='🏮'">
-      <div class="font-extrabold text-[#5A3C22] text-[17px]">📜 Scroll is Rolled</div>
-      <img src="assets/lantern-gem.webp" class="w-8 h-8" alt="" onerror="this.textContent='🏮'">
+      <img src="assets/lantern-gem.webp" class="w-7 h-7" alt="" onerror="this.textContent='🏮'">
+      <div class="font-extrabold text-[#5A3C22] text-[16px]">📜 Scroll is Rolled</div>
+      <img src="assets/lantern-gem.webp" class="w-7 h-7" alt="" onerror="this.textContent='🏮'">
     </div>
-    <div class="text-[12px] text-[#6B5A3E] mt-1">Tap to unroll • 8 sections</div>
+    <div class="text-[12px] text-[#6B5A3E] mt-1">Tap to unroll • 8 sections • Traditional Arabic</div>
   </div>
 </div>
+
 <nav id="lanternRail">
   <div id="railContainer" class="flex flex-col items-center gap-0 mt-1"></div>
 </nav>
+
 <main class="parchment-scroll" id="mainScroll">
+  <div class="px-4 pt-4 pb-2 text-center">
+    <div class="ar ar-header">الْوَحْدَةُ الثَّالِثَةُ — الدَّرْسُ الْأَوَّلُ</div>
+    <div class="text-[12px] text-[#8B7355] mt-1">Al Hira Model School • AY 2026–2027</div>
+  </div>
   <div id="cardsContainer"></div>
 </main>
+
 <div id="sectionModal">
   <div class="modal-parchment" id="modalParchment">
     <div class="sticky top-0 z-10 bg-[#FFFEF7]/95 backdrop-blur-md border-b-2 border-[#C9A86A]/30 p-3 flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <img src="assets/lantern-gem.webp" class="w-7 h-7" alt="" onerror="this.style.display='none'">
-        <div>
-          <div class="font-black text-[#3B2A14] text-[14px]" id="modalTitle">Section</div>
+      <div class="flex items-center gap-2 min-w-0">
+        <img src="assets/lantern-gem.webp" class="w-6 h-6 shrink-0" alt="" onerror="this.style.display='none'">
+        <div class="min-w-0">
+          <div class="font-black text-[#3B2A14] text-[14px] truncate" id="modalTitle">Section</div>
           <div class="text-[11px] text-[#8B7355]" id="modalSub"></div>
         </div>
       </div>
-      <button id="closeModal" class="w-9 h-9 rounded-full bg-[#1A2340] text-[#FFD77A] border-2 border-[#C9A86A]">✕</button>
+      <button id="closeModal" class="w-9 h-9 shrink-0 rounded-full bg-[#1A2340] text-[#FFD77A] border-2 border-[#C9A86A]">✕</button>
     </div>
     <div id="modalBody" class="p-3"></div>
     <div class="sticky bottom-0 bg-[#FFFEF7]/95 backdrop-blur p-3 flex gap-2 border-t border-[#C9A86A]/20">
-      <button class="flex-1 py-2 rounded-full bg-[#1A2340] text-[#FFD77A] font-bold text-[12px] border-2 border-[#C9A86A]" onclick="prevSection()">Previous</button>
-      <button class="flex-1 py-2 rounded-full bg-[#1A2340] text-[#FFD77A] font-bold text-[12px] border-2 border-[#C9A86A]" onclick="nextSection()">Next</button>
+      <button type="button" class="flex-1 py-2 rounded-full bg-[#1A2340] text-[#FFD77A] font-bold text-[12px] border-2 border-[#C9A86A]" onclick="prevSection()">◀ Previous</button>
+      <button type="button" class="flex-1 py-2 rounded-full bg-[#1A2340] text-[#FFD77A] font-bold text-[12px] border-2 border-[#C9A86A]" onclick="nextSection()">Next ▶</button>
     </div>
   </div>
 </div>
-<div id="pinModal">
-  <div class="pin-box">
-    <div class="text-[14px] font-black text-[#3B2A14]">Parent PIN Required</div>
-    <div class="text-[11px] text-[#8B7355] mt-1">Practice mode shows answers. Enter PIN to unlock.</div>
-    <input id="pinInput" type="password" inputmode="numeric" maxlength="4" class="mt-3 w-full text-center text-[20px] tracking-[0.4em] border-2 border-[#C9A86A] rounded-xl py-2 bg-white" placeholder="••••">
-    <div class="flex gap-2 mt-3">
-      <button id="pinCancel" class="flex-1 py-2 rounded-full border-2 border-[#E8DCC0] bg-white font-bold text-[12px]">Cancel</button>
-      <button id="pinSubmit" class="flex-1 py-2 rounded-full bg-[#1A2340] text-[#FFD77A] border-2 border-[#C9A86A] font-bold text-[12px]">Unlock</button>
-    </div>
-    <div id="pinError" class="text-[11px] text-red-600 mt-2 hidden">Wrong PIN</div>
-  </div>
-</div>
+
 <script src="shared/universal-pen.js"></script>
 <script>
-const TRADITIONAL_WORDS = [
-  {en:'bear', ar:'دُبٌّ', arSimple:'دُبّ', audioEn:'bear', audioAr:'دُبّ'},
-  {en:'house', ar:'بَيْتٌ', arSimple:'بَيْت', audioEn:'house', audioAr:'بَيْت'},
-  {en:'apple', ar:'تُفَّاحٌ', arSimple:'تُفَّاح', audioEn:'apple', audioAr:'تُفَّاح'},
-  {en:'students', ar:'تَلَامِيذُ', arSimple:'تَلَامِيذ', audioEn:'students', audioAr:'تَلَامِيذ'},
-  {en:'books', ar:'كُتُبٌ', arSimple:'كُتُب', audioEn:'books', audioAr:'كُتُب'},
-  {en:'chair', ar:'كُرْسِيٌّ', arSimple:'كُرْسِيّ', audioEn:'chair', audioAr:'كُرْسِيّ'},
-  {en:'map', ar:'خَرِيطَةٌ', arSimple:'خَرِيطَة', audioEn:'map', audioAr:'خَرِيطَة'},
-  {en:'ox', ar:'ثَوْرٌ', arSimple:'ثَوْر', audioEn:'ox', audioAr:'ثَوْر'},
-  {en:'flower', ar:'زَهْرَةٌ', arSimple:'زَهْرَة', audioEn:'flower', audioAr:'زَهْرَة'},
-  {en:'chick', ar:'صَوْصٌ', arSimple:'صَوْص', audioEn:'chick', audioAr:'صَوْص'},
-  {en:'father', ar:'أَبٌ', arSimple:'أَب', audioEn:'father', audioAr:'أَب'},
-  {en:'corn', ar:'ذُرَةٌ', arSimple:'ذُرَة', audioEn:'corn', audioAr:'ذُرَة'},
-  {en:'room', ar:'غُرْفَةٌ', arSimple:'غُرْفَة', audioEn:'room', audioAr:'غُرْفَة'},
-  {en:'student', ar:'تِلْمِيذٌ', arSimple:'تِلْمِيذ', audioEn:'student', audioAr:'تِلْمِيذ'},
-  {en:'book', ar:'كِتَابٌ', arSimple:'كِتَاب', audioEn:'book', audioAr:'كِتَاب'},
-  {en:'table', ar:'مَكْتَبٌ', arSimple:'مَكْتَب', audioEn:'table', audioAr:'مَكْتَب'},
-  {en:'juice', ar:'عَصِيرٌ', arSimple:'عَصِير', audioEn:'juice', audioAr:'عَصِير'},
-  {en:'horse', ar:'حِصَانٌ', arSimple:'حِصَان', audioEn:'horse', audioAr:'حِصَان'},
-  {en:'head', ar:'رَأْسٌ', arSimple:'رَأْس', audioEn:'head', audioAr:'رَأْس'},
-  {en:'sun', ar:'شَمْسٌ', arSimple:'شَمْس', audioEn:'sun', audioAr:'شَمْس'},
+/* ========== DATA (from worksheet + answer key) ========== */
+const SEC1 = [
+  {en:'bear', ar:'دُبٌّ'}, {en:'house', ar:'بَيْتٌ'}, {en:'apple', ar:'تُفَّاحٌ'}, {en:'students', ar:'تَلَامِيذُ'},
+  {en:'books', ar:'كُتُبٌ'}, {en:'chair', ar:'كُرْسِيٌّ'}, {en:'map', ar:'خَرِيطَةٌ'}, {en:'ox', ar:'ثَوْرٌ'},
+  {en:'flower', ar:'زَهْرَةٌ'}, {en:'chick', ar:'صُوصٌ'},
+  {en:'father', ar:'أَبٌ'}, {en:'corn', ar:'ذُرَةٌ'}, {en:'room', ar:'غُرْفَةٌ'}, {en:'student', ar:'تِلْمِيذٌ'},
+  {en:'book', ar:'كِتَابٌ'}, {en:'table', ar:'مَكْتَبٌ'}, {en:'juice', ar:'عَصِيرٌ'}, {en:'horse', ar:'حِصَانٌ'},
+  {en:'head', ar:'رَأْسٌ'}, {en:'sun', ar:'شَمْسٌ'}
 ];
+
+const SEC2 = [
+  {ar:'جُغْرَافِيَا', en:'geography'}, {ar:'حِسَابٌ', en:'Mathematics'}, {ar:'مَكْتَبَةٌ', en:'library'}, {ar:'مَدْرَسَةٌ', en:'school'},
+  {ar:'عَرَبِيَّةٌ', en:'Arabic'}, {ar:'سُورَةٌ', en:'chapter'}, {ar:'مَسْجِدٌ', en:'mosque'}, {ar:'سُوقٌ', en:'market'},
+  {ar:'حَدِيقَةٌ', en:'garden'}, {ar:'مُخْتَبَرٌ', en:'lab'}, {ar:'فَصْلٌ', en:'classroom'}, {ar:'مَرِيضٌ', en:'patient'},
+  {ar:'حَقِيبَةٌ', en:'bag'}, {ar:'وَاجِبٌ', en:'homework'}, {ar:'جَرَسٌ', en:'bell'}, {ar:'حَاسُوبٌ', en:'computer'}
+];
+
+const SHAMSI = 'ت ث د ذ ر ز س ش ص ض ط ظ ل ن';
+const QAMARI = 'أ ب ج ح خ ع غ ف ق ك م هـ و ي';
+
+const SEC4 = [
+  {indef:'دُبٌّ', def:'الدُّبُّ'}, {indef:'أَبٌ', def:'الأَبُ'}, {indef:'بَيْتٌ', def:'البَيْتُ'}, {indef:'ذُرَةٌ', def:'الذُّرَةُ'},
+  {indef:'تُفَّاحٌ', def:'التُّفَّاحُ'}, {indef:'غُرْفَةٌ', def:'الغُرْفَةُ'}, {indef:'تَلَامِيذُ', def:'التَّلَامِيذُ'}, {indef:'تِلْمِيذٌ', def:'التِّلْمِيذُ'},
+  {indef:'كُتُبٌ', def:'الكُتُبُ'}, {indef:'كِتَابٌ', def:'الكِتَابُ'}, {indef:'كُرْسِيٌّ', def:'الكُرْسِيُّ'}, {indef:'مَكْتَبٌ', def:'المَكْتَبُ'},
+  {indef:'خَرِيطَةٌ', def:'الخَرِيطَةُ'}, {indef:'عَصِيرٌ', def:'العَصِيرُ'}, {indef:'ثَوْرٌ', def:'الثَّوْرُ'}, {indef:'حِصَانٌ', def:'الحِصَانُ'},
+  {indef:'زَهْرَةٌ', def:'الزَّهْرَةُ'}, {indef:'رَأْسٌ', def:'الرَّأْسُ'}, {indef:'صُوصٌ', def:'الصُّوصُ'}, {indef:'شَمْسٌ', def:'الشَّمْسُ'}
+];
+
+const SEC5 = [
+  {def:'الحِسَابُ', indef:'حِسَابٌ'}, {def:'العَرَبِيَّةُ', indef:'عَرَبِيَّةٌ'}, {def:'الجُغْرَافِيَا', indef:'جُغْرَافِيَا'}, {def:'السُّورَةُ', indef:'سُورَةٌ'},
+  {def:'المَكْتَبَةُ', indef:'مَكْتَبَةٌ'}, {def:'المَسْجِدُ', indef:'مَسْجِدٌ'}, {def:'المَدْرَسَةُ', indef:'مَدْرَسَةٌ'}, {def:'السُّوقُ', indef:'سُوقٌ'},
+  {def:'الحَدِيقَةُ', indef:'حَدِيقَةٌ'}, {def:'المُخْتَبَرُ', indef:'مُخْتَبَرٌ'}, {def:'الفَصْلُ', indef:'فَصْلٌ'}, {def:'المَرِيضُ', indef:'مَرِيضٌ'},
+  {def:'الحَقِيبَةُ', indef:'حَقِيبَةٌ'}, {def:'الوَاجِبُ', indef:'وَاجِبٌ'}, {def:'الجَرَسُ', indef:'جَرَسٌ'}, {def:'الحَاسُوبُ', indef:'حَاسُوبٌ'}
+];
+
+const SEC6 = [
+  {noun:'مَسْجِدٌ', ans:'هَذَا مَسْجِدٌ', hint:'هَذَا / هَذِهِ'},
+  {noun:'مَكْتَبَةٌ', ans:'هَذِهِ مَكْتَبَةٌ', hint:'هَذَا / هَذِهِ'},
+  {noun:'بَيْتٌ', ans:'هَذَا بَيْتٌ', hint:'هَذَا / هَذِهِ'},
+  {noun:'ذُرَةٌ', ans:'هَذِهِ ذُرَةٌ', hint:'هَذَا / هَذِهِ'},
+  {noun:'عَصِيرٌ', ans:'هَذَا عَصِيرٌ', hint:'هَذَا / هَذِهِ'},
+  {noun:'خَرِيطَةٌ', ans:'هَذِهِ خَرِيطَةٌ', hint:'هَذَا / هَذِهِ'}
+];
+
+const SEC7 = [
+  {noun:'مَدْرَسَةٌ', ans:'تِلْكَ مَدْرَسَةٌ', hint:'ذَلِكَ / تِلْكَ'},
+  {noun:'سُوقٌ', ans:'ذَلِكَ سُوقٌ', hint:'ذَلِكَ / تِلْكَ'},
+  {noun:'غُرْفَةٌ', ans:'تِلْكَ غُرْفَةٌ', hint:'ذَلِكَ / تِلْكَ'},
+  {noun:'كِتَابٌ', ans:'ذَلِكَ كِتَابٌ', hint:'ذَلِكَ / تِلْكَ'},
+  {noun:'سُورَةٌ', ans:'تِلْكَ سُورَةٌ', hint:'ذَلِكَ / تِلْكَ'},
+  {noun:'ثَوْرٌ', ans:'ذَلِكَ ثَوْرٌ', hint:'ذَلِكَ / تِلْكَ'}
+];
+
+const SEC8 = [
+  {q:'أَيْنَ الكِتَابُ؟', ans:'الكِتَابُ فِي الحَقِيبَةِ', prep:'فِي', pic:'bag'},
+  {q:'أَيْنَ الكِتَابُ؟', ans:'الكِتَابُ عَلَى المَكْتَبِ', prep:'عَلَى', pic:'on'},
+  {q:'أَيْنَ الكِتَابُ؟', ans:'الكِتَابُ تَحْتَ المَكْتَبِ', prep:'تَحْتَ', pic:'under'}
+];
+
 const SECTIONS = [
-  {id:'sec1', title:'Section 1 • الأساسيات', sub:'5 words', words:TRADITIONAL_WORDS.slice(0,5)},
-  {id:'sec2', title:'Section 2 • العائلة', sub:'5 words', words:TRADITIONAL_WORDS.slice(5,10)},
-  {id:'sec3', title:'Section 3 • الصف', sub:'5 words', words:TRADITIONAL_WORDS.slice(10,15)},
-  {id:'sec4', title:'Section 4 • الطبيعة', sub:'5 words', words:TRADITIONAL_WORDS.slice(15,20)},
-  {id:'sec5', title:'Section 5 • الشمسية والقمرية', sub:'Solar & Lunar', special:'letters'},
-  {id:'sec6', title:'Section 6 • التعريف', sub:'ال', words:[{en:'bear', ar:'الدُّبُّ', arSimple:'الدُّبّ', audioEn:'bear', audioAr:'الدب'}, {en:'house', ar:'البَيْتُ', arSimple:'البَيْت', audioEn:'house', audioAr:'البيت'}]},
-  {id:'sec7', title:'Section 7 • التنكير', sub:'Remove ال', words:[{en:'الحِسَابُ', ar:'حِسَابٌ', arSimple:'حِسَاب', audioEn:'account', audioAr:'حساب'}, {en:'الجُغْرَافِيَا', ar:'جُغْرَافِيَا', arSimple:'جُغْرَافِيَا', audioEn:'geography', audioAr:'جغرافيا'}]},
-  {id:'sec8', title:'Section 8 • الجمل', sub:'Sentences', words:[{en:'This is a mosque', ar:'هَذَا مَسْجِدٌ', arSimple:'هَذَا مَسْجِد', audioEn:'This is a mosque', audioAr:'هذا مسجد'}, {en:'Where is the book?', ar:'أَيْنَ الكِتَابُ؟', arSimple:'أَيْنَ الكِتَاب', audioEn:'Where is the book', audioAr:'أين الكتاب'}]},
+  {id:'sec1', num:'1', title:'I. English → Arabic', sub:'Translate into Arabic', type:'en2ar', data:SEC1},
+  {id:'sec2', num:'2', title:'II. Arabic → English', sub:'Translate into English', type:'ar2en', data:SEC2},
+  {id:'sec3', num:'3', title:'III. Solar & Lunar', sub:'الشَّمْسِيَّةُ وَالقَمَرِيَّةُ', type:'letters'},
+  {id:'sec4', num:'4', title:'IV. Make Definite', sub:'Add الْ', type:'toDef', data:SEC4},
+  {id:'sec5', num:'5', title:'V. Make Indefinite', sub:'Remove الْ', type:'toIndef', data:SEC5},
+  {id:'sec6', num:'6', title:'VI. هَذَا / هَذِهِ', sub:'Frame sentences', type:'sentences', data:SEC6},
+  {id:'sec7', num:'7', title:'VII. ذَلِكَ / تِلْكَ', sub:'Frame sentences', type:'sentences', data:SEC7},
+  {id:'sec8', num:'8', title:'VIII. Prepositions', sub:'فِي · عَلَى · تَحْتَ', type:'prep', data:SEC8}
 ];
-let currentMode='write', expandedId=null, scrollUnfolded=false, headerHidden=false, parentUnlocked=false;
-const stripHistory={};
-// Hidden PIN - 1995 encoded to hide from kids viewing source
-const _pinCheck = () => {
-  const c = String.fromCharCode(49,57,57,53);
-  return c;
-};
+
+let currentMode = 'practice'; // practice = show answers | write = blank
+let expandedId = null;
+let scrollUnfolded = false;
+let headerHidden = false;
+
+/* ========== UI BUILD ========== */
 function buildRail(){
-  const c=document.getElementById('railContainer'); c.innerHTML='';
+  const c = document.getElementById('railContainer');
+  c.innerHTML = '';
   SECTIONS.forEach((s,i)=>{
-    const wrap=document.createElement('div'); wrap.className='flex flex-col items-center';
-    const btn=document.createElement('div'); btn.className='rail-lantern'; btn.id='rail-'+s.id;
-    btn.innerHTML=`<img src="assets/lantern-gem.webp" alt="" onerror="this.parentElement.textContent='🏮'">`;
-    btn.onclick=()=>openSection(s.id); wrap.appendChild(btn);
-    if(i<SECTIONS.length-1){ const line=document.createElement('div'); line.className='rail-line'; wrap.appendChild(line); }
+    const wrap = document.createElement('div');
+    wrap.className = 'flex flex-col items-center';
+    const btn = document.createElement('div');
+    btn.className = 'rail-lantern';
+    btn.id = 'rail-'+s.id;
+    btn.textContent = s.num;
+    btn.title = s.title;
+    btn.onclick = ()=> openSection(s.id);
+    wrap.appendChild(btn);
+    if(i < SECTIONS.length-1){
+      const line = document.createElement('div');
+      line.className = 'rail-line';
+      wrap.appendChild(line);
+    }
     c.appendChild(wrap);
   });
 }
+
 function buildCards(){
-  const container=document.getElementById('cardsContainer'); container.innerHTML='';
+  const container = document.getElementById('cardsContainer');
+  container.innerHTML = '';
   SECTIONS.forEach(sec=>{
-    const card=document.createElement('div'); card.className='scroll-card'; card.id='card-'+sec.id;
-    card.innerHTML=`<div class="flex items-center justify-between"><div class="card-banner"><img src="assets/lantern-gem.webp" class="w-4 h-4" alt="" onerror="this.style.display='none'"> ${sec.title}</div><img src="assets/badge-crescent-star.webp" class="w-6 h-6" alt="" onerror="this.style.display='none'"></div><div class="text-[11px] text-[#8B7355] mt-1">${sec.sub}</div>`;
-    card.onclick=()=>openSection(sec.id); container.appendChild(card);
+    const card = document.createElement('div');
+    card.className = 'scroll-card';
+    card.id = 'card-'+sec.id;
+    card.innerHTML = `
+      <div class="flex items-center justify-between gap-2">
+        <div class="card-banner">
+          <img src="assets/lantern-gem.webp" class="w-4 h-4" alt="" onerror="this.style.display='none'">
+          ${sec.title}
+        </div>
+        <span class="text-[11px] text-[#8B7355]">${sec.data ? sec.data.length+' items' : 'columns'}</span>
+      </div>
+      <div class="text-[11px] text-[#8B7355] mt-1">${sec.sub}</div>`;
+    card.onclick = ()=> openSection(sec.id);
+    container.appendChild(card);
   });
 }
+
+function stripHTML(key){
+  return `<div class="strip-wrap">
+    <canvas data-ink-key="${key}" class="ruled-strip" width="560" height="96"></canvas>
+    <div class="strip-tools">
+      <button type="button" class="strip-btn clear" title="Clear" onclick="clearThisStrip('${key}')">🗑️</button>
+    </div>
+  </div>`;
+}
+
 function renderModalBody(secId){
-  const sec=SECTIONS.find(s=>s.id===secId); const body=document.getElementById('modalBody');
-  document.getElementById('modalTitle').textContent=sec.title; document.getElementById('modalSub').textContent=sec.sub;
-  const isPractice = currentMode==='practice' && parentUnlocked;
-  if(sec.special==='letters'){
-    const arClass = isPractice ? 'arabic-trad' : 'arabic-trad hidden-answer';
-    const canvasClass = isPractice ? 'ruled-strip-long practice-bg' : 'ruled-strip-long';
-    body.innerHTML=`<div class="grid grid-cols-2 gap-3"><div class="border-2 border-[#E8DCC0] rounded-xl p-3 bg-[#FFFEF7]"><div class="text-center font-black">الشَّمْسِيَّةُ</div><div class="text-center ${arClass}">ت ث د ذ ر ز س ش ص ض ط ظ ل ن</div><div class="strip-wrap mt-2"><canvas data-ink-key="${secId}-shamsi-${currentMode}" class="${canvasClass}" width="300" height="88"></canvas><div class="strip-tools"><button class="strip-btn" onclick="undoStrip('${secId}-shamsi-${currentMode}')">↩️</button><button class="strip-btn clear" onclick="clearStrip('${secId}-shamsi-${currentMode}')">🗑️</button></div></div></div><div class="border-2 border-[#E8DCC0] rounded-xl p-3 bg-[#FFFEF7]"><div class="text-center font-black">القَمَرِيَّةُ</div><div class="text-center ${arClass}">أ ب ج ح خ ع غ ف ق ك م هـ و ي</div><div class="strip-wrap mt-2"><canvas data-ink-key="${secId}-qamari-${currentMode}" class="${canvasClass}" width="300" height="88"></canvas><div class="strip-tools"><button class="strip-btn" onclick="undoStrip('${secId}-qamari-${currentMode}')">↩️</button><button class="strip-btn clear" onclick="clearStrip('${secId}-qamari-${currentMode}')">🗑️</button></div></div></div></div>`;
-  } else {
-    body.innerHTML=sec.words.map((w,i)=>{
-      const key=`${secId}-${w.en}-${i}-${currentMode}`;
-      const arClass = isPractice ? 'arabic-trad' : 'arabic-trad hidden-answer';
-      const faintClass = isPractice ? 'arabic-trad faint' : 'hidden';
-      const canvasClass = isPractice ? 'ruled-strip-long practice-bg' : 'ruled-strip-long';
-      return `<div class="strip-row-rtl">
-        <div class="eng-side"><span class="english-clean" onclick="speakWord('${w.audioEn||w.en}','en-GB')">${w.en}</span></div>
-        <div class="canvas-side"><div class="strip-wrap"><canvas data-ink-key="${key}" class="${canvasClass}" width="560" height="88" data-trace="${isPractice ? w.ar : ''}"></canvas><div class="strip-tools"><button class="strip-btn" onclick="undoStrip('${key}')">↩️</button><button class="strip-btn clear" onclick="clearStrip('${key}')">🗑️</button></div></div>
-        ${isPractice ? `<div class="${faintClass}" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); pointer-events:none; opacity:0.18;">${w.ar}</div>` : ``}
-        </div>
-        <div class="ar-side"><span class="${arClass}" onclick="speakWord('${w.audioAr||w.arSimple}','ar-SA')">${w.ar}</span></div>
+  const sec = SECTIONS.find(s=>s.id===secId);
+  const body = document.getElementById('modalBody');
+  document.getElementById('modalTitle').textContent = sec.title;
+  document.getElementById('modalSub').textContent = (currentMode==='practice' ? 'Practice (answers shown) • ' : 'Write (blank) • ') + sec.sub;
+
+  let html = '';
+
+  if(sec.type === 'en2ar'){
+    html = sec.data.map((w,i)=>{
+      const key = `${secId}-en2ar-${i}-${currentMode}`;
+      const ans = currentMode==='practice'
+        ? `<span class="ar ar-lg" onclick="speakAr('${w.ar}')">${w.ar}</span>`
+        : `<span class="blank-hint">اكتب هنا ←</span>`;
+      return `<div class="word-row">
+        <div class="eng-label" onclick="speakEn('${w.en}')">${w.en}</div>
+        <div>${stripHTML(key)}</div>
+        <div class="ans-box ${currentMode}">${ans}</div>
       </div>`;
     }).join('');
   }
-  setTimeout(()=>{
-    body.querySelectorAll('canvas').forEach(c=>{
-      const dpr=window.devicePixelRatio||1; const rect=c.getBoundingClientRect();
-      c.width=rect.width*dpr; c.height=88*dpr; c.style.height='88px';
-      const ctx=c.getContext('2d'); try{ ctx.setTransform(dpr,0,0,dpr,0,0);}catch(e){}
-      // Practice: draw faint trace inside canvas
-      const trace = c.dataset.trace;
-      if(trace && currentMode==='practice' && parentUnlocked){
-        ctx.save();
-        ctx.globalAlpha=0.16;
-        ctx.font="400 28px 'Amiri','Lateef',serif";
-        ctx.textAlign='center';
-        ctx.fillStyle='#8B7355';
-        ctx.fillText(trace, rect.width/2, 52);
-        ctx.restore();
-        // Save this as base for undo
-        if(!stripHistory[c.dataset.inkKey]) stripHistory[c.dataset.inkKey]=[];
-        try{ stripHistory[c.dataset.inkKey]=[c.toDataURL()]; }catch(e){}
-      }
-      if(window.UniversalPen){ UniversalPen.forceCanvas(c); if(!stripHistory[c.dataset.inkKey]){ stripHistory[c.dataset.inkKey]=[]; try{ stripHistory[c.dataset.inkKey].push(c.toDataURL()); }catch(e){} } }
-    });
-  },160);
-}
-function openSection(id){ expandedId=id; renderModalBody(id); document.getElementById('sectionModal').classList.add('open'); document.querySelectorAll('.rail-lantern').forEach(el=>el.classList.remove('active')); const rail=document.getElementById('rail-'+id); if(rail) rail.classList.add('active'); }
-function closeModal(){ document.getElementById('sectionModal').classList.remove('open'); }
-function nextSection(){ const idx=SECTIONS.findIndex(s=>s.id===expandedId); if(idx>=0&&idx<SECTIONS.length-1) openSection(SECTIONS[idx+1].id); }
-function prevSection(){ const idx=SECTIONS.findIndex(s=>s.id===expandedId); if(idx>0) openSection(SECTIONS[idx-1].id); }
-function clearStrip(key){ const canvas=document.querySelector(`canvas[data-ink-key="${key}"]`); if(!canvas) return; const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height); 
-  const trace = canvas.dataset.trace;
-  if(trace && currentMode==='practice' && parentUnlocked){
-    ctx.save(); ctx.globalAlpha=0.16; ctx.font="400 28px 'Amiri','Lateef',serif"; ctx.textAlign='center'; ctx.fillStyle='#8B7355'; ctx.fillText(trace, canvas.getBoundingClientRect().width/2, 52); ctx.restore();
+  else if(sec.type === 'ar2en'){
+    html = sec.data.map((w,i)=>{
+      const key = `${secId}-ar2en-${i}-${currentMode}`;
+      const ans = currentMode==='practice'
+        ? `<span class="eng-label" style="font-size:1.1rem">${w.en}</span>`
+        : `<span class="blank-hint">write English →</span>`;
+      return `<div class="word-row">
+        <div class="ans-box ${currentMode}">${ans}</div>
+        <div>${stripHTML(key)}</div>
+        <div class="ar ar-lg" onclick="speakAr('${w.ar}')">${w.ar}</div>
+      </div>`;
+    }).join('');
   }
-  if(window.UniversalPen){ UniversalPen.state.activeCanvas=canvas; UniversalPen.state.ctx=ctx; UniversalPen.clearInk(); } stripHistory[key]=[]; try{ stripHistory[key].push(canvas.toDataURL()); }catch(e){} }
-function undoStrip(key){ const canvas=document.querySelector(`canvas[data-ink-key="${key}"]`); if(!canvas||!stripHistory[key]||stripHistory[key].length<2) return; stripHistory[key].pop(); const prev=stripHistory[key][stripHistory[key].length-1]; const ctx=canvas.getContext('2d'); const img=new Image(); img.onload=()=>{ ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0,canvas.width,canvas.height); }; img.src=prev; }
-let arabicVoice=null;
-function loadVoices(){ const voices=speechSynthesis.getVoices(); arabicVoice=voices.find(v=>v.lang==='ar-SA')||voices.find(v=>v.lang.startsWith('ar'))||null; }
-speechSynthesis.onvoiceschanged=loadVoices; loadVoices();
-function speakWord(text, lang){
+  else if(sec.type === 'letters'){
+    const keyS = `${secId}-shamsi-${currentMode}`;
+    const keyQ = `${secId}-qamari-${currentMode}`;
+    const showRef = currentMode==='practice';
+    html = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="col-write-box">
+        <div class="ar ar-header text-center mb-2">الشَّمْسِيَّةُ</div>
+        ${showRef ? `<div class="ar ar-md letters-ref">${SHAMSI}</div>` : `<div class="blank-hint text-center mb-2">Write solar letters</div>`}
+        ${stripHTML(keyS)}
+        ${stripHTML(keyS+'-b')}
+      </div>
+      <div class="col-write-box">
+        <div class="ar ar-header text-center mb-2">القَمَرِيَّةُ</div>
+        ${showRef ? `<div class="ar ar-md letters-ref">${QAMARI}</div>` : `<div class="blank-hint text-center mb-2">Write lunar letters</div>`}
+        ${stripHTML(keyQ)}
+        ${stripHTML(keyQ+'-b')}
+      </div>
+    </div>`;
+  }
+  else if(sec.type === 'toDef'){
+    html = `<p class="text-[12px] text-[#8B7355] mb-2">Add <span class="ar ar-sm">الْ</span> and remove one ḍamma</p>` +
+    sec.data.map((w,i)=>{
+      const key = `${secId}-todef-${i}-${currentMode}`;
+      const ans = currentMode==='practice'
+        ? `<span class="ar ar-lg" onclick="speakAr('${w.def}')">${w.def}</span>`
+        : `<span class="blank-hint">الْ + …</span>`;
+      return `<div class="word-row">
+        <div class="ar ar-md" onclick="speakAr('${w.indef}')">${w.indef}</div>
+        <div>${stripHTML(key)}</div>
+        <div class="ans-box ${currentMode}">${ans}</div>
+      </div>`;
+    }).join('');
+  }
+  else if(sec.type === 'toIndef'){
+    html = `<p class="text-[12px] text-[#8B7355] mb-2">Remove <span class="ar ar-sm">الْ</span> and add ḍamma</p>` +
+    sec.data.map((w,i)=>{
+      const key = `${secId}-toindef-${i}-${currentMode}`;
+      const ans = currentMode==='practice'
+        ? `<span class="ar ar-lg" onclick="speakAr('${w.indef}')">${w.indef}</span>`
+        : `<span class="blank-hint">…ٌ</span>`;
+      return `<div class="word-row">
+        <div class="ar ar-md" onclick="speakAr('${w.def}')">${w.def}</div>
+        <div>${stripHTML(key)}</div>
+        <div class="ans-box ${currentMode}">${ans}</div>
+      </div>`;
+    }).join('');
+  }
+  else if(sec.type === 'sentences'){
+    html = sec.data.map((w,i)=>{
+      const key = `${secId}-sent-${i}-${currentMode}`;
+      const ans = currentMode==='practice'
+        ? `<span class="ar ar-lg" onclick="speakAr('${w.ans}')">${w.ans}</span>`
+        : `<span class="blank-hint">${w.hint}</span>`;
+      return `<div class="word-row" style="grid-template-columns:auto 1.5fr 1.2fr">
+        <div class="ar ar-md" onclick="speakAr('${w.noun}')">${w.noun}</div>
+        <div>${stripHTML(key)}</div>
+        <div class="ans-box ${currentMode}">${ans}</div>
+      </div>`;
+    }).join('');
+  }
+  else if(sec.type === 'prep'){
+    html = sec.data.map((w,i)=>{
+      const key = `${secId}-prep-${i}-${currentMode}`;
+      const ans = currentMode==='practice'
+        ? `<div class="ar ar-lg" onclick="speakAr('${w.ans}')">${w.ans}</div>`
+        : `<div class="blank-hint">… ${w.prep} …</div>`;
+      const svg = picSVG(w.pic);
+      return `<div class="pic-q">
+        <div>${svg}</div>
+        <div>
+          <div class="ar ar-md mb-1" onclick="speakAr('${w.q}')">${w.q}</div>
+          ${ans}
+          ${stripHTML(key)}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  body.innerHTML = html;
+  setTimeout(initCanvases, 160);
+}
+
+function picSVG(type){
+  if(type==='bag') return `<svg viewBox="0 0 80 80" fill="none"><rect x="18" y="28" width="44" height="40" rx="6" stroke="#5A3C22" stroke-width="2.5" fill="#E8DCC0"/><path d="M28 28 V22 a12 12 0 0 1 24 0 v6" stroke="#5A3C22" stroke-width="2.5"/><circle cx="40" cy="48" r="4" fill="#C9A86A"/></svg>`;
+  if(type==='on') return `<svg viewBox="0 0 80 80" fill="none"><rect x="12" y="48" width="56" height="8" rx="2" fill="#8B5A2B"/><rect x="16" y="56" width="6" height="14" fill="#8B5A2B"/><rect x="58" y="56" width="6" height="14" fill="#8B5A2B"/><rect x="30" y="28" width="20" height="20" rx="2" fill="#C9A86A" stroke="#5A3C22" stroke-width="1.5"/></svg>`;
+  return `<svg viewBox="0 0 80 80" fill="none"><rect x="12" y="36" width="56" height="8" rx="2" fill="#8B5A2B"/><rect x="16" y="44" width="6" height="14" fill="#8B5A2B"/><rect x="58" y="44" width="6" height="14" fill="#8B5A2B"/><rect x="28" y="52" width="24" height="14" rx="2" fill="#C9A86A" stroke="#5A3C22" stroke-width="1.5"/></svg>`;
+}
+
+function initCanvases(){
+  document.querySelectorAll('#modalBody canvas').forEach(c=>{
+    const dpr = window.devicePixelRatio || 1;
+    const rect = c.getBoundingClientRect();
+    if(rect.width < 10) return;
+    c.width = Math.round(rect.width * dpr);
+    c.height = Math.round(96 * dpr);
+    c.style.height = '96px';
+    const ctx = c.getContext('2d');
+    try{ ctx.setTransform(dpr,0,0,dpr,0,0); }catch(e){}
+    if(window.UniversalPen){
+      UniversalPen.forceCanvas(c);
+    }
+  });
+}
+
+function clearThisStrip(key){
+  const canvas = document.querySelector(`canvas[data-ink-key="${key}"]`);
+  if(!canvas) return;
+  if(window.UniversalPen){
+    UniversalPen.state.activeCanvas = canvas;
+    UniversalPen.state.ctx = canvas.getContext('2d');
+    if(typeof UniversalPen.clearInk === 'function') UniversalPen.clearInk();
+    else {
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+    }
+  }
+}
+
+function openSection(id){
+  expandedId = id;
+  renderModalBody(id);
+  document.getElementById('sectionModal').classList.add('open');
+  document.querySelectorAll('.rail-lantern').forEach(el=> el.classList.remove('active'));
+  const rail = document.getElementById('rail-'+id);
+  if(rail) rail.classList.add('active');
+}
+function closeModal(){ document.getElementById('sectionModal').classList.remove('open'); }
+function nextSection(){
+  const idx = SECTIONS.findIndex(s=>s.id===expandedId);
+  if(idx>=0 && idx<SECTIONS.length-1) openSection(SECTIONS[idx+1].id);
+}
+function prevSection(){
+  const idx = SECTIONS.findIndex(s=>s.id===expandedId);
+  if(idx>0) openSection(SECTIONS[idx-1].id);
+}
+
+/* ========== SPEECH ========== */
+let arVoice = null;
+function loadVoices(){
+  const v = speechSynthesis.getVoices();
+  arVoice = v.find(x=>x.lang==='ar-SA') || v.find(x=>x.lang.startsWith('ar')) || null;
+}
+speechSynthesis.onvoiceschanged = loadVoices;
+loadVoices();
+
+function speakEn(text){
   try{
     speechSynthesis.cancel();
-    const u=new SpeechSynthesisUtterance(text); u.lang=lang; u.rate=0.82; u.pitch=1.0;
-    if(lang.startsWith('ar')&&arabicVoice) u.voice=arabicVoice;
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-GB'; u.rate = 0.85;
     speechSynthesis.speak(u);
-    const el=event?.target; if(el){ el.style.background='rgba(201,168,106,0.22)'; setTimeout(()=>el.style.background='',380); }
   }catch(e){}
 }
-document.getElementById('rolledScrollWrap').onclick=()=>{
-  if(scrollUnfolded) return; scrollUnfolded=true;
+function speakAr(text){
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'ar-SA'; u.rate = 0.8;
+    if(arVoice) u.voice = arVoice;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ========== EVENTS ========== */
+document.getElementById('rolledScrollWrap').onclick = ()=>{
+  if(scrollUnfolded) return;
+  scrollUnfolded = true;
   document.getElementById('rolledScrollWrap').classList.add('unrolled');
-  setTimeout(()=>{ document.getElementById('mainScroll').classList.add('open'); },320);
+  setTimeout(()=> document.getElementById('mainScroll').classList.add('open'), 300);
 };
-document.getElementById('hangingAvatar').onclick=()=>{
-  headerHidden=!headerHidden;
+
+document.getElementById('hangingAvatar').onclick = ()=>{
+  headerHidden = !headerHidden;
   document.getElementById('topHeader').classList.toggle('hiddenBar', headerHidden);
   document.getElementById('hangingAvatar').classList.toggle('hiddenPos', headerHidden);
 };
-// PIN Logic - Practice locked
-function showPinModal(){
-  document.getElementById('pinModal').classList.add('open');
-  document.getElementById('pinInput').value=''; document.getElementById('pinError').classList.add('hidden');
-  setTimeout(()=>document.getElementById('pinInput').focus(),100);
-}
-function hidePinModal(){ document.getElementById('pinModal').classList.remove('open'); }
-document.getElementById('practiceBtn').onclick=()=>{
-  if(parentUnlocked){
-    currentMode='practice';
-    document.getElementById('practiceBtn').className='px-3 py-1 rounded-full text-[12px] font-bold bg-[#FFD77A] text-[#3B2A14] flex items-center gap-1">✓ Practice</button>';
-    document.getElementById('writeBtn').className='px-3 py-1 rounded-full text-[12px] font-bold text-[#C9A86A]';
-    if(expandedId) renderModalBody(expandedId);
-  } else {
-    showPinModal();
-  }
-};
-document.getElementById('writeBtn').onclick=()=>{
-  currentMode='write';
-  document.getElementById('writeBtn').className='px-3 py-1 rounded-full text-[12px] font-bold bg-[#FFD77A] text-[#3B2A14]';
-  document.getElementById('practiceBtn').className='px-3 py-1 rounded-full text-[12px] font-bold text-[#C9A86A] flex items-center gap-1">🔒 Practice</button>';
+
+document.getElementById('practiceBtn').onclick = ()=>{
+  currentMode = 'practice';
+  document.getElementById('practiceBtn').className = 'px-3 py-1 rounded-full text-[12px] font-bold bg-[#FFD77A] text-[#3B2A14]';
+  document.getElementById('writeBtn').className = 'px-3 py-1 rounded-full text-[12px] font-bold text-[#C9A86A]';
   if(expandedId) renderModalBody(expandedId);
 };
-document.getElementById('pinCancel').onclick=hidePinModal;
-document.getElementById('pinSubmit').onclick=()=>{
-  const entered = document.getElementById('pinInput').value.trim();
-  if(entered===_pinCheck()){
-    parentUnlocked=true;
-    try{ localStorage.setItem('humayun_parent','1'); }catch(e){}
-    hidePinModal();
-    currentMode='practice';
-    document.getElementById('practiceBtn').innerHTML='✓ Practice';
-    document.getElementById('practiceBtn').className='px-3 py-1 rounded-full text-[12px] font-bold bg-[#FFD77A] text-[#3B2A14]';
-    document.getElementById('writeBtn').className='px-3 py-1 rounded-full text-[12px] font-bold text-[#C9A86A]';
-    if(expandedId) renderModalBody(expandedId);
-  } else {
-    document.getElementById('pinError').classList.remove('hidden');
-  }
+document.getElementById('writeBtn').onclick = ()=>{
+  currentMode = 'write';
+  document.getElementById('writeBtn').className = 'px-3 py-1 rounded-full text-[12px] font-bold bg-[#FFD77A] text-[#3B2A14]';
+  document.getElementById('practiceBtn').className = 'px-3 py-1 rounded-full text-[12px] font-bold text-[#C9A86A]';
+  if(expandedId) renderModalBody(expandedId);
 };
-document.getElementById('pinInput').onkeydown=(e)=>{ if(e.key==='Enter') document.getElementById('pinSubmit').click(); };
-// Auto unlock if already unlocked in this session
-try{ if(localStorage.getItem('humayun_parent')==='1'){ parentUnlocked=true; document.getElementById('practiceBtn').innerHTML='✓ Practice'; } }catch(e){}
-document.getElementById('fontBtn').onclick=()=>{ document.body.classList.toggle('text-[18px]'); };
-document.getElementById('closeModal').onclick=closeModal;
-document.getElementById('sectionModal').onclick=(e)=>{ if(e.target.id==='sectionModal') closeModal(); };
-document.getElementById('pinModal').onclick=(e)=>{ if(e.target.id==='pinModal') hidePinModal(); };
-buildRail(); buildCards();
-document.addEventListener('pointerup', (e)=>{
-  const canvas=e.target.closest('canvas'); if(!canvas) return;
-  const key=canvas.dataset.inkKey; if(!key) return;
-  if(!stripHistory[key]) stripHistory[key]=[];
-  setTimeout(()=>{ try{ stripHistory[key].push(canvas.toDataURL()); if(stripHistory[key].length>22) stripHistory[key].shift(); }catch(err){} },30);
-});
+
+document.getElementById('closeModal').onclick = closeModal;
+document.getElementById('sectionModal').onclick = (e)=>{ if(e.target.id==='sectionModal') closeModal(); };
+
+buildRail();
+buildCards();
 </script>
 </body>
 </html>
