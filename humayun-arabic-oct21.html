@@ -348,13 +348,14 @@ function renderModal(secId){
   if(sec.type==='items'){
     body.innerHTML=renderItems(sec, secId, show, hideClass, practiceClass);
   } else if(sec.special==='letters'){
-    const boxes=[['شَمْسِيَّةٌ','الشَّمْسِيَّةُ','ت ث د ذ ر ز س ش ص ض ط ظ ل ن','shamsi'],['قَمَرِيَّةٌ','القَمَرِيَّةُ','أ ب ج ح خ ع غ ف ق ك م هـ و ي','qamari']];
-    body.innerHTML=`<div class="grid grid-cols-1 md:grid-cols-2 gap-3">${boxes.map(([,title,letters,k])=>`
-      <div class="border-2 border-[#E8DCC0] rounded-xl p-3 bg-[#FFFEF7]">
-        <div class="text-center font-black text-[#3B2A14] sec-title-ar">${title}</div>
-        <div class="text-center arabic-trad ${hideClass}" onclick="speak(this.textContent,'ar-SA',this)">${letters}</div>
-        <div class="mt-2">${strip(secId+'-'+k+'-'+mode, practiceClass, '')}</div>
-      </div>`).join('')}</div>`;
+  const boxes=[['شَمْسِيَّةٌ','الشَّمْسِيَّةُ',SOLAR,'shamsi'],['قَمَرِيَّةٌ','القَمَرِيَّةُ',LUNAR,'qamari']];
+  body.innerHTML=`<div class="grid grid-cols-1 md:grid-cols-2 gap-3">${boxes.map(([,title,letters,k])=>`
+    <div class="border-2 border-[#E8DCC0] rounded-xl p-3 bg-[#FFFEF7]">
+      <div class="text-center font-black text-[#3B2A14] sec-title-ar">${title}</div>
+      <div class="text-center arabic-trad ${hideClass}" onclick="speak(this.textContent,'ar-SA',this)">${letters}</div>
+      <div class="mt-2">${strip(secId+'-'+k+'-1-'+mode, practiceClass, '')}</div>
+      <div class="mt-2">${strip(secId+'-'+k+'-2-'+mode, practiceClass, show ? letters : '')}</div>
+    </div>`).join('')}</div>`;
   } else {
     body.innerHTML=sec.words.map((w,i)=>{
       const key=secId+'-'+i+'-'+mode;
