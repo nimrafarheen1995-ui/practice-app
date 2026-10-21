@@ -289,8 +289,8 @@
       #penBubble,#eraserBubble{position:fixed;z-index:50;width:56px;height:56px;border-radius:50%;
         background:linear-gradient(135deg,#5A3C22,#8B5A2B);box-shadow:0 8px 24px rgba(0,0,0,.35);
         display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none;transition:transform .15s}
-      #penBubble{bottom:18px;right:14px}
-      #eraserBubble{bottom:18px;right:78px;background:linear-gradient(135deg,#6B7280,#9CA3AF)}
+      #penBubble{bottom:90px;right:14px}
+      #eraserBubble{bottom:90px;right:78px;background:linear-gradient(135deg,#6B7280,#9CA3AF)}
       #penBubble.on,#eraserBubble.on{box-shadow:0 0 0 3px #FEF3C7, 0 8px 24px rgba(0,0,0,.35)}
       #penBubble:active,#eraserBubble:active{transform:scale(.95)}
       #penBar{position:fixed;z-index:51;background:rgba(255,255,255,.98);border:2px solid #E7D5B0;border-radius:18px;
@@ -424,6 +424,8 @@
 
     attachEvents(bubble, bar, sound, renderStamps, renderStickers);
     makeDraggable(bubble, bar);
+    const eraserBubbleEl = document.getElementById('eraserBubble');
+    if (eraserBubbleEl) makeDraggable(eraserBubbleEl, bar);
     updateUI();
   }
 
@@ -548,15 +550,23 @@
       saveState();
     });
 
-    bar.querySelectorAll('.pen-btn')[6].addEventListener('click', e => {
-      e.stopPropagation();
-      document.getElementById('colorPop').classList.toggle('open');
-    });
+    // Color palette
+    const colorBtn = bar.querySelector('#colorPop')?.parentElement;
+    if (colorBtn) {
+      colorBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        document.getElementById('colorPop').classList.toggle('open');
+      });
+    }
 
-    bar.querySelectorAll('.pen-btn')[7].addEventListener('click', e => {
-      e.stopPropagation();
-      document.getElementById('stampPop').classList.toggle('open');
-    });
+    // Stamps / Stickers / Line
+    const stampBtn = bar.querySelector('#stampPop')?.parentElement;
+    if (stampBtn) {
+      stampBtn.addEventListener('click', e => {
+        e.stopPropagation();
+        document.getElementById('stampPop').classList.toggle('open');
+      });
+    }
 
     bar.querySelectorAll('.pen-tab').forEach(tab => {
       tab.addEventListener('click', e => {
@@ -564,7 +574,15 @@
         bar.querySelectorAll('.pen-tab').forEach(t => t.classList.remove('on'));
         tab.classList.add('on');
         if (tab.dataset.tab === 'stamps') renderStamps();
-        else renderStickers();
+        else if (tab.dataset.tab === 'stickers') renderStickers();
+        else if (tab.dataset.tab === 'line') {
+          state.tool = 'line';
+          saveState();
+          updateUI();
+          closePops();
+          bar.classList.remove('open');
+          barOpen = false;
+        }
       });
     });
 
