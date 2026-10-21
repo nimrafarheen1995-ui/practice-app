@@ -1,5 +1,5 @@
 /**
- * Universal Pen + Line Tool  v1.9 ARABIC QALAM S9 Tab - glitter -> qalam
+ * Universal Pen + Line Tool  v2.0 ARABIC QALAM S9 Tab - Chisel-Nib Qalam Engine
  * Dual bubbles (Pen + Eraser) + Line moved to Stamps panel
  * Samsung S9 / S11 ready
  * + Automatic ink save / load (survives browser close)
@@ -69,15 +69,6 @@
   }
 
   // ---------- Ink key helpers ----------
-  /**
-   * Build a unique storage key for the current canvas + mode.
-   * Priority:
-   *  1. Explicit key set by UniversalPen.setInkKey('write')
-   *  2. canvas[data-ink-key]
-   *  3. canvas.id
-   *  4. 'default'
-   * Always prefixed with page path so different lessons never clash.
-   */
   function buildInkKey(canvas) {
     if (!canvas) return null;
 
@@ -105,9 +96,7 @@
     try {
       const data = state.activeCanvas.toDataURL('image/png');
       localStorage.setItem(key, data);
-    } catch (e) {
-      // Storage full – silent fail (safe-storage in the hub can help later)
-    }
+    } catch (e) {}
   }
 
   function scheduleSaveInk() {
@@ -120,7 +109,6 @@
     const key = buildInkKey(canvas);
     if (!key) return;
 
-    // Already loaded this exact key for this canvas → skip
     if (state.inkLoadedFor === key && state.activeCanvas === canvas) return;
 
     const data = localStorage.getItem(key);
@@ -128,12 +116,10 @@
     if (!ctx) return;
     try{ ctx.setTransform(1,0,0,1,0,0); }catch(e){}
 
-    // Reset undo for this canvas/mode
     state.undoStack = [];
     state.redoStack = [];
 
     if (!data) {
-      // Empty – just store a blank snapshot
       try {
         state.undoStack.push(canvas.toDataURL('image/png'));
       } catch (e) {}
@@ -232,7 +218,6 @@
     playDing,
     initAudio,
 
-    /** Force a canvas and load its ink */
     forceCanvas: (canvas) => {
       if (canvas && canvas.tagName === 'CANVAS') {
         state.activeCanvas = canvas;
@@ -244,32 +229,17 @@
       }
     },
 
-    /**
-     * Change the ink “bucket” for the current canvas.
-     * Use this when switching Write ↔ Practice or Section A ↔ Section B
-     * so the drawings stay separate and never duplicate.
-     *
-     * Example:
-     *   UniversalPen.setInkKey('write');
-     *   UniversalPen.setInkKey('practice');
-     *   UniversalPen.setInkKey('section-2');
-     */
     setInkKey: (key) => {
-      // Save whatever is currently on the canvas before switching
       if (state.activeCanvas) saveInkNow();
-
       state.currentInkKey = key ? String(key) : null;
-      state.inkLoadedFor = null; // force reload
-
+      state.inkLoadedFor = null;
       if (state.activeCanvas) {
         loadInkFor(state.activeCanvas);
       }
     },
 
-    /** Manually save right now */
     saveInk: saveInkNow,
 
-    /** Clear the saved ink for the current key (and the canvas) */
     clearInk: () => {
       if (!state.ctx || !state.activeCanvas) return;
       try{ state.ctx.setTransform(1,0,0,1,0,0); }catch(e){}
@@ -559,7 +529,6 @@
       saveState();
     });
 
-    // Color palette
     const colorBtn = bar.querySelector('#colorPop')?.parentElement;
     if (colorBtn) {
       colorBtn.addEventListener('click', e => {
@@ -568,7 +537,6 @@
       });
     }
 
-    // Stamps / Stickers / Line
     const stampBtn = bar.querySelector('#stampPop')?.parentElement;
     if (stampBtn) {
       stampBtn.addEventListener('click', e => {
@@ -662,12 +630,13 @@
     const scaleY = canvas.height / r.height;
     return {
       x: (e.clientX - r.left) * scaleX,
-      y: (e.clientY - r.top) * scaleY
+      y: (e.clientY - r.top) * scaleY,
+      pressure: e.pressure > 0 ? e.pressure : 0.5,
+      tiltX: e.tiltX || 0
     };
   }
 
   function isPalm(e) {
-    // Slightly softer so stylus + light finger still work on Samsung tabs
     return e.pointerType === 'touch' && (e.width > 50 || e.height > 50);
   }
 
@@ -675,7 +644,6 @@
     if (state.tool === 'eraser') {
       return Math.max(CFG.minEraserSize, state.size * CFG.eraserMultiplier);
     }
-    if (state.penType === 'cursive') return state.size * 0.7;
     return state.size;
   }
 
@@ -715,6 +683,45 @@
     });
   }
 
+  /* ====== TRUE 45° QALAM (CHISEL-NIB) CALLIGRAPHY ENGINE ====== */
+  const QALAM_SPEC = {
+    nibAngle: -Math.PI / 4, // 45° traditional Naskh reed nib angle
+    baseWidthFactor: 3.2
+  };
+
+  function drawQalamSegment(ctx, p1, p2, color) {
+    const pStart = (p1.pressure > 0 ? p1.pressure : 0.5) * 0.65 + 0.55;
+    const pEnd   = (p2.pressure > 0 ? p2.pressure : 0.5) * 0.65 + 0.55;
+
+    const totalWidth = state.size * QALAM_SPEC.baseWidthFactor;
+    const tiltOffset = p2.tiltX ? (p2.tiltX / 90) * 0.16 : 0;
+    const angle = QALAM_SPEC.nibAngle + tiltOffset;
+
+    const hw1 = (totalWidth * pStart) / 2;
+    const hw2 = (totalWidth * pEnd) / 2;
+    const cosA = Math.cos(angle);
+    const sinA = Math.sin(angle);
+
+    const x1L = p1.x - hw1 * cosA, y1L = p1.y - hw1 * sinA;
+    const x1R = p1.x + hw1 * cosA, y1R = p1.y + hw1 * sinA;
+    const x2L = p2.x - hw2 * cosA, y2L = p2.y - hw2 * sinA;
+    const x2R = p2.x + hw2 * cosA, y2R = p2.y + hw2 * sinA;
+
+    ctx.fillStyle = color;
+    ctx.strokeStyle = color;
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = 0.85;
+
+    ctx.beginPath();
+    ctx.moveTo(x1L, y1L);
+    ctx.lineTo(x1R, y1R);
+    ctx.lineTo(x2R, y2R);
+    ctx.lineTo(x2L, y2L);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  }
+
   // ---------- Core drawing ----------
   function startDraw(e) {
     if (state.isScrolling) return;
@@ -723,14 +730,12 @@
     const canvas = e.target.closest('canvas');
     if (!canvas) return;
 
-    // Activate + load ink if this is a new canvas / new key
     state.activeCanvas = canvas;
     state.ctx = canvas.getContext('2d');
     canvas.dataset.pen = 'true';
     canvas.style.touchAction = 'none';
     loadInkFor(canvas);
     ensureInitialUndo();
-    // Guarantee a baseline snapshot before the first stroke
     if (state.undoStack.length === 0 && state.activeCanvas) {
       try { state.undoStack.push(state.activeCanvas.toDataURL('image/png')); } catch(e){}
     }
@@ -742,7 +747,6 @@
 
     e.preventDefault();
 
-    // LINE TOOL
     if (state.tool === 'line') {
       const p = getPos(e, canvas);
       state.lineStart = {
@@ -756,26 +760,14 @@
       return;
     }
 
-    // PEN / ERASER
     state.drawing = true;
     state.points = [getPos(e, canvas)];
-    state.ctx.beginPath();
-    state.ctx.lineCap = 'round';
-    state.ctx.lineJoin = 'round';
-    state.ctx.lineWidth = getCurrentLineWidth();
 
     if (state.tool === 'eraser') {
       state.ctx.globalCompositeOperation = 'destination-out';
       playEraser();
     } else {
       state.ctx.globalCompositeOperation = 'source-over';
-      state.ctx.shadowBlur = 0;
-      if (state.penType === 'rainbow') {
-        state.ctx.strokeStyle = `hsl(${state.rainbowHue},100%,50%)`;
-        state.rainbowHue = (state.rainbowHue + 5) % 360;
-      } else {
-        state.ctx.strokeStyle = state.color;
-      }
       playPen();
     }
   }
@@ -807,17 +799,37 @@
     e.preventDefault();
 
     const p = getPos(e, state.activeCanvas);
+    const lastP = state.points[state.points.length - 1];
     state.points.push(p);
 
-    if (state.points.length >= 3) {
-      const len = state.points.length;
-      const xc = (state.points[len - 2].x + p.x) / 2;
-      const yc = (state.points[len - 2].y + p.y) / 2;
-      state.ctx.quadraticCurveTo(state.points[len - 2].x, state.points[len - 2].y, xc, yc);
-      state.ctx.stroke();
+    if (state.tool === 'eraser') {
+      state.ctx.lineWidth = getCurrentLineWidth();
+      state.ctx.lineCap = 'round';
+      state.ctx.lineJoin = 'round';
       state.ctx.beginPath();
-      state.ctx.moveTo(xc, yc);
+      state.ctx.moveTo(lastP.x, lastP.y);
+      state.ctx.lineTo(p.x, p.y);
+      state.ctx.stroke();
+    } else if (state.penType === 'qalam') {
+      state.ctx.save();
+      state.ctx.globalCompositeOperation = 'source-over';
+      drawQalamSegment(state.ctx, lastP, p, state.color);
+      state.ctx.restore();
     } else {
+      state.ctx.globalCompositeOperation = 'source-over';
+      state.ctx.lineWidth = getCurrentLineWidth();
+      state.ctx.lineCap = 'round';
+      state.ctx.lineJoin = 'round';
+
+      if (state.penType === 'rainbow') {
+        state.ctx.strokeStyle = `hsl(${state.rainbowHue},100%,50%)`;
+        state.rainbowHue = (state.rainbowHue + 5) % 360;
+      } else {
+        state.ctx.strokeStyle = state.color;
+      }
+
+      state.ctx.beginPath();
+      state.ctx.moveTo(lastP.x, lastP.y);
       state.ctx.lineTo(p.x, p.y);
       state.ctx.stroke();
     }
@@ -830,11 +842,6 @@
       state.ctx.arc(p.x + (Math.random() - 0.5) * 12, p.y + (Math.random() - 0.5) * 12, 1.2, 0, Math.PI * 2);
       state.ctx.fill();
       state.ctx.restore();
-    }
-
-    if (state.tool !== 'eraser' && state.penType === 'rainbow') {
-      state.ctx.strokeStyle = `hsl(${state.rainbowHue},100%,50%)`;
-      state.rainbowHue = (state.rainbowHue + 5) % 360;
     }
   }
 
@@ -863,12 +870,6 @@
 
     if (!state.drawing) return;
     state.drawing = false;
-
-    if (state.points.length >= 2 && state.ctx) {
-      const p = state.points[state.points.length - 1];
-      state.ctx.lineTo(p.x, p.y);
-      state.ctx.stroke();
-    }
     state.points = [];
 
     if (state.ctx) state.ctx.globalCompositeOperation = 'source-over';
@@ -1008,7 +1009,6 @@
     if (state.ctx) state.ctx.globalCompositeOperation = 'source-over';
   });
 
-  // Save when the page is hidden / closed
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'hidden') saveInkNow();
   });
