@@ -3,17 +3,15 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>Humayun - Arabic - Oct21 - V3 Clean</title>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Scheherazade+New:wght@400;700&family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
+<title>Humayun - Arabic - Oct21 - V4</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400&family=Lateef:wght@400&family=Noto+Naskh+Arabic:wght@400&family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   *{ -webkit-tap-highlight-color:transparent; }
   body{ margin:0; min-height:100vh; font-family:'Baloo 2',system-ui; background:#0b1426 url('assets/islamic-night-bg.webp') center/cover no-repeat fixed; overflow-x:hidden; }
   .night-overlay{ position:fixed; inset:0; background:rgba(11,20,38,0.82); pointer-events:none; z-index:0; }
-  /* Header - can hide */
   #topHeader{ position:sticky; top:0; z-index:40; background:linear-gradient(180deg,rgba(20,28,48,0.96),rgba(11,20,38,0.92)); border-bottom:2.5px solid #C9A86A; backdrop-filter:blur(10px); transition:transform .4s ease; }
   #topHeader.hiddenBar{ transform:translateY(-105%); }
-  /* Big hanging avatar - tap to show/hide header */
   #hangingAvatar{
     position:fixed; top:4px; left:50%; transform:translateX(-50%); z-index:45;
     width:84px; height:84px; border-radius:50%; border:3px solid #C9A86A;
@@ -22,75 +20,61 @@
     transition:all .4s cubic-bezier(.34,1.56,.64,1); overflow:hidden;
   }
   #hangingAvatar img{ width:100%; height:100%; object-fit:cover; }
-  #hangingAvatar.hiddenPos{ top:-12px; transform:translateX(-50%) scale(0.72); box-shadow:0 4px 12px rgba(0,0,0,.3); }
+  #hangingAvatar.hiddenPos{ top:-12px; transform:translateX(-50%) scale(0.72); }
   #hangingAvatar::after{ content:""; position:absolute; top:-20px; left:50%; width:2px; height:20px; background:#C9A86A; transform:translateX(-50%); }
-  /* Rolled scroll in middle - tap to unfold */
-  #rolledScrollWrap{
-    position:relative; z-index:2; width:min(520px,88vw); margin:92px auto 0;
-    cursor:pointer; transition:all .7s cubic-bezier(.34,1.2,.64,1);
-  }
+  #rolledScrollWrap{ position:relative; z-index:2; width:min(520px,88vw); margin:92px auto 0; cursor:pointer; transition:all .7s cubic-bezier(.34,1.2,.64,1); }
   #rolledScrollWrap.unrolled{ opacity:0; transform:scale(0.9) translateY(-30px); pointer-events:none; max-height:0; margin:0 auto; overflow:hidden; }
-  .rolled-scroll{
-    background:linear-gradient(180deg,#FFF9E6,#E8DCC0); border-radius:28px; padding:18px 16px;
-    box-shadow:0 18px 40px rgba(0,0,0,.4), inset 0 2px 0 rgba(255,255,255,.6);
-    border:2px solid #C9A86A; text-align:center; position:relative;
-  }
-  .rolled-scroll::before,.rolled-scroll::after{
-    content:""; position:absolute; left:10%; right:10%; height:14px; background:linear-gradient(180deg,#D9C8A0,#C9A86A); border-radius:10px; box-shadow:0 3px 10px rgba(0,0,0,.2);
-  }
+  .rolled-scroll{ background:linear-gradient(180deg,#FFF9E6,#E8DCC0); border-radius:28px; padding:18px 16px; box-shadow:0 18px 40px rgba(0,0,0,.4); border:2px solid #C9A86A; text-align:center; position:relative; }
+  .rolled-scroll::before,.rolled-scroll::after{ content:""; position:absolute; left:10%; right:10%; height:14px; background:linear-gradient(180deg,#D9C8A0,#C9A86A); border-radius:10px; }
   .rolled-scroll::before{ top:-8px; } .rolled-scroll::after{ bottom:-8px; }
-  /* Main scroll */
-  .parchment-scroll{
-    position:relative; z-index:1; width:min(980px,94vw); margin:0 auto;
-    background:linear-gradient(180deg,#FFFEF7 0%,#FFF8E1 100%);
-    border-radius:18px; box-shadow:0 20px 60px rgba(0,0,0,.45),0 0 0 1.5px rgba(201,168,106,.35);
-    padding:0 0 22px 0; max-height:0; opacity:0; overflow:hidden; transform:scaleY(0.12); transform-origin:top center;
-    transition:all .85s cubic-bezier(.34,1.2,.64,1);
-  }
+  .parchment-scroll{ position:relative; z-index:1; width:min(980px,94vw); margin:0 auto; background:linear-gradient(180deg,#FFFEF7 0%,#FFF8E1 100%); border-radius:18px; box-shadow:0 20px 60px rgba(0,0,0,.45); padding:0 0 22px 0; max-height:0; opacity:0; overflow:hidden; transform:scaleY(0.12); transform-origin:top center; transition:all .85s cubic-bezier(.34,1.2,.64,1); }
   .parchment-scroll.open{ max-height:5000px; opacity:1; transform:scaleY(1); margin:18px auto 90px; }
-  /* Lantern rail with real assets */
   #lanternRail{ position:fixed; left:0; top:70px; bottom:0; width:86px; z-index:30; background:linear-gradient(180deg,rgba(11,20,38,0.92),rgba(11,20,38,0.75)); border-right:1.5px solid rgba(201,168,106,0.25); display:flex; flex-direction:column; align-items:center; padding:12px 0 80px; overflow-y:auto; }
   .rail-lantern{ width:54px; height:54px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; transition:all .3s; background:rgba(255,255,255,0.06); border:2px solid rgba(201,168,106,0.18); }
   .rail-lantern img{ width:36px; height:36px; object-fit:contain; }
   .rail-lantern.active{ background:radial-gradient(circle,#FFF3C0,#C9A86A); border-color:#FFD77A; box-shadow:0 0 18px rgba(255,215,122,.65); transform:scale(1.08); }
   .rail-line{ width:2px; height:16px; background:rgba(201,168,106,0.25); }
-  /* Cards */
   .scroll-card{ position:relative; margin:14px 16px; padding:14px 16px; background:#FFFEF7; border:1.5px solid #E8DCC0; border-radius:14px; cursor:pointer; transition:all .25s; }
   .card-banner{ display:inline-flex; align-items:center; gap:6px; background:#FFF3C0; border:1px solid rgba(201,168,106,0.35); border-radius:999px; padding:3px 10px; font-size:.76rem; font-weight:800; color:#5A3C22; }
-  /* Arabic with harakat - best font */
+  /* FIX 1: NOT BOLD - Amiri 400 + Lateef 400 */
   .arabic-trad{
-    font-family:'Scheherazade New','Amiri',serif; direction:rtl; text-align:right;
-    font-size:2.0rem; line-height:2.2; font-weight:700; color:#2B1E0E;
+    font-family:'Amiri','Lateef','Noto Naskh Arabic',serif; direction:rtl; text-align:right;
+    font-size:1.55rem; line-height:1.9; font-weight:400; color:#2B1E0E;
     font-feature-settings:"liga" 1,"calt" 1; cursor:pointer; user-select:none;
-    padding:2px 8px; border-radius:8px; transition:background .15s;
+    padding:2px 8px; border-radius:8px; transition:all .15s;
   }
-  .arabic-trad:active{ background:rgba(201,168,106,0.18); }
-  .english-clean{ font-weight:700; color:#3B2A14; font-size:1.05rem; cursor:pointer; user-select:none; padding:2px 6px; border-radius:6px; }
-  .english-clean:active{ background:rgba(201,168,106,0.15); }
-  /* Long strip - single line, big length, RTL ready */
-  .strip-row-rtl{ display:flex; align-items:center; gap:10px; margin:14px 0; direction:ltr; }
+  .arabic-trad.faint{ opacity:0.38; color:#8B7355; font-size:1.45rem; }
+  .arabic-trad.hidden-answer{ display:none !important; }
+  .english-clean{ font-weight:600; color:#3B2A14; font-size:0.95rem; cursor:pointer; user-select:none; padding:2px 6px; border-radius:6px; }
+  .strip-row-rtl{ display:flex; align-items:center; gap:10px; margin:16px 0; direction:ltr; }
   .strip-row-rtl .eng-side{ order:1; min-width:82px; }
   .strip-row-rtl .canvas-side{ order:2; flex:1; }
-  .strip-row-rtl .ar-side{ order:3; min-width:90px; display:flex; justify-content:flex-end; }
+  .strip-row-rtl .ar-side{ order:3; min-width:100px; display:flex; justify-content:flex-end; }
   .strip-wrap{ position:relative; width:100%; }
   .ruled-strip-long{
     width:100%; height:88px; display:block;
     background:
       linear-gradient(0deg,transparent 0,transparent 43px,#8FB8E8 43px,#8FB8E8 44px,transparent 44px),
       linear-gradient(0deg,#FFFFFF 0%,#FFFEF7 100%);
-    border:1.8px solid #D9C8A0; border-radius:12px; cursor:crosshair;
-    /* RTL writing hint */
-    direction:rtl;
+    border:1.8px solid #D9C8A0; border-radius:12px; cursor:crosshair; direction:rtl;
+  }
+  .ruled-strip-long.practice-bg{
+    background:
+      linear-gradient(0deg,transparent 0,transparent 43px,#8FB8E8 43px,#8FB8E8 44px,transparent 44px),
+      linear-gradient(0deg,#FFFEF7 0%,#FFF8E1 100%);
   }
   .strip-tools{ position:absolute; top:-10px; right:-8px; display:flex; gap:5px; z-index:2; }
   .strip-btn{ width:28px; height:28px; border-radius:50%; border:1.6px solid #C9A86A; background:#FFFEF7; display:flex; align-items:center; justify-content:center; font-size:14px; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,.18); }
   .strip-btn.clear{ background:#FFF1F1; border-color:#E0A0A0; }
-  /* Modal centered */
   #sectionModal{ position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; padding:14px; background:rgba(11,20,38,0.72); backdrop-filter:blur(8px); opacity:0; pointer-events:none; transition:all .45s; }
   #sectionModal.open{ opacity:1; pointer-events:auto; }
   .modal-parchment{ width:min(860px,96vw); max-height:92vh; overflow-y:auto; background:linear-gradient(180deg,#FFFEF7,#FFF8E1); border-radius:18px; border:2px solid #C9A86A; box-shadow:0 24px 80px rgba(0,0,0,.5); transform:scale(0.82) translateY(30px); transition:all .5s cubic-bezier(.34,1.56,.64,1); }
   #sectionModal.open .modal-parchment{ transform:scale(1) translateY(0); }
-  @media(max-width:768px){ #lanternRail{ width:100%; height:66px; top:auto; bottom:0; flex-direction:row; justify-content:flex-start; overflow-x:auto; border-right:0; border-top:1.5px solid rgba(201,168,106,.25); padding:8px 12px; } .rail-line{ width:16px; height:2px; } .parchment-scroll{ width:97vw; } .arabic-trad{ font-size:1.7rem; } .ruled-strip-long{ height:82px; } }
+  /* PIN Modal - hidden PIN */
+  #pinModal{ position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center; background:rgba(11,20,38,0.82); backdrop-filter:blur(6px); opacity:0; pointer-events:none; transition:all .3s; }
+  #pinModal.open{ opacity:1; pointer-events:auto; }
+  #pinModal .pin-box{ background:#FFFEF7; border:2px solid #C9A86A; border-radius:16px; padding:20px; width:min(320px,90vw); text-align:center; box-shadow:0 20px 50px rgba(0,0,0,.4); }
+  @media(max-width:768px){ #lanternRail{ width:100%; height:66px; top:auto; bottom:0; flex-direction:row; justify-content:flex-start; overflow-x:auto; border-right:0; border-top:1.5px solid rgba(201,168,106,.25); padding:8px 12px; } .rail-line{ width:16px; height:2px; } .parchment-scroll{ width:97vw; } .arabic-trad{ font-size:1.4rem; } .ruled-strip-long{ height:82px; } }
 </style>
 </head>
 <body>
@@ -106,18 +90,16 @@
     </div>
     <div class="flex items-center gap-2">
       <div class="flex bg-[#1A2340] border border-[#C9A86A]/30 rounded-full p-1">
-        <button id="practiceBtn" class="px-3 py-1 rounded-full text-[12px] font-bold bg-[#FFD77A] text-[#3B2A14]">Practice</button>
+        <button id="practiceBtn" class="px-3 py-1 rounded-full text-[12px] font-bold bg-[#FFD77A] text-[#3B2A14] flex items-center gap-1">🔒 Practice</button>
         <button id="writeBtn" class="px-3 py-1 rounded-full text-[12px] font-bold text-[#C9A86A]">Write</button>
       </div>
       <button id="fontBtn" class="w-8 h-8 rounded-full bg-[#FFFEF7] border border-[#C9A86A] text-[12px] font-black text-[#5A3C22]">Aa</button>
     </div>
   </div>
 </header>
-<!-- Big hanging avatar - tap to show/hide header -->
-<div id="hangingAvatar" title="Tap Humayun to show/hide header">
-  <img src="assets/humayun-avatar.webp" alt="Humayun" onerror="this.src='assets/humayun-scholar.webp'; this.onerror=function(){this.parentElement.textContent='👦';}">
+<div id="hangingAvatar" title="Tap to show/hide header">
+  <img src="assets/humayun-scholar.webp" alt="Humayun" onerror="this.parentElement.textContent='👦'; this.style.display='none'">
 </div>
-<!-- Rolled scroll in middle - tap to unfold -->
 <div id="rolledScrollWrap">
   <div class="rolled-scroll">
     <div class="flex items-center justify-center gap-2">
@@ -125,7 +107,7 @@
       <div class="font-extrabold text-[#5A3C22] text-[17px]">📜 Scroll is Rolled</div>
       <img src="assets/lantern-gem.webp" class="w-8 h-8" alt="" onerror="this.textContent='🏮'">
     </div>
-    <div class="text-[12px] text-[#6B5A3E] mt-1">Tap to unroll • 8 sections • Traditional Arabic with harakat</div>
+    <div class="text-[12px] text-[#6B5A3E] mt-1">Tap to unroll • 8 sections</div>
   </div>
 </div>
 <nav id="lanternRail">
@@ -151,6 +133,18 @@
       <button class="flex-1 py-2 rounded-full bg-[#1A2340] text-[#FFD77A] font-bold text-[12px] border-2 border-[#C9A86A]" onclick="prevSection()">Previous</button>
       <button class="flex-1 py-2 rounded-full bg-[#1A2340] text-[#FFD77A] font-bold text-[12px] border-2 border-[#C9A86A]" onclick="nextSection()">Next</button>
     </div>
+  </div>
+</div>
+<div id="pinModal">
+  <div class="pin-box">
+    <div class="text-[14px] font-black text-[#3B2A14]">Parent PIN Required</div>
+    <div class="text-[11px] text-[#8B7355] mt-1">Practice mode shows answers. Enter PIN to unlock.</div>
+    <input id="pinInput" type="password" inputmode="numeric" maxlength="4" class="mt-3 w-full text-center text-[20px] tracking-[0.4em] border-2 border-[#C9A86A] rounded-xl py-2 bg-white" placeholder="••••">
+    <div class="flex gap-2 mt-3">
+      <button id="pinCancel" class="flex-1 py-2 rounded-full border-2 border-[#E8DCC0] bg-white font-bold text-[12px]">Cancel</button>
+      <button id="pinSubmit" class="flex-1 py-2 rounded-full bg-[#1A2340] text-[#FFD77A] border-2 border-[#C9A86A] font-bold text-[12px]">Unlock</button>
+    </div>
+    <div id="pinError" class="text-[11px] text-red-600 mt-2 hidden">Wrong PIN</div>
   </div>
 </div>
 <script src="shared/universal-pen.js"></script>
@@ -187,8 +181,13 @@ const SECTIONS = [
   {id:'sec7', title:'Section 7 • التنكير', sub:'Remove ال', words:[{en:'الحِسَابُ', ar:'حِسَابٌ', arSimple:'حِسَاب', audioEn:'account', audioAr:'حساب'}, {en:'الجُغْرَافِيَا', ar:'جُغْرَافِيَا', arSimple:'جُغْرَافِيَا', audioEn:'geography', audioAr:'جغرافيا'}]},
   {id:'sec8', title:'Section 8 • الجمل', sub:'Sentences', words:[{en:'This is a mosque', ar:'هَذَا مَسْجِدٌ', arSimple:'هَذَا مَسْجِد', audioEn:'This is a mosque', audioAr:'هذا مسجد'}, {en:'Where is the book?', ar:'أَيْنَ الكِتَابُ؟', arSimple:'أَيْنَ الكِتَاب', audioEn:'Where is the book', audioAr:'أين الكتاب'}]},
 ];
-let currentMode='practice', expandedId=null, scrollUnfolded=false, headerHidden=false;
+let currentMode='write', expandedId=null, scrollUnfolded=false, headerHidden=false, parentUnlocked=false;
 const stripHistory={};
+// Hidden PIN - 1995 encoded to hide from kids viewing source
+const _pinCheck = () => {
+  const c = String.fromCharCode(49,57,57,53);
+  return c;
+};
 function buildRail(){
   const c=document.getElementById('railContainer'); c.innerHTML='';
   SECTIONS.forEach((s,i)=>{
@@ -211,15 +210,23 @@ function buildCards(){
 function renderModalBody(secId){
   const sec=SECTIONS.find(s=>s.id===secId); const body=document.getElementById('modalBody');
   document.getElementById('modalTitle').textContent=sec.title; document.getElementById('modalSub').textContent=sec.sub;
+  const isPractice = currentMode==='practice' && parentUnlocked;
   if(sec.special==='letters'){
-    body.innerHTML=`<div class="grid grid-cols-2 gap-3"><div class="border-2 border-[#E8DCC0] rounded-xl p-3 bg-[#FFFEF7]"><div class="text-center font-black">الشَّمْسِيَّةُ</div><div class="text-center arabic-trad">ت ث د ذ ر ز س ش ص ض ط ظ ل ن</div><div class="strip-wrap mt-2"><canvas data-ink-key="${secId}-shamsi-${currentMode}" class="ruled-strip-long" width="300" height="88"></canvas><div class="strip-tools"><button class="strip-btn" onclick="undoStrip('${secId}-shamsi-${currentMode}')">↩️</button><button class="strip-btn clear" onclick="clearStrip('${secId}-shamsi-${currentMode}')">🗑️</button></div></div></div><div class="border-2 border-[#E8DCC0] rounded-xl p-3 bg-[#FFFEF7]"><div class="text-center font-black">القَمَرِيَّةُ</div><div class="text-center arabic-trad">أ ب ج ح خ ع غ ف ق ك م هـ و ي</div><div class="strip-wrap mt-2"><canvas data-ink-key="${secId}-qamari-${currentMode}" class="ruled-strip-long" width="300" height="88"></canvas><div class="strip-tools"><button class="strip-btn" onclick="undoStrip('${secId}-qamari-${currentMode}')">↩️</button><button class="strip-btn clear" onclick="clearStrip('${secId}-qamari-${currentMode}')">🗑️</button></div></div></div></div>`;
+    const arClass = isPractice ? 'arabic-trad' : 'arabic-trad hidden-answer';
+    const canvasClass = isPractice ? 'ruled-strip-long practice-bg' : 'ruled-strip-long';
+    body.innerHTML=`<div class="grid grid-cols-2 gap-3"><div class="border-2 border-[#E8DCC0] rounded-xl p-3 bg-[#FFFEF7]"><div class="text-center font-black">الشَّمْسِيَّةُ</div><div class="text-center ${arClass}">ت ث د ذ ر ز س ش ص ض ط ظ ل ن</div><div class="strip-wrap mt-2"><canvas data-ink-key="${secId}-shamsi-${currentMode}" class="${canvasClass}" width="300" height="88"></canvas><div class="strip-tools"><button class="strip-btn" onclick="undoStrip('${secId}-shamsi-${currentMode}')">↩️</button><button class="strip-btn clear" onclick="clearStrip('${secId}-shamsi-${currentMode}')">🗑️</button></div></div></div><div class="border-2 border-[#E8DCC0] rounded-xl p-3 bg-[#FFFEF7]"><div class="text-center font-black">القَمَرِيَّةُ</div><div class="text-center ${arClass}">أ ب ج ح خ ع غ ف ق ك م هـ و ي</div><div class="strip-wrap mt-2"><canvas data-ink-key="${secId}-qamari-${currentMode}" class="${canvasClass}" width="300" height="88"></canvas><div class="strip-tools"><button class="strip-btn" onclick="undoStrip('${secId}-qamari-${currentMode}')">↩️</button><button class="strip-btn clear" onclick="clearStrip('${secId}-qamari-${currentMode}')">🗑️</button></div></div></div></div>`;
   } else {
     body.innerHTML=sec.words.map((w,i)=>{
       const key=`${secId}-${w.en}-${i}-${currentMode}`;
+      const arClass = isPractice ? 'arabic-trad' : 'arabic-trad hidden-answer';
+      const faintClass = isPractice ? 'arabic-trad faint' : 'hidden';
+      const canvasClass = isPractice ? 'ruled-strip-long practice-bg' : 'ruled-strip-long';
       return `<div class="strip-row-rtl">
         <div class="eng-side"><span class="english-clean" onclick="speakWord('${w.audioEn||w.en}','en-GB')">${w.en}</span></div>
-        <div class="canvas-side"><div class="strip-wrap"><canvas data-ink-key="${key}" class="ruled-strip-long" width="560" height="88"></canvas><div class="strip-tools"><button class="strip-btn" onclick="undoStrip('${key}')">↩️</button><button class="strip-btn clear" onclick="clearStrip('${key}')">🗑️</button></div></div></div>
-        <div class="ar-side"><span class="arabic-trad" onclick="speakWord('${w.audioAr||w.arSimple}','ar-SA')">${w.ar}</span></div>
+        <div class="canvas-side"><div class="strip-wrap"><canvas data-ink-key="${key}" class="${canvasClass}" width="560" height="88" data-trace="${isPractice ? w.ar : ''}"></canvas><div class="strip-tools"><button class="strip-btn" onclick="undoStrip('${key}')">↩️</button><button class="strip-btn clear" onclick="clearStrip('${key}')">🗑️</button></div></div>
+        ${isPractice ? `<div class="${faintClass}" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); pointer-events:none; opacity:0.18;">${w.ar}</div>` : ``}
+        </div>
+        <div class="ar-side"><span class="${arClass}" onclick="speakWord('${w.audioAr||w.arSimple}','ar-SA')">${w.ar}</span></div>
       </div>`;
     }).join('');
   }
@@ -228,15 +235,34 @@ function renderModalBody(secId){
       const dpr=window.devicePixelRatio||1; const rect=c.getBoundingClientRect();
       c.width=rect.width*dpr; c.height=88*dpr; c.style.height='88px';
       const ctx=c.getContext('2d'); try{ ctx.setTransform(dpr,0,0,dpr,0,0);}catch(e){}
+      // Practice: draw faint trace inside canvas
+      const trace = c.dataset.trace;
+      if(trace && currentMode==='practice' && parentUnlocked){
+        ctx.save();
+        ctx.globalAlpha=0.16;
+        ctx.font="400 28px 'Amiri','Lateef',serif";
+        ctx.textAlign='center';
+        ctx.fillStyle='#8B7355';
+        ctx.fillText(trace, rect.width/2, 52);
+        ctx.restore();
+        // Save this as base for undo
+        if(!stripHistory[c.dataset.inkKey]) stripHistory[c.dataset.inkKey]=[];
+        try{ stripHistory[c.dataset.inkKey]=[c.toDataURL()]; }catch(e){}
+      }
       if(window.UniversalPen){ UniversalPen.forceCanvas(c); if(!stripHistory[c.dataset.inkKey]){ stripHistory[c.dataset.inkKey]=[]; try{ stripHistory[c.dataset.inkKey].push(c.toDataURL()); }catch(e){} } }
     });
-  },140);
+  },160);
 }
 function openSection(id){ expandedId=id; renderModalBody(id); document.getElementById('sectionModal').classList.add('open'); document.querySelectorAll('.rail-lantern').forEach(el=>el.classList.remove('active')); const rail=document.getElementById('rail-'+id); if(rail) rail.classList.add('active'); }
 function closeModal(){ document.getElementById('sectionModal').classList.remove('open'); }
 function nextSection(){ const idx=SECTIONS.findIndex(s=>s.id===expandedId); if(idx>=0&&idx<SECTIONS.length-1) openSection(SECTIONS[idx+1].id); }
 function prevSection(){ const idx=SECTIONS.findIndex(s=>s.id===expandedId); if(idx>0) openSection(SECTIONS[idx-1].id); }
-function clearStrip(key){ const canvas=document.querySelector(`canvas[data-ink-key="${key}"]`); if(!canvas) return; const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height); if(window.UniversalPen){ UniversalPen.state.activeCanvas=canvas; UniversalPen.state.ctx=ctx; UniversalPen.clearInk(); } stripHistory[key]=[]; try{ stripHistory[key].push(canvas.toDataURL()); }catch(e){} }
+function clearStrip(key){ const canvas=document.querySelector(`canvas[data-ink-key="${key}"]`); if(!canvas) return; const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height); 
+  const trace = canvas.dataset.trace;
+  if(trace && currentMode==='practice' && parentUnlocked){
+    ctx.save(); ctx.globalAlpha=0.16; ctx.font="400 28px 'Amiri','Lateef',serif"; ctx.textAlign='center'; ctx.fillStyle='#8B7355'; ctx.fillText(trace, canvas.getBoundingClientRect().width/2, 52); ctx.restore();
+  }
+  if(window.UniversalPen){ UniversalPen.state.activeCanvas=canvas; UniversalPen.state.ctx=ctx; UniversalPen.clearInk(); } stripHistory[key]=[]; try{ stripHistory[key].push(canvas.toDataURL()); }catch(e){} }
 function undoStrip(key){ const canvas=document.querySelector(`canvas[data-ink-key="${key}"]`); if(!canvas||!stripHistory[key]||stripHistory[key].length<2) return; stripHistory[key].pop(); const prev=stripHistory[key][stripHistory[key].length-1]; const ctx=canvas.getContext('2d'); const img=new Image(); img.onload=()=>{ ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0,canvas.width,canvas.height); }; img.src=prev; }
 let arabicVoice=null;
 function loadVoices(){ const voices=speechSynthesis.getVoices(); arabicVoice=voices.find(v=>v.lang==='ar-SA')||voices.find(v=>v.lang.startsWith('ar'))||null; }
@@ -260,21 +286,52 @@ document.getElementById('hangingAvatar').onclick=()=>{
   document.getElementById('topHeader').classList.toggle('hiddenBar', headerHidden);
   document.getElementById('hangingAvatar').classList.toggle('hiddenPos', headerHidden);
 };
+// PIN Logic - Practice locked
+function showPinModal(){
+  document.getElementById('pinModal').classList.add('open');
+  document.getElementById('pinInput').value=''; document.getElementById('pinError').classList.add('hidden');
+  setTimeout(()=>document.getElementById('pinInput').focus(),100);
+}
+function hidePinModal(){ document.getElementById('pinModal').classList.remove('open'); }
 document.getElementById('practiceBtn').onclick=()=>{
-  currentMode='practice';
-  document.getElementById('practiceBtn').className='px-3 py-1 rounded-full text-[12px] font-bold bg-[#FFD77A] text-[#3B2A14]';
-  document.getElementById('writeBtn').className='px-3 py-1 rounded-full text-[12px] font-bold text-[#C9A86A]';
-  if(expandedId) renderModalBody(expandedId);
+  if(parentUnlocked){
+    currentMode='practice';
+    document.getElementById('practiceBtn').className='px-3 py-1 rounded-full text-[12px] font-bold bg-[#FFD77A] text-[#3B2A14] flex items-center gap-1">✓ Practice</button>';
+    document.getElementById('writeBtn').className='px-3 py-1 rounded-full text-[12px] font-bold text-[#C9A86A]';
+    if(expandedId) renderModalBody(expandedId);
+  } else {
+    showPinModal();
+  }
 };
 document.getElementById('writeBtn').onclick=()=>{
   currentMode='write';
   document.getElementById('writeBtn').className='px-3 py-1 rounded-full text-[12px] font-bold bg-[#FFD77A] text-[#3B2A14]';
-  document.getElementById('practiceBtn').className='px-3 py-1 rounded-full text-[12px] font-bold text-[#C9A86A]';
+  document.getElementById('practiceBtn').className='px-3 py-1 rounded-full text-[12px] font-bold text-[#C9A86A] flex items-center gap-1">🔒 Practice</button>';
   if(expandedId) renderModalBody(expandedId);
 };
+document.getElementById('pinCancel').onclick=hidePinModal;
+document.getElementById('pinSubmit').onclick=()=>{
+  const entered = document.getElementById('pinInput').value.trim();
+  if(entered===_pinCheck()){
+    parentUnlocked=true;
+    try{ localStorage.setItem('humayun_parent','1'); }catch(e){}
+    hidePinModal();
+    currentMode='practice';
+    document.getElementById('practiceBtn').innerHTML='✓ Practice';
+    document.getElementById('practiceBtn').className='px-3 py-1 rounded-full text-[12px] font-bold bg-[#FFD77A] text-[#3B2A14]';
+    document.getElementById('writeBtn').className='px-3 py-1 rounded-full text-[12px] font-bold text-[#C9A86A]';
+    if(expandedId) renderModalBody(expandedId);
+  } else {
+    document.getElementById('pinError').classList.remove('hidden');
+  }
+};
+document.getElementById('pinInput').onkeydown=(e)=>{ if(e.key==='Enter') document.getElementById('pinSubmit').click(); };
+// Auto unlock if already unlocked in this session
+try{ if(localStorage.getItem('humayun_parent')==='1'){ parentUnlocked=true; document.getElementById('practiceBtn').innerHTML='✓ Practice'; } }catch(e){}
 document.getElementById('fontBtn').onclick=()=>{ document.body.classList.toggle('text-[18px]'); };
 document.getElementById('closeModal').onclick=closeModal;
 document.getElementById('sectionModal').onclick=(e)=>{ if(e.target.id==='sectionModal') closeModal(); };
+document.getElementById('pinModal').onclick=(e)=>{ if(e.target.id==='pinModal') hidePinModal(); };
 buildRail(); buildCards();
 document.addEventListener('pointerup', (e)=>{
   const canvas=e.target.closest('canvas'); if(!canvas) return;
