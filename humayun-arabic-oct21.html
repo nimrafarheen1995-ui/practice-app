@@ -3,172 +3,191 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>Humayun - Arabic - Oct21 - Scroll & Lantern V2</title>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
+<title>Humayun - Arabic - Oct21 - V3 Clean</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Scheherazade+New:wght@400;700&family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   *{ -webkit-tap-highlight-color:transparent; }
   body{ margin:0; min-height:100vh; font-family:'Baloo 2',system-ui; background:#0b1426 url('assets/islamic-night-bg.webp') center/cover no-repeat fixed; overflow-x:hidden; }
-  .night-overlay{ position:fixed; inset:0; background:rgba(11,20,38,0.78); pointer-events:none; z-index:0; transition:background .4s; }
-  /* Header */
-  #topHeader{ position:sticky; top:0; z-index:40; background:linear-gradient(180deg,rgba(20,28,48,0.96),rgba(11,20,38,0.92)); border-bottom:2.5px solid #C9A86A; backdrop-filter:blur(10px); transition:transform .35s; }
-  #topHeader.hiddenBar{ transform:translateY(-100%); }
-  /* Folded scroll intro - tap to unfold */
-  #foldedIntro{
-    position:relative; z-index:2; width:min(680px,90vw); margin:22px auto 0;
-    background:linear-gradient(180deg,#E8DCC0,#D9C8A0); border-radius:16px;
-    box-shadow:0 12px 30px rgba(0,0,0,.35); padding:18px 16px 14px; text-align:center;
-    cursor:pointer; transition:all .6s cubic-bezier(.34,1.56,.64,1);
+  .night-overlay{ position:fixed; inset:0; background:rgba(11,20,38,0.82); pointer-events:none; z-index:0; }
+  /* Header - can hide */
+  #topHeader{ position:sticky; top:0; z-index:40; background:linear-gradient(180deg,rgba(20,28,48,0.96),rgba(11,20,38,0.92)); border-bottom:2.5px solid #C9A86A; backdrop-filter:blur(10px); transition:transform .4s ease; }
+  #topHeader.hiddenBar{ transform:translateY(-105%); }
+  /* Big hanging avatar - tap to show/hide header */
+  #hangingAvatar{
+    position:fixed; top:4px; left:50%; transform:translateX(-50%); z-index:45;
+    width:84px; height:84px; border-radius:50%; border:3px solid #C9A86A;
+    background:#FFFEF7; box-shadow:0 8px 24px rgba(0,0,0,.35),0 0 0 4px rgba(11,20,38,.5);
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    transition:all .4s cubic-bezier(.34,1.56,.64,1); overflow:hidden;
   }
-  #foldedIntro.unfolded{ transform:scale(0.92) translateY(-20px); opacity:0; pointer-events:none; max-height:0; margin:0 auto; padding:0; overflow:hidden; }
-  /* Main scroll - starts folded */
+  #hangingAvatar img{ width:100%; height:100%; object-fit:cover; }
+  #hangingAvatar.hiddenPos{ top:-12px; transform:translateX(-50%) scale(0.72); box-shadow:0 4px 12px rgba(0,0,0,.3); }
+  #hangingAvatar::after{ content:""; position:absolute; top:-20px; left:50%; width:2px; height:20px; background:#C9A86A; transform:translateX(-50%); }
+  /* Rolled scroll in middle - tap to unfold */
+  #rolledScrollWrap{
+    position:relative; z-index:2; width:min(520px,88vw); margin:92px auto 0;
+    cursor:pointer; transition:all .7s cubic-bezier(.34,1.2,.64,1);
+  }
+  #rolledScrollWrap.unrolled{ opacity:0; transform:scale(0.9) translateY(-30px); pointer-events:none; max-height:0; margin:0 auto; overflow:hidden; }
+  .rolled-scroll{
+    background:linear-gradient(180deg,#FFF9E6,#E8DCC0); border-radius:28px; padding:18px 16px;
+    box-shadow:0 18px 40px rgba(0,0,0,.4), inset 0 2px 0 rgba(255,255,255,.6);
+    border:2px solid #C9A86A; text-align:center; position:relative;
+  }
+  .rolled-scroll::before,.rolled-scroll::after{
+    content:""; position:absolute; left:10%; right:10%; height:14px; background:linear-gradient(180deg,#D9C8A0,#C9A86A); border-radius:10px; box-shadow:0 3px 10px rgba(0,0,0,.2);
+  }
+  .rolled-scroll::before{ top:-8px; } .rolled-scroll::after{ bottom:-8px; }
+  /* Main scroll */
   .parchment-scroll{
-    position:relative; z-index:1; width:min(980px,92vw); margin:0 auto; 
-    background:linear-gradient(180deg,#FFF9E6 0%,#FFF5D0 100%);
-    border-radius:18px 18px 28px 28px; box-shadow:0 20px 60px rgba(0,0,0,.45),0 0 0 1.5px rgba(201,168,106,.35);
-    padding:0 0 24px 0; max-height:0; opacity:0; overflow:hidden; transform:scaleY(0.15); transform-origin:top center;
-    transition:all .8s cubic-bezier(.34,1.2,.64,1);
+    position:relative; z-index:1; width:min(980px,94vw); margin:0 auto;
+    background:linear-gradient(180deg,#FFFEF7 0%,#FFF8E1 100%);
+    border-radius:18px; box-shadow:0 20px 60px rgba(0,0,0,.45),0 0 0 1.5px rgba(201,168,106,.35);
+    padding:0 0 22px 0; max-height:0; opacity:0; overflow:hidden; transform:scaleY(0.12); transform-origin:top center;
+    transition:all .85s cubic-bezier(.34,1.2,.64,1);
   }
-  .parchment-scroll.open{ max-height:4000px; opacity:1; transform:scaleY(1); margin:18px auto; }
-  .parchment-scroll::before{ content:""; position:absolute; top:-14px; left:3%; right:3%; height:28px; background:linear-gradient(180deg,#E8DCC0,#D9C8A0); border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,.25); z-index:2; }
-  .parchment-scroll::after{ content:""; position:absolute; bottom:-12px; left:3%; right:3%; height:24px; background:linear-gradient(0deg,#E8DCC0,#D9C8A0); border-radius:12px; box-shadow:0 -4px 12px rgba(0,0,0,.2); z-index:2; }
-  /* Lantern rail using real assets */
-  #lanternRail{ position:fixed; left:0; top:64px; bottom:0; width:88px; z-index:30; background:linear-gradient(180deg,rgba(11,20,38,0.92),rgba(11,20,38,0.75)); border-right:1.5px solid rgba(201,168,106,0.25); display:flex; flex-direction:column; align-items:center; padding:10px 0 80px; overflow-y:auto; gap:2px; }
-  .rail-lantern{ width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; transition:all .3s; background:rgba(255,255,255,0.06); border:2px solid rgba(201,168,106,0.18); }
-  .rail-lantern img{ width:38px; height:38px; object-fit:contain; filter:brightness(0.7) sepia(0.3); transition:all .3s; }
-  .rail-lantern.active{ background:radial-gradient(circle,#FFF3C0,#C9A86A); border-color:#FFD77A; box-shadow:0 0 18px rgba(255,215,122,.65),0 0 36px rgba(255,215,122,.25); transform:scale(1.1); }
-  .rail-lantern.active img{ filter:brightness(1.1) drop-shadow(0 0 8px gold); }
-  .rail-lantern.done::after{ content:"✓"; position:absolute; top:-2px; right:-2px; width:18px; height:18px; background:#2ECC71; color:#fff; border-radius:50%; font-size:11px; display:flex; align-items:center; justify-content:center; border:2px solid #0b1426; }
-  .rail-line{ width:2px; height:18px; background:linear-gradient(180deg,rgba(201,168,106,0.35),rgba(201,168,106,0.08)); }
+  .parchment-scroll.open{ max-height:5000px; opacity:1; transform:scaleY(1); margin:18px auto 90px; }
+  /* Lantern rail with real assets */
+  #lanternRail{ position:fixed; left:0; top:70px; bottom:0; width:86px; z-index:30; background:linear-gradient(180deg,rgba(11,20,38,0.92),rgba(11,20,38,0.75)); border-right:1.5px solid rgba(201,168,106,0.25); display:flex; flex-direction:column; align-items:center; padding:12px 0 80px; overflow-y:auto; }
+  .rail-lantern{ width:54px; height:54px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; transition:all .3s; background:rgba(255,255,255,0.06); border:2px solid rgba(201,168,106,0.18); }
+  .rail-lantern img{ width:36px; height:36px; object-fit:contain; }
+  .rail-lantern.active{ background:radial-gradient(circle,#FFF3C0,#C9A86A); border-color:#FFD77A; box-shadow:0 0 18px rgba(255,215,122,.65); transform:scale(1.08); }
+  .rail-line{ width:2px; height:16px; background:rgba(201,168,106,0.25); }
   /* Cards */
-  .scroll-card{ position:relative; margin:16px 18px; padding:14px 16px; background:linear-gradient(180deg,#FFFEF7 0%,#FFF8E1 100%); border:1.8px solid #E8DCC0; border-radius:14px; box-shadow:0 6px 18px rgba(0,0,0,.12),0 0 0 1px rgba(201,168,106,.18) inset; cursor:pointer; transition:all .28s ease; overflow:hidden; }
-  .scroll-card:hover{ transform:translateY(-2px); }
-  .card-banner{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; background:linear-gradient(90deg,#FFF3C0,rgba(201,168,106,0.18)); border:1px solid rgba(201,168,106,0.35); border-radius:999px; padding:4px 12px 4px 6px; font-size:.78rem; font-weight:800; color:#5A3C22; width:fit-content; margin-bottom:8px; }
-  .arabic{ font-family:'Amiri',serif; direction:rtl; font-size:1.5rem; font-weight:700; color:#3B2A14; cursor:pointer; transition:all .15s; user-select:none; }
-  .arabic:active{ transform:scale(0.96); background:rgba(201,168,106,0.15); border-radius:8px; }
-  .english{ font-weight:800; color:#3B2A14; cursor:pointer; user-select:none; }
-  .english:active{ background:rgba(201,168,106,0.15); border-radius:8px; }
-  /* Expanded modal - beautiful transition in middle */
-  #sectionModal{ position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; padding:16px; background:rgba(11,20,38,0.72); backdrop-filter:blur(8px); opacity:0; pointer-events:none; transition:all .45s cubic-bezier(.34,1.2,.64,1); }
+  .scroll-card{ position:relative; margin:14px 16px; padding:14px 16px; background:#FFFEF7; border:1.5px solid #E8DCC0; border-radius:14px; cursor:pointer; transition:all .25s; }
+  .card-banner{ display:inline-flex; align-items:center; gap:6px; background:#FFF3C0; border:1px solid rgba(201,168,106,0.35); border-radius:999px; padding:3px 10px; font-size:.76rem; font-weight:800; color:#5A3C22; }
+  /* Arabic with harakat - best font */
+  .arabic-trad{
+    font-family:'Scheherazade New','Amiri',serif; direction:rtl; text-align:right;
+    font-size:2.0rem; line-height:2.2; font-weight:700; color:#2B1E0E;
+    font-feature-settings:"liga" 1,"calt" 1; cursor:pointer; user-select:none;
+    padding:2px 8px; border-radius:8px; transition:background .15s;
+  }
+  .arabic-trad:active{ background:rgba(201,168,106,0.18); }
+  .english-clean{ font-weight:700; color:#3B2A14; font-size:1.05rem; cursor:pointer; user-select:none; padding:2px 6px; border-radius:6px; }
+  .english-clean:active{ background:rgba(201,168,106,0.15); }
+  /* Long strip - single line, big length, RTL ready */
+  .strip-row-rtl{ display:flex; align-items:center; gap:10px; margin:14px 0; direction:ltr; }
+  .strip-row-rtl .eng-side{ order:1; min-width:82px; }
+  .strip-row-rtl .canvas-side{ order:2; flex:1; }
+  .strip-row-rtl .ar-side{ order:3; min-width:90px; display:flex; justify-content:flex-end; }
+  .strip-wrap{ position:relative; width:100%; }
+  .ruled-strip-long{
+    width:100%; height:88px; display:block;
+    background:
+      linear-gradient(0deg,transparent 0,transparent 43px,#8FB8E8 43px,#8FB8E8 44px,transparent 44px),
+      linear-gradient(0deg,#FFFFFF 0%,#FFFEF7 100%);
+    border:1.8px solid #D9C8A0; border-radius:12px; cursor:crosshair;
+    /* RTL writing hint */
+    direction:rtl;
+  }
+  .strip-tools{ position:absolute; top:-10px; right:-8px; display:flex; gap:5px; z-index:2; }
+  .strip-btn{ width:28px; height:28px; border-radius:50%; border:1.6px solid #C9A86A; background:#FFFEF7; display:flex; align-items:center; justify-content:center; font-size:14px; cursor:pointer; box-shadow:0 3px 10px rgba(0,0,0,.18); }
+  .strip-btn.clear{ background:#FFF1F1; border-color:#E0A0A0; }
+  /* Modal centered */
+  #sectionModal{ position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center; padding:14px; background:rgba(11,20,38,0.72); backdrop-filter:blur(8px); opacity:0; pointer-events:none; transition:all .45s; }
   #sectionModal.open{ opacity:1; pointer-events:auto; }
-  #sectionModal .modal-parchment{ width:min(820px,96vw); max-height:90vh; overflow-y:auto; background:linear-gradient(180deg,#FFFEF7,#FFF8E1); border-radius:18px; border:2px solid #C9A86A; box-shadow:0 24px 80px rgba(0,0,0,.5),0 0 0 1.5px rgba(201,168,106,.35) inset; transform:scale(0.82) translateY(40px) rotateX(12deg); transition:all .5s cubic-bezier(.34,1.56,.64,1); padding:0; }
-  #sectionModal.open .modal-parchment{ transform:scale(1) translateY(0) rotateX(0); }
-  /* Strip with undo/clear per strip */
-  .strip-wrap{ position:relative; flex:1; min-width:200px; }
-  .ruled-strip{ width:100%; height:58px; background:linear-gradient(0deg,transparent 0,transparent 20px,#C7DFF5 20px,#C7DFF5 21px,transparent 21px),linear-gradient(0deg,#FFF 0%,#FFF9E6 100%); background-size:100% 26px; border:1.5px solid #E0D0A8; border-radius:10px; cursor:crosshair; display:block; }
-  .strip-tools{ position:absolute; top:-8px; right:-6px; display:flex; gap:4px; z-index:2; }
-  .strip-btn{ width:26px; height:26px; border-radius:50%; border:1.5px solid #C9A86A; background:#FFFEF7; display:flex; align-items:center; justify-content:center; font-size:13px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.15); transition:all .15s; }
-  .strip-btn:active{ transform:scale(0.88); }
-  .strip-btn.clear{ background:#FFF1F1; border-color:#E8A0A0; }
-  @media(max-width:768px){ #lanternRail{ width:100%; height:68px; top:auto; bottom:0; flex-direction:row; justify-content:flex-start; overflow-x:auto; border-right:0; border-top:1.5px solid rgba(201,168,106,.25); padding:8px 12px; gap:10px; } .rail-line{ width:18px; height:2px; } .parchment-scroll{ width:96vw; margin:12px auto 90px; } #sectionModal .modal-parchment{ width:98vw; max-height:92vh; } }
+  .modal-parchment{ width:min(860px,96vw); max-height:92vh; overflow-y:auto; background:linear-gradient(180deg,#FFFEF7,#FFF8E1); border-radius:18px; border:2px solid #C9A86A; box-shadow:0 24px 80px rgba(0,0,0,.5); transform:scale(0.82) translateY(30px); transition:all .5s cubic-bezier(.34,1.56,.64,1); }
+  #sectionModal.open .modal-parchment{ transform:scale(1) translateY(0); }
+  @media(max-width:768px){ #lanternRail{ width:100%; height:66px; top:auto; bottom:0; flex-direction:row; justify-content:flex-start; overflow-x:auto; border-right:0; border-top:1.5px solid rgba(201,168,106,.25); padding:8px 12px; } .rail-line{ width:16px; height:2px; } .parchment-scroll{ width:97vw; } .arabic-trad{ font-size:1.7rem; } .ruled-strip-long{ height:82px; } }
 </style>
 </head>
 <body>
-<div class="night-overlay" id="nightOverlay"></div>
+<div class="night-overlay"></div>
 <header id="topHeader">
   <div class="flex items-center justify-between px-3 py-2 gap-2">
     <div class="flex items-center gap-2">
-      <button id="toggleHeaderBtn" class="w-9 h-9 rounded-full bg-[#FFFEF7] border-2 border-[#C9A86A] flex items-center justify-center overflow-hidden" title="Hide header"><img src="assets/badge-crescent-star.webp" alt="" class="w-6 h-6 object-contain" onerror="this.textContent='🌙'"></button>
-      <img src="assets/humayun-scholar.webp" alt="" class="w-9 h-9 rounded-full border-2 border-[#C9A86A] object-cover hidden md:block" onerror="this.style.display='none'">
+      <img src="assets/badge-crescent-star.webp" alt="" class="w-7 h-7 object-contain" onerror="this.style.display='none'">
       <div class="text-[#FFD77A] leading-tight">
-        <div class="font-extrabold text-[15px]">تعلم العربية • Arabic Learning <span class="hidden md:inline text-[11px] font-normal text-[#C9A86A]">• Unit 3 • Lesson 1</span></div>
-        <div class="text-[11px] text-[#C9A86A] hidden md:block">Tap word to hear • Per-strip undo/clear • Scroll & Lantern</div>
+        <div class="font-extrabold text-[14px]">تعلم العربية • Arabic</div>
+        <div class="text-[10px] text-[#C9A86A]">Unit 3 • Lesson 1</div>
       </div>
     </div>
     <div class="flex items-center gap-2">
       <div class="flex bg-[#1A2340] border border-[#C9A86A]/30 rounded-full p-1">
-        <button id="practiceBtn" class="px-3 py-1 rounded-full text-[13px] font-bold bg-[#FFD77A] text-[#3B2A14]">Practice</button>
-        <button id="writeBtn" class="px-3 py-1 rounded-full text-[13px] font-bold text-[#C9A86A]">Write</button>
+        <button id="practiceBtn" class="px-3 py-1 rounded-full text-[12px] font-bold bg-[#FFD77A] text-[#3B2A14]">Practice</button>
+        <button id="writeBtn" class="px-3 py-1 rounded-full text-[12px] font-bold text-[#C9A86A]">Write</button>
       </div>
-      <div class="hidden md:flex items-center gap-1 bg-[#1A2340]/80 border border-[#C9A86A]/20 rounded-full px-2 py-1">
-        <span class="text-[10px] text-[#C9A86A] font-bold">Dim</span>
-        <input id="dimSlider" type="range" min="0" max="50" value="12" class="w-16 accent-[#C9A86A]">
-      </div>
-      <button id="fontBtn" class="w-8 h-8 rounded-full bg-[#FFFEF7] border border-[#C9A86A] text-[13px] font-black text-[#5A3C22]">Aa</button>
+      <button id="fontBtn" class="w-8 h-8 rounded-full bg-[#FFFEF7] border border-[#C9A86A] text-[12px] font-black text-[#5A3C22]">Aa</button>
     </div>
   </div>
 </header>
-<!-- Folded intro - tap to unfold -->
-<div id="foldedIntro">
-  <div class="flex items-center justify-center gap-3">
-    <img src="assets/lantern-gem.webp" class="w-10 h-10" alt="" onerror="this.textContent='🏮'">
-    <div>
-      <div class="font-extrabold text-[#5A3C22] text-[18px]">📜 Scroll is Folded • Tap to Unfold</div>
-      <div class="text-[12px] text-[#8B7355]">8 Lanterns • 20 Traditional Arabic Words • Tap words to hear</div>
+<!-- Big hanging avatar - tap to show/hide header -->
+<div id="hangingAvatar" title="Tap Humayun to show/hide header">
+  <img src="assets/humayun-avatar.webp" alt="Humayun" onerror="this.src='assets/humayun-scholar.webp'; this.onerror=function(){this.parentElement.textContent='👦';}">
+</div>
+<!-- Rolled scroll in middle - tap to unfold -->
+<div id="rolledScrollWrap">
+  <div class="rolled-scroll">
+    <div class="flex items-center justify-center gap-2">
+      <img src="assets/lantern-gem.webp" class="w-8 h-8" alt="" onerror="this.textContent='🏮'">
+      <div class="font-extrabold text-[#5A3C22] text-[17px]">📜 Scroll is Rolled</div>
+      <img src="assets/lantern-gem.webp" class="w-8 h-8" alt="" onerror="this.textContent='🏮'">
     </div>
-    <img src="assets/lantern-gem.webp" class="w-10 h-10" alt="" onerror="this.textContent='🏮'">
+    <div class="text-[12px] text-[#6B5A3E] mt-1">Tap to unroll • 8 sections • Traditional Arabic with harakat</div>
   </div>
-  <div class="mt-2 text-[11px] text-[#8B7355]">Uses your assets: lantern-gem.webp + badge-crescent-star.webp + humayun-scholar.webp</div>
 </div>
 <nav id="lanternRail">
-  <div class="text-[10px] font-black tracking-widest text-[#C9A86A]">PROGRESS</div>
-  <div class="text-[11px] font-bold text-[#FFD77A]" id="progressText">0/8</div>
-  <div id="railContainer" class="flex flex-col items-center gap-0 mt-2"></div>
+  <div id="railContainer" class="flex flex-col items-center gap-0 mt-1"></div>
 </nav>
 <main class="parchment-scroll" id="mainScroll">
-  <div class="text-center pt-8 pb-2">
-    <div class="inline-flex items-center gap-2 text-[11px] font-black tracking-[0.18em] text-[#8B7355]">UNIT 3 • LESSON 1 • TRADITIONAL ARABIC</div>
-    <h1 class="text-[20px] font-extrabold text-[#3B2A14] mt-1">Scroll & Lantern • Tap a section to open in middle</h1>
-    <div class="text-[12px] text-[#8B7355]">Tap English or Arabic word to hear • Each strip has its own ↩️ 🗑️</div>
-  </div>
   <div id="cardsContainer"></div>
-  <div class="text-center text-[11px] text-[#8B7355] mt-3 pb-2">Folded scroll animation • Center modal transition • Per-strip controls</div>
 </main>
-<!-- Beautiful centered modal for section -->
 <div id="sectionModal">
   <div class="modal-parchment" id="modalParchment">
-    <div class="sticky top-0 z-10 bg-gradient-to-b from-[#FFFEF7] to-[#FFF8E1]/95 backdrop-blur-md border-b-2 border-[#C9A86A]/30 p-3 flex items-center justify-between">
+    <div class="sticky top-0 z-10 bg-[#FFFEF7]/95 backdrop-blur-md border-b-2 border-[#C9A86A]/30 p-3 flex items-center justify-between">
       <div class="flex items-center gap-2">
-        <img src="assets/lantern-gem.webp" class="w-8 h-8" alt="" onerror="this.parentElement.textContent='🏮'">
+        <img src="assets/lantern-gem.webp" class="w-7 h-7" alt="" onerror="this.style.display='none'">
         <div>
-          <div class="font-black text-[#3B2A14] text-[15px]" id="modalTitle">Section 1</div>
-          <div class="text-[11px] text-[#8B7355]" id="modalSub">Tap words to hear</div>
+          <div class="font-black text-[#3B2A14] text-[14px]" id="modalTitle">Section</div>
+          <div class="text-[11px] text-[#8B7355]" id="modalSub"></div>
         </div>
       </div>
       <button id="closeModal" class="w-9 h-9 rounded-full bg-[#1A2340] text-[#FFD77A] border-2 border-[#C9A86A]">✕</button>
     </div>
-    <div id="modalBody" class="p-4"></div>
-    <div class="sticky bottom-0 bg-gradient-to-t from-[#FFFEF7] to-transparent p-3 flex gap-2 border-t border-[#C9A86A]/20">
-      <button class="flex-1 py-2 rounded-full bg-[#1A2340] text-[#FFD77A] font-bold text-[13px] border-2 border-[#C9A86A]" onclick="prevSection()">🏮 Previous</button>
-      <button class="flex-1 py-2 rounded-full bg-[#1A2340] text-[#FFD77A] font-bold text-[13px] border-2 border-[#C9A86A]" onclick="nextSection()">Next 🏮</button>
+    <div id="modalBody" class="p-3"></div>
+    <div class="sticky bottom-0 bg-[#FFFEF7]/95 backdrop-blur p-3 flex gap-2 border-t border-[#C9A86A]/20">
+      <button class="flex-1 py-2 rounded-full bg-[#1A2340] text-[#FFD77A] font-bold text-[12px] border-2 border-[#C9A86A]" onclick="prevSection()">Previous</button>
+      <button class="flex-1 py-2 rounded-full bg-[#1A2340] text-[#FFD77A] font-bold text-[12px] border-2 border-[#C9A86A]" onclick="nextSection()">Next</button>
     </div>
   </div>
 </div>
 <script src="shared/universal-pen.js"></script>
 <script>
 const TRADITIONAL_WORDS = [
-  {en:'bear', ar:'دُبّ', arSimple:'دب', audioEn:'bear', audioAr:'دُبّ'},
-  {en:'house', ar:'بَيْتٌ', arSimple:'بيت', audioEn:'house', audioAr:'بَيْت'},
-  {en:'apple', ar:'تُفَّاحٌ', arSimple:'تفاح', audioEn:'apple', audioAr:'تُفَّاح'},
-  {en:'students', ar:'تَلَامِيذُ', arSimple:'تلاميذ', audioEn:'students', audioAr:'تَلَامِيذ'},
-  {en:'books', ar:'كُتُبٌ', arSimple:'كتب', audioEn:'books', audioAr:'كُتُب'},
-  {en:'chair', ar:'كُرْسِيٌّ', arSimple:'كرسي', audioEn:'chair', audioAr:'كُرْسِيّ'},
-  {en:'map', ar:'خَرِيطَةٌ', arSimple:'خريطة', audioEn:'map', audioAr:'خَرِيطَة'},
-  {en:'ox', ar:'ثَوْرٌ', arSimple:'ثور', audioEn:'ox', audioAr:'ثَوْر'},
-  {en:'flower', ar:'زَهْرَةٌ', arSimple:'زهرة', audioEn:'flower', audioAr:'زَهْرَة'},
-  {en:'chick', ar:'صَوْصٌ', arSimple:'صوص', audioEn:'chick', audioAr:'صَوْص'},
-  {en:'father', ar:'أَبٌ', arSimple:'أب', audioEn:'father', audioAr:'أَب'},
-  {en:'corn', ar:'ذُرَةٌ', arSimple:'ذرة', audioEn:'corn', audioAr:'ذُرَة'},
-  {en:'room', ar:'غُرْفَةٌ', arSimple:'غرفة', audioEn:'room', audioAr:'غُرْفَة'},
-  {en:'student', ar:'تِلْمِيذٌ', arSimple:'تلميذ', audioEn:'student', audioAr:'تِلْمِيذ'},
-  {en:'book', ar:'كِتَابٌ', arSimple:'كتاب', audioEn:'book', audioAr:'كِتَاب'},
-  {en:'table', ar:'مَكْتَبٌ', arSimple:'مكتب', audioEn:'table', audioAr:'مَكْتَب'},
-  {en:'juice', ar:'عَصِيرٌ', arSimple:'عصير', audioEn:'juice', audioAr:'عَصِير'},
-  {en:'horse', ar:'حِصَانٌ', arSimple:'حصان', audioEn:'horse', audioAr:'حِصَان'},
-  {en:'head', ar:'رَأْسٌ', arSimple:'رأس', audioEn:'head', audioAr:'رَأْس'},
-  {en:'sun', ar:'شَمْسٌ', arSimple:'شمس', audioEn:'sun', audioAr:'شَمْس'},
+  {en:'bear', ar:'دُبٌّ', arSimple:'دُبّ', audioEn:'bear', audioAr:'دُبّ'},
+  {en:'house', ar:'بَيْتٌ', arSimple:'بَيْت', audioEn:'house', audioAr:'بَيْت'},
+  {en:'apple', ar:'تُفَّاحٌ', arSimple:'تُفَّاح', audioEn:'apple', audioAr:'تُفَّاح'},
+  {en:'students', ar:'تَلَامِيذُ', arSimple:'تَلَامِيذ', audioEn:'students', audioAr:'تَلَامِيذ'},
+  {en:'books', ar:'كُتُبٌ', arSimple:'كُتُب', audioEn:'books', audioAr:'كُتُب'},
+  {en:'chair', ar:'كُرْسِيٌّ', arSimple:'كُرْسِيّ', audioEn:'chair', audioAr:'كُرْسِيّ'},
+  {en:'map', ar:'خَرِيطَةٌ', arSimple:'خَرِيطَة', audioEn:'map', audioAr:'خَرِيطَة'},
+  {en:'ox', ar:'ثَوْرٌ', arSimple:'ثَوْر', audioEn:'ox', audioAr:'ثَوْر'},
+  {en:'flower', ar:'زَهْرَةٌ', arSimple:'زَهْرَة', audioEn:'flower', audioAr:'زَهْرَة'},
+  {en:'chick', ar:'صَوْصٌ', arSimple:'صَوْص', audioEn:'chick', audioAr:'صَوْص'},
+  {en:'father', ar:'أَبٌ', arSimple:'أَب', audioEn:'father', audioAr:'أَب'},
+  {en:'corn', ar:'ذُرَةٌ', arSimple:'ذُرَة', audioEn:'corn', audioAr:'ذُرَة'},
+  {en:'room', ar:'غُرْفَةٌ', arSimple:'غُرْفَة', audioEn:'room', audioAr:'غُرْفَة'},
+  {en:'student', ar:'تِلْمِيذٌ', arSimple:'تِلْمِيذ', audioEn:'student', audioAr:'تِلْمِيذ'},
+  {en:'book', ar:'كِتَابٌ', arSimple:'كِتَاب', audioEn:'book', audioAr:'كِتَاب'},
+  {en:'table', ar:'مَكْتَبٌ', arSimple:'مَكْتَب', audioEn:'table', audioAr:'مَكْتَب'},
+  {en:'juice', ar:'عَصِيرٌ', arSimple:'عَصِير', audioEn:'juice', audioAr:'عَصِير'},
+  {en:'horse', ar:'حِصَانٌ', arSimple:'حِصَان', audioEn:'horse', audioAr:'حِصَان'},
+  {en:'head', ar:'رَأْسٌ', arSimple:'رَأْس', audioEn:'head', audioAr:'رَأْس'},
+  {en:'sun', ar:'شَمْسٌ', arSimple:'شَمْس', audioEn:'sun', audioAr:'شَمْس'},
 ];
 const SECTIONS = [
-  {id:'sec1', title:'Section 1 • الأساسيات', sub:'English → Arabic • 10 words • Traditional tashkeel', words:TRADITIONAL_WORDS.slice(0,5)},
-  {id:'sec2', title:'Section 2 • العائلة', sub:'English → Arabic • 5 words', words:TRADITIONAL_WORDS.slice(5,10)},
-  {id:'sec3', title:'Section 3 • الصف', sub:'English → Arabic • 5 words', words:TRADITIONAL_WORDS.slice(10,15)},
-  {id:'sec4', title:'Section 4 • الطبيعة', sub:'English → Arabic • 5 words', words:TRADITIONAL_WORDS.slice(15,20)},
-  {id:'sec5', title:'Section 5 • الشمسية والقمرية', sub:'Solar & Lunar Letters', special:'letters'},
-  {id:'sec6', title:'Section 6 • التعريف', sub:'Indefinite → Definite • ال', words:[{en:'bear', ar:'الدُّبُّ', arSimple:'الدب', trans:'ال + دب'}, {en:'house', ar:'البَيْتُ', arSimple:'البيت', trans:'ال + بيت'}]},
-  {id:'sec7', title:'Section 7 • التنكير', sub:'Definite → Indefinite', words:[{en:'الحِسَابُ', ar:'حِسَابٌ', arSimple:'حساب', trans:'Remove ال'}, {en:'الجُغْرَافِيَا', ar:'جُغْرَافِيَا', arSimple:'جغرافيا', trans:'Remove ال'}]},
-  {id:'sec8', title:'Section 8 • الجمل', sub:'هذا مسجد • ذلك كتاب • Prepositions', words:[{en:'This is a mosque', ar:'هَذَا مَسْجِدٌ', arSimple:'هذا مسجد'}, {en:'Where is the book?', ar:'أَيْنَ الكِتَابُ؟', arSimple:'أين الكتاب؟'}]},
+  {id:'sec1', title:'Section 1 • الأساسيات', sub:'5 words', words:TRADITIONAL_WORDS.slice(0,5)},
+  {id:'sec2', title:'Section 2 • العائلة', sub:'5 words', words:TRADITIONAL_WORDS.slice(5,10)},
+  {id:'sec3', title:'Section 3 • الصف', sub:'5 words', words:TRADITIONAL_WORDS.slice(10,15)},
+  {id:'sec4', title:'Section 4 • الطبيعة', sub:'5 words', words:TRADITIONAL_WORDS.slice(15,20)},
+  {id:'sec5', title:'Section 5 • الشمسية والقمرية', sub:'Solar & Lunar', special:'letters'},
+  {id:'sec6', title:'Section 6 • التعريف', sub:'ال', words:[{en:'bear', ar:'الدُّبُّ', arSimple:'الدُّبّ', audioEn:'bear', audioAr:'الدب'}, {en:'house', ar:'البَيْتُ', arSimple:'البَيْت', audioEn:'house', audioAr:'البيت'}]},
+  {id:'sec7', title:'Section 7 • التنكير', sub:'Remove ال', words:[{en:'الحِسَابُ', ar:'حِسَابٌ', arSimple:'حِسَاب', audioEn:'account', audioAr:'حساب'}, {en:'الجُغْرَافِيَا', ar:'جُغْرَافِيَا', arSimple:'جُغْرَافِيَا', audioEn:'geography', audioAr:'جغرافيا'}]},
+  {id:'sec8', title:'Section 8 • الجمل', sub:'Sentences', words:[{en:'This is a mosque', ar:'هَذَا مَسْجِدٌ', arSimple:'هَذَا مَسْجِد', audioEn:'This is a mosque', audioAr:'هذا مسجد'}, {en:'Where is the book?', ar:'أَيْنَ الكِتَابُ؟', arSimple:'أَيْنَ الكِتَاب', audioEn:'Where is the book', audioAr:'أين الكتاب'}]},
 ];
-let currentMode='practice', expandedId=null, scrollUnfolded=false;
+let currentMode='practice', expandedId=null, scrollUnfolded=false, headerHidden=false;
 const stripHistory={};
 function buildRail(){
   const c=document.getElementById('railContainer'); c.innerHTML='';
@@ -185,7 +204,7 @@ function buildCards(){
   const container=document.getElementById('cardsContainer'); container.innerHTML='';
   SECTIONS.forEach(sec=>{
     const card=document.createElement('div'); card.className='scroll-card'; card.id='card-'+sec.id;
-    card.innerHTML=`<div class="flex items-start justify-between gap-2"><div class="flex-1"><div class="card-banner"><img src="assets/lantern-gem.webp" class="w-5 h-5" alt="" onerror="this.style.display='none'"> ${sec.title}</div><div class="text-[12px] font-bold text-[#5A3C22]">${sec.sub}</div></div><img src="assets/badge-crescent-star.webp" class="w-7 h-7" alt="" onerror="this.textContent='⭐'"></div>`;
+    card.innerHTML=`<div class="flex items-center justify-between"><div class="card-banner"><img src="assets/lantern-gem.webp" class="w-4 h-4" alt="" onerror="this.style.display='none'"> ${sec.title}</div><img src="assets/badge-crescent-star.webp" class="w-6 h-6" alt="" onerror="this.style.display='none'"></div><div class="text-[11px] text-[#8B7355] mt-1">${sec.sub}</div>`;
     card.onclick=()=>openSection(sec.id); container.appendChild(card);
   });
 }
@@ -193,132 +212,75 @@ function renderModalBody(secId){
   const sec=SECTIONS.find(s=>s.id===secId); const body=document.getElementById('modalBody');
   document.getElementById('modalTitle').textContent=sec.title; document.getElementById('modalSub').textContent=sec.sub;
   if(sec.special==='letters'){
-    body.innerHTML=`<div class="grid grid-cols-2 gap-3"><div class="bg-[#FFFEF7] border-2 border-[#E8DCC0] rounded-xl p-3"><div class="text-center font-black text-[#5A3C22]">الشَّمْسِيَّةُ</div><div class="text-center arabic text-[16px] mt-1">ت ث د ذ ر ز س ش ص ض ط ظ ل ن</div><div class="strip-wrap mt-2"><canvas data-ink-key="${secId}-shamsi-${currentMode}" class="ruled-strip" width="320" height="110"></canvas><div class="strip-tools"><button class="strip-btn" onclick="undoStrip('${secId}-shamsi-${currentMode}')">↩️</button><button class="strip-btn clear" onclick="clearStrip('${secId}-shamsi-${currentMode}')">🗑️</button></div></div></div><div class="bg-[#FFFEF7] border-2 border-[#E8DCC0] rounded-xl p-3"><div class="text-center font-black text-[#5A3C22]">القَمَرِيَّةُ</div><div class="text-center arabic text-[16px] mt-1">أ ب ج ح خ ع غ ف ق ك م هـ و ي</div><div class="strip-wrap mt-2"><canvas data-ink-key="${secId}-qamari-${currentMode}" class="ruled-strip" width="320" height="110"></canvas><div class="strip-tools"><button class="strip-btn" onclick="undoStrip('${secId}-qamari-${currentMode}')">↩️</button><button class="strip-btn clear" onclick="clearStrip('${secId}-qamari-${currentMode}')">🗑️</button></div></div></div></div>`;
+    body.innerHTML=`<div class="grid grid-cols-2 gap-3"><div class="border-2 border-[#E8DCC0] rounded-xl p-3 bg-[#FFFEF7]"><div class="text-center font-black">الشَّمْسِيَّةُ</div><div class="text-center arabic-trad">ت ث د ذ ر ز س ش ص ض ط ظ ل ن</div><div class="strip-wrap mt-2"><canvas data-ink-key="${secId}-shamsi-${currentMode}" class="ruled-strip-long" width="300" height="88"></canvas><div class="strip-tools"><button class="strip-btn" onclick="undoStrip('${secId}-shamsi-${currentMode}')">↩️</button><button class="strip-btn clear" onclick="clearStrip('${secId}-shamsi-${currentMode}')">🗑️</button></div></div></div><div class="border-2 border-[#E8DCC0] rounded-xl p-3 bg-[#FFFEF7]"><div class="text-center font-black">القَمَرِيَّةُ</div><div class="text-center arabic-trad">أ ب ج ح خ ع غ ف ق ك م هـ و ي</div><div class="strip-wrap mt-2"><canvas data-ink-key="${secId}-qamari-${currentMode}" class="ruled-strip-long" width="300" height="88"></canvas><div class="strip-tools"><button class="strip-btn" onclick="undoStrip('${secId}-qamari-${currentMode}')">↩️</button><button class="strip-btn clear" onclick="clearStrip('${secId}-qamari-${currentMode}')">🗑️</button></div></div></div></div>`;
   } else {
     body.innerHTML=sec.words.map((w,i)=>{
       const key=`${secId}-${w.en}-${i}-${currentMode}`;
-      return `<div class="flex items-center gap-2 py-2 border-b border-[#E8DCC0]/50 last:border-0">
-        <div class="flex flex-col min-w-[86px]">
-          <span class="english text-[14px]" onclick="speakWord('${w.audioEn||w.en}','en-GB')" title="Tap to hear English">${w.en}</span>
-          <span class="text-[10px] text-[#8B7355]">${currentMode}</span>
-        </div>
-        <div class="strip-wrap flex-1"><canvas data-ink-key="${key}" id="canvas-${key}" class="ruled-strip" width="520" height="58"></canvas><div class="strip-tools"><button class="strip-btn" onclick="undoStrip('${key}')">↩️</button><button class="strip-btn clear" onclick="clearStrip('${key}')">🗑️</button></div></div>
-        <span class="arabic min-w-[64px] text-right" onclick="speakWord('${w.audioAr||w.arSimple}','ar-SA')" title="Tap to hear Arabic">${w.arSimple}</span>
+      return `<div class="strip-row-rtl">
+        <div class="eng-side"><span class="english-clean" onclick="speakWord('${w.audioEn||w.en}','en-GB')">${w.en}</span></div>
+        <div class="canvas-side"><div class="strip-wrap"><canvas data-ink-key="${key}" class="ruled-strip-long" width="560" height="88"></canvas><div class="strip-tools"><button class="strip-btn" onclick="undoStrip('${key}')">↩️</button><button class="strip-btn clear" onclick="clearStrip('${key}')">🗑️</button></div></div></div>
+        <div class="ar-side"><span class="arabic-trad" onclick="speakWord('${w.audioAr||w.arSimple}','ar-SA')">${w.ar}</span></div>
       </div>`;
-    }).join('') + `<div class="text-[11px] text-[#8B7355] mt-3 text-center">💡 Tip: Tap the English or Arabic word itself to hear. No speaker icons needed. Each strip has its own ↩️ Undo and 🗑️ Clear.</div>`;
+    }).join('');
   }
   setTimeout(()=>{
     body.querySelectorAll('canvas').forEach(c=>{
       const dpr=window.devicePixelRatio||1; const rect=c.getBoundingClientRect();
-      if(c.width!==rect.width*dpr){ c.width=rect.width*dpr; c.height=(c.height||58)*dpr/58*58; if(c.height<50) c.height=58*dpr; }
+      c.width=rect.width*dpr; c.height=88*dpr; c.style.height='88px';
       const ctx=c.getContext('2d'); try{ ctx.setTransform(dpr,0,0,dpr,0,0);}catch(e){}
-      if(window.UniversalPen){ UniversalPen.forceCanvas(c); initStripHistory(c); }
+      if(window.UniversalPen){ UniversalPen.forceCanvas(c); if(!stripHistory[c.dataset.inkKey]){ stripHistory[c.dataset.inkKey]=[]; try{ stripHistory[c.dataset.inkKey].push(c.toDataURL()); }catch(e){} } }
     });
-  },120);
+  },140);
 }
-function initStripHistory(canvas){
-  const key=canvas.dataset.inkKey;
-  if(!stripHistory[key]) stripHistory[key]=[];
-  // Save initial blank
-  try{ stripHistory[key].push(canvas.toDataURL('image/png')); }catch(e){}
-}
-function openSection(id){
-  expandedId=id;
-  renderModalBody(id);
-  document.getElementById('sectionModal').classList.add('open');
-  document.querySelectorAll('.rail-lantern').forEach(el=>el.classList.remove('active'));
-  const rail=document.getElementById('rail-'+id); if(rail) rail.classList.add('active');
-}
+function openSection(id){ expandedId=id; renderModalBody(id); document.getElementById('sectionModal').classList.add('open'); document.querySelectorAll('.rail-lantern').forEach(el=>el.classList.remove('active')); const rail=document.getElementById('rail-'+id); if(rail) rail.classList.add('active'); }
 function closeModal(){ document.getElementById('sectionModal').classList.remove('open'); }
 function nextSection(){ const idx=SECTIONS.findIndex(s=>s.id===expandedId); if(idx>=0&&idx<SECTIONS.length-1) openSection(SECTIONS[idx+1].id); }
 function prevSection(){ const idx=SECTIONS.findIndex(s=>s.id===expandedId); if(idx>0) openSection(SECTIONS[idx-1].id); }
-function clearStrip(key){
-  const canvas=document.querySelector(`canvas[data-ink-key="${key}"]`);
-  if(!canvas) return;
-  const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height);
-  if(window.UniversalPen){ UniversalPen.state.activeCanvas=canvas; UniversalPen.state.ctx=ctx; UniversalPen.clearInk(); }
-  // Reset history for this strip
-  stripHistory[key]=[];
-  try{ stripHistory[key].push(canvas.toDataURL('image/png')); }catch(e){}
-}
-function undoStrip(key){
-  const canvas=document.querySelector(`canvas[data-ink-key="${key}"]`);
-  if(!canvas||!stripHistory[key]||stripHistory[key].length<2) return;
-  stripHistory[key].pop(); // remove current
-  const prev=stripHistory[key][stripHistory[key].length-1];
-  const ctx=canvas.getContext('2d'); const img=new Image();
-  img.onload=()=>{ ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0,canvas.width,canvas.height); if(window.UniversalPen) UniversalPen.saveInk(); };
-  img.src=prev;
-}
-// Audio - Traditional Arabic - fix for Tab S9/S11
+function clearStrip(key){ const canvas=document.querySelector(`canvas[data-ink-key="${key}"]`); if(!canvas) return; const ctx=canvas.getContext('2d'); ctx.clearRect(0,0,canvas.width,canvas.height); if(window.UniversalPen){ UniversalPen.state.activeCanvas=canvas; UniversalPen.state.ctx=ctx; UniversalPen.clearInk(); } stripHistory[key]=[]; try{ stripHistory[key].push(canvas.toDataURL()); }catch(e){} }
+function undoStrip(key){ const canvas=document.querySelector(`canvas[data-ink-key="${key}"]`); if(!canvas||!stripHistory[key]||stripHistory[key].length<2) return; stripHistory[key].pop(); const prev=stripHistory[key][stripHistory[key].length-1]; const ctx=canvas.getContext('2d'); const img=new Image(); img.onload=()=>{ ctx.clearRect(0,0,canvas.width,canvas.height); ctx.drawImage(img,0,0,canvas.width,canvas.height); }; img.src=prev; }
 let arabicVoice=null;
-function loadVoices(){
-  const voices=speechSynthesis.getVoices();
-  arabicVoice=voices.find(v=>v.lang==='ar-SA')||voices.find(v=>v.lang.startsWith('ar'))||null;
-}
+function loadVoices(){ const voices=speechSynthesis.getVoices(); arabicVoice=voices.find(v=>v.lang==='ar-SA')||voices.find(v=>v.lang.startsWith('ar'))||null; }
 speechSynthesis.onvoiceschanged=loadVoices; loadVoices();
 function speakWord(text, lang){
   try{
     speechSynthesis.cancel();
-    const u=new SpeechSynthesisUtterance(text);
-    u.lang=lang; u.rate=0.85; u.pitch=1.0;
+    const u=new SpeechSynthesisUtterance(text); u.lang=lang; u.rate=0.82; u.pitch=1.0;
     if(lang.startsWith('ar')&&arabicVoice) u.voice=arabicVoice;
-    // If Arabic voice not found on Samsung, try English phonetic fallback
-    if(lang.startsWith('ar')&&!arabicVoice){
-      console.log('Arabic voice not found, using default ar-SA');
-    }
     speechSynthesis.speak(u);
-    // Visual feedback
-    const el=event?.target; if(el){ el.style.background='rgba(201,168,106,0.3)'; setTimeout(()=>el.style.background='',400); }
-  }catch(e){ console.log('Speech error',e); }
+    const el=event?.target; if(el){ el.style.background='rgba(201,168,106,0.22)'; setTimeout(()=>el.style.background='',380); }
+  }catch(e){}
 }
-document.getElementById('foldedIntro').onclick=()=>{
-  if(scrollUnfolded) return;
-  scrollUnfolded=true;
-  document.getElementById('foldedIntro').classList.add('unfolded');
-  setTimeout(()=>{ document.getElementById('mainScroll').classList.add('open'); },300);
+document.getElementById('rolledScrollWrap').onclick=()=>{
+  if(scrollUnfolded) return; scrollUnfolded=true;
+  document.getElementById('rolledScrollWrap').classList.add('unrolled');
+  setTimeout(()=>{ document.getElementById('mainScroll').classList.add('open'); },320);
 };
-document.getElementById('toggleHeaderBtn').onclick=()=>{ document.getElementById('topHeader').classList.toggle('hiddenBar'); };
+document.getElementById('hangingAvatar').onclick=()=>{
+  headerHidden=!headerHidden;
+  document.getElementById('topHeader').classList.toggle('hiddenBar', headerHidden);
+  document.getElementById('hangingAvatar').classList.toggle('hiddenPos', headerHidden);
+};
 document.getElementById('practiceBtn').onclick=()=>{
   currentMode='practice';
-  document.getElementById('practiceBtn').className='px-3 py-1 rounded-full text-[13px] font-bold bg-[#FFD77A] text-[#3B2A14]';
-  document.getElementById('writeBtn').className='px-3 py-1 rounded-full text-[13px] font-bold text-[#C9A86A]';
+  document.getElementById('practiceBtn').className='px-3 py-1 rounded-full text-[12px] font-bold bg-[#FFD77A] text-[#3B2A14]';
+  document.getElementById('writeBtn').className='px-3 py-1 rounded-full text-[12px] font-bold text-[#C9A86A]';
   if(expandedId) renderModalBody(expandedId);
 };
 document.getElementById('writeBtn').onclick=()=>{
   currentMode='write';
-  document.getElementById('writeBtn').className='px-3 py-1 rounded-full text-[13px] font-bold bg-[#FFD77A] text-[#3B2A14]';
-  document.getElementById('practiceBtn').className='px-3 py-1 rounded-full text-[13px] font-bold text-[#C9A86A]';
+  document.getElementById('writeBtn').className='px-3 py-1 rounded-full text-[12px] font-bold bg-[#FFD77A] text-[#3B2A14]';
+  document.getElementById('practiceBtn').className='px-3 py-1 rounded-full text-[12px] font-bold text-[#C9A86A]';
   if(expandedId) renderModalBody(expandedId);
 };
-document.getElementById('dimSlider').oninput=(e)=>{
-  document.getElementById('nightOverlay').style.background=`rgba(11,20,38,${0.6+e.target.value/100})`;
-};
-document.getElementById('fontBtn').onclick=()=>{
-  document.body.classList.toggle('text-[18px]');
-};
+document.getElementById('fontBtn').onclick=()=>{ document.body.classList.toggle('text-[18px]'); };
 document.getElementById('closeModal').onclick=closeModal;
 document.getElementById('sectionModal').onclick=(e)=>{ if(e.target.id==='sectionModal') closeModal(); };
 buildRail(); buildCards();
-// Auto unfold after 1.2s for demo
-setTimeout(()=>{ document.getElementById('foldedIntro').click(); },1200);
-setInterval(()=>{
-  let saved=0; SECTIONS.forEach(s=>{
-    let has=false; for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&k.includes(s.id)){ has=true; break; } }
-    const rail=document.getElementById('rail-'+s.id); if(rail&&has){ rail.classList.add('done'); saved++; }
-  });
-  document.getElementById('progressText').textContent=saved+'/8';
-},2000);
-// Hook pen to save strip history per stroke
 document.addEventListener('pointerup', (e)=>{
-  const canvas=e.target.closest('canvas');
-  if(!canvas) return;
-  const key=canvas.dataset.inkKey;
-  if(!key) return;
+  const canvas=e.target.closest('canvas'); if(!canvas) return;
+  const key=canvas.dataset.inkKey; if(!key) return;
   if(!stripHistory[key]) stripHistory[key]=[];
-  setTimeout(()=>{
-    try{ stripHistory[key].push(canvas.toDataURL('image/png')); if(stripHistory[key].length>20) stripHistory[key].shift(); }catch(err){}
-  },30);
+  setTimeout(()=>{ try{ stripHistory[key].push(canvas.toDataURL()); if(stripHistory[key].length>22) stripHistory[key].shift(); }catch(err){} },30);
 });
 </script>
 </body>
