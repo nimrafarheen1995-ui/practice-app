@@ -11,7 +11,7 @@
   const CFG = {
     colors: ['#0F172A', '#2563EB', '#15803D', '#DC2626', '#7C3AED'],
     stamps: ['⭐', '😡', '❤️', '😊', '😢', '🌸', '♻️', '🌍', '✅', '❌', '💯', '❄️'],
-    stickers: ['💃', '🔥', '⭐', '🌹', '🧐', '🫰', '🌳', '🎊'],
+    stickers: ['💃', '🔥', '⭐', '🌹', '🧐', '🫰', '🌳', '🧹'],
     storageKey: 'LQ_UNIVERSAL_PEN_V16',
     soundKey: 'LQ_PEN_SOUND_V16',
     inkPrefix: 'LQ_INK_V16_',
@@ -822,12 +822,25 @@
       state.ctx.stroke();
     }
 
-    if (state.tool !== 'eraser' && state.penType === 'glitter' && Math.random() > 0.65) {
+    if (state.tool !== 'eraser' && state.penType === 'qalam') {
+      // Qalam precise Arabic: angled nib 45deg, thickness varies by stroke direction (thick horizontal, thin vertical like real bamboo qalam)
+      const prev = state.points[state.points.length-2] || p;
+      const dx = p.x - prev.x;
+      const dy = p.y - prev.y;
+      const angle = Math.atan2(dy, dx);
+      // Arabic qalam angle is ~45deg, thickness = base * |sin(angle - 45deg)|
+      const qalamAngle = Math.PI/4;
+      let thickFactor = Math.abs(Math.sin(angle - qalamAngle));
+      thickFactor = 0.35 + thickFactor*0.85; // 0.35 to 1.2
       state.ctx.save();
-      state.ctx.fillStyle = state.color;
-      state.ctx.globalAlpha = 0.55;
+      state.ctx.globalCompositeOperation='source-over';
+      // Draw angled ellipse for dot - makes sharp edges like real qalam
+      state.ctx.translate(p.x, p.y);
+      state.ctx.rotate(qalamAngle);
+      state.ctx.scale(thickFactor*1.6, 0.55);
       state.ctx.beginPath();
-      state.ctx.arc(p.x + (Math.random() - 0.5) * 12, p.y + (Math.random() - 0.5) * 12, 1.2, 0, Math.PI * 2);
+      state.ctx.arc(0, 0, state.size*0.6, 0, Math.PI*2);
+      state.ctx.fillStyle = state.color;
       state.ctx.fill();
       state.ctx.restore();
     }
@@ -835,6 +848,16 @@
     if (state.tool !== 'eraser' && state.penType === 'rainbow') {
       state.ctx.strokeStyle = `hsl(${state.rainbowHue},100%,50%)`;
       state.rainbowHue = (state.rainbowHue + 5) % 360;
+    }
+    if (state.tool !== 'eraser' && state.penType === 'qalam') {
+      // Dynamic thickness for Arabic calligraphy
+      const prev2 = state.points[state.points.length-2] || p;
+      const dx2 = p.x - prev2.x;
+      const dy2 = p.y - prev2.y;
+      const ang2 = Math.atan2(dy2, dx2);
+      let tf = Math.abs(Math.sin(ang2 - Math.PI/4));
+      tf = 0.35 + tf*0.85;
+      state.ctx.lineWidth = state.size * tf * 2.2;
     }
   }
 
