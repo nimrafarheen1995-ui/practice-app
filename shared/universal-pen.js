@@ -1,5 +1,5 @@
 /**
- * Universal Pen + Line Tool  v1.7
+ * Universal Pen + Line Tool  v1.9 ARABIC QALAM S9 Tab - glitter -> qalam
  * Dual bubbles (Pen + Eraser) + Line moved to Stamps panel
  * Samsung S9 / S11 ready
  * + Automatic ink save / load (survives browser close)
@@ -126,6 +126,7 @@
     const data = localStorage.getItem(key);
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    try{ ctx.setTransform(1,0,0,1,0,0); }catch(e){}
 
     // Reset undo for this canvas/mode
     state.undoStack = [];
@@ -142,6 +143,7 @@
 
     const img = new Image();
     img.onload = () => {
+      try{ ctx.setTransform(1,0,0,1,0,0); }catch(e){}
       ctx.globalCompositeOperation = 'source-over';
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0);
@@ -235,6 +237,7 @@
       if (canvas && canvas.tagName === 'CANVAS') {
         state.activeCanvas = canvas;
         state.ctx = canvas.getContext('2d');
+        try{ state.ctx.setTransform(1,0,0,1,0,0); }catch(e){}
         canvas.style.touchAction = 'none';
         canvas.dataset.pen = 'true';
         loadInkFor(canvas);
@@ -269,6 +272,7 @@
     /** Clear the saved ink for the current key (and the canvas) */
     clearInk: () => {
       if (!state.ctx || !state.activeCanvas) return;
+      try{ state.ctx.setTransform(1,0,0,1,0,0); }catch(e){}
       state.ctx.globalCompositeOperation = 'source-over';
       state.ctx.clearRect(0, 0, state.activeCanvas.width, state.activeCanvas.height);
       state.undoStack = [];
@@ -342,7 +346,7 @@
             <div class="pen-mini on" data-type="normal">✏️</div>
             <div class="pen-mini" data-type="cursive">🖋️</div>
             <div class="pen-mini" data-type="rainbow">🌈</div>
-            <div class="pen-mini" data-type="glitter">✨</div>
+            <div class="pen-mini" data-type="qalam">🪶</div>
           </div>
           <div class="pen-pop-row">
             <span style="font-size:.65rem;font-weight:800">Size</span>
@@ -664,7 +668,7 @@
 
   function isPalm(e) {
     // Slightly softer so stylus + light finger still work on Samsung tabs
-    return e.pointerType === 'touch' && (e.width > 36 || e.height > 36);
+    return e.pointerType === 'touch' && (e.width > 50 || e.height > 50);
   }
 
   function getCurrentLineWidth() {
