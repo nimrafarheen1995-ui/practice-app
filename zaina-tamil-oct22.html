@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+  <script src="shared/safe-storage.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Zaina's Tamil Unit Test: மொழியோடும் விளையாடுவோம்!</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@600;700;800;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+
+  <!-- WEBP ASSET PRELOADS -->
+  <link rel="preload" as="image" href="assets/village-bg.webp" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/palm-scroll-banner.webp" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/mentor-parrot.webp" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/thiruvalluvar.webp">
+
+  <style>
+    :root {
+      --gold-primary: #D97706;
+      --gold-deep: #B45309;
+      --gold-glow: #F59E0B;
+      --text-temple: #3C1904;
+      --tamil-ink: #1E3A8A;
+      --border-ornament: #FBBF24;
+      --border-warm: rgba(217, 119, 6, 0.55);
+      --ruled-guide: #93C5FD;
+      --ruled-base: #EF4444;
+      --font-tamil: 'Mukta Malar', sans-serif;
+      --font-ui: 'Nunito', sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      font-family: var(--font-ui);
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      background: #0C0603;
+      color: var(--text-temple);
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      padding: clamp(4px, 0.8vw, 8px) clamp(8px, 1.2vw, 14px);
+      gap: 5px;
+      position: relative;
+    }
+
+    /* TOP HUD */
+    .top-hud-bar {
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 50;
+      flex-shrink: 0;
+    }
+
+    .hud-group-left, .hud-group-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hud-icon-btn {
+      background: rgba(255, 255, 255, 0.94);
+      border: 2px solid var(--border-ornament);
+      color: var(--text-temple);
+      width: 40px;
+      height: 36px;
+      border-radius: 12px;
+      font-size: 1.15rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+      transition: all 0.15s ease;
+    }
+    .hud-icon-btn:active { transform: scale(0.94); }
+
+    .mode-switch-segmented {
+      display: flex;
+      background: rgba(255, 255, 255, 0.94);
+      border: 2px solid var(--border-ornament);
+      border-radius: 22px;
+      padding: 2px;
+      gap: 3px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    .mode-tab-icon-pill {
+      background: transparent;
+      border: none;
+      color: var(--text-temple);
+      padding: 4px 16px;
+      border-radius: 18px;
+      font-size: 1.15rem;
+      cursor: pointer;
+      transition: all 0.16s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mode-tab-icon-pill.active {
+      background: linear-gradient(180deg, #F59E0B 0%, #D97706 100%);
+      box-shadow: 0 2px 8px rgba(217, 119, 6, 0.4);
+    }
+
+    /* MASTER STAGE */
+    .master-temple-stage {
+      flex: 1;
+      position: relative;
+      border: 4px solid #5A3C22;
+      border-radius: 22px;
+      overflow: hidden;
+      background: #110B07 url('assets/village-bg.webp') no-repeat center center;
+      background-size: cover;
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85);
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 14px;
+      padding: 10px 16px;
+      min-height: 0;
+      z-index: 10;
+      transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .master-temple-stage.collapsed-sidebar {
+      grid-template-columns: 78px 1fr;
+    }
+
+    /* LEFT DECK */
+    .mentor-side-deck {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+      z-index: 15;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .sidebar-collapse-toggle {
+      align-self: flex-end;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1.5px solid var(--gold-primary);
+      border-radius: 8px;
+      padding: 2px 8px;
+      font-size: 0.8rem;
+      font-weight: 900;
+      cursor: pointer;
+      color: var(--text-temple);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
+
+    .thiruvalluvar-terrace-hero {
+      width: 100%;
+      height: clamp(140px, 20vh, 190px);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .thiruvalluvar-hero-img {
+      max-height: 100%;
+      max-width: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.55));
+    }
+
+    .quest-menu-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .quest-menu-item {
+      background: rgba(255, 253, 246, 0.94);
+      backdrop-filter: blur(8px);
+      border: 2px solid var(--border-warm);
+      border-radius: 12px;
+      padding: 6px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+      white-space: nowrap;
+    }
+    .quest-menu-item.active {
+      background: #FEF08A;
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
+      transform: translateX(3px);
+    }
+    .quest-menu-item.solved {
+      background: #DCFCE7;
+      border-color: #22C55E;
+    }
+    .quest-menu-text {
+      font-family: var(--font-tamil);
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--text-temple);
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .master-temple-stage.collapsed-sidebar .quest-menu-text {
+      display: none;
+    }
+
+    /* RIGHT WORKSPACE */
+    .workspace-floating-plaque {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 4px 8px;
+      gap: 8px;
+      position: relative;
+      z-index: 15;
+      overflow: visible !important;
+      min-height: 0;
+      height: 100%;
+    }
+
+    /* PALM SCROLL BANNER */
+    .palm-scroll-banner-box {
+      width: 100%;
+      height: 68px;
+      margin-top: 32px;
+      background: url('assets/palm-scroll-banner.webp') no-repeat center center;
+      background-size: 100% 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 110px 0 70px;
+      filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
+      flex-shrink: 0;
+      position: relative;
+      overflow: visible;
+    }
+    .banner-quest-title {
+      font-family: var(--font-tamil);
+      font-size: clamp(1.1rem, 1.6vw, 1.4rem);
+      font-weight: 900;
+      color: #351804;
+      line-height: 1.2;
+      text-align: center;
+      flex: 1;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
+    }
+
+    /* PARROT */
+    .freely-floating-parrot-btn {
+      width: 110px;
+      height: 190px;
+      position: absolute;
+      right: -10px;
+      top: -40px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.45));
+      flex-shrink: 0;
+      z-index: 25;
+    }
+    .freely-floating-parrot-btn:active { transform: scale(0.92); }
+    .parrot-sprite-img { width: 100%; height: 100%; object-fit: contain; }
+
+    /* PLAYGROUND BODY */
+    .quest-interactive-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 10px;
+      min-height: 0;
+      height: 100%;
+      width: 100%;
+      position: relative;
+      overflow-y: auto;
+      padding-bottom: 20px;
+    }
+
+    /* EXERCISE CARDS & LISTS */
+    .unit-test-scrollbox {
+      width: 100%;
+      max-width: 920px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 4px 6px;
+    }
+    .test-exercise-card {
+      background: rgba(255, 255, 255, 0.95);
+      border: 2.5px solid var(--border-ornament);
+      border-radius: 18px;
+      padding: 12px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+    }
+    .test-stem-tamil {
+      font-family: var(--font-tamil);
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text-temple);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .mcq-options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .mcq-opt-pill {
+      background: #FFFDF9;
+      border: 2px solid #CBD5E1;
+      border-radius: 12px;
+      padding: 6px 12px;
+      font-family: var(--font-tamil);
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #334155;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.12s ease;
+    }
+    .mcq-opt-pill.selected {
+      background: #FEF08A;
+      border-color: #D97706;
+      color: #92400E;
+    }
+    .mcq-opt-pill.correct-hint {
+      background: #DCFCE7;
+      border-color: #16A34A;
+      color: #15803D;
+    }
+
+    /* UNIVERSAL PEN INLINE WRITING PADS */
+    .inline-blank-container {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      background: #FFFFFF;
+      border: 2.5px solid var(--gold-primary);
+      border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+      margin: 2px 0;
+    }
+    .inline-canvas-wrapper {
+      position: relative;
+      height: 72px;
+      background: #FFFFFF;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+    .dual-lines-texture {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      background-color: #FFFFFF;
+      background-image: repeating-linear-gradient(
+        #FFFFFF 0px,
+        #FFFFFF 21px,
+        var(--ruled-guide) 22px,
+        #FFFFFF 23px,
+        #FFFFFF 46px,
+        var(--ruled-guide) 47px,
+        #FFFFFF 48px,
+        #FFFFFF 72px
+      );
+      opacity: 0.9;
+    }
+    .dual-lines-texture::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 16px;
+      width: 2px;
+      height: 100%;
+      background: var(--ruled-base);
+      opacity: 0.8;
+    }
+    .universal-ink-canvas {
+      position: absolute;
+      inset: 0;
+      cursor: crosshair;
+      touch-action: none;
+      z-index: 3;
+      display: block;
+    }
+    .inline-clear-btn {
+      background: #F8FAFC;
+      border: none;
+      border-left: 2px solid #CBD5E1;
+      padding: 0 12px;
+      height: 72px;
+      cursor: pointer;
+      font-size: 1.15rem;
+      color: #64748B;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 4;
+    }
+
+    /* FOOTER DOCK */
+    .workspace-footer-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 2px dashed rgba(245, 158, 11, 0.6);
+      padding-top: 5px;
+      flex-shrink: 0;
+    }
+    .status-text-pill {
+      font-family: var(--font-tamil);
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--text-temple);
+      background: rgba(255, 253, 246, 0.94);
+      padding: 5px 12px;
+      border-radius: 14px;
+      border: 1.5px solid var(--border-ornament);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    .btn-verify-seal {
+      background: linear-gradient(180deg, #16A34A 0%, #15803D 100%);
+      border: 2.5px solid #86EFAC;
+      color: #FFFFFF;
+      font-size: 1.4rem;
+      width: 48px;
+      height: 40px;
+      border-radius: 14px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.45);
+      transition: all 0.15s ease;
+    }
+    .btn-verify-seal:active { transform: scale(0.94); }
+
+    /* PROGRESSION MODAL */
+    #progressDialogStage {
+      position: fixed;
+      inset: 0;
+      z-index: 90000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(12, 6, 3, 0.65);
+      backdrop-filter: blur(5px);
+    }
+    .progress-dialog-card {
+      background: #FFFDF9;
+      border: 3.5px solid var(--gold-primary);
+      border-radius: 24px;
+      padding: 24px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      width: 90%;
+      max-width: 440px;
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.5);
+      position: relative;
+    }
+    .dialog-close-x {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      background: transparent;
+      border: none;
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: #78350F;
+      font-weight: 900;
+    }
+
+    /* FINALE STAGE */
+    #celebrationFinaleStage {
+      position: fixed;
+      inset: 0;
+      z-index: 100000;
+      display: none;
+      overflow: hidden;
+      background: radial-gradient(circle at center, rgba(30, 15, 6, 0.45) 0%, rgba(14, 7, 2, 0.92) 100%);
+      backdrop-filter: blur(6px);
+    }
+    #finaleCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+      pointer-events: none;
+    }
+    .soaring-parrot-rocket {
+      position: absolute;
+      width: 140px;
+      height: 140px;
+      z-index: 20;
+      pointer-events: none;
+      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.6));
+    }
+    .soaring-parrot-rocket img { width: 100%; height: 100%; object-fit: contain; }
+
+    .victory-award-scroll {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.3);
+      width: 90%;
+      max-width: 520px;
+      background: #FFFDF9;
+      border: 4px solid var(--gold-primary);
+      border-radius: 26px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85);
+      z-index: 25;
+      opacity: 0;
+      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
+    }
+    .victory-award-scroll.impact {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+    .victory-award-title {
+      font-family: var(--font-tamil);
+      font-size: 2rem;
+      font-weight: 900;
+      color: #92400E;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP HUD -->
+  <header class="top-hud-bar">
+    <div class="hud-group-left">
+      <button type="button" class="hud-icon-btn" onclick="goToHub()" title="முகப்பு">🪷</button>
+    </div>
+
+    <div class="mode-switch-segmented">
+      <button type="button" class="mode-tab-icon-pill active" id="tabPractice" onclick="setAppMode('practice')" title="பயிற்சி (Practice Mode)">📖</button>
+      <button type="button" class="mode-tab-icon-pill" id="tabWrite" onclick="setAppMode('write')" title="தேர்வு / எழுதுதல் (Write Mode)">✍️</button>
+    </div>
+
+    <div class="hud-group-right">
+      <button type="button" class="hud-icon-btn" onclick="confirmResetCurrentView()" title="தொடக்கம்">🔄</button>
+    </div>
+  </header>
+
+  <!-- MASTER STAGE -->
+  <main class="master-temple-stage" id="masterStageContainer">
+
+    <!-- LEFT DECK -->
+    <aside class="mentor-side-deck">
+      <button type="button" class="sidebar-collapse-toggle" onclick="toggleSidebarCollapse()" title="சுருக்கு / விரி">◀</button>
+      <div class="thiruvalluvar-terrace-hero" onclick="toggleSidebarCollapse()">
+        <img src="assets/thiruvalluvar.webp" class="thiruvalluvar-hero-img" decoding="async" alt="திருவள்ளுவர்" onerror="handleImageFallback(this)" />
+      </div>
+
+      <div class="quest-menu-container" id="questTabsContainer"></div>
+    </aside>
+
+    <!-- RIGHT WORKSPACE -->
+    <section class="workspace-floating-plaque">
+
+      <!-- PALM SCROLL BANNER -->
+      <div class="palm-scroll-banner-box">
+        <div class="banner-quest-title" id="bannerHeaderTamil">தமிழர்களின் வீர விளையாட்டுக்கள்</div>
+        <button type="button" class="freely-floating-parrot-btn" onclick="speakCurrentTarget()" title="ஒலி">
+          <img src="assets/mentor-parrot.webp" class="parrot-sprite-img" decoding="async" alt="கிளி" onerror="handleImageFallback(this)" />
+        </button>
+      </div>
+
+      <div class="quest-interactive-body" id="stageContentBody"></div>
+
+      <div class="workspace-footer-bar">
+        <span class="status-text-pill" id="statusNoticeText">
+          சரியான விடைகளை எழுதிப் பயிற்சி செய்க!
+        </span>
+        <button type="button" class="btn-verify-seal" onclick="verifyActiveTask()" title="சரிபார்">
+          ✨
+        </button>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- PROGRESSION MODAL -->
+  <div id="progressDialogStage">
+    <div class="progress-dialog-card">
+      <button type="button" class="dialog-close-x" onclick="dismissProgressDialog()">✕</button>
+      <div style="font-size:2.8rem;">✨</div>
+      <div style="font-family:var(--font-tamil); font-size:1.45rem; font-weight:900; color:#92400E;">
+        அற்புதம் ஜைனா! சரிபார்ப்பு முடிந்தது!
+      </div>
+      <div style="font-family:var(--font-tamil); font-size:1.05rem; font-weight:700; color:#451A03;" id="dialogPromptText">
+        அடுத்த பயிற்சிக்குச் செல்லவா?
+      </div>
+      <div style="display:flex; justify-content:center; gap:10px; margin-top:6px; flex-wrap:wrap;">
+        <button type="button" class="hud-icon-btn" style="width:auto; padding:6px 16px;" onclick="stepQuestProgression(-1)">⬅️</button>
+        <button type="button" class="hud-icon-btn" style="width:auto; padding:6px 16px; background:#FEF3C7;" onclick="dismissProgressDialog()">இங்கேயே இரு</button>
+        <button type="button" class="btn-verify-seal" style="width:auto; padding:6px 20px; font-size:1.05rem;" id="btnDialogNext" onclick="stepQuestProgression(1)">➔</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINALE STAGE -->
+  <div id="celebrationFinaleStage">
+    <canvas id="finaleCanvas"></canvas>
+    <div class="soaring-parrot-rocket" id="soaringParrot">
+      <img src="assets/mentor-parrot.webp" decoding="async" alt="Parrot" onerror="handleImageFallback(this)" />
+    </div>
+    <div class="victory-award-scroll" id="victoryAwardScroll">
+      <div style="font-size:3.5rem;">🪷</div>
+      <div class="victory-award-title">அற்புதம் ஜைனா! வெற்றி!</div>
+      <div style="font-family:var(--font-tamil); font-size:1.15rem; font-weight:700; color:#451A03; line-height:1.6;">
+        தமிழர்களின் வீர விளையாட்டுக்கள் மற்றும் மொழியோடு விளையாடு பயிற்சிகளை வெற்றிகரமாக முடித்துவிட்டீர்கள்!
+      </div>
+      <button type="button" class="btn-verify-seal" style="width:auto; padding:8px 28px; font-size:1.15rem;" onclick="closeCelebrationStage()">
+        ➔
+      </button>
+    </div>
+  </div>
+
+  <!-- UNIVERSAL PEN SCRIPT INTEGRATION -->
+  <script src="shared/universal-pen.js"></script>
+
+  <script>
+    /* PURE TAMIL VOICE SYNTHESIS */
+    function speakText(tamilText) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const voices = window.speechSynthesis.getVoices();
+      const tamilVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ta'));
+      const u = new SpeechSynthesisUtterance(tamilText);
+      if (tamilVoice) u.voice = tamilVoice;
+      u.lang = 'ta-IN';
+      u.rate = 0.85;
+      window.speechSynthesis.speak(u);
+    }
+
+    /* SYNTHESIZED VEENA & BELL AUDIO ENGINE */
+    class TempleAudioFX {
+      constructor() { this.ctx = null; }
+      init() {
+        if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+      }
+      playVeena(freq = 440) {
+        this.init();
+        const t0 = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, t0);
+        osc.frequency.exponentialRampToValueAtTime(freq * 0.98, t0 + 0.28);
+        gain.gain.setValueAtTime(0.35, t0);
+        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.35);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(t0);
+        osc.stop(t0 + 0.38);
+      }
+      playBell() {
+        this.init();
+        const t0 = this.ctx.currentTime;
+        [523.25, 783.99, 1046.50].forEach((f, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(f, t0 + i * 0.05);
+          gain.gain.setValueAtTime(0.25, t0 + i * 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.001, t0 + i * 0.05 + 1.2);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(t0 + i * 0.05);
+          osc.stop(t0 + i * 0.05 + 1.25);
+        });
+      }
+    }
+    const audioFX = new TempleAudioFX();
+
+    function toggleSidebarCollapse(forceState = null) {
+      saveAllCanvases();
+      const stage = document.getElementById('masterStageContainer');
+      const isCurrentlyCollapsed = stage.classList.contains('collapsed-sidebar');
+      const targetState = forceState !== null ? forceState : !isCurrentlyCollapsed;
+      stage.classList.toggle('collapsed-sidebar', targetState);
+      const btn = document.querySelector('.sidebar-collapse-toggle');
+      if (btn) btn.textContent = targetState ? "▶" : "◀";
+    }
+
+    function goToHub() {
+      saveAllCanvases();
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage("close-lesson-to-hub", "*");
+      } else {
+        window.location.href = "index.html";
+      }
+    }
+
+    function handleImageFallback(img) {
+      img.onerror = null;
+      img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><circle cx='60' cy='60' r='55' fill='%23FEF3C7' stroke='%23D97706' stroke-width='4'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='42'>🪷</text></svg>";
+    }
+
+    /* INK & UNIVERSAL PEN INTEGRATION */
+    function inlineDualBlank(id, width = 340, hintText = "") {
+      const showHint = (currentAppMode === 'practice' && hintText);
+      return `
+        <span class="inline-blank-container">
+          <span class="inline-canvas-wrapper" style="width:${width}px;">
+            <span class="dual-lines-texture"></span>
+            ${showHint ? `<span style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--font-tamil); font-size:1.15rem; font-weight:800; color:#15803D; opacity:0.85; pointer-events:none; z-index:2;">${hintText}</span>` : ''}
+            <canvas class="universal-ink-canvas" data-ink-key="${id}" data-logical-width="${width}" style="width:${width}px; height:72px;"></canvas>
+          </span>
+          <button type="button" class="inline-clear-btn" onclick="clearUniversalCanvas('${id}')" title="அழி">🧹</button>
+        </span>
+      `;
+    }
+
+    function setupUniversalCanvases() {
+      document.querySelectorAll(".universal-ink-canvas").forEach(c => {
+        const id = c.getAttribute("data-ink-key");
+        if (!id) return;
+        
+        // Register canvas with shared universal-pen.js script
+        if (window.UniversalPen && window.UniversalPen.forceCanvas) {
+          window.UniversalPen.setInkKey(id);
+          window.UniversalPen.forceCanvas(c);
+        }
+      });
+    }
+
+    function saveAllCanvases() {
+      if (window.UniversalPen && window.UniversalPen.saveInk) {
+        window.UniversalPen.saveInk();
+      }
+    }
+
+    function clearUniversalCanvas(id) {
+      if (window.UniversalPen) {
+        window.UniversalPen.setInkKey(id);
+        if (window.UniversalPen.clearInk) window.UniversalPen.clearInk();
+      }
+    }
+    window.clearUniversalCanvas = clearUniversalCanvas;
+
+    /* EXERCISE MODULES CONFIGURATION */
+    const MODULES = [
+      {
+        id: 'sports_mcq',
+        title: "1. சரியான விடை",
+        titleAr: "சரியான சொல்லைத் தெரிவு செய்து எழுதுக",
+        type: 'mcq',
+        questions: [
+          { q: "1. தமிழரின் வீர விளையாட்டுக்களாகக் கருதப்படாதது", opts: ["சிலம்பம்", "மற்போர்", "மட்டைப்பந்து", "நீர் விளையாட்டு"], ans: 2 },
+          { q: "2. 'மஞ்சு விரட்டு' என்பதைக் குறிக்கும் விளையாட்டு", opts: ["மற்போர்", "ஏறுதழுவுதல்", "சிலம்பாட்டம்", "வில்வித்தை"], ans: 1 },
+          { q: "3. 'மற்போர்' - இச்சொல்லைப் பிரித்து எழுதக் கிடைப்பது", opts: ["மற் + போர்", "மள் + போர்", "மல் + போர்", "மறு + போர்"], ans: 2 },
+          { q: "4. 'தன் + காப்பு' - இச்சொற்களைச் சேர்த்து எழுதக் கிடைப்பது", opts: ["தன்காப்பு", "தண்காப்பு", "தணிகாப்பு", "தற்காப்பு"], ans: 3 }
+        ]
+      },
+      {
+        id: 'vocab_join',
+        title: "2. சேர்த்து எழுதுக",
+        titleAr: "கீழ்க்காணும் சொற்களைச் சேர்த்து எழுதுக",
+        type: 'write_list',
+        items: [
+          { prompt: "1. சிலம்பு + ஆட்டம் =", hint: "சிலம்பாட்டம்" },
+          { prompt: "2. வீரம் + கலை =", hint: "வீரக்கலை" }
+        ]
+      },
+      {
+        id: 'vocab_split',
+        title: "3. பிரித்து எழுதுக",
+        titleAr: "கீழ்க்காணும் சொற்களைப் பிரித்து எழுதுக",
+        type: 'write_list',
+        items: [
+          { prompt: "1. தனக்கென்று =", hint: "தனக்கு + என்று" },
+          { prompt: "2. கொடைத்திறம் =", hint: "கொடை + திறம்" }
+        ]
+      },
+      {
+        id: 'transport_match',
+        title: "4. பொருத்துக",
+        titleAr: "பொருத்தமான போக்குவரத்துகளை இணைக்க",
+        type: 'match_list',
+        items: [
+          { label: "1. தொடர்வண்டி", icon: "🚂" },
+          { label: "2. மிதிவண்டி", icon: "🚲" },
+          { label: "3. தானியங்கி (Auto)", icon: "🛺" },
+          { label: "4. இருசக்கர வண்டி (Motorcycle)", icon: "🏍️" },
+          { label: "5. மகிழுந்து (Car)", icon: "🚗" }
+        ]
+      },
+      {
+        id: 'wheel_puzzle',
+        title: "5. சுழலட்டைப் புதிர்கள்",
+        titleAr: "குறிப்புகளுக்கு ஏற்ப சுழலட்டை சொற்களை எழுதுக",
+        type: 'write_list',
+        items: [
+          { prompt: "1. உடலுறுப்புகளில் ஒன்று", hint: "கால்" },
+          { prompt: "2. உப்புநீர் அதிகம் உள்ள இடம்", hint: "கடல்" },
+          { prompt: "3. அழியாத செல்வம்", hint: "கல்வி" },
+          { prompt: "4. பொருள்கள் வாங்கும் இடம்", hint: "அங்காடி" },
+          { prompt: "5. சமையலுக்குப் பயன்படுவது", hint: "மிளகு" },
+          { prompt: "6. வீடு கட்டப் பயன்படுவது", hint: "செங்கல்" }
+        ]
+      }
+    ];
+
+    let currentAppMode = 'practice';
+    let activeModuleIdx = 0;
+    let solvedModules = [false, false, false, false, false];
+    const mcqSelections = {};
+
+    function renderModuleTabs() {
+      const container = document.getElementById('questTabsContainer');
+      container.innerHTML = '';
+      MODULES.forEach((m, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `quest-menu-item ${idx === activeModuleIdx ? 'active' : ''} ${solvedModules[idx] ? 'solved' : ''}`;
+        btn.onclick = () => {
+          switchModule(idx);
+          toggleSidebarCollapse(true);
+        };
+        btn.innerHTML = `<span style="font-size:1.05rem;">🪷</span><span class="quest-menu-text">${m.title}</span>`;
+        container.appendChild(btn);
+      });
+    }
+
+    function setAppMode(mode) {
+      saveAllCanvases();
+      currentAppMode = mode;
+      document.getElementById('tabPractice').classList.toggle('active', mode === 'practice');
+      document.getElementById('tabWrite').classList.toggle('active', mode === 'write');
+
+      switchModule(activeModuleIdx);
+    }
+
+    function speakCurrentTarget() {
+      speakText(MODULES[activeModuleIdx].titleAr);
+    }
+
+    function switchModule(idx) {
+      saveAllCanvases();
+      activeModuleIdx = idx;
+      renderModuleTabs();
+
+      const m = MODULES[idx];
+      document.getElementById('bannerHeaderTamil').textContent = m.titleAr;
+      renderModulePlayground(idx);
+    }
+
+    /* RENDER ACTIVE MODULE PLAYGROUND */
+    function renderModulePlayground(idx) {
+      const m = MODULES[idx];
+      const container = document.getElementById('stageContentBody');
+      container.innerHTML = '';
+
+      const scrollBox = document.createElement('div');
+      scrollBox.className = 'unit-test-scrollbox';
+
+      if (m.type === 'mcq') {
+        m.questions.forEach((item, qIdx) => {
+          const card = document.createElement('div');
+          card.className = 'test-exercise-card';
+          
+          let optsHTML = `<div class="mcq-options-grid">`;
+          item.opts.forEach((optText, oIdx) => {
+            const isSel = mcqSelections[qIdx] === oIdx;
+            const isCorrectHint = (currentAppMode === 'practice' && oIdx === item.ans);
+            const pillClass = isSel ? 'selected' : (isCorrectHint ? 'correct-hint' : '');
+            optsHTML += `<button type="button" class="mcq-opt-pill ${pillClass}" onclick="selectMcqOption(${qIdx}, ${oIdx})">${'அ ஆ இ ஈ'[oIdx]} ) ${optText}</button>`;
+          });
+          optsHTML += `</div>`;
+
+          card.innerHTML = `
+            <div class="test-stem-tamil">${item.q}</div>
+            ${optsHTML}
+          `;
+          scrollBox.appendChild(card);
+        });
+
+      } else if (m.type === 'write_list') {
+        m.items.forEach((it, i) => {
+          const card = document.createElement('div');
+          card.className = 'test-exercise-card';
+          const canvasId = `mod_${idx}_item_${i}`;
+          card.innerHTML = `
+            <div class="test-stem-tamil">${it.prompt}</div>
+            <div style="margin-top:4px;">${inlineDualBlank(canvasId, 380, it.hint)}</div>
+          `;
+          scrollBox.appendChild(card);
+        });
+
+      } else if (m.type === 'match_list') {
+        m.items.forEach((it, i) => {
+          const card = document.createElement('div');
+          card.className = 'test-exercise-card';
+          const canvasId = `mod_${idx}_match_${i}`;
+          card.innerHTML = `
+            <div class="test-stem-tamil" style="display:flex; align-items:center; justify-content:space-between;">
+              <span>${it.label}</span>
+              <span style="font-size:1.8rem;">${it.icon}</span>
+            </div>
+            <div style="margin-top:4px;">${inlineDualBlank(canvasId, 380, it.label.split('.')[1].trim().split(' ')[0])}</div>
+          `;
+          scrollBox.appendChild(card);
+        });
+      }
+
+      container.appendChild(scrollBox);
+      setTimeout(setupUniversalCanvases, 40);
+    }
+
+    function selectMcqOption(qIdx, oIdx) {
+      audioFX.playVeena(480);
+      mcqSelections[qIdx] = oIdx;
+      renderModulePlayground(activeModuleIdx);
+    }
+    window.selectMcqOption = selectMcqOption;
+
+    /* VERIFICATION AND CELEBRATION */
+    function verifyActiveTask() {
+      audioFX.playBell();
+      solvedModules[activeModuleIdx] = true;
+      renderModuleTabs();
+
+      if (solvedModules.every(v => v === true)) {
+        triggerAsanaCelebration();
+      } else {
+        speakText("அற்புதம் ஜைனா!");
+        document.getElementById('dialogPromptText').textContent = "அடுத்த பயிற்சிக்குச் செல்லவா?";
+        document.getElementById('progressDialogStage').style.display = 'flex';
+      }
+    }
+
+    function dismissProgressDialog() {
+      document.getElementById('progressDialogStage').style.display = 'none';
+    }
+
+    function stepQuestProgression(direction) {
+      dismissProgressDialog();
+      let nextIdx = (activeModuleIdx + direction + MODULES.length) % MODULES.length;
+      switchModule(nextIdx);
+    }
+
+    function confirmResetCurrentView() {
+      if (confirm("அனைத்து விடைகளையும் அழிக்கவா?")) {
+        if (MODULES[activeModuleIdx].type === 'mcq') {
+          for (let k in mcqSelections) delete mcqSelections[k];
+          renderModulePlayground(activeModuleIdx);
+        } else {
+          MODULES[activeModuleIdx].items.forEach((_, i) => {
+            const prefix = MODULES[activeModuleIdx].type === 'match_list' ? 'match' : 'item';
+            clearUniversalCanvas(`mod_${activeModuleIdx}_${prefix}_${i}`);
+          });
+        }
+      }
+    }
+
+    /* ASANA FINALE */
+    const finaleStage = document.getElementById('celebrationFinaleStage');
+    const finaleCanvas = document.getElementById('finaleCanvas');
+    const finaleCtx = finaleCanvas.getContext('2d', { alpha: true });
+    const soaringParrot = document.getElementById('soaringParrot');
+    const victoryAwardScroll = document.getElementById('victoryAwardScroll');
+
+    let finaleRunning = false;
+    let petals = [];
+    let flightStartTime = 0;
+
+    function resizeFinaleCanvas() {
+      finaleCanvas.width = window.innerWidth;
+      finaleCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeFinaleCanvas);
+
+    class DriftingPetal {
+      constructor() {
+        this.x = Math.random() * window.innerWidth;
+        this.y = -30 - Math.random() * 200;
+        this.size = Math.random() * 12 + 8;
+        this.vx = (Math.random() - 0.5) * 1.5;
+        this.vy = Math.random() * 2.2 + 1.8;
+        this.rot = Math.random() * Math.PI * 2;
+        this.rotSpeed = (Math.random() - 0.5) * 0.05;
+        const colors = ['#F472B6', '#FBCFE8', '#F59E0B', '#FEF08A', '#34D399'];
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.rot += this.rotSpeed;
+        if (this.y > window.innerHeight + 40) {
+          this.y = -20;
+          this.x = Math.random() * window.innerWidth;
+        }
+      }
+      draw(c) {
+        c.save();
+        c.translate(this.x, this.y);
+        c.rotate(this.rot);
+        c.fillStyle = this.color;
+        c.beginPath();
+        c.ellipse(0, 0, this.size, this.size * 0.6, 0, 0, Math.PI * 2);
+        c.fill();
+        c.restore();
+      }
+    }
+
+    function triggerAsanaCelebration() {
+      resizeFinaleCanvas();
+      finaleStage.style.display = 'block';
+      finaleRunning = true;
+
+      audioFX.playBell();
+      speakText("அற்புதம் ஜைனா! பயிற்சிகள் அனைத்தும் வெற்றி!");
+
+      petals = [];
+      for (let i = 0; i < 65; i++) petals.push(new DriftingPetal());
+
+      flightStartTime = performance.now();
+      animateSoaringFlight();
+
+      setTimeout(() => {
+        victoryAwardScroll.classList.add('impact');
+      }, 1800);
+
+      requestAnimationFrame(renderPetalLoop);
+    }
+
+    function animateSoaringFlight() {
+      const dur = 2600;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      function step(now) {
+        const elapsed = now - flightStartTime;
+        const p = Math.min(1, elapsed / dur);
+        const ease = 1 - Math.pow(1 - p, 3);
+
+        const curX = -120 + (w + 240) * ease;
+        const curY = h * 0.75 - Math.sin(ease * Math.PI) * (h * 0.55);
+
+        soaringParrot.style.left = `${curX}px`;
+        soaringParrot.style.top = `${curY}px`;
+
+        if (p < 1 && finaleRunning) {
+          requestAnimationFrame(step);
+        }
+      }
+      requestAnimationFrame(step);
+    }
+
+    function renderPetalLoop() {
+      if (!finaleRunning) return;
+      finaleCtx.clearRect(0, 0, finaleCanvas.width, finaleCanvas.height);
+      for (let p of petals) {
+        p.update();
+        p.draw(finaleCtx);
+      }
+      requestAnimationFrame(renderPetalLoop);
+    }
+
+    function closeCelebrationStage() {
+      finaleRunning = false;
+      finaleStage.style.display = 'none';
+      victoryAwardScroll.classList.remove('impact');
+      goToHub();
+    }
+
+    window.onload = () => {
+      renderModuleTabs();
+      switchModule(0);
+    };
+
+    window.addEventListener("beforeunload", saveAllCanvases);
+    window.addEventListener("pagehide", saveAllCanvases);
+  </script>
+</body>
+</html>
