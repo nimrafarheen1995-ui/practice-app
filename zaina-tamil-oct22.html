@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 <html lang="ta">
 <head>
-  <script src="shared/safe-storage.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Zaina's Tamil Unit Test: மொழியோடும் விளையாடுவோம்!</title>
+  <title>Zaina's Tamil Temple Quest: இயல் 4 பயிற்சி ஏடு</title>
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@600;700;800;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@500;600;700;800;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
 
-  <!-- WEBP ASSET PRELOADS -->
-  <link rel="preload" as="image" href="assets/village-bg.webp" fetchpriority="high">
-  <link rel="preload" as="image" href="assets/palm-scroll-banner.webp" fetchpriority="high">
-  <link rel="preload" as="image" href="assets/mentor-parrot.webp" fetchpriority="high">
+  <link rel="preload" as="image" href="assets/village-bg.webp">
+  <link rel="preload" as="image" href="assets/palm-scroll-banner.webp">
+  <link rel="preload" as="image" href="assets/mentor-parrot.webp">
   <link rel="preload" as="image" href="assets/thiruvalluvar.webp">
 
   <style>
@@ -28,6 +27,7 @@
       --ruled-base: #EF4444;
       --font-tamil: 'Mukta Malar', sans-serif;
       --font-ui: 'Nunito', sans-serif;
+      --content-scale: 1;
     }
 
     * {
@@ -59,7 +59,7 @@
 
     /* TOP HUD */
     .top-hud-bar {
-      height: 42px;
+      height: 44px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -78,8 +78,8 @@
       background: rgba(255, 255, 255, 0.94);
       border: 2px solid var(--border-ornament);
       color: var(--text-temple);
-      width: 40px;
-      height: 36px;
+      width: 42px;
+      height: 38px;
       border-radius: 12px;
       font-size: 1.15rem;
       cursor: pointer;
@@ -104,7 +104,7 @@
       background: transparent;
       border: none;
       color: var(--text-temple);
-      padding: 4px 16px;
+      padding: 4px 18px;
       border-radius: 18px;
       font-size: 1.15rem;
       cursor: pointer;
@@ -118,6 +118,25 @@
       box-shadow: 0 2px 8px rgba(217, 119, 6, 0.4);
     }
 
+    .pen-toggle-btn {
+      background: rgba(255, 255, 255, 0.94);
+      border: 2px solid var(--border-ornament);
+      width: 42px;
+      height: 38px;
+      border-radius: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+      transition: all 0.15s ease;
+    }
+    .pen-toggle-btn.pen-active {
+      background: #DCFCE7;
+      border-color: #16A34A;
+    }
+
     /* MASTER STAGE */
     .master-temple-stage {
       flex: 1;
@@ -129,7 +148,7 @@
       background-size: cover;
       box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85);
       display: grid;
-      grid-template-columns: 280px 1fr;
+      grid-template-columns: 290px 1fr;
       gap: 14px;
       padding: 10px 16px;
       min-height: 0;
@@ -141,11 +160,10 @@
       grid-template-columns: 78px 1fr;
     }
 
-    /* LEFT DECK */
+    /* LEFT DECK (3 MAJOR CHAPTERS) */
     .mentor-side-deck {
       background: transparent !important;
       border: none !important;
-      box-shadow: none !important;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -185,53 +203,43 @@
       filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.55));
     }
 
-    .quest-menu-container {
+    .chapter-menu-container {
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 8px;
     }
-    .quest-menu-item {
+    .chapter-menu-item {
       background: rgba(255, 253, 246, 0.94);
       backdrop-filter: blur(8px);
       border: 2px solid var(--border-warm);
-      border-radius: 12px;
-      padding: 6px 10px;
+      border-radius: 14px;
+      padding: 10px 12px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       cursor: pointer;
       transition: all 0.15s ease;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-      white-space: nowrap;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
     }
-    .quest-menu-item.active {
+    .chapter-menu-item.active {
       background: #FEF08A;
       border-color: var(--gold-primary);
-      box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
+      box-shadow: 0 0 14px rgba(245, 158, 11, 0.6);
       transform: translateX(3px);
     }
-    .quest-menu-item.solved {
-      background: #DCFCE7;
-      border-color: #22C55E;
-    }
-    .quest-menu-text {
+    .chapter-menu-text {
       font-family: var(--font-tamil);
-      font-size: 0.92rem;
+      font-size: 1.05rem;
       font-weight: 800;
       color: var(--text-temple);
-      overflow: hidden;
-      text-overflow: ellipsis;
+      line-height: 1.25;
+      text-align: left;
     }
-    .master-temple-stage.collapsed-sidebar .quest-menu-text {
-      display: none;
-    }
+    .master-temple-stage.collapsed-sidebar .chapter-menu-text { display: none; }
 
     /* RIGHT WORKSPACE */
     .workspace-floating-plaque {
-      background: transparent !important;
-      border: none !important;
-      box-shadow: none !important;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -239,16 +247,14 @@
       gap: 8px;
       position: relative;
       z-index: 15;
-      overflow: visible !important;
       min-height: 0;
       height: 100%;
     }
 
-    /* PALM SCROLL BANNER */
     .palm-scroll-banner-box {
       width: 100%;
-      height: 68px;
-      margin-top: 32px;
+      height: 74px;
+      margin-top: 36px;
       background: url('assets/palm-scroll-banner.webp') no-repeat center center;
       background-size: 100% 100%;
       display: flex;
@@ -258,11 +264,10 @@
       filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
       flex-shrink: 0;
       position: relative;
-      overflow: visible;
     }
     .banner-quest-title {
       font-family: var(--font-tamil);
-      font-size: clamp(1.1rem, 1.6vw, 1.4rem);
+      font-size: clamp(1.2rem, 1.8vw, 1.55rem);
       font-weight: 900;
       color: #351804;
       line-height: 1.2;
@@ -271,102 +276,68 @@
       text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
     }
 
-    /* PARROT */
     .freely-floating-parrot-btn {
-      width: 110px;
-      height: 190px;
+      width: 120px;
+      height: 210px;
       position: absolute;
       right: -10px;
-      top: -40px;
+      top: -45px;
       background: transparent;
       border: none;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
       filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.45));
-      flex-shrink: 0;
       z-index: 25;
     }
     .freely-floating-parrot-btn:active { transform: scale(0.92); }
     .parrot-sprite-img { width: 100%; height: 100%; object-fit: contain; }
 
-    /* PLAYGROUND BODY */
     .quest-interactive-body {
       flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
-      gap: 10px;
+      gap: 12px;
       min-height: 0;
       height: 100%;
       width: 100%;
       position: relative;
-      overflow-y: auto;
-      padding-bottom: 20px;
+      overflow: hidden;
     }
 
-    /* EXERCISE CARDS & LISTS */
-    .unit-test-scrollbox {
+    /* GATEWAY CARDS */
+    .subsections-gateway-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
       width: 100%;
-      max-width: 920px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      padding: 4px 6px;
+      max-width: 860px;
+      margin: auto 0;
+      overflow-y: auto;
+      padding: 8px;
     }
-    .test-exercise-card {
-      background: rgba(255, 255, 255, 0.95);
+    .subsection-portal-card {
+      background: rgba(255, 255, 255, 0.94);
       border: 2.5px solid var(--border-ornament);
       border-radius: 18px;
-      padding: 12px 18px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
-    }
-    .test-stem-tamil {
-      font-family: var(--font-tamil);
-      font-size: 1.2rem;
-      font-weight: 800;
-      color: var(--text-temple);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .mcq-options-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      margin-top: 4px;
-    }
-    .mcq-opt-pill {
-      background: #FFFDF9;
-      border: 2px solid #CBD5E1;
-      border-radius: 12px;
-      padding: 6px 12px;
-      font-family: var(--font-tamil);
-      font-size: 1.05rem;
-      font-weight: 800;
-      color: #334155;
+      justify-content: space-between;
+      gap: 10px;
       cursor: pointer;
-      text-align: left;
-      transition: all 0.12s ease;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
-    .mcq-opt-pill.selected {
-      background: #FEF08A;
-      border-color: #D97706;
-      color: #92400E;
-    }
-    .mcq-opt-pill.correct-hint {
-      background: #DCFCE7;
-      border-color: #16A34A;
-      color: #15803D;
+    .subsection-portal-card:hover {
+      transform: translateY(-3px) scale(1.02);
+      border-color: var(--gold-primary);
     }
 
-    /* UNIVERSAL PEN INLINE WRITING PADS */
+    /* DUAL-LINE CANVAS STRIP */
     .inline-blank-container {
       display: inline-flex;
       align-items: center;
@@ -374,17 +345,22 @@
       background: #FFFFFF;
       border: 2.5px solid var(--gold-primary);
       border-radius: 14px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
       overflow: hidden;
-      margin: 2px 0;
+      width: 450px;
+      max-width: 100%;
     }
+    .inline-blank-container.compact-300 { width: 300px; }
+    .inline-blank-container.compact-200 { width: 200px; }
+
     .inline-canvas-wrapper {
       position: relative;
-      height: 72px;
+      height: 74px;
       background: #FFFFFF;
       overflow: hidden;
       display: flex;
       align-items: center;
+      flex: 1;
     }
     .dual-lines-texture {
       position: absolute;
@@ -397,12 +373,12 @@
         #FFFFFF 21px,
         var(--ruled-guide) 22px,
         #FFFFFF 23px,
-        #FFFFFF 46px,
-        var(--ruled-guide) 47px,
-        #FFFFFF 48px,
-        #FFFFFF 72px
+        #FFFFFF 47px,
+        var(--ruled-guide) 48px,
+        #FFFFFF 49px,
+        #FFFFFF 74px
       );
-      opacity: 0.9;
+      opacity: 0.92;
     }
     .dual-lines-texture::after {
       content: '';
@@ -412,33 +388,260 @@
       width: 2px;
       height: 100%;
       background: var(--ruled-base);
-      opacity: 0.8;
+      opacity: 0.85;
     }
-    .universal-ink-canvas {
+    .dual-canvas {
       position: absolute;
       inset: 0;
       cursor: crosshair;
       touch-action: none;
       z-index: 3;
-      display: block;
     }
-    .inline-clear-btn {
+    .strip-action-btn {
       background: #F8FAFC;
       border: none;
       border-left: 2px solid #CBD5E1;
-      padding: 0 12px;
-      height: 72px;
+      padding: 0 10px;
+      height: 74px;
       cursor: pointer;
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       color: #64748B;
       font-weight: 800;
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 4;
+      transition: background 0.15s;
+    }
+    .strip-action-btn:active { background: #E2E8F0; }
+
+    /* FULL-SCREEN SUBSECTION MODAL */
+    #sectionModalStage {
+      position: fixed;
+      inset: 0;
+      z-index: 80000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(12, 6, 3, 0.75);
+      backdrop-filter: blur(8px);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    #sectionModalStage.open { opacity: 1; }
+    .modal-parchment-window {
+      width: min(1120px, 96vw);
+      height: min(740px, 92vh);
+      background: #FFFDF9;
+      border: 3.5px solid var(--gold-primary);
+      border-radius: 24px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.75);
+      transform: scale(0.95);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    #sectionModalStage.open .modal-parchment-window {
+      transform: scale(1);
+    }
+    .modal-header-bar {
+      padding: 10px 18px;
+      border-bottom: 2px solid rgba(201, 168, 106, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #FFFBEB;
+      flex-shrink: 0;
+    }
+    .modal-scrollable-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px 50px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      touch-action: pan-y !important;
+      -webkit-overflow-scrolling: touch;
     }
 
-    /* FOOTER DOCK */
+    /* QUESTION CARD */
+    .q-card-item {
+      background: #FFFFFF;
+      border: 2px solid #E2E8F0;
+      border-radius: 16px;
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+    .q-stem-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .q-stem-tamil {
+      font-family: var(--font-tamil);
+      font-size: calc(1.2rem * var(--content-scale));
+      font-weight: 800;
+      color: var(--text-temple);
+      line-height: 1.4;
+    }
+    .tap-word-speech {
+      display: inline-block;
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+      transition: background 0.15s;
+    }
+    .tap-word-speech:hover, .tap-word-speech:active {
+      background: #FEF08A;
+      color: #92400E;
+    }
+
+    .translit-badge {
+      background: #F1F5F9;
+      color: #475569;
+      font-size: 0.8rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 8px;
+      border: 1px solid #CBD5E1;
+      margin-left: 6px;
+      display: inline-block;
+    }
+
+    /* MCQ OPTIONS */
+    .mcq-options-grid {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .mcq-option-pill {
+      background: #F8FAFC;
+      border: 2px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 6px 14px;
+      font-family: var(--font-tamil);
+      font-size: calc(1.05rem * var(--content-scale));
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s;
+      color: #334155;
+    }
+    .mcq-option-pill:active { transform: scale(0.96); }
+    .mcq-option-pill.selected {
+      background: #FEF3C7;
+      border-color: #D97706;
+      color: #92400E;
+      box-shadow: 0 0 10px rgba(217, 119, 6, 0.35);
+    }
+
+    /* PRACTICE GHOST ANSWER BANNER */
+    .practice-ghost-answer {
+      background: #ECFDF5;
+      border: 1.5px dashed #10B981;
+      color: #065F46;
+      font-family: var(--font-tamil);
+      font-size: calc(1.05rem * var(--content-scale));
+      font-weight: 800;
+      padding: 6px 14px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* 3-COLUMN MATCHING TABLE */
+    .matching-3col-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 10px;
+    }
+    .matching-row {
+      background: #FFFFFF;
+      border: 2px solid #E2E8F0;
+      border-radius: 16px;
+      padding: 10px;
+    }
+    .col-prompt {
+      width: 30%;
+      font-family: var(--font-tamil);
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-temple);
+      padding: 6px 12px;
+    }
+    .col-target {
+      width: 32%;
+      padding: 6px;
+    }
+    .col-canvas {
+      width: 38%;
+      padding: 6px 12px;
+    }
+
+    /* EDHUGAI BLOCK DISPLAY */
+    .edhugai-paired-box {
+      background: #FDF2F8;
+      border: 2px dashed #F472B6;
+      border-radius: 18px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      font-family: var(--font-tamil);
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: #831843;
+      margin-bottom: 8px;
+    }
+
+    /* SINGAMUGAK KINARU TABLE */
+    .kinaru-table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 2px solid #CBD5E1;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+    .kinaru-table th, .kinaru-table td {
+      border: 1.5px solid #CBD5E1;
+      padding: 8px 12px;
+      font-family: var(--font-tamil);
+      text-align: left;
+    }
+    .kinaru-table th { background: #FEF3C7; color: #92400E; font-weight: 900; }
+
+    /* SCOREBOARD REVIEW MODAL */
+    #scoreReviewModal {
+      position: fixed;
+      inset: 0;
+      z-index: 90000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(12, 6, 3, 0.75);
+      backdrop-filter: blur(6px);
+    }
+    .scoreboard-card {
+      background: #FFFDF9;
+      border: 3.5px solid var(--gold-primary);
+      border-radius: 24px;
+      padding: 22px;
+      width: min(680px, 94vw);
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.6);
+    }
+
     .workspace-footer-bar {
       display: flex;
       align-items: center;
@@ -453,10 +656,9 @@
       font-weight: 800;
       color: var(--text-temple);
       background: rgba(255, 253, 246, 0.94);
-      padding: 5px 12px;
+      padding: 5px 14px;
       border-radius: 14px;
       border: 1.5px solid var(--border-ornament);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
     .btn-verify-seal {
       background: linear-gradient(180deg, #16A34A 0%, #15803D 100%);
@@ -475,44 +677,7 @@
     }
     .btn-verify-seal:active { transform: scale(0.94); }
 
-    /* PROGRESSION MODAL */
-    #progressDialogStage {
-      position: fixed;
-      inset: 0;
-      z-index: 90000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      background: rgba(12, 6, 3, 0.65);
-      backdrop-filter: blur(5px);
-    }
-    .progress-dialog-card {
-      background: #FFFDF9;
-      border: 3.5px solid var(--gold-primary);
-      border-radius: 24px;
-      padding: 24px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      width: 90%;
-      max-width: 440px;
-      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.5);
-      position: relative;
-    }
-    .dialog-close-x {
-      position: absolute;
-      top: 10px;
-      right: 14px;
-      background: transparent;
-      border: none;
-      font-size: 1.4rem;
-      cursor: pointer;
-      color: #78350F;
-      font-weight: 900;
-    }
-
-    /* FINALE STAGE */
+    /* CELEBRATION STAGE */
     #celebrationFinaleStage {
       position: fixed;
       inset: 0;
@@ -536,7 +701,6 @@
       height: 140px;
       z-index: 20;
       pointer-events: none;
-      filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.6));
     }
     .soaring-parrot-rocket img { width: 100%; height: 100%; object-fit: contain; }
 
@@ -546,7 +710,7 @@
       left: 50%;
       transform: translate(-50%, -50%) scale(0.3);
       width: 90%;
-      max-width: 520px;
+      max-width: 540px;
       background: #FFFDF9;
       border: 4px solid var(--gold-primary);
       border-radius: 26px;
@@ -565,12 +729,6 @@
       transform: translate(-50%, -50%) scale(1);
       opacity: 1;
     }
-    .victory-award-title {
-      font-family: var(--font-tamil);
-      font-size: 2rem;
-      font-weight: 900;
-      color: #92400E;
-    }
   </style>
 </head>
 <body>
@@ -579,87 +737,106 @@
   <header class="top-hud-bar">
     <div class="hud-group-left">
       <button type="button" class="hud-icon-btn" onclick="goToHub()" title="முகப்பு">🪷</button>
+      <button type="button" class="pen-toggle-btn pen-active" id="btnPenMode" onclick="togglePenMode()" title="எழுதுகோல் மட்டும்">🖊️</button>
+      <button type="button" class="hud-icon-btn" onclick="cycleFontScale()" title="Font Size (Aa)">Aa</button>
     </div>
 
     <div class="mode-switch-segmented">
-      <button type="button" class="mode-tab-icon-pill active" id="tabPractice" onclick="setAppMode('practice')" title="பயிற்சி (Practice Mode)">📖</button>
-      <button type="button" class="mode-tab-icon-pill" id="tabWrite" onclick="setAppMode('write')" title="தேர்வு / எழுதுதல் (Write Mode)">✍️</button>
+      <button type="button" class="mode-tab-icon-pill active" id="tabPractice" onclick="setAppMode('practice')" title="பயிற்சி (Practice)">📖</button>
+      <button type="button" class="mode-tab-icon-pill" id="tabWrite" onclick="setAppMode('write')" title="எழுதுதல் (Write Exam)">✍️</button>
     </div>
 
     <div class="hud-group-right">
-      <button type="button" class="hud-icon-btn" onclick="confirmResetCurrentView()" title="தொடக்கம்">🔄</button>
+      <button type="button" class="hud-icon-btn" onclick="confirmResetCurrentSection()" title="அழித்துத் தொடங்கு">🗑️</button>
     </div>
   </header>
 
   <!-- MASTER STAGE -->
   <main class="master-temple-stage" id="masterStageContainer">
 
-    <!-- LEFT DECK -->
+    <!-- LEFT DECK: 3 MAJOR CHAPTER TABS -->
     <aside class="mentor-side-deck">
       <button type="button" class="sidebar-collapse-toggle" onclick="toggleSidebarCollapse()" title="சுருக்கு / விரி">◀</button>
       <div class="thiruvalluvar-terrace-hero" onclick="toggleSidebarCollapse()">
-        <img src="assets/thiruvalluvar.webp" class="thiruvalluvar-hero-img" decoding="async" alt="திருவள்ளுவர்" onerror="handleImageFallback(this)" />
+        <img src="assets/thiruvalluvar.webp" class="thiruvalluvar-hero-img" alt="திருவள்ளுவர்" onerror="handleImageFallback(this)" />
       </div>
-
-      <div class="quest-menu-container" id="questTabsContainer"></div>
+      <div class="chapter-menu-container" id="chapterTabsContainer"></div>
     </aside>
 
     <!-- RIGHT WORKSPACE -->
     <section class="workspace-floating-plaque">
-
-      <!-- PALM SCROLL BANNER -->
       <div class="palm-scroll-banner-box">
-        <div class="banner-quest-title" id="bannerHeaderTamil">தமிழர்களின் வீர விளையாட்டுக்கள்</div>
-        <button type="button" class="freely-floating-parrot-btn" onclick="speakCurrentTarget()" title="ஒலி">
-          <img src="assets/mentor-parrot.webp" class="parrot-sprite-img" decoding="async" alt="கிளி" onerror="handleImageFallback(this)" />
+        <div class="banner-quest-title" id="bannerHeaderTamil">இயல் 4: தமிழ் பயிற்சி ஏடு</div>
+        <button type="button" class="freely-floating-parrot-btn" onclick="speakCurrentHeader()" title="ஒலி">
+          <img src="assets/mentor-parrot.webp" class="parrot-sprite-img" alt="கிளி" onerror="handleImageFallback(this)" />
         </button>
       </div>
 
       <div class="quest-interactive-body" id="stageContentBody"></div>
 
       <div class="workspace-footer-bar">
-        <span class="status-text-pill" id="statusNoticeText">
-          சரியான விடைகளை எழுதிப் பயிற்சி செய்க!
-        </span>
-        <button type="button" class="btn-verify-seal" onclick="verifyActiveTask()" title="சரிபார்">
-          ✨
-        </button>
+        <span class="status-text-pill" id="statusNoticeText">பிரிவைத் தேர்ந்தெடுத்து பயிற்சியைத் தொடங்குக!</span>
+        <button type="button" class="btn-verify-seal" onclick="handleVerifyClick()" title="சரிபார் / மதிப்பீடு">✨</button>
       </div>
-
     </section>
 
   </main>
 
-  <!-- PROGRESSION MODAL -->
-  <div id="progressDialogStage">
-    <div class="progress-dialog-card">
-      <button type="button" class="dialog-close-x" onclick="dismissProgressDialog()">✕</button>
-      <div style="font-size:2.8rem;">✨</div>
-      <div style="font-family:var(--font-tamil); font-size:1.45rem; font-weight:900; color:#92400E;">
-        அற்புதம் ஜைனா! சரிபார்ப்பு முடிந்தது!
+  <!-- FULLSCREEN SUBSECTION WINDOW MODAL -->
+  <div id="sectionModalStage">
+    <div class="modal-parchment-window">
+      <div class="modal-header-bar">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="font-size:1.4rem;">📜</span>
+          <span style="font-family:var(--font-tamil); font-size:1.3rem; font-weight:900; color:#92400E;" id="modalSubSectionTitle">பிரிவு</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="hud-icon-btn" id="btnShuffleSection" onclick="triggerFisherYatesShuffle()" title="வரிசையை மாற்று (Shuffle)">🔄</button>
+          <button type="button" class="hud-icon-btn" onclick="closeSectionModal()" title="மூடு (Close)" style="background:#FEE2E2; border-color:#EF4444; color:#991B1B;">✕</button>
+        </div>
       </div>
-      <div style="font-family:var(--font-tamil); font-size:1.05rem; font-weight:700; color:#451A03;" id="dialogPromptText">
-        அடுத்த பயிற்சிக்குச் செல்லவா?
-      </div>
-      <div style="display:flex; justify-content:center; gap:10px; margin-top:6px; flex-wrap:wrap;">
-        <button type="button" class="hud-icon-btn" style="width:auto; padding:6px 16px;" onclick="stepQuestProgression(-1)">⬅️</button>
-        <button type="button" class="hud-icon-btn" style="width:auto; padding:6px 16px; background:#FEF3C7;" onclick="dismissProgressDialog()">இங்கேயே இரு</button>
-        <button type="button" class="btn-verify-seal" style="width:auto; padding:6px 20px; font-size:1.05rem;" id="btnDialogNext" onclick="stepQuestProgression(1)">➔</button>
-      </div>
+      <div class="modal-scrollable-body" id="modalQuestionsBody"></div>
     </div>
   </div>
 
-  <!-- FINALE STAGE -->
+  <!-- SCOREBOARD / EVALUATION MODAL -->
+  <div id="scoreReviewModal">
+    <div class="scoreboard-card">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-family:var(--font-tamil); font-size:1.4rem; font-weight:900; color:#92400E;">🎯 தேர்வு மதிப்பீட்டுப் பட்டியல்</span>
+        <button type="button" class="hud-icon-btn" style="width:34px; height:32px;" onclick="closeScoreReview()">✕</button>
+      </div>
+      <div style="display:flex; justify-content:space-around; background:#FEF3C7; padding:12px; border-radius:16px; border:2px solid #F59E0B;">
+        <div style="text-align:center;">
+          <div style="font-size:0.85rem; font-weight:800; color:#92400E;">மதிப்பெண்</div>
+          <div style="font-size:1.8rem; font-weight:900; color:#B45309;" id="scoreSummaryMark">0 / 23</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="font-size:0.85rem; font-weight:800; color:#92400E;">தேர்ச்சி நிலை</div>
+          <div style="font-size:1.4rem; font-weight:900; color:#15803D;" id="scoreGradeStatus">நன்று</div>
+        </div>
+      </div>
+      <div style="flex:1; overflow-y:auto; max-height:42vh; padding-right:6px;" id="scoreReviewList"></div>
+      <button type="button" class="btn-verify-seal" style="width:100%; border-radius:14px; font-size:1.1rem; height:44px;" onclick="finalizeGradingAndCelebrate()">
+        முழு நிறைவு செய்து கொண்டாடு 🪷
+      </button>
+    </div>
+  </div>
+
+  <!-- GRAND CELEBRATION STAGE -->
   <div id="celebrationFinaleStage">
     <canvas id="finaleCanvas"></canvas>
     <div class="soaring-parrot-rocket" id="soaringParrot">
-      <img src="assets/mentor-parrot.webp" decoding="async" alt="Parrot" onerror="handleImageFallback(this)" />
+      <img src="assets/mentor-parrot.webp" alt="Parrot" onerror="handleImageFallback(this)" />
     </div>
     <div class="victory-award-scroll" id="victoryAwardScroll">
       <div style="font-size:3.5rem;">🪷</div>
-      <div class="victory-award-title">அற்புதம் ஜைனா! வெற்றி!</div>
+      <div style="font-family:var(--font-tamil); font-size:2rem; font-weight:900; color:#92400E;">
+        அற்புதம் ஜைனா! வெற்றி!
+      </div>
       <div style="font-family:var(--font-tamil); font-size:1.15rem; font-weight:700; color:#451A03; line-height:1.6;">
-        தமிழர்களின் வீர விளையாட்டுக்கள் மற்றும் மொழியோடு விளையாடு பயிற்சிகளை வெற்றிகரமாக முடித்துவிட்டீர்கள்!
+        இயல் 4 பாடத்தின் அனைத்து வினாக்களையும் முழுமையாக முடித்துவிட்டீர்கள்!<br/>
+        திருக்குறள் • வீரக்கலைகள் • இணைப்புச்சொற்கள் • பூமி நாள்
       </div>
       <button type="button" class="btn-verify-seal" style="width:auto; padding:8px 28px; font-size:1.15rem;" onclick="closeCelebrationStage()">
         ➔
@@ -667,24 +844,37 @@
     </div>
   </div>
 
-  <!-- UNIVERSAL PEN SCRIPT INTEGRATION -->
-  <script src="shared/universal-pen.js"></script>
-
   <script>
-    /* PURE TAMIL VOICE SYNTHESIS */
-    function speakText(tamilText) {
+    /* AUDIO SYNTHESIS & TAMIL TTS - ROBUST WORD SPEECH */
+    let availableVoices = [];
+    function initVoices() {
       if (!('speechSynthesis' in window)) return;
-      window.speechSynthesis.cancel();
-      const voices = window.speechSynthesis.getVoices();
-      const tamilVoice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ta'));
-      const u = new SpeechSynthesisUtterance(tamilText);
-      if (tamilVoice) u.voice = tamilVoice;
-      u.lang = 'ta-IN';
-      u.rate = 0.85;
-      window.speechSynthesis.speak(u);
+      availableVoices = window.speechSynthesis.getVoices();
+    }
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = initVoices;
+      initVoices();
     }
 
-    /* SYNTHESIZED VEENA & BELL AUDIO ENGINE */
+    function speakText(rawText) {
+      if (!('speechSynthesis' in window)) return;
+      const clean = String(rawText || '').replace(/[=:\.\?,!_()"-]/g, ' ').trim();
+      if (!clean) return;
+
+      try {
+        window.speechSynthesis.cancel();
+        if (availableVoices.length === 0) initVoices();
+        
+        const tamilVoice = availableVoices.find(v => v.lang && (v.lang.toLowerCase().startsWith('ta') || v.lang.toLowerCase().includes('tamil')));
+        const u = new SpeechSynthesisUtterance(clean);
+        if (tamilVoice) u.voice = tamilVoice;
+        u.lang = 'ta-IN';
+        u.rate = 0.82;
+        u.pitch = 1.0;
+        window.speechSynthesis.speak(u);
+      } catch (err) {}
+    }
+
     class TempleAudioFX {
       constructor() { this.ctx = null; }
       init() {
@@ -692,51 +882,501 @@
         if (this.ctx.state === 'suspended') this.ctx.resume();
       }
       playVeena(freq = 440) {
-        this.init();
-        const t0 = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(freq, t0);
-        osc.frequency.exponentialRampToValueAtTime(freq * 0.98, t0 + 0.28);
-        gain.gain.setValueAtTime(0.35, t0);
-        gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.35);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(t0);
-        osc.stop(t0 + 0.38);
-      }
-      playBell() {
-        this.init();
-        const t0 = this.ctx.currentTime;
-        [523.25, 783.99, 1046.50].forEach((f, i) => {
+        try {
+          this.init();
+          const t0 = this.ctx.currentTime;
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(f, t0 + i * 0.05);
-          gain.gain.setValueAtTime(0.25, t0 + i * 0.05);
-          gain.gain.exponentialRampToValueAtTime(0.001, t0 + i * 0.05 + 1.2);
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, t0);
+          osc.frequency.exponentialRampToValueAtTime(freq * 0.98, t0 + 0.28);
+          gain.gain.setValueAtTime(0.35, t0);
+          gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.35);
           osc.connect(gain);
           gain.connect(this.ctx.destination);
-          osc.start(t0 + i * 0.05);
-          osc.stop(t0 + i * 0.05 + 1.25);
-        });
+          osc.start(t0);
+          osc.stop(t0 + 0.38);
+        } catch (_) {}
+      }
+      playBell() {
+        try {
+          this.init();
+          const t0 = this.ctx.currentTime;
+          [523.25, 783.99, 1046.50].forEach((f, i) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(f, t0 + i * 0.05);
+            gain.gain.setValueAtTime(0.25, t0 + i * 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, t0 + i * 0.05 + 1.2);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(t0 + i * 0.05);
+            osc.stop(t0 + i * 0.05 + 1.25);
+          });
+        } catch (_) {}
       }
     }
     const audioFX = new TempleAudioFX();
 
+    /* CURRICULUM ARCHITECTURE */
+    const CURRICULUM = [
+      {
+        id: "ch1",
+        title: "இயல் - 4 செய்யுள்: திருக்குறள்",
+        sub: "பண்புடைமை • வினா-விடைகள்",
+        sections: [
+          {
+            id: "ch1_mcq",
+            title: "அ. சரியான விடையைத் தெரிவு செய்து எழுதுக",
+            type: "mcq",
+            questions: [
+              {
+                id: "ch1_q1",
+                stem: "இகழ்ச்சி இச்சொல்லின் பொருள்",
+                translit: "Igalchchi ichchollin porul",
+                options: ["இரத்தல்", "உயர்தல்", "இகழ்தல்", "மகிழ்தல்"],
+                answer: "இகழ்தல்",
+                ansTranslit: "Igazhdhal"
+              },
+              {
+                id: "ch1_q2",
+                stem: "பெருஞ்செல்வம் இச்சொல்லைப் பிரித்து எழுதக் கிடைப்பது",
+                translit: "Perunjchelvam pirithu ezhudha",
+                options: ["பெருஞ் + செல்வம்", "பெரும் + செல்வம்", "பெருமை + செல்வம்", "பெரு + செல்வம்"],
+                answer: "பெரும் + செல்வம்",
+                ansTranslit: "Perum + Selvam"
+              },
+              {
+                id: "ch1_q3",
+                stem: "பண்புடைமை இச்சொல்லைப் பிரித்து எழுதக் கிடைப்பது",
+                translit: "Panpudaimai pirithu ezhudha",
+                options: ["பண் + புடைமை", "பண்பு + புடைமை", "பண்பு + உடைமை", "பண் + உடைமை"],
+                answer: "பண்பு + உடைமை",
+                ansTranslit: "Panbu + Udaimai"
+              },
+              {
+                id: "ch1_q4",
+                stem: "மரம் + போல்வர் இச்சொற்களைச் சேர்த்து எழுதக் கிடைப்பது",
+                translit: "Maram + polvar serthu ezhudha",
+                options: ["மரபோல்வர்", "மரமேல்வர்", "மரம்போல்வர்", "மரப்போல்வர்"],
+                answer: "மரபோல்வர்",
+                ansTranslit: "Marapolvar"
+              },
+              {
+                id: "ch1_q5",
+                stem: "செய்யுளில், நேர்மை என்னும் பொருள் தரும் சொல்",
+                translit: "Seyyulil nermai porul tharum sol",
+                options: ["நயன்", "அறம்", "பகை", "நன்பால்"],
+                answer: "நயன்",
+                ansTranslit: "Nayan"
+              }
+            ]
+          },
+          {
+            id: "ch1_split",
+            title: "ஆ. கீழ்க்காணும் சொற்களைப் பிரித்து எழுதுக",
+            type: "dual_strip_split",
+            questions: [
+              {
+                id: "ch1_s1",
+                stem: "இவ்விரண்டும் = ",
+                translit: "Ivvrandum",
+                part1Ans: "இ",
+                part1Translit: "I",
+                part2Ans: "இரண்டும்",
+                part2Translit: "Irandum"
+              },
+              {
+                id: "ch1_s2",
+                stem: "மக்கட்பண்பு = ",
+                translit: "Makkadpanbu",
+                part1Ans: "மக்கள்",
+                part1Translit: "Makkal",
+                part2Ans: "பண்பு",
+                part2Translit: "Panbu"
+              }
+            ]
+          },
+          {
+            id: "ch1_edhugai",
+            title: "இ. செய்யுளில் இரண்டாம் எழுத்து ஒன்றுபோல் வரும் சொற்கள் (எதுகை)",
+            type: "edhugai_blocks",
+            questions: [
+              {
+                id: "ch1_e1",
+                stem: "எதுகை இணை 1 (நகையுள்ளும் - பகையுள்ளும்)",
+                pairWord1: "நகையுள்ளும்",
+                pairWord2: "பகையுள்ளும்",
+                translit1: "Nagaiyullum",
+                translit2: "Pagaiyullum"
+              },
+              {
+                id: "ch1_e2",
+                stem: "எதுகை இணை 2 (அரம்போலும் - மரம்போல்வர்)",
+                pairWord1: "அரம்போலும்",
+                pairWord2: "மரம்போல்வர்",
+                translit1: "Arampolum",
+                translit2: "Marampolvar"
+              }
+            ]
+          },
+          {
+            id: "ch1_mai_ending",
+            title: "ஈ. ஈற்றில் 'மை' என முடியும் நான்கு சொற்கள்",
+            type: "handwriting_4list",
+            questions: [
+              { id: "ch1_m1", word: "நேர்மை", translit: "Nermai" },
+              { id: "ch1_m2", word: "உண்மை", translit: "Unmai" },
+              { id: "ch1_m3", word: "செம்மை", translit: "Semmai" },
+              { id: "ch1_m4", word: "நன்மை", translit: "Nanmai" }
+            ]
+          }
+        ]
+      },
+      {
+        id: "ch2",
+        title: "உரைநடை: தமிழர்களின் வீரக்கலைகள்",
+        sub: "சிலம்பம் • மற்போர் • ஏறுதழுவுதல்",
+        sections: [
+          {
+            id: "ch2_mcq",
+            title: "அ. சரியான விடையைத் தெரிவு செய்து எழுதுக",
+            type: "mcq",
+            questions: [
+              {
+                id: "ch2_q1",
+                stem: "தமிழரின் வீர விளையாட்டுகளுள் ஒன்று",
+                translit: "Thamizharin veera vilaiyattu",
+                options: ["சிலம்பாட்டம்", "பல்லாங்குழி", "மட்டைப்பந்து", "கூடைப்பந்து"],
+                answer: "சிலம்பாட்டம்",
+                ansTranslit: "Silambaattam"
+              },
+              {
+                id: "ch2_q2",
+                stem: "மஞ்சு விரட்டு என்பதைக் குறிக்கும் விளையாட்டு",
+                translit: "Manju virattu kurikkum vilaiyattu",
+                options: ["மற்போர்", "ஏறுதழுவுதல்", "சிலம்பாட்டம்", "வில்வித்தை"],
+                answer: "ஏறுதழுவுதல்",
+                ansTranslit: "Eruthazhuvudhal"
+              },
+              {
+                id: "ch2_q3",
+                stem: "தற்காப்பு இச்சொல்லைப் பிரித்து எழுதக் கிடைப்பது",
+                translit: "Tharkaappu pirithu ezhudha",
+                options: ["தற் + காப்பு", "தனி + காப்பு", "தன் + காப்பு", "தகவல் + காப்பு"],
+                answer: "தன் + காப்பு",
+                ansTranslit: "Than + Kaappu"
+              },
+              {
+                id: "ch2_q4",
+                stem: "மல் + போர் இச்சொற்களைச் சேர்த்து எழுதக் கிடைப்பது",
+                translit: "Mal + por serthu ezhudha",
+                options: ["மற்போர்", "மல்போர்", "மறப்போர்", "மட்டப்போர்"],
+                answer: "மற்போர்",
+                ansTranslit: "Marpor"
+              },
+              {
+                id: "ch2_q5",
+                stem: "ஒலிம்பிக் போட்டியில் சேர்க்கப்பட்டுள்ள கலை",
+                translit: "Olympic pottiyil serkkappatta kalai",
+                options: ["சிலம்பாட்டம்", "வில்வித்தை", "ஏறுதழுவுதல்", "வழுக்கு மரம் ஏறுதல்"],
+                answer: "வில்வித்தை",
+                ansTranslit: "Vilviththai"
+              }
+            ]
+          },
+          {
+            id: "ch2_join",
+            title: "ஆ. கீழ்க்காணும் சொற்களைச் சேர்த்து எழுதுக",
+            type: "single_strip_join",
+            questions: [
+              {
+                id: "ch2_j1",
+                stem: "சிலம்பு + ஆட்டம் = ",
+                translit: "Silambu + Aattam",
+                ans: "சிலம்பாட்டம்",
+                ansTranslit: "Silambaattam"
+              },
+              {
+                id: "ch2_j2",
+                stem: "வீரம் + கலை = ",
+                translit: "Veeram + Kalai",
+                ans: "வீரக்கலை",
+                ansTranslit: "Veerakkalai"
+              }
+            ]
+          },
+          {
+            id: "ch2_split",
+            title: "இ. கீழ்க்காணும் சொற்களைப் பிரித்து எழுதுக",
+            type: "dual_strip_split",
+            questions: [
+              {
+                id: "ch2_s1",
+                stem: "தனக்கென்று = ",
+                translit: "Thanakendru",
+                part1Ans: "தனக்கு",
+                part1Translit: "Thanakku",
+                part2Ans: "என்று",
+                part2Translit: "Endru"
+              },
+              {
+                id: "ch2_s2",
+                stem: "கொடைத்திறம் = ",
+                translit: "Kodaithiram",
+                part1Ans: "கொடை",
+                part1Translit: "Kodai",
+                part2Ans: "திறம்",
+                part2Translit: "Thiram"
+              }
+            ]
+          },
+          {
+            id: "ch2_match_3col",
+            title: "ஈ. பொருத்துக (3 நெடுவரிசை அமைப்பு)",
+            type: "matching_3col",
+            questions: [
+              { id: "ch2_m1", left: "காளை", leftTrans: "Kaalai", right: "திமில்", rightTrans: "Thimil" },
+              { id: "ch2_m2", left: "சிலம்பக்கலை", leftTrans: "Silambakkalai", right: "வளரி", rightTrans: "Valari" },
+              { id: "ch2_m3", left: "சிறுவாரைக்கம்பு", leftTrans: "Siruvaaraikkambu", right: "மூங்கில்", rightTrans: "Moongil" },
+              { id: "ch2_m4", left: "வேளாண்மை", leftTrans: "Veelaanmai", right: "உழவு", rightTrans: "Uzhavu" }
+            ],
+            optionsPool: ["திமில்", "வளரி", "மூங்கில்", "உழவு"]
+          }
+        ]
+      },
+      {
+        id: "ch3",
+        title: "இலக்கணம் & பாடப்பகுதி",
+        sub: "இணைப்புச்சொற்கள் • சிங்கமுகக் கிணறு • பூமி நாள்",
+        sections: [
+          {
+            id: "ch3_page1",
+            title: "பக்கம் 1: இணைப்புச்சொற்கள் (பகுதி 1)",
+            type: "mcq",
+            questions: [
+              {
+                id: "ch3_p1_q1",
+                stem: "அண்ணன் வீட்டிற்குத் தாமதமாக வந்திருந்தார். _________ அவர் மிதிவண்டி பழுதடைந்து இருந்தது.",
+                translit: "Annan veettirku thaamadhamaga vandhirundhaar...",
+                options: ["ஆயினும்", "எனவே", "எனினும்", "ஏனெனில்"],
+                answer: "ஏனெனில்",
+                ansTranslit: "Enenil"
+              },
+              {
+                id: "ch3_p1_q2",
+                stem: "நான் நன்றாகப் படித்துப் பயிற்சி எடுத்தேன். _________ முதல் மதிப்பெண் பெற்றிருக்க முடியாது.",
+                translit: "Naan nandraaga padithu...",
+                options: ["ஆகையால்", "அப்படியில்லாவிட்டால்", "அப்படியானால்", "ஏனெனில்"],
+                answer: "அப்படியில்லாவிட்டால்",
+                ansTranslit: "Appadiyillaavittaal"
+              },
+              {
+                id: "ch3_p1_q3",
+                stem: "அம்மா இனிமையாகப் பாடுவார். _________ போட்டியில் பங்கு பெற முடியுமா?",
+                translit: "Amma inimaiyaaga paaduvaar...",
+                options: ["ஏனெனில்", "எனினும்", "ஆயினும்", "அப்படியானால்"],
+                answer: "அப்படியானால்",
+                ansTranslit: "Appadiyaanaal"
+              }
+            ]
+          },
+          {
+            id: "ch3_page2",
+            title: "பக்கம் 2: சிங்கமுகக் கிணறு & இன எழுத்துகள்",
+            type: "passage_table",
+            passage: 'பாட்டி, "அதுதான் சிங்கமுகக் கிணறு" என்றார். "என்னது? சிங்கத்தின் வயிற்றுக்குள் கிணறா?" என்று தன் இரு கைகளையும் கன்னத்தில் வைத்தபடி சோழர்களின் கலைத்திறனை எண்ணி வியந்தாள். தமிழர்களின் கலைத் திறமையைக் கண்டு உள்ளம் மகிழ்ந்த அவள், அக்கலைக்கூடத்தைவிட்டு வெளியே வர மனமில்லாமல் பாட்டியுடன் வீடு வந்து சேர்ந்தாள்.',
+            translit: "Aadhikaalan Singamuga Kinaru",
+            tableItems: [
+              { cat: "பெயர்ச் சொற்கள்", ans: "பாட்டி, கிணறு, சோழர்கள், தமிழர்கள்", trans: "Paatti, Kinaru, Sozhargal, Thamizhargal" },
+              { cat: "வினைச் சொற்கள்", ans: "என்றார், வியந்தாள், கண்டு, மகிழ்ந்த, சேர்ந்தாள்", trans: "Endraar, Viyandhaal, Kandu, Magizhindha, Serndhaal" },
+              { cat: "ஒருமைச் சொற்கள்", ans: "பாட்டி, கிணறு, அவள், வீடு", trans: "Paatti, Kinaru, Aval, Veedu" },
+              { cat: "பன்மைச் சொற்கள்", ans: "சோழர்கள், தமிழர்களின், கைகளை", trans: "Sozhargal, Thamizhargalin, Kaigalai" }
+            ],
+            inaItems: [
+              { word: "என்றார்", pair: "ன் - ற", trans: "Endraar (n - ra)" },
+              { word: "சிங்கத்தின்", pair: "ங் - க / ந் - த", trans: "Singaththin (ng - ka / n - tha)" },
+              { word: "கண்டு", pair: "ண் - ட", trans: "Kandu (nn - da)" },
+              { word: "மகிழ்ந்த", pair: "ந் - த", trans: "Magizhindha (n - tha)" }
+            ]
+          },
+          {
+            id: "ch3_page3",
+            title: "பக்கம் 3: தொடரில் அமைத்து எழுதுக",
+            type: "handwriting_sentences",
+            questions: [
+              {
+                id: "ch3_p3_s1",
+                word: "ஏனெனில்",
+                trans: "Enenil",
+                sentence: "நான் நேற்று பள்ளிக்கு வரவில்லை; ஏனெனில் எனக்குக் காய்ச்சலாக இருந்தது.",
+                sentTrans: "Naan netru pallikku varavillai; enenil enakkuk kaaichchalaaga irundhadhu."
+              },
+              {
+                id: "ch3_p3_s2",
+                word: "ஆயினும்",
+                trans: "Aayinum",
+                sentence: "மழை கடுமையாகப் பெய்தது; ஆயினும் மாணவர்கள் பள்ளிக்கு வந்தனர்.",
+                sentTrans: "Mazhai kadumaiyaaga peidhadhu; aayinum maanavargal pallikku vandhanar."
+              },
+              {
+                id: "ch3_p3_s3",
+                word: "அப்படியானால்",
+                trans: "Appadiyaanaal",
+                sentence: "நீ வெற்றி பெற்றுவிட்டாயா? அப்படியானால் அனைவருக்கும் இனிப்பு வழங்கு.",
+                sentTrans: "Nee vetri petruvittaayaa? Appadiyaanaal anaivarukkum inippu vazhangu."
+              }
+            ]
+          },
+          {
+            id: "ch3_page4",
+            title: "பக்கம் 4: பூமி நாள் பத்தி வினாக்கள் & முழக்கம்",
+            type: "passage_comprehension",
+            passage: "சூரியக் குடும்பத்தில் உள்ள 8 கோள்களுள் பூமியில் மட்டுமே உயிரினங்கள் வாழ்கின்றன. இத்தகு சிறப்புமிகு பூமியின் பாதுகாப்பை வலியுறுத்தி 1970ஆம் ஆண்டு ஏப்ரல் 22ஆம் தேதி முதன்முதலில் பூமி நாள் கொண்டாடப்பட்டது. அன்றுமுதல் உலகளவில் ஒவ்வொரு ஆண்டும் பூமி நாள் கொண்டாடப்படுகிறது.",
+            questions: [
+              {
+                id: "ch3_p4_q1",
+                stem: "சூரியக் குடும்பத்தில் உள்ள கோள்களின் எண்ணிக்கை",
+                options: ["5", "7", "9", "8"],
+                answer: "8",
+                ansTranslit: "Ettu (8)"
+              },
+              {
+                id: "ch3_p4_q2",
+                stem: "'பூமி நாள்' முதன் முதலில் கொண்டாடப்பட்ட ஆண்டு",
+                options: ["1980", "1990", "1970", "1870"],
+                answer: "1970",
+                ansTranslit: "1970 (Aayirathu tholaayirathu ezhabadhu)"
+              },
+              {
+                id: "ch3_p4_q3",
+                stem: "பூமி நாள் கொண்டாடப்படுவது",
+                options: ["ஏப்ரல் 22", "மார்ச் 22", "அக்டோபர் 22", "பிப்ரவரி 22"],
+                answer: "ஏப்ரல் 22",
+                ansTranslit: "April 22"
+              },
+              {
+                id: "ch3_p4_q4",
+                stem: "பூமி நாள் கொண்டாடப்படுவதன் நோக்கம்",
+                options: ["டெங்குவைத் தடுக்க", "தீ விபத்துகளைத் தவிர்க்க", "பூமியின் பாதுகாப்பு குறித்து விழிப்புணர்வை ஏற்படுத்த", "சாலை விபத்துகளைத் தவிர்க்க"],
+                answer: "பூமியின் பாதுகாப்பு குறித்து விழிப்புணர்வை ஏற்படுத்த",
+                ansTranslit: "Bhoomiyin paadhukaappu kurithu vizhippunarvai erpaduththa"
+              }
+            ],
+            slogan: {
+              id: "ch3_p4_slogan",
+              stem: "பூமியைப் பாதுகாப்பது தொடர்பாக ஒரு முழக்கத் தொடர் எழுதுக:",
+              sample: "பூமியைக் காப்போம்! எதிர்கால தலைமுறைக்கு வாழ்வளிப்போம்!",
+              trans: "Bhoomiyai kaappom! Edhirkala thalaimuraikku vaazhvalippom!"
+            }
+          },
+          {
+            id: "ch3_page5",
+            title: "பக்கம் 5: பேச்சுத்தமிழ் நீக்கம் & இணைப்புச்சொற்கள் 2",
+            type: "correction_and_mcq",
+            corrections: [
+              {
+                id: "ch3_p5_c1",
+                colloquial: "நான் ஊருக்கு பஸ்ல போனேன்.",
+                standard: "நான் ஊருக்குப் பேருந்தில் சென்றேன்.",
+                trans: "Naan oorukkup perundhil sendren."
+              },
+              {
+                id: "ch3_p5_c2",
+                colloquial: "நான் டெய்லி ஸ்கூலுக்கு சைக்கிள்ல வரேன்.",
+                standard: "நான் தினமும் பள்ளிக்கு மிதிவண்டியில் வருகிறேன்.",
+                trans: "Naan dhinamum pallikku midhivandiyil varugiren."
+              },
+              {
+                id: "ch3_p5_c3",
+                colloquial: "என் பேக்ல புக்கு, நோட்டுக்கு, பெண் வச்சிருக்கேன்.",
+                standard: "என் பையில் புத்தகம், நோட்டுப் புத்தகம், பேனா வைத்திருக்கிறேன்.",
+                trans: "En paiyil puththagam, nottup puththagam, paenaa vaiththirukkiren."
+              }
+            ],
+            mcqQuestions: [
+              {
+                id: "ch3_p5_q1",
+                stem: "மைதானத்தில் மழைநீர் தேங்கி நிற்கிறது. _________ இன்று நம்மால் விளையாட முடியாதா?",
+                options: ["ஆயினும்", "எனவே", "அப்படியானால்", "ஏனெனில்"],
+                answer: "அப்படியானால்",
+                ansTranslit: "Appadiyaanaal"
+              },
+              {
+                id: "ch3_p5_q2",
+                stem: "பேச்சுப் போட்டியும் ஓவியப் போட்டியும் ஒரே நேரத்தில் நடந்தன. _________ நான் இரண்டிலும் கலந்து கொண்டிருப்பேன் / பங்கேற்றிருப்பேன்.",
+                options: ["ஏனெனில்", "அப்படியானால்", "அப்படியில்லாவிட்டால்", "எனவே"],
+                answer: "அப்படியில்லாவிட்டால்",
+                ansTranslit: "Appadiyillaavittaal"
+              },
+              {
+                id: "ch3_p5_q3",
+                stem: "கருமேகங்கள் வானில் திரண்டன. _________ மழை பெய்யவில்லை.",
+                options: ["எனவே", "ஆகையால்", "ஏனெனில்", "ஆயினும்"],
+                answer: "ஆயினும்",
+                ansTranslit: "Aayinum"
+              }
+            ]
+          }
+        ]
+      }
+    ];
+
+    /* APP STATE */
+    let currentAppMode = "practice";
+    let activeChapterIdx = 0;
+    let activeSectionObj = null;
+    let penOnlyMode = true;
+    let fontScaleIdx = 1;
+    const fontScales = [0.88, 1, 1.15, 1.3];
+
+    // Caches
+    const inkUndoStacks = {};
+    const hasDrawnMap = {};
+    const userSelections = {};
+    const shuffledSectionMap = {};
+
+    function cleanStemText(raw) {
+      return String(raw || '').replace(/^[0-9]+[\.\)]\s*/, '').trim();
+    }
+
+    function buildWordSpans(text) {
+      return String(text || '').split(/\s+/).map(w => {
+        const cleanWord = w.replace(/[=:\.\?,!_()"-]/g, '');
+        return `<span class="tap-word-speech" onclick="event.stopPropagation(); speakText('${cleanWord.replace(/'/g, "\\'")}')">${w}</span>`;
+      }).join(' ');
+    }
+
+    function getInkStorageKey(canvasKey) {
+      return `v2_tamil_oct22::${currentAppMode}::${canvasKey}`;
+    }
+
+    function togglePenMode() {
+      penOnlyMode = !penOnlyMode;
+      const btn = document.getElementById("btnPenMode");
+      btn.className = `pen-toggle-btn ${penOnlyMode ? 'pen-active' : ''}`;
+      btn.textContent = penOnlyMode ? "🖊️" : "👆";
+      btn.title = penOnlyMode ? "எழுதுகோல் மட்டும்" : "தொடுதிரை அனுமதி";
+    }
+
+    function cycleFontScale() {
+      fontScaleIdx = (fontScaleIdx + 1) % fontScales.length;
+      document.documentElement.style.setProperty("--content-scale", fontScales[fontScaleIdx]);
+      audioFX.playVeena(520);
+    }
+
     function toggleSidebarCollapse(forceState = null) {
-      saveAllCanvases();
-      const stage = document.getElementById('masterStageContainer');
-      const isCurrentlyCollapsed = stage.classList.contains('collapsed-sidebar');
-      const targetState = forceState !== null ? forceState : !isCurrentlyCollapsed;
-      stage.classList.toggle('collapsed-sidebar', targetState);
-      const btn = document.querySelector('.sidebar-collapse-toggle');
-      if (btn) btn.textContent = targetState ? "▶" : "◀";
+      saveAllVisibleCanvases();
+      const stage = document.getElementById("masterStageContainer");
+      const target = forceState !== null ? forceState : !stage.classList.contains("collapsed-sidebar");
+      stage.classList.toggle("collapsed-sidebar", target);
+      const btn = document.querySelector(".sidebar-collapse-toggle");
+      if (btn) btn.textContent = target ? "▶" : "◀";
     }
 
     function goToHub() {
-      saveAllCanvases();
+      saveAllVisibleCanvases();
       if (window.parent && window.parent !== window) {
         window.parent.postMessage("close-lesson-to-hub", "*");
       } else {
@@ -749,269 +1389,803 @@
       img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><circle cx='60' cy='60' r='55' fill='%23FEF3C7' stroke='%23D97706' stroke-width='4'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='42'>🪷</text></svg>";
     }
 
-    /* INK & UNIVERSAL PEN INTEGRATION */
-    function inlineDualBlank(id, width = 340, hintText = "") {
-      const showHint = (currentAppMode === 'practice' && hintText);
+    /* FISHER-YATES SHUFFLE ALGORITHM */
+    function fisherYates(array) {
+      const arr = [...array];
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function triggerFisherYatesShuffle() {
+      if (!activeSectionObj || currentAppMode === "practice") return;
+      saveAllVisibleCanvases();
+      audioFX.playBell();
+
+      if (activeSectionObj.questions) {
+        const shuffled = fisherYates(activeSectionObj.questions).map(q => {
+          const c = { ...q };
+          if (c.options) c.options = fisherYates(c.options);
+          return c;
+        });
+        shuffledSectionMap[activeSectionObj.id] = shuffled;
+        renderModalContent(activeSectionObj);
+      }
+    }
+
+    /* DUAL-LINE RULED CANVAS STRIP BUILDER */
+    function makeDualStrip(canvasKey, customClass = "") {
       return `
-        <span class="inline-blank-container">
-          <span class="inline-canvas-wrapper" style="width:${width}px;">
+        <span class="inline-blank-container ${customClass}">
+          <span class="inline-canvas-wrapper">
             <span class="dual-lines-texture"></span>
-            ${showHint ? `<span style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--font-tamil); font-size:1.15rem; font-weight:800; color:#15803D; opacity:0.85; pointer-events:none; z-index:2;">${hintText}</span>` : ''}
-            <canvas class="universal-ink-canvas" data-ink-key="${id}" data-logical-width="${width}" style="width:${width}px; height:72px;"></canvas>
+            <canvas class="dual-canvas" data-canvas-id="${canvasKey}"></canvas>
           </span>
-          <button type="button" class="inline-clear-btn" onclick="clearUniversalCanvas('${id}')" title="அழி">🧹</button>
+          <button type="button" class="strip-action-btn" onclick="undoCanvas('${canvasKey}')" title="மீட்டெடு (Undo)">↩️</button>
+          <button type="button" class="strip-action-btn" onclick="clearCanvas('${canvasKey}')" title="அழி (Clear)" style="color:#DC2626;">🗑️</button>
         </span>
       `;
     }
 
-    function setupUniversalCanvases() {
-      document.querySelectorAll(".universal-ink-canvas").forEach(c => {
-        const id = c.getAttribute("data-ink-key");
-        if (!id) return;
-        
-        // Register canvas with shared universal-pen.js script
-        if (window.UniversalPen && window.UniversalPen.forceCanvas) {
-          window.UniversalPen.setInkKey(id);
-          window.UniversalPen.forceCanvas(c);
+    function setupCanvasesInModal() {
+      const dpr = window.devicePixelRatio || 1;
+      const canvasList = document.querySelectorAll("#modalQuestionsBody .dual-canvas");
+
+      canvasList.forEach(c => {
+        const cKey = c.getAttribute("data-canvas-id");
+        const bRect = c.parentElement.getBoundingClientRect();
+        const logicalW = Math.max(180, Math.round(bRect.width) || 450);
+        const logicalH = 74;
+
+        c.width = Math.round(logicalW * dpr);
+        c.height = Math.round(logicalH * dpr);
+        c.style.width = "100%";
+        c.style.height = "74px";
+
+        const ctx = c.getContext("2d", { willReadFrequently: false });
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, logicalW, logicalH);
+
+        const storageKey = getInkStorageKey(cKey);
+        const cached = localStorage.getItem(storageKey);
+
+        if (cached) {
+          hasDrawnMap[cKey] = true;
+          const img = new Image();
+          img.onload = () => {
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.clearRect(0, 0, logicalW, logicalH);
+            ctx.drawImage(img, 0, 0, logicalW, logicalH);
+          };
+          img.src = cached;
         }
+
+        let isDrawing = false;
+        let lastX = 0, lastY = 0;
+        const baseTipWidth = 2.0;
+
+        c.onpointerdown = (e) => {
+          if (penOnlyMode && e.pointerType !== "pen" && e.pointerType !== "mouse") return;
+          isDrawing = true;
+          hasDrawnMap[cKey] = true;
+          try { c.setPointerCapture(e.pointerId); } catch (_) {}
+          const rect = c.getBoundingClientRect();
+          const scaleX = logicalW / rect.width;
+          const scaleY = logicalH / rect.height;
+          lastX = (e.clientX - rect.left) * scaleX;
+          lastY = (e.clientY - rect.top) * scaleY;
+          e.preventDefault();
+        };
+
+        c.onpointermove = (e) => {
+          if (!isDrawing) return;
+          if (penOnlyMode && e.pointerType !== "pen" && e.pointerType !== "mouse") return;
+
+          const rect = c.getBoundingClientRect();
+          const scaleX = logicalW / rect.width;
+          const scaleY = logicalH / rect.height;
+          const currX = (e.clientX - rect.left) * scaleX;
+          const currY = (e.clientY - rect.top) * scaleY;
+
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+          ctx.beginPath();
+          ctx.moveTo(lastX, lastY);
+          ctx.lineTo(currX, currY);
+          ctx.lineCap = "round";
+          ctx.lineJoin = "round";
+          ctx.strokeStyle = "#1E3A8A";
+
+          const rawPressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
+          ctx.lineWidth = baseTipWidth * (rawPressure * 1.35 + 0.35);
+          ctx.stroke();
+
+          lastX = currX;
+          lastY = currY;
+          e.preventDefault();
+        };
+
+        const stopStroke = (e) => {
+          if (isDrawing) {
+            isDrawing = false;
+            try { c.releasePointerCapture(e.pointerId); } catch (_) {}
+            pushUndoSnapshot(c, cKey);
+            saveCanvasToStorage(c, cKey);
+          }
+        };
+
+        c.onpointerup = stopStroke;
+        c.onpointercancel = stopStroke;
       });
     }
 
-    function saveAllCanvases() {
-      if (window.UniversalPen && window.UniversalPen.saveInk) {
-        window.UniversalPen.saveInk();
-      }
+    function pushUndoSnapshot(c, cKey) {
+      if (!inkUndoStacks[cKey]) inkUndoStacks[cKey] = [];
+      try {
+        const data = c.toDataURL("image/png");
+        inkUndoStacks[cKey].push(data);
+        if (inkUndoStacks[cKey].length > 20) inkUndoStacks[cKey].shift();
+      } catch (_) {}
     }
 
-    function clearUniversalCanvas(id) {
-      if (window.UniversalPen) {
-        window.UniversalPen.setInkKey(id);
-        if (window.UniversalPen.clearInk) window.UniversalPen.clearInk();
-      }
+    function undoCanvas(cKey) {
+      const c = document.querySelector(`.dual-canvas[data-canvas-id="${cKey}"]`);
+      if (!c || !inkUndoStacks[cKey] || inkUndoStacks[cKey].length < 2) return;
+      audioFX.playVeena(380);
+      inkUndoStacks[cKey].pop();
+      const prev = inkUndoStacks[cKey][inkUndoStacks[cKey].length - 1];
+
+      const ctx = c.getContext("2d");
+      const dpr = window.devicePixelRatio || 1;
+      const bRect = c.parentElement.getBoundingClientRect();
+      const logicalW = Math.max(180, Math.round(bRect.width) || 450);
+
+      const img = new Image();
+      img.onload = () => {
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, logicalW, 74);
+        ctx.drawImage(img, 0, 0, logicalW, 74);
+        saveCanvasToStorage(c, cKey);
+      };
+      img.src = prev;
     }
-    window.clearUniversalCanvas = clearUniversalCanvas;
+    window.undoCanvas = undoCanvas;
 
-    /* EXERCISE MODULES CONFIGURATION */
-    const MODULES = [
-      {
-        id: 'sports_mcq',
-        title: "1. சரியான விடை",
-        titleAr: "சரியான சொல்லைத் தெரிவு செய்து எழுதுக",
-        type: 'mcq',
-        questions: [
-          { q: "1. தமிழரின் வீர விளையாட்டுக்களாகக் கருதப்படாதது", opts: ["சிலம்பம்", "மற்போர்", "மட்டைப்பந்து", "நீர் விளையாட்டு"], ans: 2 },
-          { q: "2. 'மஞ்சு விரட்டு' என்பதைக் குறிக்கும் விளையாட்டு", opts: ["மற்போர்", "ஏறுதழுவுதல்", "சிலம்பாட்டம்", "வில்வித்தை"], ans: 1 },
-          { q: "3. 'மற்போர்' - இச்சொல்லைப் பிரித்து எழுதக் கிடைப்பது", opts: ["மற் + போர்", "மள் + போர்", "மல் + போர்", "மறு + போர்"], ans: 2 },
-          { q: "4. 'தன் + காப்பு' - இச்சொற்களைச் சேர்த்து எழுதக் கிடைப்பது", opts: ["தன்காப்பு", "தண்காப்பு", "தணிகாப்பு", "தற்காப்பு"], ans: 3 }
-        ]
-      },
-      {
-        id: 'vocab_join',
-        title: "2. சேர்த்து எழுதுக",
-        titleAr: "கீழ்க்காணும் சொற்களைச் சேர்த்து எழுதுக",
-        type: 'write_list',
-        items: [
-          { prompt: "1. சிலம்பு + ஆட்டம் =", hint: "சிலம்பாட்டம்" },
-          { prompt: "2. வீரம் + கலை =", hint: "வீரக்கலை" }
-        ]
-      },
-      {
-        id: 'vocab_split',
-        title: "3. பிரித்து எழுதுக",
-        titleAr: "கீழ்க்காணும் சொற்களைப் பிரித்து எழுதுக",
-        type: 'write_list',
-        items: [
-          { prompt: "1. தனக்கென்று =", hint: "தனக்கு + என்று" },
-          { prompt: "2. கொடைத்திறம் =", hint: "கொடை + திறம்" }
-        ]
-      },
-      {
-        id: 'transport_match',
-        title: "4. பொருத்துக",
-        titleAr: "பொருத்தமான போக்குவரத்துகளை இணைக்க",
-        type: 'match_list',
-        items: [
-          { label: "1. தொடர்வண்டி", icon: "🚂" },
-          { label: "2. மிதிவண்டி", icon: "🚲" },
-          { label: "3. தானியங்கி (Auto)", icon: "🛺" },
-          { label: "4. இருசக்கர வண்டி (Motorcycle)", icon: "🏍️" },
-          { label: "5. மகிழுந்து (Car)", icon: "🚗" }
-        ]
-      },
-      {
-        id: 'wheel_puzzle',
-        title: "5. சுழலட்டைப் புதிர்கள்",
-        titleAr: "குறிப்புகளுக்கு ஏற்ப சுழலட்டை சொற்களை எழுதுக",
-        type: 'write_list',
-        items: [
-          { prompt: "1. உடலுறுப்புகளில் ஒன்று", hint: "கால்" },
-          { prompt: "2. உப்புநீர் அதிகம் உள்ள இடம்", hint: "கடல்" },
-          { prompt: "3. அழியாத செல்வம்", hint: "கல்வி" },
-          { prompt: "4. பொருள்கள் வாங்கும் இடம்", hint: "அங்காடி" },
-          { prompt: "5. சமையலுக்குப் பயன்படுவது", hint: "மிளகு" },
-          { prompt: "6. வீடு கட்டப் பயன்படுவது", hint: "செங்கல்" }
-        ]
-      }
-    ];
+    function clearCanvas(cKey) {
+      const c = document.querySelector(`.dual-canvas[data-canvas-id="${cKey}"]`);
+      if (!c) return;
+      audioFX.playVeena(320);
+      const ctx = c.getContext("2d");
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, c.width, c.height);
+      const dpr = window.devicePixelRatio || 1;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    let currentAppMode = 'practice';
-    let activeModuleIdx = 0;
-    let solvedModules = [false, false, false, false, false];
-    const mcqSelections = {};
+      const storageKey = getInkStorageKey(cKey);
+      localStorage.removeItem(storageKey);
+      hasDrawnMap[cKey] = false;
+      inkUndoStacks[cKey] = [];
+    }
+    window.clearCanvas = clearCanvas;
 
-    function renderModuleTabs() {
-      const container = document.getElementById('questTabsContainer');
-      container.innerHTML = '';
-      MODULES.forEach((m, idx) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = `quest-menu-item ${idx === activeModuleIdx ? 'active' : ''} ${solvedModules[idx] ? 'solved' : ''}`;
+    function saveCanvasToStorage(c, cKey) {
+      if (!c) return;
+      try {
+        const data = c.toDataURL("image/png");
+        const key = getInkStorageKey(cKey);
+        localStorage.setItem(key, data);
+      } catch (_) {}
+    }
+
+    function saveAllVisibleCanvases() {
+      document.querySelectorAll(".dual-canvas").forEach(c => {
+        const cKey = c.getAttribute("data-canvas-id");
+        if (hasDrawnMap[cKey]) saveCanvasToStorage(c, cKey);
+      });
+    }
+
+    /* RENDER CHAPTERS & GATEWAY */
+    function renderChapterTabs() {
+      const container = document.getElementById("chapterTabsContainer");
+      container.innerHTML = "";
+      CURRICULUM.forEach((ch, idx) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `chapter-menu-item ${idx === activeChapterIdx ? 'active' : ''}`;
         btn.onclick = () => {
-          switchModule(idx);
+          switchChapter(idx);
           toggleSidebarCollapse(true);
         };
-        btn.innerHTML = `<span style="font-size:1.05rem;">🪷</span><span class="quest-menu-text">${m.title}</span>`;
+        btn.innerHTML = `
+          <span style="font-size:1.3rem;">🪷</span>
+          <span class="chapter-menu-text">${ch.title}</span>
+        `;
         container.appendChild(btn);
       });
     }
 
-    function setAppMode(mode) {
-      saveAllCanvases();
-      currentAppMode = mode;
-      document.getElementById('tabPractice').classList.toggle('active', mode === 'practice');
-      document.getElementById('tabWrite').classList.toggle('active', mode === 'write');
+    function switchChapter(idx) {
+      saveAllVisibleCanvases();
+      activeChapterIdx = idx;
+      renderChapterTabs();
 
-      switchModule(activeModuleIdx);
+      const ch = CURRICULUM[idx];
+      document.getElementById("bannerHeaderTamil").textContent = ch.title;
+      document.getElementById("statusNoticeText").textContent = `${ch.sub} • பிரிவைத் தொடுக!`;
+
+      renderChapterGateway(ch);
     }
 
-    function speakCurrentTarget() {
-      speakText(MODULES[activeModuleIdx].titleAr);
+    function renderChapterGateway(ch) {
+      const container = document.getElementById("stageContentBody");
+      container.innerHTML = "";
+
+      const grid = document.createElement("div");
+      grid.className = "subsections-gateway-grid";
+
+      ch.sections.forEach(sec => {
+        const card = document.createElement("div");
+        card.className = "subsection-portal-card";
+        card.onclick = () => openSectionModal(sec);
+        card.innerHTML = `
+          <div>
+            <div style="font-family:var(--font-tamil); font-size:1.25rem; font-weight:900; color:#92400E;">${sec.title}</div>
+            <div style="font-size:0.85rem; color:#64748B; margin-top:4px;">பயிற்சியைத் திறக்க தொடவும்</div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:0.85rem; font-weight:800; color:#D97706;">தொடங்கு ➔</span>
+            <span style="font-size:1.3rem;">📜</span>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+
+      container.appendChild(grid);
     }
 
-    function switchModule(idx) {
-      saveAllCanvases();
-      activeModuleIdx = idx;
-      renderModuleTabs();
+    /* MODAL WINDOW WORKSPACE */
+    function openSectionModal(sec) {
+      saveAllVisibleCanvases();
+      activeSectionObj = sec;
+      document.getElementById("modalSubSectionTitle").textContent = sec.title;
 
-      const m = MODULES[idx];
-      document.getElementById('bannerHeaderTamil').textContent = m.titleAr;
-      renderModulePlayground(idx);
+      document.getElementById("btnShuffleSection").style.display = (currentAppMode === "practice") ? "none" : "inline-flex";
+
+      renderModalContent(sec);
+
+      const modalStage = document.getElementById("sectionModalStage");
+      modalStage.style.display = "flex";
+      setTimeout(() => {
+        modalStage.classList.add("open");
+        setupCanvasesInModal();
+      }, 50);
     }
 
-    /* RENDER ACTIVE MODULE PLAYGROUND */
-    function renderModulePlayground(idx) {
-      const m = MODULES[idx];
-      const container = document.getElementById('stageContentBody');
-      container.innerHTML = '';
+    function closeSectionModal() {
+      saveAllVisibleCanvases();
+      const modalStage = document.getElementById("sectionModalStage");
+      modalStage.classList.remove("open");
+      setTimeout(() => {
+        modalStage.style.display = "none";
+        activeSectionObj = null;
+      }, 260);
+    }
 
-      const scrollBox = document.createElement('div');
-      scrollBox.className = 'unit-test-scrollbox';
+    function renderModalContent(sec) {
+      const body = document.getElementById("modalQuestionsBody");
+      body.innerHTML = "";
+      const isPractice = (currentAppMode === "practice");
 
-      if (m.type === 'mcq') {
-        m.questions.forEach((item, qIdx) => {
-          const card = document.createElement('div');
-          card.className = 'test-exercise-card';
-          
-          let optsHTML = `<div class="mcq-options-grid">`;
-          item.opts.forEach((optText, oIdx) => {
-            const isSel = mcqSelections[qIdx] === oIdx;
-            const isCorrectHint = (currentAppMode === 'practice' && oIdx === item.ans);
-            const pillClass = isSel ? 'selected' : (isCorrectHint ? 'correct-hint' : '');
-            optsHTML += `<button type="button" class="mcq-opt-pill ${pillClass}" onclick="selectMcqOption(${qIdx}, ${oIdx})">${'அ ஆ இ ஈ'[oIdx]} ) ${optText}</button>`;
-          });
-          optsHTML += `</div>`;
+      // 1. STANDARD MCQ
+      if (sec.type === "mcq") {
+        const qList = (!isPractice && shuffledSectionMap[sec.id]) ? shuffledSectionMap[sec.id] : sec.questions;
+        qList.forEach((q, idx) => {
+          const card = document.createElement("div");
+          card.className = "q-card-item";
 
-          card.innerHTML = `
-            <div class="test-stem-tamil">${item.q}</div>
-            ${optsHTML}
-          `;
-          scrollBox.appendChild(card);
-        });
+          const cleanText = cleanStemText(q.stem);
+          const wordsHtml = buildWordSpans(cleanText);
 
-      } else if (m.type === 'write_list') {
-        m.items.forEach((it, i) => {
-          const card = document.createElement('div');
-          card.className = 'test-exercise-card';
-          const canvasId = `mod_${idx}_item_${i}`;
-          card.innerHTML = `
-            <div class="test-stem-tamil">${it.prompt}</div>
-            <div style="margin-top:4px;">${inlineDualBlank(canvasId, 380, it.hint)}</div>
-          `;
-          scrollBox.appendChild(card);
-        });
+          let translitBadge = (isPractice && q.translit) ? `<span class="translit-badge">${q.translit}</span>` : "";
+          let ghostAnswer = (isPractice && q.answer) ? `
+            <div class="practice-ghost-answer">
+              <span>💡 விடை: ${q.answer}</span>
+              ${q.ansTranslit ? `<span class="translit-badge">${q.ansTranslit}</span>` : ''}
+            </div>` : "";
 
-      } else if (m.type === 'match_list') {
-        m.items.forEach((it, i) => {
-          const card = document.createElement('div');
-          card.className = 'test-exercise-card';
-          const canvasId = `mod_${idx}_match_${i}`;
-          card.innerHTML = `
-            <div class="test-stem-tamil" style="display:flex; align-items:center; justify-content:space-between;">
-              <span>${it.label}</span>
-              <span style="font-size:1.8rem;">${it.icon}</span>
+          const selectedVal = userSelections[q.id] || "";
+          const optionsHtml = `
+            <div class="mcq-options-grid">
+              ${q.options.map(opt => `
+                <button type="button" 
+                        class="mcq-option-pill ${selectedVal === opt ? 'selected' : ''}" 
+                        onclick="selectOption('${q.id}', '${opt.replace(/'/g, "\\'")}', this)">
+                  ${opt}
+                </button>
+              `).join('')}
             </div>
-            <div style="margin-top:4px;">${inlineDualBlank(canvasId, 380, it.label.split('.')[1].trim().split(' ')[0])}</div>
           `;
-          scrollBox.appendChild(card);
+
+          card.innerHTML = `
+            <div class="q-stem-row">
+              <div class="q-stem-tamil">
+                <span style="color:#D97706; margin-right:4px;">${idx + 1}.</span>
+                ${wordsHtml} ${translitBadge}
+              </div>
+            </div>
+            ${ghostAnswer}
+            ${optionsHtml}
+            <div style="margin-top:6px;">
+              ${makeDualStrip(q.id)}
+            </div>
+          `;
+          body.appendChild(card);
+        });
+
+      // 2. DUAL STRIP SPLIT (SCREENSHOT 1 & 2)
+      } else if (sec.type === "dual_strip_split") {
+        sec.questions.forEach((q, idx) => {
+          const card = document.createElement("div");
+          card.className = "q-card-item";
+
+          const cleanText = cleanStemText(q.stem);
+          let ghostAnswer = isPractice ? `
+            <div class="practice-ghost-answer">
+              <span>💡 விடை: ${q.part1Ans} + ${q.part2Ans}</span>
+              <span class="translit-badge">${q.part1Translit} + ${q.part2Translit}</span>
+            </div>` : "";
+
+          card.innerHTML = `
+            <div class="q-stem-tamil">
+              <span style="color:#D97706; margin-right:4px;">${idx + 1}.</span>
+              ${buildWordSpans(cleanText)}
+              ${isPractice ? `<span class="translit-badge">${q.translit}</span>` : ''}
+            </div>
+            ${ghostAnswer}
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:6px;">
+              ${makeDualStrip(q.id + "_p1", "compact-200")}
+              <span style="font-size:1.8rem; font-weight:900; color:#D97706;">+</span>
+              ${makeDualStrip(q.id + "_p2", "compact-200")}
+            </div>
+          `;
+          body.appendChild(card);
+        });
+
+      // 3. EDHUGAI BLOCKS (SCREENSHOT 1)
+      } else if (sec.type === "edhugai_blocks") {
+        sec.questions.forEach((q, idx) => {
+          const card = document.createElement("div");
+          card.className = "q-card-item";
+
+          const cleanText = cleanStemText(q.stem);
+          let displayPair = isPractice ? `
+            <div class="edhugai-paired-box">
+              <span>${q.pairWord1} <span class="translit-badge">${q.translit1}</span></span>
+              <span>—</span>
+              <span>${q.pairWord2} <span class="translit-badge">${q.translit2}</span></span>
+            </div>` : "";
+
+          card.innerHTML = `
+            <div class="q-stem-tamil">
+              <span style="color:#D97706; margin-right:4px;">${idx + 1}.</span>
+              ${buildWordSpans(cleanText)}
+            </div>
+            ${displayPair}
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:6px;">
+              ${makeDualStrip(q.id + "_pair1", "compact-200")}
+              <span style="font-size:1.4rem; font-weight:900; color:#D97706; align-self:center;">—</span>
+              ${makeDualStrip(q.id + "_pair2", "compact-200")}
+            </div>
+          `;
+          body.appendChild(card);
+        });
+
+      // 4. 'மை' ENDING WORDS (SCREENSHOT 1)
+      } else if (sec.type === "handwriting_4list") {
+        const card = document.createElement("div");
+        card.className = "q-card-item";
+        card.innerHTML = `<div class="q-stem-tamil">அன்புடைமை, பண்புடைமை என்பன போல் ஈற்றில் 'மை' என முடியும் நான்கு சொற்கள்:</div>`;
+
+        sec.questions.forEach((q, idx) => {
+          let ghostAnswer = isPractice ? `
+            <div class="practice-ghost-answer" style="margin:4px 0;">
+              <span>💡 விடை: ${q.word}</span>
+              <span class="translit-badge">${q.translit}</span>
+            </div>` : "";
+
+          card.innerHTML += `
+            <div style="margin-top:8px;">
+              <div style="font-family:var(--font-tamil); font-weight:800; font-size:1.1rem; color:#92400E;">${idx + 1}. சொல்:</div>
+              ${ghostAnswer}
+              ${makeDualStrip(q.id)}
+            </div>
+          `;
+        });
+        body.appendChild(card);
+
+      // 5. SINGLE STRIP JOIN (SCREENSHOT 2)
+      } else if (sec.type === "single_strip_join") {
+        sec.questions.forEach((q, idx) => {
+          const card = document.createElement("div");
+          card.className = "q-card-item";
+
+          const cleanText = cleanStemText(q.stem);
+          let ghostAnswer = isPractice ? `
+            <div class="practice-ghost-answer">
+              <span>💡 விடை: ${q.ans}</span>
+              <span class="translit-badge">${q.ansTranslit}</span>
+            </div>` : "";
+
+          card.innerHTML = `
+            <div class="q-stem-tamil">
+              <span style="color:#D97706; margin-right:4px;">${idx + 1}.</span>
+              ${buildWordSpans(cleanText)}
+              ${isPractice ? `<span class="translit-badge">${q.translit}</span>` : ''}
+            </div>
+            ${ghostAnswer}
+            <div style="margin-top:6px;">
+              ${makeDualStrip(q.id)}
+            </div>
+          `;
+          body.appendChild(card);
+        });
+
+      // 6. 3-COLUMN MATCHING WITH 300PX CANVAS STRIP (SCREENSHOT 2)
+      } else if (sec.type === "matching_3col") {
+        const card = document.createElement("div");
+        card.className = "q-card-item";
+        card.innerHTML = `<div class="q-stem-tamil">பொருத்துக: சரியான இணையைத் தேர்ந்தெடுத்து 300px பகுதியில் எழுதுக</div>`;
+
+        const table = document.createElement("table");
+        table.className = "matching-3col-table";
+
+        sec.questions.forEach((q, idx) => {
+          const selectedTarget = userSelections[q.id] || "";
+          const optionsHtml = sec.optionsPool.map(opt => `
+            <button type="button" 
+                    class="mcq-option-pill ${selectedTarget === opt ? 'selected' : ''}" 
+                    style="margin:2px;"
+                    onclick="selectOption('${q.id}', '${opt}', this)">
+              ${opt}
+            </button>
+          `).join('');
+
+          let ghostAns = isPractice ? `<div class="practice-ghost-answer" style="margin-top:4px;">💡 ${q.right} <span class="translit-badge">${q.rightTrans}</span></div>` : '';
+
+          const tr = document.createElement("tr");
+          tr.className = "matching-row";
+          tr.innerHTML = `
+            <td class="col-prompt">
+              <span style="color:#D97706; margin-right:4px;">${idx + 1}.</span>
+              ${buildWordSpans(cleanStemText(q.left))}
+              ${isPractice ? `<div class="translit-badge">${q.leftTrans}</div>` : ''}
+            </td>
+            <td class="col-target">
+              ${optionsHtml}
+              ${ghostAns}
+            </td>
+            <td class="col-canvas">
+              ${makeDualStrip(q.id, "compact-300")}
+            </td>
+          `;
+          table.appendChild(tr);
+        });
+
+        card.appendChild(table);
+        body.appendChild(card);
+
+      // 7. PASSAGE TABLE (PAGE 2)
+      } else if (sec.type === "passage_table") {
+        const card = document.createElement("div");
+        card.className = "q-card-item";
+        card.innerHTML = `
+          <div style="background:#FFFBEB; border:2px solid #F59E0B; border-radius:14px; padding:12px; font-family:var(--font-tamil); font-size:1.15rem; line-height:1.6; color:#451A03;">
+            ${buildWordSpans(sec.passage)}
+          </div>
+          ${isPractice ? `<div class="translit-badge" style="margin-top:4px;">${sec.translit}</div>` : ''}
+        `;
+
+        const tbl = document.createElement("table");
+        tbl.className = "kinaru-table";
+        tbl.innerHTML = `<tr><th>சொல் வகை</th><th>விடைகள் (வார்த்தைகள்)</th><th>எழுதும் இடம்</th></tr>`;
+
+        sec.tableItems.forEach((item, i) => {
+          tbl.innerHTML += `
+            <tr>
+              <td style="font-weight:800; width:22%;">${item.cat}</td>
+              <td style="width:38%;">
+                ${isPractice ? `<div style="font-weight:700; color:#15803D;">${item.ans}</div><span class="translit-badge">${item.trans}</span>` : 'சுயமாக வகைப்படுத்துக'}
+              </td>
+              <td style="width:40%;">
+                ${makeDualStrip("ch3_p2_tbl_" + i, "compact-300")}
+              </td>
+            </tr>
+          `;
+        });
+        card.appendChild(tbl);
+
+        const inaBox = document.createElement("div");
+        inaBox.style.marginTop = "14px";
+        inaBox.innerHTML = `<div class="q-stem-tamil">வண்ணமிடப்பட்ட சொற்களில் இன எழுத்துகள்:</div>`;
+
+        sec.inaItems.forEach((ina, i) => {
+          inaBox.innerHTML += `
+            <div style="margin:8px 0; background:#F8FAFC; border:1.5px solid #CBD5E1; border-radius:12px; padding:8px 14px; display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-family:var(--font-tamil); font-size:1.15rem; font-weight:800;">${ina.word}</span>
+              ${isPractice ? `<span style="font-family:var(--font-tamil); font-weight:900; color:#B45309;">${ina.pair} <span class="translit-badge">${ina.trans}</span></span>` : ''}
+              ${makeDualStrip("ch3_p2_ina_" + i, "compact-200")}
+            </div>
+          `;
+        });
+        card.appendChild(inaBox);
+        body.appendChild(card);
+
+      // 8. SENTENCE CREATION (PAGE 3)
+      } else if (sec.type === "handwriting_sentences") {
+        sec.questions.forEach((q, idx) => {
+          const card = document.createElement("div");
+          card.className = "q-card-item";
+
+          let ghostAnswer = isPractice ? `
+            <div class="practice-ghost-answer">
+              <span>💡 மாதிரித் தொடர்: ${q.sentence}</span>
+              <span class="translit-badge">${q.sentTrans}</span>
+            </div>` : "";
+
+          card.innerHTML = `
+            <div class="q-stem-tamil">
+              <span style="color:#D97706; margin-right:4px;">${idx + 1}.</span>
+              <span class="tap-word-speech" onclick="speakText('${q.word}')">${cleanStemText(q.word)}</span>
+              ${isPractice ? `<span class="translit-badge">${q.trans}</span>` : ''}
+            </div>
+            ${ghostAnswer}
+            <div style="margin-top:6px;">
+              ${makeDualStrip(q.id)}
+            </div>
+          `;
+          body.appendChild(card);
+        });
+
+      // 9. PASSAGE COMPREHENSION & SLOGAN (PAGE 4)
+      } else if (sec.type === "passage_comprehension") {
+        const passCard = document.createElement("div");
+        passCard.className = "q-card-item";
+        passCard.innerHTML = `
+          <div style="background:#FFFBEB; border:2px solid #F59E0B; border-radius:14px; padding:12px; font-family:var(--font-tamil); font-size:1.15rem; line-height:1.6; color:#451A03;">
+            ${buildWordSpans(sec.passage)}
+          </div>
+        `;
+        body.appendChild(passCard);
+
+        const qList = (!isPractice && shuffledSectionMap[sec.id]) ? shuffledSectionMap[sec.id] : sec.questions;
+        qList.forEach((q, idx) => {
+          const card = document.createElement("div");
+          card.className = "q-card-item";
+
+          const cleanText = cleanStemText(q.stem);
+          let ghostAns = isPractice ? `
+            <div class="practice-ghost-answer">
+              <span>💡 விடை: ${q.answer}</span>
+              <span class="translit-badge">${q.ansTranslit}</span>
+            </div>` : "";
+
+          const selectedVal = userSelections[q.id] || "";
+          const optionsHtml = `
+            <div class="mcq-options-grid">
+              ${q.options.map(opt => `
+                <button type="button" 
+                        class="mcq-option-pill ${selectedVal === opt ? 'selected' : ''}" 
+                        onclick="selectOption('${q.id}', '${opt.replace(/'/g, "\\'")}', this)">
+                  ${opt}
+                </button>
+              `).join('')}
+            </div>
+          `;
+
+          card.innerHTML = `
+            <div class="q-stem-tamil">
+              <span style="color:#D97706; margin-right:4px;">${idx + 1}.</span>
+              ${buildWordSpans(cleanText)}
+            </div>
+            ${ghostAns}
+            ${optionsHtml}
+            <div style="margin-top:6px;">
+              ${makeDualStrip(q.id)}
+            </div>
+          `;
+          body.appendChild(card);
+        });
+
+        // Slogan Writing Card
+        const slogCard = document.createElement("div");
+        slogCard.className = "q-card-item";
+        slogCard.innerHTML = `
+          <div class="q-stem-tamil">
+            <span style="color:#D97706; margin-right:4px;">5.</span>
+            ${buildWordSpans(cleanStemText(sec.slogan.stem))}
+          </div>
+          ${isPractice ? `<div class="practice-ghost-answer">💡 முழக்கம்: ${sec.slogan.sample} <span class="translit-badge">${sec.slogan.trans}</span></div>` : ''}
+          <div style="margin-top:6px;">
+            ${makeDualStrip(sec.slogan.id)}
+          </div>
+        `;
+        body.appendChild(slogCard);
+
+      // 10. CORRECTION & MCQ 2 (PAGE 5)
+      } else if (sec.type === "correction_and_mcq") {
+        const corrCard = document.createElement("div");
+        corrCard.className = "q-card-item";
+        corrCard.innerHTML = `<div class="q-stem-tamil">பிறமொழிச் சொற்களையும் பேச்சுத்தமிழையும் நீக்கிச் சரியாக எழுதுக:</div>`;
+
+        sec.corrections.forEach((c, idx) => {
+          corrCard.innerHTML += `
+            <div style="margin-top:10px;">
+              <div style="font-family:var(--font-tamil); font-weight:800; font-size:1.15rem; color:#991B1B;">
+                <span style="color:#D97706; margin-right:4px;">${idx + 1}.</span>
+                ${buildWordSpans(cleanStemText(c.colloquial))}
+              </div>
+              ${isPractice ? `<div class="practice-ghost-answer" style="margin:4px 0;">💡 சரியான விடை: ${c.standard} <span class="translit-badge">${c.trans}</span></div>` : ''}
+              ${makeDualStrip(c.id)}
+            </div>
+          `;
+        });
+        body.appendChild(corrCard);
+
+        sec.mcqQuestions.forEach((q, idx) => {
+          const card = document.createElement("div");
+          card.className = "q-card-item";
+
+          const cleanText = cleanStemText(q.stem);
+          let ghostAns = isPractice ? `
+            <div class="practice-ghost-answer">
+              <span>💡 விடை: ${q.answer}</span>
+              <span class="translit-badge">${q.ansTranslit}</span>
+            </div>` : "";
+
+          const selectedVal = userSelections[q.id] || "";
+          const optionsHtml = `
+            <div class="mcq-options-grid">
+              ${q.options.map(opt => `
+                <button type="button" 
+                        class="mcq-option-pill ${selectedVal === opt ? 'selected' : ''}" 
+                        onclick="selectOption('${q.id}', '${opt.replace(/'/g, "\\'")}', this)">
+                  ${opt}
+                </button>
+              `).join('')}
+            </div>
+          `;
+
+          card.innerHTML = `
+            <div class="q-stem-tamil">
+              <span style="color:#D97706; margin-right:4px;">${idx + 1}.</span>
+              ${buildWordSpans(cleanText)}
+            </div>
+            ${ghostAns}
+            ${optionsHtml}
+            <div style="margin-top:6px;">
+              ${makeDualStrip(q.id)}
+            </div>
+          `;
+          body.appendChild(card);
         });
       }
 
-      container.appendChild(scrollBox);
-      setTimeout(setupUniversalCanvases, 40);
+      setTimeout(setupCanvasesInModal, 60);
     }
 
-    function selectMcqOption(qIdx, oIdx) {
+    function selectOption(qId, optText, btnEl) {
+      userSelections[qId] = optText;
       audioFX.playVeena(480);
-      mcqSelections[qIdx] = oIdx;
-      renderModulePlayground(activeModuleIdx);
+      speakText(optText);
+
+      const parent = btnEl.parentElement;
+      parent.querySelectorAll(".mcq-option-pill").forEach(p => p.classList.remove("selected"));
+      btnEl.classList.add("selected");
     }
-    window.selectMcqOption = selectMcqOption;
+    window.selectOption = selectOption;
 
-    /* VERIFICATION AND CELEBRATION */
-    function verifyActiveTask() {
-      audioFX.playBell();
-      solvedModules[activeModuleIdx] = true;
-      renderModuleTabs();
+    function setAppMode(mode) {
+      saveAllVisibleCanvases();
+      currentAppMode = mode;
+      document.getElementById("tabPractice").classList.toggle("active", mode === "practice");
+      document.getElementById("tabWrite").classList.toggle("active", mode === "write");
 
-      if (solvedModules.every(v => v === true)) {
-        triggerAsanaCelebration();
+      if (activeSectionObj) {
+        document.getElementById("btnShuffleSection").style.display = (mode === "practice") ? "none" : "inline-flex";
+        renderModalContent(activeSectionObj);
       } else {
-        speakText("அற்புதம் ஜைனா!");
-        document.getElementById('dialogPromptText').textContent = "அடுத்த பயிற்சிக்குச் செல்லவா?";
-        document.getElementById('progressDialogStage').style.display = 'flex';
+        switchChapter(activeChapterIdx);
       }
     }
 
-    function dismissProgressDialog() {
-      document.getElementById('progressDialogStage').style.display = 'none';
+    function speakCurrentHeader() {
+      const ch = CURRICULUM[activeChapterIdx];
+      speakText(ch.title);
     }
 
-    function stepQuestProgression(direction) {
-      dismissProgressDialog();
-      let nextIdx = (activeModuleIdx + direction + MODULES.length) % MODULES.length;
-      switchModule(nextIdx);
-    }
-
-    function confirmResetCurrentView() {
-      if (confirm("அனைத்து விடைகளையும் அழிக்கவா?")) {
-        if (MODULES[activeModuleIdx].type === 'mcq') {
-          for (let k in mcqSelections) delete mcqSelections[k];
-          renderModulePlayground(activeModuleIdx);
-        } else {
-          MODULES[activeModuleIdx].items.forEach((_, i) => {
-            const prefix = MODULES[activeModuleIdx].type === 'match_list' ? 'match' : 'item';
-            clearUniversalCanvas(`mod_${activeModuleIdx}_${prefix}_${i}`);
-          });
+    function confirmResetCurrentSection() {
+      if (confirm("தற்போதுள்ள விடைகளை அழிக்கவா? மீண்டும் தொடங்க விரும்புகிறீர்களா?")) {
+        if (activeSectionObj) {
+          if (activeSectionObj.questions) {
+            activeSectionObj.questions.forEach(q => {
+              delete userSelections[q.id];
+              clearCanvas(q.id);
+            });
+          }
+          renderModalContent(activeSectionObj);
         }
       }
     }
 
-    /* ASANA FINALE */
-    const finaleStage = document.getElementById('celebrationFinaleStage');
-    const finaleCanvas = document.getElementById('finaleCanvas');
-    const finaleCtx = finaleCanvas.getContext('2d', { alpha: true });
-    const soaringParrot = document.getElementById('soaringParrot');
-    const victoryAwardScroll = document.getElementById('victoryAwardScroll');
+    /* 23-MARKS OBJECTIVE AUTO-GRADING ENGINE */
+    function handleVerifyClick() {
+      saveAllVisibleCanvases();
+
+      if (currentAppMode === "practice") {
+        audioFX.playBell();
+        speakText("பயிற்சி முறை முடிந்தது! தேர்வு முறைக்குச் செல்லவும்.");
+        alert("அற்புதம் ஜைனா! தேர்வு முறைக்குச் சென்று (✍️ Write) சுயமாக எழுதி மதிப்பெண் பெறுக!");
+        return;
+      }
+
+      let score = 0;
+      let totalGradable = 0;
+      const reviewList = document.getElementById("scoreReviewList");
+      reviewList.innerHTML = "";
+
+      CURRICULUM.forEach(ch => {
+        ch.sections.forEach(sec => {
+          const list = (!shuffledSectionMap[sec.id]) ? sec.questions : shuffledSectionMap[sec.id];
+          if (list) {
+            list.forEach(q => {
+              if (q.answer) {
+                totalGradable++;
+                const userChoice = userSelections[q.id] || "";
+                const isCorrect = userChoice.trim() === q.answer.trim();
+                if (isCorrect) score++;
+
+                const row = document.createElement("div");
+                row.style.cssText = "padding:8px; border-bottom:1px solid #E2E8F0; font-family:var(--font-tamil); font-size:0.95rem; display:flex; justify-content:space-between; align-items:center;";
+                row.innerHTML = `
+                  <div>
+                    <div style="font-weight:800; color:#1E293B;">${cleanStemText(q.stem)}</div>
+                    <div style="font-size:0.85rem; color:${isCorrect ? '#16A34A' : '#DC2626'};">
+                      ${userChoice ? `தேர்வு: ${userChoice}` : 'விடை அளிக்கப்படவில்லை'} ${isCorrect ? '✓' : `(சரியானது: ${q.answer})`}
+                    </div>
+                  </div>
+                  <span style="font-size:1.2rem;">${isCorrect ? '⭐' : '❌'}</span>
+                `;
+                reviewList.appendChild(row);
+              }
+            });
+          }
+        });
+      });
+
+      document.getElementById("scoreSummaryMark").textContent = `${score} / ${totalGradable}`;
+      document.getElementById("scoreGradeStatus").textContent = (score >= 20) ? "மிகச் சிறப்பு (Excellent!)" : (score >= 14) ? "நன்று (Good!)" : "பயிற்சி தேவை";
+
+      audioFX.playBell();
+      document.getElementById("scoreReviewModal").style.display = "flex";
+    }
+
+    function closeScoreReview() {
+      document.getElementById("scoreReviewModal").style.display = "none";
+    }
+
+    function finalizeGradingAndCelebrate() {
+      closeScoreReview();
+      if (activeSectionObj) closeSectionModal();
+      triggerGrandCelebration();
+    }
+
+    /* GRAND ASANA FINALE */
+    const finaleStage = document.getElementById("celebrationFinaleStage");
+    const finaleCanvas = document.getElementById("finaleCanvas");
+    const finaleCtx = finaleCanvas.getContext("2d", { alpha: true });
+    const soaringParrot = document.getElementById("soaringParrot");
+    const victoryAwardScroll = document.getElementById("victoryAwardScroll");
 
     let finaleRunning = false;
     let petals = [];
@@ -1021,7 +2195,7 @@
       finaleCanvas.width = window.innerWidth;
       finaleCanvas.height = window.innerHeight;
     }
-    window.addEventListener('resize', resizeFinaleCanvas);
+    window.addEventListener("resize", resizeFinaleCanvas);
 
     class DriftingPetal {
       constructor() {
@@ -1032,7 +2206,7 @@
         this.vy = Math.random() * 2.2 + 1.8;
         this.rot = Math.random() * Math.PI * 2;
         this.rotSpeed = (Math.random() - 0.5) * 0.05;
-        const colors = ['#F472B6', '#FBCFE8', '#F59E0B', '#FEF08A', '#34D399'];
+        const colors = ["#F472B6", "#FBCFE8", "#F59E0B", "#FEF08A", "#34D399"];
         this.color = colors[Math.floor(Math.random() * colors.length)];
       }
       update() {
@@ -1056,13 +2230,13 @@
       }
     }
 
-    function triggerAsanaCelebration() {
+    function triggerGrandCelebration() {
       resizeFinaleCanvas();
-      finaleStage.style.display = 'block';
+      finaleStage.style.display = "block";
       finaleRunning = true;
 
       audioFX.playBell();
-      speakText("அற்புதம் ஜைனா! பயிற்சிகள் அனைத்தும் வெற்றி!");
+      speakText("அற்புதம் ஜைனா! இயல் நான்கு வெற்றிகரமாக முடிந்தது!");
 
       petals = [];
       for (let i = 0; i < 65; i++) petals.push(new DriftingPetal());
@@ -1071,8 +2245,8 @@
       animateSoaringFlight();
 
       setTimeout(() => {
-        victoryAwardScroll.classList.add('impact');
-      }, 1800);
+        victoryAwardScroll.classList.add("impact");
+      }, 1600);
 
       requestAnimationFrame(renderPetalLoop);
     }
@@ -1112,18 +2286,21 @@
 
     function closeCelebrationStage() {
       finaleRunning = false;
-      finaleStage.style.display = 'none';
-      victoryAwardScroll.classList.remove('impact');
+      finaleStage.style.display = "none";
+      victoryAwardScroll.classList.remove("impact");
       goToHub();
     }
 
     window.onload = () => {
-      renderModuleTabs();
-      switchModule(0);
+      renderChapterTabs();
+      switchChapter(0);
     };
 
-    window.addEventListener("beforeunload", saveAllCanvases);
-    window.addEventListener("pagehide", saveAllCanvases);
+    window.addEventListener("beforeunload", saveAllVisibleCanvases);
+    window.addEventListener("pagehide", saveAllVisibleCanvases);
   </script>
+
+  <!-- CONNECT UNIVERSAL PEN JS -->
+  <script src="assets/universal-pen.js"></script>
 </body>
 </html>
