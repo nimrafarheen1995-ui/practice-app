@@ -28,6 +28,7 @@
             --margin-red: rgba(220, 38, 38, 0.35);
             --ruled-line: rgba(74, 85, 104, 0.22);
         }
+        /* FIX: Tailwind v4 utilities live in a CSS layer, so our unlayered rules beat them. Force .hidden to win. */
         .hidden { display: none !important; }
 
         *, *::before, *::after { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: var(--font-main); }
@@ -97,8 +98,28 @@
         .bind-writing { position: absolute; inset: 0; display: flex; flex-direction: column; background: #FFF; }
         .bind-ruled { position: relative; flex: 1; min-height: 0; background-color: #fffefb; background-image: linear-gradient(90deg, transparent 58px, var(--margin-red) 58px, var(--margin-red) 60px, transparent 60px), linear-gradient(var(--ruled-line) 1px, transparent 1px); background-size: 100% 100%, 100% 30px; background-position: 0 0, 0 18px; }
         .bind-ruled canvas { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: none; cursor: crosshair; z-index: 10; }
-        .bind-header-prompt { background: rgba(255,255,255,0.95); padding: 10px 16px; border-bottom: 1.5px solid #CBD5E1; color: #0F172A; }
+        /* right padding keeps text clear of the 🛠️ button */
+        .bind-header-prompt { background: rgba(255,255,255,0.95); padding: 10px 70px 10px 16px; border-bottom: 1.5px solid #CBD5E1; color: #0F172A; }
         .canvas-embossed-scholar { position: absolute; right: 16px; bottom: 8px; width: 130px; height: auto; max-height: 80%; object-fit: contain; opacity: 0.22; pointer-events: none; z-index: 5; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25)); }
+
+        /* 🛠️ button: the ONLY control visible on the notebook page */
+        .tools-gear-btn { position: absolute; right: 14px; top: 12px; z-index: 40; width: 42px; height: 42px; border-radius: 50%; background: #1E293B; border: 2px solid rgba(255,255,255,0.7); font-size: 20px; cursor: pointer; box-shadow: 0 6px 16px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; }
+        .tools-gear-btn:active { transform: scale(0.92); }
+
+        /* Drawer: horizontal toolbar under the gear. Wheel bubbles anchor to the drawer itself. */
+        .journal-pen-drawer { position: absolute; right: 14px; top: 62px; z-index: 45; display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; max-width: min(340px, calc(100% - 28px)); background: rgba(15, 23, 42, 0.95); padding: 10px; border-radius: 20px; border: 1.5px solid rgba(255, 255, 255, 0.35); box-shadow: 0 15px 35px rgba(0,0,0,0.7); }
+        .drawer-divider { width: 1px; height: 28px; background: rgba(255,255,255,0.25); margin: 0 2px; }
+        .drawer-tool-btn { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #FFF; font-size: 18px; width: 40px; height: 40px; border-radius: 12px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: transform 0.1s; touch-action: manipulation; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+        .drawer-tool-btn.on { background: #B45309; border-color: #FDE047; box-shadow: 0 0 10px rgba(245,158,11,0.6); }
+        .drawer-tool-btn:active { transform: scale(0.92); }
+        .drawer-tool-btn.danger { color: #FCA5A5; }
+
+        .journal-wheel-bubble { position: absolute; right: 0; top: calc(100% + 8px); max-width: min(290px, 80vw); flex-wrap: wrap; justify-content: center; background: rgba(15, 23, 42, 0.98); border: 2px solid #FDE047; border-radius: 20px; padding: 12px; display: flex; gap: 10px; align-items: center; box-shadow: 0 15px 35px rgba(0,0,0,0.8); z-index: 100; transform: scale(0); transform-origin: right top; transition: transform 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28); pointer-events: none; }
+        .journal-wheel-bubble.open { transform: scale(1); pointer-events: auto; }
+        .wheel-swatch { width: 32px; height: 32px; border-radius: 50%; border: 2.5px solid #FFF; cursor: pointer; }
+        .wheel-swatch.on { transform: scale(1.15); box-shadow: 0 0 10px #FDE047; }
+        .wheel-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: #FFF; font-size: 14px; padding: 6px 10px; border-radius: 10px; cursor: pointer; font-weight: 700; }
+        .wheel-btn.on { background: #B45309; border-color: #FDE047; }
 
         .page-chip { background: rgba(255,255,255,0.12); color: #FDE68A; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 999px; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,0.25); }
         .page-chip button { color: #fff; background: none; border: 0; font-size: 16px; cursor: pointer; padding: 2px 4px; touch-action: manipulation; }
@@ -227,9 +248,6 @@
             </div>
         </div>
     </div>
-
-    <!-- GLOBAL UNIVERSAL PEN SCRIPT INTEGRATION -->
-    <script src="shared/universal-pen.js"></script>
 
 <script>
     /* ==========================================================================
@@ -361,6 +379,13 @@
     let isPracticeMode = true;
     const binderOpenState = {};
 
+    /* One shared pen/eraser setup for the whole notebook. Switching pen style or flipping pages
+       never touches saved ink, it only changes how the NEXT stroke is drawn. */
+    const toolState = { tool: 'pen', color: '#0F172A', thickness: 2.5, eraserSize: 28, style: 'normal', stamp: null };
+    function getPageState() { return toolState; }
+
+    /* Write mode: items are shuffled ONCE per page visit (per section). Practice mode keeps the original order.
+       Ink stays tied to each item's original id, so shuffling never moves or changes anyone's writing. */
     const writeOrders = {};
     function getOrder(sec) {
         const n = sec.items.length;
@@ -385,6 +410,8 @@
 
     let journalDrawerOpen = false;
     let drawerCtx = null;
+    let lpFired = false;
+    const LONG_PRESS_MS = 800;
 
     function modeKey() { return isPracticeMode ? 'p' : 'w'; }
 
@@ -439,6 +466,51 @@
         } catch (_) {}
     }
 
+    const DrawingSound = {
+        ready: false, penGain: null, penFilter: null, eraseGain: null, eraseFilter: null,
+        init() {
+            if (this.ready) return;
+            try {
+                const ctx = getAudioCtx();
+                const len = Math.floor(ctx.sampleRate * 1.5);
+                const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+                const data = buf.getChannelData(0);
+                for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+
+                const penSrc = ctx.createBufferSource(); penSrc.buffer = buf; penSrc.loop = true;
+                this.penFilter = ctx.createBiquadFilter(); this.penFilter.type = 'bandpass'; this.penFilter.frequency.value = 3500; this.penFilter.Q.value = 2.0;
+                this.penGain = ctx.createGain(); this.penGain.gain.value = 0;
+                penSrc.connect(this.penFilter); this.penFilter.connect(this.penGain); this.penGain.connect(ctx.destination); penSrc.start();
+
+                const eraseSrc = ctx.createBufferSource(); eraseSrc.buffer = buf; eraseSrc.loop = true;
+                this.eraseFilter = ctx.createBiquadFilter(); this.eraseFilter.type = 'lowpass'; this.eraseFilter.frequency.value = 600; this.eraseFilter.Q.value = 0.8;
+                this.eraseGain = ctx.createGain(); this.eraseGain.gain.value = 0;
+                eraseSrc.connect(this.eraseFilter); this.eraseFilter.connect(this.eraseGain); this.eraseGain.connect(ctx.destination); eraseSrc.start();
+                this.ready = true;
+            } catch (e) {}
+        },
+        update(isEraser, speed) {
+            try {
+                this.init();
+                if (!this.ready) return;
+                const t = getAudioCtx().currentTime;
+                if (isEraser) {
+                    this.eraseFilter.frequency.setTargetAtTime(500 + Math.random() * 400, t, .03);
+                    this.eraseGain.gain.setTargetAtTime(Math.min(.15, .03 + speed * .007), t, .03);
+                    this.penGain.gain.setTargetAtTime(0, t, .03);
+                } else {
+                    this.penFilter.frequency.setTargetAtTime(3200 + Math.random() * 1200, t, .02);
+                    this.penGain.gain.setTargetAtTime(Math.min(.09, .01 + speed * .005), t, .03);
+                    this.eraseGain.gain.setTargetAtTime(0, t, .03);
+                }
+            } catch (e) {}
+        },
+        stop() {
+            if (!this.ready) return;
+            try { const t = getAudioCtx().currentTime; this.penGain.gain.setTargetAtTime(0, t, .04); this.eraseGain.gain.setTargetAtTime(0, t, .04); } catch (e) {}
+        }
+    };
+
     function playPaperRuffleSound() {
         try {
             const ctx = getAudioCtx();
@@ -471,7 +543,7 @@
         const clean = expanded.replace(/[\u064B-\u065F\u0670]/g, '').replace(/[^a-zA-Z0-9\u0600-\u06FF\s]/g, '').trim();
         const finalText = (clean === 'RA') ? 'radiyallahu anhu' : clean;
         const utterance = new SpeechSynthesisUtterance(finalText || word);
-        window._utt = utterance;
+        window._utt = utterance;   // keeps the utterance alive so onend always fires
         if (lang === 'ar') {
             utterance.lang = 'ar-SA';
             utterance.rate = 0.75;
@@ -581,6 +653,7 @@
     }
 
     function returnToDashboard() {
+        flushAndResetCanvases();
         document.getElementById('sectionContainer').classList.add('hidden');
         document.getElementById('dashNavBtn').classList.add('hidden');
         document.getElementById('dashboardView').classList.remove('hidden');
@@ -592,6 +665,7 @@
         if (delta > 0) {
             if (nextIdx >= unit.sections.length) { returnToDashboard(); return; }
         } else if (nextIdx < 0) return;
+        saveVisibleCanvases();
         currentSecIdx = nextIdx;
         currentSubPage = 0;
         journalDrawerOpen = false;
@@ -599,6 +673,7 @@
     }
 
     function showCelebration(onComplete) {
+        saveVisibleCanvases();
         const phrases = ["Masha'Allah!", "Subhan'Allah!", "Allahu Akbar!"];
         const phrase = phrases[Math.floor(Math.random() * phrases.length)];
         document.getElementById('celebrationPhrase').textContent = phrase;
@@ -625,6 +700,9 @@
         SECTION RENDERING
         ========================================================================== */
     function renderSection() {
+        // 1) save anything unsaved under the keys it was created with, 2) forget old canvases
+        flushAndResetCanvases();
+
         const unit = CURRICULUM[activeUnitKey];
         const sec = unit.sections[currentSecIdx];
         const container = document.getElementById('sectionContainer');
@@ -665,6 +743,7 @@
         return `<div class="write-strip-box">
             <canvas id="cv_${qId}"></canvas>
             <div class="strip-actions">
+                <button class="mini-btn" onclick="undoCanvas('${qId}')" title="Undo">↶</button>
                 <button class="mini-btn del" onclick="clearCanvas('${qId}')" title="Clear">🗑️</button>
             </div>
         </div>`;
@@ -708,6 +787,7 @@
         });
     }
 
+    /* Shared notebook shell: ruled canvas + ONE visible control (🛠️) + glass cover */
     function binderShell(qId, headerHTML, lessonLabel) {
         const isOpen = !!binderOpenState[qId];
         return `
@@ -719,6 +799,9 @@
                         <canvas id="cv_${qId}"></canvas>
                     </div>
                 </div>
+
+                <button class="tools-gear-btn" onclick="toggleJournalDrawer()" title="Tools">🛠️</button>
+                <div id="drawer_${qId}" class="journal-pen-drawer hidden"></div>
 
                 <div id="cover_${qId}" class="binder-cover ${isOpen ? 'binder-open' : ''}">
                     <div class="notebook-spine-rings"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
@@ -738,10 +821,12 @@
             </div>`;
     }
 
-    function mountBinder(qId) {
+    function mountBinder(qId, hasSub, total) {
         setTimeout(() => {
             mountFullCanvas(qId);
             initCoverSlide(qId);
+            renderJournalDrawerContent(qId, hasSub, total);
+            applyDrawerVisibility();
         }, 15);
     }
 
@@ -755,7 +840,7 @@
                 <div style="font-size:0.9rem; font-weight:800; color:#991B1B;">${tokenize('WRITE FROM MEMORY: Translate Verses 1 to 8 into English.', 'en')}</div>
             </div>`;
         container.innerHTML = binderShell(qId, header, sec.coverTitle);
-        mountBinder(qId);
+        mountBinder(qId, false, 1);
     }
 
     function renderHadithMultiPage(sec, container) {
@@ -771,7 +856,7 @@
                 <div class="text-sm font-bold text-teal-700 mt-1" style="display: ${isPracticeMode ? 'block' : 'none'};">Answer: ${tokenize(pageData.a, 'en')}</div>
             </div>`;
         container.innerHTML = binderShell(qId, header, `${sec.coverTitle} (Q${currentSubPage + 1})`);
-        mountBinder(qId);
+        mountBinder(qId, true, sec.pages.length);
     }
 
     function renderGreetingSingle(sec, container, qId) {
@@ -787,7 +872,120 @@
                 <div class="text-xs text-slate-600 mt-0.5" style="display: ${isPracticeMode ? 'block' : 'none'};">Meaning: "${tokenize(item.mean, 'en')}"</div>
             </div>`;
         container.innerHTML = binderShell(qId, header, sec.coverTitle);
-        mountBinder(qId);
+        mountBinder(qId, false, 1);
+    }
+
+    /* ==========================================================================
+        🛠️ DRAWER + LONG-PRESS WHEELS
+        ========================================================================== */
+    function toggleJournalDrawer() {
+        journalDrawerOpen = !journalDrawerOpen;
+        applyDrawerVisibility();
+        playPop();
+    }
+
+    function applyDrawerVisibility() {
+        document.querySelectorAll('.journal-pen-drawer').forEach(d => d.classList.toggle('hidden', !journalDrawerOpen));
+        if (!journalDrawerOpen) closeWheels();
+    }
+
+    function closeWheels() {
+        document.querySelectorAll('.journal-wheel-bubble.open').forEach(w => w.classList.remove('open'));
+    }
+
+    function refreshDrawer() {
+        if (drawerCtx) renderJournalDrawerContent(drawerCtx.qId, drawerCtx.hasSub, drawerCtx.total);
+    }
+
+    function renderJournalDrawerContent(qId, hasSub = false, total = 1) {
+        drawerCtx = { qId, hasSub, total };
+        const drawer = document.getElementById(`drawer_${qId}`);
+        if (!drawer) return;
+
+        const s = toolState;
+        const penOn = s.tool === 'pen' || s.tool === 'stamp';
+        const swatch = c => `<div class="wheel-swatch ${s.color === c && s.style !== 'rainbow' ? 'on' : ''}" style="background:${c}" onclick="setPenColor('${c}')"></div>`;
+        const thick = (label, v) => `<button class="wheel-btn ${s.thickness === v ? 'on' : ''}" onclick="setThickness(${v})">${label}</button>`;
+        const erase = (label, v) => `<button class="wheel-btn ${s.eraserSize === v ? 'on' : ''}" onclick="setEraserSize(${v})">${label}</button>`;
+
+        drawer.innerHTML = `
+            <button id="jPenBtn_${qId}" class="drawer-tool-btn ${penOn ? 'on' : ''}" onclick="setTool('pen')" title="Pen (hold for options)">✏️</button>
+            <button id="jEraserBtn_${qId}" class="drawer-tool-btn ${s.tool === 'eraser' ? 'on' : ''}" onclick="setTool('eraser')" title="Eraser (hold for sizes)">🧹</button>
+            <div class="drawer-divider"></div>
+            <button class="drawer-tool-btn" onclick="undoCanvas('${qId}')" title="Undo">↶</button>
+            <button class="drawer-tool-btn" onclick="redoCanvas('${qId}')" title="Redo">↷</button>
+            <button class="drawer-tool-btn danger" onclick="clearCanvas('${qId}')" title="Clear this page">🗑️</button>
+            <div class="drawer-divider"></div>
+            <button class="drawer-tool-btn" onclick="toggleBinderCover('${qId}')" title="Close cover">📕</button>
+            ${hasSub ? `
+                <div class="page-chip">
+                    <button onclick="stepSubPage(-1, ${total})" ${currentSubPage === 0 ? 'disabled' : ''}>◀</button>
+                    <span>Page ${currentSubPage + 1}/${total}</span>
+                    <button onclick="stepSubPage(1, ${total})" ${currentSubPage === total - 1 ? 'disabled' : ''}>▶</button>
+                </div>` : ''}
+
+            <div id="jPenWheel_${qId}" class="journal-wheel-bubble">
+                <button class="wheel-btn ${s.style === 'rainbow' ? 'on' : ''}" onclick="setPenStyle('rainbow')">🌈</button>
+                <button class="wheel-btn ${s.style === 'cursive' ? 'on' : ''}" onclick="setPenStyle('cursive')" title="Calligraphy / cursive pen">✒️</button>
+                ${['#0F172A', '#EC4899', '#9333EA', '#DC2626', '#16A34A'].map(swatch).join('')}
+                ${thick('Thin', 1.5)}${thick('Med', 2.5)}${thick('Thick', 5)}
+                <button class="wheel-btn" onclick="setStamp('⭐')">⭐</button>
+                <button class="wheel-btn" onclick="setStamp('🌸')">🌸</button>
+            </div>
+            <div id="jEraserWheel_${qId}" class="journal-wheel-bubble">
+                ${erase('Thin', 16)}${erase('Med', 28)}${erase('Thick', 45)}
+            </div>
+        `;
+
+        setupLongPress(`jPenBtn_${qId}`, `jPenWheel_${qId}`);
+        setupLongPress(`jEraserBtn_${qId}`, `jEraserWheel_${qId}`);
+    }
+
+    function setupLongPress(btnId, wheelId) {
+        const btn = document.getElementById(btnId);
+        const wheel = document.getElementById(wheelId);
+        if (!btn || !wheel) return;
+        let timer = null;
+        btn.addEventListener('pointerdown', () => {
+            lpFired = false;
+            closeWheels();
+            timer = setTimeout(() => { lpFired = true; wheel.classList.add('open'); playPop(); }, LONG_PRESS_MS);
+        });
+        const cancel = () => clearTimeout(timer);
+        ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => btn.addEventListener(ev, cancel));
+        btn.addEventListener('contextmenu', e => e.preventDefault());
+    }
+
+    // bound ONCE: tapping anywhere outside an open wheel closes it
+    document.addEventListener('pointerdown', e => {
+        if (e.target.closest('.journal-wheel-bubble') || e.target.closest('[id^="jPenBtn_"], [id^="jEraserBtn_"]')) return;
+        closeWheels();
+    });
+
+    function setTool(tool) {
+        if (lpFired) { lpFired = false; return; }   // the release after a long-press must not close the wheel
+        toolState.tool = tool;
+        refreshDrawer();
+    }
+    function setPenColor(c) { toolState.color = c; if (toolState.style === 'rainbow') toolState.style = 'normal'; toolState.tool = 'pen'; refreshDrawer(); }
+    function setPenStyle(st) { toolState.style = (toolState.style === st) ? 'normal' : st; toolState.tool = 'pen'; refreshDrawer(); }
+    function setThickness(v) { toolState.thickness = v; toolState.tool = 'pen'; refreshDrawer(); }
+    function setStamp(s) { toolState.stamp = s; toolState.tool = 'stamp'; refreshDrawer(); }
+    function setEraserSize(v) { toolState.eraserSize = v; toolState.tool = 'eraser'; refreshDrawer(); }
+
+    /* Page navigation (Hadith Q&A pages). Each page has its own storage key, so ink never moves between pages. */
+    function stepSubPage(d, total) {
+        const n = currentSubPage + d;
+        if (n < 0 || n >= total) return;
+        flipSubPage(n);
+    }
+
+    function flipSubPage(idx) {
+        const base = `${activeUnitKey}_s${currentSecIdx}_hadith_`;
+        if (binderOpenState[base + currentSubPage]) binderOpenState[base + idx] = true; // keep notebook open while flipping
+        saveVisibleCanvases();
+        currentSubPage = idx;
+        renderSection();
     }
 
     /* ==========================================================================
@@ -838,9 +1036,35 @@
         }
     }
 
+    function toggleBinderCover(id) {
+        binderOpenState[id] = !binderOpenState[id];
+        const el = document.getElementById(`cover_${id}`);
+        if (el) {
+            el.style.transform = '';
+            el.style.opacity = '';
+            el.classList.toggle('binder-open', binderOpenState[id]);
+            playPaperRuffleSound();
+        }
+    }
+
     /* ==========================================================================
-        UNIVERSAL PEN INTEGRATION (WITH PALM REJECTION)
+        INK ENGINE
+        Each canvas captures its OWN storage key when it is created, so it can only
+        ever read or write that one slot. Practice and Write mode use different keys
+        (…_p_… vs …_w_…), and each notebook page has its own key.
         ========================================================================== */
+    const activeCanvases = {};
+    const undoStacks = {};
+    const redoStacks = {};
+
+    function storageKey(qId) {
+        return `zaina_isl_${modeKey()}_${activeUnitKey}_s${currentSecIdx}_p${currentSubPage}_${qId}`;
+    }
+
+    function registerCanvas(qId, canvas, ctx, dpr) {
+        activeCanvases[qId] = { canvas, ctx, dpr, key: storageKey(qId), dirty: false };
+    }
+
     function mountInlineCanvas(qId) {
         const canvas = document.getElementById(`cv_${qId}`);
         if (!canvas) return;
@@ -850,13 +1074,9 @@
         canvas.height = Math.round(rect.height * dpr);
         const ctx = canvas.getContext('2d');
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-        // Register with global shared/universal-pen.js script
-        if (window.UniversalPen) {
-            window.UniversalPen.setInkKey(qId);
-            window.UniversalPen.forceCanvas(canvas);
-        }
-        applyPalmRejection(canvas);
+        registerCanvas(qId, canvas, ctx, dpr);
+        loadInk(qId);
+        bindPointerEvents(canvas, qId);
     }
 
     function mountFullCanvas(qId) {
@@ -869,61 +1089,296 @@
         canvas.height = Math.round(rect.height * dpr);
         const ctx = canvas.getContext('2d');
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-        if (window.UniversalPen) {
-            window.UniversalPen.setInkKey(qId);
-            window.UniversalPen.forceCanvas(canvas);
-        }
-        applyPalmRejection(canvas);
+        registerCanvas(qId, canvas, ctx, dpr);
+        loadInk(qId);
+        bindPointerEvents(canvas, qId);
     }
 
-    function applyPalmRejection(canvas) {
-        canvas.addEventListener('pointerdown', e => {
-            if (e.pointerType === 'touch') {
-                const w = e.width || 0, h = e.height || 0;
-                const area = Math.max(w, h);
-                // Strict palm rejection for Samsung Tab S9/S11
-                if (area > 18 || e.pressure < 0.15) {
-                    e.stopImmediatePropagation();
-                    e.preventDefault();
-                    return;
-                }
-                if (window.__lastPenTime && (Date.now() - window.__lastPenTime) < 1200) {
-                    e.stopImmediatePropagation();
-                    e.preventDefault();
-                    return;
-                }
+    // After S Pen activity, ignore touch contacts for a short window (palm rests while writing)
+    let lastPenActivityAt = 0;
+    const PEN_PRIORITY_MS = 2500;
+
+        /* ---------- Palm / accidental-touch rejection (Samsung Tab + S Pen) ----------
+       Rules:
+       1. Always accept pointerType === 'pen' (S Pen / stylus).
+       2. Reject fat touch contacts (palm): width/height above threshold.
+       3. While a pen/finger stroke is active, ignore every other pointer.
+       4. Track the accepted pointerId so move/up only apply to that one contact.
+       5. Small fingertip touch still allowed if contact area is small.
+    -------------------------------------------------------------------------- */
+    function isPalmContact(e) {
+        if (e.pointerType === 'pen') {
+            lastPenActivityAt = Date.now();
+            return false;          // stylus is never palm
+        }
+        if (e.pointerType === 'mouse' && e.buttons === 1) return false; // desktop mouse ok
+        // While S Pen was used recently, treat all touch as palm (hand resting on screen)
+        if (e.pointerType === 'touch' && (Date.now() - lastPenActivityAt) < PEN_PRIORITY_MS) return true;
+        // Touch (or unknown): treat large contact area as palm
+        const w = e.width || 0;
+        const h = e.height || 0;
+        // Samsung often reports palm width/height ~30–80+; fingertip ~8–20
+        if (w >= 22 || h >= 22) return true;
+        // Contact with no size data but marked as touch + zero/near-zero pressure → often palm
+        if (e.pointerType === 'touch' && w === 0 && h === 0 && (e.pressure === 0 || e.pressure === 0.5)) {
+            // pressure 0.5 is a common default when browser does not report real pressure;
+            // still allow small intentional finger taps by requiring a second signal — skip this path
+        }
+        // Very low pressure + non-pen is often a resting palm edge
+        if (e.pointerType === 'touch' && typeof e.pressure === 'number' && e.pressure > 0 && e.pressure < 0.08 && (w > 12 || h > 12)) return true;
+        return false;
+    }
+
+    function bindPointerEvents(canvas, qId) {
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let activePointerId = null;   // only this pointer may draw
+        let lastPt = [0, 0];
+        let hue = 0;
+        let prevMid = [0, 0];
+        let curW = 2;
+        const NIB_ANGLE = -Math.PI / 4;   // broad nib held at 45 degrees
+
+        const getXY = e => {
+            const r = canvas.getBoundingClientRect();
+            return [e.clientX - r.left, e.clientY - r.top];
+        };
+
+        canvas.onpointerdown = e => {
+            // Already drawing with another pointer (e.g. pen) → ignore palm / second finger
+            if (isDrawing && e.pointerId !== activePointerId) {
+                e.preventDefault();
+                return;
             }
-            if (e.pointerType === 'pen') window.__lastPenTime = Date.now();
-        }, true);
+            // Reject palm / large touch
+            if (isPalmContact(e)) {
+                e.preventDefault();
+                return;
+            }
+
+            const item = activeCanvases[qId];
+            if (!item) return;
+            item.dirty = true;
+            isDrawing = true;
+            activePointerId = e.pointerId;
+            try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+            lastPt = getXY(e);
+
+            const state = toolState;
+            if (state.tool === 'stamp' && state.stamp) {
+                ctx.save();
+                ctx.font = '28px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(state.stamp, lastPt[0], lastPt[1]);
+                ctx.restore();
+                isDrawing = false;
+                activePointerId = null;
+                saveInk(qId);
+                playPop();
+                return;
+            }
+
+            const isEraser = state.tool === 'eraser';
+            ctx.save();
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.globalCompositeOperation = isEraser ? 'destination-out' : 'source-over';
+            const cursive = !isEraser && state.style === 'cursive';
+            ctx.lineWidth = isEraser ? state.eraserSize : (cursive ? state.thickness * 1.1 : state.thickness);
+            if (isEraser) {
+                ctx.strokeStyle = '#000';
+            } else if (state.style === 'rainbow') {
+                hue = Math.random() * 360;
+                ctx.strokeStyle = `hsl(${hue}, 85%, 50%)`;
+            } else {
+                ctx.strokeStyle = state.color;
+            }
+            ctx.fillStyle = ctx.strokeStyle;   // dot matches the pen colour
+
+            ctx.beginPath();
+            ctx.arc(lastPt[0], lastPt[1], ctx.lineWidth / 2, 0, Math.PI * 2);
+            ctx.fill();
+            prevMid = lastPt.slice();
+            curW = state.thickness * 1.1;
+            DrawingSound.init();
+        };
+
+        canvas.onpointermove = e => {
+            // Only the pointer that started the stroke may continue it
+            if (!isDrawing || e.pointerId !== activePointerId) return;
+            if (e.pointerType === 'pen') lastPenActivityAt = Date.now();
+            // Extra safety: if a move somehow looks like a huge palm blob, stop the stroke
+            if (e.pointerType !== 'pen' && isPalmContact(e)) {
+                stopDraw(e);
+                return;
+            }
+            const state = toolState;
+            const isEraser = state.tool === 'eraser';
+            const events = (e.getCoalescedEvents && e.getCoalescedEvents().length) ? e.getCoalescedEvents() : [e];
+            let dist = 0;
+            for (const ev of events) {
+                const pt = getXY(ev);
+                const seg = Math.hypot(pt[0] - lastPt[0], pt[1] - lastPt[1]);
+                if (state.style === 'cursive' && !isEraser) {
+                    // calligraphic nib: width follows stroke direction, thins with speed, curves are smoothed
+                    if (seg < 0.6) continue;
+                    const ang = Math.atan2(pt[1] - lastPt[1], pt[0] - lastPt[0]);
+                    const base = state.thickness * 1.8;
+                    let target = base * (0.3 + 0.7 * Math.abs(Math.sin(ang - NIB_ANGLE)));
+                    target *= Math.max(0.55, 1 - seg * 0.04);
+                    curW = curW * 0.7 + target * 0.3;
+                    ctx.lineWidth = curW;
+                    const mid = [(lastPt[0] + pt[0]) / 2, (lastPt[1] + pt[1]) / 2];
+                    ctx.beginPath();
+                    ctx.moveTo(prevMid[0], prevMid[1]);
+                    ctx.quadraticCurveTo(lastPt[0], lastPt[1], mid[0], mid[1]);
+                    ctx.stroke();
+                    prevMid = mid;
+                    dist += seg;
+                    lastPt = pt;
+                    continue;
+                }
+                if (state.style === 'rainbow' && !isEraser) {
+                    hue = (hue + seg * 1.5) % 360;
+                    ctx.strokeStyle = `hsl(${hue}, 85%, 50%)`;   // colour flows along the stroke
+                }
+                ctx.beginPath();
+                ctx.moveTo(lastPt[0], lastPt[1]);
+                ctx.lineTo(pt[0], pt[1]);
+                ctx.stroke();
+                dist += seg;
+                lastPt = pt;
+            }
+            DrawingSound.update(isEraser, dist / events.length);
+        };
+
+        const stopDraw = (e) => {
+            if (!isDrawing) return;
+            // Ignore up/cancel from a different pointer (palm lifting while pen still down)
+            if (e && e.pointerId != null && e.pointerId !== activePointerId) return;
+            isDrawing = false;
+            activePointerId = null;
+            if (toolState.style === 'cursive' && toolState.tool === 'pen') {
+                ctx.beginPath();
+                ctx.moveTo(prevMid[0], prevMid[1]);
+                ctx.lineTo(lastPt[0], lastPt[1]);
+                ctx.stroke();
+            }
+            try { ctx.restore(); } catch (_) {}
+            DrawingSound.stop();
+            saveInk(qId);
+        };
+        canvas.onpointerup = stopDraw;
+        canvas.onpointercancel = stopDraw;
+        // If pointer leaves the canvas while captured, still end cleanly
+        canvas.onlostpointercapture = e => {
+            if (isDrawing && e.pointerId === activePointerId) stopDraw(e);
+        };
+    }
+
+    function saveInk(qId) {
+        const item = activeCanvases[qId];
+        if (!item || !item.canvas || !item.dirty) return;   // untouched canvases never write anything
+        try {
+            const k = item.key;
+            const prev = LS.get(k) || '';
+            const cur = item.canvas.toDataURL();
+            if (!LS.set(k, cur)) {
+                showToast('Storage is full. Your latest writing could not be saved. Please clear space.');
+                return;
+            }
+            if (prev !== cur) {
+                const stack = undoStacks[k] || (undoStacks[k] = []);
+                stack.push(prev);
+                if (stack.length > 20) stack.shift();
+                redoStacks[k] = [];
+            }
+            item.dirty = false;
+        } catch (_) {}
+    }
+
+    function loadInk(qId) {
+        const item = activeCanvases[qId];
+        if (!item || !item.canvas) return;
+        const { ctx, dpr, canvas } = item;
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.restore();
+
+        const data = LS.get(item.key);
+        if (!data) return;
+        const img = new Image();
+        img.onload = () => {
+            if (activeCanvases[qId] !== item) return;   // canvas was replaced meanwhile
+            ctx.save();
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.drawImage(img, 0, 0, canvas.width / dpr, canvas.height / dpr);
+            ctx.restore();
+        };
+        img.src = data;
+    }
+
+    function saveVisibleCanvases() {
+        Object.keys(activeCanvases).forEach(qId => saveInk(qId));
+    }
+
+    function flushAndResetCanvases() {
+        saveVisibleCanvases();
+        Object.keys(activeCanvases).forEach(k => delete activeCanvases[k]);
+    }
+
+    function undoCanvas(qId) {
+        const item = activeCanvases[qId];
+        if (!item) return;
+        const k = item.key;
+        const stack = undoStacks[k];
+        if (!stack || !stack.length) return;
+        const cur = LS.get(k);
+        if (cur) (redoStacks[k] || (redoStacks[k] = [])).push(cur);
+        const prev = stack.pop();
+        if (prev) LS.set(k, prev); else LS.del(k);
+        item.dirty = false;
+        loadInk(qId);
+        playPop();
+    }
+
+    function redoCanvas(qId) {
+        const item = activeCanvases[qId];
+        if (!item) return;
+        const k = item.key;
+        const rStack = redoStacks[k];
+        if (!rStack || !rStack.length) return;
+        const cur = LS.get(k);
+        if (cur) (undoStacks[k] || (undoStacks[k] = [])).push(cur);
+        const next = rStack.pop();
+        if (next) LS.set(k, next);
+        item.dirty = false;
+        loadInk(qId);
+        playPop();
     }
 
     function clearCanvas(qId) {
-        if (window.UniversalPen) {
-            window.UniversalPen.setInkKey(qId);
-            if (window.UniversalPen.clearInk) window.UniversalPen.clearInk();
-        }
+        const item = activeCanvases[qId];
+        if (!item) return;
+        const k = item.key;
+        const cur = LS.get(k);
+        if (cur) (undoStacks[k] || (undoStacks[k] = [])).push(cur);
+        LS.del(k);
+        item.dirty = false;
+        const { ctx, canvas } = item;
+        ctx.save();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.restore();
         playPop();
     }
-    window.clearCanvas = clearCanvas;
 
-    function undoCanvas(qId) {
-        if (window.UniversalPen && window.UniversalPen.undo) {
-            window.UniversalPen.setInkKey(qId);
-            window.UniversalPen.undo();
-        }
-        playPop();
-    }
-    window.undoCanvas = undoCanvas;
-
-    function redoCanvas(qId) {
-        if (window.UniversalPen && window.UniversalPen.redo) {
-            window.UniversalPen.setInkKey(qId);
-            window.UniversalPen.redo();
-        }
-        playPop();
-    }
-    window.redoCanvas = redoCanvas;
+    // belt and braces: flush if the tab is hidden or closed mid-stroke
+    document.addEventListener('visibilitychange', () => { if (document.hidden) saveVisibleCanvases(); });
+    window.addEventListener('pagehide', saveVisibleCanvases);
 
     /* ==========================================================================
         PRACTICE / WRITE MODE + PIN (1995)
@@ -931,9 +1386,9 @@
     function switchMode(targetPractice) {
         if (targetPractice === isPracticeMode) return;
         if (!targetPractice) {
-            if (window.UniversalPen && window.UniversalPen.saveInk) window.UniversalPen.saveInk();
+            saveVisibleCanvases();   // saved under the keys they were created with (practice)
             isPracticeMode = false;
-            renderSection();
+            renderSection();         // new canvases load from the write-mode keys
         } else {
             document.getElementById('pinInput').value = '';
             document.getElementById('pinErrorMsg').classList.add('hidden');
@@ -947,7 +1402,7 @@
     function verifyParentPin() {
         if (document.getElementById('pinInput').value === '1995') {
             closePinModal();
-            if (window.UniversalPen && window.UniversalPen.saveInk) window.UniversalPen.saveInk();
+            saveVisibleCanvases();
             isPracticeMode = true;
             renderSection();
         } else {
