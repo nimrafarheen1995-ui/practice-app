@@ -1,3360 +1,532 @@
 <!DOCTYPE html>
 <html lang="ta">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-  <title>Zaina's Tamil Temple Quest: இயல் 4 பயிற்சி ஏடு</title>
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@500;600;700;800;900&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
-
-  <link rel="preload" as="image" href="assets/village-bg.webp">
-  <link rel="preload" as="image" href="assets/palm-scroll-banner.webp">
-  <link rel="preload" as="image" href="assets/mentor-parrot.webp">
-  <link rel="preload" as="image" href="assets/thiruvalluvar.webp">
-
-  <!-- SAFE STORAGE INTEGRATION FOR INDEXEDDB OVERFLOW PROTECTION -->
-  <script src="shared/safe-storage.js"></script>
-  <!-- Prefer shared universal pen if present; embedded copy below is fallback -->
-  <script src="shared/universal-pen.js" onerror="console.warn('universal-pen.js not found, using embedded pen')"></script>
-
-  <style>
-    :root {
-      --gold-primary: #D97706;
-      --gold-deep: #B45309;
-      --gold-glow: #F59E0B;
-      --text-temple: #3C1904;
-      --tamil-ink: #1E3A8A;
-      --border-ornament: #FBBF24;
-      --border-warm: rgba(217, 119, 6, 0.55);
-      --ruled-guide: #93C5FD;
-      --ruled-base: #EF4444;
-      --font-tamil: 'Mukta Malar', sans-serif;
-      --font-ui: 'Nunito', sans-serif;
-      --content-scale: 1;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      user-select: none;
-      -webkit-user-select: none;
-      -webkit-tap-highlight-color: transparent;
-      font-family: var(--font-ui);
-    }
-
-    html, body {
-      width: 100vw;
-      height: 100vh;
-      height: 100dvh;
-      overflow: hidden;
-      background: #0C0603;
-      color: var(--text-temple);
-    }
-
-    body {
-      display: flex;
-      flex-direction: column;
-      padding: clamp(4px, 0.8vw, 8px) clamp(8px, 1.2vw, 14px);
-      gap: 5px;
-      position: relative;
-    }
-
-    /* TOP HUD */
-    .top-hud-bar {
-      height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: relative;
-      z-index: 50;
-      flex-shrink: 0;
-    }
-
-    .hud-group-left, .hud-group-right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .hud-icon-btn {
-      background: rgba(255, 255, 255, 0.94);
-      border: 2px solid var(--border-ornament);
-      color: var(--text-temple);
-      width: 42px;
-      height: 38px;
-      border-radius: 12px;
-      font-size: 1.15rem;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
-      transition: all 0.15s ease;
-    }
-    .hud-icon-btn:active { transform: scale(0.94); }
-
-    .mode-switch-segmented {
-      display: flex;
-      background: rgba(255, 255, 255, 0.94);
-      border: 2px solid var(--border-ornament);
-      border-radius: 22px;
-      padding: 2px;
-      gap: 3px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-    .mode-tab-icon-pill {
-      background: transparent;
-      border: none;
-      color: var(--text-temple);
-      padding: 4px 18px;
-      border-radius: 18px;
-      font-size: 1.15rem;
-      cursor: pointer;
-      transition: all 0.16s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .mode-tab-icon-pill.active {
-      background: linear-gradient(180deg, #F59E0B 0%, #D97706 100%);
-      box-shadow: 0 2px 8px rgba(217, 119, 6, 0.4);
-    }
-
-    .pen-toggle-btn {
-      background: rgba(255, 255, 255, 0.94);
-      border: 2px solid var(--border-ornament);
-      width: 42px;
-      height: 38px;
-      border-radius: 12px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.15rem;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
-      transition: all 0.15s ease;
-    }
-    .pen-toggle-btn.pen-active {
-      background: #DCFCE7;
-      border-color: #16A34A;
-    }
-
-    /* MASTER STAGE */
-    .master-temple-stage {
-      flex: 1;
-      position: relative;
-      border: 4px solid #5A3C22;
-      border-radius: 22px;
-      overflow: hidden;
-      background: #110B07 url('assets/village-bg.webp') no-repeat center center;
-      background-size: cover;
-      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85);
-      display: grid;
-      grid-template-columns: 290px 1fr;
-      gap: 14px;
-      padding: 10px 16px;
-      min-height: 0;
-      z-index: 10;
-      transition: grid-template-columns 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .master-temple-stage.collapsed-sidebar {
-      grid-template-columns: 78px 1fr;
-    }
-
-    /* LEFT DECK (3 MAJOR CHAPTERS) */
-    .mentor-side-deck {
-      background: transparent !important;
-      border: none !important;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      position: relative;
-      z-index: 15;
-      overflow-y: auto;
-      overflow-x: hidden;
-    }
-
-    .sidebar-collapse-toggle {
-      align-self: flex-end;
-      background: rgba(255, 255, 255, 0.92);
-      border: 1.5px solid var(--gold-primary);
-      border-radius: 8px;
-      padding: 2px 8px;
-      font-size: 0.8rem;
-      font-weight: 900;
-      cursor: pointer;
-      color: var(--text-temple);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-    }
-
-    .thiruvalluvar-terrace-hero {
-      width: 100%;
-      height: clamp(140px, 20vh, 190px);
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      flex-shrink: 0;
-      cursor: pointer;
-    }
-    .thiruvalluvar-hero-img {
-      max-height: 100%;
-      max-width: 100%;
-      object-fit: contain;
-      filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.55));
-    }
-
-    .chapter-menu-container {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .chapter-menu-item {
-      background: rgba(255, 253, 246, 0.94);
-      backdrop-filter: blur(8px);
-      border: 2px solid var(--border-warm);
-      border-radius: 14px;
-      padding: 10px 12px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
-    }
-    .chapter-menu-item.active {
-      background: #FEF08A;
-      border-color: var(--gold-primary);
-      box-shadow: 0 0 14px rgba(245, 158, 11, 0.6);
-      transform: translateX(3px);
-    }
-    .chapter-menu-text {
-      font-family: var(--font-tamil);
-      font-size: 1.05rem;
-      font-weight: 800;
-      color: var(--text-temple);
-      line-height: 1.25;
-      text-align: left;
-    }
-    .master-temple-stage.collapsed-sidebar .chapter-menu-text { display: none; }
-
-    /* RIGHT WORKSPACE */
-    .workspace-floating-plaque {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 4px 8px;
-      gap: 8px;
-      position: relative;
-      z-index: 15;
-      min-height: 0;
-      height: 100%;
-    }
-
-    .palm-scroll-banner-box {
-      width: 100%;
-      height: 74px;
-      margin-top: 36px;
-      background: url('assets/palm-scroll-banner.webp') no-repeat center center;
-      background-size: 100% 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 110px 0 70px;
-      filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.45));
-      flex-shrink: 0;
-      position: relative;
-    }
-    .banner-quest-title {
-      font-family: var(--font-tamil);
-      font-size: clamp(1.2rem, 1.8vw, 1.55rem);
-      font-weight: 900;
-      color: #351804;
-      line-height: 1.2;
-      text-align: center;
-      flex: 1;
-      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.45);
-    }
-
-    .freely-floating-parrot-btn {
-      width: 120px;
-      height: 210px;
-      position: absolute;
-      right: -10px;
-      top: -45px;
-      background: transparent;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.45));
-      z-index: 25;
-    }
-    .freely-floating-parrot-btn:active { transform: scale(0.92); }
-    .parrot-sprite-img { width: 100%; height: 100%; object-fit: contain; }
-
-    .quest-interactive-body {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 12px;
-      min-height: 0;
-      height: 100%;
-      width: 100%;
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* GATEWAY CARDS */
-    .subsections-gateway-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 14px;
-      width: 100%;
-      max-width: 860px;
-      margin: auto 0;
-      overflow-y: auto;
-      padding: 8px;
-    }
-    .subsection-portal-card {
-      background: rgba(255, 255, 255, 0.94);
-      border: 2.5px solid var(--border-ornament);
-      border-radius: 18px;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 10px;
-      cursor: pointer;
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
-      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    .subsection-portal-card:hover {
-      transform: translateY(-3px) scale(1.02);
-      border-color: var(--gold-primary);
-    }
-
-    /* SIZED DUAL-LINE CANVAS STRIPS (VERTICAL RESPONSIVE GEOMETRY) */
-    .inline-blank-container {
-      display: inline-flex;
-      align-items: center;
-      vertical-align: middle;
-      background: #FFFFFF;
-      border: 2.5px solid var(--gold-primary);
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
-      overflow: hidden;
-      width: 540px;
-      max-width: 100%;
-      height: 104px;
-    }
-    .inline-blank-container.full-sentence-strip {
-      width: 100% !important;
-      height: 110px;
-    }
-    .inline-blank-container.split-word-strip {
-      width: 360px !important;
-      max-width: calc(50% - 20px);
-      height: 104px;
-    }
-    .inline-blank-container.matching-strip {
-      width: 380px !important;
-      height: 98px;
-    }
-
-    .inline-canvas-wrapper {
-      position: relative;
-      height: 100%;
-      background: #FFFFFF;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      flex: 1;
-    }
-    .dual-lines-texture {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 1;
-      background-color: #FFFFFF;
-      background-image: repeating-linear-gradient(
-        #FFFFFF 0px,
-        #FFFFFF 28px,
-        var(--ruled-guide) 29px,
-        #FFFFFF 30px,
-        #FFFFFF 68px,
-        var(--ruled-guide) 69px,
-        #FFFFFF 70px,
-        #FFFFFF 104px
-      );
-      opacity: 0.95;
-    }
-    .dual-lines-texture::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 20px;
-      width: 2.5px;
-      height: 100%;
-      background: var(--ruled-base);
-      opacity: 0.9;
-    }
-    .dual-canvas {
-      position: absolute;
-      inset: 0;
-      cursor: crosshair;
-      touch-action: none;
-      z-index: 3;
-    }
-    .strip-action-btn {
-      background: #F8FAFC;
-      border: none;
-      border-left: 2px solid #CBD5E1;
-      padding: 0 14px;
-      height: 100%;
-      cursor: pointer;
-      font-size: 1.25rem;
-      color: #64748B;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 4;
-      transition: background 0.15s;
-    }
-    .strip-action-btn:active { background: #E2E8F0; }
-
-    /* FULL-SCREEN SUBSECTION MODAL */
-    #sectionModalStage {
-      position: fixed;
-      inset: 0;
-      z-index: 80000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      background: rgba(12, 6, 3, 0.75);
-      backdrop-filter: blur(8px);
-      opacity: 0;
-      transition: opacity 0.25s ease;
-    }
-    #sectionModalStage.open { opacity: 1; }
-    .modal-parchment-window {
-      width: min(1180px, 96vw);
-      height: min(800px, 93vh);
-      background: #FFFDF9;
-      border: 3.5px solid var(--gold-primary);
-      border-radius: 24px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.75);
-      transform: scale(0.95);
-      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    #sectionModalStage.open .modal-parchment-window {
-      transform: scale(1);
-    }
-    .modal-header-bar {
-      padding: 10px 18px;
-      border-bottom: 2px solid rgba(201, 168, 106, 0.4);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #FFFBEB;
-      flex-shrink: 0;
-    }
-    .modal-scrollable-body {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px 20px 60px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      touch-action: pan-y !important;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    /* QUESTION CARDS */
-    .q-card-item {
-      background: #FFFFFF;
-      border: 2px solid #E2E8F0;
-      border-radius: 16px;
-      padding: 16px 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    }
-    .q-stem-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    .q-stem-tamil {
-      font-family: var(--font-tamil);
-      font-size: calc(1.25rem * var(--content-scale));
-      font-weight: 800;
-      color: var(--text-temple);
-      line-height: 1.45;
-    }
-    .tap-word-speech {
-      display: inline-block;
-      cursor: pointer;
-      padding: 2px 4px;
-      border-radius: 4px;
-      transition: background 0.15s;
-    }
-    .tap-word-speech:hover, .tap-word-speech:active {
-      background: #FEF08A;
-      color: #92400E;
-    }
-
-    .translit-badge {
-      background: #F1F5F9;
-      color: #475569;
-      font-size: 0.85rem;
-      font-weight: 800;
-      padding: 3px 8px;
-      border-radius: 8px;
-      border: 1px solid #CBD5E1;
-      margin-left: 6px;
-      display: inline-block;
-    }
-
-    /* MCQ OPTIONS */
-    .mcq-options-grid {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .mcq-option-pill {
-      background: #F8FAFC;
-      border: 2px solid #E2E8F0;
-      border-radius: 12px;
-      padding: 8px 16px;
-      font-family: var(--font-tamil);
-      font-size: calc(1.08rem * var(--content-scale));
-      font-weight: 800;
-      cursor: pointer;
-      transition: all 0.15s;
-      color: #334155;
-    }
-    .mcq-option-pill:active { transform: scale(0.96); }
-    .mcq-option-pill.selected {
-      background: #FEF3C7;
-      border-color: #D97706;
-      color: #92400E;
-      box-shadow: 0 0 10px rgba(217, 119, 6, 0.35);
-    }
-
-    /* PRACTICE GHOST ANSWER BANNER */
-    .practice-ghost-answer {
-      background: #ECFDF5;
-      border: 1.5px dashed #10B981;
-      color: #065F46;
-      font-family: var(--font-tamil);
-      font-size: calc(1.08rem * var(--content-scale));
-      font-weight: 800;
-      padding: 8px 14px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    /* 3-COLUMN MATCHING TABLE */
-    .matching-3col-table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0 12px;
-    }
-    .matching-row {
-      background: #FFFFFF;
-      border: 2px solid #E2E8F0;
-      border-radius: 16px;
-      padding: 10px;
-    }
-    .col-prompt {
-      width: 26%;
-      font-family: var(--font-tamil);
-      font-size: 1.18rem;
-      font-weight: 800;
-      color: var(--text-temple);
-      padding: 6px 12px;
-    }
-    .col-target {
-      width: 34%;
-      padding: 6px;
-    }
-    .col-canvas {
-      width: 40%;
-      padding: 6px 12px;
-    }
-
-    /* EDHUGAI BLOCK DISPLAY */
-    .edhugai-paired-box {
-      background: #FDF2F8;
-      border: 2px dashed #F472B6;
-      border-radius: 18px;
-      padding: 12px 18px;
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-      font-family: var(--font-tamil);
-      font-size: 1.3rem;
-      font-weight: 900;
-      color: #831843;
-      margin-bottom: 8px;
-    }
-
-    /* KINARU CARDS (FULL-WIDTH WRITING AREA) */
-    .kinaru-card-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      width: 100%;
-      margin-top: 10px;
-    }
-    .kinaru-item-card {
-      background: #F8FAFC;
-      border: 2px solid #E2E8F0;
-      border-radius: 16px;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    /* SCOREBOARD REVIEW MODAL */
-    #pinModal {
-      position: fixed; inset: 0; z-index: 95000;
-      display: none; align-items: center; justify-content: center;
-      background: rgba(12, 6, 3, 0.8); backdrop-filter: blur(8px);
-    }
-    #pinModal.open { display: flex; }
-    .pin-box {
-      background: #FFFDF9; border: 3px solid var(--gold-primary); border-radius: 22px;
-      padding: 22px 24px; width: min(340px, 92vw); text-align: center;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.55);
-    }
-    .pin-box h3 { margin: 0 0 6px; font-family: var(--font-tamil); font-size: 1.2rem; font-weight: 900; color: var(--text-temple); }
-    .pin-box p { margin: 0 0 12px; font-size: 0.85rem; font-weight: 700; color: #78716c; }
-    .pin-input {
-      width: 100%; text-align: center; font-size: 1.5rem; font-weight: 900;
-      letter-spacing: 0.35em; padding: 12px; border: 2px solid #FBBF24; border-radius: 14px;
-      outline: none; margin-bottom: 10px; background: #fff;
-    }
-    .pin-input:focus { border-color: #D97706; }
-    .pin-err { color: #DC2626; font-size: 0.8rem; font-weight: 800; min-height: 1.2em; margin-bottom: 8px; }
-    .pin-actions { display: flex; gap: 10px; }
-    .pin-actions button {
-      flex: 1; padding: 11px; border-radius: 12px; font-weight: 800; font-size: 0.9rem;
-      cursor: pointer; border: 2px solid #E7D5B0; background: #fff; color: var(--text-temple);
-    }
-    .pin-actions .go { background: #D97706; color: #fff; border-color: #B45309; }
-
-    #scoreReviewModal {
-      position: fixed;
-      inset: 0;
-      z-index: 90000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      background: rgba(12, 6, 3, 0.75);
-      backdrop-filter: blur(6px);
-    }
-    .scoreboard-card {
-      background: #FFFDF9;
-      border: 3.5px solid var(--gold-primary);
-      border-radius: 24px;
-      padding: 22px;
-      width: min(680px, 94vw);
-      max-height: 88vh;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.6);
-    }
-
-    .workspace-footer-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-top: 2px dashed rgba(245, 158, 11, 0.6);
-      padding-top: 5px;
-      flex-shrink: 0;
-    }
-    .status-text-pill {
-      font-family: var(--font-tamil);
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: var(--text-temple);
-      background: rgba(255, 253, 246, 0.94);
-      padding: 5px 14px;
-      border-radius: 14px;
-      border: 1.5px solid var(--border-ornament);
-    }
-    .btn-verify-seal {
-      background: linear-gradient(180deg, #16A34A 0%, #15803D 100%);
-      border: 2.5px solid #86EFAC;
-      color: #FFFFFF;
-      font-size: 1.4rem;
-      width: 48px;
-      height: 40px;
-      border-radius: 14px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.45);
-      transition: all 0.15s ease;
-    }
-    .btn-verify-seal:active { transform: scale(0.94); }
-
-    /* CELEBRATION STAGE */
-    #celebrationFinaleStage {
-      position: fixed;
-      inset: 0;
-      z-index: 100000;
-      display: none;
-      overflow: hidden;
-      background: radial-gradient(circle at center, rgba(30, 15, 6, 0.45) 0%, rgba(14, 7, 2, 0.92) 100%);
-      backdrop-filter: blur(6px);
-    }
-    #finaleCanvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 10;
-      pointer-events: none;
-    }
-    .soaring-parrot-rocket {
-      position: absolute;
-      width: 140px;
-      height: 140px;
-      z-index: 20;
-      pointer-events: none;
-    }
-    .soaring-parrot-rocket img { width: 100%; height: 100%; object-fit: contain; }
-
-    .victory-award-scroll {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.3);
-      width: 90%;
-      max-width: 540px;
-      background: #FFFDF9;
-      border: 4px solid var(--gold-primary);
-      border-radius: 26px;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      gap: 12px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85);
-      z-index: 25;
-      opacity: 0;
-      transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
-    }
-    .victory-award-scroll.impact {
-      transform: translate(-50%, -50%) scale(1);
-      opacity: 1;
-    }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+<title>Zaina's Tamil Temple Quest: இயல் 4</title>
+<link href="https://fonts.googleapis.com/css2?family=Mukta+Malar:wght@700;800;900&family=Nunito:wght@800;900&display=swap" rel="stylesheet">
+<script src="shared/safe-storage.js"></script>
+<style>
+:root{--gold:#D97706;--gold2:#B45309;--ink:#1E3A8A;--paper:#FFFEFB;--ruled:#93C5FD;--ruledRed:#EF4444;--tamil:'Mukta Malar',sans-serif;--ui:'Nunito',sans-serif;--scale:1}
+*{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;font-family:var(--ui)}
+html,body{width:100%;height:100%;height:100dvh;overflow:hidden;background:#0C0603;color:#3C1904}
+body{display:flex;flex-direction:column;padding:6px 10px;gap:6px}
+.top{height:46px;display:flex;align-items:center;justify-content:space-between;z-index:50;flex-shrink:0}
+.hg{display:flex;gap:7px;align-items:center}
+.hb{background:rgba(255,255,255,.96);border:2px solid #FBBF24;width:42px;height:38px;border-radius:12px;font-size:1.15rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 8px rgba(0,0,0,.2)}
+.hb.on{background:#DCFCE7;border-color:#16A34A}
+.seg{display:flex;background:rgba(255,255,255,.96);border:2px solid #FBBF24;border-radius:22px;padding:3px;gap:3px;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.seg button{border:none;background:transparent;padding:4px 18px;border-radius:18px;font-size:1.15rem;cursor:pointer}
+.seg button.active{background:linear-gradient(180deg,#F59E0B,#D97706);box-shadow:0 2px 8px rgba(217,119,6,.4)}
+.stage{flex:1;display:grid;grid-template-columns:280px 1fr;gap:12px;padding:10px 14px;border:4px solid #5A3C22;border-radius:22px;overflow:hidden;background:#110B07 url('assets/village-bg.webp') center/cover no-repeat;box-shadow:0 16px 45px rgba(0,0,0,.85);min-height:0;transition:grid-template-columns .3s}
+.stage.collapsed{grid-template-columns:72px 1fr}
+.left{display:flex;flex-direction:column;gap:8px;overflow-y:auto}
+.coll{ align-self:flex-end;background:rgba(255,255,255,.9);border:1.5px solid var(--gold);border-radius:8px;padding:2px 8px;font-size:.8rem;font-weight:900;cursor:pointer}
+.hero{width:100%;height:150px;display:flex;align-items:flex-end;justify-content:center;cursor:pointer;flex-shrink:0}
+.hero img{max-height:100%;max-width:100%;object-fit:contain;filter:drop-shadow(0 8px 14px rgba(0,0,0,.5))}
+.chs{display:flex;flex-direction:column;gap:8px}
+.ch{background:rgba(255,253,246,.94);border:2px solid rgba(217,119,6,.5);border-radius:14px;padding:10px 12px;display:flex;gap:10px;align-items:center;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.15);transition:.15s}
+.ch.active{background:#FEF08A;border-color:var(--gold);box-shadow:0 0 14px rgba(245,158,11,.6);transform:translateX(3px)}
+.ct{font-family:var(--tamil);font-size:1.02rem;font-weight:800;line-height:1.25;color:#451A03;text-align:left}
+.stage.collapsed .ct{display:none}
+.right{display:flex;flex-direction:column;gap:8px;min-height:0;height:100%;z-index:15}
+.banner{width:100%;height:70px;margin-top:34px;background:url('assets/palm-scroll-banner.webp') center/100% 100% no-repeat;display:flex;align-items:center;justify-content:center;padding:0 90px 0 50px;filter:drop-shadow(0 6px 14px rgba(0,0,0,.4));flex-shrink:0;position:relative}
+.bt{font-family:var(--tamil);font-size:clamp(1.15rem,1.6vw,1.45rem);font-weight:900;color:#351804;text-align:center;flex:1;text-shadow:0 1px 0 rgba(255,255,255,.4)}
+.parrot{width:100px;height:160px;position:absolute;right:-8px;top:-36px;background:transparent;border:none;cursor:pointer;filter:drop-shadow(0 8px 12px rgba(0,0,0,.4));z-index:20}
+.parrot img{width:100%;height:100%;object-fit:contain}
+.body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:10px;min-height:0;height:100%;width:100%;overflow:hidden}
+.gate{width:100%;max-width:860px;margin:auto 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;padding:6px;overflow-y:auto}
+.gc{background:rgba(255,255,255,.94);border:2.5px solid #FBBF24;border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:8px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.2);transition:.2s}
+.gc:hover{transform:translateY(-2px) scale(1.01);border-color:var(--gold)}
+.strip{position:relative;display:inline-flex;align-items:center;background:#FFF;border:2.5px solid #D97706;border-radius:14px;box-shadow:0 4px 12px rgba(0,0,0,.15);overflow:hidden;width:520px;max-width:100%;flex-shrink:0}
+.strip.s360{width:360px}.strip.s380{width:380px}.strip.full{width:100%}
+.wrap{position:relative;height:100px;flex:1;background:#FFF;overflow:hidden;display:flex}
+.lines{position:absolute;inset:0;pointer-events:none;z-index:1;background:#FFF;background-image:repeating-linear-gradient(#FFF 0px,#FFF 28px,var(--ruled) 29px,#FFF 30px,#FFF 68px,var(--ruled) 69px,#FFF 70px,#FFF 100px);opacity:.9}
+.lines::after{content:'';position:absolute;top:0;left:18px;width:2px;height:100%;background:var(--ruledRed);opacity:.8}
+.ink{position:absolute;inset:0;cursor:crosshair;touch-action:none;z-index:3}
+.sb{background:#F8FAFC;border:none;border-left:2px solid #E2E8F0;padding:0 11px;height:100px;cursor:pointer;font-size:1.1rem;color:#64748B;font-weight:800;display:flex;align-items:center;justify-content:center;z-index:4}
+.sb.del{color:#DC2626}
+#modal{position:fixed;inset:0;z-index:80000;display:none;align-items:center;justify-content:center;background:rgba(12,6,3,.75);backdrop-filter:blur(8px);opacity:0;transition:opacity .25s}
+#modal.open{opacity:1}
+.mwin{width:min(1120px,96vw);height:min(780px,92vh);background:#FFFEFB;border:3.5px solid var(--gold);border-radius:24px;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.7);transform:scale(.95);transition:transform .25s}
+#modal.open .mwin{transform:scale(1)}
+.mh{padding:10px 16px;border-bottom:2px solid rgba(201,168,106,.35);display:flex;justify-content:space-between;align-items:center;background:#FFFBEB;flex-shrink:0}
+.mb{flex:1;overflow-y:auto;padding:16px 18px 50px;display:flex;flex-direction:column;gap:14px;touch-action:pan-y !important}
+.qc{background:#FFF;border:2px solid #E2E8F0;border-radius:16px;padding:14px 18px;display:flex;flex-direction:column;gap:10px;box-shadow:0 3px 8px rgba(0,0,0,.04)}
+.qs{font-family:var(--tamil);font-size:calc(1.18rem * var(--scale));font-weight:800;color:#451A03;line-height:1.45}
+.tw{display:inline-block;cursor:pointer;padding:1px 3px;border-radius:4px}
+.tw:hover{background:#FEF08A}
+.badge{display:inline-block;background:#F1F5F9;color:#475569;font-size:.78rem;font-weight:800;padding:2px 7px;border-radius:7px;border:1px solid #CBD5E1;margin-left:5px}
+.hint{background:#ECFDF5;border:1.5px dashed #10B981;color:#065F46;font-family:var(--tamil);font-size:calc(1rem * var(--scale));font-weight:700;padding:7px 12px;border-radius:12px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.mcq{display:flex;gap:7px;flex-wrap:wrap}
+.mcq button{background:#F8FAFC;border:2px solid #E2E8F0;border-radius:12px;padding:6px 14px;font-family:var(--tamil);font-size:calc(1rem * var(--scale));font-weight:800;cursor:pointer;color:#334155;transition:.12s}
+.mcq button.sel{background:#FEF3C7;border-color:var(--gold);color:var(--gold2);box-shadow:0 0 8px rgba(217,119,6,.3)}
+.foot{display:flex;justify-content:space-between;align-items:center;border-top:2px dashed rgba(245,158,11,.55);padding-top:5px;flex-shrink:0}
+.stat{font-family:var(--tamil);font-size:.9rem;font-weight:800;background:rgba(255,253,246,.94);padding:5px 12px;border-radius:12px;border:1.5px solid #FBBF24}
+.ver{background:linear-gradient(180deg,#16A34A,#15803D);border:2.5px solid #86EFAC;color:#FFF;font-size:1.3rem;width:46px;height:38px;border-radius:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(22,163,74,.4)}
+#pinM{position:fixed;inset:0;z-index:95000;display:none;align-items:center;justify-content:center;background:rgba(12,6,3,.8);backdrop-filter:blur(8px)}
+#pinM.open{display:flex}
+.pinB{background:#FFFEFB;border:3px solid var(--gold);border-radius:22px;padding:22px 24px;width:min(340px,92vw);text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.55)}
+#scoreM{position:fixed;inset:0;z-index:90000;display:none;align-items:center;justify-content:center;background:rgba(12,6,3,.75);backdrop-filter:blur(6px)}
+.scoreC{background:#FFFEFB;border:3.5px solid var(--gold);border-radius:24px;padding:20px;width:min(680px,94vw);max-height:88vh;display:flex;flex-direction:column;gap:12px;box-shadow:0 16px 45px rgba(0,0,0,.6)}
+#penB,#erasB{position:fixed;z-index:99990;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#5A3C22,#8B5A2B);box-shadow:0 8px 24px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none;transition:transform .12s;font-size:22px}
+#penB{bottom:90px;right:14px}#erasB{bottom:90px;right:78px;background:linear-gradient(135deg,#6B7280,#9CA3AF)}
+#penB.on,#erasB.on{box-shadow:0 0 0 3px #FEF3C7,0 8px 24px rgba(0,0,0,.35)}
+#penBar{position:fixed;z-index:99991;background:rgba(255,255,255,.98);border:2px solid #E7D5B0;border-radius:18px;padding:8px;box-shadow:0 16px 40px rgba(0,0,0,.22);transform:scale(.9);opacity:0;pointer-events:none;transition:all .22s;display:flex;gap:6px;align-items:center;flex-wrap:wrap;max-width:calc(100vw - 20px)}
+#penBar.open{transform:scale(1);opacity:1;pointer-events:auto}
+.pb{width:36px;height:36px;border-radius:10px;border:2px solid #E7D5B0;background:#FFF;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:.12s;position:relative}
+.pb.on{background:#FEF3C7;border-color:#8B5A2B}
+.pop{position:absolute;bottom:46px;left:50%;transform:translateX(-50%) scale(.9);opacity:0;pointer-events:none;transition:.18s;background:rgba(255,255,255,.98);border:2px solid #E7D5B0;border-radius:14px;padding:8px;box-shadow:0 8px 24px rgba(0,0,0,.18);white-space:nowrap;z-index:99992}
+.pop.open{transform:translateX(-50%) scale(1);opacity:1;pointer-events:auto}
+.pr{display:flex;gap:6px;align-items:center;margin-bottom:6px}.pr:last-child{margin-bottom:0}
+.pm{width:32px;height:32px;border-radius:8px;border:2px solid #E7D5B0;background:#FFF;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
+.pm.on{background:#FEF3C7;border-color:#8B5A2B}
+.pd{width:26px;height:26px;border-radius:50%;cursor:pointer;border:3px solid #FFF;box-shadow:0 0 0 2px #E7D5B0}
+.pd.on{box-shadow:0 0 0 2px #8B5A2B;transform:scale(1.1)}
+#snd{position:fixed;bottom:16px;left:12px;z-index:99990;width:42px;height:42px;border-radius:50%;background:#FFF;border:2px solid #8B5A2B;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+#finale{position:fixed;inset:0;z-index:100000;display:none;overflow:hidden;background:radial-gradient(circle at center,rgba(30,15,6,.4) 0%,rgba(14,7,2,.92) 100%);backdrop-filter:blur(6px)}
+#finaleC{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+</style>
 </head>
 <body>
-
-  <!-- TOP HUD -->
-  <header class="top-hud-bar">
-    <div class="hud-group-left">
-      <button type="button" class="hud-icon-btn" onclick="goToHub()" title="முகப்பு">🪷</button>
-      <button type="button" class="pen-toggle-btn pen-active" id="btnPenMode" onclick="togglePenMode()" title="எழுதுகோல் மட்டும்">🖊️</button>
-      <button type="button" class="hud-icon-btn" onclick="cycleFontScale()" title="Font Size (Aa)">Aa</button>
-    </div>
-
-    <div class="mode-switch-segmented">
-      <button type="button" class="mode-tab-icon-pill active" id="tabPractice" onclick="setAppMode('practice')" title="பயிற்சி (Practice)">📖</button>
-      <button type="button" class="mode-tab-icon-pill" id="tabWrite" onclick="setAppMode('write')" title="எழுதுதல் (Write Exam)">✍️</button>
-    </div>
-
-    <div class="hud-group-right">
-      <button type="button" class="hud-icon-btn" onclick="confirmResetCurrentSection()" title="அழித்துத் தொடங்கு">🗑️</button>
-    </div>
-  </header>
-
-  <!-- MASTER STAGE -->
-  <main class="master-temple-stage" id="masterStageContainer">
-
-    <!-- LEFT DECK: 3 MAJOR CHAPTER TABS -->
-    <aside class="mentor-side-deck">
-      <button type="button" class="sidebar-collapse-toggle" onclick="toggleSidebarCollapse()" title="சுருக்கு / விரி">◀</button>
-      <div class="thiruvalluvar-terrace-hero" onclick="toggleSidebarCollapse()">
-        <img src="assets/thiruvalluvar.webp" class="thiruvalluvar-hero-img" alt="திருவள்ளுவர்" onerror="handleImageFallback(this)" />
-      </div>
-      <div class="chapter-menu-container" id="chapterTabsContainer"></div>
-    </aside>
-
-    <!-- RIGHT WORKSPACE -->
-    <section class="workspace-floating-plaque">
-      <div class="palm-scroll-banner-box">
-        <div class="banner-quest-title" id="bannerHeaderTamil">இயல் 4: தமிழ் பயிற்சி ஏடு</div>
-        <button type="button" class="freely-floating-parrot-btn" onclick="speakCurrentHeader()" title="ஒலி">
-          <img src="assets/mentor-parrot.webp" class="parrot-sprite-img" alt="கிளி" onerror="handleImageFallback(this)" />
-        </button>
-      </div>
-
-      <div class="quest-interactive-body" id="stageContentBody"></div>
-
-      <div class="workspace-footer-bar">
-        <span class="status-text-pill" id="statusNoticeText">பிரிவைத் தேர்ந்தெடுத்து பயிற்சியைத் தொடங்குக!</span>
-        <button type="button" class="btn-verify-seal" onclick="handleVerifyClick()" title="சரிபார் / மதிப்பீடு">✨</button>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- FULLSCREEN SUBSECTION WINDOW MODAL -->
-  <div id="sectionModalStage">
-    <div class="modal-parchment-window">
-      <div class="modal-header-bar">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span style="font-size:1.4rem;">📜</span>
-          <span style="font-family:var(--font-tamil); font-size:1.3rem; font-weight:900; color:#92400E;" id="modalSubSectionTitle">பிரிவு</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:8px;">
-          <button type="button" class="hud-icon-btn" id="btnShuffleSection" onclick="triggerFisherYatesShuffle()" title="வரிசையை மாற்று (Shuffle)">🔄</button>
-          <button type="button" class="hud-icon-btn" onclick="closeSectionModal()" title="மூடு (Close)" style="background:#FEE2E2; border-color:#EF4444; color:#991B1B;">✕</button>
-        </div>
-      </div>
-      <div class="modal-scrollable-body" id="modalQuestionsBody"></div>
-    </div>
-  </div>
-
-  <!-- SCOREBOARD / EVALUATION MODAL -->
-  <!-- PARENT PIN: unlock Practice from Write -->
-  <div id="pinModal">
-    <div class="pin-box">
-      <h3>🔒 பெற்றோர் திறப்பு</h3>
-      <p>Write → Practice திரும்ப PIN உள்ளிடவும்</p>
-      <div class="pin-err" id="pinErr"></div>
-      <input type="password" class="pin-input" id="pinInput" maxlength="6" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="••••" />
-      <div class="pin-actions">
-        <button type="button" onclick="closePinModal()">ரத்து</button>
-        <button type="button" class="go" onclick="submitParentPin()">திற</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="scoreReviewModal">
-    <div class="scoreboard-card">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <span style="font-family:var(--font-tamil); font-size:1.4rem; font-weight:900; color:#92400E;">🎯 தேர்வு மதிப்பீட்டுப் பட்டியல்</span>
-        <button type="button" class="hud-icon-btn" style="width:34px; height:32px;" onclick="closeScoreReview()">✕</button>
-      </div>
-      <div style="display:flex; justify-content:space-around; background:#FEF3C7; padding:12px; border-radius:16px; border:2px solid #F59E0B;">
-        <div style="text-align:center;">
-          <div style="font-size:0.85rem; font-weight:800; color:#92400E;">மதிப்பெண்</div>
-          <div style="font-size:1.8rem; font-weight:900; color:#B45309;" id="scoreSummaryMark">0 / 23</div>
-        </div>
-        <div style="text-align:center;">
-          <div style="font-size:0.85rem; font-weight:800; color:#92400E;">தேர்ச்சி நிலை</div>
-          <div style="font-size:1.4rem; font-weight:900; color:#15803D;" id="scoreGradeStatus">நன்று</div>
-        </div>
-      </div>
-      <div style="flex:1; overflow-y:auto; max-height:42vh; padding-right:6px;" id="scoreReviewList"></div>
-      <button type="button" class="btn-verify-seal" style="width:100%; border-radius:14px; font-size:1.1rem; height:44px;" onclick="finalizeGradingAndCelebrate()">
-        முழு நிறைவு செய்து கொண்டாடு 🪷
-      </button>
-    </div>
-  </div>
-
-  <!-- GRAND CELEBRATION STAGE -->
-  <div id="celebrationFinaleStage">
-    <canvas id="finaleCanvas"></canvas>
-    <div class="soaring-parrot-rocket" id="soaringParrot">
-      <img src="assets/mentor-parrot.webp" alt="Parrot" onerror="handleImageFallback(this)" />
-    </div>
-    <div class="victory-award-scroll" id="victoryAwardScroll">
-      <div style="font-size:3.5rem;">🪷</div>
-      <div style="font-family:var(--font-tamil); font-size:2rem; font-weight:900; color:#92400E;">
-        அற்புதம் ஜைனா! வெற்றி!
-      </div>
-      <div style="font-family:var(--font-tamil); font-size:1.15rem; font-weight:700; color:#451A03; line-height:1.6;">
-        இயல் 4 பாடத்தின் அனைத்து வினாக்களையும் முழுமையாக முடித்துவிட்டீர்கள்!<br/>
-        திருக்குறள் • வீரக்கலைகள் • இணைப்புச்சொற்கள் • பூமி நாள்
-      </div>
-      <button type="button" class="btn-verify-seal" style="width:auto; padding:8px 28px; font-size:1.15rem;" onclick="closeCelebrationStage()">
-        ➔
-      </button>
-    </div>
-  </div>
-
-  <script>
-    /* 1. RELIABLE TAMIL TTS & AUDIO FX */
-    let availableVoices = [];
-    function initVoices() {
-      if (!('speechSynthesis' in window)) return;
-      availableVoices = window.speechSynthesis.getVoices();
-    }
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.onvoiceschanged = initVoices;
-      initVoices();
-    }
-
-    function speakText(rawText) {
-      if (!('speechSynthesis' in window)) return;
-      const clean = String(rawText || '').replace(/[=:\.\?,!_()"-]/g, ' ').trim();
-      if (!clean) return;
-
-      try {
-        window.speechSynthesis.cancel();
-        if (availableVoices.length === 0) initVoices();
-        
-        const tamilVoice = availableVoices.find(v => v.lang && (v.lang.toLowerCase().startsWith('ta') || v.lang.toLowerCase().includes('tamil')));
-        const u = new SpeechSynthesisUtterance(clean);
-        if (tamilVoice) u.voice = tamilVoice;
-        u.lang = 'ta-IN';
-        u.rate = 0.82;
-        u.pitch = 1.0;
-        window.speechSynthesis.speak(u);
-      } catch (err) {}
-    }
-
-    class TempleAudioFX {
-      constructor() { this.ctx = null; }
-      init() {
-        if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-        if (this.ctx.state === 'suspended') this.ctx.resume();
-      }
-      playVeena(freq = 440) {
-        try {
-          this.init();
-          const t0 = this.ctx.currentTime;
-          const osc = this.ctx.createOscillator();
-          const gain = this.ctx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(freq, t0);
-          osc.frequency.exponentialRampToValueAtTime(freq * 0.98, t0 + 0.28);
-          gain.gain.setValueAtTime(0.35, t0);
-          gain.gain.exponentialRampToValueAtTime(0.001, t0 + 0.35);
-          osc.connect(gain);
-          gain.connect(this.ctx.destination);
-          osc.start(t0);
-          osc.stop(t0 + 0.38);
-        } catch (_) {}
-      }
-      playBell() {
-        try {
-          this.init();
-          const t0 = this.ctx.currentTime;
-          [523.25, 783.99, 1046.50].forEach((f, i) => {
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(f, t0 + i * 0.05);
-            gain.gain.setValueAtTime(0.25, t0 + i * 0.05);
-            gain.gain.exponentialRampToValueAtTime(0.001, t0 + i * 0.05 + 1.2);
-            osc.connect(gain);
-            gain.connect(this.ctx.destination);
-            osc.start(t0 + i * 0.05);
-            osc.stop(t0 + i * 0.05 + 1.25);
-          });
-        } catch (_) {}
-      }
-    }
-    const audioFX = new TempleAudioFX();
-
-    /* 2. CURRICULUM DATA MODEL */
-    const CURRICULUM = [
-      {
-        id: "ch1",
-        title: "இயல் - 4 செய்யுள்: திருக்குறள்",
-        sub: "பண்புடைமை • வினா-விடைகள்",
-        sections: [
-          {
-            id: "ch1_mcq",
-            title: "அ. சரியான விடையைத் தெரிவு செய்து எழுதுக",
-            type: "mcq",
-            questions: [
-              {
-                id: "ch1_q1",
-                stem: "இகழ்ச்சி இச்சொல்லின் பொருள்",
-                translit: "Igalchchi ichchollin porul",
-                options: ["இரத்தல்", "உயர்தல்", "இகழ்தல்", "மகிழ்தல்"],
-                answer: "இகழ்தல்",
-                ansTranslit: "Igazhdhal"
-              },
-              {
-                id: "ch1_q2",
-                stem: "பெருஞ்செல்வம் இச்சொல்லைப் பிரித்து எழுதக் கிடைப்பது",
-                translit: "Perunjchelvam pirithu ezhudha",
-                options: ["பெருஞ் + செல்வம்", "பெரும் + செல்வம்", "பெருமை + செல்வம்", "பெரு + செல்வம்"],
-                answer: "பெரும் + செல்வம்",
-                ansTranslit: "Perum + Selvam"
-              },
-              {
-                id: "ch1_q3",
-                stem: "பண்புடைமை இச்சொல்லைப் பிரித்து எழுதக் கிடைப்பது",
-                translit: "Panpudaimai pirithu ezhudha",
-                options: ["பண் + புடைமை", "பண்பு + புடைமை", "பண்பு + உடைமை", "பண் + உடைமை"],
-                answer: "பண்பு + உடைமை",
-                ansTranslit: "Panbu + Udaimai"
-              },
-              {
-                id: "ch1_q4",
-                stem: "மரம் + போல்வர் இச்சொற்களைச் சேர்த்து எழுதக் கிடைப்பது",
-                translit: "Maram + polvar serthu ezhudha",
-                options: ["மரபோல்வர்", "மரமேல்வர்", "மரம்போல்வர்", "மரப்போல்வர்"],
-                answer: "மரபோல்வர்",
-                ansTranslit: "Marapolvar"
-              },
-              {
-                id: "ch1_q5",
-                stem: "செய்யுளில், நேர்மை என்னும் பொருள் தரும் சொல்",
-                translit: "Seyyulil nermai porul tharum sol",
-                options: ["நயன்", "அறம்", "பகை", "நன்பால்"],
-                answer: "நயன்",
-                ansTranslit: "Nayan"
-              }
-            ]
-          },
-          {
-            id: "ch1_split",
-            title: "ஆ. கீழ்க்காணும் சொற்களைப் பிரித்து எழுதுக (Screenshot 1)",
-            type: "dual_strip_split",
-            questions: [
-              {
-                id: "ch1_s1",
-                stem: "இவ்விரண்டும் = ",
-                translit: "Ivvrandum",
-                part1Ans: "இ",
-                part1Translit: "I",
-                part2Ans: "இரண்டும்",
-                part2Translit: "Irandum"
-              },
-              {
-                id: "ch1_s2",
-                stem: "மக்கட்பண்பு = ",
-                translit: "Makkadpanbu",
-                part1Ans: "மக்கள்",
-                part1Translit: "Makkal",
-                part2Ans: "பண்பு",
-                part2Translit: "Panbu"
-              }
-            ]
-          },
-          {
-            id: "ch1_edhugai",
-            title: "இ. செய்யுளில் இரண்டாம் எழுத்து ஒன்றுபோல் வரும் சொற்கள் (எதுகை)",
-            type: "edhugai_blocks",
-            questions: [
-              {
-                id: "ch1_e1",
-                stem: "எதுகை இணை 1 (நகையுள்ளும் - பகையுள்ளும்)",
-                pairWord1: "நகையுள்ளும்",
-                pairWord2: "பகையுள்ளும்",
-                translit1: "Nagaiyullum",
-                translit2: "Pagaiyullum"
-              },
-              {
-                id: "ch1_e2",
-                stem: "எதுகை இணை 2 (அரம்போலும் - மரம்போல்வர்)",
-                pairWord1: "அரம்போலும்",
-                pairWord2: "மரம்போல்வர்",
-                translit1: "Arampolum",
-                translit2: "Marampolvar"
-              }
-            ]
-          },
-          {
-            id: "ch1_mai_ending",
-            title: "ஈ. ஈற்றில் 'மை' என முடியும் நான்கு சொற்கள்",
-            type: "handwriting_4list",
-            questions: [
-              { id: "ch1_m1", word: "நேர்மை", translit: "Nermai" },
-              { id: "ch1_m2", word: "உண்மை", translit: "Unmai" },
-              { id: "ch1_m3", word: "செம்மை", translit: "Semmai" },
-              { id: "ch1_m4", word: "நன்மை", translit: "Nanmai" }
-            ]
-          }
-        ]
-      },
-      {
-        id: "ch2",
-        title: "உரைநடை: தமிழர்களின் வீரக்கலைகள்",
-        sub: "சிலம்பம் • மற்போர் • ஏறுதழுவுதல்",
-        sections: [
-          {
-            id: "ch2_mcq",
-            title: "அ. சரியான விடையைத் தெரிவு செய்து எழுதுக",
-            type: "mcq",
-            questions: [
-              {
-                id: "ch2_q1",
-                stem: "தமிழரின் வீர விளையாட்டுகளுள் ஒன்று",
-                translit: "Thamizharin veera vilaiyattu",
-                options: ["சிலம்பாட்டம்", "பல்லாங்குழி", "மட்டைப்பந்து", "கூடைப்பந்து"],
-                answer: "சிலம்பாட்டம்",
-                ansTranslit: "Silambaattam"
-              },
-              {
-                id: "ch2_q2",
-                stem: "மஞ்சு விரட்டு என்பதைக் குறிக்கும் விளையாட்டு",
-                translit: "Manju virattu kurikkum vilaiyattu",
-                options: ["மற்போர்", "ஏறுதழுவுதல்", "சிலம்பாட்டம்", "வில்வித்தை"],
-                answer: "ஏறுதழுவுதல்",
-                ansTranslit: "Eruthazhuvudhal"
-              },
-              {
-                id: "ch2_q3",
-                stem: "தற்காப்பு இச்சொல்லைப் பிரித்து எழுதக் கிடைப்பது",
-                translit: "Tharkaappu pirithu ezhudha",
-                options: ["தற் + காப்பு", "தனி + காப்பு", "தன் + காப்பு", "தகவல் + காப்பு"],
-                answer: "தன் + காப்பு",
-                ansTranslit: "Than + Kaappu"
-              },
-              {
-                id: "ch2_q4",
-                stem: "மல் + போர் இச்சொற்களைச் சேர்த்து எழுதக் கிடைப்பது",
-                translit: "Mal + por serthu ezhudha",
-                options: ["மற்போர்", "மல்போர்", "மறப்போர்", "மட்டப்போர்"],
-                answer: "மற்போர்",
-                ansTranslit: "Marpor"
-              },
-              {
-                id: "ch2_q5",
-                stem: "ஒலிம்பிக் போட்டியில் சேர்க்கப்பட்டுள்ள கலை",
-                translit: "Olympic pottiyil serkkappatta kalai",
-                options: ["சிலம்பாட்டம்", "வில்வித்தை", "ஏறுதழுவுதல்", "வழுக்கு மரம் ஏறுதல்"],
-                answer: "வில்வித்தை",
-                ansTranslit: "Vilviththai"
-              }
-            ]
-          },
-          {
-            id: "ch2_join",
-            title: "ஆ. கீழ்க்காணும் சொற்களைச் சேர்த்து எழுதுக (Screenshot 2)",
-            type: "single_strip_join",
-            questions: [
-              {
-                id: "ch2_j1",
-                stem: "சிலம்பு + ஆட்டம் = ",
-                translit: "Silambu + Aattam",
-                ans: "சிலம்பாட்டம்",
-                ansTranslit: "Silambaattam"
-              },
-              {
-                id: "ch2_j2",
-                stem: "வீரம் + கலை = ",
-                translit: "Veeram + Kalai",
-                ans: "வீரக்கலை",
-                ansTranslit: "Veerakkalai"
-              }
-            ]
-          },
-          {
-            id: "ch2_split",
-            title: "இ. கீழ்க்காணும் சொற்களைப் பிரித்து எழுதுக (Screenshot 2)",
-            type: "dual_strip_split",
-            questions: [
-              {
-                id: "ch2_s1",
-                stem: "தனக்கென்று = ",
-                translit: "Thanakendru",
-                part1Ans: "தனக்கு",
-                part1Translit: "Thanakku",
-                part2Ans: "என்று",
-                part2Translit: "Endru"
-              },
-              {
-                id: "ch2_s2",
-                stem: "கொடைத்திறம் = ",
-                translit: "Kodaithiram",
-                part1Ans: "கொடை",
-                part1Translit: "Kodai",
-                part2Ans: "திறம்",
-                part2Translit: "Thiram"
-              }
-            ]
-          },
-          {
-            id: "ch2_match_3col",
-            title: "ஈ. பொருத்துக (3 நெடுவரிசை அமைப்பு)",
-            type: "matching_3col",
-            questions: [
-              { id: "ch2_m1", left: "காளை", leftTrans: "Kaalai", right: "திமில்", rightTrans: "Thimil" },
-              { id: "ch2_m2", left: "சிலம்பக்கலை", leftTrans: "Silambakkalai", right: "வளரி", rightTrans: "Valari" },
-              { id: "ch2_m3", left: "சிறுவாரைக்கம்பு", leftTrans: "Siruvaaraikkambu", right: "மூங்கில்", rightTrans: "Moongil" },
-              { id: "ch2_m4", left: "வேளாண்மை", leftTrans: "Veelaanmai", right: "உழவு", rightTrans: "Uzhavu" }
-            ],
-            optionsPool: ["திமில்", "வளரி", "மூங்கில்", "உழவு"]
-          }
-        ]
-      },
-      {
-        id: "ch3",
-        title: "இலக்கணம் & பாடப்பகுதி (இலக்கணம்.docx)",
-        sub: "இணைப்புச்சொற்கள் • சிங்கமுகக் கிணறு • பூமி நாள்",
-        sections: [
-          {
-            id: "ch3_page1",
-            title: "பக்கம் 1: இணைப்புச்சொற்கள் (பகுதி 1)",
-            type: "mcq",
-            questions: [
-              {
-                id: "ch3_p1_q1",
-                stem: "அண்ணன் வீட்டிற்குத் தாமதமாக வந்திருந்தார். _________ அவர் மிதிவண்டி பழுதடைந்து இருந்தது.",
-                translit: "Annan veettirku thaamadhamaga vandhirundhaar...",
-                options: ["ஆயினும்", "எனவே", "எனினும்", "ஏனெனில்"],
-                answer: "ஏனெனில்",
-                ansTranslit: "Enenil"
-              },
-              {
-                id: "ch3_p1_q2",
-                stem: "நான் நன்றாகப் படித்துப் பயிற்சி எடுத்தேன். _________ முதல் மதிப்பெண் பெற்றிருக்க முடியாது.",
-                translit: "Naan nandraaga padithu...",
-                options: ["ஆகையால்", "அப்படியில்லாவிட்டால்", "அப்படியானால்", "ஏனெனில்"],
-                answer: "அப்படியில்லாவிட்டால்",
-                ansTranslit: "Appadiyillaavittaal"
-              },
-              {
-                id: "ch3_p1_q3",
-                stem: "அம்மா இனிமையாகப் பாடுவார். _________ போட்டியில் பங்கு பெற முடியுமா?",
-                translit: "Amma inimaiyaaga paaduvaar...",
-                options: ["ஏனெனில்", "எனினும்", "ஆயினும்", "அப்படியானால்"],
-                answer: "அப்படியானால்",
-                ansTranslit: "Appadiyaanaal"
-              }
-            ]
-          },
-          {
-            id: "ch3_page2",
-            title: "பக்கம் 2: சிங்கமுகக் கிணறு & இன எழுத்துகள்",
-            type: "passage_table",
-            passage: 'பாட்டி, "அதுதான் சிங்கமுகக் கிணறு" என்றார். "என்னது? சிங்கத்தின் வயிற்றுக்குள் கிணறா?" என்று தன் இரு கைகளையும் கன்னத்தில் வைத்தபடி சோழர்களின் கலைத்திறனை எண்ணி வியந்தாள். தமிழர்களின் கலைத் திறமையைக் கண்டு உள்ளம் மகிழ்ந்த அவள், அக்கலைக்கூடத்தைவிட்டு வெளியே வர மனமில்லாமல் பாட்டியுடன் வீடு வந்து சேர்ந்தாள்.',
-            translit: "Aadhikaalan Singamuga Kinaru",
-            tableItems: [
-              { cat: "பெயர்ச் சொற்கள்", ans: "பாட்டி, கிணறு, சோழர்கள், தமிழர்கள்", trans: "Paatti, Kinaru, Sozhargal, Thamizhargal" },
-              { cat: "வினைச் சொற்கள்", ans: "என்றார், வியந்தாள், கண்டு, மகிழ்ந்த, சேர்ந்தாள்", trans: "Endraar, Viyandhaal, Kandu, Magizhindha, Serndhaal" },
-              { cat: "ஒருமைச் சொற்கள்", ans: "பாட்டி, கிணறு, அவள், வீடு", trans: "Paatti, Kinaru, Aval, Veedu" },
-              { cat: "பன்மைச் சொற்கள்", ans: "சோழர்கள், தமிழர்களின், கைகளை", trans: "Sozhargal, Thamizhargalin, Kaigalai" }
-            ],
-            inaItems: [
-              { word: "என்றார்", pair: "ன் - ற", trans: "Endraar (n - ra)" },
-              { word: "சிங்கத்தின்", pair: "ங் - க / ந் - த", trans: "Singaththin (ng - ka / n - tha)" },
-              { word: "கண்டு", pair: "ண் - ட", trans: "Kandu (nn - da)" },
-              { word: "மகிழ்ந்த", pair: "ந் - த", trans: "Magizhindha (n - tha)" }
-            ]
-          },
-          {
-            id: "ch3_page3",
-            title: "பக்கம் 3: தொடரில் அமைத்து எழுதுக",
-            type: "handwriting_sentences",
-            questions: [
-              {
-                id: "ch3_p3_s1",
-                word: "ஏனெனில்",
-                trans: "Enenil",
-                sentence: "நான் நேற்று பள்ளிக்கு வரவில்லை; ஏனெனில் எனக்குக் காய்ச்சலாக இருந்தது.",
-                sentTrans: "Naan netru pallikku varavillai; enenil enakkuk kaaichchalaaga irundhadhu."
-              },
-              {
-                id: "ch3_p3_s2",
-                word: "ஆயினும்",
-                trans: "Aayinum",
-                sentence: "மழை கடுமையாகப் பெய்தது; ஆயினும் மாணவர்கள் பள்ளிக்கு வந்தனர்.",
-                sentTrans: "Mazhai kadumaiyaaga peidhadhu; aayinum maanavargal pallikku vandhanar."
-              },
-              {
-                id: "ch3_p3_s3",
-                word: "அப்படியானால்",
-                trans: "Appadiyaanaal",
-                sentence: "நீ வெற்றி பெற்றுவிட்டாயா? அப்படியானால் அனைவருக்கும் இனிப்பு வழங்கு.",
-                sentTrans: "Nee vetri petruvittaayaa? Appadiyaanaal anaivarukkum inippu vazhangu."
-              }
-            ]
-          },
-          {
-            id: "ch3_page4",
-            title: "பக்கம் 4: பூமி நாள் பத்தி வினாக்கள் & முழக்கம்",
-            type: "passage_comprehension",
-            passage: "சூரியக் குடும்பத்தில் உள்ள 8 கோள்களுள் பூமியில் மட்டுமே உயிரினங்கள் வாழ்கின்றன. இத்தகு சிறப்புமிகு பூமியின் பாதுகாப்பை வலியுறுத்தி 1970ஆம் ஆண்டு ஏப்ரல் 22ஆம் தேதி முதன்முதலில் பூமி நாள் கொண்டாடப்பட்டது. அன்றுமுதல் உலகளவில் ஒவ்வொரு ஆண்டும் பூமி நாள் கொண்டாடப்படுகிறது.",
-            questions: [
-              {
-                id: "ch3_p4_q1",
-                stem: "சூரியக் குடும்பத்தில் உள்ள கோள்களின் எண்ணிக்கை",
-                options: ["5", "7", "9", "8"],
-                answer: "8",
-                ansTranslit: "Ettu (8)"
-              },
-              {
-                id: "ch3_p4_q2",
-                stem: "'பூமி நாள்' முதன் முதலில் கொண்டாடப்பட்ட ஆண்டு",
-                options: ["1980", "1990", "1970", "1870"],
-                answer: "1970",
-                ansTranslit: "1970 (Aayirathu tholaayirathu ezhabadhu)"
-              },
-              {
-                id: "ch3_p4_q3",
-                stem: "பூமி நாள் கொண்டாடப்படுவது",
-                options: ["ஏப்ரல் 22", "மார்ச் 22", "அக்டோபர் 22", "பிப்ரவரி 22"],
-                answer: "ஏப்ரல் 22",
-                ansTranslit: "April 22"
-              },
-              {
-                id: "ch3_p4_q4",
-                stem: "பூமி நாள் கொண்டாடப்படுவதன் நோக்கம்",
-                options: ["டெங்குவைத் தடுக்க", "தீ விபத்துகளைத் தவிர்க்க", "பூமியின் பாதுகாப்பு குறித்து விழிப்புணர்வை ஏற்படுத்த", "சாலை விபத்துகளைத் தவிர்க்க"],
-                answer: "பூமியின் பாதுகாப்பு குறித்து விழிப்புணர்வை ஏற்படுத்த",
-                ansTranslit: "Bhoomiyin paadhukaappu kurithu vizhippunarvai erpaduththa"
-              }
-            ],
-            slogan: {
-              id: "ch3_p4_slogan",
-              stem: "பூமியைப் பாதுகாப்பது தொடர்பாக ஒரு முழக்கத் தொடர் எழுதுக:",
-              sample: "பூமியைக் காப்போம்! எதிர்கால தலைமுறைக்கு வாழ்வளிப்போம்!",
-              trans: "Bhoomiyai kaappom! Edhirkala thalaimuraikku vaazhvalippom!"
-            }
-          },
-          {
-            id: "ch3_page5",
-            title: "பக்கம் 5: பேச்சுத்தமிழ் நீக்கம் & இணைப்புச்சொற்கள் 2",
-            type: "correction_and_mcq",
-            corrections: [
-              {
-                id: "ch3_p5_c1",
-                colloquial: "நான் ஊருக்கு பஸ்ல போனேன்.",
-                standard: "நான் ஊருக்குப் பேருந்தில் சென்றேன்.",
-                trans: "Naan oorukkup perundhil sendren."
-              },
-              {
-                id: "ch3_p5_c2",
-                colloquial: "நான் டெய்லி ஸ்கூலுக்கு சைக்கிள்ல வரேன்.",
-                standard: "நான் தினமும் பள்ளிக்கு மிதிவண்டியில் வருகிறேன்.",
-                trans: "Naan dhinamum pallikku midhivandiyil varugiren."
-              },
-              {
-                id: "ch3_p5_c3",
-                colloquial: "என் பேக்ல புக்கு, நோட்டுக்கு, பெண் வச்சிருக்கேன்.",
-                standard: "என் பையில் புத்தகம், நோட்டுப் புத்தகம், பேனா வைத்திருக்கிறேன்.",
-                trans: "En paiyil puththagam, nottup puththagam, paenaa vaiththirukkiren."
-              }
-            ],
-            mcqQuestions: [
-              {
-                id: "ch3_p5_q1",
-                stem: "மைதானத்தில் மழைநீர் தேங்கி நிற்கிறது. _________ இன்று நம்மால் விளையாட முடியாதா?",
-                options: ["ஆயினும்", "எனவே", "அப்படியானால்", "ஏனெனில்"],
-                answer: "அப்படியானால்",
-                ansTranslit: "Appadiyaanaal"
-              },
-              {
-                id: "ch3_p5_q2",
-                stem: "பேச்சுப் போட்டியும் ஓவியப் போட்டியும் ஒரே நேரத்தில் நடந்தன. _________ நான் இரண்டிலும் கலந்து கொண்டிருப்பேன் / பங்கேற்றிருப்பேன்.",
-                options: ["ஏனெனில்", "அப்படியானால்", "அப்படியில்லாவிட்டால்", "எனவே"],
-                answer: "அப்படியில்லாவிட்டால்",
-                ansTranslit: "Appadiyillaavittaal"
-              },
-              {
-                id: "ch3_p5_q3",
-                stem: "கருமேகங்கள் வானில் திரண்டன. _________ மழை பெய்யவில்லை.",
-                options: ["எனவே", "ஆகையால்", "ஏனெனில்", "ஆயினும்"],
-                answer: "ஆயினும்",
-                ansTranslit: "Aayinum"
-              }
-            ]
-          }
-        ]
-      }
-    ];
-
-    /* 3. APPLICATION STATE & HELPERS */
-    let currentAppMode = "practice";
-    let activeChapterIdx = 0;
-    let activeSectionObj = null;
-    let penOnlyMode = true;
-    let writeModeLocked = false;
-    const PARENT_PIN = "1995";
-    let fontScaleIdx = 1;
-    const fontScales = [0.88, 1, 1.15, 1.3];
-
-    // Storage Caches
-    const inkUndoStacks = {};
-    const hasDrawnMap = {};
-    const userSelections = {};
-    const shuffledSectionMap = {};
-
-    function cleanStemText(raw) {
-      return String(raw || '').replace(/^[0-9]+[\.\)]\s*/, '').trim();
-    }
-
-    function buildWordSpans(text) {
-      return String(text || '').split(/\s+/).map(w => {
-        const cleanWord = w.replace(/[=:\.\?,!_()"-]/g, '');
-        return `<span class="tap-word-speech" onclick="event.stopPropagation(); speakText('${cleanWord.replace(/'/g, "\\'")}')">${w}</span>`;
-      }).join(' ');
-    }
-
-    function getInkStorageKey(canvasKey) {
-      return `v2_tamil_oct22::${currentAppMode}::${canvasKey}`;
-    }
-
-    function togglePenMode() {
-      penOnlyMode = !penOnlyMode;
-      const btn = document.getElementById("btnPenMode");
-      btn.className = `pen-toggle-btn ${penOnlyMode ? 'pen-active' : ''}`;
-      btn.textContent = penOnlyMode ? "🖊️" : "👆";
-      btn.title = penOnlyMode ? "எழுதுகோல் மட்டும்" : "தொடுதிரை அனுமதி";
-    }
-
-    function cycleFontScale() {
-      fontScaleIdx = (fontScaleIdx + 1) % fontScales.length;
-      document.documentElement.style.setProperty("--content-scale", fontScales[fontScaleIdx]);
-      audioFX.playVeena(520);
-    }
-
-    function toggleSidebarCollapse(forceState = null) {
-      saveAllVisibleCanvases();
-      const stage = document.getElementById("masterStageContainer");
-      const target = forceState !== null ? forceState : !stage.classList.contains("collapsed-sidebar");
-      stage.classList.toggle("collapsed-sidebar", target);
-      const btn = document.querySelector(".sidebar-collapse-toggle");
-      if (btn) btn.textContent = target ? "▶" : "◀";
-    }
-
-    function goToHub() {
-      saveAllVisibleCanvases();
-      if (window.parent && window.parent !== window) {
-        window.parent.postMessage("close-lesson-to-hub", "*");
-      } else {
-        window.location.href = "index.html";
-      }
-    }
-
-    function handleImageFallback(img) {
-      img.onerror = null;
-      img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><circle cx='60' cy='60' r='55' fill='%23FEF3C7' stroke='%23D97706' stroke-width='4'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='42'>🪷</text></svg>";
-    }
-
-    /* 4. FISHER-YATES SHUFFLE (WRITE MODE ONLY) */
-    function fisherYates(array) {
-      const arr = [...array];
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
-    }
-
-    function triggerFisherYatesShuffle() {
-      if (!activeSectionObj || currentAppMode === "practice") return;
-      saveAllVisibleCanvases();
-      audioFX.playBell();
-
-      if (activeSectionObj.questions) {
-        const shuffled = fisherYates(activeSectionObj.questions).map(q => {
-          const c = { ...q };
-          if (c.options) c.options = fisherYates(c.options);
-          return c;
-        });
-        shuffledSectionMap[activeSectionObj.id] = shuffled;
-        renderModalContent(activeSectionObj);
-      }
-    }
-
-    /* 5. INLINE STRIP BUILDER (CALIBRATED GEOMETRY) */
-    let lastPenTimestamp = 0;
-
-    function makeDualStrip(canvasKey, customClass = "") {
-      return `
-        <span class="inline-blank-container ${customClass}">
-          <span class="inline-canvas-wrapper">
-            <span class="dual-lines-texture"></span>
-            <canvas class="dual-canvas" data-canvas-id="${canvasKey}"></canvas>
-          </span>
-          <button type="button" class="strip-action-btn" onclick="undoCanvas('${canvasKey}')" title="மீட்டெடு (Undo)">↩️</button>
-          <button type="button" class="strip-action-btn" onclick="clearCanvas('${canvasKey}')" title="அழி (Clear)" style="color:#DC2626;">🗑️</button>
-        </span>
-      `;
-    }
-
-    function setupCanvasesInModal() {
-      const dpr = window.devicePixelRatio || 1;
-      const canvasList = document.querySelectorAll("#modalQuestionsBody .dual-canvas");
-
-      canvasList.forEach(c => {
-        const cKey = c.getAttribute("data-canvas-id");
-        const bRect = c.parentElement.getBoundingClientRect();
-        const logicalW = Math.max(220, Math.round(bRect.width) || 480);
-        const logicalH = Math.max(84, Math.round(bRect.height) || 104);
-
-        c.width = Math.round(logicalW * dpr);
-        c.height = Math.round(logicalH * dpr);
-        c.style.width = "100%";
-        c.style.height = "100%";
-
-        const ctx = c.getContext("2d", { willReadFrequently: false });
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        ctx.clearRect(0, 0, logicalW, logicalH);
-
-        const storageKey = getInkStorageKey(cKey);
-        const cached = localStorage.getItem(storageKey);
-
-        if (cached) {
-          hasDrawnMap[cKey] = true;
-          const img = new Image();
-          img.onload = () => {
-            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            ctx.clearRect(0, 0, logicalW, logicalH);
-            ctx.drawImage(img, 0, 0, logicalW, logicalH);
-          };
-          img.src = cached;
-        }
-
-        let isDrawing = false;
-        let activePointerId = null;
-        let lastX = 0, lastY = 0;
-        const baseTipWidth = 2.0;
-
-        // Seed empty undo so the first stroke can be undone
-        if (!inkUndoStacks[cKey] || !inkUndoStacks[cKey].length) {
-          try { inkUndoStacks[cKey] = [c.toDataURL("image/png")]; } catch (_) { inkUndoStacks[cKey] = []; }
-        }
-
-        function isDualPalm(e) {
-          if (e.pointerType === 'pen') {
-            lastPenTimestamp = Date.now();
-            return false;
-          }
-          if (e.pointerType === 'mouse') return false;
-          // Pen-only mode or recent S Pen activity → reject all touch
-          if (penOnlyMode) return true;
-          if ((Date.now() - lastPenTimestamp) < 2500) return true;
-          const w = e.width || 0, h = e.height || 0;
-          if (w >= 22 || h >= 22) return true;
-          if (typeof e.pressure === 'number' && e.pressure > 0 && e.pressure < 0.08 && (w > 12 || h > 12)) return true;
-          return false;
-        }
-
-        c.onpointerdown = (e) => {
-          if (isDrawing && activePointerId != null && e.pointerId !== activePointerId) {
-            e.preventDefault();
-            return;
-          }
-          if (isDualPalm(e)) {
-            e.preventDefault();
-            return;
-          }
-
-          isDrawing = true;
-          activePointerId = e.pointerId;
-          hasDrawnMap[cKey] = true;
-          try { c.setPointerCapture(e.pointerId); } catch (_) {}
-          const rect = c.getBoundingClientRect();
-          const scaleX = logicalW / rect.width;
-          const scaleY = logicalH / rect.height;
-          lastX = (e.clientX - rect.left) * scaleX;
-          lastY = (e.clientY - rect.top) * scaleY;
-          e.preventDefault();
-        };
-
-        c.onpointermove = (e) => {
-          if (!isDrawing || e.pointerId !== activePointerId) return;
-          if (e.pointerType === 'pen') lastPenTimestamp = Date.now();
-          // If contact expands into a palm mid-stroke, end it
-          if (e.pointerType === 'touch' && isDualPalm(e)) {
-            isDrawing = false;
-            activePointerId = null;
-            try { c.releasePointerCapture(e.pointerId); } catch (_) {}
-            pushUndoSnapshot(c, cKey);
-            saveCanvasToStorage(c, cKey);
-            return;
-          }
-
-          const rect = c.getBoundingClientRect();
-          const scaleX = logicalW / rect.width;
-          const scaleY = logicalH / rect.height;
-          const currX = (e.clientX - rect.left) * scaleX;
-          const currY = (e.clientY - rect.top) * scaleY;
-
-          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-          ctx.beginPath();
-          ctx.moveTo(lastX, lastY);
-          ctx.lineTo(currX, currY);
-          ctx.lineCap = "round";
-          ctx.lineJoin = "round";
-          ctx.strokeStyle = "#1E3A8A";
-
-          const rawPressure = (e.pressure && e.pressure > 0) ? e.pressure : 0.5;
-          ctx.lineWidth = baseTipWidth * (rawPressure * 1.35 + 0.35);
-          ctx.stroke();
-
-          lastX = currX;
-          lastY = currY;
-          e.preventDefault();
-        };
-
-        const stopStroke = (e) => {
-          if (!isDrawing) return;
-          if (e && e.pointerId != null && e.pointerId !== activePointerId) return;
-          isDrawing = false;
-          activePointerId = null;
-          try { if (e) c.releasePointerCapture(e.pointerId); } catch (_) {}
-          pushUndoSnapshot(c, cKey);
-          saveCanvasToStorage(c, cKey);
-        };
-
-        c.onpointerup = stopStroke;
-        c.onpointercancel = stopStroke;
-        c.onlostpointercapture = stopStroke;
-      });
-    }
-
-    function pushUndoSnapshot(c, cKey) {
-      if (!inkUndoStacks[cKey]) inkUndoStacks[cKey] = [];
-      try {
-        const data = c.toDataURL("image/png");
-        inkUndoStacks[cKey].push(data);
-        if (inkUndoStacks[cKey].length > 20) inkUndoStacks[cKey].shift();
-      } catch (_) {}
-    }
-
-    function undoCanvas(cKey) {
-      const c = document.querySelector(`.dual-canvas[data-canvas-id="${cKey}"]`);
-      if (!c || !inkUndoStacks[cKey] || inkUndoStacks[cKey].length < 2) return;
-      audioFX.playVeena(380);
-      inkUndoStacks[cKey].pop();
-      const prev = inkUndoStacks[cKey][inkUndoStacks[cKey].length - 1];
-
-      const ctx = c.getContext("2d");
-      const dpr = window.devicePixelRatio || 1;
-      const bRect = c.parentElement.getBoundingClientRect();
-      const logicalW = Math.max(220, Math.round(bRect.width) || 480);
-      const logicalH = Math.max(84, Math.round(bRect.height) || 104);
-
-      const img = new Image();
-      img.onload = () => {
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        ctx.clearRect(0, 0, logicalW, logicalH);
-        ctx.drawImage(img, 0, 0, logicalW, logicalH);
-        saveCanvasToStorage(c, cKey);
-      };
-      img.src = prev;
-    }
-    window.undoCanvas = undoCanvas;
-
-    function clearCanvas(cKey) {
-      const c = document.querySelector(`.dual-canvas[data-canvas-id="${cKey}"]`);
-      if (!c) return;
-      audioFX.playVeena(320);
-      pushUndoSnapshot(c, cKey); // keep history so clear can be undone
-      const ctx = c.getContext("2d");
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.clearRect(0, 0, c.width, c.height);
-      const dpr = window.devicePixelRatio || 1;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-      const storageKey = getInkStorageKey(cKey);
-      localStorage.removeItem(storageKey);
-      hasDrawnMap[cKey] = false;
-      // Keep undo stack (with cleared snapshot on top) so Undo restores previous ink
-      try {
-        if (!inkUndoStacks[cKey]) inkUndoStacks[cKey] = [];
-        inkUndoStacks[cKey].push(c.toDataURL("image/png"));
-      } catch (_) {}
-    }
-    window.clearCanvas = clearCanvas;
-
-    function saveCanvasToStorage(c, cKey) {
-      if (!c) return;
-      try {
-        const data = c.toDataURL("image/png");
-        const key = getInkStorageKey(cKey);
-        localStorage.setItem(key, data);
-      } catch (_) {}
-    }
-
-    function saveAllVisibleCanvases() {
-      document.querySelectorAll(".dual-canvas").forEach(c => {
-        const cKey = c.getAttribute("data-canvas-id");
-        if (hasDrawnMap[cKey]) saveCanvasToStorage(c, cKey);
-      });
-    }
-
-    /* 6. CHAPTER VIEW & MODAL WORKSPACE */
-    function renderChapterTabs() {
-      const container = document.getElementById("chapterTabsContainer");
-      container.innerHTML = "";
-      CURRICULUM.forEach((ch, idx) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = `chapter-menu-item ${idx === activeChapterIdx ? 'active' : ''}`;
-        btn.onclick = () => {
-          switchChapter(idx);
-          toggleSidebarCollapse(true);
-        };
-        btn.innerHTML = `
-          <span style="font-size:1.3rem;">🪷</span>
-          <span class="chapter-menu-text">${ch.title}</span>
-        `;
-        container.appendChild(btn);
-      });
-    }
-
-    function switchChapter(idx) {
-      saveAllVisibleCanvases();
-      activeChapterIdx = idx;
-      renderChapterTabs();
-
-      const ch = CURRICULUM[idx];
-      document.getElementById("bannerHeaderTamil").textContent = ch.title;
-      document.getElementById("statusNoticeText").textContent = `${ch.sub} • பிரிவைத் தொடுக!`;
-
-      renderChapterGateway(ch);
-    }
-
-    function renderChapterGateway(ch) {
-      const container = document.getElementById("stageContentBody");
-      container.innerHTML = "";
-
-      const grid = document.createElement("div");
-      grid.className = "subsections-gateway-grid";
-
-      ch.sections.forEach(sec => {
-        const card = document.createElement("div");
-        card.className = "subsection-portal-card";
-        card.onclick = () => openSectionModal(sec);
-        card.innerHTML = `
-          <div>
-            <div style="font-family:var(--font-tamil); font-size:1.25rem; font-weight:900; color:#92400E;">${sec.title}</div>
-            <div style="font-size:0.85rem; color:#64748B; margin-top:4px;">பயிற்சியைத் திறக்க தொடவும்</div>
-          </div>
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:0.85rem; font-weight:800; color:#D97706;">தொடங்கு ➔</span>
-            <span style="font-size:1.3rem;">📜</span>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-
-      container.appendChild(grid);
-    }
-
-    function openSectionModal(sec) {
-      saveAllVisibleCanvases();
-      activeSectionObj = sec;
-      document.getElementById("modalSubSectionTitle").textContent = sec.title;
-      document.getElementById("btnShuffleSection").style.display = (currentAppMode === "practice") ? "none" : "inline-flex";
-
-      renderModalContent(sec);
-
-      const modalStage = document.getElementById("sectionModalStage");
-      modalStage.style.display = "flex";
-
-      requestAnimationFrame(() => {
-        modalStage.classList.add("open");
-        setTimeout(setupCanvasesInModal, 260);
-      });
-    }
-
-    function closeSectionModal() {
-      saveAllVisibleCanvases();
-      const modalStage = document.getElementById("sectionModalStage");
-      modalStage.classList.remove("open");
-      setTimeout(() => {
-        modalStage.style.display = "none";
-        activeSectionObj = null;
-      }, 260);
-    }
-
-    function renderModalContent(sec) {
-      const body = document.getElementById("modalQuestionsBody");
-      body.innerHTML = "";
-      const isPractice = (currentAppMode === "practice");
-
-      // 1. STANDARD MCQ
-      if (sec.type === "mcq") {
-        const qList = (!isPractice && shuffledSectionMap[sec.id]) ? shuffledSectionMap[sec.id] : sec.questions;
-        qList.forEach((q, idx) => {
-          const card = document.createElement("div");
-          card.className = "q-card-item";
-
-          const cleanText = cleanStemText(q.stem);
-          const wordsHtml = buildWordSpans(cleanText);
-
-          let translitBadge = (isPractice && q.translit) ? `<span class="translit-badge">${q.translit}</span>` : "";
-          let ghostAnswer = (isPractice && q.answer) ? `
-            <div class="practice-ghost-answer">
-              <span>💡 விடை: ${q.answer}</span>
-              ${q.ansTranslit ? `<span class="translit-badge">${q.ansTranslit}</span>` : ''}
-            </div>` : "";
-
-          const selectedVal = userSelections[q.id] || "";
-          const optionsHtml = `
-            <div class="mcq-options-grid">
-              ${q.options.map(opt => `
-                <button type="button" 
-                        class="mcq-option-pill ${selectedVal === opt ? 'selected' : ''}" 
-                        onclick="selectOption('${q.id}', '${opt.replace(/'/g, "\\'")}', this)">
-                  ${opt}
-                </button>
-              `).join('')}
-            </div>
-          `;
-
-          card.innerHTML = `
-            <div class="q-stem-row">
-              <div class="q-stem-tamil">
-                <span style="color:#D97706; margin-right:4px;">${idx + 1}.</span>
-                ${wordsHtml} ${translitBadge}
-              </div>
-            </div>
-            ${ghostAnswer}
-            ${optionsHtml}
-            <div style="margin-top:8px;">
-              ${makeDualStrip(q.id)}
-            </div>
-          `;
-          body.appendChild(card);
-        });
-
-      // 2. DUAL STRIP SPLIT (SCREENSHOT 1 & 2)
-      } else if (sec.type === "dual_strip_split") {
-        sec.questions.forEach((q, idx) => {
-          const card = document.createElement("div");
-          card.className = "q-card-item";
-
-          const cleanText = cleanStemText(q.stem);
-          let ghostAnswer = isPractice ? `
-            <div class="practice-ghost-answer">
-              <span>💡 விடை: ${q.part1Ans} + ${q.part2Ans}</span>
-              <span class="translit-badge">${q.part1Translit} + ${q.part2Translit}</span>
-            </div>` : "";
-
-          card.innerHTML = `
-            <div class="q-stem-tamil">
-              <span style="color:#D97706; margin-right:4px;">${idx + 1}.</span>
-              ${buildWordSpans(cleanText)}
-              ${isPractice ? `<span class="translit-badge">${q.translit}</span>` : ''}
-            </div>
-            ${ghostAnswer}
-            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:8px;">
-              ${makeDualStrip(q.id + "_p1", "split-word-strip")}
-              <span style="font-size:2.2rem; font-weight:900; color:#D97706; align-self:center;">+</span>
-              ${makeDualStrip(q.id + "_p2", "split-word-strip")}
-            </div>
-          `;
-          body.appendChild(card);
-        });
-
-      // 3. EDHUGAI BLOCKS (SCREENSHOT 1)
-      } else if (sec.type === "edhugai_blocks") {
-        sec.questions.forEach((q, idx) => {
-          const card = document.createElement("div");
-          card.className = "q-card-item";
-
-          const cleanText = cleanStemText(q.stem);
-          let displayPair = isPractice ? `
-            <div class="edhugai-paired-box">
-              <span>${q.pairWord1} <span class="translit-badge">${q.translit1}</span></span>
-              <span>—</span>
-              <span>${q.pairWord2} <span class="translit-badge">${q.translit2}</span></span>
-            </div>` : "";
-
-          card.innerHTML = `
-            <div class="q-stem-tamil">
-              <span style="color:#D97706; margin-right:4px;">${idx + 1}.</span>
-              ${buildWordSpans(cleanText)}
-            </div>
-            ${displayPair}
-            <div style="display:flex; gap:14px; flex-wrap:wrap; margin-top:8px;">
-              ${makeDualStrip(q.id + "_pair1", "split-word-strip")}
-              <span style="font-size:1.8rem; font-weight:900; color:#D97706; align-self:center;">—</span>
-              ${makeDualStrip(q.id + "_pair2", "split-word-strip")}
-            </div>
-          `;
-          body.appendChild(card);
-        });
-
-      // 4. 'மை' ENDING WORDS (SCREENSHOT 1)
-      } else if (sec.type === "handwriting_4list") {
-        const card = document.createElement("div");
-        card.className = "q-card-item";
-        card.innerHTML = `<div class="q-stem-tamil">அன்புடைமை, பண்புடைமை என்பன போல் ஈற்றில் 'மை' என முடியும் நான்கு சொற்கள்:</div>`;
-
-        sec.questions.forEach((q, idx) => {
-          let ghostAnswer = isPractice ? `
-            <div class="practice-ghost-answer" style="margin:4px 0;">
-              <span>💡 விடை: ${q.word}</span>
-              <span class="translit-badge">${q.translit}</span>
-            </div>` : "";
-
-          card.innerHTML += `
-            <div style="margin-top:10px;">
-              <div style="font-family:var(--font-tamil); font-weight:800; font-size:1.15rem; color:#92400E;">${idx + 1}. சொல்:</div>
-              ${ghostAnswer}
-              <div style="margin-top:4px;">
-                ${makeDualStrip(q.id)}
-              </div>
-            </div>
-          `;
-        });
-        body.appendChild(card);
-
-      // 5. SINGLE STRIP JOIN (SCREENSHOT 2)
-      } else if (sec.type === "single_strip_join") {
-        sec.questions.forEach((q, idx) => {
-          const card = document.createElement("div");
-          card.className = "q-card-item";
-
-          const cleanText = cleanStemText(q.stem);
-          let ghostAnswer = isPractice ? `
-            <div class="practice-ghost-answer">
-              <span>💡 விடை: ${q.ans}</span>
-              <span class="translit-badge">${q.ansTranslit}</span>
-            </div>` : "";
-
-          card.innerHTML = `
-            <div class="q-stem-tamil">
-              <span style="color:#D97706; margin-right:4px;">${idx + 1}.</span>
-              ${buildWordSpans(cleanText)}
-              ${isPractice ? `<span class="translit-badge">${q.translit}</span>` : ''}
-            </div>
-            ${ghostAnswer}
-            <div style="margin-top:8px;">
-              ${makeDualStrip(q.id)}
-            </div>
-          `;
-          body.appendChild(card);
-        });
-
-      // 6. 3-COLUMN MATCHING WITH 380PX CANVAS STRIP (SCREENSHOT 2)
-      } else if (sec.type === "matching_3col") {
-        const card = document.createElement("div");
-        card.className = "q-card-item";
-        card.innerHTML = `<div class="q-stem-tamil">பொருத்துக: சரியான இணையைத் தேர்ந்தெடுத்து 380px பகுதியில் எழுதுக</div>`;
-
-        const table = document.createElement("table");
-        table.className = "matching-3col-table";
-
-        sec.questions.forEach((q, idx) => {
-          const selectedTarget = userSelections[q.id] || "";
-          const optionsHtml = sec.optionsPool.map(opt => `
-            <button type="button" 
-                    class="mcq-option-pill ${selectedTarget === opt ? 'selected' : ''}" 
-                    style="margin:3px;"
-                    onclick="selectOption('${q.id}', '${opt}', this)">
-              ${opt}
-            </button>
-          `).join('');
-
-          let ghostAns = isPractice ? `<div class="practice-ghost-answer" style="margin-top:4px;">💡 ${q.right} <span class="translit-badge">${q.rightTrans}</span></div>` : '';
-
-          const tr = document.createElement("tr");
-          tr.className = "matching-row";
-          tr.innerHTML = `
-            <td class="col-prompt">
-              <span style="color:#D97706; margin-right:4px;">${idx + 1}.</span>
-              ${buildWordSpans(cleanStemText(q.left))}
-              ${isPractice ? `<div class="translit-badge">${q.leftTrans}</div>` : ''}
-            </td>
-            <td class="col-target">
-              ${optionsHtml}
-              ${ghostAns}
-            </td>
-            <td class="col-canvas">
-              ${makeDualStrip(q.id, "matching-strip")}
-            </td>
-          `;
-          table.appendChild(tr);
-        });
-
-        card.appendChild(table);
-        body.appendChild(card);
-
-      // 7. PASSAGE TABLE (PAGE 2: FULL-WIDTH WRITING AREA)
-      } else if (sec.type === "passage_table") {
-        const card = document.createElement("div");
-        card.className = "q-card-item";
-        card.innerHTML = `
-          <div style="background:#FFFBEB; border:2px solid #F59E0B; border-radius:14px; padding:12px; font-family:var(--font-tamil); font-size:1.18rem; line-height:1.65; color:#451A03;">
-            ${buildWordSpans(sec.passage)}
-          </div>
-          ${isPractice ? `<div class="translit-badge" style="margin-top:6px;">${sec.translit}</div>` : ''}
-        `;
-
-        const kGrid = document.createElement("div");
-        kGrid.className = "kinaru-card-grid";
-
-        sec.tableItems.forEach((item, i) => {
-          const row = document.createElement("div");
-          row.className = "kinaru-item-card";
-          row.innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span style="font-family:var(--font-tamil); font-size:1.2rem; font-weight:900; color:#92400E;">${i+1}. ${item.cat}</span>
-              ${isPractice ? `<span class="translit-badge">${item.trans}</span>` : ''}
-            </div>
-            ${isPractice ? `<div class="practice-ghost-answer">💡 விடைகள்: ${item.ans}</div>` : ''}
-            <div style="margin-top:4px;">
-              ${makeDualStrip("ch3_p2_tbl_" + i, "full-sentence-strip")}
-            </div>
-          `;
-          kGrid.appendChild(row);
-        });
-        card.appendChild(kGrid);
-
-        const inaBox = document.createElement("div");
-        inaBox.style.marginTop = "18px";
-        inaBox.innerHTML = `<div class="q-stem-tamil">வண்ணமிடப்பட்ட சொற்களில் இன எழுத்துகள்:</div>`;
-
-        sec.inaItems.forEach((ina, i) => {
-          inaBox.innerHTML += `
-            <div style="margin:10px 0; background:#F8FAFC; border:1.5px solid #CBD5E1; border-radius:14px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-              <span style="font-family:var(--font-tamil); font-size:1.2rem; font-weight:800;">${ina.word}</span>
-              ${isPractice ? `<span style="font-family:var(--font-tamil); font-weight:900; color:#B45309;">${ina.pair} <span class="translit-badge">${ina.trans}</span></span>` : ''}
-              ${makeDualStrip("ch3_p2_ina_" + i, "split-word-strip")}
-            </div>
-          `;
-        });
-        card.appendChild(inaBox);
-        body.appendChild(card);
-
-      // 8. SENTENCE CREATION (PAGE 3: FULL-WIDTH WRITING STRIP)
-      } else if (sec.type === "handwriting_sentences") {
-        sec.questions.forEach((q, idx) => {
-          const card = document.createElement("div");
-          card.className = "q-card-item";
-
-          let ghostAnswer = isPractice ? `
-            <div class="practice-ghost-answer">
-              <span>💡 மாதிரித் தொடர்: ${q.sentence}</span>
-              <span class="translit-badge">${q.sentTrans}</span>
-            </div>` : "";
-
-          card.innerHTML = `
-            <div class="q-stem-tamil">
-              <span style="color:#D97706; margin-right:4px;">${idx + 1}.</span>
-              <span class="tap-word-speech" onclick="speakText('${q.word}')">${cleanStemText(q.word)}</span>
-              ${isPractice ? `<span class="translit-badge">${q.trans}</span>` : ''}
-            </div>
-            ${ghostAnswer}
-            <div style="margin-top:8px;">
-              ${makeDualStrip(q.id, "full-sentence-strip")}
-            </div>
-          `;
-          body.appendChild(card);
-        });
-
-      // 9. PASSAGE COMPREHENSION & SLOGAN (PAGE 4)
-      } else if (sec.type === "passage_comprehension") {
-        const passCard = document.createElement("div");
-        passCard.className = "q-card-item";
-        passCard.innerHTML = `
-          <div style="background:#FFFBEB; border:2px solid #F59E0B; border-radius:14px; padding:12px; font-family:var(--font-tamil); font-size:1.18rem; line-height:1.65; color:#451A03;">
-            ${buildWordSpans(sec.passage)}
-          </div>
-        `;
-        body.appendChild(passCard);
-
-        const qList = (!isPractice && shuffledSectionMap[sec.id]) ? shuffledSectionMap[sec.id] : sec.questions;
-        qList.forEach((q, idx) => {
-          const card = document.createElement("div");
-          card.className = "q-card-item";
-
-          const cleanText = cleanStemText(q.stem);
-          let ghostAns = isPractice ? `
-            <div class="practice-ghost-answer">
-              <span>💡 விடை: ${q.answer}</span>
-              <span class="translit-badge">${q.ansTranslit}</span>
-            </div>` : "";
-
-          const selectedVal = userSelections[q.id] || "";
-          const optionsHtml = `
-            <div class="mcq-options-grid">
-              ${q.options.map(opt => `
-                <button type="button" 
-                        class="mcq-option-pill ${selectedVal === opt ? 'selected' : ''}" 
-                        onclick="selectOption('${q.id}', '${opt.replace(/'/g, "\\'")}', this)">
-                  ${opt}
-                </button>
-              `).join('')}
-            </div>
-          `;
-
-          card.innerHTML = `
-            <div class="q-stem-tamil">
-              <span style="color:#D97706; margin-right:4px;">${idx + 1}.</span>
-              ${buildWordSpans(cleanText)}
-            </div>
-            ${ghostAns}
-            ${optionsHtml}
-            <div style="margin-top:8px;">
-              ${makeDualStrip(q.id)}
-            </div>
-          `;
-          body.appendChild(card);
-        });
-
-        // Slogan Writing Card (Full-Width)
-        const slogCard = document.createElement("div");
-        slogCard.className = "q-card-item";
-        slogCard.innerHTML = `
-          <div class="q-stem-tamil">
-            <span style="color:#D97706; margin-right:4px;">5.</span>
-            ${buildWordSpans(cleanStemText(sec.slogan.stem))}
-          </div>
-          ${isPractice ? `<div class="practice-ghost-answer">💡 முழக்கம்: ${sec.slogan.sample} <span class="translit-badge">${sec.slogan.trans}</span></div>` : ''}
-          <div style="margin-top:8px;">
-            ${makeDualStrip(sec.slogan.id, "full-sentence-strip")}
-          </div>
-        `;
-        body.appendChild(slogCard);
-
-      // 10. CORRECTION & MCQ 2 (PAGE 5)
-      } else if (sec.type === "correction_and_mcq") {
-        const corrCard = document.createElement("div");
-        corrCard.className = "q-card-item";
-        corrCard.innerHTML = `<div class="q-stem-tamil">பிறமொழிச் சொற்களையும் பேச்சுத்தமிழையும் நீக்கிச் சரியாக எழுதுக:</div>`;
-
-        sec.corrections.forEach((c, idx) => {
-          corrCard.innerHTML += `
-            <div style="margin-top:12px;">
-              <div style="font-family:var(--font-tamil); font-weight:800; font-size:1.18rem; color:#991B1B;">
-                <span style="color:#D97706; margin-right:4px;">${idx + 1}.</span>
-                ${buildWordSpans(cleanStemText(c.colloquial))}
-              </div>
-              ${isPractice ? `<div class="practice-ghost-answer" style="margin:4px 0;">💡 சரியான விடை: ${c.standard} <span class="translit-badge">${c.trans}</span></div>` : ''}
-              <div style="margin-top:6px;">
-                ${makeDualStrip(c.id, "full-sentence-strip")}
-              </div>
-            </div>
-          `;
-        });
-        body.appendChild(corrCard);
-
-        sec.mcqQuestions.forEach((q, idx) => {
-          const card = document.createElement("div");
-          card.className = "q-card-item";
-
-          const cleanText = cleanStemText(q.stem);
-          let ghostAns = isPractice ? `
-            <div class="practice-ghost-answer">
-              <span>💡 விடை: ${q.answer}</span>
-              <span class="translit-badge">${q.ansTranslit}</span>
-            </div>` : "";
-
-          const selectedVal = userSelections[q.id] || "";
-          const optionsHtml = `
-            <div class="mcq-options-grid">
-              ${q.options.map(opt => `
-                <button type="button" 
-                        class="mcq-option-pill ${selectedVal === opt ? 'selected' : ''}" 
-                        onclick="selectOption('${q.id}', '${opt.replace(/'/g, "\\'")}', this)">
-                  ${opt}
-                </button>
-              `).join('')}
-            </div>
-          `;
-
-          card.innerHTML = `
-            <div class="q-stem-tamil">
-              <span style="color:#D97706; margin-right:4px;">${idx + 1}.</span>
-              ${buildWordSpans(cleanText)}
-            </div>
-            ${ghostAns}
-            ${optionsHtml}
-            <div style="margin-top:8px;">
-              ${makeDualStrip(q.id)}
-            </div>
-          `;
-          body.appendChild(card);
-        });
-      }
-
-      setTimeout(setupCanvasesInModal, 60);
-    }
-
-    function selectOption(qId, optText, btnEl) {
-      userSelections[qId] = optText;
-      audioFX.playVeena(480);
-      speakText(optText);
-
-      const parent = btnEl.parentElement;
-      parent.querySelectorAll(".mcq-option-pill").forEach(p => p.classList.remove("selected"));
-      btnEl.classList.add("selected");
-    }
-    window.selectOption = selectOption;
-
-    function applyAppMode(mode) {
-      saveAllVisibleCanvases();
-      currentAppMode = mode;
-      document.getElementById("tabPractice").classList.toggle("active", mode === "practice");
-      document.getElementById("tabWrite").classList.toggle("active", mode === "write");
-
-      if (activeSectionObj) {
-        document.getElementById("btnShuffleSection").style.display = (mode === "practice") ? "none" : "inline-flex";
-        renderModalContent(activeSectionObj);
-      } else {
-        switchChapter(activeChapterIdx);
-      }
-    }
-
-    function setAppMode(mode) {
-      // Entering Write: lock Practice until parent PIN
-      if (mode === "write" && currentAppMode === "practice") {
-        writeModeLocked = true;
-        try { localStorage.setItem("v2_tamil_oct22::writeLocked", "1"); } catch (_) {}
-        applyAppMode("write");
-        return;
-      }
-      // Leaving Write → Practice: require PIN
-      if (mode === "practice" && currentAppMode === "write") {
-        if (writeModeLocked || localStorage.getItem("v2_tamil_oct22::writeLocked") === "1") {
-          openPinModal();
-          return;
-        }
-      }
-      applyAppMode(mode);
-    }
-
-    function openPinModal() {
-      const err = document.getElementById("pinErr");
-      if (err) err.textContent = "";
-      const inp = document.getElementById("pinInput");
-      if (inp) inp.value = "";
-      document.getElementById("pinModal").classList.add("open");
-      setTimeout(() => { try { document.getElementById("pinInput").focus(); } catch (_) {} }, 60);
-    }
-    function closePinModal() {
-      document.getElementById("pinModal").classList.remove("open");
-    }
-    function submitParentPin() {
-      const v = (document.getElementById("pinInput").value || "").trim();
-      if (v === PARENT_PIN) {
-        writeModeLocked = false;
-        try { localStorage.setItem("v2_tamil_oct22::writeLocked", "0"); } catch (_) {}
-        closePinModal();
-        applyAppMode("practice");
-      } else {
-        document.getElementById("pinErr").textContent = "தவறான PIN. மீண்டும் முயலவும்.";
-        document.getElementById("pinInput").value = "";
-        document.getElementById("pinInput").focus();
-      }
-    }
-    // Enter key on PIN field
-    document.addEventListener("DOMContentLoaded", () => {
-      const inp = document.getElementById("pinInput");
-      if (inp) inp.addEventListener("keydown", e => { if (e.key === "Enter") submitParentPin(); });
+<header class="top">
+<div class="hg"><button class="hb" onclick="goHub()">🪷</button><button class="hb on" id="penModeBtn" onclick="togglePenOnly()">🖊</button><button class="hb" onclick="cycleFont()">Aa</button></div>
+<div class="seg"><button class="active" id="tabP" onclick="setMode('practice')">📖</button><button id="tabW" onclick="setMode('write')">✍</button></div>
+<div class="hg"><button class="hb" onclick="resetSec()">🗑</button></div>
+</header>
+<main class="stage" id="stage">
+<aside class="left"><button class="coll" onclick="toggleColl()">◀</button><div class="hero" onclick="toggleColl()"><img src="assets/thiruvalluvar.webp" alt="வள்ளுவர்" onerror="this.style.display='none'"></div><div class="chs" id="chTabs"></div></aside>
+<section class="right"><div class="banner"><div class="bt" id="bannerTitle">இயல் 4: தமிழ் பயிற்சி ஏடு</div><button class="parrot" onclick="speakHeader()"><img src="assets/mentor-parrot.webp" alt="கிளி" onerror="this.style.display='none'"></button></div><div class="body" id="body"></div><div class="foot"><span class="stat" id="status">பிரிவைத் தேர்ந்தெடுக!</span><button class="ver" onclick="verify()">✨</button></div></section>
+</main>
+<div id="modal"><div class="mwin"><div class="mh"><div style="display:flex;gap:8px;align-items:center"><span style="font-size:1.3rem">📜</span><span style="font-family:var(--tamil);font-size:1.2rem;font-weight:900;color:#92400E" id="mTitle">பிரிவு</span></div><div style="display:flex;gap:7px"><button class="hb" id="shufBtn" onclick="doShuffle()">🔄</button><button class="hb" onclick="closeModal()" style="background:#FEE2E2;border-color:#EF4444;color:#991B1B">✕</button></div></div><div class="mb" id="mBody"></div></div></div>
+<div id="pinM"><div class="pinB"><h3 style="font-family:var(--tamil)">🔒 பெற்றோர் திறப்பு</h3><p style="font-size:.85rem;color:#78716C;margin:6px 0 10px">Write → Practice PIN</p><div id="pinErr" style="color:#DC2626;font-size:.8rem;font-weight:800;min-height:1.2em"></div><input type="password" id="pinInput" maxlength="6" inputmode="numeric" placeholder="••••" style="width:100%;text-align:center;font-size:1.5rem;font-weight:900;letter-spacing:.35em;padding:12px;border:2px solid #FBBF24;border-radius:14px;outline:none;margin-bottom:10px"/><div style="display:flex;gap:10px"><button class="hb" style="flex:1;width:auto;height:44px" onclick="closePin()">ரத்து</button><button class="hb" style="flex:1;width:auto;height:44px;background:#D97706;color:#FFF;border-color:#B45309" onclick="submitPin()">திற</button></div></div></div>
+<div id="scoreM"><div class="scoreC"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:var(--tamil);font-size:1.3rem;font-weight:900;color:#92400E">🎯 மதிப்பீடு</span><button class="hb" style="width:32px;height:30px" onclick="closeScore()">✕</button></div><div style="display:flex;justify-content:space-around;background:#FEF3C7;padding:12px;border-radius:16px;border:2px solid #F59E0B"><div style="text-align:center"><div style="font-size:.8rem;font-weight:800;color:#92400E">மதிப்பெண்</div><div style="font-size:1.7rem;font-weight:900;color:#B45309" id="scoreTxt">0 / 0</div></div><div style="text-align:center"><div style="font-size:.8rem;font-weight:800;color:#92400E">நிலை</div><div style="font-size:1.2rem;font-weight:900;color:#15803D" id="gradeTxt">நன்று</div></div></div><div style="flex:1;overflow-y:auto;max-height:42vh" id="scoreList"></div><button class="ver" style="width:100%;height:44px;border-radius:14px;font-size:1rem" onclick="celebrate()">கொண்டாடு 🪷</button></div></div>
+<div id="finale"><canvas id="finaleC"></canvas><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:90%;max-width:520px;background:#FFFEFB;border:4px solid var(--gold);border-radius:26px;padding:22px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;box-shadow:0 20px 60px rgba(0,0,0,.8)"><div style="font-size:3rem">🪷</div><div style="font-family:var(--tamil);font-size:1.8rem;font-weight:900;color:#92400E">அற்புதம் ஜைனா!</div><button class="ver" style="width:auto;padding:8px 26px" onclick="closeFinale()">➔</button></div></div>
+<script>
+// SAFE STORE WRAPPER - USES shared/safe-storage.js if present
+const Store = {
+  db:null,
+  async init(){
+    if(this.db) return;
+    if(window.SafeStorage && window.SafeStorage.init){ try{ await window.SafeStorage.init(); }catch{} }
+    return new Promise(res=>{
+      try{
+        const req=indexedDB.open('zaina_final_v1',1);
+        req.onupgradeneeded=e=>{ try{ e.target.result.createObjectStore('kv'); }catch{} };
+        req.onsuccess=e=>{ this.db=e.target.result; res(); };
+        req.onerror=()=>res();
+      }catch{ res(); }
     });
-    // Restore lock flag
-    try {
-      if (localStorage.getItem("v2_tamil_oct22::writeLocked") === "1") writeModeLocked = true;
-    } catch (_) {}
-
-    function speakCurrentHeader() {
-      const ch = CURRICULUM[activeChapterIdx];
-      speakText(ch.title);
-    }
-
-    function confirmResetCurrentSection() {
-      if (confirm("தற்போதுள்ள விடைகளை அழிக்கவா? மீண்டும் தொடங்க விரும்புகிறீர்களா?")) {
-        if (activeSectionObj) {
-          if (activeSectionObj.questions) {
-            activeSectionObj.questions.forEach(q => {
-              delete userSelections[q.id];
-              clearCanvas(q.id);
-            });
-          }
-          renderModalContent(activeSectionObj);
-        }
+  },
+  async set(k,v){
+    await this.init();
+    try{ if(window.SafeStorage && window.SafeStorage.setItem){ await window.SafeStorage.setItem(k,v); return; } }catch{}
+    if(this.db){ return new Promise(r=>{ try{ const tx=this.db.transaction('kv','readwrite'); tx.objectStore('kv').put(v,k); tx.oncomplete=()=>r(); tx.onerror=()=>{ try{localStorage.setItem(k,v)}catch{}; r(); }; }catch{ try{localStorage.setItem(k,v)}catch{}; r(); } }); }
+    else{ try{localStorage.setItem(k,v)}catch{} }
+  },
+  async get(k){
+    await this.init();
+    try{ if(window.SafeStorage && window.SafeStorage.getItem){ const v=await window.SafeStorage.getItem(k); if(v!=null) return v; } }catch{}
+    if(this.db){ return new Promise(r=>{ try{ const tx=this.db.transaction('kv','readonly'); const req=tx.objectStore('kv').get(k); req.onsuccess=()=>r(req.result||localStorage.getItem(k)); req.onerror=()=>r(localStorage.getItem(k)); }catch{ r(localStorage.getItem(k)); } }); }
+    else return localStorage.getItem(k);
+  },
+  async del(k){
+    await this.init();
+    try{ if(window.SafeStorage && window.SafeStorage.removeItem){ await window.SafeStorage.removeItem(k); } }catch{}
+    if(this.db){ try{ const tx=this.db.transaction('kv','readwrite'); tx.objectStore('kv').delete(k); }catch{} }
+    try{ localStorage.removeItem(k); }catch{}
+  }
+};
+// CURRICULUM - SAME DATA CLEANED
+const CURR=[
+{id:"ch1",title:"இயல் - 4 செய்யுள்: திருக்குறள்",sub:"பண்புடைமை",secs:[
+{id:"ch1_mcq",title:"அ. சரியான விடை",type:"mcq",qs:[
+{id:"ch1_q1",stem:"இகழ்ச்சி இச்சொல்லின் பொருள்",tr:"Igalchchi",opts:["இரத்தல்","உயர்தல்","இகழ்தல்","மகிழ்தல்"],ans:"இகழ்தல்"},
+{id:"ch1_q2",stem:"பெருஞ்செல்வம் இச்சொல்லைப் பிரித்து எழுதக் கிடைப்பது",tr:"Perunjchelvam",opts:["பெருஞ் + செல்வம்","பெரும் + செல்வம்","பெருமை + செல்வம்","பெரு + செல்வம்"],ans:"பெரும் + செல்வம்"},
+{id:"ch1_q3",stem:"பண்புடைமை இச்சொல்லைப் பிரித்து எழுதக் கிடைப்பது",tr:"Panpudaimai",opts:["பண் + புடைமை","பண்பு + புடைமை","பண்பு + உடைமை","பண் + உடைமை"],ans:"பண்பு + உடைமை"},
+{id:"ch1_q4",stem:"மரம் + போல்வர் இச்சொற்களைச் சேர்த்து எழுதக் கிடைப்பது",tr:"Maram+polvar",opts:["மரபோல்வர்","மரமேல்வர்","மரம்போல்வர்","மரப்போல்வர்"],ans:"மரபோல்வர்"},
+{id:"ch1_q5",stem:"செய்யுளில், நேர்மை என்னும் பொருள் தரும் சொல்",tr:"Nermai",opts:["நயன்","அறம்","பகை","நன்பால்"],ans:"நயன்"}
+]},
+{id:"ch1_split",title:"ஆ. சொற்களைப் பிரித்து எழுதுக",type:"dual_split",qs:[
+{id:"ch1_s1",stem:"இவ்விரண்டும் = ",tr:"Ivvirandum",p1:"இ",p2:"இரண்டும்"},
+{id:"ch1_s2",stem:"மக்கட்பண்பு = ",tr:"Makkadpanbu",p1:"மக்கள்",p2:"பண்பு"}
+]},
+{id:"ch1_edhugai",title:"இ. எதுகை சொற்கள்",type:"edhugai",qs:[
+{id:"ch1_e1",stem:"எதுகை இணை 1",w1:"நகையுள்ளும்",w2:"பகையுள்ளும்",t1:"Nagaiyullum",t2:"Pagaiyullum"},
+{id:"ch1_e2",stem:"எதுகை இணை 2",w1:"அரம்போலும்",w2:"மரம்போல்வர்",t1:"Arampolum",t2:"Marampolvar"}
+]},
+{id:"ch1_mai",title:"ஈ. 'மை'யில் முடியும் சொற்கள்",type:"list4",qs:[
+{id:"ch1_m1",word:"நேர்மை",t:"Nermai"},{id:"ch1_m2",word:"உண்மை",t:"Unmai"},{id:"ch1_m3",word:"செம்மை",t:"Semmai"},{id:"ch1_m4",word:"நன்மை",t:"Nanmai"}
+]}
+]},
+{id:"ch2",title:"உரைநடை: தமிழர்களின் வீரக்கலைகள்",sub:"சிலம்பம் • மற்போர்",secs:[
+{id:"ch2_mcq",title:"அ. சரியான விடை",type:"mcq",qs:[
+{id:"ch2_q1",stem:"தமிழரின் வீர விளையாட்டுகளுள் ஒன்று",tr:"Veera",opts:["சிலம்பாட்டம்","பல்லாங்குழி","மட்டைப்பந்து","கூடைப்பந்து"],ans:"சிலம்பாட்டம்"},
+{id:"ch2_q2",stem:"மஞ்சு விரட்டு என்பதைக் குறிக்கும் விளையாட்டு",tr:"Manju",opts:["மற்போர்","ஏறுதழுவுதல்","சிலம்பாட்டம்","வில்வித்தை"],ans:"ஏறுதழுவுதல்"},
+{id:"ch2_q3",stem:"தற்காப்பு இச்சொல்லைப் பிரித்து எழுதக் கிடைப்பது",tr:"Tharkaappu",opts:["தற் + காப்பு","தனி + காப்பு","தன் + காப்பு","தகவல் + காப்பு"],ans:"தன் + காப்பு"},
+{id:"ch2_q4",stem:"மல் + போர் இச்சொற்களைச் சேர்த்து எழுதக் கிடைப்பது",tr:"Mal+por",opts:["மற்போர்","மல்போர்","மறப்போர்","மட்டப்போர்"],ans:"மற்போர்"},
+{id:"ch2_q5",stem:"ஒலிம்பிக் போட்டியில் சேர்க்கப்பட்டுள்ள கலை",tr:"Olympic",opts:["சிலம்பாட்டம்","வில்வித்தை","ஏறுதழுவுதல்","வழுக்கு மரம் ஏறுதல்"],ans:"வில்வித்தை"}
+]},
+{id:"ch2_join",title:"ஆ. சொற்களைச் சேர்த்து எழுதுக",type:"single_join",qs:[
+{id:"ch2_j1",stem:"சிலம்பு + ஆட்டம் = ",tr:"Silambu",ans:"சிலம்பாட்டம்"},
+{id:"ch2_j2",stem:"வீரம் + கலை = ",tr:"Veeram",ans:"வீரக்கலை"}
+]},
+{id:"ch2_split",title:"இ. சொற்களைப் பிரித்து எழுதுக",type:"dual_split",qs:[
+{id:"ch2_s1",stem:"தனக்கென்று = ",tr:"Thanakendru",p1:"தனக்கு",p2:"என்று"},
+{id:"ch2_s2",stem:"கொடைத்திறம் = ",tr:"Kodaithiram",p1:"கொடை",p2:"திறம்"}
+]},
+{id:"ch2_match",title:"ஈ. பொருத்துக",type:"matching",qs:[
+{id:"ch2_m1",left:"காளை",lt:"Kaalai",right:"திமில்"},{id:"ch2_m2",left:"சிலம்பக்கலை",lt:"Silambakkalai",right:"வளரி"},
+{id:"ch2_m3",left:"சிறுவாரைக்கம்பு",lt:"Siruvaaraikkambu",right:"மூங்கில்"},{id:"ch2_m4",left:"வேளாண்மை",lt:"Veelaanmai",right:"உழவு"}
+],pool:["திமில்","வளரி","மூங்கில்","உழவு"]}
+]},
+{id:"ch3",title:"இலக்கணம் & பாடப்பகுதி",sub:"இணைப்புச்சொற்கள் • பூமி நாள்",secs:[
+{id:"ch3_p1",title:"பக்கம் 1: இணைப்புச்சொற்கள்",type:"mcq",qs:[
+{id:"ch3_p1_q1",stem:"அண்ணன் வீட்டிற்குத் தாமதமாக வந்திருந்தார். _________ அவர் மிதிவண்டி பழுதடைந்து இருந்தது.",tr:"Annan",opts:["ஆயினும்","எனவே","எனினும்","ஏனெனில்"],ans:"ஏனெனில்"},
+{id:"ch3_p1_q2",stem:"நான் நன்றாகப் படித்துப் பயிற்சி எடுத்தேன். _________ முதல் மதிப்பெண் பெற்றிருக்க முடியாது.",tr:"Naan",opts:["ஆகையால்","அப்படியில்லாவிட்டால்","அப்படியானால்","ஏனெனில்"],ans:"அப்படியில்லாவிட்டால்"},
+{id:"ch3_p1_q3",stem:"அம்மா இனிமையாகப் பாடுவார். _________ போட்டியில் பங்கு பெற முடியுமா?",tr:"Amma",opts:["ஏனெனில்","எனினும்","ஆயினும்","அப்படியானால்"],ans:"அப்படியானால்"}
+]},
+{id:"ch3_p2",title:"பக்கம் 2: சிங்கமுகக் கிணறு",type:"table",passage:"பாட்டி, \"அதுதான் சிங்கமுகக் கிணறு\" என்றார். \"என்னது? சிங்கத்தின் வயிற்றுக்குள் கிணறா?\" என்று தன் இரு கைகளையும் கன்னத்தில் வைத்தபடி சோழர்களின் கலைத்திறனை எண்ணி வியந்தாள்.",items:[
+{cat:"பெயர்ச் சொற்கள்",ans:"பாட்டி, கிணறு, சோழர்கள், தமிழர்கள்"},{cat:"வினைச் சொற்கள்",ans:"என்றார், வியந்தாள், கண்டு, மகிழ்ந்த, சேர்ந்தாள்"},
+{cat:"ஒருமைச் சொற்கள்",ans:"பாட்டி, கிணறு, அவள், வீடு"},{cat:"பன்மைச் சொற்கள்",ans:"சோழர்கள், தமிழர்களின், கைகளை"}
+]},
+{id:"ch3_p3",title:"பக்கம் 3: தொடரில் அமைத்து எழுதுக",type:"sent",qs:[
+{id:"ch3_p3_s1",word:"ஏனெனில்",t:"Enenil",sent:"நான் நேற்று பள்ளிக்கு வரவில்லை; ஏனெனில் எனக்குக் காய்ச்சல்."},
+{id:"ch3_p3_s2",word:"ஆயினும்",t:"Aayinum",sent:"மழை கடுமையாகப் பெய்தது; ஆயினும் மாணவர்கள் பள்ளிக்கு வந்தனர்."},
+{id:"ch3_p3_s3",word:"அப்படியானால்",t:"Appadiyaanaal",sent:"நீ வெற்றி பெற்றுவிட்டாயா? அப்படியானால் இனிப்பு வழங்கு."}
+]},
+{id:"ch3_p4",title:"பக்கம் 4: பூமி நாள்",type:"passage_mcq",passage:"சூரியக் குடும்பத்தில் உள்ள 8 கோள்களுள் பூமியில் மட்டுமே உயிரினங்கள் வாழ்கின்றன. பூமியின் பாதுகாப்பை வலியுறுத்தி 1970 ஏப்ரல் 22 முதல் பூமி நாள் கொண்டாடப்படுகிறது.",qs:[
+{id:"ch3_p4_q1",stem:"சூரியக் குடும்பத்தில் உள்ள கோள்களின் எண்ணிக்கை",opts:["5","7","9","8"],ans:"8"},
+{id:"ch3_p4_q2",stem:"'பூமி நாள்' முதன் முதலில் கொண்டாடப்பட்ட ஆண்டு",opts:["1980","1990","1970","1870"],ans:"1970"},
+{id:"ch3_p4_q3",stem:"பூமி நாள் கொண்டாடப்படுவது",opts:["ஏப்ரல் 22","மார்ச் 22","அக்டோபர் 22","பிப்ரவரி 22"],ans:"ஏப்ரல் 22"},
+{id:"ch3_p4_q4",stem:"பூமி நாள் நோக்கம்",opts:["டெங்குவைத் தடுக்க","தீ விபத்துகளைத் தவிர்க்க","பூமியின் பாதுகாப்பு குறித்து விழிப்புணர்வை ஏற்படுத்த","சாலை விபத்துகளைத் தவிர்க்க"],ans:"பூமியின் பாதுகாப்பு குறித்து விழிப்புணர்வை ஏற்படுத்த"}
+],slogan:{id:"ch3_p4_slogan",stem:"பூமியைப் பாதுகாப்பது தொடர்பாக ஒரு முழக்கத் தொடர் எழுதுக:",sample:"பூமியைக் காப்போம்! எதிர்கால தலைமுறைக்கு வாழ்வளிப்போம்!"}},
+{id:"ch3_p5",title:"பக்கம் 5: பேச்சுத்தமிழ் & இணைப்புச்சொற்கள்",type:"corr_mcq",corrs:[
+{id:"ch3_p5_c1",col:"நான் ஊருக்கு பஸ்ல போனேன்.",std:"நான் ஊருக்குப் பேருந்தில் சென்றேன்."},
+{id:"ch3_p5_c2",col:"நான் டெய்லி ஸ்கூலுக்கு சைக்கிள்ல வரேன்.",std:"நான் தினமும் பள்ளிக்கு மிதிவண்டியில் வருகிறேன்."},
+{id:"ch3_p5_c3",col:"என் பேக்ல புக்கு வச்சிருக்கேன்.",std:"என் பையில் புத்தகம் வைத்திருக்கிறேன்."}
+],mcqs:[
+{id:"ch3_p5_q1",stem:"மைதானத்தில் மழைநீர் தேங்கி நிற்கிறது. _________ இன்று நம்மால் விளையாட முடியாதா?",opts:["ஆயினும்","எனவே","அப்படியானால்","ஏனெனில்"],ans:"அப்படியானால்"},
+{id:"ch3_p5_q2",stem:"பேச்சுப் போட்டியும் ஓவியப் போட்டியும் ஒரே நேரத்தில் நடந்தன. _________ நான் இரண்டிலும் கலந்து கொண்டிருப்பேன்.",opts:["ஏனெனில்","அப்படியானால்","அப்படியில்லாவிட்டால்","எனவே"],ans:"அப்படியில்லாவிட்டால்"},
+{id:"ch3_p5_q3",stem:"கருமேகங்கள் வானில் திரண்டன. _________ மழை பெய்யவில்லை.",opts:["எனவே","ஆகையால்","ஏனெனில்","ஆயினும்"],ans:"ஆயினும்"}
+]}
+]}
+];
+// STATE
+let mode="practice", chIdx=0, secObj=null, penOnly=true, scaleIdx=1;
+const scales=[0.9,1,1.15,1.3];
+const selMap={}, shufMap={};
+function cleanStem(s){return String(s||'').replace(/^[0-9]+[\.\)]\s*/,'').trim();}
+function wordSpans(t){return String(t||'').split(/\s+/).map(w=>{const c=w.replace(/[=:\.\?,!_()"-]/g,'');return `<span class="tw" onclick="event.stopPropagation();speak('${c.replace(/'/g,"\\'")}')">${w}</span>`;}).join(' ');}
+function inkKey(id){return `final_v1::${mode}::${id}`;}
+function selKey(){return `final_v1::sel::${mode}`;}
+function fy(arr){const a=[...arr];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a;}
+async function saveSel(){ try{ await Store.set(selKey(), JSON.stringify(selMap)); }catch{} }
+async function loadSel(){ try{ const v=await Store.get(selKey()); if(v){ Object.assign(selMap, JSON.parse(v)); } }catch{} }
+// TTS & FX
+let voices=[]; function loadV(){ if('speechSynthesis' in window) voices=speechSynthesis.getVoices(); }
+if('speechSynthesis' in window){ speechSynthesis.onvoiceschanged=loadV; loadV(); }
+function speak(t){ if(!('speechSynthesis' in window)) return; const c=String(t||'').replace(/[=:\.\?,!_()"-]/g,' ').trim(); if(!c) return; try{ speechSynthesis.cancel(); if(!voices.length) loadV(); const tv=voices.find(v=>v.lang&& (v.lang.toLowerCase().startsWith('ta')||v.lang.toLowerCase().includes('tamil'))); const u=new SpeechSynthesisUtterance(c); if(tv) u.voice=tv; u.lang='ta-IN'; u.rate=0.82; speechSynthesis.speak(u);}catch{} }
+class Fx{constructor(){this.ctx=null} init(){if(!this.ctx) this.ctx=new (window.AudioContext||window.webkitAudioContext)(); if(this.ctx.state==='suspended') this.ctx.resume();} ding(f=520){try{this.init(); const t=this.ctx.currentTime; const o=this.ctx.createOscillator(); const g=this.ctx.createGain(); o.type='triangle'; o.frequency.setValueAtTime(f,t); g.gain.setValueAtTime(.3,t); g.gain.exponentialRampToValueAtTime(.001,t+.3); o.connect(g); g.connect(this.ctx.destination); o.start(t); o.stop(t+.35);}catch{}}}
+const fx=new Fx();
+// RENDER CHAPTERS
+function renderChTabs(){
+  const el=document.getElementById('chTabs'); el.innerHTML='';
+  CURR.forEach((ch,i)=>{
+    const b=document.createElement('button'); b.className='ch'+(i===chIdx?' active':'');
+    b.onclick=()=>{ switchCh(i); toggleColl(true); };
+    b.innerHTML=`<span>🪷</span><span class="ct">${ch.title}</span>`;
+    el.appendChild(b);
+  });
+}
+function switchCh(i){
+  chIdx=i; renderChTabs();
+  const ch=CURR[i];
+  document.getElementById('bannerTitle').textContent=ch.title;
+  document.getElementById('status').textContent=`${ch.sub} • பிரிவைத் தொடுக!`;
+  const body=document.getElementById('body'); body.innerHTML='';
+  const grid=document.createElement('div'); grid.className='gate';
+  ch.secs.forEach(sec=>{
+    const card=document.createElement('div'); card.className='gc';
+    card.onclick=()=>openModal(sec);
+    card.innerHTML=`<div style="font-family:var(--tamil);font-size:1.15rem;font-weight:900;color:#92400E">${sec.title}</div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px"><span style="font-size:.85rem;font-weight:800;color:#D97706">தொடங்கு ➔</span><span>📜</span></div>`;
+    grid.appendChild(card);
+  });
+  body.appendChild(grid);
+}
+function stripHtml(id, cls=""){
+  return `<span class="strip ${cls}"><span class="wrap"><span class="lines"></span><canvas class="ink" data-id="${id}"></canvas></span><button class="sb" onclick="undoStrip('${id}')">↩</button><button class="sb del" onclick="clearStrip('${id}')">🗑</button></span>`;
+}
+// SINGLE PEN ENGINE - UNIFIED
+const Pen={tool:'pen', penType:'normal', color:'#0F172A', size:2.6, hue:0, active:null, ctx:null, drawing:false, points:[], undo:{}, lineStart:null, lineSnap:null, lastPenTime:0};
+function isPalm(e){ if(e.pointerType==='pen'){ Pen.lastPenTime=Date.now(); return false; } if(e.pointerType==='mouse') return false; if(Date.now()-Pen.lastPenTime<2500) return true; const w=e.width||0,h=e.height||0; return (w>=28||h>=28); }
+async function initCanvases(){
+  const list=document.querySelectorAll('#mBody .ink');
+  for(const c of list){
+    const parent=c.parentElement; const rect=parent.getBoundingClientRect();
+    const w=Math.max(280, Math.round(rect.width)||520); const h=100;
+    const dpr=window.devicePixelRatio||1;
+    c.width=Math.round(w*dpr); c.height=Math.round(h*dpr); c.style.width='100%'; c.style.height='100%';
+    const ctx=c.getContext('2d',{willReadFrequently:true}); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,w,h); ctx.lineCap='round'; ctx.lineJoin='round';
+    c.dataset.pen='true'; c.style.touchAction='none';
+    const k=inkKey(c.dataset.id);
+    try{
+      const data=await Store.get(k);
+      if(data){
+        const img=new Image();
+        img.onload=()=>{ ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,w,h); ctx.drawImage(img,0,0,w,h); if(!Pen.undo[k]) Pen.undo[k]=[]; Pen.undo[k].push(c.toDataURL()); };
+        img.src=data;
+      }else{
+        if(!Pen.undo[k]) Pen.undo[k]=[]; try{ Pen.undo[k].push(c.toDataURL()); }catch{}
       }
+    }catch{}
+  }
+}
+async function saveInk(c){ if(!c) return; try{ const data=c.toDataURL('image/webp',0.85); await Store.set(inkKey(c.dataset.id), data); }catch{ try{ const d2=c.toDataURL('image/png'); await Store.set(inkKey(c.dataset.id), d2); }catch{} } }
+document.addEventListener('pointerdown', e=>{
+  const c=e.target.closest('canvas.ink'); if(!c) return;
+  if(isPalm(e)) return;
+  if(penOnly && e.pointerType!=='pen' && e.pointerType!=='mouse') return;
+  e.preventDefault();
+  Pen.active=c; Pen.ctx=c.getContext('2d'); const dpr=window.devicePixelRatio||1; Pen.ctx.setTransform(dpr,0,0,dpr,0,0);
+  try{ c.setPointerCapture(e.pointerId); }catch{}
+  const rect=c.getBoundingClientRect(); const x=(e.clientX-rect.left)*(c.width/rect.width)/dpr; const y=(e.clientY-rect.top)*(c.height/rect.height)/dpr;
+  if(Pen.tool==='line'){
+    try{ Pen.lineSnap=Pen.ctx.getImageData(0,0,c.width,c.height); }catch{ Pen.lineSnap=null; }
+    Pen.lineStart={x,y}; return;
+  }
+  Pen.drawing=true; Pen.points=[{x,y,p:e.pressure>0?e.pressure:.5,tx:e.tiltX||0}];
+  if(Pen.tool==='eraser') Pen.ctx.globalCompositeOperation='destination-out'; else Pen.ctx.globalCompositeOperation='source-over';
+},{passive:false});
+document.addEventListener('pointermove', e=>{
+  if(isPalm(e)) return;
+  if(penOnly && Pen.active && e.pointerType!=='pen' && e.pointerType!=='mouse') return;
+  if(Pen.tool==='line' && Pen.lineStart && Pen.active){
+    e.preventDefault(); const c=Pen.active; const rect=c.getBoundingClientRect(); const dpr=window.devicePixelRatio||1;
+    const ex=(e.clientX-rect.left)*(c.width/rect.width)/dpr; const ey=(e.clientY-rect.top)*(c.height/rect.height)/dpr;
+    if(Pen.lineSnap) try{ Pen.ctx.putImageData(Pen.lineSnap,0,0); }catch{}
+    Pen.ctx.save(); Pen.ctx.strokeStyle='#8B5A2B'; Pen.ctx.lineWidth=2.5; Pen.ctx.globalCompositeOperation='source-over';
+    Pen.ctx.beginPath(); Pen.ctx.moveTo(Pen.lineStart.x,Pen.lineStart.y); Pen.ctx.lineTo(ex,ey); Pen.ctx.stroke(); Pen.ctx.restore(); return;
+  }
+  if(!Pen.drawing||!Pen.active) return; e.preventDefault();
+  const c=Pen.active; const rect=c.getBoundingClientRect(); const dpr=window.devicePixelRatio||1;
+  const x=(e.clientX-rect.left)*(c.width/rect.width)/dpr; const y=(e.clientY-rect.top)*(c.height/rect.height)/dpr;
+  const last=Pen.points[Pen.points.length-1]; const ctx=Pen.ctx; ctx.setTransform(dpr,0,0,dpr,0,0);
+  if(Pen.tool==='eraser'){ ctx.lineWidth=Math.max(14, Pen.size*4); ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(x,y); ctx.stroke(); }
+  else{
+    if(Pen.penType==='qalam'){
+      const angle=-Math.PI/4 + (e.tiltX/90)*0.16; const tot=Pen.size*3.2;
+      const p1=last.p*0.65+0.55; const p2=(e.pressure>0?e.pressure:.5)*0.65+0.55;
+      const hw1=tot*p1/2,hw2=tot*p2/2; const ca=Math.cos(angle),sa=Math.sin(angle);
+      ctx.fillStyle=Pen.color; ctx.strokeStyle=Pen.color; ctx.lineWidth=0.8;
+      ctx.beginPath(); ctx.moveTo(last.x-hw1*ca,last.y-hw1*sa); ctx.lineTo(last.x+hw1*ca,last.y+hw1*sa); ctx.lineTo(x+hw2*ca,y+hw2*sa); ctx.lineTo(x-hw2*ca,y-hw2*sa); ctx.closePath(); ctx.fill(); ctx.stroke();
+    }else{
+      if(Pen.penType==='rainbow'){ ctx.strokeStyle=`hsl(${Pen.hue},100%,50%)`; Pen.hue=(Pen.hue+4)%360; } else ctx.strokeStyle=Pen.color;
+      ctx.lineWidth=Pen.size; ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(x,y); ctx.stroke();
     }
-
-    /* 7. GRADING & CELEBRATION ENGINE */
-    function handleVerifyClick() {
-      saveAllVisibleCanvases();
-
-      if (currentAppMode === "practice") {
-        audioFX.playBell();
-        speakText("பயிற்சி முறை முடிந்தது! தேர்வு முறைக்குச் செல்லவும்.");
-        alert("அற்புதம் ஜைனா! தேர்வு முறைக்குச் சென்று (✍️ Write) சுயமாக எழுதி மதிப்பெண் பெறுக!");
-        return;
-      }
-
-      let score = 0;
-      let totalGradable = 0;
-      const reviewList = document.getElementById("scoreReviewList");
-      reviewList.innerHTML = "";
-
-      CURRICULUM.forEach(ch => {
-        ch.sections.forEach(sec => {
-          const list = (!shuffledSectionMap[sec.id]) ? sec.questions : shuffledSectionMap[sec.id];
-          if (list) {
-            list.forEach(q => {
-              if (q.answer) {
-                totalGradable++;
-                const userChoice = userSelections[q.id] || "";
-                const isCorrect = userChoice.trim() === q.answer.trim();
-                if (isCorrect) score++;
-
-                const row = document.createElement("div");
-                row.style.cssText = "padding:8px; border-bottom:1px solid #E2E8F0; font-family:var(--font-tamil); font-size:0.95rem; display:flex; justify-content:space-between; align-items:center;";
-                row.innerHTML = `
-                  <div>
-                    <div style="font-weight:800; color:#1E293B;">${cleanStemText(q.stem)}</div>
-                    <div style="font-size:0.85rem; color:${isCorrect ? '#16A34A' : '#DC2626'};">
-                      ${userChoice ? `தேர்வு: ${userChoice}` : 'விடை அளிக்கப்படவில்லை'} ${isCorrect ? '✓' : `(சரியானது: ${q.answer})`}
-                    </div>
-                  </div>
-                  <span style="font-size:1.2rem;">${isCorrect ? '⭐' : '❌'}</span>
-                `;
-                reviewList.appendChild(row);
-              }
-            });
-          }
-        });
-      });
-
-      document.getElementById("scoreSummaryMark").textContent = `${score} / ${totalGradable}`;
-      document.getElementById("scoreGradeStatus").textContent = (score >= 20) ? "மிகச் சிறப்பு (Excellent!)" : (score >= 14) ? "நன்று (Good!)" : "பயிற்சி தேவை";
-
-      audioFX.playBell();
-      document.getElementById("scoreReviewModal").style.display = "flex";
-    }
-
-    function closeScoreReview() {
-      document.getElementById("scoreReviewModal").style.display = "none";
-    }
-
-    function finalizeGradingAndCelebrate() {
-      closeScoreReview();
-      if (activeSectionObj) closeSectionModal();
-      triggerGrandCelebration();
-    }
-
-    const finaleStage = document.getElementById("celebrationFinaleStage");
-    const finaleCanvas = document.getElementById("finaleCanvas");
-    const finaleCtx = finaleCanvas.getContext("2d", { alpha: true });
-    const soaringParrot = document.getElementById("soaringParrot");
-    const victoryAwardScroll = document.getElementById("victoryAwardScroll");
-
-    let finaleRunning = false;
-    let petals = [];
-    let flightStartTime = 0;
-
-    function resizeFinaleCanvas() {
-      finaleCanvas.width = window.innerWidth;
-      finaleCanvas.height = window.innerHeight;
-    }
-    window.addEventListener("resize", resizeFinaleCanvas);
-
-    class DriftingPetal {
-      constructor() {
-        this.x = Math.random() * window.innerWidth;
-        this.y = -30 - Math.random() * 200;
-        this.size = Math.random() * 12 + 8;
-        this.vx = (Math.random() - 0.5) * 1.5;
-        this.vy = Math.random() * 2.2 + 1.8;
-        this.rot = Math.random() * Math.PI * 2;
-        this.rotSpeed = (Math.random() - 0.5) * 0.05;
-        const colors = ["#F472B6", "#FBCFE8", "#F59E0B", "#FEF08A", "#34D399"];
-        this.color = colors[Math.floor(Math.random() * colors.length)];
-      }
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        this.rot += this.rotSpeed;
-        if (this.y > window.innerHeight + 40) {
-          this.y = -20;
-          this.x = Math.random() * window.innerWidth;
-        }
-      }
-      draw(c) {
-        c.save();
-        c.translate(this.x, this.y);
-        c.rotate(this.rot);
-        c.fillStyle = this.color;
-        c.beginPath();
-        c.ellipse(0, 0, this.size, this.size * 0.6, 0, 0, Math.PI * 2);
-        c.fill();
-        c.restore();
-      }
-    }
-
-    function triggerGrandCelebration() {
-      resizeFinaleCanvas();
-      finaleStage.style.display = "block";
-      finaleRunning = true;
-
-      audioFX.playBell();
-      speakText("அற்புதம் ஜைனா! இயல் நான்கு வெற்றிகரமாக முடிந்தது!");
-
-      petals = [];
-      for (let i = 0; i < 65; i++) petals.push(new DriftingPetal());
-
-      flightStartTime = performance.now();
-      animateSoaringFlight();
-
-      setTimeout(() => {
-        victoryAwardScroll.classList.add("impact");
-      }, 1600);
-
-      requestAnimationFrame(renderPetalLoop);
-    }
-
-    function animateSoaringFlight() {
-      const dur = 2600;
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-
-      function step(now) {
-        const elapsed = now - flightStartTime;
-        const p = Math.min(1, elapsed / dur);
-        const ease = 1 - Math.pow(1 - p, 3);
-
-        const curX = -120 + (w + 240) * ease;
-        const curY = h * 0.75 - Math.sin(ease * Math.PI) * (h * 0.55);
-
-        soaringParrot.style.left = `${curX}px`;
-        soaringParrot.style.top = `${curY}px`;
-
-        if (p < 1 && finaleRunning) {
-          requestAnimationFrame(step);
-        }
-      }
-      requestAnimationFrame(step);
-    }
-
-    function renderPetalLoop() {
-      if (!finaleRunning) return;
-      finaleCtx.clearRect(0, 0, finaleCanvas.width, finaleCanvas.height);
-      for (let p of petals) {
-        p.update();
-        p.draw(finaleCtx);
-      }
-      requestAnimationFrame(renderPetalLoop);
-    }
-
-    function closeCelebrationStage() {
-      finaleRunning = false;
-      finaleStage.style.display = "none";
-      victoryAwardScroll.classList.remove("impact");
-      goToHub();
-    }
-
-    window.onload = () => {
-      renderChapterTabs();
-      switchChapter(0);
-    };
-
-    window.addEventListener("beforeunload", saveAllVisibleCanvases);
-    window.addEventListener("pagehide", saveAllVisibleCanvases);
-  </script>
-
-  <!-- ======================================================== -->
-  <!-- COMPLETE UNIVERSAL PEN ENGINE (DEDICATED FLOATING TOOL)   -->
-  <!-- ======================================================== -->
-  <script>
-  (function () {
-    'use strict';
-
-    const CFG = {
-      colors: ['#0F172A', '#2563EB', '#15803D', '#DC2626', '#7C3AED'],
-      stamps: ['⭐', '😡', '❤️', '😊', '😢', '🌸', '♻️', '🌍', '✅', '❌', '💯', '❄️'],
-      stickers: ['💃', '🔥', '⭐', '🌹', '🧐', '🫰', '🌳', '🎊'],
-      storageKey: 'LQ_UNIVERSAL_PEN_V16',
-      soundKey: 'LQ_PEN_SOUND_V16',
-      inkPrefix: 'LQ_INK_V16_',
-      maxUndo: 30,
-      lineColor: '#8B5A2B',
-      lineWidth: 2.5,
-      eraserMultiplier: 4,
-      minEraserSize: 14,
-      saveDebounceMs: 400
-    };
-
-    const state = {
-      tool: 'pen',
-      penType: 'normal',
-      color: '#0F172A',
-      size: 2.5,
-      drawing: false,
-      soundOn: false,
-      activeCanvas: null,
-      ctx: null,
-      audioCtx: null,
-      undoStack: [],
-      redoStack: [],
-      rainbowHue: 0,
-      isScrolling: false,
-      points: [],
-      longPressTimer: null,
-      lineStart: null,
-      pointerId: null,
-      currentInkKey: null,
-      saveTimer: null,
-      inkLoadedFor: null
-    };
-
-    function loadState() {
-      try {
-        const s = localStorage.getItem(CFG.storageKey);
-        if (s) Object.assign(state, JSON.parse(s));
-        state.soundOn = localStorage.getItem(CFG.soundKey) === 'true';
-      } catch (e) {}
-    }
-
-    function saveState() {
-      try {
-        localStorage.setItem(CFG.storageKey, JSON.stringify({
-          tool: state.tool,
-          penType: state.penType,
-          color: state.color,
-          size: state.size
-        }));
-        localStorage.setItem(CFG.soundKey, String(state.soundOn));
-      } catch (e) {}
-    }
-
-    function buildInkKey(canvas) {
-      if (!canvas) return null;
-      const pagePart = (location.pathname || 'page').replace(/^\//, '').replace(/\.html?$/i, '').replace(/[^a-z0-9_-]/gi, '_') || 'page';
-      let sectionPart = 'default';
-      if (state.currentInkKey) sectionPart = state.currentInkKey;
-      else if (canvas.dataset && canvas.dataset.canvasId) sectionPart = canvas.dataset.canvasId;
-      else if (canvas.id) sectionPart = canvas.id;
-      return CFG.inkPrefix + pagePart + '__' + sectionPart;
-    }
-
-    function saveInkNow() {
-      if (!state.activeCanvas) return;
-      const key = buildInkKey(state.activeCanvas);
-      if (!key) return;
-      try {
-        const data = state.activeCanvas.toDataURL('image/png');
-        localStorage.setItem(key, data);
-      } catch (e) {}
-    }
-
-    function scheduleSaveInk() {
-      clearTimeout(state.saveTimer);
-      state.saveTimer = setTimeout(saveInkNow, CFG.saveDebounceMs);
-    }
-
-    function loadInkFor(canvas) {
-      if (!canvas) return;
-      const key = buildInkKey(canvas);
-      if (!key) return;
-      if (state.inkLoadedFor === key && state.activeCanvas === canvas) return;
-
-      const data = localStorage.getItem(key);
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-      try { ctx.setTransform(1, 0, 0, 1, 0, 0); } catch (e) {}
-
-      state.undoStack = [];
-      state.redoStack = [];
-
-      if (!data) {
-        try { state.undoStack.push(canvas.toDataURL('image/png')); } catch (e) {}
-        state.inkLoadedFor = key;
-        return;
-      }
-
-      const img = new Image();
-      img.onload = () => {
-        try { ctx.setTransform(1, 0, 0, 1, 0, 0); } catch (e) {}
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0);
-        try { state.undoStack.push(canvas.toDataURL('image/png')); } catch (e) {}
-        state.inkLoadedFor = key;
-      };
-      img.onerror = () => { state.inkLoadedFor = key; };
-      img.src = data;
-    }
-
-    function clearSavedInk() {
-      if (!state.activeCanvas) return;
-      const key = buildInkKey(state.activeCanvas);
-      if (key) {
-        try { localStorage.removeItem(key); } catch (e) {}
-      }
-    }
-
-    function initAudio() {
-      if (!state.audioCtx) {
-        state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-    }
-
-    function playPen() {
-      if (!state.soundOn || !state.audioCtx) return;
-      try {
-        const len = state.audioCtx.sampleRate * 0.05;
-        const buffer = state.audioCtx.createBuffer(1, len, state.audioCtx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * Math.exp(-i / data.length * 3) * 0.7;
-        const noise = state.audioCtx.createBufferSource();
-        const filter = state.audioCtx.createBiquadFilter();
-        const gain = state.audioCtx.createGain();
-        noise.buffer = buffer;
-        filter.type = 'lowpass';
-        filter.frequency.value = 800;
-        gain.gain.setValueAtTime(0.04, state.audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, state.audioCtx.currentTime + 0.05);
-        noise.connect(filter).connect(gain).connect(state.audioCtx.destination);
-        noise.start();
-      } catch (_) {}
-    }
-
-    function playEraser() {
-      if (!state.soundOn || !state.audioCtx) return;
-      try {
-        const len = state.audioCtx.sampleRate * 0.08;
-        const buffer = state.audioCtx.createBuffer(1, len, state.audioCtx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * 0.2;
-        const noise = state.audioCtx.createBufferSource();
-        const filter = state.audioCtx.createBiquadFilter();
-        const gain = state.audioCtx.createGain();
-        noise.buffer = buffer;
-        filter.type = 'bandpass';
-        filter.frequency.value = 400;
-        filter.Q.value = 0.5;
-        gain.gain.setValueAtTime(0.04, state.audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, state.audioCtx.currentTime + 0.08);
-        noise.connect(filter).connect(gain).connect(state.audioCtx.destination);
-        noise.start();
-      } catch (_) {}
-    }
-
-    function playDing() {
-      if (!state.soundOn || !state.audioCtx) return;
-      try {
-        const osc = state.audioCtx.createOscillator();
-        const gain = state.audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(800, state.audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.12, state.audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, state.audioCtx.currentTime + 0.25);
-        osc.connect(gain).connect(state.audioCtx.destination);
-        osc.start();
-        osc.stop(state.audioCtx.currentTime + 0.25);
-      } catch (_) {}
-    }
-
-    window.UniversalPen = {
-      state,
-      saveState,
-      playDing,
-      initAudio,
-      forceCanvas: (canvas) => {
-        if (canvas && canvas.tagName === 'CANVAS') {
-          state.activeCanvas = canvas;
-          state.ctx = canvas.getContext('2d');
-          try { state.ctx.setTransform(1, 0, 0, 1, 0, 0); } catch (e) {}
-          canvas.style.touchAction = 'none';
-          canvas.dataset.pen = 'true';
-          loadInkFor(canvas);
-        }
-      },
-      setInkKey: (key) => {
-        if (state.activeCanvas) saveInkNow();
-        state.currentInkKey = key ? String(key) : null;
-        state.inkLoadedFor = null;
-        if (state.activeCanvas) loadInkFor(state.activeCanvas);
-      },
-      saveInk: saveInkNow,
-      clearInk: () => {
-        if (!state.ctx || !state.activeCanvas) return;
-        try { state.ctx.setTransform(1, 0, 0, 1, 0, 0); } catch (e) {}
-        state.ctx.globalCompositeOperation = 'source-over';
-        state.ctx.clearRect(0, 0, state.activeCanvas.width, state.activeCanvas.height);
-        state.undoStack = [];
-        state.redoStack = [];
-        clearSavedInk();
-      }
-    };
-
-    function buildUI() {
-      if (document.getElementById('penBubble')) return;
-
-      const css = document.createElement('style');
-      css.textContent = `
-        #penBubble,#eraserBubble{position:fixed;z-index:99990;width:56px;height:56px;border-radius:50%;
-          background:linear-gradient(135deg,#5A3C22,#8B5A2B);box-shadow:0 8px 24px rgba(0,0,0,.35);
-          display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none;transition:transform .15s}
-        #penBubble{bottom:90px;right:14px}
-        #eraserBubble{bottom:90px;right:78px;background:linear-gradient(135deg,#6B7280,#9CA3AF)}
-        #penBubble.on,#eraserBubble.on{box-shadow:0 0 0 3px #FEF3C7, 0 8px 24px rgba(0,0,0,.35)}
-        #penBubble:active,#eraserBubble:active{transform:scale(.95)}
-        #penBar{position:fixed;z-index:99991;background:rgba(255,255,255,.98);border:2px solid #E7D5B0;border-radius:18px;
-          padding:8px;box-shadow:0 16px 40px rgba(0,0,0,.22);transform:scale(.9);opacity:0;pointer-events:none;
-          transition:all .25s;display:flex;gap:6px;align-items:center;flex-wrap:wrap;max-width:calc(100vw - 24px)}
-        #penBar.open{transform:scale(1);opacity:1;pointer-events:auto}
-        .pen-btn{width:36px;height:36px;border-radius:10px;border:2px solid #E7D5B0;background:#fff;
-          display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;transition:.15s;position:relative}
-        .pen-btn.on{background:#FEF3C7;border-color:#8B5A2B}
-        .pen-btn:active{transform:scale(.9)}
-        .pen-pop{position:absolute;bottom:46px;left:50%;transform:translateX(-50%) scale(.9);opacity:0;pointer-events:none;
-          transition:all .2s;background:rgba(255,255,255,.98);border:2px solid #E7D5B0;border-radius:14px;padding:8px;
-          box-shadow:0 8px 24px rgba(0,0,0,.18);white-space:nowrap;z-index:99992}
-        .pen-pop.open{transform:translateX(-50%) scale(1);opacity:1;pointer-events:auto}
-        .pen-pop-row{display:flex;gap:6px;align-items:center;margin-bottom:6px}
-        .pen-pop-row:last-child{margin-bottom:0}
-        .pen-mini{width:32px;height:32px;border-radius:8px;border:2px solid #E7D5B0;background:#fff;
-          display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px}
-        .pen-mini.on{background:#FEF3C7;border-color:#8B5A2B}
-        .pen-dot{width:28px;height:28px;border-radius:50%;cursor:pointer;border:3px solid #fff;box-shadow:0 0 0 2px #E7D5B0;transition:.15s}
-        .pen-dot.on{box-shadow:0 0 0 2px #8B5A2B;transform:scale(1.1)}
-        .pen-tab{padding:4px 10px;border-radius:8px;border:2px solid #E7D5B0;background:#fff;cursor:pointer;font-size:.75rem;font-weight:700}
-        .pen-tab.on{background:#FEF3C7;border-color:#8B5A2B}
-        #penSound{position:fixed;bottom:18px;left:14px;z-index:99990;width:44px;height:44px;border-radius:50%;
-          background:#fff;border:2px solid #8B5A2B;display:flex;align-items:center;justify-content:center;
-          cursor:pointer;font-size:20px;box-shadow:0 4px 12px rgba(0,0,0,.15);touch-action:none}
-        .pen-sticker{position:fixed;font-size:32px;cursor:grab;z-index:99980;user-select:none;touch-action:none;
-          filter:drop-shadow(0 4px 8px rgba(0,0,0,.25))}
-        .pen-sticker.sel{outline:2px dashed #8B5A2B;outline-offset:4px}
-      `;
-      document.head.appendChild(css);
-
-      const bubble = document.createElement('div');
-      bubble.id = 'penBubble';
-      bubble.innerHTML = '<span style="font-size:24px">✏️</span>';
-
-      const eraserBubble = document.createElement('div');
-      eraserBubble.id = 'eraserBubble';
-      eraserBubble.innerHTML = '<span style="font-size:22px">🧽</span>';
-
-      const bar = document.createElement('div');
-      bar.id = 'penBar';
-      bar.innerHTML = `
-        <div class="pen-btn on" data-tool="pen" style="position:relative">
-          ✏️
-          <div class="pen-pop" id="penPop">
-            <div class="pen-pop-row">
-              <div class="pen-mini on" data-type="normal">✏️</div>
-              <div class="pen-mini" data-type="cursive">🖋️</div>
-              <div class="pen-mini" data-type="rainbow">🌈</div>
-              <div class="pen-mini" data-type="qalam">🪶</div>
-            </div>
-            <div class="pen-pop-row">
-              <span style="font-size:.65rem;font-weight:800">Size</span>
-              <input type="range" min="1" max="8" step="0.5" value="${state.size}" id="penSize" style="width:100px;accent-color:#8B5A2B"/>
-              <span id="penSizeLab" style="font-size:.65rem;font-weight:800;min-width:24px">${state.size}</span>
-            </div>
-          </div>
-        </div>
-        <div class="pen-btn" data-act="undo">↩️</div>
-        <div class="pen-btn" data-act="redo">↪️</div>
-        <div class="pen-btn" data-act="clear">🗑️</div>
-        <div class="pen-btn" style="position:relative">
-          🎨
-          <div class="pen-pop" id="colorPop">
-            <div class="pen-pop-row" id="colorRow"></div>
-          </div>
-        </div>
-        <div class="pen-btn" style="position:relative">
-          ⭐
-          <div class="pen-pop" id="stampPop" style="width:240px">
-            <div class="pen-pop-row">
-              <div class="pen-tab on" data-tab="stamps">Stamps</div>
-              <div class="pen-tab" data-tab="stickers">Stickers</div>
-              <div class="pen-tab" data-tab="line">📏 Line</div>
-            </div>
-            <div id="stampGrid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:6px"></div>
-          </div>
+  }
+  Pen.points.push({x,y,p:e.pressure>0?e.pressure:.5,tx:e.tiltX||0});
+},{passive:false});
+document.addEventListener('pointerup', async e=>{
+  if(Pen.tool==='line' && Pen.lineStart && Pen.active){
+    e.preventDefault(); const c=Pen.active; const rect=c.getBoundingClientRect(); const dpr=window.devicePixelRatio||1;
+    const ex=(e.clientX-rect.left)*(c.width/rect.width)/dpr; const ey=(e.clientY-rect.top)*(c.height/rect.height)/dpr;
+    const ctx=Pen.ctx; ctx.setTransform(dpr,0,0,dpr,0,0); ctx.save(); ctx.strokeStyle='#8B5A2B'; ctx.lineWidth=2.5; ctx.globalCompositeOperation='source-over';
+    ctx.beginPath(); ctx.moveTo(Pen.lineStart.x,Pen.lineStart.y); ctx.lineTo(ex,ey); ctx.stroke(); ctx.restore();
+    const k=inkKey(c.dataset.id); if(!Pen.undo[k]) Pen.undo[k]=[]; Pen.undo[k].push(c.toDataURL()); if(Pen.undo[k].length>30) Pen.undo[k].shift(); await saveInk(c); Pen.lineStart=null; Pen.lineSnap=null; return;
+  }
+  if(!Pen.drawing) return; Pen.drawing=false; const c=Pen.active; if(!c) return;
+  const k=inkKey(c.dataset.id); if(!Pen.undo[k]) Pen.undo[k]=[]; try{ Pen.undo[k].push(c.toDataURL()); if(Pen.undo[k].length>30) Pen.undo[k].shift(); }catch{} await saveInk(c);
+  try{ c.releasePointerCapture(e.pointerId); }catch{}
+});
+function undoStrip(id){
+  const c=document.querySelector(`.ink[data-id="${id}"]`); if(!c) return;
+  const k=inkKey(id); const st=Pen.undo[k]; if(!st||st.length<2) return; fx.ding(350); st.pop(); const prev=st[st.length-1];
+  const ctx=c.getContext('2d'); const dpr=window.devicePixelRatio||1;
+  const img=new Image(); img.onload=async()=>{ const r=c.parentElement.getBoundingClientRect(); const w=Math.max(280,Math.round(r.width)||520); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,w,100); ctx.drawImage(img,0,0,w,100); await saveInk(c); }; img.src=prev;
+}
+async function clearStrip(id){
+  const c=document.querySelector(`.ink[data-id="${id}"]`); if(!c) return; fx.ding(300);
+  const ctx=c.getContext('2d'); const dpr=window.devicePixelRatio||1; const r=c.parentElement.getBoundingClientRect(); const w=Math.max(280,Math.round(r.width)||520);
+  ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,c.width,c.height); ctx.setTransform(dpr,0,0,dpr,0,0);
+  const k=inkKey(id); Pen.undo[k]=[c.toDataURL()]; await Store.del(k);
+}
+window.undoStrip=undoStrip; window.clearStrip=clearStrip;
+function doShuffle(){
+  if(!secObj||mode==="practice") return; fx.ding(600);
+  document.querySelectorAll('.ink').forEach(c=>saveInk(c));
+  if(secObj.qs){
+    const sh=fy(secObj.qs).map(q=>{ const cp={...q}; if(cp.opts) cp.opts=fy(cp.opts); return cp; });
+    shufMap[secObj.id]=sh;
+    if(secObj.pool) shufMap[secObj.id+'_pool']=fy(secObj.pool);
+    renderModal();
+  }
+}
+function openModal(sec){
+  secObj=sec; document.getElementById('mTitle').textContent=sec.title;
+  document.getElementById('shufBtn').style.display=(mode==='practice')?'none':'flex';
+  renderModal();
+  const m=document.getElementById('modal'); m.style.display='flex'; setTimeout(()=>m.classList.add('open'),20);
+  setTimeout(()=>{ initCanvases(); },250);
+}
+function closeModal(){
+  document.querySelectorAll('.ink').forEach(c=>saveInk(c));
+  const m=document.getElementById('modal'); m.classList.remove('open'); setTimeout(()=>{ m.style.display='none'; secObj=null; },260);
+}
+function renderModal(){
+  const body=document.getElementById('mBody'); body.innerHTML=''; const isP=(mode==='practice');
+  if(!secObj) return;
+  let qList=secObj.qs; if(!isP && shufMap[secObj.id]) qList=shufMap[secObj.id];
+  if(secObj.type==='mcq'){
+    qList.forEach((q,i)=>{
+      const div=document.createElement('div'); div.className='qc';
+      const sel=selMap[q.id]||''; div.innerHTML=`
+        <div class="qs"><span style="color:#D97706;margin-right:4px">${i+1}.</span>${wordSpans(cleanStem(q.stem))}${isP&&q.tr?`<span class="badge">${q.tr}</span>`:''}</div>
+        ${isP&&q.ans?`<div class="hint">💡 ${q.ans}</div>`:''}
+        <div class="mcq">${q.opts.map(o=>`<button class="${sel===o?'sel':''}" onclick="pick('${q.id}','${o.replace(/'/g,"\\'")}',this)">${o}</button>`).join('')}</div>
+        <div style="margin-top:4px">${stripHtml(q.id)}</div>
+      `; body.appendChild(div);
+    });
+  }else if(secObj.type==='dual_split'){
+    qList.forEach((q,i)=>{
+      const div=document.createElement('div'); div.className='qc';
+      div.innerHTML=`
+        <div class="qs"><span style="color:#D97706;margin-right:4px">${i+1}.</span>${wordSpans(cleanStem(q.stem))}${isP?`<span class="badge">${q.tr}</span>`:''}</div>
+        ${isP?`<div class="hint">💡 ${q.p1} + ${q.p2}</div>`:''}
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">${stripHtml(q.id+'_a','s360')}<span style="font-size:1.6rem;font-weight:900;color:#D97706">+</span>${stripHtml(q.id+'_b','s360')}</div>
+      `; body.appendChild(div);
+    });
+  }else if(secObj.type==='edhugai'){
+    qList.forEach((q,i)=>{
+      const div=document.createElement('div'); div.className='qc';
+      div.innerHTML=`
+        <div class="qs"><span style="color:#D97706;margin-right:4px">${i+1}.</span>${wordSpans(cleanStem(q.stem))}</div>
+        ${isP?`<div style="background:#FDF2F8;border:2px dashed #F472B6;border-radius:14px;padding:8px 14px;display:flex;justify-content:space-around;font-family:var(--tamil);font-weight:900;color:#831843"><span>${q.w1} <span class="badge">${q.t1}</span></span><span>—</span><span>${q.w2} <span class="badge">${q.t2}</span></span></div>`:''}
+        <div style="display:flex;gap:8px;flex-wrap:wrap">${stripHtml(q.id+'_1','s360')}<span style="align-self:center;font-weight:900;color:#D97706">—</span>${stripHtml(q.id+'_2','s360')}</div>
+      `; body.appendChild(div);
+    });
+  }else if(secObj.type==='list4'){
+    const div=document.createElement('div'); div.className='qc'; div.innerHTML=`<div class="qs">‘மை’ என முடியும் நான்கு சொற்கள்:</div>`;
+    qList.forEach((q,i)=>{ div.innerHTML+=`<div style="margin-top:8px"><div style="font-family:var(--tamil);font-weight:800;color:#92400E">${i+1}. சொல்:</div>${isP?`<div class="hint">${q.word} <span class="badge">${q.t}</span></div>`:''}${stripHtml(q.id)}</div>`; });
+    body.appendChild(div);
+  }else if(secObj.type==='single_join'){
+    qList.forEach((q,i)=>{
+      const div=document.createElement('div'); div.className='qc';
+      div.innerHTML=`<div class="qs"><span style="color:#D97706;margin-right:4px">${i+1}.</span>${wordSpans(cleanStem(q.stem))}${isP?`<span class="badge">${q.tr}</span>`:''}</div>${isP?`<div class="hint">💡 ${q.ans}</div>`:''}<div style="margin-top:4px">${stripHtml(q.id)}</div>`; body.appendChild(div);
+    });
+  }else if(secObj.type==='matching'){
+    const div=document.createElement('div'); div.className='qc'; div.innerHTML=`<div class="qs">பொருத்துக - சரியான இணையை எழுதுக</div>`;
+    const pool=(!isP && shufMap[secObj.id+'_pool']) ? shufMap[secObj.id+'_pool'] : secObj.pool;
+    qList.forEach((q,i)=>{
+      const sel=selMap[q.id]||''; div.innerHTML+=`
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid #F1F5F9">
+          <div style="min-width:120px"><span style="color:#D97706;font-weight:900">${i+1}.</span> <span style="font-family:var(--tamil);font-weight:800">${q.left}</span>${isP?`<span class="badge">${q.lt}</span>`:''}</div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap">${pool.map(o=>`<button class="${sel===o?'sel':''}" onclick="pick('${q.id}','${o}',this)">${o}</button>`).join('')}</div>
+          <div>${isP?`<div class="hint">💡 ${q.right}</div>`:''}${stripHtml(q.id,'s380')}</div>
         </div>
       `;
-
-      const sound = document.createElement('div');
-      sound.id = 'penSound';
-      sound.textContent = state.soundOn ? '🔊' : '🔇';
-
-      document.body.appendChild(bubble);
-      document.body.appendChild(eraserBubble);
-      document.body.appendChild(bar);
-      document.body.appendChild(sound);
-
-      const colorRow = document.getElementById('colorRow');
-      CFG.colors.forEach(c => {
-        const d = document.createElement('div');
-        d.className = 'pen-dot' + (c === state.color ? ' on' : '');
-        d.style.background = c;
-        d.onclick = () => {
-          state.color = c;
-          saveState();
-          updateUI();
-          closePops();
-        };
-        colorRow.appendChild(d);
-      });
-
-      const stampGrid = document.getElementById('stampGrid');
-      function renderStamps() {
-        stampGrid.innerHTML = '';
-        CFG.stamps.forEach(s => {
-          const b = document.createElement('div');
-          b.className = 'pen-mini';
-          b.textContent = s;
-          b.style.fontSize = '20px';
-          b.onclick = () => { placeSticker(s); closePops(); };
-          stampGrid.appendChild(b);
-        });
-      }
-      function renderStickers() {
-        stampGrid.innerHTML = '';
-        CFG.stickers.forEach(s => {
-          const b = document.createElement('div');
-          b.className = 'pen-mini';
-          b.textContent = s;
-          b.style.fontSize = '20px';
-          b.onclick = () => { placeSticker(s); closePops(); };
-          stampGrid.appendChild(b);
-        });
-      }
-      renderStamps();
-
-      attachEvents(bubble, bar, sound, renderStamps, renderStickers);
-      makeDraggable(bubble, bar);
-      const erB = document.getElementById('eraserBubble');
-      if (erB) makeDraggable(erB, bar);
-      updateUI();
-    }
-
-    function closePops() {
-      document.querySelectorAll('.pen-pop').forEach(p => p.classList.remove('open'));
-    }
-
-    function updateUI() {
-      const penB = document.getElementById('penBubble');
-      const erB = document.getElementById('eraserBubble');
-      if (penB) penB.classList.toggle('on', state.tool === 'pen');
-      if (erB) erB.classList.toggle('on', state.tool === 'eraser');
-      document.querySelectorAll('[data-tool]').forEach(b => {
-        b.classList.toggle('on', b.dataset.tool === state.tool);
-      });
-      document.querySelectorAll('[data-type]').forEach(b => {
-        b.classList.toggle('on', b.dataset.type === state.penType);
-      });
-      document.querySelectorAll('.pen-dot').forEach((d, i) => {
-        d.classList.toggle('on', CFG.colors[i] === state.color);
-      });
-    }
-
-    function positionBar(bubble, bar) {
-      const rect = bubble.getBoundingClientRect();
-      const barRect = bar.getBoundingClientRect();
-      const isTop = rect.top < window.innerHeight / 2;
-      if (isTop) {
-        bar.style.top = (rect.bottom + 8) + 'px';
-        bar.style.bottom = 'auto';
-      } else {
-        bar.style.bottom = (window.innerHeight - rect.top + 8) + 'px';
-        bar.style.top = 'auto';
-      }
-      bar.style.left = Math.max(8, Math.min(window.innerWidth - barRect.width - 8, rect.left + rect.width / 2 - barRect.width / 2)) + 'px';
-    }
-
-    function attachEvents(bubble, bar, sound, renderStamps, renderStickers) {
-      const eraserBubble = document.getElementById('eraserBubble');
-      let barOpen = false;
-
-      bubble.addEventListener('click', e => {
-        e.stopPropagation();
-        state.tool = 'pen';
-        saveState();
-        updateUI();
-        barOpen = !barOpen;
-        bar.classList.toggle('open', barOpen);
-        if (barOpen) positionBar(bubble, bar);
-        closePops();
-      });
-
-      if (eraserBubble) {
-        eraserBubble.addEventListener('click', e => {
-          e.stopPropagation();
-          state.tool = 'eraser';
-          saveState();
-          updateUI();
-          bar.classList.remove('open');
-          barOpen = false;
-          closePops();
-        });
-      }
-
-      sound.addEventListener('click', () => {
-        state.soundOn = !state.soundOn;
-        sound.textContent = state.soundOn ? '🔊' : '🔇';
-        saveState();
-        if (state.soundOn) initAudio();
-      });
-
-      document.addEventListener('click', e => {
-        if (!bar.contains(e.target) && !bubble.contains(e.target)) {
-          bar.classList.remove('open');
-          barOpen = false;
-          closePops();
-        }
-      });
-
-      bar.querySelectorAll('[data-tool]').forEach(b => {
-        b.addEventListener('click', e => {
-          e.stopPropagation();
-          state.tool = b.dataset.tool;
-          saveState();
-          updateUI();
-          closePops();
-        });
-      });
-
-      bar.querySelector('[data-tool="pen"]').addEventListener('click', e => {
-        e.stopPropagation();
-        document.getElementById('penPop').classList.toggle('open');
-      });
-
-      bar.querySelectorAll('[data-type]').forEach(b => {
-        b.addEventListener('click', e => {
-          e.stopPropagation();
-          state.penType = b.dataset.type;
-          state.tool = 'pen';
-          saveState();
-          updateUI();
-        });
-      });
-
-      document.getElementById('penSize').addEventListener('input', e => {
-        state.size = parseFloat(e.target.value);
-        document.getElementById('penSizeLab').textContent = state.size;
-        saveState();
-      });
-
-      const colorBtn = bar.querySelector('#colorPop')?.parentElement;
-      if (colorBtn) {
-        colorBtn.addEventListener('click', e => {
-          e.stopPropagation();
-          document.getElementById('colorPop').classList.toggle('open');
-        });
-      }
-
-      const stampBtn = bar.querySelector('#stampPop')?.parentElement;
-      if (stampBtn) {
-        stampBtn.addEventListener('click', e => {
-          e.stopPropagation();
-          document.getElementById('stampPop').classList.toggle('open');
-        });
-      }
-
-      bar.querySelectorAll('.pen-tab').forEach(tab => {
-        tab.addEventListener('click', e => {
-          e.stopPropagation();
-          bar.querySelectorAll('.pen-tab').forEach(t => t.classList.remove('on'));
-          tab.classList.add('on');
-          if (tab.dataset.tab === 'stamps') renderStamps();
-          else if (tab.dataset.tab === 'stickers') renderStickers();
-          else if (tab.dataset.tab === 'line') {
-            state.tool = 'line';
-            saveState();
-            updateUI();
-            closePops();
-            bar.classList.remove('open');
-            barOpen = false;
-          }
-        });
-      });
-
-      bar.querySelector('[data-act="undo"]').addEventListener('click', e => { e.stopPropagation(); undo(); });
-      bar.querySelector('[data-act="redo"]').addEventListener('click', e => { e.stopPropagation(); redo(); });
-      bar.querySelector('[data-act="clear"]').addEventListener('click', e => {
-        e.stopPropagation();
-        if (confirm('Clear all drawings on active strip?')) clearCanvas();
-      });
-    }
-
-    function makeDraggable(el, bar) {
-      let pos = { x: 0, y: 0 };
-      let moved = false;
-
-      el.addEventListener('pointerdown', e => {
-        if (e.target !== el && !el.contains(e.target)) return;
-        e.preventDefault();
-        e.stopPropagation();
-        pos = { x: e.clientX, y: e.clientY };
-        moved = false;
-        el.setPointerCapture(e.pointerId);
-
-        const penB = document.getElementById('penBubble');
-        const erB = document.getElementById('eraserBubble');
-
-        const move = ev => {
-          if (Math.abs(ev.clientX - pos.x) > 6 || Math.abs(ev.clientY - pos.y) > 6) moved = true;
-          const dx = ev.clientX - pos.x;
-          const dy = ev.clientY - pos.y;
-          [penB, erB].forEach(b => {
-            if (!b) return;
-            b.style.left = (b.offsetLeft + dx) + 'px';
-            b.style.top = (b.offsetTop + dy) + 'px';
-            b.style.bottom = b.style.right = 'auto';
-          });
-          pos = { x: ev.clientX, y: ev.clientY };
-          if (bar.classList.contains('open')) positionBar(penB || el, bar);
-        };
-
-        const up = () => {
-          el.releasePointerCapture(e.pointerId);
-          document.removeEventListener('pointermove', move);
-          document.removeEventListener('pointerup', up);
-          document.removeEventListener('pointercancel', up);
-        };
-
-        document.addEventListener('pointermove', move);
-        document.addEventListener('pointerup', up);
-        document.addEventListener('pointercancel', up);
-      });
-    }
-
-    function getPos(e, canvas) {
-      const r = canvas.getBoundingClientRect();
-      const scaleX = canvas.width / r.width;
-      const scaleY = canvas.height / r.height;
-      return {
-        x: (e.clientX - r.left) * scaleX,
-        y: (e.clientY - r.top) * scaleY,
-        pressure: e.pressure > 0 ? e.pressure : 0.5,
-        tiltX: e.tiltX || 0
-      };
-    }
-
-    let lastPenAtEmbedded = 0;
-    function isPalm(e) {
-      if (e.pointerType === 'pen') { lastPenAtEmbedded = Date.now(); return false; }
-      if (e.pointerType === 'mouse') return false;
-      if (e.pointerType === 'touch' && (Date.now() - lastPenAtEmbedded) < 2500) return true;
-      const w = e.width || 0, h = e.height || 0;
-      if (w >= 22 || h >= 22) return true;
-      return false;
-    }
-
-    function getCurrentLineWidth() {
-      if (state.tool === 'eraser') return Math.max(CFG.minEraserSize, state.size * CFG.eraserMultiplier);
-      return state.size;
-    }
-
-    function ensureInitialUndo() {
-      if (!state.activeCanvas || state.undoStack.length > 0) return;
-      try { state.undoStack.push(state.activeCanvas.toDataURL('image/png')); } catch (e) {}
-    }
-
-    function pushUndo() {
-      if (!state.activeCanvas) return;
-      try {
-        const data = state.activeCanvas.toDataURL('image/png');
-        if (state.undoStack.length && state.undoStack[state.undoStack.length - 1] === data) return;
-        state.undoStack.push(data);
-        if (state.undoStack.length > CFG.maxUndo) state.undoStack.shift();
-        state.redoStack = [];
-      } catch (e) {}
-    }
-
-    function restoreFromDataURL(dataUrl) {
-      return new Promise((resolve) => {
-        if (!state.ctx || !state.activeCanvas) { resolve(); return; }
-        const img = new Image();
-        img.onload = () => {
-          state.ctx.globalCompositeOperation = 'source-over';
-          state.ctx.clearRect(0, 0, state.activeCanvas.width, state.activeCanvas.height);
-          state.ctx.drawImage(img, 0, 0);
-          resolve();
-        };
-        img.onerror = () => resolve();
-        img.src = dataUrl;
-      });
-    }
-
-    const QALAM_SPEC = { nibAngle: -Math.PI / 4, baseWidthFactor: 3.2 };
-
-    function drawQalamSegment(ctx, p1, p2, color) {
-      const pStart = (p1.pressure > 0 ? p1.pressure : 0.5) * 0.65 + 0.55;
-      const pEnd = (p2.pressure > 0 ? p2.pressure : 0.5) * 0.65 + 0.55;
-      const totalWidth = state.size * QALAM_SPEC.baseWidthFactor;
-      const angle = QALAM_SPEC.nibAngle + (p2.tiltX ? (p2.tiltX / 90) * 0.16 : 0);
-
-      const hw1 = (totalWidth * pStart) / 2;
-      const hw2 = (totalWidth * pEnd) / 2;
-      const cosA = Math.cos(angle);
-      const sinA = Math.sin(angle);
-
-      const x1L = p1.x - hw1 * cosA, y1L = p1.y - hw1 * sinA;
-      const x1R = p1.x + hw1 * cosA, y1R = p1.y + hw1 * sinA;
-      const x2L = p2.x - hw2 * cosA, y2L = p2.y - hw2 * sinA;
-      const x2R = p2.x + hw2 * cosA, y2R = p2.y + hw2 * sinA;
-
-      ctx.fillStyle = color;
-      ctx.strokeStyle = color;
-      ctx.lineJoin = 'round';
-      ctx.lineWidth = 0.85;
-
-      ctx.beginPath();
-      ctx.moveTo(x1L, y1L);
-      ctx.lineTo(x1R, y1R);
-      ctx.lineTo(x2R, y2R);
-      ctx.lineTo(x2L, y2L);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-    }
-
-    function startDraw(e) {
-      // Guard: Dual-line ruled canvases handle their own calibrated high-speed inking
-      if (e.target.classList && e.target.classList.contains('dual-canvas')) return;
-      if (state.isScrolling) return;
-      if (isPalm(e)) return;
-      if (state.drawing && state.pointerId != null && e.pointerId !== state.pointerId) return;
-
-      const canvas = e.target.closest('canvas');
-      if (!canvas) return;
-
-      state.activeCanvas = canvas;
-      state.ctx = canvas.getContext('2d');
-      canvas.dataset.pen = 'true';
-      canvas.style.touchAction = 'none';
-      loadInkFor(canvas);
-      ensureInitialUndo();
-
-      try {
-        canvas.setPointerCapture(e.pointerId);
-        state.pointerId = e.pointerId;
-      } catch (err) {}
-
-      e.preventDefault();
-
-      if (state.tool === 'line') {
-        const p = getPos(e, canvas);
-        state.lineStart = { x: p.x, y: p.y, canvas, ctx: state.ctx, snapshot: null };
-        try { state.lineStart.snapshot = state.ctx.getImageData(0, 0, canvas.width, canvas.height); } catch (err) { state.lineStart.snapshot = null; }
-        return;
-      }
-
-      state.drawing = true;
-      state.points = [getPos(e, canvas)];
-
-      if (state.tool === 'eraser') {
-        state.ctx.globalCompositeOperation = 'destination-out';
-        playEraser();
-      } else {
-        state.ctx.globalCompositeOperation = 'source-over';
-        playPen();
-      }
-    }
-
-    function draw(e) {
-      if (e.target.classList && e.target.classList.contains('dual-canvas')) return;
-      if (state.isScrolling) return;
-      if (isPalm(e)) return;
-
-      if (state.tool === 'line' && state.lineStart) {
-        e.preventDefault();
-        const { canvas, ctx, snapshot, x, y } = state.lineStart;
-        const end = getPos(e, canvas);
-        if (snapshot) ctx.putImageData(snapshot, 0, 0);
-        ctx.save();
-        ctx.strokeStyle = CFG.lineColor;
-        ctx.lineWidth = CFG.lineWidth;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(end.x, end.y);
-        ctx.stroke();
-        ctx.restore();
-        return;
-      }
-
-      if (!state.drawing || !state.ctx) return;
-      e.preventDefault();
-
-      const p = getPos(e, state.activeCanvas);
-      const lastP = state.points[state.points.length - 1];
-      state.points.push(p);
-
-      if (state.tool === 'eraser') {
-        state.ctx.lineWidth = getCurrentLineWidth();
-        state.ctx.lineCap = 'round';
-        state.ctx.lineJoin = 'round';
-        state.ctx.beginPath();
-        state.ctx.moveTo(lastP.x, lastP.y);
-        state.ctx.lineTo(p.x, p.y);
-        state.ctx.stroke();
-      } else if (state.penType === 'qalam') {
-        state.ctx.save();
-        state.ctx.globalCompositeOperation = 'source-over';
-        drawQalamSegment(state.ctx, lastP, p, state.color);
-        state.ctx.restore();
-      } else {
-        state.ctx.globalCompositeOperation = 'source-over';
-        state.ctx.lineWidth = getCurrentLineWidth();
-        state.ctx.lineCap = 'round';
-        state.ctx.lineJoin = 'round';
-
-        if (state.penType === 'rainbow') {
-          state.ctx.strokeStyle = `hsl(${state.rainbowHue},100%,50%)`;
-          state.rainbowHue = (state.rainbowHue + 5) % 360;
-        } else {
-          state.ctx.strokeStyle = state.color;
-        }
-
-        state.ctx.beginPath();
-        state.ctx.moveTo(lastP.x, lastP.y);
-        state.ctx.lineTo(p.x, p.y);
-        state.ctx.stroke();
-      }
-    }
-
-    function endDraw(e) {
-      if (e.target.classList && e.target.classList.contains('dual-canvas')) return;
-      if (state.tool === 'line' && state.lineStart) {
-        e.preventDefault();
-        const { canvas, ctx, x, y } = state.lineStart;
-        const end = getPos(e, canvas);
-        ctx.save();
-        ctx.strokeStyle = CFG.lineColor;
-        ctx.lineWidth = CFG.lineWidth;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-        ctx.globalCompositeOperation = 'source-over';
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(end.x, end.y);
-        ctx.stroke();
-        ctx.restore();
-        playDing();
-        pushUndo();
-        scheduleSaveInk();
-        state.lineStart = null;
-        return;
-      }
-
-      if (!state.drawing) return;
-      state.drawing = false;
-      state.points = [];
-
-      if (state.ctx) state.ctx.globalCompositeOperation = 'source-over';
-
-      setTimeout(() => {
-        pushUndo();
-        scheduleSaveInk();
-      }, 16);
-
-      if (state.activeCanvas && state.pointerId != null) {
-        try { state.activeCanvas.releasePointerCapture(state.pointerId); } catch (err) {}
-        state.pointerId = null;
-      }
-    }
-
-    async function undo() {
-      if (!state.ctx || state.undoStack.length < 2) return;
-      const current = state.undoStack.pop();
-      state.redoStack.push(current);
-      const prev = state.undoStack[state.undoStack.length - 1];
-      await restoreFromDataURL(prev);
-      scheduleSaveInk();
-    }
-
-    async function redo() {
-      if (!state.ctx || !state.redoStack.length) return;
-      const data = state.redoStack.pop();
-      state.undoStack.push(data);
-      await restoreFromDataURL(data);
-      scheduleSaveInk();
-    }
-
-    function clearCanvas() {
-      if (!state.ctx || !state.activeCanvas) return;
-      pushUndo();
-      state.ctx.globalCompositeOperation = 'source-over';
-      state.ctx.clearRect(0, 0, state.activeCanvas.width, state.activeCanvas.height);
-      clearSavedInk();
-      scheduleSaveInk();
-    }
-
-    function placeSticker(em) {
-      const s = document.createElement('div');
-      s.className = 'pen-sticker';
-      s.textContent = em;
-      s.style.left = (window.innerWidth / 2 - 20) + 'px';
-      s.style.top = (window.innerHeight / 2 - 20) + 'px';
-      document.body.appendChild(s);
-
-      let dragging = false;
-      let start = { x: 0, y: 0 };
-
-      s.addEventListener('pointerdown', e => {
-        e.preventDefault(); e.stopPropagation();
-        dragging = true;
-        start = { x: e.clientX - s.offsetLeft, y: e.clientY - s.offsetTop };
-        s.setPointerCapture(e.pointerId);
-      });
-
-      s.addEventListener('pointermove', e => {
-        if (!dragging) return;
-        s.style.left = (e.clientX - start.x) + 'px';
-        s.style.top = (e.clientY - start.y) + 'px';
-      });
-
-      s.addEventListener('pointerup', () => { dragging = false; });
-      s.addEventListener('click', e => {
-        if (dragging) return;
-        e.stopPropagation();
-        s.remove();
-      });
-      setTimeout(() => s.remove(), 300000);
-    }
-
-    loadState();
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', buildUI);
-    } else {
-      buildUI();
-    }
-
-    document.addEventListener('pointerdown', startDraw, { passive: false });
-    document.addEventListener('pointermove', draw, { passive: false });
-    document.addEventListener('pointerup', endDraw, { passive: false });
-    document.addEventListener('pointercancel', () => {
-      state.drawing = false;
-      state.points = [];
-      state.lineStart = null;
+    }); body.appendChild(div);
+  }else if(secObj.type==='table'){
+    const div=document.createElement('div'); div.className='qc';
+    div.innerHTML=`<div style="background:#FFFBEB;border:2px solid #F59E0B;border-radius:14px;padding:10px;font-family:var(--tamil);font-size:1.1rem;line-height:1.5">${wordSpans(secObj.passage)}</div>`;
+    const tbl=document.createElement('table'); tbl.style.width='100%'; tbl.style.borderCollapse='collapse'; tbl.style.marginTop='10px';
+    tbl.innerHTML=`<tr style="background:#FEF3C7"><th style="border:1.5px solid #CBD5E1;padding:8px;text-align:left;font-family:var(--tamil)">வகை</th><th style="border:1.5px solid #CBD5E1;padding:8px">விடை</th><th style="border:1.5px solid #CBD5E1;padding:8px">எழுதுக</th></tr>`;
+    secObj.items.forEach((it,idx)=>{ tbl.innerHTML+=`<tr><td style="border:1.5px solid #CBD5E1;padding:8px;font-weight:800;width:22%">${it.cat}</td><td style="border:1.5px solid #CBD5E1;padding:8px;width:38%">${isP?`<div style="font-weight:700;color:#15803D">${it.ans}</div>`:''}</td><td style="border:1.5px solid #CBD5E1;padding:8px;width:40%">${stripHtml('tbl_'+idx,'s380')}</td></tr>`; });
+    div.appendChild(tbl); body.appendChild(div);
+  }else if(secObj.type==='sent'){
+    qList.forEach((q,i)=>{
+      const div=document.createElement('div'); div.className='qc';
+      div.innerHTML=`<div class="qs"><span style="color:#D97706;margin-right:4px">${i+1}.</span><span class="tw" onclick="speak('${q.word}')">${q.word}</span>${isP?`<span class="badge">${q.t}</span>`:''}</div>${isP?`<div class="hint">💡 ${q.sent}</div>`:''}<div style="margin-top:4px">${stripHtml(q.id,'full')}</div>`; body.appendChild(div);
     });
-
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') saveInkNow();
+  }else if(secObj.type==='passage_mcq'){
+    const pc=document.createElement('div'); pc.className='qc'; pc.innerHTML=`<div style="background:#FFFBEB;border:2px solid #F59E0B;border-radius:14px;padding:10px;font-family:var(--tamil);font-size:1.1rem;line-height:1.5">${wordSpans(secObj.passage)}</div>`; body.appendChild(pc);
+    qList.forEach((q,i)=>{
+      const div=document.createElement('div'); div.className='qc'; const sel=selMap[q.id]||'';
+      div.innerHTML=`<div class="qs"><span style="color:#D97706;margin-right:4px">${i+1}.</span>${wordSpans(cleanStem(q.stem))}</div>${isP?`<div class="hint">💡 ${q.ans}</div>`:''}<div class="mcq">${q.opts.map(o=>`<button class="${sel===o?'sel':''}" onclick="pick('${q.id}','${o}',this)">${o}</button>`).join('')}</div><div style="margin-top:4px">${stripHtml(q.id)}</div>`; body.appendChild(div);
     });
-    window.addEventListener('pagehide', saveInkNow);
-
-    let scrollTimer;
-    window.addEventListener('scroll', () => {
-      state.isScrolling = true;
-      clearTimeout(scrollTimer);
-      scrollTimer = setTimeout(() => { state.isScrolling = false; }, 180);
-    }, { passive: true });
-
-  })();
-  </script>
+    const sDiv=document.createElement('div'); sDiv.className='qc'; sDiv.innerHTML=`<div class="qs">5. ${wordSpans(cleanStem(secObj.slogan.stem))}</div>${isP?`<div class="hint">💡 ${secObj.slogan.sample}</div>`:''}<div style="margin-top:4px">${stripHtml(secObj.slogan.id,'full')}</div>`; body.appendChild(sDiv);
+  }else if(secObj.type==='corr_mcq'){
+    const cDiv=document.createElement('div'); cDiv.className='qc'; cDiv.innerHTML=`<div class="qs">பிறமொழிச் சொற்களையும் பேச்சுத்தமிழையும் நீக்கிச் சரியாக எழுதுக:</div>`;
+    secObj.corrs.forEach((c,i)=>{ cDiv.innerHTML+=`<div style="margin-top:8px"><div style="font-family:var(--tamil);font-weight:800;color:#991B1B">${i+1}. ${c.col}</div>${isP?`<div class="hint">💡 ${c.std}</div>`:''}${stripHtml(c.id,'full')}</div>`; }); body.appendChild(cDiv);
+    secObj.mcqs.forEach((q,i)=>{
+      const div=document.createElement('div'); div.className='qc'; const sel=selMap[q.id]||'';
+      div.innerHTML=`<div class="qs"><span style="color:#D97706;margin-right:4px">${i+1}.</span>${wordSpans(cleanStem(q.stem))}</div>${isP?`<div class="hint">💡 ${q.ans}</div>`:''}<div class="mcq">${q.opts.map(o=>`<button class="${sel===o?'sel':''}" onclick="pick('${q.id}','${o.replace(/'/g,"\\'")}',this)">${o}</button>`).join('')}</div><div style="margin-top:4px">${stripHtml(q.id)}</div>`; body.appendChild(div);
+    });
+  }
+  setTimeout(initCanvases,60);
+}
+function pick(id,val,btn){ selMap[id]=val; fx.ding(480); speak(val); saveSel(); const par=btn.parentElement; par.querySelectorAll('button').forEach(p=>p.classList.remove('sel')); btn.classList.add('sel'); }
+window.pick=pick;
+// MODES
+let writeLocked=false; const PIN_HASH="MTk5NQ=="; // 1995 base64 obfuscated
+try{ if(localStorage.getItem("final_v1::lock")==="1") writeLocked=true; }catch{}
+function setMode(m){
+  if(m==="write" && mode==="practice"){ writeLocked=true; try{ localStorage.setItem("final_v1::lock","1"); }catch{} applyMode("write"); return; }
+  if(m==="practice" && mode==="write" && writeLocked){ openPin(); return; }
+  applyMode(m);
+}
+function applyMode(m){
+  document.querySelectorAll('.ink').forEach(c=>saveInk(c));
+  mode=m; document.getElementById('tabP').classList.toggle('active',m==='practice'); document.getElementById('tabW').classList.toggle('active',m==='write');
+  if(secObj){ document.getElementById('shufBtn').style.display=(m==='practice')?'none':'flex'; renderModal(); } else switchCh(chIdx);
+}
+function openPin(){ document.getElementById('pinErr').textContent=''; document.getElementById('pinInput').value=''; document.getElementById('pinM').classList.add('open'); setTimeout(()=>{ try{ document.getElementById('pinInput').focus(); }catch{} },60); }
+function closePin(){ document.getElementById('pinM').classList.remove('open'); }
+function submitPin(){ const v=(document.getElementById('pinInput').value||'').trim(); if(btoa(v)===PIN_HASH){ writeLocked=false; try{ localStorage.setItem("final_v1::lock","0"); }catch{} closePin(); applyMode("practice"); } else { document.getElementById('pinErr').textContent="தவறான PIN"; document.getElementById('pinInput').value=''; } }
+document.addEventListener('DOMContentLoaded',()=>{ const inp=document.getElementById('pinInput'); if(inp) inp.addEventListener('keydown',e=>{ if(e.key==='Enter') submitPin(); }); });
+function togglePenOnly(){ penOnly=!penOnly; const b=document.getElementById('penModeBtn'); b.textContent=penOnly?'🖊':'👆'; b.classList.toggle('on',!penOnly); b.style.background=penOnly?'':'#DCFCE7'; }
+function cycleFont(){ scaleIdx=(scaleIdx+1)%scales.length; document.documentElement.style.setProperty('--scale', scales[scaleIdx]); fx.ding(520); }
+function toggleColl(f=null){ const st=document.getElementById('stage'); const tgt=f!==null?f:!st.classList.contains('collapsed'); st.classList.toggle('collapsed',tgt); const btn=document.querySelector('.coll'); if(btn) btn.textContent=tgt?'▶':'◀'; }
+function goHub(){ if(window.parent!==window) parent.postMessage('close-lesson-to-hub','*'); else location.href='index.html'; }
+function speakHeader(){ speak(CURR[chIdx].title); }
+function resetSec(){ if(!confirm('விடைகளை அழிக்கவா?')) return; if(secObj && secObj.qs){ secObj.qs.forEach(q=>{ delete selMap[q.id]; clearStrip(q.id); }); } saveSel(); renderModal(); }
+function verify(){
+  if(mode==='practice'){ fx.ding(600); alert('தேர்வு முறைக்கு செல்லவும் (✍)'); return; }
+  let score=0,total=0; const list=document.getElementById('scoreList'); list.innerHTML='';
+  CURR.forEach(ch=>{ ch.secs.forEach(sec=>{
+    const qs=shufMap[sec.id]||sec.qs; if(!qs) return;
+    qs.forEach(q=>{ if(q.ans){ total++; const u=selMap[q.id]||''; const ok=u.trim()===q.ans.trim(); if(ok) score++; const row=document.createElement('div'); row.style.cssText='padding:8px;border-bottom:1px solid #E2E8F0;font-family:var(--tamil);display:flex;justify-content:space-between'; row.innerHTML=`<div><div style="font-weight:800">${cleanStem(q.stem)}</div><div style="font-size:.85rem;color:${ok?'#16A34A':'#DC2626'}">${u?`தேர்வு: ${u}`:'விடை இல்லை'} ${ok?'✓':`(சரி: ${q.ans})`}</div></div><span>${ok?'⭐':'❌'}</span>`; list.appendChild(row); } });
+    if(sec.mcqs){ sec.mcqs.forEach(q=>{ total++; const u=selMap[q.id]||''; const ok=u.trim()===q.ans.trim(); if(ok) score++; }); }
+  }); });
+  document.getElementById('scoreTxt').textContent=`${score} / ${total}`; document.getElementById('gradeTxt').textContent=score>=Math.round(total*.8)?'மிகச் சிறப்பு':score>=Math.round(total*.6)?'நன்று':'பயிற்சி தேவை'; fx.ding(700); document.getElementById('scoreM').style.display='flex';
+}
+function closeScore(){ document.getElementById('scoreM').style.display='none'; }
+function celebrate(){ closeScore(); closeModal(); document.getElementById('finale').style.display='block'; fx.ding(800); speak('அற்புதம் ஜைனா! வெற்றி!'); }
+function closeFinale(){ document.getElementById('finale').style.display='none'; goHub(); }
+// FLOATING PEN BAR
+(function(){
+  const colors=['#0F172A','#2563EB','#15803D','#DC2626','#7C3AED'];
+  function build(){
+    if(document.getElementById('penB')) return;
+    const bubble=document.createElement('div'); bubble.id='penB'; bubble.textContent='✏';
+    const eBubble=document.createElement('div'); eBubble.id='erasB'; eBubble.textContent='🧽';
+    const bar=document.createElement('div'); bar.id='penBar';
+    bar.innerHTML=`<div class="pb on" data-tool="pen" style="position:relative">✏<div class="pop" id="penPop"><div class="pr"><div class="pm on" data-pt="normal">✏</div><div class="pm" data-pt="cursive">🖋</div><div class="pm" data-pt="rainbow">🌈</div><div class="pm" data-pt="qalam">🪶</div></div><div class="pr"><span style="font-size:.65rem;font-weight:800">Size</span><input type="range" min="1" max="7" step=".5" value="${Pen.size}" id="pSize" style="width:90px;accent-color:#8B5A2B"><span id="pSizeL" style="font-size:.65rem;font-weight:800;min-width:20px">${Pen.size}</span></div></div></div><div class="pb" data-act="undo">↩</div><div class="pb" data-act="clear">🗑</div><div class="pb" data-act="line">📏</div><div class="pb" style="position:relative">🎨<div class="pop" id="colPop"><div class="pr" id="colRow"></div></div></div>`;
+    const sound=document.createElement('div'); sound.id='snd'; sound.textContent='🔇';
+    document.body.appendChild(bubble); document.body.appendChild(eBubble); document.body.appendChild(bar); document.body.appendChild(sound);
+    const colRow=document.getElementById('colRow');
+    colors.forEach(c=>{ const d=document.createElement('div'); d.className='pd'+(c===Pen.color?' on':''); d.style.background=c; d.onclick=()=>{ Pen.color=c; upd(); closeP(); }; colRow.appendChild(d); });
+    document.getElementById('pSize').oninput=e=>{ Pen.size=parseFloat(e.target.value); document.getElementById('pSizeL').textContent=Pen.size; };
+    function upd(){ document.getElementById('penB').classList.toggle('on',Pen.tool==='pen'); document.getElementById('erasB').classList.toggle('on',Pen.tool==='eraser'); document.querySelectorAll('.pd').forEach((d,i)=>d.classList.toggle('on',colors[i]===Pen.color)); }
+    function closeP(){ document.querySelectorAll('.pop').forEach(p=>p.classList.remove('open')); }
+    function posBar(bub){ const r=bub.getBoundingClientRect(); const br=bar.getBoundingClientRect(); const isTop=r.top<innerHeight/2; if(isTop){ bar.style.top=(r.bottom+8)+'px'; bar.style.bottom='auto'; } else { bar.style.bottom=(innerHeight-r.top+8)+'px'; bar.style.top='auto'; } bar.style.left=Math.max(8,Math.min(innerWidth-br.width-8,r.left+r.width/2-br.width/2))+'px'; }
+    let open=false;
+    bubble.onclick=e=>{ e.stopPropagation(); Pen.tool='pen'; upd(); open=!open; bar.classList.toggle('open',open); if(open) posBar(bubble); closeP(); };
+    eBubble.onclick=e=>{ e.stopPropagation(); Pen.tool='eraser'; upd(); bar.classList.remove('open'); open=false; closeP(); };
+    bar.querySelector('[data-tool="pen"]').onclick=e=>{ e.stopPropagation(); document.getElementById('penPop').classList.toggle('open'); };
+    bar.querySelectorAll('[data-pt]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); Pen.penType=b.dataset.pt; Pen.tool='pen'; upd(); });
+    bar.querySelector('[data-act="line"]').onclick=e=>{ e.stopPropagation(); Pen.tool='line'; upd(); bar.classList.remove('open'); open=false; };
+    bar.querySelector('[data-act="undo"]').onclick=e=>{ e.stopPropagation(); if(Pen.active) undoStrip(Pen.active.dataset.id); };
+    bar.querySelector('[data-act="clear"]').onclick=e=>{ e.stopPropagation(); if(Pen.active && confirm('அழிக்கவா?')) clearStrip(Pen.active.dataset.id); };
+    const colBtn=bar.querySelector('#colPop').parentElement; colBtn.onclick=e=>{ e.stopPropagation(); document.getElementById('colPop').classList.toggle('open'); };
+    sound.onclick=()=>{ fx.init(); sound.textContent='🔊'; };
+    document.addEventListener('click',e=>{ if(!bar.contains(e.target)&&!bubble.contains(e.target)&&!eBubble.contains(e.target)){ bar.classList.remove('open'); open=false; closeP(); } });
+    function drag(el){ el.addEventListener('pointerdown',e=>{ e.preventDefault(); let sx=e.clientX,sy=e.clientY; const mm=ev=>{ const dx=ev.clientX-sx,dy=ev.clientY-sy; [bubble,eBubble].forEach(b=>{ if(!b) return; b.style.left=(b.offsetLeft+dx)+'px'; b.style.top=(b.offsetTop+dy)+'px'; b.style.bottom=b.style.right='auto'; }); sx=ev.clientX; sy=ev.clientY; if(bar.classList.contains('open')) posBar(bubble); }; const mu=()=>{ document.removeEventListener('pointermove',mm); document.removeEventListener('pointerup',mu); }; document.addEventListener('pointermove',mm); document.addEventListener('pointerup',mu); }); } drag(bubble); drag(eBubble);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',build); else build();
+})();
+window.onload=async()=>{ await loadSel(); renderChTabs(); switchCh(0); };
+window.addEventListener('beforeunload',()=>{ document.querySelectorAll('.ink').forEach(c=>saveInk(c)); saveSel(); });
+</script>
 </body>
 </html>
