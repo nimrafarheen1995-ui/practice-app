@@ -15,7 +15,9 @@
   <link rel="preload" as="image" href="assets/thiruvalluvar.webp">
 
   <!-- SAFE STORAGE INTEGRATION FOR INDEXEDDB OVERFLOW PROTECTION -->
-  <script src="assets/safe-storage.js"></script>
+  <script src="shared/safe-storage.js"></script>
+  <!-- Prefer shared universal pen if present; embedded copy below is fallback -->
+  <script src="shared/universal-pen.js" onerror="console.warn('universal-pen.js not found, using embedded pen')"></script>
 
   <style>
     :root {
@@ -340,25 +342,37 @@
       border-color: var(--gold-primary);
     }
 
-    /* UPGRADED DUAL-LINE CANVAS STRIPS (GENEROUS WRITING GEOMETRY) */
+    /* SIZED DUAL-LINE CANVAS STRIPS (VERTICAL RESPONSIVE GEOMETRY) */
     .inline-blank-container {
       display: inline-flex;
       align-items: center;
       vertical-align: middle;
       background: #FFFFFF;
       border: 2.5px solid var(--gold-primary);
-      border-radius: 14px;
+      border-radius: 16px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
       overflow: hidden;
-      width: 480px;
+      width: 540px;
       max-width: 100%;
+      height: 104px;
     }
-    .inline-blank-container.compact-340 { width: 340px; }
-    .inline-blank-container.compact-280 { width: 280px; }
+    .inline-blank-container.full-sentence-strip {
+      width: 100% !important;
+      height: 110px;
+    }
+    .inline-blank-container.split-word-strip {
+      width: 360px !important;
+      max-width: calc(50% - 20px);
+      height: 104px;
+    }
+    .inline-blank-container.matching-strip {
+      width: 380px !important;
+      height: 98px;
+    }
 
     .inline-canvas-wrapper {
       position: relative;
-      height: 84px;
+      height: 100%;
       background: #FFFFFF;
       overflow: hidden;
       display: flex;
@@ -373,25 +387,25 @@
       background-color: #FFFFFF;
       background-image: repeating-linear-gradient(
         #FFFFFF 0px,
-        #FFFFFF 24px,
-        var(--ruled-guide) 25px,
-        #FFFFFF 26px,
-        #FFFFFF 54px,
-        var(--ruled-guide) 55px,
-        #FFFFFF 56px,
-        #FFFFFF 84px
+        #FFFFFF 28px,
+        var(--ruled-guide) 29px,
+        #FFFFFF 30px,
+        #FFFFFF 68px,
+        var(--ruled-guide) 69px,
+        #FFFFFF 70px,
+        #FFFFFF 104px
       );
-      opacity: 0.92;
+      opacity: 0.95;
     }
     .dual-lines-texture::after {
       content: '';
       position: absolute;
       top: 0;
-      left: 18px;
-      width: 2px;
+      left: 20px;
+      width: 2.5px;
       height: 100%;
       background: var(--ruled-base);
-      opacity: 0.85;
+      opacity: 0.9;
     }
     .dual-canvas {
       position: absolute;
@@ -404,10 +418,10 @@
       background: #F8FAFC;
       border: none;
       border-left: 2px solid #CBD5E1;
-      padding: 0 12px;
-      height: 84px;
+      padding: 0 14px;
+      height: 100%;
       cursor: pointer;
-      font-size: 1.15rem;
+      font-size: 1.25rem;
       color: #64748B;
       font-weight: 800;
       display: flex;
@@ -433,8 +447,8 @@
     }
     #sectionModalStage.open { opacity: 1; }
     .modal-parchment-window {
-      width: min(1140px, 96vw);
-      height: min(760px, 92vh);
+      width: min(1180px, 96vw);
+      height: min(800px, 93vh);
       background: #FFFDF9;
       border: 3.5px solid var(--gold-primary);
       border-radius: 24px;
@@ -488,7 +502,7 @@
     }
     .q-stem-tamil {
       font-family: var(--font-tamil);
-      font-size: calc(1.22rem * var(--content-scale));
+      font-size: calc(1.25rem * var(--content-scale));
       font-weight: 800;
       color: var(--text-temple);
       line-height: 1.45;
@@ -508,7 +522,7 @@
     .translit-badge {
       background: #F1F5F9;
       color: #475569;
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       font-weight: 800;
       padding: 3px 8px;
       border-radius: 8px;
@@ -527,9 +541,9 @@
       background: #F8FAFC;
       border: 2px solid #E2E8F0;
       border-radius: 12px;
-      padding: 7px 16px;
+      padding: 8px 16px;
       font-family: var(--font-tamil);
-      font-size: calc(1.05rem * var(--content-scale));
+      font-size: calc(1.08rem * var(--content-scale));
       font-weight: 800;
       cursor: pointer;
       transition: all 0.15s;
@@ -549,7 +563,7 @@
       border: 1.5px dashed #10B981;
       color: #065F46;
       font-family: var(--font-tamil);
-      font-size: calc(1.05rem * var(--content-scale));
+      font-size: calc(1.08rem * var(--content-scale));
       font-weight: 800;
       padding: 8px 14px;
       border-radius: 12px;
@@ -572,7 +586,7 @@
       padding: 10px;
     }
     .col-prompt {
-      width: 28%;
+      width: 26%;
       font-family: var(--font-tamil);
       font-size: 1.18rem;
       font-weight: 800;
@@ -580,7 +594,7 @@
       padding: 6px 12px;
     }
     .col-target {
-      width: 32%;
+      width: 34%;
       padding: 6px;
     }
     .col-canvas {
@@ -598,30 +612,58 @@
       align-items: center;
       justify-content: space-around;
       font-family: var(--font-tamil);
-      font-size: 1.25rem;
+      font-size: 1.3rem;
       font-weight: 900;
       color: #831843;
       margin-bottom: 8px;
     }
 
-    /* SINGAMUGAK KINARU TABLE */
-    .kinaru-table {
+    /* KINARU CARDS (FULL-WIDTH WRITING AREA) */
+    .kinaru-card-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
       width: 100%;
-      border-collapse: collapse;
-      border: 2px solid #CBD5E1;
-      border-radius: 12px;
-      overflow: hidden;
-      margin-top: 6px;
+      margin-top: 10px;
     }
-    .kinaru-table th, .kinaru-table td {
-      border: 1.5px solid #CBD5E1;
-      padding: 10px 12px;
-      font-family: var(--font-tamil);
-      text-align: left;
+    .kinaru-item-card {
+      background: #F8FAFC;
+      border: 2px solid #E2E8F0;
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
-    .kinaru-table th { background: #FEF3C7; color: #92400E; font-weight: 900; }
 
     /* SCOREBOARD REVIEW MODAL */
+    #pinModal {
+      position: fixed; inset: 0; z-index: 95000;
+      display: none; align-items: center; justify-content: center;
+      background: rgba(12, 6, 3, 0.8); backdrop-filter: blur(8px);
+    }
+    #pinModal.open { display: flex; }
+    .pin-box {
+      background: #FFFDF9; border: 3px solid var(--gold-primary); border-radius: 22px;
+      padding: 22px 24px; width: min(340px, 92vw); text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.55);
+    }
+    .pin-box h3 { margin: 0 0 6px; font-family: var(--font-tamil); font-size: 1.2rem; font-weight: 900; color: var(--text-temple); }
+    .pin-box p { margin: 0 0 12px; font-size: 0.85rem; font-weight: 700; color: #78716c; }
+    .pin-input {
+      width: 100%; text-align: center; font-size: 1.5rem; font-weight: 900;
+      letter-spacing: 0.35em; padding: 12px; border: 2px solid #FBBF24; border-radius: 14px;
+      outline: none; margin-bottom: 10px; background: #fff;
+    }
+    .pin-input:focus { border-color: #D97706; }
+    .pin-err { color: #DC2626; font-size: 0.8rem; font-weight: 800; min-height: 1.2em; margin-bottom: 8px; }
+    .pin-actions { display: flex; gap: 10px; }
+    .pin-actions button {
+      flex: 1; padding: 11px; border-radius: 12px; font-weight: 800; font-size: 0.9rem;
+      cursor: pointer; border: 2px solid #E7D5B0; background: #fff; color: var(--text-temple);
+    }
+    .pin-actions .go { background: #D97706; color: #fff; border-color: #B45309; }
+
     #scoreReviewModal {
       position: fixed;
       inset: 0;
@@ -803,6 +845,20 @@
   </div>
 
   <!-- SCOREBOARD / EVALUATION MODAL -->
+  <!-- PARENT PIN: unlock Practice from Write -->
+  <div id="pinModal">
+    <div class="pin-box">
+      <h3>🔒 பெற்றோர் திறப்பு</h3>
+      <p>Write → Practice திரும்ப PIN உள்ளிடவும்</p>
+      <div class="pin-err" id="pinErr"></div>
+      <input type="password" class="pin-input" id="pinInput" maxlength="6" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="••••" />
+      <div class="pin-actions">
+        <button type="button" onclick="closePinModal()">ரத்து</button>
+        <button type="button" class="go" onclick="submitParentPin()">திற</button>
+      </div>
+    </div>
+  </div>
+
   <div id="scoreReviewModal">
     <div class="scoreboard-card">
       <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -848,7 +904,7 @@
   </div>
 
   <script>
-    /* AUDIO SYNTHESIS & TAMIL TTS - ROBUST WORD SPEECH */
+    /* 1. RELIABLE TAMIL TTS & AUDIO FX */
     let availableVoices = [];
     function initVoices() {
       if (!('speechSynthesis' in window)) return;
@@ -922,7 +978,7 @@
     }
     const audioFX = new TempleAudioFX();
 
-    /* CURRICULUM ARCHITECTURE */
+    /* 2. CURRICULUM DATA MODEL */
     const CURRICULUM = [
       {
         id: "ch1",
@@ -1326,15 +1382,17 @@
       }
     ];
 
-    /* APP STATE */
+    /* 3. APPLICATION STATE & HELPERS */
     let currentAppMode = "practice";
     let activeChapterIdx = 0;
     let activeSectionObj = null;
     let penOnlyMode = true;
+    let writeModeLocked = false;
+    const PARENT_PIN = "1995";
     let fontScaleIdx = 1;
     const fontScales = [0.88, 1, 1.15, 1.3];
 
-    // Caches
+    // Storage Caches
     const inkUndoStacks = {};
     const hasDrawnMap = {};
     const userSelections = {};
@@ -1392,7 +1450,7 @@
       img.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><circle cx='60' cy='60' r='55' fill='%23FEF3C7' stroke='%23D97706' stroke-width='4'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='42'>🪷</text></svg>";
     }
 
-    /* FISHER-YATES SHUFFLE ALGORITHM */
+    /* 4. FISHER-YATES SHUFFLE (WRITE MODE ONLY) */
     function fisherYates(array) {
       const arr = [...array];
       for (let i = arr.length - 1; i > 0; i--) {
@@ -1418,7 +1476,9 @@
       }
     }
 
-    /* DUAL-LINE RULED CANVAS STRIP BUILDER */
+    /* 5. INLINE STRIP BUILDER (CALIBRATED GEOMETRY) */
+    let lastPenTimestamp = 0;
+
     function makeDualStrip(canvasKey, customClass = "") {
       return `
         <span class="inline-blank-container ${customClass}">
@@ -1439,13 +1499,13 @@
       canvasList.forEach(c => {
         const cKey = c.getAttribute("data-canvas-id");
         const bRect = c.parentElement.getBoundingClientRect();
-        const logicalW = Math.max(220, Math.round(bRect.width) || 450);
-        const logicalH = 84;
+        const logicalW = Math.max(220, Math.round(bRect.width) || 480);
+        const logicalH = Math.max(84, Math.round(bRect.height) || 104);
 
         c.width = Math.round(logicalW * dpr);
         c.height = Math.round(logicalH * dpr);
         c.style.width = "100%";
-        c.style.height = "84px";
+        c.style.height = "100%";
 
         const ctx = c.getContext("2d", { willReadFrequently: false });
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -1466,12 +1526,42 @@
         }
 
         let isDrawing = false;
+        let activePointerId = null;
         let lastX = 0, lastY = 0;
         const baseTipWidth = 2.0;
 
+        // Seed empty undo so the first stroke can be undone
+        if (!inkUndoStacks[cKey] || !inkUndoStacks[cKey].length) {
+          try { inkUndoStacks[cKey] = [c.toDataURL("image/png")]; } catch (_) { inkUndoStacks[cKey] = []; }
+        }
+
+        function isDualPalm(e) {
+          if (e.pointerType === 'pen') {
+            lastPenTimestamp = Date.now();
+            return false;
+          }
+          if (e.pointerType === 'mouse') return false;
+          // Pen-only mode or recent S Pen activity → reject all touch
+          if (penOnlyMode) return true;
+          if ((Date.now() - lastPenTimestamp) < 2500) return true;
+          const w = e.width || 0, h = e.height || 0;
+          if (w >= 22 || h >= 22) return true;
+          if (typeof e.pressure === 'number' && e.pressure > 0 && e.pressure < 0.08 && (w > 12 || h > 12)) return true;
+          return false;
+        }
+
         c.onpointerdown = (e) => {
-          if (penOnlyMode && e.pointerType !== "pen" && e.pointerType !== "mouse") return;
+          if (isDrawing && activePointerId != null && e.pointerId !== activePointerId) {
+            e.preventDefault();
+            return;
+          }
+          if (isDualPalm(e)) {
+            e.preventDefault();
+            return;
+          }
+
           isDrawing = true;
+          activePointerId = e.pointerId;
           hasDrawnMap[cKey] = true;
           try { c.setPointerCapture(e.pointerId); } catch (_) {}
           const rect = c.getBoundingClientRect();
@@ -1483,8 +1573,17 @@
         };
 
         c.onpointermove = (e) => {
-          if (!isDrawing) return;
-          if (penOnlyMode && e.pointerType !== "pen" && e.pointerType !== "mouse") return;
+          if (!isDrawing || e.pointerId !== activePointerId) return;
+          if (e.pointerType === 'pen') lastPenTimestamp = Date.now();
+          // If contact expands into a palm mid-stroke, end it
+          if (e.pointerType === 'touch' && isDualPalm(e)) {
+            isDrawing = false;
+            activePointerId = null;
+            try { c.releasePointerCapture(e.pointerId); } catch (_) {}
+            pushUndoSnapshot(c, cKey);
+            saveCanvasToStorage(c, cKey);
+            return;
+          }
 
           const rect = c.getBoundingClientRect();
           const scaleX = logicalW / rect.width;
@@ -1510,16 +1609,18 @@
         };
 
         const stopStroke = (e) => {
-          if (isDrawing) {
-            isDrawing = false;
-            try { c.releasePointerCapture(e.pointerId); } catch (_) {}
-            pushUndoSnapshot(c, cKey);
-            saveCanvasToStorage(c, cKey);
-          }
+          if (!isDrawing) return;
+          if (e && e.pointerId != null && e.pointerId !== activePointerId) return;
+          isDrawing = false;
+          activePointerId = null;
+          try { if (e) c.releasePointerCapture(e.pointerId); } catch (_) {}
+          pushUndoSnapshot(c, cKey);
+          saveCanvasToStorage(c, cKey);
         };
 
         c.onpointerup = stopStroke;
         c.onpointercancel = stopStroke;
+        c.onlostpointercapture = stopStroke;
       });
     }
 
@@ -1542,13 +1643,14 @@
       const ctx = c.getContext("2d");
       const dpr = window.devicePixelRatio || 1;
       const bRect = c.parentElement.getBoundingClientRect();
-      const logicalW = Math.max(220, Math.round(bRect.width) || 450);
+      const logicalW = Math.max(220, Math.round(bRect.width) || 480);
+      const logicalH = Math.max(84, Math.round(bRect.height) || 104);
 
       const img = new Image();
       img.onload = () => {
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        ctx.clearRect(0, 0, logicalW, 84);
-        ctx.drawImage(img, 0, 0, logicalW, 84);
+        ctx.clearRect(0, 0, logicalW, logicalH);
+        ctx.drawImage(img, 0, 0, logicalW, logicalH);
         saveCanvasToStorage(c, cKey);
       };
       img.src = prev;
@@ -1559,6 +1661,7 @@
       const c = document.querySelector(`.dual-canvas[data-canvas-id="${cKey}"]`);
       if (!c) return;
       audioFX.playVeena(320);
+      pushUndoSnapshot(c, cKey); // keep history so clear can be undone
       const ctx = c.getContext("2d");
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.clearRect(0, 0, c.width, c.height);
@@ -1568,7 +1671,11 @@
       const storageKey = getInkStorageKey(cKey);
       localStorage.removeItem(storageKey);
       hasDrawnMap[cKey] = false;
-      inkUndoStacks[cKey] = [];
+      // Keep undo stack (with cleared snapshot on top) so Undo restores previous ink
+      try {
+        if (!inkUndoStacks[cKey]) inkUndoStacks[cKey] = [];
+        inkUndoStacks[cKey].push(c.toDataURL("image/png"));
+      } catch (_) {}
     }
     window.clearCanvas = clearCanvas;
 
@@ -1588,7 +1695,7 @@
       });
     }
 
-    /* RENDER CHAPTERS & GATEWAY */
+    /* 6. CHAPTER VIEW & MODAL WORKSPACE */
     function renderChapterTabs() {
       const container = document.getElementById("chapterTabsContainer");
       container.innerHTML = "";
@@ -1647,22 +1754,21 @@
       container.appendChild(grid);
     }
 
-    /* MODAL WINDOW WORKSPACE */
     function openSectionModal(sec) {
       saveAllVisibleCanvases();
       activeSectionObj = sec;
       document.getElementById("modalSubSectionTitle").textContent = sec.title;
-
       document.getElementById("btnShuffleSection").style.display = (currentAppMode === "practice") ? "none" : "inline-flex";
 
       renderModalContent(sec);
 
       const modalStage = document.getElementById("sectionModalStage");
       modalStage.style.display = "flex";
-      setTimeout(() => {
+
+      requestAnimationFrame(() => {
         modalStage.classList.add("open");
-        setupCanvasesInModal();
-      }, 50);
+        setTimeout(setupCanvasesInModal, 260);
+      });
     }
 
     function closeSectionModal() {
@@ -1719,7 +1825,7 @@
             </div>
             ${ghostAnswer}
             ${optionsHtml}
-            <div style="margin-top:6px;">
+            <div style="margin-top:8px;">
               ${makeDualStrip(q.id)}
             </div>
           `;
@@ -1746,10 +1852,10 @@
               ${isPractice ? `<span class="translit-badge">${q.translit}</span>` : ''}
             </div>
             ${ghostAnswer}
-            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-top:6px;">
-              ${makeDualStrip(q.id + "_p1", "compact-280")}
-              <span style="font-size:1.8rem; font-weight:900; color:#D97706;">+</span>
-              ${makeDualStrip(q.id + "_p2", "compact-280")}
+            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:8px;">
+              ${makeDualStrip(q.id + "_p1", "split-word-strip")}
+              <span style="font-size:2.2rem; font-weight:900; color:#D97706; align-self:center;">+</span>
+              ${makeDualStrip(q.id + "_p2", "split-word-strip")}
             </div>
           `;
           body.appendChild(card);
@@ -1775,10 +1881,10 @@
               ${buildWordSpans(cleanText)}
             </div>
             ${displayPair}
-            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:6px;">
-              ${makeDualStrip(q.id + "_pair1", "compact-280")}
-              <span style="font-size:1.4rem; font-weight:900; color:#D97706; align-self:center;">—</span>
-              ${makeDualStrip(q.id + "_pair2", "compact-280")}
+            <div style="display:flex; gap:14px; flex-wrap:wrap; margin-top:8px;">
+              ${makeDualStrip(q.id + "_pair1", "split-word-strip")}
+              <span style="font-size:1.8rem; font-weight:900; color:#D97706; align-self:center;">—</span>
+              ${makeDualStrip(q.id + "_pair2", "split-word-strip")}
             </div>
           `;
           body.appendChild(card);
@@ -1798,10 +1904,12 @@
             </div>` : "";
 
           card.innerHTML += `
-            <div style="margin-top:8px;">
-              <div style="font-family:var(--font-tamil); font-weight:800; font-size:1.1rem; color:#92400E;">${idx + 1}. சொல்:</div>
+            <div style="margin-top:10px;">
+              <div style="font-family:var(--font-tamil); font-weight:800; font-size:1.15rem; color:#92400E;">${idx + 1}. சொல்:</div>
               ${ghostAnswer}
-              ${makeDualStrip(q.id)}
+              <div style="margin-top:4px;">
+                ${makeDualStrip(q.id)}
+              </div>
             </div>
           `;
         });
@@ -1827,18 +1935,18 @@
               ${isPractice ? `<span class="translit-badge">${q.translit}</span>` : ''}
             </div>
             ${ghostAnswer}
-            <div style="margin-top:6px;">
+            <div style="margin-top:8px;">
               ${makeDualStrip(q.id)}
             </div>
           `;
           body.appendChild(card);
         });
 
-      // 6. 3-COLUMN MATCHING WITH 340PX CANVAS STRIP (SCREENSHOT 2)
+      // 6. 3-COLUMN MATCHING WITH 380PX CANVAS STRIP (SCREENSHOT 2)
       } else if (sec.type === "matching_3col") {
         const card = document.createElement("div");
         card.className = "q-card-item";
-        card.innerHTML = `<div class="q-stem-tamil">பொருத்துக: சரியான இணையைத் தேர்ந்தெடுத்து 340px பகுதியில் எழுதுக</div>`;
+        card.innerHTML = `<div class="q-stem-tamil">பொருத்துக: சரியான இணையைத் தேர்ந்தெடுத்து 380px பகுதியில் எழுதுக</div>`;
 
         const table = document.createElement("table");
         table.className = "matching-3col-table";
@@ -1848,7 +1956,7 @@
           const optionsHtml = sec.optionsPool.map(opt => `
             <button type="button" 
                     class="mcq-option-pill ${selectedTarget === opt ? 'selected' : ''}" 
-                    style="margin:2px;"
+                    style="margin:3px;"
                     onclick="selectOption('${q.id}', '${opt}', this)">
               ${opt}
             </button>
@@ -1869,7 +1977,7 @@
               ${ghostAns}
             </td>
             <td class="col-canvas">
-              ${makeDualStrip(q.id, "compact-340")}
+              ${makeDualStrip(q.id, "matching-strip")}
             </td>
           `;
           table.appendChild(tr);
@@ -1878,53 +1986,54 @@
         card.appendChild(table);
         body.appendChild(card);
 
-      // 7. PASSAGE TABLE (PAGE 2)
+      // 7. PASSAGE TABLE (PAGE 2: FULL-WIDTH WRITING AREA)
       } else if (sec.type === "passage_table") {
         const card = document.createElement("div");
         card.className = "q-card-item";
         card.innerHTML = `
-          <div style="background:#FFFBEB; border:2px solid #F59E0B; border-radius:14px; padding:12px; font-family:var(--font-tamil); font-size:1.15rem; line-height:1.6; color:#451A03;">
+          <div style="background:#FFFBEB; border:2px solid #F59E0B; border-radius:14px; padding:12px; font-family:var(--font-tamil); font-size:1.18rem; line-height:1.65; color:#451A03;">
             ${buildWordSpans(sec.passage)}
           </div>
-          ${isPractice ? `<div class="translit-badge" style="margin-top:4px;">${sec.translit}</div>` : ''}
+          ${isPractice ? `<div class="translit-badge" style="margin-top:6px;">${sec.translit}</div>` : ''}
         `;
 
-        const tbl = document.createElement("table");
-        tbl.className = "kinaru-table";
-        tbl.innerHTML = `<tr><th>சொல் வகை</th><th>விடைகள் (வார்த்தைகள்)</th><th>எழுதும் இடம்</th></tr>`;
+        const kGrid = document.createElement("div");
+        kGrid.className = "kinaru-card-grid";
 
         sec.tableItems.forEach((item, i) => {
-          tbl.innerHTML += `
-            <tr>
-              <td style="font-weight:800; width:22%;">${item.cat}</td>
-              <td style="width:38%;">
-                ${isPractice ? `<div style="font-weight:700; color:#15803D;">${item.ans}</div><span class="translit-badge">${item.trans}</span>` : 'சுயமாக வகைப்படுத்துக'}
-              </td>
-              <td style="width:40%;">
-                ${makeDualStrip("ch3_p2_tbl_" + i, "compact-340")}
-              </td>
-            </tr>
+          const row = document.createElement("div");
+          row.className = "kinaru-item-card";
+          row.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-family:var(--font-tamil); font-size:1.2rem; font-weight:900; color:#92400E;">${i+1}. ${item.cat}</span>
+              ${isPractice ? `<span class="translit-badge">${item.trans}</span>` : ''}
+            </div>
+            ${isPractice ? `<div class="practice-ghost-answer">💡 விடைகள்: ${item.ans}</div>` : ''}
+            <div style="margin-top:4px;">
+              ${makeDualStrip("ch3_p2_tbl_" + i, "full-sentence-strip")}
+            </div>
           `;
+          kGrid.appendChild(row);
         });
-        card.appendChild(tbl);
+        card.appendChild(kGrid);
 
         const inaBox = document.createElement("div");
-        inaBox.style.marginTop = "14px";
+        inaBox.style.marginTop = "18px";
         inaBox.innerHTML = `<div class="q-stem-tamil">வண்ணமிடப்பட்ட சொற்களில் இன எழுத்துகள்:</div>`;
 
         sec.inaItems.forEach((ina, i) => {
           inaBox.innerHTML += `
-            <div style="margin:8px 0; background:#F8FAFC; border:1.5px solid #CBD5E1; border-radius:12px; padding:8px 14px; display:flex; justify-content:space-between; align-items:center;">
-              <span style="font-family:var(--font-tamil); font-size:1.15rem; font-weight:800;">${ina.word}</span>
+            <div style="margin:10px 0; background:#F8FAFC; border:1.5px solid #CBD5E1; border-radius:14px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+              <span style="font-family:var(--font-tamil); font-size:1.2rem; font-weight:800;">${ina.word}</span>
               ${isPractice ? `<span style="font-family:var(--font-tamil); font-weight:900; color:#B45309;">${ina.pair} <span class="translit-badge">${ina.trans}</span></span>` : ''}
-              ${makeDualStrip("ch3_p2_ina_" + i, "compact-280")}
+              ${makeDualStrip("ch3_p2_ina_" + i, "split-word-strip")}
             </div>
           `;
         });
         card.appendChild(inaBox);
         body.appendChild(card);
 
-      // 8. SENTENCE CREATION (PAGE 3)
+      // 8. SENTENCE CREATION (PAGE 3: FULL-WIDTH WRITING STRIP)
       } else if (sec.type === "handwriting_sentences") {
         sec.questions.forEach((q, idx) => {
           const card = document.createElement("div");
@@ -1943,8 +2052,8 @@
               ${isPractice ? `<span class="translit-badge">${q.trans}</span>` : ''}
             </div>
             ${ghostAnswer}
-            <div style="margin-top:6px;">
-              ${makeDualStrip(q.id)}
+            <div style="margin-top:8px;">
+              ${makeDualStrip(q.id, "full-sentence-strip")}
             </div>
           `;
           body.appendChild(card);
@@ -1955,7 +2064,7 @@
         const passCard = document.createElement("div");
         passCard.className = "q-card-item";
         passCard.innerHTML = `
-          <div style="background:#FFFBEB; border:2px solid #F59E0B; border-radius:14px; padding:12px; font-family:var(--font-tamil); font-size:1.15rem; line-height:1.6; color:#451A03;">
+          <div style="background:#FFFBEB; border:2px solid #F59E0B; border-radius:14px; padding:12px; font-family:var(--font-tamil); font-size:1.18rem; line-height:1.65; color:#451A03;">
             ${buildWordSpans(sec.passage)}
           </div>
         `;
@@ -1993,14 +2102,14 @@
             </div>
             ${ghostAns}
             ${optionsHtml}
-            <div style="margin-top:6px;">
+            <div style="margin-top:8px;">
               ${makeDualStrip(q.id)}
             </div>
           `;
           body.appendChild(card);
         });
 
-        // Slogan Writing Card
+        // Slogan Writing Card (Full-Width)
         const slogCard = document.createElement("div");
         slogCard.className = "q-card-item";
         slogCard.innerHTML = `
@@ -2009,8 +2118,8 @@
             ${buildWordSpans(cleanStemText(sec.slogan.stem))}
           </div>
           ${isPractice ? `<div class="practice-ghost-answer">💡 முழக்கம்: ${sec.slogan.sample} <span class="translit-badge">${sec.slogan.trans}</span></div>` : ''}
-          <div style="margin-top:6px;">
-            ${makeDualStrip(sec.slogan.id)}
+          <div style="margin-top:8px;">
+            ${makeDualStrip(sec.slogan.id, "full-sentence-strip")}
           </div>
         `;
         body.appendChild(slogCard);
@@ -2023,13 +2132,15 @@
 
         sec.corrections.forEach((c, idx) => {
           corrCard.innerHTML += `
-            <div style="margin-top:10px;">
-              <div style="font-family:var(--font-tamil); font-weight:800; font-size:1.15rem; color:#991B1B;">
+            <div style="margin-top:12px;">
+              <div style="font-family:var(--font-tamil); font-weight:800; font-size:1.18rem; color:#991B1B;">
                 <span style="color:#D97706; margin-right:4px;">${idx + 1}.</span>
                 ${buildWordSpans(cleanStemText(c.colloquial))}
               </div>
               ${isPractice ? `<div class="practice-ghost-answer" style="margin:4px 0;">💡 சரியான விடை: ${c.standard} <span class="translit-badge">${c.trans}</span></div>` : ''}
-              ${makeDualStrip(c.id)}
+              <div style="margin-top:6px;">
+                ${makeDualStrip(c.id, "full-sentence-strip")}
+              </div>
             </div>
           `;
         });
@@ -2066,7 +2177,7 @@
             </div>
             ${ghostAns}
             ${optionsHtml}
-            <div style="margin-top:6px;">
+            <div style="margin-top:8px;">
               ${makeDualStrip(q.id)}
             </div>
           `;
@@ -2088,7 +2199,7 @@
     }
     window.selectOption = selectOption;
 
-    function setAppMode(mode) {
+    function applyAppMode(mode) {
       saveAllVisibleCanvases();
       currentAppMode = mode;
       document.getElementById("tabPractice").classList.toggle("active", mode === "practice");
@@ -2101,6 +2212,58 @@
         switchChapter(activeChapterIdx);
       }
     }
+
+    function setAppMode(mode) {
+      // Entering Write: lock Practice until parent PIN
+      if (mode === "write" && currentAppMode === "practice") {
+        writeModeLocked = true;
+        try { localStorage.setItem("v2_tamil_oct22::writeLocked", "1"); } catch (_) {}
+        applyAppMode("write");
+        return;
+      }
+      // Leaving Write → Practice: require PIN
+      if (mode === "practice" && currentAppMode === "write") {
+        if (writeModeLocked || localStorage.getItem("v2_tamil_oct22::writeLocked") === "1") {
+          openPinModal();
+          return;
+        }
+      }
+      applyAppMode(mode);
+    }
+
+    function openPinModal() {
+      const err = document.getElementById("pinErr");
+      if (err) err.textContent = "";
+      const inp = document.getElementById("pinInput");
+      if (inp) inp.value = "";
+      document.getElementById("pinModal").classList.add("open");
+      setTimeout(() => { try { document.getElementById("pinInput").focus(); } catch (_) {} }, 60);
+    }
+    function closePinModal() {
+      document.getElementById("pinModal").classList.remove("open");
+    }
+    function submitParentPin() {
+      const v = (document.getElementById("pinInput").value || "").trim();
+      if (v === PARENT_PIN) {
+        writeModeLocked = false;
+        try { localStorage.setItem("v2_tamil_oct22::writeLocked", "0"); } catch (_) {}
+        closePinModal();
+        applyAppMode("practice");
+      } else {
+        document.getElementById("pinErr").textContent = "தவறான PIN. மீண்டும் முயலவும்.";
+        document.getElementById("pinInput").value = "";
+        document.getElementById("pinInput").focus();
+      }
+    }
+    // Enter key on PIN field
+    document.addEventListener("DOMContentLoaded", () => {
+      const inp = document.getElementById("pinInput");
+      if (inp) inp.addEventListener("keydown", e => { if (e.key === "Enter") submitParentPin(); });
+    });
+    // Restore lock flag
+    try {
+      if (localStorage.getItem("v2_tamil_oct22::writeLocked") === "1") writeModeLocked = true;
+    } catch (_) {}
 
     function speakCurrentHeader() {
       const ch = CURRICULUM[activeChapterIdx];
@@ -2121,7 +2284,7 @@
       }
     }
 
-    /* 23-MARKS OBJECTIVE AUTO-GRADING ENGINE */
+    /* 7. GRADING & CELEBRATION ENGINE */
     function handleVerifyClick() {
       saveAllVisibleCanvases();
 
@@ -2183,7 +2346,6 @@
       triggerGrandCelebration();
     }
 
-    /* GRAND ASANA FINALE */
     const finaleStage = document.getElementById("celebrationFinaleStage");
     const finaleCanvas = document.getElementById("finaleCanvas");
     const finaleCtx = finaleCanvas.getContext("2d", { alpha: true });
@@ -2304,7 +2466,7 @@
   </script>
 
   <!-- ======================================================== -->
-  <!-- COMPLETE INLINED UNIVERSAL PEN + 45° QALAM STYLUS ENGINE -->
+  <!-- COMPLETE UNIVERSAL PEN ENGINE (DEDICATED FLOATING TOOL)   -->
   <!-- ======================================================== -->
   <script>
   (function () {
@@ -2878,8 +3040,14 @@
       };
     }
 
+    let lastPenAtEmbedded = 0;
     function isPalm(e) {
-      return e.pointerType === 'touch' && (e.width > 50 || e.height > 50);
+      if (e.pointerType === 'pen') { lastPenAtEmbedded = Date.now(); return false; }
+      if (e.pointerType === 'mouse') return false;
+      if (e.pointerType === 'touch' && (Date.now() - lastPenAtEmbedded) < 2500) return true;
+      const w = e.width || 0, h = e.height || 0;
+      if (w >= 22 || h >= 22) return true;
+      return false;
     }
 
     function getCurrentLineWidth() {
@@ -2952,8 +3120,11 @@
     }
 
     function startDraw(e) {
+      // Guard: Dual-line ruled canvases handle their own calibrated high-speed inking
+      if (e.target.classList && e.target.classList.contains('dual-canvas')) return;
       if (state.isScrolling) return;
       if (isPalm(e)) return;
+      if (state.drawing && state.pointerId != null && e.pointerId !== state.pointerId) return;
 
       const canvas = e.target.closest('canvas');
       if (!canvas) return;
@@ -2992,6 +3163,7 @@
     }
 
     function draw(e) {
+      if (e.target.classList && e.target.classList.contains('dual-canvas')) return;
       if (state.isScrolling) return;
       if (isPalm(e)) return;
 
@@ -3055,6 +3227,7 @@
     }
 
     function endDraw(e) {
+      if (e.target.classList && e.target.classList.contains('dual-canvas')) return;
       if (state.tool === 'line' && state.lineStart) {
         e.preventDefault();
         const { canvas, ctx, x, y } = state.lineStart;
