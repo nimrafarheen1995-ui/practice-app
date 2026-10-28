@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+<title>Humayun • Islamiyath • Unit Test III</title>
+<link href="https://fonts.googleapis.com/css2?family=Scheherazade+New:wght@400;700&family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+*{ -webkit-tap-highlight-color:transparent; box-sizing:border-box; }
+html,body{ margin:0; min-height:100%; font-family:'Baloo 2',system-ui,sans-serif; background:#0a1128 url('assets/islamic-night-bg.webp') center/cover no-repeat fixed; overflow-x:hidden; color:#1e293b; }
+.night-overlay{ position:fixed; inset:0; background:rgba(10,17,40,0.78); pointer-events:none; z-index:0; }
+.layer{ position:relative; z-index:1; }
+
+/* Header */
+#topHeader{
+  position:sticky; top:0; z-index:40;
+  background:linear-gradient(180deg,rgba(15,23,42,0.97),rgba(10,17,40,0.93));
+  border-bottom:2.5px solid #f59e0b; backdrop-filter:blur(10px);
+  transition:transform .4s ease;
+}
+#topHeader.hiddenBar{ transform:translateY(-105%); }
+
+#hangingAvatar{
+  position:fixed; top:4px; left:50%; transform:translateX(-50%); z-index:45;
+  width:78px; height:78px; border-radius:50%; border:3px solid #f59e0b;
+  background:#FFFEF7; box-shadow:0 8px 24px rgba(0,0,0,.35);
+  display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden;
+}
+#hangingAvatar img{ width:100%; height:100%; object-fit:cover; }
+#hangingAvatar.hiddenPos{ top:-10px; transform:translateX(-50%) scale(0.7); }
+
+.scroll-card{
+  margin:12px 14px; padding:14px; background:#FFFEF7;
+  border:1.5px solid #E8DCC0; border-radius:14px; cursor:pointer; transition:all .2s;
+}
+.scroll-card:active{ transform:scale(0.98); background:#FFF8E1; }
+.card-banner{
+  display:inline-flex; align-items:center; gap:6px; background:#FFF3C0;
+  border:1px solid rgba(245,158,11,0.35); border-radius:999px; padding:3px 10px;
+  font-size:.78rem; font-weight:800; color:#5A3C22;
+}
+
+/* Writing strip */
+.strip-wrap{ position:relative; width:100%; margin-top:6px; }
+.ruled-strip{
+  width:100%; height:88px; display:block;
+  background:
+    linear-gradient(0deg,transparent 0,transparent 43px,#8FB8E8 43px,#8FB8E8 44px,transparent 44px),
+    linear-gradient(0deg,#FFFFFF 0%,#FFFEF7 100%);
+  border:1.8px solid #D9C8A0; border-radius:12px; cursor:crosshair; touch-action:none;
+}
+.strip-tools{ position:absolute; top:-8px; right:-6px; display:flex; gap:4px; z-index:2; }
+.strip-btn{
+  width:26px; height:26px; border-radius:50%; border:1.5px solid #C9A86A;
+  background:#FFFEF7; display:flex; align-items:center; justify-content:center;
+  font-size:13px; cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,.15);
+}
+.strip-btn.clear{ background:#FFF1F1; border-color:#E0A0A0; }
+.ruled-strip.tall{ height:150px; }
+
+.q-block{ padding:12px 8px; border-bottom:1px dashed #E8DCC0; }
+.q-text{ font-weight:700; color:#3B2A14; font-size:1.05rem; margin-bottom:6px; }
+.opt-row{ display:flex; flex-wrap:wrap; gap:8px; margin:6px 0; }
+.opt{
+  padding:6px 12px; border-radius:999px; border:1.5px solid #E8DCC0;
+  background:#fff; font-size:.9rem; cursor:pointer; transition:all .15s;
+}
+.opt.sel{ background:#FFD77A; border-color:#f59e0b; font-weight:700; }
+.opt.correct{ background:#d1fae5; border-color:#10b981; }
+.opt.wrong{ background:#fee2e2; border-color:#ef4444; }
+
+.tf-row{ display:flex; align-items:center; gap:10px; margin:8px 0; }
+.tf-btn{
+  width:42px; height:42px; border-radius:12px; border:2px solid #E8DCC0;
+  background:#fff; font-size:1.2rem; font-weight:900; cursor:pointer;
+}
+.tf-btn.sel{ background:#FFD77A; border-color:#f59e0b; }
+.tf-btn.ok{ background:#d1fae5; border-color:#10b981; }
+.tf-btn.bad{ background:#fee2e2; border-color:#ef4444; }
+
+.blank-inline{
+  display:inline-block; min-width:80px; border-bottom:2.5px solid #f59e0b;
+  padding:0 6px; margin:0 4px; text-align:center; font-weight:700;
+}
+
+/* Modal */
+#sectionModal{
+  position:fixed; inset:0; z-index:50; display:flex; align-items:center; justify-content:center;
+  padding:12px; background:rgba(10,17,40,0.75); backdrop-filter:blur(8px);
+  opacity:0; pointer-events:none; transition:all .4s;
+}
+#sectionModal.open{ opacity:1; pointer-events:auto; }
+.modal-parchment{
+  width:min(900px,96vw); max-height:92vh; overflow-y:auto;
+  background:linear-gradient(180deg,#FFFEF7,#FFF8E1);
+  border-radius:18px; border:2px solid #f59e0b;
+  box-shadow:0 24px 80px rgba(0,0,0,.5);
+  transform:scale(0.88) translateY(24px); transition:all .45s cubic-bezier(.34,1.4,.64,1);
+}
+#sectionModal.open .modal-parchment{ transform:scale(1) translateY(0); }
+
+body.big .q-text{ font-size:1.2rem; }
+body.big .opt{ font-size:1rem; }
+
+@media(max-width:768px){
+  .ruled-strip{ height:80px; }
+}
+</style>
+</head>
+<body>
+<div class="night-overlay"></div>
+
+<header id="topHeader">
+  <div class="flex items-center justify-between px-3 py-2 gap-2">
+    <div class="flex items-center gap-2">
+      <img src="assets/badge-crescent-star.webp" alt="" class="w-7 h-7 object-contain" onerror="this.style.display='none'">
+      <div class="text-[#fbbf24] leading-tight">
+        <div class="font-extrabold text-[14px]">Islamiyath • Unit Test III</div>
+        <div class="text-[10px] text-[#f59e0b]">Class III • 2025–2026</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-2">
+      <div class="flex bg-[#1A2340] border border-[#f59e0b]/30 rounded-full p-1">
+        <button id="practiceBtn" class="px-3 py-1 rounded-full text-[12px] font-bold text-[#fbbf24]">🔒 Practice</button>
+        <button id="writeBtn" class="px-3 py-1 rounded-full text-[12px] font-bold bg-[#fbbf24] text-[#3B2A14]">Write</button>
+      </div>
+      <button type="button" id="fontBtn" class="w-8 h-8 rounded-full bg-[#FFFEF7] border border-[#f59e0b] text-[12px] font-black text-[#5A3C22]">Aa</button>
+      <button type="button" onclick="location.href='index.html'" class="text-[11px] font-bold px-2 py-1 rounded-lg border border-[#f59e0b]/40 text-[#fbbf24]">← Hub</button>
+    </div>
+  </div>
+</header>
+
+<div id="hangingAvatar" title="Tap to show/hide header">
+  <img src="assets/humayun-scholar.webp" alt="Humayun" onerror="this.parentElement.textContent='👦';">
+</div>
+
+<main class="layer" style="padding-top:20px; max-width:900px; margin:0 auto;">
+  <div class="text-center px-4 mb-4">
+    <div class="text-[#fbbf24] font-extrabold text-lg">Al Hira Model School</div>
+    <div class="text-[#cbd5e1] text-sm">Unit Test III • Islamiyath • Marks: 20 • Time: 40 mins</div>
+  </div>
+  <div id="cardsContainer"></div>
+</main>
+
+<div id="sectionModal">
+  <div class="modal-parchment">
+    <div class="sticky top-0 z-10 bg-[#FFFEF7]/95 backdrop-blur-md border-b-2 border-[#f59e0b]/30 p-3 flex items-center justify-between">
+      <div class="min-w-0">
+        <div class="font-black text-[#3B2A14]" id="modalTitle">Section</div>
+        <div class="text-[11px] text-[#8B7355]" id="modalSub"></div>
+      </div>
+      <button id="closeModal" class="w-9 h-9 shrink-0 rounded-full bg-[#1A2340] text-[#fbbf24] border-2 border-[#f59e0b]">✕</button>
+    </div>
+    <div id="modalBody" class="p-3"></div>
+    <div class="sticky bottom-0 bg-[#FFFEF7]/95 backdrop-blur p-3 flex gap-2 border-t border-[#f59e0b]/20">
+      <button type="button" class="flex-1 py-2 rounded-full bg-[#1A2340] text-[#fbbf24] font-bold text-[12px] border-2 border-[#f59e0b]" onclick="prevSection()">◀ Previous</button>
+      <button type="button" class="flex-1 py-2 rounded-full bg-[#1A2340] text-[#fbbf24] font-bold text-[12px] border-2 border-[#f59e0b]" onclick="nextSection()">Next ▶</button>
+    </div>
+  </div>
+</div>
+
+<div id="pinModal" style="position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;background:rgba(10,17,40,0.85);opacity:0;pointer-events:none;transition:opacity .3s">
+  <div style="background:#FFFEF7;border:2px solid #f59e0b;border-radius:16px;padding:20px;width:min(320px,90vw);text-align:center;">
+    <div style="font-weight:900;color:#3B2A14;">Parent PIN Required</div>
+    <div style="font-size:11px;color:#8B7355;margin-top:4px">Practice mode shows answers.</div>
+    <input id="pinInput" type="password" inputmode="numeric" maxlength="4" placeholder="••••" style="margin-top:12px;width:100%;text-align:center;font-size:20px;letter-spacing:.35em;border:2px solid #f59e0b;border-radius:12px;padding:10px;">
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button type="button" id="pinCancel" style="flex:1;padding:10px;border-radius:999px;font-weight:700;border:2px solid #E8DCC0;background:#fff;">Cancel</button>
+      <button type="button" id="pinSubmit" style="flex:1;padding:10px;border-radius:999px;font-weight:700;border:2px solid #f59e0b;background:#1A2340;color:#fbbf24;">Unlock</button>
+    </div>
+    <div id="pinError" style="font-size:11px;color:#dc2626;margin-top:8px;display:none">Wrong PIN.</div>
+  </div>
+</div>
+
+<script src="shared/universal-pen.js"></script>
+<script>
+const SECTIONS = [
+  {
+    id:'sec1', title:'I. Choose the correct answers', sub:'4 × 1 = 4', type:'mcq',
+    items:[
+      {q:"The name of Khadijah’s (RA) father was", opts:['Khuwaalid','Abu Bakr','Abu Talib'], ans:0},
+      {q:"Muhammad (SAW) married Khadijah (RA) when she was", opts:['40 years old','50 years old','25 years old'], ans:0},
+      {q:"Khadijah (RA) lived with the Prophet (SAW) for", opts:['30 years','25 years','15 years'], ans:1},
+      {q:"Khadijah (RA) was older than the Prophet (SAW) by", opts:['15 years','25 years','5 years'], ans:0}
+    ]
+  },
+  {
+    id:'sec2', title:'II. Mark right (✓) or wrong (X)', sub:'5 × 1 = 5', type:'tf',
+    items:[
+      {q:"The Quran is the word of Muhammad (SAW).", ans:false},
+      {q:"Islam is the absolute truth.", ans:true},
+      {q:"Thanking Allah increases His blessings.", ans:true},
+      {q:"We should remember Allah always.", ans:true},
+      {q:"There are three kinds of disbelief.", ans:false}
+    ]
+  },
+  {
+    id:'sec3', title:'III. Fill in the missing hadith', sub:'5 × 1 = 5', type:'fill',
+    hadith:'He who puts on a garment and says: “praise be to ______, He who clothed me with this and who provided me with it without any ______ or ______ from me, his ______ and ______ sins are forgiven for him.”',
+    blanks:['Allah','might','power','previous','future']
+  },
+  {
+    id:'sec4', title:'IV. Answer the following', sub:'3 × 2 = 6', type:'short',
+    items:[
+      {q:"Who was the first woman to accept Islam?", ans:"Khadijah (RA)"},
+      {q:"Who was Khadijah (RA)?", ans:"The first wife of the Prophet (SAW) and the first woman to accept Islam."},
+      {q:"What is the benefit of bathing?", ans:"It keeps the body clean and is a form of purification in Islam."}
+    ]
+  }
+];
+
+let currentMode = 'write';
+let expandedId = null;
+let headerHidden = false;
+
+function buildCards(){
+  const c = document.getElementById('cardsContainer');
+  c.innerHTML = '';
+  SECTIONS.forEach(sec=>{
+    const card = document.createElement('div');
+    card.className = 'scroll-card';
+    card.innerHTML = `<div class="card-banner">📜 ${sec.title}</div><div class="text-[11px] text-[#8B7355] mt-1">${sec.sub}</div>`;
+    card.onclick = ()=> openSection(sec.id);
+    c.appendChild(card);
+  });
+}
+
+function stripHTML(key, tall){
+  const h = tall ? 150 : 88;
+  const cls = tall ? 'ruled-strip tall' : 'ruled-strip';
+  return `<div class="strip-wrap">
+    <canvas data-ink-key="${key}" class="${cls}" width="560" height="${h}"></canvas>
+    <div class="strip-tools">
+      <button type="button" class="strip-btn clear" title="Clear" onclick="clearThisStrip('${key}')">🗑️</button>
+    </div>
+  </div>`;
+}
+
+function renderModalBody(secId){
+  const sec = SECTIONS.find(s=>s.id===secId);
+  const body = document.getElementById('modalBody');
+  document.getElementById('modalTitle').textContent = sec.title;
+  document.getElementById('modalSub').textContent = (currentMode==='practice' ? 'Practice • ' : 'Write • ') + sec.sub;
+
+  let html = '';
+  if(sec.type==='mcq'){
+    html = sec.items.map((it,i)=>{
+      const key = `${secId}-mcq-${i}-${currentMode}`;
+      const opts = it.opts.map((o,j)=>{
+        const cls = currentMode==='practice' && j===it.ans ? 'opt correct' : 'opt';
+        return `<span class="${cls}" data-q="${i}" data-o="${j}">${['i','ii','iii'][j]}) ${o}</span>`;
+      }).join('');
+      return `<div class="q-block">
+        <div class="q-text">${i+1}) ${it.q}</div>
+        <div class="opt-row">${opts}</div>
+        ${currentMode==='write' ? stripHTML(key) : ''}
+      </div>`;
+    }).join('');
+  }
+  else if(sec.type==='tf'){
+    html = sec.items.map((it,i)=>{
+      const key = `${secId}-tf-${i}-${currentMode}`;
+      const mark = currentMode==='practice' ? (it.ans ? '✓' : '✗') : '';
+      return `<div class="q-block">
+        <div class="q-text">${i+1}) ${it.q}</div>
+        <div class="tf-row">
+          <button class="tf-btn" data-q="${i}" data-v="true">✓</button>
+          <button class="tf-btn" data-q="${i}" data-v="false">✗</button>
+          ${currentMode==='practice' ? `<span style="font-weight:800;color:#10b981">${mark}</span>` : ''}
+        </div>
+        ${currentMode==='write' ? stripHTML(key) : ''}
+      </div>`;
+    }).join('');
+  }
+  else if(sec.type==='fill'){
+    const parts = sec.hadith.split('______');
+    let filled = parts[0];
+    sec.blanks.forEach((b,i)=>{
+      const show = currentMode==='practice' ? `<span class="blank-inline">${b}</span>` : `<span class="blank-inline">______</span>`;
+      filled += show + (parts[i+1]||'');
+    });
+    const key = `${secId}-hadith-${currentMode}`;
+    html = `<div class="q-block">
+      <div class="q-text">Allah’s messenger (SAW) said:</div>
+      <div style="line-height:1.8;font-size:1.05rem;margin:8px 0">${filled}</div>
+      <div style="text-align:right;font-size:.85rem;color:#8B7355">-(Abu Dawud)</div>
+      ${stripHTML(key)}
+    </div>`;
+  }
+  else if(sec.type==='short'){
+    html = sec.items.map((it,i)=>{
+      const key = `${secId}-short-${i}-${currentMode}`;
+      const ans = currentMode==='practice' ? `<div style="background:#ecfdf5;border:1.5px solid #10b981;border-radius:10px;padding:10px 12px;margin:8px 0;font-size:.98rem;color:#065f46;font-weight:600">✓ ${it.ans}</div>` : '';
+      return `<div class="q-block">
+        <div class="q-text">${i+1}) ${it.q}</div>
+        ${ans}
+        ${stripHTML(key, true)}
+      </div>`;
+    }).join('');
+  }
+
+  body.innerHTML = html;
+  setTimeout(initCanvases, 120);
+
+  // Simple selection feedback in write mode
+  body.querySelectorAll('.opt').forEach(el=>{
+    el.onclick = ()=>{
+      if(currentMode!=='write') return;
+      const q = el.dataset.q;
+      body.querySelectorAll(`.opt[data-q="${q}"]`).forEach(o=>o.classList.remove('sel'));
+      el.classList.add('sel');
+    };
+  });
+  body.querySelectorAll('.tf-btn').forEach(el=>{
+    el.onclick = ()=>{
+      if(currentMode!=='write') return;
+      const q = el.dataset.q;
+      body.querySelectorAll(`.tf-btn[data-q="${q}"]`).forEach(b=>b.classList.remove('sel'));
+      el.classList.add('sel');
+    };
+  });
+
+  // Check button for MCQ / TF in write mode
+  if(currentMode==='write' && (sec.type==='mcq' || sec.type==='tf')){
+    const btn = document.createElement('button');
+    btn.textContent = '🔍 Check answers';
+    btn.style.cssText = 'margin:12px auto;display:block;padding:10px 20px;border-radius:999px;background:#1A2340;color:#fbbf24;border:2px solid #f59e0b;font-weight:700;cursor:pointer;';
+    btn.onclick = ()=> checkAnswers(sec, body);
+    body.appendChild(btn);
+  }
+}
+
+function checkAnswers(sec, body){
+  if(sec.type==='mcq'){
+    body.querySelectorAll('.opt').forEach(el=>{
+      const q = +el.dataset.q, o = +el.dataset.o;
+      el.classList.remove('correct','wrong');
+      if(el.classList.contains('sel')){
+        if(o === sec.items[q].ans) el.classList.add('correct');
+        else el.classList.add('wrong');
+      }
+    });
+  } else if(sec.type==='tf'){
+    body.querySelectorAll('.tf-btn').forEach(el=>{
+      const q = +el.dataset.q, v = el.dataset.v === 'true';
+      el.classList.remove('ok','bad');
+      if(el.classList.contains('sel')){
+        if(v === sec.items[q].ans) el.classList.add('ok');
+        else el.classList.add('bad');
+      }
+    });
+  }
+}
+
+function initCanvases(){
+  document.querySelectorAll('#modalBody canvas').forEach(c=>{
+    const dpr = window.devicePixelRatio || 1;
+    const rect = c.getBoundingClientRect();
+    if(rect.width < 10) return;
+    c.width = Math.round(rect.width * dpr);
+    const isTall = c.classList.contains('tall');
+    const h = isTall ? 150 : 88;
+    c.height = Math.round(h * dpr);
+    c.style.height = h + 'px';
+    const ctx = c.getContext('2d');
+    try{ ctx.setTransform(dpr,0,0,dpr,0,0); }catch(e){}
+    if(window.UniversalPen) UniversalPen.forceCanvas(c);
+  });
+}
+
+function clearThisStrip(key){
+  const canvas = document.querySelector(`canvas[data-ink-key="${key}"]`);
+  if(!canvas || !window.UniversalPen) return;
+  UniversalPen.state.activeCanvas = canvas;
+  UniversalPen.state.ctx = canvas.getContext('2d');
+  if(typeof UniversalPen.clearInk === 'function') UniversalPen.clearInk();
+  else canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
+}
+
+function openSection(id){
+  expandedId = id;
+  renderModalBody(id);
+  document.getElementById('sectionModal').classList.add('open');
+}
+function closeModal(){ document.getElementById('sectionModal').classList.remove('open'); }
+function nextSection(){
+  const idx = SECTIONS.findIndex(s=>s.id===expandedId);
+  if(idx>=0 && idx<SECTIONS.length-1) openSection(SECTIONS[idx+1].id);
+}
+function prevSection(){
+  const idx = SECTIONS.findIndex(s=>s.id===expandedId);
+  if(idx>0) openSection(SECTIONS[idx-1].id);
+}
+
+/* PIN */
+const PIN_SALT = 'humayun-islam-v1:';
+const PIN_CHECK = '6f2f794b';
+function fnv1a(s){ let h=0x811c9dc5; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,0x01000193)>>>0; } return (h>>>0).toString(16).padStart(8,'0'); }
+function isUnlocked(){ try{ return Number(localStorage.getItem('humayun_islam_unlock_until')||0) > Date.now(); }catch(e){ return false; } }
+function unlockSession(){ try{ localStorage.setItem('humayun_islam_unlock_until', String(Date.now()+10*60*1000)); }catch(e){} }
+function setModeUI(){
+  const pr=document.getElementById('practiceBtn'), wr=document.getElementById('writeBtn');
+  const onP = currentMode==='practice';
+  pr.className = 'px-3 py-1 rounded-full text-[12px] font-bold ' + (onP ? 'bg-[#fbbf24] text-[#3B2A14]' : 'text-[#fbbf24]');
+  pr.textContent = onP ? '✓ Practice' : (isUnlocked() ? 'Practice' : '🔒 Practice');
+  wr.className = 'px-3 py-1 rounded-full text-[12px] font-bold ' + (!onP ? 'bg-[#fbbf24] text-[#3B2A14]' : 'text-[#fbbf24]');
+}
+function showPin(){
+  document.getElementById('pinInput').value='';
+  document.getElementById('pinError').style.display='none';
+  const m=document.getElementById('pinModal'); m.style.opacity='1'; m.style.pointerEvents='auto';
+  setTimeout(()=>document.getElementById('pinInput').focus(),80);
+}
+function hidePin(){ const m=document.getElementById('pinModal'); m.style.opacity='0'; m.style.pointerEvents='none'; }
+function checkPin(){
+  const entered=document.getElementById('pinInput').value.trim();
+  if(fnv1a(PIN_SALT+entered)===PIN_CHECK){
+    unlockSession(); hidePin(); currentMode='practice'; setModeUI();
+    if(expandedId) renderModalBody(expandedId);
+  } else {
+    document.getElementById('pinError').style.display='block';
+    document.getElementById('pinInput').value='';
+  }
+}
+
+document.getElementById('hangingAvatar').onclick = ()=>{
+  headerHidden = !headerHidden;
+  document.getElementById('topHeader').classList.toggle('hiddenBar', headerHidden);
+  document.getElementById('hangingAvatar').classList.toggle('hiddenPos', headerHidden);
+};
+document.getElementById('practiceBtn').onclick = ()=>{
+  if(isUnlocked()){ currentMode='practice'; setModeUI(); if(expandedId) renderModalBody(expandedId); }
+  else showPin();
+};
+document.getElementById('writeBtn').onclick = ()=>{
+  currentMode='write'; setModeUI(); if(expandedId) renderModalBody(expandedId);
+};
+document.getElementById('pinCancel').onclick = hidePin;
+document.getElementById('pinSubmit').onclick = checkPin;
+document.getElementById('pinInput').onkeydown = e=>{ if(e.key==='Enter') checkPin(); };
+document.getElementById('pinModal').onclick = e=>{ if(e.target.id==='pinModal') hidePin(); };
+
+document.getElementById('fontBtn').onclick = () => {
+  try {
+    const on = localStorage.getItem('humayun_islam_big') === '1';
+    localStorage.setItem('humayun_islam_big', on ? '0' : '1');
+    document.body.classList.toggle('big', !on);
+  } catch(e) {}
+};
+try { if (localStorage.getItem('humayun_islam_big') === '1') document.body.classList.add('big'); } catch(e) {}
+
+document.getElementById('closeModal').onclick = closeModal;
+document.getElementById('sectionModal').onclick = (e)=>{ if(e.target.id==='sectionModal') closeModal(); };
+
+setModeUI();
+buildCards();
+</script>
+</body>
+</html>
