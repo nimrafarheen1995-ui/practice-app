@@ -2,167 +2,241 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <title>Humayun • Social • The Work We Do</title>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
 <style>
-*{ -webkit-tap-highlight-color:transparent; box-sizing:border-box; }
-html,body{ margin:0; min-height:100%; font-family:'Baloo 2',system-ui,sans-serif; background:#1a2e1a; overflow:hidden; }
-#bgLayer{ position:fixed; inset:0; z-index:0; background:#1a2e1a url('assets/work-workshop-bg.webp') center/cover no-repeat; }
-.overlay{ position:fixed; inset:0; background:rgba(20,35,20,0.48); z-index:0; pointer-events:none; }
-
-#topBar{
-  position:fixed; top:0; left:0; right:0; z-index:40; height:56px;
-  background:rgba(15,30,15,0.94); border-bottom:2px solid #d4a017;
-  display:flex; align-items:center; justify-content:space-between; padding:0 12px;
-  backdrop-filter:blur(8px);
+:root{
+  --gold:#d4a017; --ink:#1a2e1a; --cream:#fef3c7; --paper:#fffcf5;
+  --ease:cubic-bezier(.25,.8,.25,1); --topH:56px; --bottomH:108px;
 }
-.mode-seg{ display:flex; background:#1a2e1a; border:1.5px solid #d4a017; border-radius:999px; overflow:hidden; }
-.mode-seg button{ padding:6px 12px; font-size:12px; font-weight:700; border:0; background:transparent; color:#fef3c7; cursor:pointer; }
-.mode-seg button.on{ background:#d4a017; color:#1a2e1a; }
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#0f1a0f;font-family:'Baloo 2',system-ui,sans-serif;color:var(--ink)}
 
-.slide-stage{ position:fixed; inset:56px 0 70px 0; z-index:10; overflow:hidden; }
-.slide{
-  position:absolute; inset:0; padding:14px 18px;
-  display:flex; flex-direction:column; opacity:0; pointer-events:none;
-  transform:translateX(50px); transition:all .5s cubic-bezier(.25,.8,.25,1);
+/* ---------- Cinematic backdrop ---------- */
+#bgLayer{position:fixed;inset:0;z-index:0;background:#1a2e1a url('assets/work-workshop-bg.webp') center/cover no-repeat}
+.overlay{position:fixed;inset:0;z-index:1;background:rgba(20,35,20,.48);pointer-events:none}
+.vignette{position:fixed;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.6) 100%)}
+.grain{position:fixed;inset:-50%;z-index:2;pointer-events:none;opacity:.08;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation:grain 1s steps(4) infinite}
+@keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-2%,2%)}50%{transform:translate(2%,-2%)}75%{transform:translate(-1%,1%)}100%{transform:translate(0,0)}}
+
+/* ---------- Top bar ---------- */
+#topBar{position:fixed;top:0;left:0;right:0;height:var(--topH);z-index:40;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 10px;background:rgba(15,30,15,.94);border-bottom:2px solid var(--gold);backdrop-filter:blur(8px)}
+.top-left,.top-right{display:flex;align-items:center;gap:6px}
+.ttl{color:var(--cream);font-weight:800;font-size:14px;white-space:nowrap;margin-left:4px}
+.tool-badge{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 10px 0 5px;border-radius:8px;background:rgba(254,243,199,.12);border:1.5px solid rgba(212,160,23,.55);color:var(--cream);font:inherit;font-size:12px;font-weight:800;cursor:pointer;opacity:.6;transition:all .35s var(--ease)}
+.tool-badge .ico{width:26px;height:26px;display:grid;place-items:center;font-size:16px;border-radius:6px;background:var(--cream)}
+.tool-badge:hover{opacity:1}
+.tool-badge.here{opacity:1;border-color:var(--gold);box-shadow:0 0 0 2px rgba(212,160,23,.4)}
+.tool-badge.on{opacity:1;background:#d1fae5;color:#065f46;border-color:#10b981}
+.tool-badge.on .ico{background:#fff}
+.tool-badge.on .lbl::after{content:' ✓'}
+.mode-seg{display:flex;background:var(--ink);border:1.5px solid var(--gold);border-radius:999px;overflow:hidden}
+.mode-seg button{padding:5px 10px;font:inherit;font-size:12px;font-weight:700;border:0;background:transparent;color:var(--cream);cursor:pointer}
+.mode-seg button.on{background:var(--gold);color:var(--ink)}
+.hub-btn{padding:5px 8px;font:inherit;font-size:12px;font-weight:700;border:0;background:transparent;color:var(--cream);cursor:pointer}
+
+/* ---------- Stage & letterbox ---------- */
+#stage{position:fixed;top:var(--topH);bottom:var(--bottomH);left:0;right:0;z-index:10;overflow:hidden}
+.lb{position:absolute;left:0;right:0;height:0;background:#000;z-index:5;transition:height .7s var(--ease)}
+#lbTop{top:0}
+#lbBot{bottom:0}
+#stage.cine .lb{height:14px}
+
+.slide{position:absolute;inset:0;padding:16px 18px;display:flex;flex-direction:column;opacity:0;pointer-events:none;transform:translateX(var(--x,0));transition:opacity .45s var(--ease),transform .55s var(--ease)}
+.slide.active{opacity:1;pointer-events:auto;transform:none}
+.slide-card{flex:1;overflow-y:auto;background:rgba(255,252,245,.97);border:2px solid var(--gold);border-radius:18px;padding:16px;box-shadow:0 12px 40px rgba(0,0,0,.25)}
+.centered{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px}
+.head{font-weight:800;font-size:1.15rem;margin-bottom:10px}
+
+/* Staggered entrance for each question block */
+.rise{animation:rise .5s var(--ease) both;animation-delay:calc(var(--i,0)*90ms + 200ms)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ---------- Clapperboard scene card ---------- */
+#clapper{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:50;width:min(300px,82vw);opacity:0;pointer-events:none;transition:opacity .25s}
+#clapper.show{opacity:1}
+.clap-board{position:relative;background:#111;border:2px solid #f5f5f5;border-radius:10px;padding:14px;color:#f5f5f5;text-align:center;box-shadow:0 14px 40px rgba(0,0,0,.5)}
+.clap-stick{position:absolute;left:-2px;right:-2px;top:-34px;height:34px;background:repeating-linear-gradient(-45deg,#111 0 14px,#f5f5f5 14px 28px);border:2px solid #f5f5f5;border-radius:8px 8px 0 0;transform-origin:0 100%;transform:rotate(-40deg)}
+#clapper.show .clap-stick{animation:clapStick .35s .3s cubic-bezier(.3,1.4,.5,1) both}
+@keyframes clapStick{from{transform:rotate(-40deg)}to{transform:rotate(0)}}
+.clap-scene{font-weight:800;font-size:1.15rem;letter-spacing:.05em}
+.clap-take{font-size:.8rem;opacity:.75;margin-top:4px}
+
+/* ---------- Countdown leader ---------- */
+#leader{position:fixed;inset:0;z-index:70;background:#000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s}
+#leader.show{opacity:1;pointer-events:auto}
+#leaderNum{color:#fff;font-size:7rem;font-weight:800}
+.pop{animation:pop .8s var(--ease) both}
+@keyframes pop{0%{transform:scale(1.6);opacity:0}30%{opacity:1}100%{transform:scale(1);opacity:.3}}
+
+/* ---------- Title & end ---------- */
+.start-btn{margin-top:18px;padding:12px 30px;border-radius:999px;background:var(--ink);color:var(--cream);border:2px solid var(--gold);font:inherit;font-size:1.05rem;font-weight:800;cursor:pointer}
+.end-title{font-size:1.4rem;font-weight:800}
+.end-sub,.credit{color:#5a4a2a;font-size:.95rem}
+.roll{animation:roll 6s var(--ease) both}
+@keyframes roll{from{transform:translateY(60%);opacity:0}to{transform:none;opacity:1}}
+
+/* ---------- Question styles ---------- */
+.q-block{margin-bottom:14px;padding-bottom:12px;border-bottom:1px dashed #e5d5b0;border-radius:10px;transition:background .4s}
+.now-play{background:rgba(212,160,23,.16)!important}
+.q-text{font-weight:700;font-size:1.08rem;line-height:1.55}
+.word{cursor:pointer;padding:0 1px;border-radius:3px}
+.word:active{background:rgba(212,160,23,.35)}
+
+.ib{display:inline-flex;height:56px;min-width:140px;max-width:220px;border:2px solid #c9b58a;border-radius:10px;background:#fffef8;overflow:hidden;vertical-align:middle;margin:0 4px}
+.ib canvas{flex:1;touch-action:none;display:block;height:56px}
+.ib-tools{display:flex;flex-direction:column;width:22px;border-left:1.5px solid #e3d6b8}
+.ib-tools button{flex:1;border:0;background:#f6efdb;font-size:11px;padding:0;cursor:pointer}
+
+.flap{display:inline-block;min-width:80px;padding:2px 8px;margin:0 4px;background:#e8d5a3;border-radius:8px;cursor:pointer;font-weight:700;transition:all .3s;user-select:none}
+.flap .hid{opacity:0;transition:opacity .3s}
+.flap.open{background:#d1fae5;color:#065f46}
+.flap.open .hid{opacity:1}
+
+.opt-row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.opt{padding:8px 14px;border-radius:999px;border:1.5px solid var(--gold);background:#fff;font:inherit;font-size:.95rem;cursor:pointer;transition:all .15s}
+.opt.sel{background:#fef3c7;font-weight:800}
+.opt.correct{background:#d1fae5;border-color:#10b981}
+.opt.wrong{background:#fee2e2;border-color:#ef4444}
+
+.match-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.match-left,.match-right{padding:10px 12px;border-radius:12px;font-weight:700;cursor:pointer;margin-bottom:8px;transition:all .2s}
+.match-left{background:#fef3c7}
+.match-right{background:#fff;border:1.5px solid var(--gold)}
+.match-left.sel{outline:3px solid var(--gold)}
+.match-left.ok{background:#d1fae5;outline:2px solid #10b981}
+.match-left.bad{background:#fee2e2}
+.pill{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:999px;background:var(--ink);color:var(--cream);font-size:12px}
+.pill:empty{display:none}
+
+.foot{margin-top:12px;text-align:center}
+.cta{padding:9px 18px;border-radius:999px;background:var(--ink);color:var(--cream);border:2px solid var(--gold);font:inherit;font-weight:800;cursor:pointer}
+.banner{margin-top:12px;padding:12px;border-radius:14px;background:#d1fae5;border:2px solid #10b981;font-weight:800;text-align:center;animation:rise .5s var(--ease) both}
+
+/* ---------- Bottom: play bar + film strip ---------- */
+#bottomArea{position:fixed;left:0;right:0;bottom:0;height:var(--bottomH);z-index:40;background:rgba(15,30,15,.95);border-top:2px solid var(--gold);display:flex;flex-direction:column}
+#playBar{height:44px;display:flex;align-items:center;gap:10px;padding:0 14px}
+#playBtn{width:34px;height:34px;flex:none;border-radius:50%;border:2px solid var(--gold);background:var(--ink);color:var(--cream);font-size:13px;cursor:pointer}
+#playBtn:disabled{opacity:.35;cursor:default}
+#progress{flex:1;height:6px;background:#3b4a3b;border-radius:999px;overflow:hidden}
+#progressFill{height:100%;width:0;background:var(--gold);transition:width .4s var(--ease)}
+#tc{min-width:86px;text-align:right;color:var(--cream);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+#navRow{flex:1;display:flex;align-items:center;gap:8px;padding:0 10px}
+.nav-btn{width:40px;height:40px;flex:none;border-radius:50%;border:2px solid var(--gold);background:var(--ink);color:var(--cream);font-size:16px;cursor:pointer;display:grid;place-items:center}
+.nav-btn:disabled{opacity:.35}
+.strip{position:relative;flex:1;min-width:0;height:48px;display:flex;align-items:center;gap:5px;padding:7px 10px;background:#3a3a30;border:1.5px solid #5a5a4a;border-radius:6px}
+.strip::before,.strip::after{content:"";position:absolute;left:0;right:0;height:4px;background:repeating-linear-gradient(90deg,#0b150b 0 6px,transparent 6px 12px)}
+.strip::before{top:2px}
+.strip::after{bottom:2px}
+.frame{position:relative;z-index:1;flex:1;min-width:0;height:30px;border:1.5px solid #6b6b5b;border-radius:3px;background:#1d2a1d;color:#d6d3c4;font:inherit;font-size:10px;font-weight:800;cursor:pointer;padding:0;white-space:nowrap;overflow:hidden;transition:all .25s}
+.frame.on{background:var(--gold);color:var(--ink);border-color:var(--cream);box-shadow:0 0 0 2px rgba(254,243,199,.5)}
+
+/* ---------- Captions ---------- */
+#caption{position:fixed;left:12px;right:12px;bottom:calc(var(--bottomH) + 10px);z-index:45;padding:8px 14px;border-radius:12px;background:rgba(10,20,10,.85);color:#fff;text-align:center;font-size:16px;line-height:1.4;opacity:0;transform:translateY(6px);transition:all .3s var(--ease);pointer-events:none}
+#caption.show{opacity:1;transform:none}
+#caption .w.now{color:var(--gold);font-weight:800}
+
+/* ---------- PIN modal ---------- */
+#pinModal{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.75);opacity:0;pointer-events:none;transition:opacity .3s}
+#pinModal.open{opacity:1;pointer-events:auto}
+.pin-box{background:var(--paper);border:2px solid var(--gold);border-radius:16px;padding:20px;width:min(300px,90vw);text-align:center}
+#pinInput{width:100%;text-align:center;font:inherit;font-size:20px;letter-spacing:.3em;border:2px solid var(--gold);border-radius:10px;padding:8px}
+.pin-btns{display:flex;gap:8px;margin-top:10px}
+.pin-btns button{flex:1;padding:8px;border-radius:999px;border:1.5px solid var(--gold);background:#fff;font:inherit;cursor:pointer}
+#pinOk{background:var(--ink)!important;color:var(--cream);font-weight:700!important}
+#pinErr{color:#dc2626;font-size:12px;margin-top:6px;display:none}
+
+@media (max-width:480px){.ttl{display:none}.frame{font-size:9px}.tool-badge .lbl{display:none}.tool-badge{padding:0 6px 0 5px}}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .grain{animation:none}
 }
-.slide.active{ opacity:1; pointer-events:auto; transform:translateX(0); }
-.slide-card{
-  background:rgba(255,252,245,0.97); border-radius:18px; border:2px solid #d4a017;
-  padding:16px; flex:1; overflow-y:auto; box-shadow:0 12px 40px rgba(0,0,0,.22);
-}
-
-#bottomNav{
-  position:fixed; bottom:0; left:0; right:0; height:70px; z-index:40;
-  background:rgba(15,30,15,0.95); border-top:2px solid #d4a017;
-  display:flex; align-items:center; justify-content:space-between; padding:0 16px;
-}
-.nav-btn{
-  width:46px; height:46px; border-radius:50%; border:2px solid #d4a017;
-  background:#1a2e1a; color:#fef3c7; font-size:18px; cursor:pointer; display:grid; place-items:center;
-}
-.nav-btn:disabled{ opacity:0.35; }
-.dots{ display:flex; gap:10px; }
-.dot{ width:14px; height:14px; border-radius:50%; background:#4a5a4a; cursor:pointer; transition:all .25s; }
-.dot.on{ background:#d4a017; transform:scale(1.3); }
-.slide-num{ color:#fef3c7; font-size:13px; font-weight:700; }
-
-.q-block{ margin-bottom:14px; padding-bottom:12px; border-bottom:1px dashed #e5d5b0; }
-.q-text{ font-weight:700; color:#1a2e1a; font-size:1.08rem; line-height:1.55; cursor:pointer; }
-.q-text:active{ background:rgba(212,160,23,0.12); border-radius:6px; }
-.word{ cursor:pointer; padding:0 1px; border-radius:3px; }
-.word:active{ background:rgba(212,160,23,0.35); }
-
-/* Inline blank boxes (Indian Village style) */
-.ib{
-  display:inline-flex; height:56px; min-width:140px; max-width:220px;
-  border:2px solid #c9b58a; border-radius:10px; background:#fffef8;
-  overflow:hidden; vertical-align:middle; margin:0 4px;
-}
-.ib canvas{ flex:1; touch-action:none; display:block; height:56px; }
-.ib-tools{ display:flex; flex-direction:column; width:22px; border-left:1.5px solid #e3d6b8; }
-.ib-tools button{ flex:1; border:0; background:#f6efdb; font-size:11px; padding:0; cursor:pointer; }
-
-/* Cover flap */
-.flap{
-  display:inline-block; min-width:80px; padding:2px 8px; margin:0 4px;
-  background:#e8d5a3; border-radius:8px; cursor:pointer; font-weight:700;
-  transition:all .3s; user-select:none;
-}
-.flap.open{ background:#d1fae5; color:#065f46; }
-.flap .hid{ opacity:0; }
-.flap.open .hid{ opacity:1; }
-
-.opt-row{ display:flex; flex-wrap:wrap; gap:8px; margin:8px 0; }
-.opt{
-  padding:8px 14px; border-radius:999px; border:1.5px solid #d4a017;
-  background:#fff; font-size:.95rem; cursor:pointer; transition:all .15s;
-}
-.opt.sel{ background:#fef3c7; font-weight:700; }
-.opt.correct{ background:#d1fae5; border-color:#10b981; }
-.opt.wrong{ background:#fee2e2; border-color:#ef4444; }
-
-.match-grid{ display:grid; grid-template-columns:1.2fr 1.2fr 1fr; gap:8px; align-items:center; margin:8px 0; }
-.match-left,.match-right{
-  padding:10px 12px; border-radius:12px; font-weight:700; cursor:pointer;
-}
-.match-left{ background:#fef3c7; }
-.match-right{ background:#fff; border:1.5px solid #d4a017; }
-.match-left.sel,.match-right.sel{ outline:3px solid #d4a017; }
-.match-right.ok{ background:#d1fae5; border-color:#10b981; }
-.match-write{ min-height:50px; }
-
-#pinModal{ position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.75); opacity:0; pointer-events:none; transition:opacity .3s; }
-#pinModal.open{ opacity:1; pointer-events:auto; }
-.pin-box{ background:#fffef8; border:2px solid #d4a017; border-radius:16px; padding:20px; width:min(300px,90vw); text-align:center; }
-
-.tool-badge{ width:36px; height:36px; border-radius:50%; background:#fef3c7; border:2px solid #d4a017; display:inline-flex; align-items:center; justify-content:center; font-size:18px; margin:0 4px; opacity:0.4; transition:all .3s; }
-.tool-badge.on{ opacity:1; transform:scale(1.1); background:#d1fae5; }
 </style>
 </head>
 <body>
 <div id="bgLayer"></div>
 <div class="overlay"></div>
+<div class="vignette"></div>
+<div class="grain"></div>
 
 <header id="topBar">
-  <div class="flex items-center gap-2">
-    <span class="tool-badge" id="b1">🌾</span>
-    <span class="tool-badge" id="b2">🐟</span>
-    <span class="tool-badge" id="b3">⛏️</span>
-    <span class="text-[#fef3c7] font-extrabold text-sm ml-2">The Work We Do</span>
+  <div class="top-left">
+    <button class="tool-badge" id="b1" data-go="1" title="Scene 1: Fill the blanks"><span class="ico">🌾</span><span class="lbl">Farming</span></button>
+    <button class="tool-badge" id="b2" data-go="2" title="Scene 2: Choose the answer"><span class="ico">🐟</span><span class="lbl">Fishing</span></button>
+    <button class="tool-badge" id="b3" data-go="3" title="Scene 3: Match the work"><span class="ico">⛏️</span><span class="lbl">Mining</span></button>
+    <span class="ttl">The Work We Do</span>
   </div>
-  <div class="flex items-center gap-2">
+  <div class="top-right">
     <div class="mode-seg">
       <button id="practiceBtn">🔒 Practice</button>
       <button id="writeBtn" class="on">Write</button>
     </div>
-    <button onclick="location.href='index.html'" class="text-[#fef3c7] text-xs font-bold px-2">← Hub</button>
+    <button class="hub-btn" id="hubBtn">← Hub</button>
   </div>
 </header>
 
-<div class="slide-stage" id="stage">
-  <div class="slide active" data-slide="0">
-    <div class="slide-card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
-      <img src="assets/work-title-banner.webp" alt="" style="width:min(320px,80%);height:auto;margin-bottom:12px;" onerror="this.style.display='none'">
-      <div style="font-size:1.7rem;font-weight:800;color:#1a2e1a;">The Work We Do</div>
-      <div style="color:#5a4a2a;margin:6px 0 18px;">Lesson 4 • Social Studies</div>
-      <button class="nav-btn" style="width:auto;padding:0 28px;border-radius:999px;font-size:15px;font-weight:800;" onclick="goSlide(1)">Start →</button>
+<main id="stage" class="cine">
+  <div class="lb" id="lbTop"></div>
+  <div class="lb" id="lbBot"></div>
+
+  <section class="slide active" data-slide="0">
+    <div class="slide-card centered">
+      <img src="assets/work-title-banner.webp" alt="" style="width:min(300px,80%);height:auto" onerror="this.style.display='none'">
+      <div style="font-size:1.7rem;font-weight:800">The Work We Do</div>
+      <div style="color:#5a4a2a">Lesson 4 • Social Studies</div>
+      <div style="color:#5a4a2a;font-size:.9rem">3 scenes: Farming, Fishing, Mining</div>
+      <button class="start-btn" id="startBtn">▶ Start the lesson</button>
     </div>
+  </section>
+  <section class="slide" data-slide="1"><div class="slide-card" id="slideA"></div></section>
+  <section class="slide" data-slide="2"><div class="slide-card" id="slideB"></div></section>
+  <section class="slide" data-slide="3"><div class="slide-card" id="slideC"></div></section>
+  <section class="slide" data-slide="4"><div class="slide-card centered" id="slideEnd"></div></section>
+</main>
+
+<div id="clapper">
+  <div class="clap-board">
+    <div class="clap-stick"></div>
+    <div class="clap-scene" id="clapScene"></div>
+    <div class="clap-take">TAKE 1</div>
   </div>
-  <div class="slide" data-slide="1"><div class="slide-card" id="slideA"></div></div>
-  <div class="slide" data-slide="2"><div class="slide-card" id="slideB"></div></div>
-  <div class="slide" data-slide="3"><div class="slide-card" id="slideC"></div></div>
 </div>
 
-<nav id="bottomNav">
-  <button class="nav-btn" id="prevBtn" onclick="prevSlide()">◀</button>
-  <div class="dots" id="dots"></div>
-  <div class="slide-num" id="slideNum">1 / 4</div>
-  <button class="nav-btn" id="nextBtn" onclick="nextSlide()">▶</button>
-</nav>
+<div id="leader"><div id="leaderNum">3</div></div>
+<div id="caption"></div>
+
+<footer id="bottomArea">
+  <div id="playBar">
+    <button id="playBtn" disabled>▶</button>
+    <div id="progress"><div id="progressFill"></div></div>
+    <div id="tc">—</div>
+  </div>
+  <div id="navRow">
+    <button class="nav-btn" id="prevBtn">◀</button>
+    <div class="strip" id="strip"></div>
+    <button class="nav-btn" id="nextBtn">▶</button>
+  </div>
+</footer>
 
 <div id="pinModal">
   <div class="pin-box">
-    <div style="font-weight:800;color:#1a2e1a;">Parent PIN</div>
-    <div style="font-size:12px;color:#6b5a3a;margin:4px 0 10px;">Practice mode shows answers</div>
-    <input id="pinInput" type="password" maxlength="4" inputmode="numeric" placeholder="••••" style="width:100%;text-align:center;font-size:20px;letter-spacing:.3em;border:2px solid #d4a017;border-radius:10px;padding:8px;">
-    <div style="display:flex;gap:8px;margin-top:10px;">
-      <button onclick="hidePin()" style="flex:1;padding:8px;border-radius:999px;border:1.5px solid #ccc;background:#fff;">Cancel</button>
-      <button onclick="checkPin()" style="flex:1;padding:8px;border-radius:999px;border:1.5px solid #d4a017;background:#1a2e1a;color:#fef3c7;font-weight:700;">Unlock</button>
+    <div style="font-weight:800">Parent PIN</div>
+    <div style="font-size:12px;color:#6b5a3a;margin:4px 0 10px">Practice mode shows answers</div>
+    <input id="pinInput" type="password" maxlength="4" inputmode="numeric" placeholder="••••">
+    <div class="pin-btns">
+      <button id="pinCancel">Cancel</button>
+      <button id="pinOk">Unlock</button>
     </div>
-    <div id="pinErr" style="color:#dc2626;font-size:12px;margin-top:6px;display:none;">Wrong PIN</div>
+    <div id="pinErr">Wrong PIN</div>
   </div>
 </div>
 
 <script src="shared/universal-pen.js"></script>
 <script>
-const SLIDES = 4;
-let current = 0;
-let mode = 'write';
-let matchOrder = null; // Fisher-Yates once per visit
-
+/* ================= Content ================= */
 const SEC_A = [
   {parts:['People engage in different types of ', ' to fulfil their basic needs.'], ans:'work'},
   {parts:['', ' is the main occupation of people living in the coastal areas.'], ans:'Fishing'},
@@ -184,164 +258,375 @@ const SEC_C = [
   {left:'Working in forests', right:'Furniture'},
   {left:'Farming', right:'Grains'}
 ];
+const SCENE_NAMES = {1:'Fill the Blanks', 2:'Choose the Answer', 3:'Match the Work'};
+const FRAME_LABELS = ['🎬','1','2','3','🏁'];
+const FRAME_TITLES = ['Start','Scene 1: Fill the blanks','Scene 2: Choose the answer','Scene 3: Match the work','The end'];
+const LAST = 4;
 
+/* ================= State ================= */
+let current = 0;
+let mode = 'write';
+let matchOrder = null;
+let matchPairs = {};
+let matchSel = null;
+let bSel = {};
+let bResult = {};
+const visited = new Set();
+const done = new Set();
+let speakId = 0;
+let playState = 'idle';   // idle | playing | paused
+let playQueue = [];
+let playIdx = 0;
+let unlockUntil = 0;
+let starting = false;
 
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ================= Helpers ================= */
 function wordSpans(text){
-  return text.split(/(\s+)/).map(w=>{
-    if(!w.trim()) return w;
-    return `<span class="word" onclick="speak('${w.replace(/'/g,"\\'")}')">${w}</span>`;
-  }).join('');
+  return text.split(/(\s+)/).map(w => w.trim() ? `<span class="word" data-say="${esc(w)}">${esc(w)}</span>` : esc(w)).join('');
 }
-function speak(text){
-  try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text); u.lang='en-GB'; u.rate=0.88; speechSynthesis.speak(u); }catch(e){}
+function head(t){ return `<div class="head">${t}</div>`; }
+function ibHTML(key){
+  return `<span class="ib"><canvas data-ink-key="${key}" width="120" height="42"></canvas><span class="ib-tools"><button data-clear="${key}">⌫</button></span></span>`;
 }
-
+function flapHTML(ans, id){
+  if(mode !== 'practice') return '';
+  return `<span class="flap" id="${id}"><span class="hid">${esc(ans)}</span></span>`;
+}
+function revealFlap(el){
+  el.classList.add('open');
+  speakOne(el.querySelector('.hid').textContent);
+  setTimeout(()=>el.classList.remove('open'), 3200);
+}
 function fisherYates(arr){
-  const a = [...arr];
+  const a=[...arr];
   for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
   return a;
 }
-
-function buildDots(){
-  const d=document.getElementById('dots'); d.innerHTML='';
-  for(let i=0;i<SLIDES;i++){
-    const dot=document.createElement('div');
-    dot.className='dot'+(i===current?' on':'');
-    dot.onclick=()=>goSlide(i);
-    d.appendChild(dot);
+function currentOrder(){
+  if(mode !== 'write') return SEC_C.map((_,i)=>i);
+  if(!matchOrder){
+    do { matchOrder = fisherYates(SEC_C.map((_,i)=>i)); }
+    while(matchOrder.every((v,i)=>v===i));
   }
+  return matchOrder;
+}
+function letterOf(ri){ return 'abcde'[currentOrder().indexOf(ri)]; }
+function resetWork(){ matchOrder=null; matchPairs={}; matchSel=null; bSel={}; bResult={}; }
+function markDone(n){ done.add(n); updateBadges(); updateStrip(); }
+function banner(text, nextIdx){
+  return `<div class="banner">${text}</div><div class="foot"><button class="cta" data-go="${nextIdx}">Next scene ▶</button></div>`;
 }
 
-function goSlide(n){
-  if(n<0||n>=SLIDES) return;
-  document.querySelectorAll('.slide').forEach(s=>s.classList.remove('active'));
-  document.querySelector(`.slide[data-slide="${n}"]`).classList.add('active');
-  current=n;
-  document.getElementById('slideNum').textContent=(n+1)+' / '+SLIDES;
-  document.getElementById('prevBtn').disabled=n===0;
-  document.getElementById('nextBtn').disabled=n===SLIDES-1;
-  buildDots();
-  if(n===1) renderA();
-  if(n===2) renderB();
-  if(n===3){ if(mode==='write' && !matchOrder) matchOrder=fisherYates(SEC_C.map((_,i)=>i)); renderC(); }
-  updateBadges();
+/* ================= Speech, captions & narration ================= */
+function wordStarts(text){
+  const s=[]; let p=0;
+  text.split(' ').forEach(w=>{ s.push(p); p+=w.length+1; });
+  return s;
 }
-function nextSlide(){ goSlide(current+1); }
-function prevSlide(){ goSlide(current-1); }
+function showCaption(text){
+  const cap=$('caption');
+  cap.innerHTML = text.split(' ').map((w,i)=>`<span class="w" data-i="${i}">${esc(w)}</span>`).join(' ');
+  cap.classList.add('show');
+}
+function hilite(starts, charIndex){
+  let idx=0;
+  starts.forEach((s,i)=>{ if(s<=charIndex) idx=i; });
+  document.querySelectorAll('#caption .w').forEach(el=>el.classList.toggle('now', +el.dataset.i===idx));
+}
+function hideCaption(){ $('caption').classList.remove('show'); }
 
-function ibHTML(key){
-  return `<span class="ib"><canvas data-ink-key="${key}" width="120" height="42"></canvas><span class="ib-tools"><button onclick="clearIB('${key}')">⌫</button></span></span>`;
+function say(text, id){
+  return new Promise(resolve=>{
+    const finish=()=>{ if(id===speakId) hideCaption(); resolve(); };
+    showCaption(text);
+    if(!window.speechSynthesis){ setTimeout(finish, Math.max(1500, text.length*70)); return; }
+    speechSynthesis.cancel();
+    const starts=wordStarts(text);
+    const u=new SpeechSynthesisUtterance(text);
+    u.lang='en-GB'; u.rate=.88;
+    u.onboundary=e=>{ if(e.name==='word' && id===speakId) hilite(starts, e.charIndex); };
+    u.onend=finish; u.onerror=finish;
+    speechSynthesis.speak(u);
+  });
+}
+function speakOne(text){
+  stopPlay();
+  say(text, speakId);
 }
 
-function flapHTML(ans, id){
-  if(mode!=='practice') return '';
-  return `<span class="flap" id="${id}" onclick="revealFlap(this)"><span class="hid">${ans}</span></span>`;
+/* ================= Play (narrated walkthrough) ================= */
+function buildQueue(n){
+  if(n===1) return [...document.querySelectorAll('#slideA .q-block')].map((el,i)=>({
+    el, text: SEC_A[i].parts.join(' blank ').replace(/\s+/g,' ').trim()
+  }));
+  if(n===2) return [...document.querySelectorAll('#slideB .q-block')].map((el,i)=>({
+    el, text: SEC_B[i].q + ' ' + SEC_B[i].opts.map((o,j)=>`Option ${'abcd'[j]}, ${o}.`).join(' ')
+  }));
+  if(n===3) return [...document.querySelectorAll('#slideC .match-left')].map((el,i)=>({
+    el, text: (i===0 ? 'Match each job to its answer. ' : '') + `${i+1}. ${SEC_C[i].left}.`
+  }));
+  return [];
+}
+function setPlayUI(){
+  const playable = current>=1 && current<=3;
+  const btn=$('playBtn');
+  btn.disabled = !playable;
+  btn.textContent = playState==='playing' ? '❚❚' : '▶';
+  const len=playQueue.length;
+  $('tc').textContent = playState==='idle'
+    ? (playable ? `Scene ${current} ready` : '')
+    : `Q ${Math.min(playIdx+1,len)} / ${len}`;
+  $('progressFill').style.width = len ? (playIdx/len*100)+'%' : '0%';
+}
+function togglePlay(){
+  if(playState==='playing'){ speechSynthesis.pause(); playState='paused'; }
+  else if(playState==='paused'){ speechSynthesis.resume(); playState='playing'; }
+  else startPlay();
+  setPlayUI();
+}
+function startPlay(){
+  playQueue = buildQueue(current);
+  if(!playQueue.length) return;
+  playIdx=0; playState='playing';
+  playNext();
+}
+function playNext(){
+  if(playState!=='playing') return;
+  document.querySelectorAll('.now-play').forEach(x=>x.classList.remove('now-play'));
+  if(playIdx>=playQueue.length){ stopPlay(); return; }
+  const item=playQueue[playIdx];
+  item.el.classList.add('now-play');
+  item.el.scrollIntoView({block:'nearest', behavior:'smooth'});
+  const id=++speakId;
+  setPlayUI();
+  say(item.text, id).then(()=>{
+    if(id===speakId && playState==='playing'){ playIdx++; playNext(); }
+  });
+}
+function stopPlay(){
+  speakId++;
+  if(window.speechSynthesis) speechSynthesis.cancel();
+  playState='idle'; playIdx=0; playQueue=[];
+  hideCaption();
+  document.querySelectorAll('.now-play').forEach(x=>x.classList.remove('now-play'));
+  setPlayUI();
 }
 
-function revealFlap(el){
-  el.classList.add('open');
-  speak(el.querySelector('.hid').textContent);
-  setTimeout(()=>el.classList.remove('open'), 3200);
+/* ================= Clapper & leader ================= */
+function showClapper(text){
+  const c=$('clapper');
+  $('clapScene').textContent=text;
+  c.classList.remove('show'); void c.offsetWidth; c.classList.add('show');
+  clearTimeout(showClapper.t);
+  showClapper.t=setTimeout(()=>c.classList.remove('show'), 1600);
+}
+function runLeader(done){
+  const L=$('leader'), N=$('leaderNum');
+  const seq=['3','2','1'];
+  let i=0;
+  L.classList.add('show');
+  const tick=()=>{
+    if(i<seq.length){
+      N.textContent=seq[i];
+      N.classList.remove('pop'); void N.offsetWidth; N.classList.add('pop');
+      i++; setTimeout(tick, 850);
+    } else {
+      L.classList.remove('show');
+      done();
+    }
+  };
+  tick();
 }
 
+/* ================= Scene rendering ================= */
 function renderA(){
-  const box=document.getElementById('slideA');
-  box.innerHTML='<div style="font-weight:800;color:#1a2e1a;margin-bottom:10px;">A. Fill in the blanks</div>'+
-  SEC_A.map((it,i)=>{
-    let html=`<div class="q-block"><div class="q-text">${i+1}. `;
-    const ansArr = Array.isArray(it.ans)?it.ans:[it.ans];
+  let h = head('Scene 1 · Fill in the blanks');
+  h += SEC_A.map((it,i)=>{
+    const ans = Array.isArray(it.ans) ? it.ans : [it.ans];
+    let b = `<div class="q-block rise" style="--i:${i}"><div class="q-text">${i+1}. `;
     it.parts.forEach((p,j)=>{
-      html+=wordSpans(p);
-      if(j<it.parts.length-1){
-        const key=`a-${i}-${j}-${mode}`;
-        html+=ibHTML(key);
-        if(mode==='practice') html+=flapHTML(ansArr[j]||ansArr[0], `flap-a-${i}-${j}`);
+      b += wordSpans(p);
+      if(j < it.parts.length-1){
+        b += ibHTML(`a-${i}-${j}-${mode}`);
+        b += flapHTML(ans[j]!==undefined ? ans[j] : ans[0], `flap-a-${i}-${j}`);
       }
     });
-    html+='</div></div>';
-    return html;
+    return b + '</div></div>';
   }).join('');
+  if(mode==='write' && !done.has(1)){
+    h += `<div class="foot"><button class="cta" data-finish="1">✓ Finish scene</button></div>`;
+  }
+  $('slideA').innerHTML = h;
   setTimeout(initCanvases, 80);
 }
 
 function renderB(){
-  const box=document.getElementById('slideB');
-  box.innerHTML='<div style="font-weight:800;color:#1a2e1a;margin-bottom:10px;">B. Choose the correct answer</div>'+
-  SEC_B.map((it,i)=>{
-    const opts=it.opts.map((o,j)=>{
-      const cls=mode==='practice'&&j===it.ans?'opt correct':'opt';
-      return `<span class="${cls}" data-q="${i}" data-o="${j}" onclick="pickOpt(this); speak('${o}')">${'abcd'[j]}. ${o}</span>`;
+  let h = head('Scene 2 · Choose the answer');
+  h += SEC_B.map((it,i)=>{
+    const sel=bSel[i], res=bResult[i];
+    const opts = it.opts.map((o,j)=>{
+      let c='opt';
+      if(sel===j) c+=' sel';
+      if(mode==='write' && sel===j && res) c += res==='ok' ? ' correct' : ' wrong';
+      if(mode==='practice' && j===it.ans) c+=' correct';
+      return `<button class="${c}" data-q="${i}" data-o="${j}" data-text="${esc(o)}">${'abcd'[j]}. ${esc(o)}</button>`;
     }).join('');
     const flap = mode==='practice' ? flapHTML(it.opts[it.ans], `flap-b-${i}`) : '';
-    return `<div class="q-block">
-      <div class="q-text">${i+1}. ${wordSpans(it.q)}</div>
-      <div class="opt-row">${opts}</div>${flap}
-    </div>`;
-  }).join('')+
-  (mode==='write'?'<button onclick="checkB()" style="margin-top:8px;padding:8px 18px;border-radius:999px;background:#1a2e1a;color:#fef3c7;border:2px solid #d4a017;font-weight:700;">🔍 Check</button>':'');
+    return `<div class="q-block rise" style="--i:${i}"><div class="q-text">${i+1}. ${wordSpans(it.q)}</div><div class="opt-row">${opts}</div>${flap}</div>`;
+  }).join('');
+  if(mode==='write'){
+    h += done.has(2)
+      ? banner('🎉 Scene complete!', 3)
+      : `<div class="foot"><button class="cta" data-check="b">🔍 Check</button></div>`;
+  }
+  $('slideB').innerHTML = h;
 }
 
-function pickOpt(el){
+function pickOpt(q,o){
   if(mode!=='write') return;
-  const q=el.dataset.q;
-  document.querySelectorAll(`.opt[data-q="${q}"]`).forEach(o=>o.classList.remove('sel'));
-  el.classList.add('sel');
+  bSel[q]=o; bResult[q]=undefined;
+  document.querySelectorAll(`#slideB .opt[data-q="${q}"]`).forEach(b=>{
+    b.classList.toggle('sel', +b.dataset.o===o);
+    b.classList.remove('correct','wrong');
+  });
 }
 function checkB(){
-  document.querySelectorAll('#slideB .opt').forEach(el=>{
-    const q=+el.dataset.q, o=+el.dataset.o;
-    el.classList.remove('correct','wrong');
-    if(el.classList.contains('sel')){
-      if(o===SEC_B[q].ans){ el.classList.add('correct'); speak('Correct'); }
-      else el.classList.add('wrong');
-    }
+  let all=true;
+  SEC_B.forEach((it,i)=>{
+    if(bSel[i]===undefined){ all=false; return; }
+    bResult[i] = bSel[i]===it.ans ? 'ok' : 'bad';
+    if(bResult[i]!=='ok') all=false;
   });
-  document.getElementById('b2').classList.add('on');
+  if(all){ markDone(2); speakOne('Well done! Scene complete.'); }
+  renderB();
 }
 
-let matchSel=null;
 function renderC(){
-  const box=document.getElementById('slideC');
-  const order = mode==='write' && matchOrder ? matchOrder : SEC_C.map((_,i)=>i);
-  box.innerHTML='<div style="font-weight:800;color:#1a2e1a;margin-bottom:10px;">C. Match the following</div>'+
-  SEC_C.map((it,i)=>{
-    const rIdx = order[i];
-    const right = SEC_C[rIdx].right;
-    const key=`c-${i}-${mode}`;
-    const writeCol = mode==='write' ? `<div class="match-write">${ibHTML(key)}</div>` : '';
-    const flap = mode==='practice' ? flapHTML(it.right, `flap-c-${i}`) : '';
-    return `<div class="match-grid">
-      <div class="match-left" data-i="${i}" onclick="pickLeft(this)">${i+1}. ${wordSpans(it.left)}</div>
-      <div class="match-right" data-val="${right}" data-correct="${it.right}" onclick="pickRight(this)">${wordSpans(right)}${flap}</div>
-      ${writeCol}
-    </div>`;
-  }).join('')+
-  (mode==='write'?'<button onclick="checkC()" style="margin-top:8px;padding:8px 18px;border-radius:999px;background:#1a2e1a;color:#fef3c7;border:2px solid #d4a017;font-weight:700;">🔍 Check</button>':'');
-  setTimeout(initCanvases, 80);
+  const order = currentOrder();
+  let h = head('Scene 3 · Match the work');
+  h += '<div class="match-cols"><div>' +
+    SEC_C.map((it,i)=>`<div class="match-left rise${matchSel===i?' sel':''}" style="--i:${i}" data-left="${i}"><span>${i+1}. ${wordSpans(it.left)}</span><span class="pill" data-pill="${i}"></span>${mode==='practice' ? flapHTML(it.right, `flap-c-${i}`) : ''}</div>`).join('') +
+    '</div><div>' +
+    order.map((ri,pos)=>`<div class="match-right rise" style="--i:${pos}" data-right="${ri}"><b>${'abcde'[pos]}.</b> ${wordSpans(SEC_C[ri].right)}</div>`).join('') +
+    '</div></div>';
+  if(mode==='write'){
+    h += done.has(3)
+      ? banner('🎉 Scene complete!', 4)
+      : `<div class="foot"><button class="cta" data-check="c">🔍 Check</button></div>`;
+  }
+  $('slideC').innerHTML = h;
+  updatePills();
 }
-function pickLeft(el){
+function pickLeft(i){
   if(mode!=='write') return;
-  document.querySelectorAll('.match-left').forEach(x=>x.classList.remove('sel'));
-  el.classList.add('sel'); matchSel=el;
+  matchSel = matchSel===i ? null : i;
+  document.querySelectorAll('.match-left').forEach(el=>el.classList.toggle('sel', +el.dataset.left===matchSel));
 }
-function pickRight(el){
-  if(mode!=='write'||!matchSel) return;
-  const idx=matchSel.dataset.i;
-  el.classList.remove('ok');
-  if(el.dataset.correct===SEC_C[idx].right) el.classList.add('ok');
-  matchSel.classList.remove('sel'); matchSel=null;
+function pairRight(ri){
+  if(mode!=='write' || matchSel===null) return;
+  matchPairs[matchSel]=ri;
+  matchSel=null;
+  document.querySelectorAll('.match-left').forEach(el=>el.classList.remove('sel'));
+  updatePills();
+}
+function updatePills(){
+  SEC_C.forEach((_,i)=>{
+    const p=document.querySelector(`[data-pill="${i}"]`);
+    const left=document.querySelector(`.match-left[data-left="${i}"]`);
+    if(!p||!left) return;
+    p.textContent = matchPairs[i]!==undefined ? '→ '+letterOf(matchPairs[i]) : '';
+    left.classList.remove('ok','bad');
+  });
 }
 function checkC(){
   let ok=0;
-  document.querySelectorAll('.match-right').forEach(el=>{
-    const row=el.closest('.match-grid');
-    const left=row.querySelector('.match-left');
-    const idx=left.dataset.i;
-    if(el.dataset.val===SEC_C[idx].right){ el.classList.add('ok'); ok++; }
+  SEC_C.forEach((_,i)=>{
+    const L=document.querySelector(`.match-left[data-left="${i}"]`);
+    const p=matchPairs[i];
+    if(p===undefined){ L.classList.add('bad'); return; }
+    if(p===i){ L.classList.add('ok'); ok++; }
+    else L.classList.add('bad');
   });
-  if(ok===SEC_C.length) document.getElementById('b3').classList.add('on');
+  if(ok===SEC_C.length){ markDone(3); speakOne('Well done! Scene complete.'); renderC(); }
 }
 
+function renderEnd(){
+  $('slideEnd').innerHTML = `<div class="roll centered">
+    <div style="font-size:2rem">⭐⭐⭐</div>
+    <div class="end-title">THE WORK WE DO</div>
+    <div class="end-sub">Lesson 4 · Social Studies</div>
+    <div class="credit">🌾 Farming · 🐟 Fishing · ⛏️ Mining</div>
+    <div class="credit">Scenes complete: ${done.size} / 3</div>
+    <div class="end-title" style="font-size:1.6rem;color:#065f46">Well done, Humayun!</div>
+    <button class="cta" data-replay="1">↺ Replay</button>
+  </div>`;
+}
+function renderScene(n){
+  if(n===1) renderA();
+  else if(n===2) renderB();
+  else if(n===3) renderC();
+  else if(n===4) renderEnd();
+}
+
+/* ================= Navigation ================= */
+function goSlide(n){
+  if(n<0 || n>LAST) return;
+  stopPlay();
+  const dir = n>=current ? 1 : -1;
+  const from = document.querySelector('.slide.active');
+  const to = document.querySelector(`.slide[data-slide="${n}"]`);
+  if(from!==to){
+    from.style.setProperty('--x', (-dir*60)+'px');
+    from.classList.remove('active');
+    to.style.setProperty('--x', (dir*60)+'px');
+    to.classList.add('active');
+  }
+  current=n;
+  renderScene(n);
+  if(n>=1 && n<=3 && !visited.has(n)){
+    visited.add(n);
+    showClapper(`SCENE ${n} · ${SCENE_NAMES[n].toUpperCase()}`);
+  }
+  updateNav();
+}
+function updateNav(){
+  $('prevBtn').disabled = current===0;
+  $('nextBtn').disabled = current===LAST;
+  updateStrip();
+  updateBadges();
+  setPlayUI();
+}
+function buildStrip(){
+  $('strip').innerHTML = FRAME_LABELS.map((_,i)=>`<button class="frame" data-go="${i}" title="${FRAME_TITLES[i]}"></button>`).join('');
+  updateStrip();
+}
+function updateStrip(){
+  document.querySelectorAll('.frame').forEach((f,i)=>{
+    f.classList.toggle('on', i===current);
+    f.textContent = (i>=1 && i<=3 && done.has(i)) ? `${i} ✓` : FRAME_LABELS[i];
+  });
+}
+function updateBadges(){
+  [1,2,3].forEach(n=>{
+    const b=$('b'+n);
+    b.classList.toggle('on', done.has(n));
+    b.classList.toggle('here', current===n);
+  });
+}
+function completeFromA(){
+  markDone(1);
+  goSlide(2);
+}
+function replay(){
+  visited.clear(); done.clear(); resetWork();
+  updateBadges();
+  goSlide(0);
+}
+
+/* ================= Ink helpers (UniversalPen) ================= */
 function initCanvases(){
   document.querySelectorAll('canvas').forEach(c=>{
     const dpr=window.devicePixelRatio||1;
@@ -355,42 +640,126 @@ function initCanvases(){
 }
 function clearIB(key){
   const c=document.querySelector(`canvas[data-ink-key="${key}"]`);
-  if(c&&window.UniversalPen){
+  if(c && window.UniversalPen){
     UniversalPen.state.activeCanvas=c;
     UniversalPen.state.ctx=c.getContext('2d');
     if(typeof UniversalPen.clearInk==='function') UniversalPen.clearInk();
   }
 }
 
-function updateBadges(){
-  document.getElementById('b1').classList.toggle('on', current>=1);
-  document.getElementById('b2').classList.toggle('on', current>=2);
-  document.getElementById('b3').classList.toggle('on', current>=3);
-}
-
-/* PIN */
+/* ================= Modes & PIN ================= */
 const PIN_SALT='humayun-social-v1:';
 function fnv1a(s){ let h=0x811c9dc5; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,0x01000193)>>>0; } return (h>>>0).toString(16).padStart(8,'0'); }
 const PIN_CHECK=fnv1a(PIN_SALT+'1995');
-function isUnlocked(){ try{ return Number(localStorage.getItem('humayun_social_unlock')||0)>Date.now(); }catch(e){return false;} }
-function unlock(){ try{ localStorage.setItem('humayun_social_unlock', String(Date.now()+10*60*1000)); }catch(e){} }
+function isUnlocked(){ return Date.now()<unlockUntil; }
 function setModeUI(){
-  const p=document.getElementById('practiceBtn'), w=document.getElementById('writeBtn');
-  p.className=mode==='practice'?'on':'';
-  p.textContent=mode==='practice'?'✓ Practice':(isUnlocked()?'Practice':'🔒 Practice');
-  w.className=mode==='write'?'on':'';
+  const p=$('practiceBtn'), w=$('writeBtn');
+  p.classList.toggle('on', mode==='practice');
+  p.textContent = mode==='practice' ? '✓ Practice' : (isUnlocked() ? 'Practice' : '🔒 Practice');
+  w.classList.toggle('on', mode==='write');
 }
-function showPin(){ document.getElementById('pinModal').classList.add('open'); document.getElementById('pinInput').value=''; document.getElementById('pinErr').style.display='none'; }
-function hidePin(){ document.getElementById('pinModal').classList.remove('open'); }
+function setMode(m){
+  stopPlay();
+  mode=m;
+  resetWork();
+  setModeUI();
+  renderScene(current);
+  updateNav();
+}
+function showPin(){
+  $('pinModal').classList.add('open');
+  $('pinInput').value='';
+  $('pinErr').style.display='none';
+  setTimeout(()=>$('pinInput').focus(), 50);
+}
+function hidePin(){ $('pinModal').classList.remove('open'); }
 function checkPin(){
-  const v=document.getElementById('pinInput').value.trim();
-  if(fnv1a(PIN_SALT+v)===PIN_CHECK){ unlock(); hidePin(); mode='practice'; matchOrder=null; setModeUI(); goSlide(current); }
-  else document.getElementById('pinErr').style.display='block';
+  const v=$('pinInput').value.trim();
+  if(fnv1a(PIN_SALT+v)===PIN_CHECK){
+    unlockUntil=Date.now()+10*60*1000;
+    hidePin();
+    setMode('practice');
+  } else {
+    $('pinErr').style.display='block';
+  }
 }
-document.getElementById('practiceBtn').onclick=()=>{ if(isUnlocked()){ mode='practice'; matchOrder=null; setModeUI(); goSlide(current); } else showPin(); };
-document.getElementById('writeBtn').onclick=()=>{ mode='write'; matchOrder=null; setModeUI(); goSlide(current); };
 
-setModeUI(); buildDots(); goSlide(0);
+/* ================= Events ================= */
+$('startBtn').onclick=()=>{
+  if(starting) return;
+  starting=true;
+  runLeader(()=>{ starting=false; goSlide(1); });
+};
+$('practiceBtn').onclick=()=>{ if(isUnlocked()) setMode('practice'); else showPin(); };
+$('writeBtn').onclick=()=>setMode('write');
+$('hubBtn').onclick=()=>{ location.href='index.html'; };
+$('pinCancel').onclick=hidePin;
+$('pinOk').onclick=checkPin;
+$('pinInput').addEventListener('keydown', e=>{ if(e.key==='Enter') checkPin(); });
+$('playBtn').onclick=togglePlay;
+$('prevBtn').onclick=()=>goSlide(current-1);
+$('nextBtn').onclick=()=>goSlide(current+1);
+
+document.addEventListener('click', e=>{
+  const t=e.target;
+  const word=t.closest('.word');
+  if(word) speakOne(word.dataset.say);
+
+  const flap=t.closest('.flap');
+  if(flap){ revealFlap(flap); return; }
+
+  const clr=t.closest('[data-clear]');
+  if(clr){ clearIB(clr.dataset.clear); return; }
+
+  const opt=t.closest('.opt');
+  if(opt){
+    pickOpt(+opt.dataset.q, +opt.dataset.o);
+    if(!word) speakOne(opt.dataset.text);
+    return;
+  }
+
+  const left=t.closest('.match-left');
+  if(left && mode==='write'){ pickLeft(+left.dataset.left); return; }
+
+  const right=t.closest('.match-right');
+  if(right && mode==='write'){ pairRight(+right.dataset.right); return; }
+
+  const fin=t.closest('[data-finish]');
+  if(fin){ completeFromA(); return; }
+
+  const chk=t.closest('[data-check]');
+  if(chk){ chk.dataset.check==='b' ? checkB() : checkC(); return; }
+
+  const rep=t.closest('[data-replay]');
+  if(rep){ replay(); return; }
+
+  const go=t.closest('[data-go]');
+  if(go){ goSlide(+go.dataset.go); }
+});
+
+document.addEventListener('keydown', e=>{
+  if($('pinModal').classList.contains('open')) return;
+  if(e.key==='ArrowRight') goSlide(current+1);
+  if(e.key==='ArrowLeft') goSlide(current-1);
+});
+
+/* Swipe between scenes, ignoring drawing on ink boxes */
+let touchX=null;
+$('stage').addEventListener('touchstart', e=>{
+  touchX = e.target.closest('canvas') ? null : e.touches[0].clientX;
+}, {passive:true});
+$('stage').addEventListener('touchend', e=>{
+  if(touchX===null) return;
+  const dx=e.changedTouches[0].clientX-touchX;
+  touchX=null;
+  if(Math.abs(dx)>60) dx<0 ? goSlide(current+1) : goSlide(current-1);
+});
+
+/* ================= Init ================= */
+buildStrip();
+setModeUI();
+updateBadges();
+updateNav();
 </script>
 </body>
 </html>
