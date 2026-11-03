@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
+<title>Humayun • Social • The Work We Do</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+*{ -webkit-tap-highlight-color:transparent; box-sizing:border-box; }
+html,body{ margin:0; min-height:100%; font-family:'Baloo 2',system-ui,sans-serif; background:#1a2e1a; overflow:hidden; }
+#bgLayer{ position:fixed; inset:0; z-index:0; background:#1a2e1a url('assets/work-workshop-bg.webp') center/cover no-repeat; }
+.overlay{ position:fixed; inset:0; background:rgba(20,35,20,0.48); z-index:0; pointer-events:none; }
+
+#topBar{
+  position:fixed; top:0; left:0; right:0; z-index:40; height:56px;
+  background:rgba(15,30,15,0.94); border-bottom:2px solid #d4a017;
+  display:flex; align-items:center; justify-content:space-between; padding:0 12px;
+  backdrop-filter:blur(8px);
+}
+.mode-seg{ display:flex; background:#1a2e1a; border:1.5px solid #d4a017; border-radius:999px; overflow:hidden; }
+.mode-seg button{ padding:6px 12px; font-size:12px; font-weight:700; border:0; background:transparent; color:#fef3c7; cursor:pointer; }
+.mode-seg button.on{ background:#d4a017; color:#1a2e1a; }
+
+.slide-stage{ position:fixed; inset:56px 0 70px 0; z-index:10; overflow:hidden; }
+.slide{
+  position:absolute; inset:0; padding:14px 18px;
+  display:flex; flex-direction:column; opacity:0; pointer-events:none;
+  transform:translateX(50px); transition:all .5s cubic-bezier(.25,.8,.25,1);
+}
+.slide.active{ opacity:1; pointer-events:auto; transform:translateX(0); }
+.slide-card{
+  background:rgba(255,252,245,0.97); border-radius:18px; border:2px solid #d4a017;
+  padding:16px; flex:1; overflow-y:auto; box-shadow:0 12px 40px rgba(0,0,0,.22);
+}
+
+#bottomNav{
+  position:fixed; bottom:0; left:0; right:0; height:70px; z-index:40;
+  background:rgba(15,30,15,0.95); border-top:2px solid #d4a017;
+  display:flex; align-items:center; justify-content:space-between; padding:0 16px;
+}
+.nav-btn{
+  width:46px; height:46px; border-radius:50%; border:2px solid #d4a017;
+  background:#1a2e1a; color:#fef3c7; font-size:18px; cursor:pointer; display:grid; place-items:center;
+}
+.nav-btn:disabled{ opacity:0.35; }
+.dots{ display:flex; gap:10px; }
+.dot{ width:14px; height:14px; border-radius:50%; background:#4a5a4a; cursor:pointer; transition:all .25s; }
+.dot.on{ background:#d4a017; transform:scale(1.3); }
+.slide-num{ color:#fef3c7; font-size:13px; font-weight:700; }
+
+.q-block{ margin-bottom:14px; padding-bottom:12px; border-bottom:1px dashed #e5d5b0; }
+.q-text{ font-weight:700; color:#1a2e1a; font-size:1.08rem; line-height:1.55; cursor:pointer; }
+.q-text:active{ background:rgba(212,160,23,0.12); border-radius:6px; }
+
+/* Inline blank boxes (Indian Village style) */
+.ib{
+  display:inline-flex; height:42px; min-width:90px; max-width:160px;
+  border:2px solid #c9b58a; border-radius:10px; background:#fffef8;
+  overflow:hidden; vertical-align:middle; margin:0 4px;
+}
+.ib canvas{ flex:1; touch-action:none; display:block; height:42px; }
+.ib-tools{ display:flex; flex-direction:column; width:22px; border-left:1.5px solid #e3d6b8; }
+.ib-tools button{ flex:1; border:0; background:#f6efdb; font-size:11px; padding:0; cursor:pointer; }
+
+/* Cover flap */
+.flap{
+  display:inline-block; min-width:80px; padding:2px 8px; margin:0 4px;
+  background:#e8d5a3; border-radius:8px; cursor:pointer; font-weight:700;
+  transition:all .3s; user-select:none;
+}
+.flap.open{ background:#d1fae5; color:#065f46; }
+.flap .hid{ opacity:0; }
+.flap.open .hid{ opacity:1; }
+
+.opt-row{ display:flex; flex-wrap:wrap; gap:8px; margin:8px 0; }
+.opt{
+  padding:8px 14px; border-radius:999px; border:1.5px solid #d4a017;
+  background:#fff; font-size:.95rem; cursor:pointer; transition:all .15s;
+}
+.opt.sel{ background:#fef3c7; font-weight:700; }
+.opt.correct{ background:#d1fae5; border-color:#10b981; }
+.opt.wrong{ background:#fee2e2; border-color:#ef4444; }
+
+.match-grid{ display:grid; grid-template-columns:1.2fr 1.2fr 1fr; gap:8px; align-items:center; margin:8px 0; }
+.match-left,.match-right{
+  padding:10px 12px; border-radius:12px; font-weight:700; cursor:pointer;
+}
+.match-left{ background:#fef3c7; }
+.match-right{ background:#fff; border:1.5px solid #d4a017; }
+.match-left.sel,.match-right.sel{ outline:3px solid #d4a017; }
+.match-right.ok{ background:#d1fae5; border-color:#10b981; }
+.match-write{ min-height:50px; }
+
+#pinModal{ position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.75); opacity:0; pointer-events:none; transition:opacity .3s; }
+#pinModal.open{ opacity:1; pointer-events:auto; }
+.pin-box{ background:#fffef8; border:2px solid #d4a017; border-radius:16px; padding:20px; width:min(300px,90vw); text-align:center; }
+
+.tool-badge{ width:36px; height:36px; border-radius:50%; background:#fef3c7; border:2px solid #d4a017; display:inline-flex; align-items:center; justify-content:center; font-size:18px; margin:0 4px; opacity:0.4; transition:all .3s; }
+.tool-badge.on{ opacity:1; transform:scale(1.1); background:#d1fae5; }
+</style>
+</head>
+<body>
+<div id="bgLayer"></div>
+<div class="overlay"></div>
+
+<header id="topBar">
+  <div class="flex items-center gap-2">
+    <span class="tool-badge" id="b1">🌾</span>
+    <span class="tool-badge" id="b2">🐟</span>
+    <span class="tool-badge" id="b3">⛏️</span>
+    <span class="text-[#fef3c7] font-extrabold text-sm ml-2">The Work We Do</span>
+  </div>
+  <div class="flex items-center gap-2">
+    <div class="mode-seg">
+      <button id="practiceBtn">🔒 Practice</button>
+      <button id="writeBtn" class="on">Write</button>
+    </div>
+    <button onclick="location.href='index.html'" class="text-[#fef3c7] text-xs font-bold px-2">← Hub</button>
+  </div>
+</header>
+
+<div class="slide-stage" id="stage">
+  <div class="slide active" data-slide="0">
+    <div class="slide-card" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;">
+      <img src="assets/work-title-banner.webp" alt="" style="width:min(320px,80%);height:auto;margin-bottom:12px;" onerror="this.style.display='none'">
+      <div style="font-size:1.7rem;font-weight:800;color:#1a2e1a;">The Work We Do</div>
+      <div style="color:#5a4a2a;margin:6px 0 18px;">Lesson 4 • Social Studies</div>
+      <button class="nav-btn" style="width:auto;padding:0 28px;border-radius:999px;font-size:15px;font-weight:800;" onclick="goSlide(1)">Start →</button>
+    </div>
+  </div>
+  <div class="slide" data-slide="1"><div class="slide-card" id="slideA"></div></div>
+  <div class="slide" data-slide="2"><div class="slide-card" id="slideB"></div></div>
+  <div class="slide" data-slide="3"><div class="slide-card" id="slideC"></div></div>
+</div>
+
+<nav id="bottomNav">
+  <button class="nav-btn" id="prevBtn" onclick="prevSlide()">◀</button>
+  <div class="dots" id="dots"></div>
+  <div class="slide-num" id="slideNum">1 / 4</div>
+  <button class="nav-btn" id="nextBtn" onclick="nextSlide()">▶</button>
+</nav>
+
+<div id="pinModal">
+  <div class="pin-box">
+    <div style="font-weight:800;color:#1a2e1a;">Parent PIN</div>
+    <div style="font-size:12px;color:#6b5a3a;margin:4px 0 10px;">Practice mode shows answers</div>
+    <input id="pinInput" type="password" maxlength="4" inputmode="numeric" placeholder="••••" style="width:100%;text-align:center;font-size:20px;letter-spacing:.3em;border:2px solid #d4a017;border-radius:10px;padding:8px;">
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <button onclick="hidePin()" style="flex:1;padding:8px;border-radius:999px;border:1.5px solid #ccc;background:#fff;">Cancel</button>
+      <button onclick="checkPin()" style="flex:1;padding:8px;border-radius:999px;border:1.5px solid #d4a017;background:#1a2e1a;color:#fef3c7;font-weight:700;">Unlock</button>
+    </div>
+    <div id="pinErr" style="color:#dc2626;font-size:12px;margin-top:6px;display:none;">Wrong PIN</div>
+  </div>
+</div>
+
+<script src="shared/universal-pen.js"></script>
+<script>
+const SLIDES = 4;
+let current = 0;
+let mode = 'write';
+let matchOrder = null; // Fisher-Yates once per visit
+
+const SEC_A = [
+  {parts:['People engage in different types of ', ' to fulfil their basic needs.'], ans:'work'},
+  {parts:['', ' is the main occupation of people living in the coastal areas.'], ans:'Fishing'},
+  {parts:['While cows produce ', ', sheep give us ', '.'], ans:['milk','wool']},
+  {parts:['Coins are made of ', '.'], ans:'metal'},
+  {parts:['In ', ' many people work in offices.'], ans:'cities'}
+];
+const SEC_B = [
+  {q:'The main occupation in our country is __________.', opts:['teaching','farming','tailoring','singing'], ans:1},
+  {q:'Which of these is an animal product?', opts:['gum','rubber','paper','wool'], ans:3},
+  {q:'What do we get from fish?', opts:['oil','wool','milk','cotton'], ans:0},
+  {q:'This is the process of digging out minerals from the Earth.', opts:['fishing','mining','farming','tailoring'], ans:1},
+  {q:'Metals are needed to make __________.', opts:['shoes','cheese','coins','paper'], ans:2}
+];
+const SEC_C = [
+  {left:'Dairy farming', right:'Milk and milk products'},
+  {left:'Poultry farming', right:'Eggs and meat'},
+  {left:'Mining', right:'Digging minerals out of the ground'},
+  {left:'Working in forests', right:'Furniture'},
+  {left:'Farming', right:'Grains'}
+];
+
+function speak(text){
+  try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text); u.lang='en-GB'; u.rate=0.88; speechSynthesis.speak(u); }catch(e){}
+}
+
+function fisherYates(arr){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+function buildDots(){
+  const d=document.getElementById('dots'); d.innerHTML='';
+  for(let i=0;i<SLIDES;i++){
+    const dot=document.createElement('div');
+    dot.className='dot'+(i===current?' on':'');
+    dot.onclick=()=>goSlide(i);
+    d.appendChild(dot);
+  }
+}
+
+function goSlide(n){
+  if(n<0||n>=SLIDES) return;
+  document.querySelectorAll('.slide').forEach(s=>s.classList.remove('active'));
+  document.querySelector(`.slide[data-slide="${n}"]`).classList.add('active');
+  current=n;
+  document.getElementById('slideNum').textContent=(n+1)+' / '+SLIDES;
+  document.getElementById('prevBtn').disabled=n===0;
+  document.getElementById('nextBtn').disabled=n===SLIDES-1;
+  buildDots();
+  if(n===1) renderA();
+  if(n===2) renderB();
+  if(n===3){ if(mode==='write' && !matchOrder) matchOrder=fisherYates(SEC_C.map((_,i)=>i)); renderC(); }
+  updateBadges();
+}
+function nextSlide(){ goSlide(current+1); }
+function prevSlide(){ goSlide(current-1); }
+
+function ibHTML(key){
+  return `<span class="ib"><canvas data-ink-key="${key}" width="120" height="42"></canvas><span class="ib-tools"><button onclick="clearIB('${key}')">⌫</button></span></span>`;
+}
+
+function flapHTML(ans, id){
+  if(mode!=='practice') return '';
+  return `<span class="flap" id="${id}" onclick="revealFlap(this)"><span class="hid">${ans}</span></span>`;
+}
+
+function revealFlap(el){
+  el.classList.add('open');
+  speak(el.querySelector('.hid').textContent);
+  setTimeout(()=>el.classList.remove('open'), 3200);
+}
+
+function renderA(){
+  const box=document.getElementById('slideA');
+  box.innerHTML='<div style="font-weight:800;color:#1a2e1a;margin-bottom:10px;">A. Fill in the blanks</div>'+
+  SEC_A.map((it,i)=>{
+    let html=`<div class="q-block"><div class="q-text" onclick="speak(this.innerText)">${i+1}. `;
+    const ansArr = Array.isArray(it.ans)?it.ans:[it.ans];
+    it.parts.forEach((p,j)=>{
+      html+=p;
+      if(j<it.parts.length-1){
+        const key=`a-${i}-${j}-${mode}`;
+        html+=ibHTML(key);
+        if(mode==='practice') html+=flapHTML(ansArr[j]||ansArr[0], `flap-a-${i}-${j}`);
+      }
+    });
+    html+='</div></div>';
+    return html;
+  }).join('');
+  setTimeout(initCanvases, 80);
+}
+
+function renderB(){
+  const box=document.getElementById('slideB');
+  box.innerHTML='<div style="font-weight:800;color:#1a2e1a;margin-bottom:10px;">B. Choose the correct answer</div>'+
+  SEC_B.map((it,i)=>{
+    const opts=it.opts.map((o,j)=>{
+      const cls=mode==='practice'&&j===it.ans?'opt correct':'opt';
+      return `<span class="${cls}" data-q="${i}" data-o="${j}" onclick="pickOpt(this); speak('${o}')">${'abcd'[j]}. ${o}</span>`;
+    }).join('');
+    const flap = mode==='practice' ? flapHTML(it.opts[it.ans], `flap-b-${i}`) : '';
+    return `<div class="q-block">
+      <div class="q-text" onclick="speak(this.innerText)">${i+1}. ${it.q}</div>
+      <div class="opt-row">${opts}</div>${flap}
+    </div>`;
+  }).join('')+
+  (mode==='write'?'<button onclick="checkB()" style="margin-top:8px;padding:8px 18px;border-radius:999px;background:#1a2e1a;color:#fef3c7;border:2px solid #d4a017;font-weight:700;">🔍 Check</button>':'');
+}
+
+function pickOpt(el){
+  if(mode!=='write') return;
+  const q=el.dataset.q;
+  document.querySelectorAll(`.opt[data-q="${q}"]`).forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function checkB(){
+  document.querySelectorAll('#slideB .opt').forEach(el=>{
+    const q=+el.dataset.q, o=+el.dataset.o;
+    el.classList.remove('correct','wrong');
+    if(el.classList.contains('sel')){
+      if(o===SEC_B[q].ans){ el.classList.add('correct'); speak('Correct'); }
+      else el.classList.add('wrong');
+    }
+  });
+  document.getElementById('b2').classList.add('on');
+}
+
+let matchSel=null;
+function renderC(){
+  const box=document.getElementById('slideC');
+  const order = mode==='write' && matchOrder ? matchOrder : SEC_C.map((_,i)=>i);
+  box.innerHTML='<div style="font-weight:800;color:#1a2e1a;margin-bottom:10px;">C. Match the following</div>'+
+  SEC_C.map((it,i)=>{
+    const rIdx = order[i];
+    const right = SEC_C[rIdx].right;
+    const key=`c-${i}-${mode}`;
+    const writeCol = mode==='write' ? `<div class="match-write">${ibHTML(key)}</div>` : '';
+    const flap = mode==='practice' ? flapHTML(it.right, `flap-c-${i}`) : '';
+    return `<div class="match-grid">
+      <div class="match-left" data-i="${i}" onclick="speak(this.innerText); pickLeft(this)">${i+1}. ${it.left}</div>
+      <div class="match-right" data-val="${right}" data-correct="${it.right}" onclick="speak(this.innerText); pickRight(this)">${right}${flap}</div>
+      ${writeCol}
+    </div>`;
+  }).join('')+
+  (mode==='write'?'<button onclick="checkC()" style="margin-top:8px;padding:8px 18px;border-radius:999px;background:#1a2e1a;color:#fef3c7;border:2px solid #d4a017;font-weight:700;">🔍 Check</button>':'');
+  setTimeout(initCanvases, 80);
+}
+function pickLeft(el){
+  if(mode!=='write') return;
+  document.querySelectorAll('.match-left').forEach(x=>x.classList.remove('sel'));
+  el.classList.add('sel'); matchSel=el;
+}
+function pickRight(el){
+  if(mode!=='write'||!matchSel) return;
+  const idx=matchSel.dataset.i;
+  el.classList.remove('ok');
+  if(el.dataset.correct===SEC_C[idx].right) el.classList.add('ok');
+  matchSel.classList.remove('sel'); matchSel=null;
+}
+function checkC(){
+  let ok=0;
+  document.querySelectorAll('.match-right').forEach(el=>{
+    const row=el.closest('.match-grid');
+    const left=row.querySelector('.match-left');
+    const idx=left.dataset.i;
+    if(el.dataset.val===SEC_C[idx].right){ el.classList.add('ok'); ok++; }
+  });
+  if(ok===SEC_C.length) document.getElementById('b3').classList.add('on');
+}
+
+function initCanvases(){
+  document.querySelectorAll('canvas').forEach(c=>{
+    const dpr=window.devicePixelRatio||1;
+    const r=c.getBoundingClientRect();
+    if(r.width<8) return;
+    c.width=Math.round(r.width*dpr);
+    c.height=Math.round((c.classList.contains('ib')?42:72)*dpr);
+    try{ c.getContext('2d').setTransform(dpr,0,0,dpr,0,0); }catch(e){}
+    if(window.UniversalPen) UniversalPen.forceCanvas(c);
+  });
+}
+function clearIB(key){
+  const c=document.querySelector(`canvas[data-ink-key="${key}"]`);
+  if(c&&window.UniversalPen){
+    UniversalPen.state.activeCanvas=c;
+    UniversalPen.state.ctx=c.getContext('2d');
+    if(typeof UniversalPen.clearInk==='function') UniversalPen.clearInk();
+  }
+}
+
+function updateBadges(){
+  document.getElementById('b1').classList.toggle('on', current>=1);
+  document.getElementById('b2').classList.toggle('on', current>=2);
+  document.getElementById('b3').classList.toggle('on', current>=3);
+}
+
+/* PIN */
+const PIN_SALT='humayun-social-v1:';
+function fnv1a(s){ let h=0x811c9dc5; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,0x01000193)>>>0; } return (h>>>0).toString(16).padStart(8,'0'); }
+const PIN_CHECK=fnv1a(PIN_SALT+'1995');
+function isUnlocked(){ try{ return Number(localStorage.getItem('humayun_social_unlock')||0)>Date.now(); }catch(e){return false;} }
+function unlock(){ try{ localStorage.setItem('humayun_social_unlock', String(Date.now()+10*60*1000)); }catch(e){} }
+function setModeUI(){
+  const p=document.getElementById('practiceBtn'), w=document.getElementById('writeBtn');
+  p.className=mode==='practice'?'on':'';
+  p.textContent=mode==='practice'?'✓ Practice':(isUnlocked()?'Practice':'🔒 Practice');
+  w.className=mode==='write'?'on':'';
+}
+function showPin(){ document.getElementById('pinModal').classList.add('open'); document.getElementById('pinInput').value=''; document.getElementById('pinErr').style.display='none'; }
+function hidePin(){ document.getElementById('pinModal').classList.remove('open'); }
+function checkPin(){
+  const v=document.getElementById('pinInput').value.trim();
+  if(fnv1a(PIN_SALT+v)===PIN_CHECK){ unlock(); hidePin(); mode='practice'; matchOrder=null; setModeUI(); goSlide(current); }
+  else document.getElementById('pinErr').style.display='block';
+}
+document.getElementById('practiceBtn').onclick=()=>{ if(isUnlocked()){ mode='practice'; matchOrder=null; setModeUI(); goSlide(current); } else showPin(); };
+document.getElementById('writeBtn').onclick=()=>{ mode='write'; matchOrder=null; setModeUI(); goSlide(current); };
+
+setModeUI(); buildDots(); goSlide(0);
+</script>
+</body>
+</html>
