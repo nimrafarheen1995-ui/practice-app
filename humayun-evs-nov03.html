@@ -52,14 +52,16 @@ html,body{ margin:0; min-height:100%; font-family:'Baloo 2',system-ui,sans-serif
 .q-block{ margin-bottom:14px; padding-bottom:12px; border-bottom:1px dashed #e5d5b0; }
 .q-text{ font-weight:700; color:#1a2e1a; font-size:1.08rem; line-height:1.55; cursor:pointer; }
 .q-text:active{ background:rgba(212,160,23,0.12); border-radius:6px; }
+.word{ cursor:pointer; padding:0 1px; border-radius:3px; }
+.word:active{ background:rgba(212,160,23,0.35); }
 
 /* Inline blank boxes (Indian Village style) */
 .ib{
-  display:inline-flex; height:42px; min-width:90px; max-width:160px;
+  display:inline-flex; height:56px; min-width:140px; max-width:220px;
   border:2px solid #c9b58a; border-radius:10px; background:#fffef8;
   overflow:hidden; vertical-align:middle; margin:0 4px;
 }
-.ib canvas{ flex:1; touch-action:none; display:block; height:42px; }
+.ib canvas{ flex:1; touch-action:none; display:block; height:56px; }
 .ib-tools{ display:flex; flex-direction:column; width:22px; border-left:1.5px solid #e3d6b8; }
 .ib-tools button{ flex:1; border:0; background:#f6efdb; font-size:11px; padding:0; cursor:pointer; }
 
@@ -183,6 +185,13 @@ const SEC_C = [
   {left:'Farming', right:'Grains'}
 ];
 
+
+function wordSpans(text){
+  return text.split(/(\s+)/).map(w=>{
+    if(!w.trim()) return w;
+    return `<span class="word" onclick="speak('${w.replace(/'/g,"\\'")}')">${w}</span>`;
+  }).join('');
+}
 function speak(text){
   try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text); u.lang='en-GB'; u.rate=0.88; speechSynthesis.speak(u); }catch(e){}
 }
@@ -239,10 +248,10 @@ function renderA(){
   const box=document.getElementById('slideA');
   box.innerHTML='<div style="font-weight:800;color:#1a2e1a;margin-bottom:10px;">A. Fill in the blanks</div>'+
   SEC_A.map((it,i)=>{
-    let html=`<div class="q-block"><div class="q-text" onclick="speak(this.innerText)">${i+1}. `;
+    let html=`<div class="q-block"><div class="q-text">${i+1}. `;
     const ansArr = Array.isArray(it.ans)?it.ans:[it.ans];
     it.parts.forEach((p,j)=>{
-      html+=p;
+      html+=wordSpans(p);
       if(j<it.parts.length-1){
         const key=`a-${i}-${j}-${mode}`;
         html+=ibHTML(key);
@@ -265,7 +274,7 @@ function renderB(){
     }).join('');
     const flap = mode==='practice' ? flapHTML(it.opts[it.ans], `flap-b-${i}`) : '';
     return `<div class="q-block">
-      <div class="q-text" onclick="speak(this.innerText)">${i+1}. ${it.q}</div>
+      <div class="q-text">${i+1}. ${wordSpans(it.q)}</div>
       <div class="opt-row">${opts}</div>${flap}
     </div>`;
   }).join('')+
@@ -302,8 +311,8 @@ function renderC(){
     const writeCol = mode==='write' ? `<div class="match-write">${ibHTML(key)}</div>` : '';
     const flap = mode==='practice' ? flapHTML(it.right, `flap-c-${i}`) : '';
     return `<div class="match-grid">
-      <div class="match-left" data-i="${i}" onclick="speak(this.innerText); pickLeft(this)">${i+1}. ${it.left}</div>
-      <div class="match-right" data-val="${right}" data-correct="${it.right}" onclick="speak(this.innerText); pickRight(this)">${right}${flap}</div>
+      <div class="match-left" data-i="${i}" onclick="pickLeft(this)">${i+1}. ${wordSpans(it.left)}</div>
+      <div class="match-right" data-val="${right}" data-correct="${it.right}" onclick="pickRight(this)">${wordSpans(right)}${flap}</div>
       ${writeCol}
     </div>`;
   }).join('')+
@@ -339,7 +348,7 @@ function initCanvases(){
     const r=c.getBoundingClientRect();
     if(r.width<8) return;
     c.width=Math.round(r.width*dpr);
-    c.height=Math.round((c.classList.contains('ib')?42:72)*dpr);
+    c.height=Math.round((c.closest('.ib')?56:72)*dpr);
     try{ c.getContext('2d').setTransform(dpr,0,0,dpr,0,0); }catch(e){}
     if(window.UniversalPen) UniversalPen.forceCanvas(c);
   });
